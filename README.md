@@ -1,5 +1,5 @@
 <img src="http://miki.rie.one/img/ai_miki_logo.png"/>
-Miki documentation and issues
+Miki repository
 
 ## useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
