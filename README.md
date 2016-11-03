@@ -1,4 +1,4 @@
-# miki
+<img src="http://miki.rie.one/img/ai_miki_logo.png"/>
 Miki documentation and issues
 
 ## useful links
