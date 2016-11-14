@@ -1,4 +1,4 @@
-<img src="http://miki.rie.one/img/ai_miki_logo.png"/>
+<img src="http://miki.rie.one/img/ia_miki_logo.png"/>
 <b>repository</b>
 
 ## useful links
