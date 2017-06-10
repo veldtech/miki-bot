@@ -1,5 +1,4 @@
-<img src="http://miki.rie.one/img/ia_miki_logo.png"/>
-<b>repository</b>
+<img src="http://miki.rie.one/img/ia_miki_logo.png"/><b>repository</b>
 
 ## useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
