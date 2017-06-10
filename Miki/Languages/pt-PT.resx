@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="miki_errors_enabled_message" xml:space="preserve">
+    <value>Miki encontrou um problema em seu código com o seu pedido. Vamos enviar-lhe um registro e instruções por meio de PM.</value>
+    <comment>This message is sent when miki catches a uncaught error</comment>
+  </data>
+  <data name="miki_error_message_generic" xml:space="preserve">
+    <value>Alguma coisa saiu errada!</value>
+    <comment>When no other error message is appliable to this version</comment>
+  </data>
+  <data name="miki_join_message" xml:space="preserve">
+    <value>Olá, eu sou **Miki**! Ao seu serviço! 
+Tente usar **&gt;help** para ver o que eu posso fazer! :notes:</value>
+    <comment>This message is called when miki joins a new guild</comment>
+  </data>
+  <data name="miki_global_profile_user_header" xml:space="preserve">
+    <value>{0}&apos;s perfil global</value>
+  </data>
+  <data name="miki_local_profile_user_header" xml:space="preserve">
+    <value>{0}&apos;s perfil local</value>
+  </data>
+  <data name="miki_mekos_insufficient" xml:space="preserve">
+    <value>Você não tem mekos suficientes.</value>
+  </data>
+  <data name="miki_module_eventmessages_delete_guildjoin" xml:space="preserve">
+    <value>✅ mensagem de boas-vindas excluída</value>
+  </data>
+  <data name="miki_module_eventmessages_set_guildjoin" xml:space="preserve">
+    <value>✅ nova mensagem de boas-vindas é definido como: `{0}`</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
+    <value>Não conte com isso.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
+    <value>Minha resposta é não.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_3" xml:space="preserve">
+    <value>Minhas fontes dizem que não.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
+    <value>Outlook não é tão bom.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
+    <value>Muito duvidoso.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_1" xml:space="preserve">
+    <value>Resposta nebulosa, tente novamente.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_2" xml:space="preserve">
+    <value>Pergunte novamente mais tarde.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_3" xml:space="preserve">
+    <value>Melhor não te dizer agora.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_4" xml:space="preserve">
+    <value>Não é possível prever agora.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_5" xml:space="preserve">
+    <value>Concentre-se e pergunte novamente.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_1" xml:space="preserve">
+    <value>É certo</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_2" xml:space="preserve">
+    <value>É decididamente assim.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_3" xml:space="preserve">
+    <value>Sem dúvida.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_4" xml:space="preserve">
+    <value>Sim,definitivamente.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_5" xml:space="preserve">
+    <value>Você pode confiar nele.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_6" xml:space="preserve">
+    <value>Provavelmente.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_7" xml:space="preserve">
+    <value>Outlook bom.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_8" xml:space="preserve">
+    <value>Sim.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_9" xml:space="preserve">
+    <value>Sinais apontam que sim.</value>
+  </data>
+  <data name="miki_module_fun_compliment_body_1" xml:space="preserve">
+    <value>A parte inferior de seus lábios</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_10" xml:space="preserve">
+    <value>Os ângulos especiais que seus cotovelos fazem</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_11" xml:space="preserve">
+    <value>as covinhas em suas bochechas</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_12" xml:space="preserve">
+    <value>Seu cabelo liso</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_2" xml:space="preserve">
+    <value>O menor dedo do pé no seu pé esquerdo</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_3" xml:space="preserve">
+    <value>O menor dedo do pé no seu pé direito</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_4" xml:space="preserve">
+    <value>O segundo cílio em seu olho esquerdo</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_5" xml:space="preserve">
+    <value>A parte inferior do seu queixo</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_6" xml:space="preserve">
+    <value>Seu dedo assustador em sua mão esquerda</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_7" xml:space="preserve">
+    <value>Seu sorriso é fofo</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_8" xml:space="preserve">
+    <value>Aqueles seus olhos deslumbrantes</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_9" xml:space="preserve">
+    <value>Seu dedo assustador em sua mão direita</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_1" xml:space="preserve">
+    <value>Eu gosto</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_2" xml:space="preserve">
+    <value>Eu amo</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_3" xml:space="preserve">
+    <value>Eu admiro</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_4" xml:space="preserve">
+    <value>Eu realmente gosto</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_5" xml:space="preserve">
+    <value>Por alguma razão eu gosto</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_1" xml:space="preserve">
+    <value>muito.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_2" xml:space="preserve">
+    <value>um pouco.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_3" xml:space="preserve">
+    <value>bastante.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_4" xml:space="preserve">
+    <value>Muito, isso é estranho?</value>
+  </data>
+  <data name="miki_module_fun_pick" xml:space="preserve">
+    <value>{0}, eu escolhi `{1}`</value>
+  </data>
+  <data name="miki_module_fun_pick_no_arg" xml:space="preserve">
+    <value>Eu não tenho nada para escolher :(
+Use vírgulas (,) para dividir escolhas.</value>
+  </data>
+  <data name="miki_module_fun_pun_1" xml:space="preserve">
+    <value>Eu não posso acreditar eu fui despedido da fábrica de calendário.Tudo o que fiz foi tirar um dia de folga.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_10" xml:space="preserve">
+    <value>Quando eu ficar nua no banheiro, o chuveiro geralmente fica ligado.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_11" xml:space="preserve">
+    <value>Ladrões tinham entrado em minha casa e roubado tudo, exceto meu sabonete, gel de banho, toalhas e desodorante. Bastardos sujos.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_12" xml:space="preserve">
+    <value>Eu gosto de chá gelado, o Clark Kent.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_13" xml:space="preserve">
+    <value>Meu primeiro trabalho foi trabalhar em uma fábrica de suco de laranja, mas eu tenho enlatados: não conseguia se concentrar.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_14" xml:space="preserve">
+    <value>Eu estou em uma dieta de frutos do mar. Toda vez que eu vejo comida, eu como.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_15" xml:space="preserve">
+    <value>Eu quero fazer uma piada sobre sódio, mas Na ...</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_16" xml:space="preserve">
+    <value>Por que o cientista instalou uma aldrava em sua porta? Ele queria ganhar o prêmio No-bell!</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_17" xml:space="preserve">
+    <value>Eu vou de ônibus, o James Bond.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_18" xml:space="preserve">
+    <value>Fazer sexo em um elevador está errado em tantos níveis.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_19" xml:space="preserve">
+    <value>Eu ia dar-lhe um olhar desagradável, mas ele já tinha um.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_2" xml:space="preserve">
+    <value>Como escapei do Iraque? Iran.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_20" xml:space="preserve">
+    <value>Um livro caiu na minha cabeça. Eu só tenho a minha prateleira para culpar.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_21" xml:space="preserve">
+    <value>O que os prisioneiros usam para se chamarem? Celulares.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_22" xml:space="preserve">
+    <value>Meu professor de matemática me chamou de média. Que mal</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_23" xml:space="preserve">
+    <value>Eu não sou fotógrafo, mas posso imaginar-nos juntos.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_24" xml:space="preserve">
+    <value>Como você pode identificar o cara cego na colônia nudista? Não é díficil.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_25" xml:space="preserve">
+    <value>O ateísmo é uma organização não-profeta.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_26" xml:space="preserve">
+    <value>Como você chama as pessoas que têm medo do Papai Noel? Claustrofóbico.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_27" xml:space="preserve">
+    <value>Um buraco foi encontrado na parede de um acampamento nudista. A polícia está olhando para ele.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_28" xml:space="preserve">
+    <value>Que dia as galinhas odeiam mais? Sexta-feira.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_29" xml:space="preserve">
+    <value>Eu odeio trocadilhos de inseto, eles realmente me incomodam.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_3" xml:space="preserve">
+    <value>Gostaria de dizer-lhe uma piada química, mas eu sei que eu não iria receber uma reação.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_30" xml:space="preserve">
+    <value>Eu vou de ônibus, o James Bond.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_31" xml:space="preserve">
+    <value>Os piratas principiantes fazem os cantores terríveis porque não podem bater os mares elevados.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_32" xml:space="preserve">
+    <value>Nunca discuta o infinito com um matemático, eles podem continuar sobre ele para sempre.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_33" xml:space="preserve">
+    <value>Eu não esperei, mas o Jack Sparrow</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_34" xml:space="preserve">
+    <value>O que o sushi disse para a abelha? Wasabee.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_35" xml:space="preserve">
+    <value>===Ele vai apagar essa==
+remove</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_36" xml:space="preserve">
+    <value>Por que o papagaio foi enviado para fora da 
+sala de aula? Porque ele estava usando linguagem de aves!</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_37" xml:space="preserve">
+    <value>Ontem eu acidentalmente engoli alguns alimentos coloridos. O médico diz que eu estou bem, mas sinto que tenho tingido um pouco dentro.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_38" xml:space="preserve">
+    <value>Por que os programadores não gostam da natureza? Tem muitos bugs.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_39" xml:space="preserve">
+    <value>Eu não conseguia me lembrar como jogar um boomerang, mas eventualmente ele voltou para mim.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_4" xml:space="preserve">
+    <value>Eu não estava indo originalmente para obter um transplante de cérebro, mas depois eu mudei de idéia.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_40" xml:space="preserve">
+    <value>O Pateta usa o teclado, e o Mickey Mouse.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_41" xml:space="preserve">
+    <value>Eu não confio nessas escadas porque eles estão sempre à altura de algo.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_42" xml:space="preserve">
+    <value>E se eu não souber o que significa apocalipse? Não é o fim do mundo!</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_43" xml:space="preserve">
+    <value>A padaria de meu amigo queimou na noite passada. Agora seu negócio é brinde.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_44" xml:space="preserve">
+    <value>A polícia foi chamada para uma creche onde uma criança de três anos estava resistindo a um repouso.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_45" xml:space="preserve">
+    <value>Eu não tenho, mas o Frankstein</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_46" xml:space="preserve">
+    <value>Eu fiz um desempenho teatral sobre trocadilhos. Realmente era apenas um jogo de palavras.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_47" xml:space="preserve">
+    <value>O outro dia eu segurei a porta aberta para um palhaço. Pensei que era um bom bobo.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_48" xml:space="preserve">
+    <value>O que a uva disse quando foi pisada? Nada - mas soltou um pequeno gemido.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_49" xml:space="preserve">
+    <value>A menina deixou seu trabalho na fábrica de rosquinhas porque estava farta do negócio de buracos.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_5" xml:space="preserve">
+    <value>Estou feliz por saber linguagem de sinais, é muito útil.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_50" xml:space="preserve">
+    <value>Havia um sinal no gramado de um centro de reabilitação de drogas que dizia &quot;Mantenha-se fora da grama&quot;.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_51" xml:space="preserve">
+    <value>Não faça sexo por telefone, você pode ter aparelhos auditivos.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_52" xml:space="preserve">
+    <value>Eu e você somos como a frente e a parte de trás de um livro, nós sempre terminaremos de volta juntos.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_6" xml:space="preserve">
+    <value>Por que a Cinderela foi expulsa da equipe de basquete? Ela fugiu da bola.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_7" xml:space="preserve">
+    <value>Você ouviu sobre o cara que foi atingido na cabeça com uma lata de refrigerante? Ele teve sorte que era um refrigerante</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_8" xml:space="preserve">
+    <value>Estou lendo um livro sobre anti-gravidade. É impossível colocar para baixo</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_9" xml:space="preserve">
+    <value>Estou emocionalmente constipado. Eu não tenho dado uma merda a dias.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_roll_result" xml:space="preserve">
+    <value>🎲 {0} rolou um ** {1} **</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner" xml:space="preserve">
+    <value>E o vencedor de `{0}` é {1}</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner_no_arg" xml:space="preserve">
+    <value>E o vencedor é: {0}</value>
+  </data>
+  <data name="miki_module_fun_slots_header" xml:space="preserve">
+    <value>slots</value>
+  </data>
+  <data name="miki_module_fun_slots_win_amount" xml:space="preserve">
+    <value>{0} 🔸 foi adicionado à sua conta.</value>
+  </data>
+  <data name="miki_module_fun_slots_win_header" xml:space="preserve">
+    <value>você ganhou!</value>
+  </data>
+  <data name="miki_command_description_8ball" xml:space="preserve">
+    <value>Empurre sua sorte perguntando a Miki perguntas específicas sobre sua vida!</value>
+  </data>
+  <data name="miki_command_description_pasta" xml:space="preserve">
+    <value>Salvar e carregar em determinadas linhas de texto.</value>
+  </data>
+  <data name="miki_command_usage_8ball" xml:space="preserve">
+    <value>&gt; 8ball &lt;question&gt;</value>
+  </data>
+  <data name="miki_command_usage_pasta" xml:space="preserve">
+    <value>pasta new &lt;palavra-chave&gt; &lt;conteúdo de pasta&gt;
+pasta + &lt;palavra-chave&gt; &lt;conteúdo de pasta&gt;
+pasta find &lt;palavra-chave&gt;
+pasta search &lt;palavra-chave&gt;
+pasta edit &lt;palavra-chave&gt; &lt;conteúdo para editar&gt;
+pasta change &lt;palavra-chave&gt; &lt;conteúdo para editar&gt;
+pasta who &lt;palavra-chave&gt;
+pasta whom &lt;palavra-chave&gt;
+pasta ? &lt;palavra-chave&gt;
+pasta upvote &lt;palavra-chave&gt;
+pasta &lt;3 &lt;palavra-chave&gt;
+pasta love &lt;palavra-chave&gt;
+pasta downvote &lt;palavra-chave&gt;
+pasta &lt;/3 &lt;palavra-chave&gt;pasta hate &lt;palavra-chave&gt;</value>
+    <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff</comment>
+  </data>
+  <data name="miki_module_fun_8ball_result" xml:space="preserve">
+    <value>🎱 {0}, a sua pergunta foi respondida `{1}`</value>
+  </data>
+  <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
+    <value>Nenhuma imagem encontrada em sua pesquisa. -benzóico.</value>
+  </data>
+  <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
+    <value>Esta pasta já existe! Tente uma outra diferente!</value>
+  </data>
+  <data name="miki_module_pasta_create_success" xml:space="preserve">
+    <value>Pasta criada `{0}`!</value>
+  </data>
+  <data name="miki_module_pasta_delete_success" xml:space="preserve">
+    <value>Pasta apagada `{0}`!</value>
+  </data>
+  <data name="miki_module_pasta_edit_success" xml:space="preserve">
+    <value>Editado `{0}`!</value>
+  </data>
+  <data name="miki_module_pasta_error_no_permissions" xml:space="preserve">
+    <value>Você não pode {0} pastas que você não criou!</value>
+  </data>
+  <data name="miki_module_pasta_error_null" xml:space="preserve">
+    <value>Esta pasta não existe!
+</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
+    <value>Insira uma das tags ou comandos.</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_results" xml:space="preserve">
+    <value>Nenhuma consulta de pesquisa encontrada, especifique o que você deseja pesquisar.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify" xml:space="preserve">
+    <value>Especifique quais pastas você gostaria de {0}.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_check" xml:space="preserve">
+    <value>Verificar</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_delete" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_upvote" xml:space="preserve">
+    <value>Votação</value>
+  </data>
+  <data name="miki_module_pasta_identify_created_by" xml:space="preserve">
+    <value>Criado por</value>
+  </data>
+  <data name="miki_module_pasta_identify_date_created" xml:space="preserve">
+    <value>Dados criados</value>
+  </data>
+  <data name="miki_module_pasta_identify_rating" xml:space="preserve">
+    <value>Avaliação</value>
+  </data>
+  <data name="miki_module_pasta_identify_times_used" xml:space="preserve">
+    <value>Vezes usados</value>
+  </data>
+  <data name="miki_module_pasta_mine_error_null" xml:space="preserve">
+    <value>Desculpe, mas você não tem pastas ainda</value>
+  </data>
+  <data name="miki_module_pasta_mine_header" xml:space="preserve">
+    <value>{0} &apos;s pastas</value>
+  </data>
+  <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
+    <value>Desculpe, mas não conseguimos encontrar uma pasta com `{0}`</value>
+  </data>
+  <data name="miki_module_pasta_search_footer" xml:space="preserve">
+    <value>
+ Página {0} de {1}</value>
+  </data>
+  <data name="miki_module_pasta_search_header" xml:space="preserve">
+    <value>🔎 Eu encontrei estas pastas</value>
+  </data>
+  <data name="miki_module_pasta_vote_success" xml:space="preserve">
+    <value>Seu voto foi atualizado! Pontuação atual `{0}`</value>
+  </data>
+  <data name="miki_success_message_generic" xml:space="preserve">
+    <value>Sucesso!</value>
+  </data>
+  <data name="miki_command_description_info" xml:space="preserve">
+    <value>Mostra informações sobre o bot e o seu criador.</value>
+  </data>
+  <data name="miki_command_description_prefix" xml:space="preserve">
+    <value>Defina o prefixo do seu servidor para miki (padrão: &gt;) para outra coisa</value>
+  </data>
+  <data name="miki_command_usage_info" xml:space="preserve">
+    <value>&gt;informações</value>
+  </data>
+  <data name="miki_command_usage_prefix" xml:space="preserve">
+    <value>Prefixo</value>
+  </data>
+  <data name="miki_module_admin_disable_command" xml:space="preserve">
+    <value>Comando desativado `{0}`!</value>
+  </data>
+  <data name="miki_module_admin_disable_module" xml:space="preserve">
+    <value>Módulo desativado `{0}`!</value>
+  </data>
+  <data name="miki_module_admin_enable_command" xml:space="preserve">
+    <value>Comando ativado `{0}`!</value>
+  </data>
+  <data name="miki_module_admin_enable_module" xml:space="preserve">
+    <value>Módulo ativado `{0}`!</value>
+  </data>
+  <data name="miki_module_admin_error_module_disabled" xml:space="preserve">
+    <value>O módulo {0} está desativado.</value>
+  </data>
+  <data name="miki_module_admin_kick_by" xml:space="preserve">
+    <value>💁 Expulso por</value>
+  </data>
+  <data name="miki_module_admin_kick_description" xml:space="preserve">
+    <value>Você foi expulso de **{0}**!</value>
+  </data>
+  <data name="miki_module_admin_kick_header" xml:space="preserve">
+    <value>⚠ Expulsar</value>
+  </data>
+  <data name="miki_module_admin_kick_reason" xml:space="preserve">
+    <value>💬 Motivo</value>
+  </data>
+  <data name="miki_module_admin_prune_error_max" xml:space="preserve">
+    <value>Você não pode excluir mais de 100 mensagens por comando</value>
+  </data>
+  <data name="miki_module_admin_prune_error_no_access" xml:space="preserve">
+    <value>Não consigo excluir mensagens neste canal ):</value>
+  </data>
+  <data name="miki_module_admin_prune_success" xml:space="preserve">
+    <value>Excluído {0} mensagens!</value>
+  </data>
+  <data name="miki_module_general_calc_error" xml:space="preserve">
+    <value>Eu não posso fazer esses tipos de matemática!</value>
+  </data>
+  <data name="miki_module_general_guildinfo_channels" xml:space="preserve">
+    <value>📺 Canais</value>
+  </data>
+  <data name="miki_module_general_guildinfo_owned_by" xml:space="preserve">
+    <value>👑 Possuído por</value>
+  </data>
+  <data name="miki_module_general_guildinfo_roles" xml:space="preserve">
+    <value>📜 Funções</value>
+  </data>
+  <data name="miki_module_general_guildinfo_users" xml:space="preserve">
+    <value>🙎 Usuários</value>
+  </data>
+  <data name="miki_module_general_help_description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="miki_module_general_help_dm" xml:space="preserve">
+    <value>Uma mensagem pessoal com todos os meus comandos está a caminho, use `&gt; help [command]` para obter mais informações sobre este comando!</value>
+  </data>
+  <data name="miki_module_general_help_usage" xml:space="preserve">
+    <value>Uso</value>
+  </data>
+  <data name="miki_module_general_info_docs" xml:space="preserve">
+    <value>Documentação</value>
+  </data>
+  <data name="miki_module_general_info_donate_string" xml:space="preserve">
+    <value>Olá a todos! Eu criei um Patreon para permitir que as pessoas apoiem Miki. Por favor, verifique e suporte se você puder!</value>
+  </data>
+  <data name="miki_module_general_info_links" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="miki_module_general_info_made_by_description" xml:space="preserve">
+    <value>Agradecimentos especiais a: Florestina, Mei, Rappy, Rie, Rosie</value>
+  </data>
+  <data name="miki_module_general_info_made_by_header" xml:space="preserve">
+    <value>**Feito por:** Veld</value>
+  </data>
+  <data name="miki_module_general_info_patreon" xml:space="preserve">
+    <value>Patrão</value>
+  </data>
+  <data name="miki_module_general_info_reddit" xml:space="preserve">
+    <value>subreddit</value>
+  </data>
+  <data name="miki_module_general_info_server" xml:space="preserve">
+    <value>Servidor de suporte</value>
+  </data>
+  <data name="miki_module_general_info_twitter" xml:space="preserve">
+    <value>Twitter</value>
+  </data>
+  <data name="miki_module_general_info_website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="miki_module_general_invite_dm" xml:space="preserve">
+    <value>Aqui está! :3</value>
+  </data>
+  <data name="miki_module_general_invite_message" xml:space="preserve">
+    <value>Enviar-lhe-ei uma mensagem privada com um URL de convite.</value>
+  </data>
+  <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
+    <value>Não é possível definir seu prefixo como nada. Consulte `&gt;help prefix` para saber o que ele faz.</value>
+  </data>
+  <data name="miki_module_general_prefix_example_command_header" xml:space="preserve">
+    <value>Exemplo de comando</value>
+  </data>
+  <data name="miki_module_general_prefix_success_header" xml:space="preserve">
+    <value>⚙️ Prefiro alterado!</value>
+  </data>
+  <data name="miki_module_general_prefix_success_message" xml:space="preserve">
+    <value>Mudou seu prefixo para ** {0} **!</value>
+  </data>
+  <data name="miki_module_general_urban_definition" xml:space="preserve">
+    <value>Definição</value>
+  </data>
+  <data name="miki_module_general_urban_example" xml:space="preserve">
+    <value>Exemplo</value>
+  </data>
+  <data name="miki_module_general_urban_rating" xml:space="preserve">
+    <value>Avaliação</value>
+  </data>
+  <data name="miki_module_help_didyoumean" xml:space="preserve">
+    <value>Você quis dizer?</value>
+  </data>
+  <data name="miki_module_help_error_null_header" xml:space="preserve">
+    <value>Comando não encontrado</value>
+  </data>
+  <data name="miki_module_help_error_null_message" xml:space="preserve">
+    <value>Isto não é um comando. Para usar `{0} help [command]`, preencha um comando existente!</value>
+  </data>
+  <data name="miki_module_whois_header" xml:space="preserve">
+    <value>Quem é {0} !?</value>
+  </data>
+  <data name="miki_module_whois_tag_personal" xml:space="preserve">
+    <value>🙎 Pessoal</value>
+  </data>
+
+</root>

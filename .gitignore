@@ -1,0 +1,11 @@
+*.log
+packages/
+Miki/bin/
+Miki/obj/Release/Miki.csproj.Miki.exe.config
+Miki/obj/
+Miki.VC.db
+Miki.VC.VC.opendb
+Miki.Actions/bin/
+Miki.Actions/obj/
+RestClient/bin/
+RestClient/obj/
