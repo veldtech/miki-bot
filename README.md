@@ -31,8 +31,8 @@ The following dependencies are mostly gotten from nuget, I'll link a github sour
 * Discord.Net
 * Discord.Net.API
 * Discord.Net.Websocket
-* IA ((source)[https://github.com/velddev/IA])
-* IA.SDK ((source)[https://github.com/velddev/IA.SDK])
+* IA ([source](https://github.com/velddev/IA))
+* IA.SDK ([source](https://github.com/velddev/IA.SDK))
 * Imgur.API
   
 ## Useful links
