@@ -708,7 +708,80 @@ namespace Miki.Modules
                 };
             });
 
-            await new RuntimeModule(module_fun).InstallAsync(bot);
+            await new RuntimeModule(module_fun)
+                .AddCommand(new RuntimeCommandEvent("remind")
+                    .Default(DoRemind))
+                .InstallAsync(bot);
+        }
+
+        // >remind do the dishes in 120 seconds
+        public async Task DoRemind(IDiscordMessage msg, string args)
+        {
+            List<string> arguments = args.Split(' ').ToList();
+            int splitIndex = 0;
+
+            for(int i = 0; i < arguments.Count; i++)
+            {
+                if(arguments[i].ToLower() == "in")
+                {
+                    splitIndex = i;
+                }
+            }
+
+            if(splitIndex == 0)
+            {
+                // throw error
+                return;
+            }
+
+            TimeSpan timeUntilReminder = new TimeSpan();
+            string reminderText;
+
+            List<string> timeList = new List<string>();
+            timeList.AddRange(arguments);
+            timeList.RemoveRange(0, splitIndex);
+
+            int count = arguments.Count;
+            arguments.RemoveRange(splitIndex, count - (splitIndex + 1));
+            reminderText = string.Join(" ", arguments);
+
+            if (reminderText.StartsWith("me to "))
+            {
+                reminderText = reminderText.Substring(6);
+            }
+
+            for (int i = 1; i < timeList.Count; i++)
+            {
+                switch(timeList[i])
+                {
+                    case "seconds":
+                    case "second":
+                        int seconds = int.Parse(timeList[i - 1]);
+                        timeUntilReminder.Add(new TimeSpan(0, 0, seconds));
+                        break;
+                    case "minutes":
+                    case "minute":
+                        int minutes = int.Parse(timeList[i - 1]);
+                        timeUntilReminder.Add(new TimeSpan(0, minutes, 0));
+                        break;
+                    case "hours":
+                    case "hour":
+                        int hours = int.Parse(timeList[i - 1]);
+                        timeUntilReminder.Add(new TimeSpan(hours, 0 , 0));
+                        break;
+                    case "days":
+                    case "day":
+                        int days = int.Parse(timeList[i - 1]);
+                        timeUntilReminder.Add(new TimeSpan(days, 0, 0, 0));
+                        break;
+                }
+            }
+
+            await Utils.Embed()
+                .SetTitle("👌 OK")
+                .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
+                .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
+                .SendToChannel(msg.Channel.Id);
         }
     }
 }

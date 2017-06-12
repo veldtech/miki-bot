@@ -84,7 +84,7 @@ namespace Miki.Objects
             c.UseDefaultCredentials = true;
             c.Credentials = CredentialCache.DefaultCredentials;
 
-            c.Headers.Add("User-Agent: Other");   //that is the simple line!
+            c.Headers.Add("User-Agent: Other");
 
             byte[] b;
             string[] command = content.Split(' ');
