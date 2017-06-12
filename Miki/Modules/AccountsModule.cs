@@ -252,7 +252,7 @@ namespace Miki.Modules
                                             return;
                                         }
 
-                                        if(currentMarriage.Divorced || currentMarriage.Proposing)
+                                        if(currentMarriage.Proposing)
                                         {
                                             await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
                                             return;
@@ -358,8 +358,8 @@ namespace Miki.Modules
 
                                 if(await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
                                 {
-                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, x.Metadata.errorMessage));
-                                    return;
+                                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, x.Metadata.errorMessage));
+                                        return;
                                 }
 
                                 if(await Marriage.ProposeAsync(context, currentUser.user_id, mentionedPerson.user_id))
@@ -384,7 +384,7 @@ namespace Miki.Modules
 
                             using(var context = new MikiContext())
                             {
-                                Marriage marriage = Marriage.GetProposalReceived(context, e.MentionedUserIds.First(), e.Author.Id);
+                                Marriage marriage = await Marriage.GetProposalReceivedAsync(context, e.MentionedUserIds.First(), e.Author.Id);
 
                                 if(marriage != null)
                                 {

@@ -20,14 +20,8 @@ namespace Miki.Models
         [Column("Id2", Order = 1)]
         public long Id2 { get; set; }
 
-        [Column("TimesRemarried")]
-        public int TimesRemarried { get; set; }
-
         [Column("Proposing")]
         public bool Proposing { get; set; }
-
-        [Column("Divorced")]
-        public bool Divorced { get; set; }
 
         [Column("TimeOfMarriage")]
         public DateTime TimeOfMarriage { get; set; }
@@ -49,33 +43,19 @@ namespace Miki.Models
 
         public void AcceptProposal(MikiContext context)
         {
-            if (Proposing)
-            {
-                TimeOfMarriage = DateTime.Now;
-                Proposing = false;
-                if (Divorced)
-                {
-                    Divorced = false;
-                    TimesRemarried++;
-                }
-            }
+            TimeOfMarriage = DateTime.Now;
+            Proposing = false;
         }
 
         public async Task DeclineProposalAsync(MikiContext context)
         {
-            if(TimesRemarried > 0)
-            {
-                Proposing = false;
-                await context.SaveChangesAsync();
-                return;
-            }
             context.Marriages.Remove(this);
             await context.SaveChangesAsync();
         }
 
         public async Task DivorceAsync(MikiContext context)
         {
-            Divorced = true;
+            context.Marriages.Remove(this);
             await context.SaveChangesAsync();
         }
 
@@ -85,26 +65,13 @@ namespace Miki.Models
         {
             List<Marriage> proposals = InternalGetProposalsReceived(context, me);
             List<Marriage> disposableProposals = new List<Marriage>();
-            foreach (Marriage m in proposals)
-            {
-                if(m.TimesRemarried == 0)
-                {
-                    disposableProposals.Add(m);
-                    continue;
-                }
-                m.Proposing = false;
-                m.Divorced = true;
-            }
-            context.Marriages.RemoveRange(disposableProposals);
+            context.Marriages.RemoveRange(proposals);
             await context.SaveChangesAsync();
         }
         public static async Task DivorceAllMarriagesAsync(MikiContext context, long me)
         {
             List<Marriage> marriages = InternalGetMarriages(context, me);
-            foreach(Marriage m in marriages)
-            {
-                m.Divorced = true;
-            }
+            context.Marriages.RemoveRange(marriages);
             await context.SaveChangesAsync();
         }
 
@@ -114,20 +81,31 @@ namespace Miki.Models
             return await GetEntryAsync(context, id1, id2) != null;
         }
 
-        public static Marriage GetProposal(MikiContext context, ulong receiver, ulong asker) => GetProposal(context, receiver.ToDbLong(), asker.ToDbLong());
-        public static Marriage GetProposal(MikiContext context, long receiver, long asker)
+        public static async Task<bool> ExistsAsMarriageAsync(MikiContext context, long id1, long id2)
+        {
+            return GetMarriage(context, id1, id2) != null;
+        }
+
+        public static async Task<Marriage> GetProposalAsync(MikiContext context, ulong receiver, ulong asker)
+        {
+            return await GetProposalAsync(context, receiver.ToDbLong(), asker.ToDbLong());
+        }
+        public static async Task<Marriage> GetProposalAsync(MikiContext context, long receiver, long asker)
         {
             Marriage m = null;
-            m = InternalGetProposal(context, receiver, asker);
-            if (m == null) m = InternalGetProposal(context, asker, receiver);
+            m = await InternalGetProposalAsync(context, receiver, asker);
+            if (m == null) m = await InternalGetProposalAsync(context, asker, receiver);
             return m;
         }
 
-        public static Marriage GetProposalReceived(MikiContext context, ulong receiver, ulong asker) => GetProposalReceived(context, receiver.ToDbLong(), asker.ToDbLong());
-        public static Marriage GetProposalReceived(MikiContext context, long receiver, long asker)
+        public static async Task<Marriage> GetProposalReceivedAsync(MikiContext context, ulong receiver, ulong asker)
+        {
+            return await GetProposalReceivedAsync(context, receiver.ToDbLong(), asker.ToDbLong());
+        }
+        public static async Task<Marriage> GetProposalReceivedAsync(MikiContext context, long receiver, long asker)
         {
             Marriage m = null;
-            m = InternalGetProposal(context, receiver, asker);
+            m = await InternalGetProposalAsync(context, receiver, asker);
             return m;
         }
 
@@ -160,58 +138,51 @@ namespace Miki.Models
             return m;
         }
 
-        public static bool IsBeingProposedBy(MikiContext context, long receiver, long asker)
+        public static async Task<bool> IsBeingProposedBy(MikiContext context, long receiver, long asker)
         {
-            return InternalGetProposal(context, receiver, asker) != null;
+            return await InternalGetProposalAsync(context, receiver, asker) != null;
         }
 
         public static async Task<bool> ProposeAsync(MikiContext context, long receiver, long asker)
         {
-            if(await ExistsAsync(context, receiver, asker))
-            {
-                return false;
-            }
-
             context.Marriages.Add(new Marriage()
             {
                 Id1 = receiver,
                 Id2 = asker,
-                Divorced = false,
                 Proposing = true,
                 TimeOfProposal = DateTime.Now,
                 TimeOfMarriage = DateTime.Now,
-                TimesRemarried = 0
             });
 
             await context.SaveChangesAsync();
             return true;
         }
 
-        private static Marriage InternalGetProposal(MikiContext context, long receiver, long asker)
+        private static async Task<Marriage> InternalGetProposalAsync(MikiContext context, long receiver, long asker)
         {
-            return context
+            return await context
                 .Marriages
-                .Find(receiver, asker);
+                .FindAsync(receiver, asker);
         }
         private static List<Marriage> InternalGetProposalsSent(MikiContext context, long asker)
         {
-            return context.Marriages.Where(p => p.Id1 == asker && p.Proposing == true && p.Divorced == false).ToList();
+            return context.Marriages.Where(p => p.Id1 == asker && p.Proposing == true).ToList();
         }
         private static List<Marriage> InternalGetProposalsReceived(MikiContext context, long receiver)
         {
-            return context.Marriages.Where(p => p.Id2 == receiver && p.Proposing == true && p.Divorced == false).ToList();
+            return context.Marriages.Where(p => p.Id2 == receiver && p.Proposing == true).ToList();
         }
 
         private static Marriage InternalGetMarriage(MikiContext context, long receiver, long asker)
         {
-            return context.Marriages.Where(tm => tm.Id1 == receiver && tm.Id2 == asker && tm.Proposing == false && tm.Divorced == false).FirstOrDefault();
+            return context.Marriages.Where(tm => tm.Id1 == receiver && tm.Id2 == asker && tm.Proposing == false).FirstOrDefault();
         }
         private static List<Marriage> InternalGetMarriages(MikiContext context, long userid)
         {
             return context
                 .Marriages
-                .Where(p => p.Id1 == userid && p.Proposing == false && p.Divorced == false 
-                    || p.Id2 == userid && p.Proposing == false && p.Divorced == false)
+                .Where(p => p.Id1 == userid && p.Proposing == false
+                    || p.Id2 == userid && p.Proposing == false)
                 .ToList();
         }
         #endregion
