@@ -3,6 +3,12 @@
 # Welcome to Miki Repository
 Below you will find a basic workflow of how the branches should work. Please follow this to prevent bad merge conflicts on Miki and things constantly breaking.
 
+## Table of contents
+
+### Workflow for branches
+### Dependencies
+### Useful links
+
 ## Workflow for Branches
 
 * Pull the latest changes from the **master** branch.
@@ -19,7 +25,17 @@ Below you will find a basic workflow of how the branches should work. Please fol
 * When changes are approved, and are ready for release, the branch will be merged into the **master** branch.
   * *Note: The working branch at this time will be deleted from the repository.*
   
-## useful links
+## Dependencies
+The following dependencies are mostly gotten from nuget, I'll link a github source repo otherwise.
+
+* Discord.Net
+* Discord.Net.API
+* Discord.Net.Websocket
+* IA ((source)[https://github.com/velddev/IA])
+* IA.SDK ((source)[https://github.com/velddev/IA.SDK])
+* Imgur.API
+  
+## Useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
