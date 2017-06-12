@@ -30,8 +30,6 @@ The following dependencies are mostly gotten from nuget, I'll link a github sour
 
 * Entity Framework 6.0
 * Discord.Net
-* Discord.Net.API
-* Discord.Net.Websocket
 * IA ([source](https://github.com/velddev/IA))
 * IA.SDK ([source](https://github.com/velddev/IA.SDK))
 * Imgur.API
