@@ -40,8 +40,9 @@ namespace Miki.Modules
                             {
                                 if(string.IsNullOrEmpty(arg))
                                 {
-                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), EventMessageType.JOINSERVER));
+                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
                                     await e.Channel.SendMessage($"✅ deleted your welcome message");
+                                    await context.SaveChangesAsync();
                                     return;
                                 }
 
@@ -63,8 +64,9 @@ namespace Miki.Modules
                             {
                                 if(string.IsNullOrEmpty(arg))
                                 {
-                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), EventMessageType.JOINSERVER));
+                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
                                     await e.Channel.SendMessage($"✅ deleted your welcome message");
+                                    await context.SaveChangesAsync();
                                     return;
                                 }
 
