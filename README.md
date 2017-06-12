@@ -28,12 +28,14 @@ Below you will find a basic workflow of how the branches should work. Please fol
 ## Dependencies
 The following dependencies are mostly gotten from nuget, I'll link a github source repo otherwise.
 
+* Entity Framework 6.0
 * Discord.Net
 * Discord.Net.API
 * Discord.Net.Websocket
 * IA ([source](https://github.com/velddev/IA))
 * IA.SDK ([source](https://github.com/velddev/IA.SDK))
 * Imgur.API
+* Newtonsoft.Json
   
 ## Useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
