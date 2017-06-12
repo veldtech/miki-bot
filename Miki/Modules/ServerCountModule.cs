@@ -43,19 +43,6 @@ namespace Miki.Modules
                 string responseString = await response.Content.ReadAsStringAsync();
             }
         }
-
-        private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
-        {
-            using (var client = new HttpClient())
-            {
-                using (var content = new StringContent($"{{ \"server_count\": {bot.Client.Guilds.Count}}}", Encoding.UTF8, "application/json"))
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordPwKey);
-                    HttpResponseMessage response = await client.PostAsync("https://discordbots.org/api/bots/160105994217586689/stats", content);
-                }
-            }
-        }
-
         private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
         {
             using (var client = new HttpClient())
@@ -63,6 +50,17 @@ namespace Miki.Modules
                 using (var content = new StringContent($"{{ \"server_count\": {bot.Client.Guilds.Count}}}", Encoding.UTF8, "application/json"))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordBotsOrgKey);
+                    HttpResponseMessage response = await client.PostAsync("https://discordbots.org/api/bots/160105994217586689/stats", content);
+                }
+            }
+        }
+        private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
+        {
+            using (var client = new HttpClient())
+            {
+                using (var content = new StringContent($"{{ \"server_count\": {bot.Client.Guilds.Count}}}", Encoding.UTF8, "application/json"))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordPwKey);
                     HttpResponseMessage response = await client.PostAsync("https://discordbots.org/api/bots/160105994217586689/stats", content);
                 }
             }
