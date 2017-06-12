@@ -385,6 +385,14 @@
     <Compile Include="Migrations\201705270151321_Add-LevelRoles.Designer.cs">
       <DependentUpon>201705270151321_Add-LevelRoles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706112013250_Fix-Marriage.cs" />
+    <Compile Include="Migrations\201706112013250_Fix-Marriage.Designer.cs">
+      <DependentUpon>201706112013250_Fix-Marriage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706112117072_Revert-Marriages-To-Base.cs" />
+    <Compile Include="Migrations\201706112117072_Revert-Marriages-To-Base.Designer.cs">
+      <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achievement.cs" />
     <Compile Include="Models\CommandUsage.cs" />
@@ -402,6 +410,7 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VoteCount.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
+    <Compile Include="Modules\NsfwModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
@@ -533,6 +542,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705270151321_Add-LevelRoles.resx">
       <DependentUpon>201705270151321_Add-LevelRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706112013250_Fix-Marriage.resx">
+      <DependentUpon>201706112013250_Fix-Marriage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706112117072_Revert-Marriages-To-Base.resx">
+      <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

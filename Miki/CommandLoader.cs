@@ -17,6 +17,7 @@ namespace Miki
             await new EventMessageModule().LoadEvents(bot);
             await new GeneralModule().LoadEvents(bot);
             await new FunModule().LoadEvents(bot);
+            await new NsfwModule().LoadEvents(bot);
             await new PastaModule().LoadEvents(bot);
             await new PatreonModule().LoadEvents(bot);
             await new ReactionsModule().LoadEvents(bot);

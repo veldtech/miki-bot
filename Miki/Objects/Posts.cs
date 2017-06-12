@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -10,6 +11,15 @@ namespace Miki.Objects
 {
     public class BasePost
     {
+        protected static List<string> bannedTags = new List<string>()
+        {
+            "loli",
+            "shota",
+            "gore",
+            "vore",
+            "death"
+        };
+
         protected static string GetTags(string[] tags)
         {
             List<string> output = new List<string>();
@@ -39,6 +49,16 @@ namespace Miki.Objects
             }
             outputTags.Remove(outputTags.Length - 1);
             return outputTags;
+        }
+
+        protected static void RemoveBannedTerms(List<string> tags)
+        {
+            tags.RemoveAll(p => bannedTags.Contains(p));
+        }
+
+        protected static void AddBannedTerms(List<string> tags)
+        {
+            bannedTags.ForEach(p => tags.Add("-" + p));
         }
     }
 
@@ -92,6 +112,8 @@ namespace Miki.Objects
                     break;
             }
             tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
 
             string outputTags = GetTags(tags.ToArray());
 
@@ -242,6 +264,8 @@ namespace Miki.Objects
                     break;
             }
             tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
 
             string outputTags = GetTags(tags.ToArray());
 
@@ -357,6 +381,8 @@ namespace Miki.Objects
             }
 
             tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
 
             string outputTags = GetTags(tags.ToArray());
 
@@ -521,6 +547,8 @@ namespace Miki.Objects
                     break;
             }
             tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
 
             string outputTags = GetTags(tags.ToArray());
 
@@ -623,6 +651,8 @@ namespace Miki.Objects
             }
 
             tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
 
             string outputTags = GetTags(tags.ToArray());
 
