@@ -339,43 +339,10 @@ namespace Miki.Modules
                                 }
                             };
                         }),
-                    new CommandEvent(x =>
-                        {
-                            x.Name = "prefix";
-                            x.Accessibility = EventAccessibility.ADMINONLY;
-                            x.ProcessCommand = async (e, args) =>
-                            {
-                                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-                                if(string.IsNullOrEmpty(args))
-                                {
-                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
-                                    return;
-                                }
-                                else if(args == "?")
-                                {
-                                    await Utils.Embed
-                                            .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
-                                            .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
-                                            .SendToChannel(e.Channel.Id);
-                                    return;
-                                }
-
-                                await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, args);
-
-                                IDiscordEmbed embed = e.CreateEmbed();
-                                embed.Title = locale.GetString("miki_module_general_prefix_success_header");
-                                embed.Description = locale.GetString("miki_module_general_prefix_success_message", args);
-
-                                embed.AddField(f =>
-                                {
-                                    f.Name = locale.GetString("miki_module_general_prefix_example_command_header");
-                                    f.Value = $"{args}profile";
-                                });
-
-                                await e.Channel.SendMessage(embed);
-                            };
-                        }),
+                    new RuntimeCommandEvent("prefix")
+                        .SetAccessibility(EventAccessibility.ADMINONLY)
+                        .Default(DoPrefixDefault)
+                        .On("?", DoPrefixHelp),
                     new CommandEvent(x =>
                         {
                             x.Name = "invite";
@@ -391,6 +358,41 @@ namespace Miki.Modules
                         .Default(DoUrban)
                 };
             }).InstallAsync(bot);
+        }
+
+        public async Task DoPrefixDefault(IDiscordMessage msg, string args)
+        {
+            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+
+            if (string.IsNullOrEmpty(args))
+            {
+                await msg.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
+                return;
+            }
+
+            await PrefixInstance.Default.ChangeForGuildAsync(msg.Guild.Id, args);
+
+            IDiscordEmbed embed = msg.CreateEmbed();
+            embed.Title = locale.GetString("miki_module_general_prefix_success_header");
+            embed.Description = locale.GetString("miki_module_general_prefix_success_message", args);
+
+            embed.AddField(f =>
+            {
+                f.Name = locale.GetString("miki_module_general_prefix_example_command_header");
+                f.Value = $"{args}profile";
+            });
+
+            await msg.Channel.SendMessage(embed);
+        }
+
+        public async Task DoPrefixHelp(IDiscordMessage msg, string args)
+        {
+            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+
+            await Utils.Embed
+                .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
+                .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
+                .SendToChannel(msg.Channel.Id);
         }
 
         public async Task DoUrban(IDiscordMessage msg, string args)
