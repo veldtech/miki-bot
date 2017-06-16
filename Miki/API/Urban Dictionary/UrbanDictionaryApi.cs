@@ -23,10 +23,15 @@ namespace Miki.API.UrbanDictionary
 
             RestRequest r = new RestRequest();
             r.AddHeader("X-Mashape-Key", key);
-            r.AddHeader("Accept", "application/json");
+                r.AddHeader("Accept", "application/json");
 
             RestResponse entry = (RestResponse)client.Execute(r);
             UrbanDictionaryResponse post = JsonConvert.DeserializeObject<UrbanDictionaryResponse>(entry.Content);
+
+            if(post.Entries.Count == 0)
+            {
+                return null;
+            }
 
             return (post.Entries.Count - 1 <= index) ? post.Entries[index] : post.Entries[post.Entries.Count - 1];
         }
