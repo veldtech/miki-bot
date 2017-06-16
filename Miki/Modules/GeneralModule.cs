@@ -3,7 +3,7 @@ using IA.Events;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
-using Miki.Core;
+using Miki.API.UrbanDictionary;
 using Miki.Languages;
 using Newtonsoft.Json;
 using RestSharp;
@@ -36,7 +36,7 @@ namespace Miki.Modules
                                     await e.Channel.SendMessage(string.Join(".", e.Guild.AvatarUrl));
                                 }
                                 else if(e.MentionedUserIds.Count > 0)
-                                { 
+                                {
                                     await e.Channel.SendMessage(string.Join(".", (await e.Guild.GetUserAsync(e.MentionedUserIds.First())).AvatarUrl));
                                 }
                                 else
@@ -78,7 +78,7 @@ namespace Miki.Modules
                                 embed.AddInlineField(
                                     l.GetString("miki_module_whois_tag_personal"),
                                     $"User Id      : **{user.Id}**\nUsername: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty(user.Nickname)? "" : $"({user.Nickname})")}**\nCreated at: **{user.CreatedAt.ToString()}**\nJoined at   : **{user.JoinedAt.ToString()}**\n");
-                                
+
                                 List<string> roles = new List<string>();
                                 foreach(ulong i in user.RoleIds)
                                 {
@@ -86,7 +86,7 @@ namespace Miki.Modules
                                 }
 
                                 embed.AddInlineField(
-                                    l.GetString("miki_module_general_guildinfo_roles"), 
+                                    l.GetString("miki_module_general_guildinfo_roles"),
                                     string.Join(" ", roles));
 
                                 await e.Channel.SendMessage(embed);
@@ -237,7 +237,7 @@ namespace Miki.Modules
                                             return;
                                         }
 
-                                        IDiscordEmbed explainedHelpEmbed = Utils.Embed()
+                                        IDiscordEmbed explainedHelpEmbed = Utils.Embed
                                             .SetTitle(ev.Name.ToUpper());
 
                                         if(ev.Aliases.Length > 0)
@@ -354,7 +354,7 @@ namespace Miki.Modules
                                 }
                                 else if(args == "?")
                                 {
-                                    await Utils.Embed()
+                                    await Utils.Embed
                                             .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
                                             .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
                                             .SendToChannel(e.Channel.Id);
@@ -387,51 +387,39 @@ namespace Miki.Modules
                                 await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
                             };
                         }),
-                    new CommandEvent(x =>
-                        {
-                            x.Name = "urban";
-                            x.ProcessCommand = async (e, args) =>
-                            {
-                                if (string.IsNullOrEmpty(args)) return;
-
-                                args = args.Trim('.');
-
-                                Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
-                                RestClient client = new RestClient("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + args);
-
-                                RestRequest r = new RestRequest();
-                                r.AddHeader("X-Mashape-Key", Global.UrbanKey);
-                                r.AddHeader("Accept", "application/json");
-
-                                RestResponse entry = (RestResponse)client.Execute(r);
-                                UrbanDictionaryInformation post = JsonConvert.DeserializeObject<UrbanDictionaryInformation>(entry.Content);
-
-                                IDiscordEmbed embed = e.CreateEmbed();
-                                embed.SetAuthor(post.Entries[0].word, "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png", "http://www.urbandictionary.com/define.php?term=" + args);
-                                embed.Description = l.GetString("miki_module_general_urban_author", post.Entries[0].author);
-                                embed.AddField(f =>
-                                {
-                                    f.Name = l.GetString("miki_module_general_urban_definition");
-                                    f.Value = post.Entries[0].definition;
-                                    f.IsInline = true;
-                                });
-                                embed.AddField(f =>
-                                {
-                                    f.Name = l.GetString("miki_module_general_urban_example");
-                                    f.Value = post.Entries[0].example;
-                                    f.IsInline = true;
-                                });
-                                embed.AddField(f =>
-                                {
-                                    f.Name = l.GetString("miki_module_general_urban_rating");
-                                    f.Value = "👍 " + post.Entries[0].thumbs_up + "  👎 " + post.Entries[0].thumbs_down;
-                                    f.IsInline = true;
-                                });
-                                await e.Channel.SendMessage(embed);
-                        };
-                    })
+                    new RuntimeCommandEvent("urban")
+                        .Default(DoUrban)
                 };
             }).InstallAsync(bot);
+        }
+
+        public async Task DoUrban(IDiscordMessage msg, string args)
+        {
+            if (string.IsNullOrEmpty(args)) return;
+
+            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.UrbanKey);
+            UrbanDictionaryEntry entry = api.GetEntry(args);
+
+            if (entry != null)
+            {
+                IDiscordEmbed embed = Utils.Embed
+                    .SetAuthor(entry.Term,
+                        "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png",
+                        "http://www.urbandictionary.com/define.php?term=" + args)
+                    .SetDescription(locale.GetString("miki_module_general_urban_author", entry.Author));
+
+                embed.AddInlineField(locale.GetString("miki_module_general_urban_definition"), entry.Definition);
+                embed.AddInlineField(locale.GetString("miki_module_general_urban_example"), entry.Example);
+                embed.AddInlineField(locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown);
+
+                await msg.Channel.SendMessage(embed);
+            }
+            else
+            {
+                await Utils.ErrorEmbed(locale, "This term couldn't been found!")
+                    .SendToChannel(msg.Channel.Id);
+            }
         }
     }
 }

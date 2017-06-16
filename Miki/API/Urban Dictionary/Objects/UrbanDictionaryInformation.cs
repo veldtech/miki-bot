@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Miki.Core
+namespace Miki.API.UrbanDictionary
 {
-    internal class UrbanDictionaryInformation
+    internal class UrbanDictionaryResponse
     {
         [JsonProperty("tags")]
         public List<string> Tags { get; set; }
@@ -12,7 +12,7 @@ namespace Miki.Core
         public string ResultType { get; set; }
 
         [JsonProperty("list")]
-        public List<UrbanDictionaryEntryInformation> Entries { get; set; }
+        public List<UrbanDictionaryEntry> Entries { get; set; }
 
         [JsonProperty("sounds")]
         public List<string> Sounds { get; set; }
