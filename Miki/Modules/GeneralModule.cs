@@ -391,7 +391,7 @@ namespace Miki.Modules
 
             await Utils.Embed
                 .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
-                .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
+                .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(msg.Guild.Id)))
                 .SendToChannel(msg.Channel.Id);
         }
 
