@@ -32,7 +32,7 @@ namespace Miki
               time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
         }
 
-        public static IDiscordEmbed Embed() => new RuntimeEmbed(new EmbedBuilder());
+        public static IDiscordEmbed Embed => new RuntimeEmbed(new EmbedBuilder());
 
         public static IDiscordEmbed ErrorEmbed(Locale locale, string message)
         {
