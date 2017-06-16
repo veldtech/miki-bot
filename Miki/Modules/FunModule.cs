@@ -777,7 +777,7 @@ namespace Miki.Modules
                 }
             }
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("👌 OK")
                 .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))

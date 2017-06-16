@@ -126,15 +126,15 @@ namespace Miki.Modules
                         .SetAccessibility(EventAccessibility.DEVELOPERONLY)
                         .Default(async (e, args) =>
                         {
-                            await Utils.Embed().SetColor(IA.SDK.Color.GetColor(IAColor.ORANGE)).SetDescription("This is the default command param").SendToChannel(e.Channel.Id);
+                            await Utils.Embed.SetColor(IA.SDK.Color.GetColor(IAColor.ORANGE)).SetDescription("This is the default command param").SendToChannel(e.Channel.Id);
                         })
                         .On("?", async (e, args) =>
                         {
-                            await Utils.Embed().SetDescription("? was triggered").SendToChannel(e.Channel.Id);
+                            await Utils.Embed.SetDescription("? was triggered").SendToChannel(e.Channel.Id);
                         })
                         .On("say", async (e, args) =>
                         {
-                            await Utils.Embed().SetTitle("SAY").SetDescription(args).SendToChannel(e.Channel.Id);
+                            await Utils.Embed.SetTitle("SAY").SetDescription(args).SendToChannel(e.Channel.Id);
                         }),
                     new RuntimeCommandEvent(x =>
                     {

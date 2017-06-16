@@ -34,7 +34,7 @@ namespace Miki.Modules
         {
             IPost s = GelbooruPost.Create(args, ImageRating.EXPLICIT);
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("Gelbooru")
                 .SetImageUrl(s.ImageUrl)
                 .SendToChannel(msg.Channel.Id);
@@ -44,7 +44,7 @@ namespace Miki.Modules
         {
             IPost s = Rule34Post.Create(args, ImageRating.EXPLICIT);
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("Rule34")
                 .SetImageUrl(s.ImageUrl)
                 .SendToChannel(msg.Channel.Id);
@@ -54,7 +54,7 @@ namespace Miki.Modules
         {
             IPost s = E621Post.Create(args, ImageRating.EXPLICIT);
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("E621x")
                 .SetImageUrl(s.ImageUrl)
                 .SendToChannel(msg.Channel.Id);
