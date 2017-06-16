@@ -384,7 +384,7 @@ namespace Miki.Modules
                                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
                                 Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
                                 await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
-                                await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot");
+                                await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
                             };
                         }),
                     new CommandEvent(x =>
@@ -407,7 +407,7 @@ namespace Miki.Modules
                                 UrbanDictionaryInformation post = JsonConvert.DeserializeObject<UrbanDictionaryInformation>(entry.Content);
 
                                 IDiscordEmbed embed = e.CreateEmbed();
-                                embed.Title = post.Entries[0].word;
+                                embed.SetAuthor(post.Entries[0].word, "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png", "http://www.urbandictionary.com/define.php?term=" + args);
                                 embed.Description = l.GetString("miki_module_general_urban_author", post.Entries[0].author);
                                 embed.AddField(f =>
                                 {
