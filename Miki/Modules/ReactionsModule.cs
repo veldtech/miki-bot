@@ -1,7 +1,7 @@
-﻿using Meru;
-using Meru.Events;
-using Meru.SDK;
-using Meru.SDK.Events;
+﻿using IA;
+using IA.Events;
+using IA.SDK;
+using IA.SDK.Events;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,7 +9,7 @@ namespace Miki.Modules
 {
     internal class ReactionsModule
     {
-        public async Task LoadEvents(Client bot)
+        public async Task LoadEvents(Bot bot)
         {
             IModule m = new Module(mod =>
             {

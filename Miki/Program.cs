@@ -1,7 +1,7 @@
 ﻿using Discord;
-using Meru;
-using Meru.FileHandling;
-using Meru.SDK;
+using IA;
+using IA.FileHandling;
+using IA.SDK;
 using Miki.Accounts;
 using Miki.Languages;
 using Miki.Models;
@@ -22,7 +22,7 @@ namespace Miki
           new Program().Start().GetAwaiter().GetResult();
         }
 
-        public static DiscordClient bot;
+        public static Bot bot;
 
         public static DateTime timeSinceStartup;
         private string devId;
@@ -76,7 +76,7 @@ namespace Miki
         /// </summary>
         public void LoadDiscord()
         {
-            bot = new DiscordClient(x =>
+            bot = new Bot(x =>
             {
                 x.Name = "Miki";
                 x.Version = "0.3.1";
@@ -90,7 +90,7 @@ namespace Miki
             {
                 RuntimeEmbed e = new RuntimeEmbed();
                 e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
-                e.Color = new Meru.SDK.Color(1, 0.4f, 0.6f);
+                e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
 
                 if (Notification.CanSendNotification(msg.Author.Id, DatabaseEntityType.USER, DatabaseSettingId.ERRORMESSAGE))
                 {

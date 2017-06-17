@@ -1,6 +1,6 @@
 ﻿using Discord;
-using Meru.SDK;
-using Meru.SDK.Interfaces;
+using IA.SDK;
+using IA.SDK.Interfaces;
 using Miki.Languages;
 using System;
 
@@ -40,7 +40,7 @@ namespace Miki
             {
                 Title = "🚫 " + locale.GetString(Locale.ErrorMessageGeneric),
                 Description = message,
-                Color = new Meru.SDK.Color(1, 0, 0)
+                Color = new IA.SDK.Color(1, 0, 0)
             };
         }
         public static IDiscordEmbed SuccessEmbed(Locale locale, string message)
@@ -49,7 +49,7 @@ namespace Miki
             {
                 Title = locale.GetString(Locale.SuccessMessageGeneric),
                 Description = message,
-                Color = new Meru.SDK.Color(0, 1, 0)
+                Color = new IA.SDK.Color(0, 1, 0)
             };
         }
     }

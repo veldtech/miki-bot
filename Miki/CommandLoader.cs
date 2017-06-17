@@ -1,4 +1,4 @@
-﻿using Meru;
+﻿using IA;
 using Miki.Modules;
 using System.Threading.Tasks;
 
@@ -9,7 +9,7 @@ namespace Miki
         /// <summary>
         /// Loads all the modules.
         /// </summary>
-        public static async Task LoadEvents(Client bot)
+        public static async Task LoadEvents(Bot bot)
         {
             await new AccountsModule().LoadEvents(bot);
             await new AdminModule().LoadEvents(bot);

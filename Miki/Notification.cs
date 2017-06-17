@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Meru;
-using Meru.SDK;
-using Meru.SDK.Interfaces;
+using IA;
+using IA.SDK;
+using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements;
 using Miki.Models;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace Miki
 
         public static async Task SendPM(ulong userId, string message, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
-            IUser m = DiscordClient.instance.Client.GetUser(userId);
+            IUser m = Bot.instance.Client.GetUser(userId);
             IDiscordUser user = new RuntimeUser(m);
 
             if (CanSendNotification(userId, entityType, settingId))
@@ -31,7 +31,7 @@ namespace Miki
         }
         public static async Task SendPM(ulong userId, IDiscordEmbed embed, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
-            IUser m = DiscordClient.instance.Client.GetUser(userId);
+            IUser m = Bot.instance.Client.GetUser(userId);
             IDiscordUser user = new RuntimeUser(m);
 
             if (CanSendNotification(userId, entityType, settingId))

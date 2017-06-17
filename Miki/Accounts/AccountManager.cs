@@ -1,7 +1,7 @@
 ﻿using Discord;
-using Meru;
-using Meru.SDK;
-using Meru.SDK.Interfaces;
+using IA;
+using IA.SDK;
+using IA.SDK.Interfaces;
 using Miki.Languages;
 using Miki.Models;
 using System;
@@ -14,18 +14,18 @@ namespace Miki.Accounts
 
     public class AccountManager
     {
-        private static AccountManager _instance = new AccountManager(DiscordClient.instance);
+        private static AccountManager _instance = new AccountManager(Bot.instance);
         public static AccountManager Instance => _instance;
 
         public event LevelUpDelegate OnLocalLevelUp;
         public event LevelUpDelegate OnGlobalLevelUp;
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
-        private DiscordClient bot;
+        private Bot bot;
 
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
 
-        private AccountManager(DiscordClient bot)
+        private AccountManager(Bot bot)
         {
             this.bot = bot;
 
@@ -40,7 +40,7 @@ namespace Miki.Accounts
                 embed.Title = locale.GetString("miki_accounts_level_up_header");
                 embed.Description = locale.GetString("miki_accounts_level_up_content", a.Name, l);
                 embed.AddField(x => { x.Name = locale.GetString("miki_generic_reward"); x.Value = "🔸" + currencyAdded.ToString(); });
-                embed.Color = new Meru.SDK.Color(1, 0.7f, 0.2f);
+                embed.Color = new IA.SDK.Color(1, 0.7f, 0.2f);
                 await Notification.SendChannel(e, embed);
 
                 using (var context = new MikiContext())

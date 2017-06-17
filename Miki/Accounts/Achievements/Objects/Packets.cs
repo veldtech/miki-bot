@@ -1,6 +1,6 @@
-﻿using Meru.SDK;
-using Meru.SDK.Events;
-using Meru.SDK.Interfaces;
+﻿using IA.SDK;
+using IA.SDK.Events;
+using IA.SDK.Interfaces;
 using Miki.Models;
 using System;
 using System.Collections.Generic;

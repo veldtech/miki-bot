@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rest;
-using Meru.SDK;
+using IA.SDK;
 
 namespace Miki.API.RocketLeague
 {

@@ -1,6 +1,6 @@
-﻿using Meru;
-using Meru.Events;
-using Meru.SDK.Interfaces;
+﻿using IA;
+using IA.Events;
+using IA.SDK.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace Miki.Modules
 {
     class ServerCountModule
     {
-        public async Task LoadEvents(Client bot)
+        public async Task LoadEvents(Bot bot)
         {
             await new RuntimeModule("--servercount")
             {
@@ -22,14 +22,14 @@ namespace Miki.Modules
             }.InstallAsync(bot);
         }
 
-        private async Task OnUpdateGuilds(Client bot, IDiscordGuild g)
+        private async Task OnUpdateGuilds(Bot bot, IDiscordGuild g)
         {
             await SendCarbon(bot);
             await SendDiscordBotsOrg(bot, g);
             await SendDiscordPW(bot, g);
         }
 
-        private async Task SendCarbon(Client bot)
+        private async Task SendCarbon(Bot bot)
         {
             using (var client = new HttpClient())
             {
@@ -43,7 +43,7 @@ namespace Miki.Modules
                 string responseString = await response.Content.ReadAsStringAsync();
             }
         }
-        private async Task SendDiscordBotsOrg(Client bot, IDiscordGuild g)
+        private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
         {
             using (var client = new HttpClient())
             {
@@ -54,7 +54,7 @@ namespace Miki.Modules
                 }
             }
         }
-        private async Task SendDiscordPW(Client bot, IDiscordGuild g)
+        private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
         {
             using (var client = new HttpClient())
             {

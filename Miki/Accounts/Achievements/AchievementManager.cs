@@ -1,10 +1,10 @@
-﻿using Meru;
+﻿using IA;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Meru.SDK.Interfaces;
+using IA.SDK.Interfaces;
 using System;
 using Discord;
-using Meru.SDK;
+using IA.SDK;
 using Miki.Models;
 using System.Linq;
 using Miki.Accounts.Achievements.Objects;
@@ -17,10 +17,10 @@ namespace Miki.Accounts.Achievements
 
     public class AchievementManager
     {
-        private static AchievementManager _instance = new AchievementManager(DiscordClient.instance);
+        private static AchievementManager _instance = new AchievementManager(Bot.instance);
         public static AchievementManager Instance => _instance;
 
-        private DiscordClient bot;
+        private Bot bot;
         private Dictionary<string, AchievementDataContainer<BaseAchievement>> containers = new Dictionary<string, AchievementDataContainer<BaseAchievement>>();
 
         public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -32,7 +32,7 @@ namespace Miki.Accounts.Achievements
         // Veld - WARNING: does not work with channel messages 
         public event Func<UserUpdatePacket, Task> OnUserUpdate;
 
-        private AchievementManager(DiscordClient bot)
+        private AchievementManager(Bot bot)
         {
             this.bot = bot;
 

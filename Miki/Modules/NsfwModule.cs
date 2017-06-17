@@ -1,6 +1,6 @@
-﻿using Meru;
-using Meru.Events;
-using Meru.SDK.Interfaces;
+﻿using IA;
+using IA.Events;
+using IA.SDK.Interfaces;
 using Miki.Objects;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Miki.Modules
 {
     class NsfwModule
     {
-        public async Task LoadEvents(Client bot)
+        public async Task LoadEvents(Bot bot)
         {
             await new RuntimeModule("NSFW")
                 .SetNsfw(true)

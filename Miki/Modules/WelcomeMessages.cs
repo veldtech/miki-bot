@@ -1,8 +1,8 @@
-﻿using Meru;
-using Meru.Events;
-using Meru.SDK;
-using Meru.SDK.Events;
-using Meru.SDK.Interfaces;
+﻿using IA;
+using IA.Events;
+using IA.SDK;
+using IA.SDK.Events;
+using IA.SDK.Interfaces;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Miki.Modules
          * -sc = server count 
          */
 
-        public async Task LoadEvents(Client bot)
+        public async Task LoadEvents(Bot bot)
         {
             IModule i = new Module(module =>
             {

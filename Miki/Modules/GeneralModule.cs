@@ -1,8 +1,8 @@
-﻿using Meru;
-using Meru.Events;
-using Meru.SDK;
-using Meru.SDK.Events;
-using Meru.SDK.Interfaces;
+﻿using IA;
+using IA.Events;
+using IA.SDK;
+using IA.SDK.Events;
+using IA.SDK.Interfaces;
 using Miki.API.UrbanDictionary;
 using Miki.Languages;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace Miki.Modules
 {
     class GeneralModule
     {
-        public async Task LoadEvents(Client bot)
+        public async Task LoadEvents(Bot bot)
         {
             await new RuntimeModule(module =>
             {
@@ -323,58 +323,41 @@ namespace Miki.Modules
                                  await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
                              };
                         }),
-                    new RuntimeCommandEvent("ping")
-                        .SetAliases("lag")
-                        .On("-g", DoPingGateway)
-                        .Default(DoPingDefault),
+                    new CommandEvent(x =>
+                        {
+                            x.Name = "ping";
+                            x.Aliases = new string[]
+                            {
+                                  "lag"
+                            };
+                            x.ProcessCommand = async (e, args) =>
+                            {
+                                IDiscordMessage message = await e.Channel.SendMessage("Pong! ...");
+                                if (message != null)
+                                {
+                                    await message.ModifyAsync("Pong! " + (message.Timestamp - e.Timestamp).TotalMilliseconds + "ms");
+                                }
+                            };
+                        }),
                     new RuntimeCommandEvent("prefix")
                         .SetAccessibility(EventAccessibility.ADMINONLY)
                         .Default(DoPrefixDefault)
                         .On("?", DoPrefixHelp),
-                    new RuntimeCommandEvent("invite")
-                        .Default(DoInvite),
+                    new CommandEvent(x =>
+                        {
+                            x.Name = "invite";
+                            x.ProcessCommand = async (e, args) =>
+                            {
+                                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+                                Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
+                                await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
+                                await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
+                            };
+                        }),
                     new RuntimeCommandEvent("urban")
                         .Default(DoUrban)
                 };
             }).InstallAsync(bot);
-        }
-
-        public async Task DoInvite(IDiscordMessage msg, string args)
-        {
-            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
-            Locale authorLocale = Locale.GetEntity(msg.Author.Id.ToDbLong());
-
-            await msg.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
-            await msg.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
-        }
-
-        public async Task DoPingDefault(IDiscordMessage msg, string args)
-        {
-            IDiscordMessage message = await Utils.Embed
-                .SetTitle("Pinging - please wait")
-                .SetDescription("Ping ...")
-                .SetColor(new Color(0.5f, 0.5f, 0.5f))
-                .SendToChannel(msg.Channel.Id);
-
-            if (message != null)
-            {
-                double responseInMilliseconds = (message.Timestamp - msg.Timestamp).TotalMilliseconds;
-
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle("Ping")
-                    .SetDescription("Pong! " + responseInMilliseconds + "ms")
-                    .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)(responseInMilliseconds / 2500)));
-
-                await message.ModifyAsync(embed);
-            }
-        }
-        public async Task DoPingGateway(IDiscordMessage msg, string args)
-        {
-            await Utils.Embed
-                    .SetTitle("Ping Gateway")
-                    .SetDescription("Pong! " + DiscordClient.Instance.MessageAPI.Latency + "ms")
-                    .SetColor(Color.Lerp(new Color(1, 0, 0), new Color(0, 1, 0), (float)(DiscordClient.Instance.MessageAPI.Latency / 2500)))
-                    .SendToChannel(msg.Channel.Id);
         }
 
         public async Task DoPrefixDefault(IDiscordMessage msg, string args)
@@ -401,6 +384,7 @@ namespace Miki.Modules
 
             await msg.Channel.SendMessage(embed);
         }
+
         public async Task DoPrefixHelp(IDiscordMessage msg, string args)
         {
             Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
@@ -425,8 +409,7 @@ namespace Miki.Modules
                     .SetAuthor(entry.Term,
                         "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png",
                         "http://www.urbandictionary.com/define.php?term=" + args)
-                    .SetDescription(locale.GetString("miki_module_general_urban_author", entry.Author))
-                    .SetColor(0.94f, 0.61f, 0.0f);
+                    .SetDescription(locale.GetString("miki_module_general_urban_author", entry.Author));
 
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_definition"), entry.Definition);
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_example"), entry.Example);
