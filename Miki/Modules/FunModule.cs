@@ -1,9 +1,9 @@
 ﻿using Discord;
-using IA;
-using IA.Events;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Interfaces;
+using Meru;
+using Meru.Events;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Interfaces;
 using IMDBNet;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
@@ -27,7 +27,7 @@ namespace Miki.Modules
 {
     public class FunModule
     {
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             string[] puns = new string[]
             {
@@ -777,10 +777,10 @@ namespace Miki.Modules
                 }
             }
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("👌 OK")
                 .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
-                .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
+                .SetColor(Meru.SDK.Color.GetColor(IAColor.GREEN))
                 .SendToChannel(msg.Channel.Id);
 
             await Task.Delay(timeUntilReminder.Milliseconds);

@@ -65,9 +65,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\IA.SDK\IA.SDK\IA.SDK.csproj">
+    <ProjectReference Include="..\..\IA.SDK\IA.SDK\Meru.SDK.csproj">
       <Project>{b8ffa60f-2c45-449f-ad4d-cf1c5a3075d4}</Project>
-      <Name>IA.SDK</Name>
+      <Name>Meru.SDK</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

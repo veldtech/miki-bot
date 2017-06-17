@@ -1,6 +1,6 @@
-﻿using IA;
-using IA.Events;
-using IA.SDK.Interfaces;
+﻿using Meru;
+using Meru.Events;
+using Meru.SDK.Interfaces;
 using Miki.API.RocketLeague;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Miki.Modules
             ApiKey = Global.RocketLeagueKey
         });
 
-        public async Task LoadEvent(Bot bot)
+        public async Task LoadEvent(DiscordClient bot)
         {
             await new RuntimeModule("Rocket League")
                 .AddCommand(new RuntimeCommandEvent("rluser")

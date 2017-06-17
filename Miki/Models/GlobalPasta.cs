@@ -1,4 +1,4 @@
-﻿using IA;
+﻿using Meru;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,7 +49,7 @@ namespace Miki.Models
 
         public bool CanDeletePasta(ulong user_id)
         {
-            return user_id == CreatorId || Bot.instance.Events.Developers.Contains(user_id);
+            return user_id == CreatorId || DiscordClient.instance.Events.Developers.Contains(user_id);
         }
 
         public VoteCount GetVotes(MikiContext context)

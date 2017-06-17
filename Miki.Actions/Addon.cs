@@ -1,7 +1,7 @@
-﻿using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Extensions;
-using IA.SDK.Interfaces;
+﻿using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Extensions;
+using Meru.SDK.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -431,6 +431,41 @@ namespace Miki.Actions
                                 else
                                 {
                                     embed.Title = $"{e.Bot.Username} slaps {e.Author.Username}";
+                                }
+                                embed.ImageUrl = images[r.Next(0, images.Length)];
+
+                                await e.Channel.SendMessage(embed);
+                            };
+                        }),
+
+                        // cake
+                        new CommandEvent(command =>
+                        {
+                            command.Name = "cake";
+                            command.ProcessCommand = async (e, args) =>
+                            {
+                                  string[] images = new string[]
+                                {
+                                    "http://i.imgur.com/CYyrjRQ.gif",
+                                    "http://i.imgur.com/3nWbcNT.gif",
+                                    "http://i.imgur.com/AhOVdff.gif",
+                                    "http://i.imgur.com/QRJ6xqB.gif",
+                                    "http://i.imgur.com/Fuc4BX7.gif",
+                                    "http://i.imgur.com/VQjMsms.gif",
+                                    "http://i.imgur.com/ZwJJzQu.gif",
+                                };
+
+                                Random r = new Random();
+
+                                IDiscordEmbed embed = e.CreateEmbed();
+
+                                if (args.Length > 0)
+                                {
+                                    embed.Title = $"{e.Author.Username} feeds {e.RemoveMentions(args)} cake";
+                                }
+                                else
+                                {
+                                    embed.Title = $"{e.Bot.Username} feeds {e.Author.Username} cake";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 

@@ -1,5 +1,5 @@
-﻿using IA;
-using IA.SDK.Interfaces;
+﻿using Meru;
+using Meru.SDK.Interfaces;
 using Miki;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Models;

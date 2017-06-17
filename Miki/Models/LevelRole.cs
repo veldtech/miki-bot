@@ -1,6 +1,6 @@
-﻿using IA;
-using IA.SDK;
-using IA.SDK.Interfaces;
+﻿using Meru;
+using Meru.SDK;
+using Meru.SDK.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,6 +28,6 @@ namespace Miki.Models
         public int RequiredLevel { get; set; }
 
         [NotMapped]
-        public IDiscordRole Role => new RuntimeRole(Bot.instance.Client.GetGuild(GuildId.FromDbLong()).GetRole(RoleId.FromDbLong()));
+        public IDiscordRole Role => new RuntimeRole(DiscordClient.instance.Client.GetGuild(GuildId.FromDbLong()).GetRole(RoleId.FromDbLong()));
     }
 }

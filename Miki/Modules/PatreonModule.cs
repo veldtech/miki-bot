@@ -1,9 +1,9 @@
-﻿using IA;
-using IA.Events;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Extensions;
-using IA.SDK.Interfaces;
+﻿using Meru;
+using Meru.Events;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Extensions;
+using Meru.SDK.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,7 +71,7 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
         };
 
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             IModule m = new Module(module =>
             {

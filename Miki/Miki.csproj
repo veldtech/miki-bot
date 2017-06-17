@@ -314,6 +314,7 @@
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\LeaderboardsItem.cs" />
+    <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
     <Compile Include="CommandLoader.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs" />
     <Compile Include="Languages\cz-CZ.Designer.cs" />
@@ -440,8 +441,8 @@
     <Compile Include="Objects\Posts.cs" />
     <Compile Include="Objects\Imgur\ImgurImage.cs" />
     <Compile Include="API\Rocket League\RocketLeagueApi.cs" />
-    <Compile Include="Objects\UrbanDictionaryEntryInformation.cs" />
-    <Compile Include="Objects\UrbanDictionaryInformation.cs" />
+    <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryEntryInformation.cs" />
+    <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryInformation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -465,7 +466,7 @@
       <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
       <Name>IA</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RestClient\RestClient.csproj">
+    <ProjectReference Include="..\..\IA\RestClient\RestClient.csproj">
       <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
       <Name>RestClient</Name>
     </ProjectReference>
