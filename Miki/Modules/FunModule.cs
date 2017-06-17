@@ -714,7 +714,7 @@ namespace Miki.Modules
                 .InstallAsync(bot);
         }
 
-        // >remind do the dishes in 120 seconds
+        //example: >remind do the dishes in 120 seconds
         public async Task DoRemind(IDiscordMessage msg, string args)
         {
             List<string> arguments = args.Split(' ').ToList();
@@ -742,7 +742,7 @@ namespace Miki.Modules
             timeList.RemoveRange(0, splitIndex);
 
             int count = arguments.Count;
-            arguments.RemoveRange(splitIndex, count - (splitIndex + 1));
+            arguments.RemoveRange(splitIndex - 1, count - (splitIndex));
             reminderText = string.Join(" ", arguments);
 
             if (reminderText.StartsWith("me to "))
@@ -757,22 +757,22 @@ namespace Miki.Modules
                     case "seconds":
                     case "second":
                         int seconds = int.Parse(timeList[i - 1]);
-                        timeUntilReminder.Add(new TimeSpan(0, 0, seconds));
+                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(0, 0, seconds));
                         break;
                     case "minutes":
                     case "minute":
                         int minutes = int.Parse(timeList[i - 1]);
-                        timeUntilReminder.Add(new TimeSpan(0, minutes, 0));
+                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(0, minutes, 0));
                         break;
                     case "hours":
                     case "hour":
                         int hours = int.Parse(timeList[i - 1]);
-                        timeUntilReminder.Add(new TimeSpan(hours, 0 , 0));
+                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(hours, 0 , 0));
                         break;
                     case "days":
                     case "day":
                         int days = int.Parse(timeList[i - 1]);
-                        timeUntilReminder.Add(new TimeSpan(days, 0, 0, 0));
+                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(days, 0, 0, 0));
                         break;
                 }
             }
@@ -782,6 +782,13 @@ namespace Miki.Modules
                 .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
                 .SendToChannel(msg.Channel.Id);
+
+            await Task.Delay(timeUntilReminder.Milliseconds);
+
+            await Utils.Embed()
+                .SetTitle("Reminder")
+                .SetDescription($"You asked me to remind you to `{reminderText}")
+                .SendToUser(msg.Author.Id);
         }
     }
 }
