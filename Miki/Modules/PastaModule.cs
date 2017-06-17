@@ -1,10 +1,10 @@
 ﻿using Discord;
-using IA;
-using IA.Events;
-using IA.Node;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Interfaces;
+using Meru;
+using Meru.Events;
+using Meru.Node;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.Languages;
@@ -25,7 +25,7 @@ namespace Miki.Modules
 {
     internal class PastaModule
     {
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             IModule module_general = new Module(m =>
             {
@@ -236,7 +236,7 @@ namespace Miki.Modules
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.CreatorId == e.Author.Id || Bot.instance.Events.Developers.Contains(e.Author.Id))
+                if (p.CreatorId == e.Author.Id || DiscordClient.instance.Events.Developers.Contains(e.Author.Id))
                 {
                     p.Text = content;
                     await context.SaveChangesAsync();

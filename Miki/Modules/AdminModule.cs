@@ -1,9 +1,9 @@
-﻿using IA;
-using IA.Events;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Extensions;
-using IA.SDK.Interfaces;
+﻿using Meru;
+using Meru.Events;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Extensions;
+using Meru.SDK.Interfaces;
 using Miki.Languages;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace Miki.Modules
 {
     internal class AdminModule
     {
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             IModule module = new Module(mod =>
             {
@@ -141,7 +141,7 @@ namespace Miki.Modules
                             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                             string[] arguments = args.Split(' ');
-                            ICommandEvent command = Bot.instance.Events.GetCommandEvent(arguments[0]);
+                            ICommandEvent command = DiscordClient.Instance.Events.GetCommandEvent(arguments[0]);
                             if(command == null)
                             {
                                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command"));
@@ -186,7 +186,7 @@ namespace Miki.Modules
                             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                             string[] arguments = args.Split(' ');
-                            IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
+                            IModule m = DiscordClient.Instance.Events.GetModuleByName(arguments[0]);
                             if(m == null)
                             {
                                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module"));

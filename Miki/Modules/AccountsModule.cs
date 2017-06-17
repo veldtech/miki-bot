@@ -1,11 +1,11 @@
 ﻿#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using Discord;
-using IA;
-using IA.Events;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Interfaces;
+using Meru;
+using Meru.Events;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
@@ -24,7 +24,7 @@ namespace Miki.Modules
 {
     internal class AccountsModule
     {
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             AccountManager.Instance.OnLocalLevelUp += async (a, g, l) =>
             {
@@ -263,7 +263,7 @@ namespace Miki.Modules
                                         IDiscordEmbed embed = e.CreateEmbed();
                                         embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                         embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, users.First().Name);
-                                        embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
+                                        embed.Color = new Meru.SDK.Color(0.6f, 0.4f, 0.1f);
                                         await e.Channel.SendMessage(embed);
                                         return;
                                     }
@@ -284,7 +284,7 @@ namespace Miki.Modules
                                                     IDiscordEmbed embed = e.CreateEmbed();
                                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
-                                                    embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
+                                                    embed.Color = new Meru.SDK.Color(0.6f, 0.4f, 0.1f);
                                                     await e.Channel.SendMessage(embed);
                                                     break;
                                                 }
@@ -315,7 +315,7 @@ namespace Miki.Modules
                                     IDiscordEmbed embed = e.CreateEmbed();
                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", user1, user2);
-                                    embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
+                                    embed.Color = new Meru.SDK.Color(0.6f, 0.4f, 0.1f);
                                     await e.Channel.SendMessage(embed);
                                 }
                             }
@@ -522,7 +522,7 @@ namespace Miki.Modules
                                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
                                 embed.Title = "🔸 Mekos";
                                 embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
-                                embed.Color = new IA.SDK.Color(1f, 0.5f, 0.7f);
+                                embed.Color = new Meru.SDK.Color(1f, 0.5f, 0.7f);
 
                                 await e.Channel.SendMessage(embed);
                             }   
@@ -668,7 +668,7 @@ namespace Miki.Modules
                                         embed.AddField(f => { f.Name="Pro tip!"; f.Value="Donators get 5 more slots!"; });
                                     }
 
-                                    embed.Color = new IA.SDK.Color(1f, 0.6f, 0.4f);
+                                    embed.Color = new Meru.SDK.Color(1f, 0.6f, 0.4f);
                                     await e.Channel.SendMessage(embed);
                                     return;
                                 }
@@ -676,7 +676,7 @@ namespace Miki.Modules
                                 int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
                                 embed.Description = $"Do you want to buy a marriage slot for **{costForUpgrade}**?\n\nPress the checkmark to confirm.";
-                                embed.Color = new IA.SDK.Color(0.4f, 0.6f, 1f);
+                                embed.Color = new Meru.SDK.Color(0.4f, 0.6f, 1f);
 
                                 await e.Channel.SendOption(embed, e.Author,
                                     new Option("☑", async () => {
@@ -685,7 +685,7 @@ namespace Miki.Modules
                                             user.MarriageSlots++;
                                             user.Currency-=costForUpgrade;
                                             IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                            notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
+                                            notEnoughMekosErrorEmbed.Color = new Meru.SDK.Color(0.4f, 1f, 0.6f);
                                             notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
                                             await e.Channel.SendMessage(notEnoughMekosErrorEmbed);
                                             await context.SaveChangesAsync();
@@ -693,7 +693,7 @@ namespace Miki.Modules
                                         else
                                         {
                                             IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                            notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
+                                            notEnoughMekosErrorEmbed.Color = new Meru.SDK.Color(1, 0.4f, 0.6f);
                                             notEnoughMekosErrorEmbed.Description = "You do not have enough mekos!";
                                             await e.Channel.SendMessage(notEnoughMekosErrorEmbed);
                                         }
@@ -1061,7 +1061,7 @@ namespace Miki.Modules
                         Icon = "😱",
                         CheckCommand = async (p) =>
                         {
-                            return Bot.instance.Events.GetUserAccessibility(p.message) < p.command.Accessibility;
+                            return DiscordClient.instance.Events.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
                     }
                 };

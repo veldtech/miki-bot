@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using IA;
-using IA.Events;
-using IA.SDK;
-using IA.SDK.Events;
-using IA.SDK.Extensions;
-using IA.SDK.Interfaces;
+using Meru;
+using Meru.Events;
+using Meru.SDK;
+using Meru.SDK.Events;
+using Meru.SDK.Extensions;
+using Meru.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.Languages;
@@ -21,7 +21,7 @@ namespace Miki.Modules
 {
     internal class DeveloperModule
     {
-        public async Task LoadEvents(Bot bot)
+        public async Task LoadEvents(Client bot)
         {
             // TODO: Change to SDK
             await new RuntimeModule(module =>
@@ -126,7 +126,7 @@ namespace Miki.Modules
                         .SetAccessibility(EventAccessibility.DEVELOPERONLY)
                         .Default(async (e, args) =>
                         {
-                            await Utils.Embed.SetColor(IA.SDK.Color.GetColor(IAColor.ORANGE)).SetDescription("This is the default command param").SendToChannel(e.Channel.Id);
+                            await Utils.Embed.SetColor(Meru.SDK.Color.GetColor(IAColor.ORANGE)).SetDescription("This is the default command param").SendToChannel(e.Channel.Id);
                         })
                         .On("?", async (e, args) =>
                         {
@@ -150,7 +150,7 @@ namespace Miki.Modules
                             IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
                             embed.Title = "⚙️ Miki stats";
                             embed.Description = "General realtime stats about miki!";
-                            embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
+                            embed.Color = new Meru.SDK.Color(0.3f, 0.8f, 1);
 
                             //embed.AddField(f =>
                             //{
