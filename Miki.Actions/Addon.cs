@@ -333,6 +333,9 @@ namespace Miki.Actions
                         new CommandEvent(command =>
                         {
                             command.Name = "pat";
+                            command.Metadata = new EventMetadata("Give that adorable person a pat <3",
+                                "Couldn't give pat",
+                                ">pat", ">pat [@user]", ">pat miki");
                             command.ProcessCommand = async (e, args) =>
                             {
                                 string[] images = new string[]
@@ -368,6 +371,9 @@ namespace Miki.Actions
                         new CommandEvent(command =>
                         {
                             command.Name = "pet";
+                            command.Metadata = new EventMetadata("Pet a cutie",
+                                "Couldn't pet",
+                                ">pet", ">pet [@user]", ">pet miki");
                             command.ProcessCommand = async (e, args) =>
                             {
                                   string[] images = new string[]
@@ -403,19 +409,22 @@ namespace Miki.Actions
                         new CommandEvent(command =>
                         {
                             command.Name = "slap";
+                            command.Metadata = new EventMetadata("Slap a baka",
+                                "Couldn't slap, they ran away...",
+                                ">slap", ">slap [@user]", ">slap IA");
                             command.ProcessCommand = async (e, args) =>
                             {
                                 string[] images = new string[]
                                 {
-                                    "http://imgur.com/jVc3GGv.gif",
+                                    "http://i.imgur.com/GQtzDsV.gif",
+                                    "http://i.imgur.com/rk8eqnt.gif",
+                                    "http://i.imgur.com/UnzGS24.gif",
+                                    "http://i.imgur.com/CHbRGnV.gif",
+                                    "http://i.imgur.com/DvwnC0r.gif",
+                                    "http://i.imgur.com/Ksy8dvd.gif",
+                                    "http://i.imgur.com/b75B4qM.gif",
+                                    "http://i.imgur.com/d9thUdx.gif",
                                     "http://imgur.com/iekwz4h.gif",
-                                    "http://imgur.com/AbRmlAo.gif",
-                                    "http://imgur.com/o5MoMYi.gif",
-                                    "http://imgur.com/yNfMX9B.gif",
-                                    "http://imgur.com/bwXvfKE.gif",
-                                    "http://imgur.com/6wKJVHy.gif",
-                                    "http://imgur.com/kokCK1I.gif",
-                                    "http://imgur.com/E3CtvPV.gif",
                                     "http://imgur.com/q7AmR8n.gif",
                                     "http://imgur.com/pDohPrm.gif",
                                 };
@@ -442,6 +451,9 @@ namespace Miki.Actions
                         new CommandEvent(command =>
                         {
                             command.Name = "cake";
+                            command.Metadata = new EventMetadata("Make someone's day by giving someone cake!",
+                                    "Failed to give cake",
+                                    ">cake", ">cake [@user]", ">cake Fuzen");
                             command.ProcessCommand = async (e, args) =>
                             {
                                   string[] images = new string[]
