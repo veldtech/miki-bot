@@ -81,7 +81,7 @@ namespace Miki.Models
             return await GetEntryAsync(context, id1, id2) != null;
         }
 
-        public static async Task<bool> ExistsAsMarriageAsync(MikiContext context, long id1, long id2)
+        public static bool ExistsAsMarriage(MikiContext context, long id1, long id2)
         {
             return GetMarriage(context, id1, id2) != null;
         }
