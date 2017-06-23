@@ -15,13 +15,13 @@ namespace Miki.Modules
     {
         public async Task LoadEvents(Bot bot)
         {
-            IModule module = new Module(mod =>
+            RuntimeModule module = new RuntimeModule(mod =>
             {
                 mod.Name = "admin";
                 mod.CanBeDisabled = false;
                 mod.Events = new List<ICommandEvent>()
                 {
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "ban";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.BanMembers };
@@ -69,7 +69,7 @@ namespace Miki.Modules
                             await bannedUser.Ban(e.Guild);
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "softban";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.BanMembers };
@@ -121,7 +121,7 @@ namespace Miki.Modules
                             await bannedUser.Unban(e.Guild);
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "clean";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.ManageMessages };
@@ -131,7 +131,7 @@ namespace Miki.Modules
                             await PruneAsync(e, 100, bot.Client.GetShard(e.Discord.ShardId).CurrentUser.Id);
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "setcommand";
                         x.CanBeDisabled = false;
@@ -176,7 +176,7 @@ namespace Miki.Modules
                             await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?"Enabled":"Disabled") + $" {command.Name}"));
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "setmodule";
                         x.CanBeDisabled = false;
@@ -221,7 +221,7 @@ namespace Miki.Modules
                             await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?"Enabled":"Disabled") + $" {m.Name}"));
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "kick";
                         x.Accessibility = EventAccessibility.ADMINONLY;
@@ -276,7 +276,7 @@ namespace Miki.Modules
                             await bannedUser.Kick();
                         };
                     }),
-                    new CommandEvent(x =>
+                    new RuntimeCommandEvent(x =>
                     {
                         x.Name = "prune";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.ManageMessages };
@@ -309,7 +309,7 @@ namespace Miki.Modules
                 };
             });
 
-            await new RuntimeModule(module).InstallAsync(bot);
+            await module.InstallAsync(bot);
         }
 
         public async Task PruneAsync(IDiscordMessage e, int amount)

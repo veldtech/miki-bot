@@ -495,56 +495,8 @@ namespace Miki.Modules
                                }
                            };
                     }),
-                    new CommandEvent(x =>
-                    {
-                        x.Name = "safe";
-                        x.ProcessCommand = async (e, args) =>
-                        {
-                            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
-
-                            IPost s = null;
-                            if (args.ToLower().StartsWith("use"))
-                            {
-                                string[] a = args.Split(' ');
-                                args = args.Substring(a[0].Length);
-                                switch (a[0].Split(':')[1].ToLower())
-                                {
-                                    case "safebooru":
-                                    {
-                                        s = SafebooruPost.Create(args, ImageRating.SAFE);
-                                    } break;
-                                    case "gelbooru":
-                                    {
-                                        s = GelbooruPost.Create(args, ImageRating.SAFE);
-                                    } break;
-                                    case "konachan":
-                                    {
-                                        s = KonachanPost.Create(args, ImageRating.SAFE);
-                                    } break;
-                                    case "e621":
-                                    {
-                                        s = E621Post.Create(args, ImageRating.QUESTIONABLE);
-                                    } break;
-                                    default:
-                                    {
-                                        await e.Channel.SendMessage("I do not support this image host :(");
-                                    } break;
-                                }
-                            }
-                            else
-                            {
-                                s = SafebooruPost.Create(args, ImageRating.SAFE);
-                            }
-
-                        if(s == null)
-                        {
-                            await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!"));
-                            return;
-                        }
-
-                        await e.Channel.SendMessage(s.ImageUrl);
-                    };
-                }),
+                    new RuntimeCommandEvent("safe")
+                        .Default(DoSafe),
                     new CommandEvent(x =>
                     {
                         x.Name = "taiko";
@@ -710,6 +662,7 @@ namespace Miki.Modules
 
             await new RuntimeModule(module_fun)
                 .AddCommand(new RuntimeCommandEvent("remind")
+                    .SetAccessibility(EventAccessibility.DEVELOPERONLY)
                     .Default(DoRemind))
                 .InstallAsync(bot);
         }
@@ -785,10 +738,62 @@ namespace Miki.Modules
 
             await Task.Delay(timeUntilReminder.Milliseconds);
 
-            await Utils.Embed()
+            await Utils.Embed
                 .SetTitle("Reminder")
                 .SetDescription($"You asked me to remind you to `{reminderText}")
                 .SendToUser(msg.Author.Id);
+        }
+
+        public async Task DoSafe(IDiscordMessage msg, string args)
+        {
+            Locale locale = Locale.GetEntity(msg.Guild.Id.ToDbLong());
+
+            IPost s = null;
+            if (args.ToLower().StartsWith("use"))
+            {
+                string[] a = args.Split(' ');
+                args = args.Substring(a[0].Length);
+                switch (a[0].Split(':')[1].ToLower())
+                {
+                    case "safebooru":
+                        {
+                            s = SafebooruPost.Create(args, ImageRating.SAFE);
+                        }
+                        break;
+                    case "gelbooru":
+                        {
+                            s = GelbooruPost.Create(args, ImageRating.SAFE);
+                        }
+                        break;
+                    case "konachan":
+                        {
+                            s = KonachanPost.Create(args, ImageRating.SAFE);
+                        }
+                        break;
+                    case "e621":
+                        {
+                            s = E621Post.Create(args, ImageRating.SAFE);
+                        }
+                        break;
+                    default:
+                        {
+                            await msg.Channel.SendMessage("I do not support this image host :(");
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                s = SafebooruPost.Create(args, ImageRating.SAFE);
+            }
+
+            if (s == null)
+            {
+                await msg.Channel.SendMessage(Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!"));
+                return;
+            }
+
+            await msg.Channel.SendMessage(s.ImageUrl);
         }
     }
 }
