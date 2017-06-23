@@ -640,6 +640,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "buymarriageslot";
+                        x.Accessibility = EventAccessibility.DEVELOPERONLY;
                         x.Metadata = new EventMetadata(
                             "Buy more marriage slots here, the price increases with 2500 for every slot, and caps at 10 slots.",
                             "Purchase failed",
@@ -957,13 +958,21 @@ namespace Miki.Modules
                                 await context.SaveChangesAsync();
                             }
                         };
-                    })
+                    }).On("list", DoListLocale)
                 };
             });
 
             await new RuntimeModule(module_settings).InstallAsync(bot);
 
             LoadAchievements();
+        }
+
+        public async Task DoListLocale(IDiscordMessage msg, string args)
+        {
+            await Utils.Embed
+                .SetTitle("Available locales")
+                .SetDescription("`" + string.Join("`, `", Locale.Locales.Keys) + "`")
+                .SendToChannel(msg.Channel.Id);
         }
 
         public void LoadAchievements()
