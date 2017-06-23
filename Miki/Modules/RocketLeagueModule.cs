@@ -111,7 +111,6 @@ namespace Miki.Modules
             if (user.RankedSeasons.ContainsKey(seasonId))
             {
                 Dictionary<int, RocketLeagueRankedStats> rankedseason = user.RankedSeasons[seasonId];
-                string s = "";
 
                 foreach (RocketLeaguePlaylist playlist in api.playlists.Data)
                 {
