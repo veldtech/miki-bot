@@ -13,7 +13,6 @@ namespace Miki.Objects
     {
         protected static List<string> bannedTags = new List<string>()
         {
-            "loli",
             "shota",
             "gore",
             "vore",
