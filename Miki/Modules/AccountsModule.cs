@@ -647,6 +647,9 @@ namespace Miki.Modules
                             ">buymarriageslot");
                         x.ProcessCommand = async (e, args) =>
                         {
+                            await e.Channel.SendMessage("This command is disabled because we got IP banned for it ;w;''\n\ncheck back soon!");
+                            return; 
+
                             using(var context = new MikiContext())
                             {
                                 User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
