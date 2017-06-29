@@ -394,6 +394,10 @@
     <Compile Include="Migrations\201706112117072_Revert-Marriages-To-Base.Designer.cs">
       <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706292313026_sync.cs" />
+    <Compile Include="Migrations\201706292313026_sync.Designer.cs">
+      <DependentUpon>201706292313026_sync.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achievement.cs" />
     <Compile Include="Models\CommandUsage.cs" />
@@ -549,6 +553,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706112117072_Revert-Marriages-To-Base.resx">
       <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706292313026_sync.resx">
+      <DependentUpon>201706292313026_sync.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

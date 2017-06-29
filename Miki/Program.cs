@@ -79,7 +79,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.3.1";
+                x.Version = "0.3.3";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
