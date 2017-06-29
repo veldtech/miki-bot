@@ -251,20 +251,6 @@ namespace Miki.Modules
                         {
                             await e.Channel.SendMessage(e.RemoveMentions());
                         };
-                    }),
-                    new RuntimeCommandEvent(x =>
-                    {
-                        x.Name = "qwindow";
-                        x.ProcessCommand = async (e, args) =>
-                        {
-                            await (e.Channel as RuntimeMessageChannel).SendOption("OK or NO?", e.Author, 
-                                new Option("👌", async () => {
-                                    await e.Channel.SendMessage("You picked: OK");
-                                }) , 
-                                new Option("🚫", async () =>{
-                                    await e.Channel.SendMessage("You picked: NO");
-                                }));
-                        };
                     })
                 };
             }).InstallAsync(bot);
