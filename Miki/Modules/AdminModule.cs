@@ -159,7 +159,7 @@ namespace Miki.Modules
                                     break;
                             }
 
-                            if(!command.CanBeDisabled && !setValue)
+                            if(!command.CanBeDisabled)
                             {
                                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} cannot be disabled"));
                                 return;
@@ -169,7 +169,6 @@ namespace Miki.Modules
                             {
                                 if(arguments.Contains("-s"))
                                 {
-                                    // todo: create override for all channels
                                 }
                             }
                             await command.SetEnabled(e.Channel.Id, setValue);
