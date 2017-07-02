@@ -363,7 +363,8 @@ namespace Miki.Modules
 
                                 if(await Marriage.ProposeAsync(context, currentUser.user_id, mentionedPerson.user_id))
                                 {
-                                    await e.Channel.SendMessage($"💍 " + 
+                                    await e.Channel.SendMessage(
+                                        $"💍 " + 
                                         locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**") +
                                         " 💍\n\n⛪ " + user.Mention + " " +
                                         locale.GetString("miki_module_accounts_marry_text2") +
@@ -425,22 +426,22 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "declinemarriage";
-                        x.Metadata.description = "only when you really don't want to get married.";
-                        x.Metadata.usage.Add(">declinemarriage [@user]");
                         x.ProcessCommand = async (e, args) =>
                         {
+                            Locale locale = Locale.GetEntity(e.Channel.Id);
+
                             using (var context = new MikiContext())
                             {
                                 if(args == "*")
                                 {
                                     await Marriage.DeclineAllProposalsAsync(context, e.Author.Id.ToDbLong());
-                                    await e.Channel.SendMessage("All proposals declined.");
+                                    await e.Channel.SendMessage(locale.GetString("miki_marriage_all_declined"));
                                     return;
                                 }
 
                                 if(e.MentionedUserIds.Count == 0)
                                 {
-                                    await e.Channel.SendMessage("Please mention the person you want to decline.");
+                                    await e.Channel.SendMessage(locale.GetString("miki_marriage_no_mention"));
                                     return;
                                 }
 
@@ -449,11 +450,11 @@ namespace Miki.Modules
                                 if(marriage != null)
                                 {
                                     await marriage.DeclineProposalAsync(context);
-                                    await e.Channel.SendMessage("The proposal has been declined.");
+                                    await e.Channel.SendMessage(locale.GetString("miki_marriage_declined"));
                                 }
                                 else
                                 {
-                                    await e.Channel.SendMessage("This user hasn't proposed to you!");
+                                    await e.Channel.SendMessage(locale.GetString("miki_marriage_null"));
                                     return;
                                 }
                             }

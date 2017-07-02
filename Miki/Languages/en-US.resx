@@ -912,4 +912,28 @@ Fuzzy</comment>
   <data name="miki_module_general_guildinfo_voicechannels" xml:space="preserve">
     <value>Voice Channels</value>
   </data>
+  <data name="miki_command_description_marry" xml:space="preserve">
+    <value>Marry your soulmate &lt;3</value>
+  </data>
+  <data name="miki_command_usage_marry" xml:space="preserve">
+    <value>&gt;marry @user</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
+    <value>You're already proposing/married to this person.</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
+    <value>Please mention the person you're proposing to!</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
+    <value>You or the other person doesn't have a miki account yet. Make them talk more!</value>
+  </data>
+  <data name="miki_module_accounts_marry_text" xml:space="preserve">
+    <value>{0} has proposed to {1}!</value>
+  </data>
+  <data name="miki_module_accounts_marry_text2" xml:space="preserve">
+    <value>Do you accept?</value>
+  </data>
+  <data name="miki_terms_mention" xml:space="preserve">
+    <value>mention</value>
+  </data>
 </root>

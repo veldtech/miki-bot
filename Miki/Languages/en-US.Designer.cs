@@ -79,6 +79,25 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to only when you really don&apos;t want to get married..
+        /// </summary>
+        internal static string miki_command_declinemarriage_description {
+            get {
+                return ResourceManager.GetString("miki_command_declinemarriage_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;declinemarriage @user
+        ///&gt;declinemarriage *.
+        /// </summary>
+        internal static string miki_command_declinemarriage_usage {
+            get {
+                return ResourceManager.GetString("miki_command_declinemarriage_usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Push your luck by asking Miki specific questions about your life!.
         /// </summary>
         internal static string miki_command_description_8ball {
@@ -400,6 +419,42 @@ namespace Miki.Languages {
         internal static string miki_local_profile_user_header {
             get {
                 return ResourceManager.GetString("miki_local_profile_user_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All proposals declined!.
+        /// </summary>
+        internal static string miki_marriage_all_declined {
+            get {
+                return ResourceManager.GetString("miki_marriage_all_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The proposal has been declined..
+        /// </summary>
+        internal static string miki_marriage_declined {
+            get {
+                return ResourceManager.GetString("miki_marriage_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please mention the person you want to decline..
+        /// </summary>
+        internal static string miki_marriage_no_mention {
+            get {
+                return ResourceManager.GetString("miki_marriage_no_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This user hasn&apos;t proposed to you!.
+        /// </summary>
+        internal static string miki_marriage_null {
+            get {
+                return ResourceManager.GetString("miki_marriage_null", resourceCulture);
             }
         }
         
