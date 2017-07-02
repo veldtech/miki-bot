@@ -1,5 +1,6 @@
 ﻿using IA;
 using IA.Events;
+using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Objects;
 using System;
@@ -30,34 +31,34 @@ namespace Miki.Modules
                 .InstallAsync(bot);              
         }
 
-        public async Task RunGelbooru(IDiscordMessage msg, string args)
+        public async Task RunGelbooru(EventContext e)
         {
-            IPost s = GelbooruPost.Create(args, ImageRating.EXPLICIT);
+            IPost s = GelbooruPost.Create(e.arguments, ImageRating.EXPLICIT);
 
             await Utils.Embed
                 .SetTitle("Gelbooru")
                 .SetImageUrl(s.ImageUrl)
-                .SendToChannel(msg.Channel.Id);
+                .SendToChannel(e.Channel.Id);
         }
 
-        public async Task RunRule34(IDiscordMessage msg, string args)
+        public async Task RunRule34(EventContext e)
         {
-            IPost s = Rule34Post.Create(args, ImageRating.EXPLICIT);
+            IPost s = Rule34Post.Create(e.arguments, ImageRating.EXPLICIT);
 
             await Utils.Embed
                 .SetTitle("Rule34")
                 .SetImageUrl(s.ImageUrl)
-                .SendToChannel(msg.Channel.Id);
+                .SendToChannel(e.Channel.Id);
         }
 
-        public async Task RunE621(IDiscordMessage msg, string args)
+        public async Task RunE621(EventContext e)
         {
-            IPost s = E621Post.Create(args, ImageRating.EXPLICIT);
+            IPost s = E621Post.Create(e.arguments, ImageRating.EXPLICIT);
 
             await Utils.Embed
                 .SetTitle("E621x")
                 .SetImageUrl(s.ImageUrl)
-                .SendToChannel(msg.Channel.Id);
+                .SendToChannel(e.Channel.Id);
         }
     }
 }

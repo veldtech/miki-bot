@@ -60,30 +60,30 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "leaderboards";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            switch(args.ToLower())
+                            switch(e.arguments.ToLower())
                             {
                                 case "local":
                                 case "server":
                                 case "guild":
                                     {
-                                        await ShowLeaderboardsAsync(e, LeaderboardsType.LocalExperience);
+                                        await ShowLeaderboardsAsync(e.message, LeaderboardsType.LocalExperience);
                                     } break;
                                 case "commands":
                                 case "cmds":
                                     {
-                                       await ShowLeaderboardsAsync(e, LeaderboardsType.Commands);
+                                       await ShowLeaderboardsAsync(e.message, LeaderboardsType.Commands);
                                     } break;
                                 case "currency":
                                 case "mekos":
                                 case "money":
                                     {
-                                        await ShowLeaderboardsAsync(e, LeaderboardsType.Currency);
+                                        await ShowLeaderboardsAsync(e.message, LeaderboardsType.Currency);
                                     } break;
                                 default:
                                     {
-                                        await ShowLeaderboardsAsync(e);
+                                        await ShowLeaderboardsAsync(e.message);
                                     } break;
                             }
                         };
@@ -91,7 +91,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "profile";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Stopwatch sw = new Stopwatch();
                             sw.Start();
@@ -101,14 +101,14 @@ namespace Miki.Modules
                                 long id = 0;
                                 ulong uid = 0;
 
-                                if (e.MentionedUserIds.Count() > 0)
+                                if (e.message.MentionedUserIds.Count() > 0)
                                 {
-                                    uid = e.MentionedUserIds.First();
+                                    uid = e.message.MentionedUserIds.First();
                                     id = uid.ToDbLong();
                                 }
                                 else
                                 {
-                                    uid = e.Author.Id;
+                                    uid = e.message.Author.Id;
                                     id = uid.ToDbLong();
                                 }
 
@@ -229,15 +229,15 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "divorce";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-                            if(e.MentionedUserIds.Count == 0)
+                            if(e.message.MentionedUserIds.Count == 0)
                             {
                                 using(MikiContext context = new MikiContext())
                                 {
-                                    List<User> users = context.Users.Where(p => p.Name.ToLower() == args.ToLower()).ToList();
+                                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower()).ToList();
 
                                     if(users.Count == 0)
                                     {
@@ -260,7 +260,7 @@ namespace Miki.Modules
 
                                         await currentMarriage.DivorceAsync(context);
 
-                                        IDiscordEmbed embed = e.CreateEmbed();
+                                        IDiscordEmbed embed = Utils.Embed;
                                         embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                         embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, users.First().Name);
                                         embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
@@ -281,7 +281,7 @@ namespace Miki.Modules
                                                     await marriage.DivorceAsync(context);
                                                     done = true;
 
-                                                    IDiscordEmbed embed = e.CreateEmbed();
+                                                    IDiscordEmbed embed = Utils.Embed;
                                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
                                                     embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
@@ -297,7 +297,7 @@ namespace Miki.Modules
                             }
                             else
                             {
-                                if(e.Author.Id == e.MentionedUserIds.First())
+                                if(e.Author.Id == e.message.MentionedUserIds.First())
                                 {
                                     await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
                                     return;
@@ -305,14 +305,14 @@ namespace Miki.Modules
 
                                 using(MikiContext context = new MikiContext())
                                 {
-                                    Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, e.MentionedUserIds.First());
+                                    Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, e.message.MentionedUserIds.First());
 
                                     await currentMarriage.DivorceAsync(context);
 
                                     string user1 = (await e.Guild.GetUserAsync(currentMarriage.GetMe(e.Author.Id))).Username;
                                     string user2 = (await e.Guild.GetUserAsync(currentMarriage.GetOther(e.Author.Id))).Username;
 
-                                    IDiscordEmbed embed = e.CreateEmbed();
+                                    IDiscordEmbed embed = Utils.Embed;
                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", user1, user2);
                                     embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
@@ -325,11 +325,11 @@ namespace Miki.Modules
                     {
                         x.Name = "marry";
 
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Locale locale = Locale.GetEntity(e.Channel.Id);
 
-                            if(e.MentionedUserIds.Count == 0)
+                            if(e.message.MentionedUserIds.Count == 0)
                             {
                                 await e.Channel.SendMessage(locale.GetString("miki_module_accounts_marry_error_no_mention"));
                                 return;
@@ -338,10 +338,10 @@ namespace Miki.Modules
 
                             using(MikiContext context = new MikiContext())
                             {
-                                User mentionedPerson = await context.Users.FindAsync(e.MentionedUserIds.First().ToDbLong());
+                                User mentionedPerson = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
                                 User currentUser = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-                                IDiscordUser user = await e.Guild.GetUserAsync(e.MentionedUserIds.First());
+                                IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
                                 if(currentUser == null || mentionedPerson == null)
                                 {
@@ -378,9 +378,9 @@ namespace Miki.Modules
                         x.Name = "acceptmarriage";
                         x.Metadata.description = "Find your true love, accept a marriage proposal!";
                         x.Metadata.usage.Add(">acceptmarriage [@user]");
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            if(e.MentionedUserIds.Count == 0)
+                            if(e.message.MentionedUserIds.Count == 0)
                             {
                                 await e.Channel.SendMessage("Please mention the person you want to marry.");
                                 return;
@@ -388,7 +388,7 @@ namespace Miki.Modules
 
                             using(var context = new MikiContext())
                             {
-                                Marriage marriage = await Marriage.GetProposalReceivedAsync(context, e.MentionedUserIds.First(), e.Author.Id);
+                                Marriage marriage = await Marriage.GetProposalReceivedAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
 
                                 if(marriage != null)
                                 {
@@ -426,26 +426,26 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "declinemarriage";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Locale locale = Locale.GetEntity(e.Channel.Id);
 
                             using (var context = new MikiContext())
                             {
-                                if(args == "*")
+                                if(e.arguments == "*")
                                 {
                                     await Marriage.DeclineAllProposalsAsync(context, e.Author.Id.ToDbLong());
                                     await e.Channel.SendMessage(locale.GetString("miki_marriage_all_declined"));
                                     return;
                                 }
 
-                                if(e.MentionedUserIds.Count == 0)
+                                if(e.message.MentionedUserIds.Count == 0)
                                 {
                                     await e.Channel.SendMessage(locale.GetString("miki_marriage_no_mention"));
                                     return;
                                 }
 
-                                Marriage marriage = await Marriage.GetEntryAsync(context, e.MentionedUserIds.First(), e.Author.Id);
+                                Marriage marriage = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
 
                                 if(marriage != null)
                                 {
@@ -466,7 +466,7 @@ namespace Miki.Modules
                         x.Metadata.errorMessage = "none (yet!)";
                         x.Metadata.description = "Show who tried to propose you.";
                         x.Metadata.usage.Add(">showproposals");
-                        x.ProcessCommand = async(e, args) =>
+                        x.ProcessCommand = async(e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -517,7 +517,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "mekos";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -537,7 +537,7 @@ namespace Miki.Modules
                         x.Name = "daily";
                         x.Metadata.description = "Get daily Mekos!";
                         x.Metadata.usage.Add(">daily");
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -578,12 +578,12 @@ namespace Miki.Modules
                         x.Metadata.description = "Give love to your friends";
                         x.Metadata.usage.Add(">give **[@user]** 1000");
                         x.Metadata.errorMessage = "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Locale locale = Locale.GetEntity(e.Guild.Id);
 
                             int goldSent = 0;
-                            string[] arguments = args.Split(' ');
+                            string[] arguments = e.arguments.Split(' ');
 
                             if(arguments.Length < 2)
                             {
@@ -603,7 +603,7 @@ namespace Miki.Modules
                                 return;
                             }
 
-                            if(e.MentionedUserIds.Count <= 0)
+                            if(e.message.MentionedUserIds.Count <= 0)
                             {
                                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!"));
                                 return;
@@ -612,14 +612,14 @@ namespace Miki.Modules
                             using(var context = new MikiContext())
                             {
                                 User sender = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                                User receiver = await context.Users.FindAsync(e.MentionedUserIds.First().ToDbLong());
+                                User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
 
                                 if(goldSent <= sender.Currency)
                                 {
                                     receiver.AddCurrency(context, sender, goldSent);
                                     sender.AddCurrency(context, sender, -goldSent);
 
-                                    string reciever = (await e.Guild.GetUserAsync(e.MentionedUserIds.First())).Username;
+                                    string reciever = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Username;
 
                                     EmbedBuilder em = new EmbedBuilder();
                                     em.Title = "🔸 transaction";
@@ -649,7 +649,7 @@ namespace Miki.Modules
                             "Buy more marriage slots here, the price increases with 2500 for every slot, and caps at 10 slots.",
                             "Purchase failed",
                             ">buymarriageslot");
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             await e.Channel.SendMessage("This command is disabled because we got IP banned for it ;w;''\n\ncheck back soon!");
                             return; 
@@ -713,7 +713,7 @@ namespace Miki.Modules
                     {
                         cmd.Name = "syncavatar";
                         cmd.Metadata = new EventMetadata("Change your profile's avatar to your discord avatar", "couldn't set this image as your avatar", ">changeavatar");
-                        cmd.ProcessCommand = async (e, args) =>
+                        cmd.ProcessCommand = async (e) =>
                         {
                             string localFilename = @"c:\inetpub\miki.veld.one\assets\img\user\" + e.Author.Id + ".png";
 
@@ -756,7 +756,7 @@ namespace Miki.Modules
                                 await context.SaveChangesAsync();
                             }
 
-                            IDiscordEmbed embed = e.CreateEmbed();
+                            IDiscordEmbed embed = Utils.Embed;
                             embed.Title = "👌 OKAY";
                             embed.Description = "I've synchronized your current avatar to Miki's database!";
                             await e.Channel.SendMessage(embed);
@@ -765,7 +765,7 @@ namespace Miki.Modules
                     new CommandEvent(cmd =>
                     {
                         cmd.Name = "syncname";
-                        cmd.ProcessCommand = async (e, args) =>
+                        cmd.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -778,7 +778,7 @@ namespace Miki.Modules
                                 await context.SaveChangesAsync();
                             }
 
-                            IDiscordEmbed embed = e.CreateEmbed();
+                            IDiscordEmbed embed = Utils.Embed;
                             embed.Title = "👌 OKAY";
                             embed.Description = "I've synchronized your current name to Miki's database!";
                             await e.Channel.SendMessage(embed);
@@ -788,14 +788,14 @@ namespace Miki.Modules
                     {
                         x.Name = "setrolelevel";
                         x.Accessibility = EventAccessibility.ADMINONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
                                 Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
                                 List<string> allArgs = new List<string>();
-                                allArgs.AddRange(args.Split(' '));
+                                allArgs.AddRange(e.arguments.Split(' '));
                                 if(allArgs.Count >= 2)
                                 {
                                     int levelrequirement = int.Parse(allArgs[allArgs.Count - 1]);
@@ -813,7 +813,7 @@ namespace Miki.Modules
                                     {
                                         lr = context.LevelRoles.Add(new LevelRole(){ GuildId = e.Guild.Id.ToDbLong(), RoleId = role.Id.ToDbLong(), RequiredLevel = levelrequirement });
 
-                                        IDiscordEmbed embed = e.CreateEmbed();
+                                        IDiscordEmbed embed = Utils.Embed;
                                         embed.Title = "Added Role!";
                                         embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
                                         await e.Channel.SendMessage(embed);
@@ -822,7 +822,7 @@ namespace Miki.Modules
                                     {
                                         lr.RequiredLevel = levelrequirement;
 
-                                        IDiscordEmbed embed = e.CreateEmbed();
+                                        IDiscordEmbed embed = Utils.Embed;
                                         embed.Title = "Updated Role!";
                                         embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
                                         await e.Channel.SendMessage(embed);
@@ -941,7 +941,7 @@ namespace Miki.Modules
                         Icon = "😱",
                         CheckCommand = async (p) =>
                         {
-                            return Bot.instance.Events.GetUserAccessibility(p.message) < p.command.Accessibility;
+                            return Bot.instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
                     }
                 };

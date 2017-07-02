@@ -1,5 +1,6 @@
 ﻿using IA;
 using IA.Events;
+using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.API.RocketLeague;
 using System;
@@ -21,19 +22,19 @@ namespace Miki.Modules
         {
             await new RuntimeModule("Rocket League")
                 .AddCommand(new RuntimeCommandEvent("rluser")
-                    .Default(async (e, args) => await GetUser(e, args)))
+                    .Default(GetUser))
                 .AddCommand(new RuntimeCommandEvent("rlsearchuser")
-                    .Default(async (e, args) => await SearchUser(e, args)))
+                    .Default(SearchUser))
                 .AddCommand(new RuntimeCommandEvent("rluserseason")
-                    .Default(async (e, args) => await GetUserSeason(e, args)))
+                    .Default(GetUserSeason))
                 .AddCommand(new RuntimeCommandEvent("rlnowplaying")
-                    .Default(async (e, args) => await GetNowPlaying(e, args)))
+                    .Default(GetNowPlaying))
                 .InstallAsync(bot);
         }
 
-        public async Task GetUser(IDiscordMessage e, string args)
+        public async Task GetUser(EventContext e)
         {
-            string[] arg = args.Split(' ');
+            string[] arg = e.arguments.Split(' ');
             int platform = 1;
 
             if (arg.Length > 1)
@@ -41,7 +42,7 @@ namespace Miki.Modules
                 platform = GetPlatform(arg[1]);
             }
 
-            IDiscordEmbed embed = e.CreateEmbed();
+            IDiscordEmbed embed = Utils.Embed;
 
             RocketLeagueUser user = await TryGetUser(arg[0], platform);
 
@@ -83,10 +84,10 @@ namespace Miki.Modules
             embed.ImageUrl = user.SignatureUrl;
             await e.Channel.SendMessage(embed);
         }
-        public async Task GetUserSeason(IDiscordMessage e, string args)
+        public async Task GetUserSeason(EventContext e)
         {
             int platform = 1;
-            string[] arg = args.Split(' ');
+            string[] arg = e.arguments.Split(' ');
             int seasonId = int.Parse(arg[1]);
 
             if (arg.Length > 2)
@@ -94,7 +95,7 @@ namespace Miki.Modules
                 platform = GetPlatform(arg[2]);
             }
 
-            IDiscordEmbed embed = e.CreateEmbed();
+            IDiscordEmbed embed = Utils.Embed;
             RocketLeagueUser user = await TryGetUser(arg[0], platform);
 
             if (user == null)
@@ -142,13 +143,13 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        public async Task GetNowPlaying(IDiscordMessage e, string args)
+        public async Task GetNowPlaying(EventContext e)
         {
             int platform = -1;
 
-            if (!string.IsNullOrWhiteSpace(args))
+            if (!string.IsNullOrWhiteSpace(e.arguments))
             {
-                platform = GetPlatform(args);
+                platform = GetPlatform(e.arguments);
             }
 
             Dictionary<int, RocketLeaguePlaylist> d = new Dictionary<int, RocketLeaguePlaylist>();
@@ -185,7 +186,7 @@ namespace Miki.Modules
                 }
             }
 
-            IDiscordEmbed embed = e.CreateEmbed();
+            IDiscordEmbed embed = Utils.Embed;
             embed.Title = "Now Playing!";
             foreach (RocketLeaguePlaylist p in d.Values)
             {
@@ -200,10 +201,10 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        public async Task SearchUser(IDiscordMessage e, string args)
+        public async Task SearchUser(EventContext e)
         {
-            string[] arg = args.Split(' ');
-            IDiscordEmbed embed = e.CreateEmbed();
+            string[] arg = e.arguments.Split(' ');
+            IDiscordEmbed embed = Utils.Embed;
             RocketLeagueSearchResult user = await api.SearchUsersAsync(arg[0], (arg.Length >= 2) ? int.Parse(arg[1]) : 0);
 
             embed.Title = $"Found {user.TotalResults} users with the name `{arg[0]}`";

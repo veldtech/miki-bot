@@ -26,14 +26,14 @@ namespace Miki.Modules
             // TODO: Change to SDK
             await new RuntimeModule(module =>
             {
-                module.Name = "Developer";
+                module.Name = "Experimental";
                 module.Events = new List<ICommandEvent>()
                 {
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "dumpshards";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             EmbedBuilder embed = new EmbedBuilder();
                             embed.Title = "Shards";
@@ -55,11 +55,11 @@ namespace Miki.Modules
                     {
                         x.Name = "changeavatar";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            Image s = new Image(new FileStream("./" + args, FileMode.Open));
+                            Image s = new Image(new FileStream("./" + e.arguments, FileMode.Open));
 
-                            await bot.Client.GetShard(e.Discord.ShardId).CurrentUser.ModifyAsync(z =>
+                            await bot.Client.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
                             {
                                 z.Avatar = new Optional<Image?>(s);
                             });
@@ -69,11 +69,11 @@ namespace Miki.Modules
                     {
                         x.Name = "changename";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await bot.Client.GetShard(e.Discord.ShardId).CurrentUser.ModifyAsync(z =>
+                            await bot.Client.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
                              {
-                                 z.Username = args;
+                                 z.Username = e.arguments;
                              });
                         };
                     }),
@@ -81,16 +81,16 @@ namespace Miki.Modules
                     {
                         x.Name = "setexp";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
-                                LocalExperience u = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), e.MentionedUserIds.First().ToDbLong());
+                                LocalExperience u = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), e.message.MentionedUserIds.First().ToDbLong());
                                 if(u == null)
                                 {
                                     return;
                                 }
-                                u.Experience = int.Parse(args.Split(' ')[1]);
+                                u.Experience = int.Parse(e.arguments.Split(' ')[1]);
                                 await context.SaveChangesAsync();
                             }
                         };
@@ -99,47 +99,47 @@ namespace Miki.Modules
                     {
                         x.Name = "setgame";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await e.Discord.SetGameAsync(args);
+                            await e.message.Discord.SetGameAsync(e.arguments);
                         };
                     }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "setstream";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await e.Discord.SetGameAsync(args, "https://www.twitch.tv/velddev");
+                            await e.message.Discord.SetGameAsync(e.arguments, "https://www.twitch.tv/velddev");
                         };
                     }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "testnotification";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await Notification.SendPM(e.Author.Id, args);
+                            await Notification.SendPM(e.Author.Id, e.arguments);
                         };
                     }),
                     new RuntimeCommandEvent("commandsystemtest")
                         .SetAccessibility(EventAccessibility.DEVELOPERONLY)
-                        .Default(async (e, args) =>
+                        .Default(async (e) =>
                         {
                             await Utils.Embed.SetColor(IA.SDK.Color.GetColor(IAColor.ORANGE)).SetDescription("This is the default command param").SendToChannel(e.Channel.Id);
                         })
-                        .On("?", async (e, args) =>
+                        .On("?", async (e) =>
                         {
                             await Utils.Embed.SetDescription("? was triggered").SendToChannel(e.Channel.Id);
                         })
-                        .On("say", async (e, args) =>
+                        .On("say", async (e) =>
                         {
-                            await Utils.Embed.SetTitle("SAY").SetDescription(args).SendToChannel(e.Channel.Id);
+                            await Utils.Embed.SetTitle("SAY").SetDescription(e.arguments).SendToChannel(e.Channel.Id);
                         }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "stats";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             //int servers = bot.Client.Guilds.Count;
                             //int channels = bot.Client.Guilds.Sum(a => a.Channels.Count);
@@ -208,52 +208,81 @@ namespace Miki.Modules
                     {
                         x.Name = "unload";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await bot.Addons.Unload(bot, args);
-                            await e.Channel.SendMessage($"Unloaded Add-On \"{args}\" successfully");
+                            await bot.Addons.Unload(bot, e.arguments);
+                            await e.Channel.SendMessage($"Unloaded Add-On \"{e.arguments}\" successfully");
                         };
                     }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "load";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await bot.Addons.LoadSpecific(bot, args);
-                            await e.Channel.SendMessage($"Loaded Add-On \"{args}\" successfully");
+                            await bot.Addons.LoadSpecific(bot, e.arguments);
+                            await e.Channel.SendMessage($"Loaded Add-On \"{e.arguments}\" successfully");
                         };
                     }),
+                    new RuntimeCommandEvent("cmdtest")
+                        .SetAccessibility(EventAccessibility.DEVELOPERONLY)
+                        .Default(DoCmdTest),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "reload";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await bot.Addons.Unload(bot, args);
-                            await bot.Addons.LoadSpecific(bot, args);
-                            await e.Channel.SendMessage($"Reloaded {args} successfully!");
+                            await bot.Addons.Unload(bot, e.arguments);
+                            await bot.Addons.LoadSpecific(bot, e.arguments);
+                            await e.Channel.SendMessage($"Reloaded {e.arguments} successfully!");
                         };
                     }),
                     new CommandEvent(x =>
                     {
                         x.Name = "queryembed";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await e.Channel.SendMessage(new RuntimeEmbed(new EmbedBuilder()).Query(args));
+                            await e.Channel.SendMessage(new RuntimeEmbed(new EmbedBuilder()).Query(e.arguments));
                         };
                     }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "mtou";
                         x.Accessibility = EventAccessibility.DEVELOPERONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            await e.Channel.SendMessage(e.RemoveMentions());
+                            await e.Channel.SendMessage(e.message.RemoveMentions());
                         };
                     })
                 };
             }).InstallAsync(bot);
+        }
+
+        private async Task DoCmdTest(EventContext message)
+        {
+            CommandHandler c = new CommandHandlerBuilder()
+                .AddPrefix(">")
+                .DisposeInSeconds(20)
+                .SetOwner(message.Author.Id)
+                .AddCommand(
+                    new RuntimeCommandEvent("yes")
+                        .Default(async (e) => 
+                        {
+                            await e.Channel.SendMessage("you picked yes!");
+                            e.commandHandler.RequestDispose();
+                        }))
+                .AddCommand(
+                    new RuntimeCommandEvent("no")
+                        .Default(async (e) => 
+                        {
+                            await e.Channel.SendMessage("you picked no!");
+                            e.commandHandler.RequestDispose();
+                        }))
+                .Build();
+
+            Bot.instance.Events.AddPrivateCommandHandler(message.Author.Id, c);
+            await message.Channel.SendMessage("OK!");
         }
     }
 }

@@ -34,11 +34,11 @@ namespace Miki.Modules
                         cmd.Metadata.description = "Set a welcome message, set it to \"\" to remove it\n**Variables usable**\n-u : the person that joins\n-um: mention the person that joins\n-o : server owner's name\n-s : server's name";
 
                         cmd.Accessibility = EventAccessibility.ADMINONLY;
-                        cmd.ProcessCommand = async (e, arg) =>
+                        cmd.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
-                                if(string.IsNullOrEmpty(arg))
+                                if(string.IsNullOrEmpty(e.arguments))
                                 {
                                     context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
                                     await e.Channel.SendMessage($"✅ deleted your welcome message");
@@ -46,9 +46,9 @@ namespace Miki.Modules
                                     return;
                                 }
 
-                                if(await SetMessage(e.Guild.Id, arg, EventMessageType.JOINSERVER, e.Channel.Id))
+                                if(await SetMessage(e.Guild.Id, e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
                                 {
-                                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ arg }`");
+                                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
                                 }
                                 await context.SaveChangesAsync();
                             }
@@ -58,11 +58,11 @@ namespace Miki.Modules
                     {
                         cmd.Name = "setleavemessage";
                         cmd.Accessibility = EventAccessibility.ADMINONLY;
-                        cmd.ProcessCommand = async (e, arg) =>
+                        cmd.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
-                                if(string.IsNullOrEmpty(arg))
+                                if(string.IsNullOrEmpty(e.arguments))
                                 {
                                     context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
                                     await e.Channel.SendMessage($"✅ deleted your welcome message");
@@ -70,9 +70,9 @@ namespace Miki.Modules
                                     return;
                                 }
 
-                                if(await SetMessage(e.Guild.Id, arg, EventMessageType.LEAVESERVER, e.Channel.Id))
+                                if(await SetMessage(e.Guild.Id, e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
                                 {
-                                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ arg }`");
+                                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
                                 }
                                 await context.SaveChangesAsync();
                             }

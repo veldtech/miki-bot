@@ -936,4 +936,23 @@ Fuzzy</comment>
   <data name="miki_terms_mention" xml:space="preserve">
     <value>mention</value>
   </data>
+  <data name="miki_command_declinemarriage_description" xml:space="preserve">
+    <value>only when you really don't want to get married.</value>
+  </data>
+  <data name="miki_command_declinemarriage_usage" xml:space="preserve">
+    <value>&gt;declinemarriage @user
+&gt;declinemarriage *</value>
+  </data>
+  <data name="miki_marriage_all_declined" xml:space="preserve">
+    <value>All proposals declined!</value>
+  </data>
+  <data name="miki_marriage_declined" xml:space="preserve">
+    <value>The proposal has been declined.</value>
+  </data>
+  <data name="miki_marriage_no_mention" xml:space="preserve">
+    <value>Please mention the person you want to decline.</value>
+  </data>
+  <data name="miki_marriage_null" xml:space="preserve">
+    <value>This user hasn't proposed to you!</value>
+  </data>
 </root>

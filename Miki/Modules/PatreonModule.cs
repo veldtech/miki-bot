@@ -85,18 +85,18 @@ namespace Miki.Modules
                             "Ask people things :)",
                             "Couldn't ask this person :(",
                             ">ask [@user] question");
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            string question = args.Substring(args.Split(' ').First().Length + 1);
+                            string question = e.arguments.Substring(e.arguments.Split(' ').First().Length + 1);
                             string image = "http://i.imgur.com/AHPnL.gif";
 
-                            IDiscordEmbed embed = e.CreateEmbed();
+                            IDiscordEmbed embed = Utils.Embed;
 
-                            embed.Description = $"{e.Author.Username} asks {e.RemoveMentions(args)}";
+                            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
 
-                            if(e.MentionedUserIds.Count > 0)
+                            if(e.message.MentionedUserIds.Count > 0)
                             {
-                                if(e.Author.Id == 114190551670194183 && e.MentionedUserIds.First() == 185942988596183040)
+                                if(e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
                                 {
                                    IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
                                    question = "lewds";
@@ -112,7 +112,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {   
                         x.Name  = "lunch";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             await e.Channel.SendMessage("Woof woof! What's for lunch?\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
                         };

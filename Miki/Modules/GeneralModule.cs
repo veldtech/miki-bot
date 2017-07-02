@@ -29,15 +29,15 @@ namespace Miki.Modules
                         {
                             x.Name = "avatar";
                             x.Aliases = new string[] {"av"};
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
-                                if(args.StartsWith("-s"))
+                                if(e.arguments.StartsWith("-s"))
                                 {
                                     await e.Channel.SendMessage(string.Join(".", e.Guild.AvatarUrl));
                                 }
-                                else if(e.MentionedUserIds.Count > 0)
+                                else if(e.message.MentionedUserIds.Count > 0)
                                 {
-                                    await e.Channel.SendMessage(string.Join(".", (await e.Guild.GetUserAsync(e.MentionedUserIds.First())).AvatarUrl));
+                                    await e.Channel.SendMessage(string.Join(".", (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).AvatarUrl));
                                 }
                                 else
                                 {
@@ -48,28 +48,28 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                         {
                             x.Name = "whois";
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
                                 ulong id = 0;
 
-                                if(string.IsNullOrEmpty(args))
+                                if(string.IsNullOrEmpty(e.arguments))
                                 {
                                     id = e.Author.Id;
                                 }
-                                else if(e.MentionedUserIds.Count == 0)
+                                else if(e.message.MentionedUserIds.Count == 0)
                                 {
-                                    id = ulong.Parse(args);
+                                    id = ulong.Parse(e.arguments);
                                 }
                                 else
                                 {
-                                    id = e.MentionedUserIds.First();
+                                    id = e.message.MentionedUserIds.First();
                                 }
 
                                 IDiscordUser user = await e.Guild.GetUserAsync(id);
 
                                 Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = Utils.Embed;
                                 embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname)? user.Username : user.Nickname)}!?";
                                 embed.Color = new Color(0.5f, 0, 1);
 
@@ -95,13 +95,13 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                         {
                               x.Name = "calc";
-                              x.ProcessCommand = async (e, args) =>
+                              x.ProcessCommand = async (e) =>
                               {
                                   Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                                   try
                                   {
-                                    var result = new DataTable().Compute(args, null);
+                                    var result = new DataTable().Compute(e.arguments, null);
                                     await e.Channel.SendMessage(result.ToString());
                                   }
                                   catch
@@ -113,9 +113,9 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                         {
                             x.Name = "guildinfo";
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = Utils.Embed;
                                 Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                                 embed.SetAuthor(e.Guild.Name, e.Guild.AvatarUrl, e.Guild.AvatarUrl);
@@ -165,16 +165,16 @@ namespace Miki.Modules
                                  "commands", "command"
                             };
                             x.Cooldown = 2;
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
                                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-                                if (!string.IsNullOrEmpty(args))
+                                if (!string.IsNullOrEmpty(e.arguments))
                                 {
-                                    ICommandEvent ev = bot.Events.GetCommandEvent(args);
+                                    ICommandEvent ev = bot.Events.CommandHandler.GetCommandEvent(e.arguments);
                                     if (ev == null)
                                     {
-                                        IDiscordEmbed helpListEmbed = e.CreateEmbed();
+                                        IDiscordEmbed helpListEmbed = Utils.Embed;
                                         helpListEmbed.Title = locale.GetString("miki_module_help_error_null_header");
                                         helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message");
                                         helpListEmbed.Color = new Color(1.0f, 0, 0);
@@ -185,7 +185,7 @@ namespace Miki.Modules
                                         {
                                             foreach(ICommandEvent c in a.Events)
                                             {
-                                                if(bot.Events.GetUserAccessibility(e) < c.Accessibility)
+                                                if(bot.Events.CommandHandler.GetUserAccessibility(e.message) < c.Accessibility)
                                                 {
                                                     continue;
                                                 }
@@ -195,7 +195,7 @@ namespace Miki.Modules
                                                     break;
                                                 }
 
-                                                if(c.Name.Contains(args))
+                                                if(c.Name.Contains(e.arguments))
                                                 {
                                                     helpListEmbed.AddField(f =>
                                                     {
@@ -208,7 +208,7 @@ namespace Miki.Modules
 
                                                 foreach(string alias in c.Aliases)
                                                 {
-                                                    if(alias.Contains(args))
+                                                    if(alias.Contains(e.arguments))
                                                     {
                                                         helpListEmbed.AddField(f =>
                                                         {
@@ -232,7 +232,7 @@ namespace Miki.Modules
                                     else
                                     {
 
-                                        if(bot.Events.GetUserAccessibility(e) < ev.Accessibility)
+                                        if(bot.Events.CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
                                         {
                                             return;
                                         }
@@ -260,7 +260,7 @@ namespace Miki.Modules
                                     }
                                     return;
                                 }
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = Utils.Embed;
 
                                 embed.Description = locale.GetString("miki_module_general_help_dm");
 
@@ -268,7 +268,7 @@ namespace Miki.Modules
 
                                 await e.Channel.SendMessage(embed);
 
-                                await e.Author.SendMessage(await bot.Events.ListCommandsInEmbed(e));
+                                await e.Author.SendMessage(await bot.Events.ListCommandsInEmbed(e.message));
                             };
                         }),
                     new CommandEvent(x =>
@@ -279,9 +279,9 @@ namespace Miki.Modules
                                 "about"
                           };
                           x.Cooldown = 2;
-                          x.ProcessCommand = async (e, args) =>
+                          x.ProcessCommand = async (e) =>
                           {
-                              IDiscordEmbed embed = e.CreateEmbed();
+                              IDiscordEmbed embed = Utils.Embed;
                             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                                 embed.Author = embed.CreateAuthor();
@@ -317,7 +317,7 @@ namespace Miki.Modules
                              {
                                  "patreon"
                              };
-                             x.ProcessCommand = async (e, args) =>
+                             x.ProcessCommand = async (e) =>
                              {
                                  Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
                                  await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
@@ -330,12 +330,12 @@ namespace Miki.Modules
                             {
                                   "lag"
                             };
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
                                 IDiscordMessage message = await e.Channel.SendMessage("Pong! ...");
                                 if (message != null)
                                 {
-                                    await message.ModifyAsync("Pong! " + (message.Timestamp - e.Timestamp).TotalMilliseconds + "ms");
+                                    await message.ModifyAsync("Pong! " + (message.Timestamp - e.message.Timestamp).TotalMilliseconds + "ms");
                                 }
                             };
                         }),
@@ -346,7 +346,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                         {
                             x.Name = "invite";
-                            x.ProcessCommand = async (e, args) =>
+                            x.ProcessCommand = async (e) =>
                             {
                                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
                                 Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
@@ -360,67 +360,67 @@ namespace Miki.Modules
             }).InstallAsync(bot);
         }
 
-        public async Task DoPrefixDefault(IDiscordMessage msg, string args)
+        public async Task DoPrefixDefault(EventContext e)
         {
-            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            if (string.IsNullOrEmpty(args))
+            if (string.IsNullOrEmpty(e.arguments))
             {
-                await msg.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
+                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
                 return;
             }
 
-            await PrefixInstance.Default.ChangeForGuildAsync(msg.Guild.Id, args);
+            await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.arguments);
 
-            IDiscordEmbed embed = msg.CreateEmbed();
+            IDiscordEmbed embed = Utils.Embed;
             embed.Title = locale.GetString("miki_module_general_prefix_success_header");
-            embed.Description = locale.GetString("miki_module_general_prefix_success_message", args);
+            embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.arguments);
 
             embed.AddField(f =>
             {
                 f.Name = locale.GetString("miki_module_general_prefix_example_command_header");
-                f.Value = $"{args}profile";
+                f.Value = $"{e.arguments}profile";
             });
 
-            await msg.Channel.SendMessage(embed);
+            await e.Channel.SendMessage(embed);
         }
 
-        public async Task DoPrefixHelp(IDiscordMessage msg, string args)
+        public async Task DoPrefixHelp(EventContext e)
         {
-            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             await Utils.Embed
                 .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
-                .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(msg.Guild.Id)))
-                .SendToChannel(msg.Channel.Id);
+                .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
+                .SendToChannel(e.Channel.Id);
         }
 
-        public async Task DoUrban(IDiscordMessage msg, string args)
+        public async Task DoUrban(EventContext e)
         {
-            if (string.IsNullOrEmpty(args)) return;
+            if (string.IsNullOrEmpty(e.arguments)) return;
 
-            Locale locale = Locale.GetEntity(msg.Channel.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
             UrbanDictionaryApi api = new UrbanDictionaryApi(Global.UrbanKey);
-            UrbanDictionaryEntry entry = api.GetEntry(args);
+            UrbanDictionaryEntry entry = api.GetEntry(e.arguments);
 
             if (entry != null)
             {
                 IDiscordEmbed embed = Utils.Embed
                     .SetAuthor(entry.Term,
                         "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png",
-                        "http://www.urbandictionary.com/define.php?term=" + args)
+                        "http://www.urbandictionary.com/define.php?term=" + e.arguments)
                     .SetDescription(locale.GetString("miki_module_general_urban_author", entry.Author));
 
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_definition"), entry.Definition);
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_example"), entry.Example);
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown);
 
-                await msg.Channel.SendMessage(embed);
+                await e.Channel.SendMessage(embed);
             }
             else
             {
                 await Utils.ErrorEmbed(locale, "This term couldn't been found!")
-                    .SendToChannel(msg.Channel.Id);
+                    .SendToChannel(e.Channel.Id);
             }
         }
     }

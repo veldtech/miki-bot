@@ -33,26 +33,26 @@ namespace Miki.Modules
                 m.Events = new List<ICommandEvent>()
                 {
                     new RuntimeCommandEvent("pasta")
-                        .Default(async (e, args)        => await GetPasta(e, args))
-                        .On("+", async (e, args)        => await CreatePasta(e, args))
-                        .On("new", async(e, args)       => await CreatePasta(e, args))
-                        .On("find", async(e, args)      => await SearchPasta(e, args))
-                        .On("search", async(e, args)    => await SearchPasta(e, args))
-                        .On("edit", async(e, args)      => await EditPasta(e, args))
-                        .On("change", async(e, args)    => await EditPasta(e, args))
-                        .On("remove", async(e, args)    => await DeletePasta(e, args))
-                        .On("delete", async(e, args)    => await DeletePasta(e, args))
-                        .On("who", async(e, args)       => await IdentifyPasta(e, args))
-                        .On("?", async(e, args)         => await IdentifyPasta(e, args))
-                        .On("whom", async(e, args)      => await IdentifyPasta(e, args))
-                        .On("upvote", async(e, args)    => await VotePasta(e, args, true))
-                        .On("love", async(e, args)      => await VotePasta(e, args, true))
-                        .On("<3", async(e, args)        => await VotePasta(e, args, true))
-                        .On("downvote", async(e, args)  => await VotePasta(e, args, false))
-                        .On("</3", async(e, args)       => await VotePasta(e, args, false))
-                        .On("hate", async(e, args)      => await VotePasta(e, args, false))
-                        .On("mine", async(e, args)      => await MyPasta(e, args))
-                        .On("my", async(e, args)        => await MyPasta(e, args))
+                        .Default(async (e)        => await GetPasta(e))
+                        .On("+", async (e)        => await CreatePasta(e))
+                        .On("new", async(e)       => await CreatePasta(e))
+                        .On("find", async(e)      => await SearchPasta(e))
+                        .On("search", async(e)    => await SearchPasta(e))
+                        .On("edit", async(e)      => await EditPasta(e))
+                        .On("change", async(e)    => await EditPasta(e))
+                        .On("remove", async(e)    => await DeletePasta(e))
+                        .On("delete", async(e)    => await DeletePasta(e))
+                        .On("who", async(e)       => await IdentifyPasta(e))
+                        .On("?", async(e)         => await IdentifyPasta(e))
+                        .On("whom", async(e)      => await IdentifyPasta(e))
+                        .On("upvote", async(e)    => await VotePasta(e, true))
+                        .On("love", async(e)      => await VotePasta(e, true))
+                        .On("<3", async(e)        => await VotePasta(e, true))
+                        .On("downvote", async(e)  => await VotePasta(e, false))
+                        .On("</3", async(e)       => await VotePasta(e, false))
+                        .On("hate", async(e)      => await VotePasta(e, false))
+                        .On("mine", async(e)      => await MyPasta(e))
+                        .On("my", async(e)        => await MyPasta(e))
                 };
             });
 
@@ -88,14 +88,14 @@ namespace Miki.Modules
             });
         }
 
-        private async Task MyPasta(IDiscordMessage e, string args)
+        private async Task MyPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
             int page = 0;
-            if (!string.IsNullOrWhiteSpace(args))
+            if (!string.IsNullOrWhiteSpace(e.arguments))
             {
-                if (int.TryParse(args, out page))
+                if (int.TryParse(e.arguments, out page))
                 {
                     page -= 1;
                 }
@@ -116,7 +116,7 @@ namespace Miki.Modules
 
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
-                    IDiscordEmbed embed = e.CreateEmbed();
+                    IDiscordEmbed embed = Utils.Embed;
                     embed.Title = e.Author.Username + "'s pastas";
                     embed.Description = resultString;
                     embed.CreateFooter();
@@ -129,9 +129,9 @@ namespace Miki.Modules
             }
         }
 
-        private async Task CreatePasta(IDiscordMessage e, string args)
+        private async Task CreatePasta(EventContext e)
         {
-            List<string> arguments = args.Split(' ').ToList();
+            List<string> arguments = e.arguments.Split(' ').ToList();
 
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -169,11 +169,11 @@ namespace Miki.Modules
             }
         }
 
-        private async Task DeletePasta(IDiscordMessage e, string v)
+        private async Task DeletePasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-            if (string.IsNullOrWhiteSpace(v))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 await Utils.ErrorEmbed(locale, "Please specify which pasta you'd like to remove.")
                     .SendToChannel(e.Channel.Id);
@@ -184,7 +184,7 @@ namespace Miki.Modules
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
-                GlobalPasta pasta = await context.Pastas.FindAsync(v);
+                GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
                 if(pasta == null)
                 {
@@ -196,12 +196,12 @@ namespace Miki.Modules
                 {
                     context.Pastas.Remove(pasta);
 
-                    List<PastaVote> votes = context.Votes.AsNoTracking().Where(p => p.Id.Equals(v)).ToList();
+                    List<PastaVote> votes = context.Votes.AsNoTracking().Where(p => p.Id.Equals(e.arguments)).ToList();
                     context.Votes.RemoveRange(votes);
 
                     await context.SaveChangesAsync();
 
-                    await e.Channel.SendMessage(Utils.SuccessEmbed(locale, $"Deleted pasta `{v}`!"));
+                    await e.Channel.SendMessage(Utils.SuccessEmbed(locale, $"Deleted pasta `{e.arguments}`!"));
                     return;
                 }
                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta is not yours!"));
@@ -209,18 +209,18 @@ namespace Miki.Modules
             }
         }
 
-        private async Task EditPasta(IDiscordMessage e, string content)
+        private async Task EditPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 await Utils.ErrorEmbed(locale, "Please specify which pasta you'd like to edit.")
                     .SendToChannel(e.Channel.Id);
                 return;
             }
 
-            if(content.Split(' ').Length == 1)
+            if(e.arguments.Split(' ').Length == 1)
             {
                 await Utils.ErrorEmbed(locale, "Please specify the content you'd like it to be edited to.")
                     .SendToChannel(e.Channel.Id);
@@ -231,14 +231,14 @@ namespace Miki.Modules
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
-                string tag = content.Split(' ')[0];
-                content = content.Substring(tag.Length + 1);
+                string tag = e.arguments.Split(' ')[0];
+                e.arguments = e.arguments.Substring(tag.Length + 1);
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
                 if (p.CreatorId == e.Author.Id || Bot.instance.Events.Developers.Contains(e.Author.Id))
                 {
-                    p.Text = content;
+                    p.Text = e.arguments;
                     await context.SaveChangesAsync();
                     await e.Channel.SendMessage($"Edited `{tag}`!");
                 }
@@ -249,17 +249,17 @@ namespace Miki.Modules
             }
         }
 
-        private async Task GetPasta(IDiscordMessage e, string args)
+        private async Task GetPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-            if (string.IsNullOrWhiteSpace(args))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Please enter one of the tags, or commands."));
                 return;
             }
 
-            List<string> arguments = args.Split(' ').ToList();
+            List<string> arguments = e.arguments.Split(' ').ToList();
             
             using (var context = MikiContext.CreateNoCache())
             {
@@ -268,7 +268,7 @@ namespace Miki.Modules
                 GlobalPasta pasta = await context.Pastas.FindAsync(arguments[0]);
                 if (pasta == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"No pasta found with the name `{args}`"));
+                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"No pasta found with the name `{e.arguments}`"));
                     return;
                 }
                 pasta.TimesUsed++;
@@ -277,11 +277,11 @@ namespace Miki.Modules
             }
         }
 
-        private async Task IdentifyPasta(IDiscordMessage e, string args)
+        private async Task IdentifyPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-            if (string.IsNullOrWhiteSpace(args))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 await Utils.ErrorEmbed(locale, "Please state which pasta you'd like to identify.")
                     .SendToChannel(e.Channel.Id);
@@ -294,7 +294,7 @@ namespace Miki.Modules
 
                 try
                 {
-                    GlobalPasta pasta = await context.Pastas.FindAsync(args);
+                    GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
                     if(pasta == null)
                     {
@@ -348,18 +348,18 @@ namespace Miki.Modules
             }
         }
 
-        private async Task SearchPasta(IDiscordMessage e, string args)
+        private async Task SearchPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-            if(string.IsNullOrWhiteSpace(args))
+            if(string.IsNullOrWhiteSpace(e.arguments))
             {
                 await Utils.ErrorEmbed(locale, "Please specify the terms you want to search.")
                     .SendToChannel(e.Channel.Id);
                 return;
             }
 
-            List<string> arguments = args.Split(' ').ToList();
+            List<string> arguments = e.arguments.Split(' ').ToList();
             int page = 0;         
 
             if (arguments.Count > 1)
@@ -382,7 +382,7 @@ namespace Miki.Modules
                         
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
-                    IDiscordEmbed embed = e.CreateEmbed();
+                    IDiscordEmbed embed = Utils.Embed;
                     embed.Title = "🔎 I found these pastas";
                     embed.Description = resultString;
                     embed.CreateFooter();
@@ -395,7 +395,7 @@ namespace Miki.Modules
             }
         }
 
-        private async Task VotePasta(IDiscordMessage e, string tag, bool vote)
+        private async Task VotePasta(EventContext e, bool vote)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -403,7 +403,7 @@ namespace Miki.Modules
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
-                var pasta = await context.Pastas.FindAsync(tag);
+                var pasta = await context.Pastas.FindAsync(e.arguments);
 
                 if(pasta == null)
                 {
@@ -413,11 +413,11 @@ namespace Miki.Modules
 
                 long authorId = e.Author.Id.ToDbLong();
 
-                var voteObject = context.Votes.AsNoTracking().Where(q => q.Id == tag && q.__UserId == authorId).FirstOrDefault();
+                var voteObject = context.Votes.AsNoTracking().Where(q => q.Id == e.arguments && q.__UserId == authorId).FirstOrDefault();
 
                 if (voteObject == null)
                 {
-                    voteObject = new PastaVote() { Id = tag, __UserId = e.Author.Id.ToDbLong(), PositiveVote = vote };
+                    voteObject = new PastaVote() { Id = e.arguments, __UserId = e.Author.Id.ToDbLong(), PositiveVote = vote };
                     context.Votes.Add(voteObject);
                 }
                 else

@@ -115,7 +115,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "8ball";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             Locale l = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -126,7 +126,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "bird";
-                          x.ProcessCommand = async (e, args) =>
+                          x.ProcessCommand = async (e) =>
                           {
                               string[] bird = new string[]
                               {
@@ -159,7 +159,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "cat";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             WebClient c = new WebClient();
                             byte[] b = c.DownloadData("http://random.cat/meow");
@@ -171,7 +171,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "compliment";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string[] I_LIKE = new string[]
                             {
@@ -213,7 +213,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "cage";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             await e.Channel.SendMessage("http://www.placecage.com/c/" + Global.random.Next(100, 1500) + "/" + Global.random.Next(100, 1500));
                         };
@@ -222,11 +222,11 @@ namespace Miki.Modules
                     {
                         x.Name = "ctb";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.AttachFiles };
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using (WebClient webClient = new WebClient())
                             {
-                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + args + "&mode=2&countryrank");
+                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=2&countryrank");
 
                                 using (MemoryStream mem = new MemoryStream(data))
                                 {
@@ -238,7 +238,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "dog";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string[] dog = new string[]
                             {
@@ -279,13 +279,13 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "gif";
-                        x.ProcessCommand = async(e, args) =>
+                        x.ProcessCommand = async(e) =>
                         {
-                            if (string.IsNullOrEmpty(args)) return;
+                            if (string.IsNullOrEmpty(e.arguments)) return;
 
                             var client = new MashapeClient(Global.ImgurClientId, Global.ImgurKey);
                             var endpoint = new GalleryEndpoint(client);
-                            var images = await endpoint.SearchGalleryAsync($"title:{args} ext:gif");
+                            var images = await endpoint.SearchGalleryAsync($"title:{e.arguments} ext:gif");
                             List<IGalleryImage> actualImages = new List<IGalleryImage>();
                             foreach(IGalleryItem item in images)
                             {
@@ -310,13 +310,13 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "img";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
-                            if (string.IsNullOrEmpty(args)) return;
+                            if (string.IsNullOrEmpty(e.arguments)) return;
 
                             var client = new MashapeClient(Global.ImgurClientId, Global.ImgurKey);
                             var endpoint = new GalleryEndpoint(client);
-                            var images = await endpoint.SearchGalleryAsync($"title:{args}");
+                            var images = await endpoint.SearchGalleryAsync($"title:{e.arguments}");
                             List<IGalleryImage> actualImages = new List<IGalleryImage>();
                             foreach(IGalleryItem item in images)
                             {
@@ -341,7 +341,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "lewd";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string[] lewd = new string[]
                             {
@@ -372,11 +372,11 @@ namespace Miki.Modules
                     {
                         x.Name = "mania";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.AttachFiles };
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using (WebClient webClient = new WebClient())
                             {
-                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + args + "&mode=3&countryrank");
+                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=3&countryrank");
 
                                 using (MemoryStream mem = new MemoryStream(data))
                                 {
@@ -389,11 +389,11 @@ namespace Miki.Modules
                     {
                         x.Name = "osu";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.AttachFiles };
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using (WebClient webClient = new WebClient())
                             {
-                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + args + "&countryrank"); 
+                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&countryrank"); 
 
                                 using (MemoryStream mem = new MemoryStream(data))
                                 {
@@ -405,14 +405,14 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "pick";
-                      x.ProcessCommand = async (e, args) =>
+                      x.ProcessCommand = async (e) =>
                       {
-                          if (string.IsNullOrWhiteSpace(args))
+                          if (string.IsNullOrWhiteSpace(e.arguments))
                           {
                               await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.ErrorPickNoArgs));
                               return;
                           }
-                          string[] choices = args.Split(',');
+                          string[] choices = e.arguments.Split(',');
 
                           Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
                           await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[]{ e.Author.Username, choices[Global.random.Next(0, choices.Length)] }));
@@ -421,7 +421,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "pun";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(puns[Global.random.Next(0, puns.Length)]));
                         };
@@ -429,15 +429,15 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "roll";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string rollCalc = "";
                             string amount = "";
                             int rollAmount = 0;
 
-                            if (args != "")
+                            if (e.arguments != "")
                             {
-                                amount = args.Split(' ')[0];
+                                amount = e.arguments.Split(' ')[0];
 
                                 if (amount.Split('d').Length > 1)
                                 {
@@ -479,19 +479,19 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                            x.Name = "roulette";
-                           x.ProcessCommand = async (e, args) =>
+                           x.ProcessCommand = async (e) =>
                            {
                                IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
 
                                Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-                               if (e.Content.Split(' ').Length == 1)
+                               if (e.message.Content.Split(' ').Length == 1)
                                {
                                    await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessageNoArg, new object[]{ "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
                                }
                                else
                                {
-                                   await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessage, new object[]{ args,  "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
+                                   await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessage, new object[]{ e.arguments,  "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
                                }
                            };
                     }),
@@ -501,11 +501,11 @@ namespace Miki.Modules
                     {
                         x.Name = "taiko";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.AttachFiles };
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using (WebClient webClient = new WebClient())
                             {
-                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + args + "&mode=1&countryrank");
+                                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=1&countryrank");
 
                                 using (MemoryStream mem = new MemoryStream(data))
                                 {
@@ -517,7 +517,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "slots";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             int moneyBet = 0;
 
@@ -526,9 +526,9 @@ namespace Miki.Modules
                                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                                 Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-                                if(!string.IsNullOrWhiteSpace(args))
+                                if(!string.IsNullOrWhiteSpace(e.arguments))
                                 {
-                                    moneyBet = int.Parse(args);
+                                    moneyBet = int.Parse(e.arguments);
 
                                     if(moneyBet > u.Currency)
                                     {
@@ -668,9 +668,9 @@ namespace Miki.Modules
         }
 
         //example: >remind do the dishes in 120 seconds
-        public async Task DoRemind(IDiscordMessage msg, string args)
+        public async Task DoRemind(EventContext e)
         {
-            List<string> arguments = args.Split(' ').ToList();
+            List<string> arguments = e.arguments.Split(' ').ToList();
             int splitIndex = 0;
 
             for(int i = 0; i < arguments.Count; i++)
@@ -734,66 +734,66 @@ namespace Miki.Modules
                 .SetTitle("👌 OK")
                 .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
-                .SendToChannel(msg.Channel.Id);
+                .SendToChannel(e.Channel.Id);
 
             await Task.Delay(timeUntilReminder.Milliseconds);
 
             await Utils.Embed
                 .SetTitle("Reminder")
                 .SetDescription($"You asked me to remind you to `{reminderText}")
-                .SendToUser(msg.Author.Id);
+                .SendToUser(e.Author.Id);
         }
 
-        public async Task DoSafe(IDiscordMessage msg, string args)
+        public async Task DoSafe(EventContext e)
         {
-            Locale locale = Locale.GetEntity(msg.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
             IPost s = null;
-            if (args.ToLower().StartsWith("use"))
+            if (e.arguments.ToLower().StartsWith("use"))
             {
-                string[] a = args.Split(' ');
-                args = args.Substring(a[0].Length);
+                string[] a = e.arguments.Split(' ');
+                e.arguments = e.arguments.Substring(a[0].Length);
                 switch (a[0].Split(':')[1].ToLower())
                 {
                     case "safebooru":
                         {
-                            s = SafebooruPost.Create(args, ImageRating.SAFE);
+                            s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
                     case "gelbooru":
                         {
-                            s = GelbooruPost.Create(args, ImageRating.SAFE);
+                            s = GelbooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
                     case "konachan":
                         {
-                            s = KonachanPost.Create(args, ImageRating.SAFE);
+                            s = KonachanPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
                     case "e621":
                         {
-                            s = E621Post.Create(args, ImageRating.SAFE);
+                            s = E621Post.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
                     default:
                         {
-                            await msg.Channel.SendMessage("I do not support this image host :(");
+                            await e.Channel.SendMessage("I do not support this image host :(");
                         }
                         break;
                 }
             }
             else
             {
-                s = SafebooruPost.Create(args, ImageRating.SAFE);
+                s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
             }
 
             if (s == null)
             {
-                await msg.Channel.SendMessage(Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!"));
+                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!"));
                 return;
             }
 
-            await msg.Channel.SendMessage(s.ImageUrl);
+            await e.Channel.SendMessage(s.ImageUrl);
         }
     }
 }

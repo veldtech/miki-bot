@@ -24,7 +24,7 @@ namespace Miki.Modules
                             "Consfuse your opponents with the power of cuties! <3",
                             "Couldn't interrogate suspect!! '0'?!",
                             ">confused");
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string[] images = new string[]
                             {
@@ -77,7 +77,7 @@ namespace Miki.Modules
                             "NO, no pouts for you!!! baka",
                             ">pout");
 
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             string[] images = new string[]
                             {
@@ -107,7 +107,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                     x.Name = "smug";
-                    x.ProcessCommand = async (e, args) =>
+                    x.ProcessCommand = async (e) =>
                     {
                         string[] images = new string[]
                         {
