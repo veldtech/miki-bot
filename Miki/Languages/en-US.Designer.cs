@@ -115,6 +115,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Marry your soulmate &lt;3.
+        /// </summary>
+        internal static string miki_command_description_marry {
+            get {
+                return ResourceManager.GetString("miki_command_description_marry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save and load lines of text..
         /// </summary>
         internal static string miki_command_description_pasta {
@@ -205,6 +214,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_leaderboards {
             get {
                 return ResourceManager.GetString("miki_command_usage_leaderboards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;marry @user.
+        /// </summary>
+        internal static string miki_command_usage_marry {
+            get {
+                return ResourceManager.GetString("miki_command_usage_marry", resourceCulture);
             }
         }
         
@@ -472,6 +490,51 @@ namespace Miki.Languages {
         internal static string miki_module_accounts_leaderboards_mekos_header {
             get {
                 return ResourceManager.GetString("miki_module_accounts_leaderboards_mekos_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re already proposing/married to this person..
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_exists {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please mention the person you&apos;re proposing to!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_no_mention {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_no_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You or the other person doesn&apos;t have a miki account yet. Make them talk more!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_null {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has proposed to {1}!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_text {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you accept?.
+        /// </summary>
+        internal static string miki_module_accounts_marry_text2 {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_text2", resourceCulture);
             }
         }
         
@@ -2164,6 +2227,15 @@ namespace Miki.Languages {
         internal static string miki_success_message_generic {
             get {
                 return ResourceManager.GetString("miki_success_message_generic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mention.
+        /// </summary>
+        internal static string miki_terms_mention {
+            get {
+                return ResourceManager.GetString("miki_terms_mention", resourceCulture);
             }
         }
     }

@@ -231,7 +231,7 @@ namespace Miki.Modules
                         x.Name = "divorce";
                         x.ProcessCommand = async (e, args) =>
                         {
-                            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+                            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                             if(e.MentionedUserIds.Count == 0)
                             {
@@ -324,18 +324,17 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "marry";
-                        x.Metadata.description = "Marry your soulmate <3";
-                        x.Metadata.errorMessage = "You're already proposing/married to this person.";
-                        x.Metadata.usage.Add(">marry [@user]");
+
                         x.ProcessCommand = async (e, args) =>
                         {
+                            Locale locale = Locale.GetEntity(e.Channel.Id);
+
                             if(e.MentionedUserIds.Count == 0)
                             {
-                                await e.Channel.SendMessage("Please mention the person you're proposing to!!");
+                                await e.Channel.SendMessage(locale.GetString("miki_module_accounts_marry_error_no_mention"));
                                 return;
                             }
 
-                            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
                             using(MikiContext context = new MikiContext())
                             {
@@ -346,25 +345,29 @@ namespace Miki.Modules
 
                                 if(currentUser == null || mentionedPerson == null)
                                 {
-                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "You or the other person doesn't have a miki account yet. Make them talk more!! >v<"));
+                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "miki_module_accounts_marry_error_null"));
                                     return;
                                 }
 
                                 if(mentionedPerson.Id == currentUser.Id)
                                 {
-                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "You cannot marry yourself!"));
+                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_null")));
                                     return;
                                 }
 
                                 if(await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
                                 {
-                                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, x.Metadata.errorMessage));
-                                        return;
+                                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_exists")));
+                                    return;
                                 }
 
                                 if(await Marriage.ProposeAsync(context, currentUser.user_id, mentionedPerson.user_id))
                                 {
-                                    await e.Channel.SendMessage($"💍 **{ e.Author.Username }** has proposed to **{ user.Username }**! 💍\n\n⛪  {user.Mention}, Do you accept ? ⛪\n\n✅ **>acceptmarriage [@mention]**\n❌ **>declinemarriage [@mention]**");
+                                    await e.Channel.SendMessage($"💍 " + 
+                                        locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**") +
+                                        " 💍\n\n⛪ " + user.Mention + " " +
+                                        locale.GetString("miki_module_accounts_marry_text2") +
+                                        $" ⛪\n\n✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
                                 }
                             }
                         };
