@@ -264,7 +264,7 @@ namespace Miki.Modules
             CommandHandler c = new CommandHandlerBuilder()
                 .AddPrefix(">")
                 .DisposeInSeconds(20)
-                .SetOwner(message.Author.Id)
+                .SetOwner(message.message)
                 .AddCommand(
                     new RuntimeCommandEvent("yes")
                         .Default(async (e) => 
@@ -281,7 +281,7 @@ namespace Miki.Modules
                         }))
                 .Build();
 
-            Bot.instance.Events.AddPrivateCommandHandler(message.Author.Id, c);
+            Bot.instance.Events.AddPrivateCommandHandler(message.message, c);
             await message.Channel.SendMessage("OK!");
         }
     }

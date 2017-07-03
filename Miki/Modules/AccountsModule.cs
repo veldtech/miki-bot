@@ -644,16 +644,12 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "buymarriageslot";
-                        x.Accessibility = EventAccessibility.DEVELOPERONLY;
                         x.Metadata = new EventMetadata(
                             "Buy more marriage slots here, the price increases with 2500 for every slot, and caps at 10 slots.",
                             "Purchase failed",
                             ">buymarriageslot");
                         x.ProcessCommand = async (e) =>
                         {
-                            await e.Channel.SendMessage("This command is disabled because we got IP banned for it ;w;''\n\ncheck back soon!");
-                            return; 
-
                             using(var context = new MikiContext())
                             {
                                 User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -673,7 +669,7 @@ namespace Miki.Modules
 
                                     if(limit == 15)
                                     {
-                                        embed.AddField(f => { f.Name="Pro tip!"; f.Value="Donators get 5 more slots!"; });
+                                        embed.AddField("Pro tip!", "Donators get 5 more slots!");
                                     }
 
                                     embed.Color = new IA.SDK.Color(1f, 0.6f, 0.4f);
@@ -683,29 +679,41 @@ namespace Miki.Modules
 
                                 int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
-                                embed.Description = $"Do you want to buy a marriage slot for **{costForUpgrade}**?\n\nPress the checkmark to confirm.";
+                                embed.Description = $"Do you want to buy a marriage slot for **{costForUpgrade}**?\n\nType `>yes` to confirm.";
                                 embed.Color = new IA.SDK.Color(0.4f, 0.6f, 1f);
+                                await e.Channel.SendMessage(embed);
 
-                                await e.Channel.SendOption(embed, e.Author,
-                                    new Option("☑", async () => {
-                                        if(user.Currency >= costForUpgrade)
-                                        {
-                                            user.MarriageSlots++;
-                                            user.Currency-=costForUpgrade;
-                                            IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                            notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                                            notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
-                                            await e.Channel.SendMessage(notEnoughMekosErrorEmbed);
-                                            await context.SaveChangesAsync();
-                                        }
-                                        else
-                                        {
-                                            IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                            notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-                                            notEnoughMekosErrorEmbed.Description = "You do not have enough mekos!";
-                                            await e.Channel.SendMessage(notEnoughMekosErrorEmbed);
-                                        }
-                                    }));
+                                CommandHandler c = new CommandHandlerBuilder()
+                                    .AddPrefix(">")
+                                    .DisposeInSeconds(20)
+                                    .SetOwner(e.message)
+                                    .AddCommand(
+                                        new RuntimeCommandEvent("yes")
+                                            .Default(async (cont) =>
+                                            {
+                                                if(user.Currency >= costForUpgrade)
+                                                {
+                                                    user.MarriageSlots++;
+                                                    user.Currency -= costForUpgrade;
+                                                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
+                                                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
+                                                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
+                                                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                                                    await context.SaveChangesAsync();
+                                                    cont.commandHandler.RequestDispose();
+                                                }
+                                                else
+                                                {
+                                                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
+                                                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
+                                                    notEnoughMekosErrorEmbed.Description = $"You do not have enough mekos! You need {costForUpgrade - user.Currency} more mekos!";
+                                                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                                                    cont.commandHandler.RequestDispose();
+                                                }
+                                            }))
+                                            .Build();
+
+                                Bot.instance.Events.AddPrivateCommandHandler(e.message, c);
                             }
                         };
                     }),
@@ -1329,3 +1337,4 @@ namespace Miki.Modules
         Currency
     }
 }
+ 
