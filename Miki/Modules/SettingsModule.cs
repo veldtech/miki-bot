@@ -30,7 +30,7 @@ namespace Miki.Modules
                             "Toggle Miki's ability to PM you.",
                             "I couldn't toggle that for you!",
                             ">togglepm");
-                        x.ProcessCommand = async (e, arg) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -60,7 +60,7 @@ namespace Miki.Modules
                         x.Name = "toggleguildnotifications";
                         x.Aliases = new string[]{"tgn"};
                         x.Accessibility = EventAccessibility.ADMINONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -88,7 +88,7 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "toggleerrors";
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
@@ -117,14 +117,14 @@ namespace Miki.Modules
                     {
                         x.Name = "setlocale";
                         x.Accessibility = EventAccessibility.ADMINONLY;
-                        x.ProcessCommand = async (e, args) =>
+                        x.ProcessCommand = async (e) =>
                         {
                             using(var context = new MikiContext())
                             {
                                 ChannelLanguage language = await context.Languages.FindAsync(e.Guild.Id.ToDbLong());
                                 Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
-                                if(!Locale.Locales.ContainsKey(args.ToLower()))
+                                if(!Locale.Locales.ContainsKey(e.arguments.ToLower()))
                                 {
                                     await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "{0} is not a valid language. use `>help setlocale` to see all of the memes xd"));
                                     return;
@@ -132,10 +132,10 @@ namespace Miki.Modules
 
                                 if(language == null)
                                 {
-                                    language = context.Languages.Add(new ChannelLanguage(){ EntityId = e.Guild.Id.ToDbLong(), Language = args.ToLower() });
+                                    language = context.Languages.Add(new ChannelLanguage(){ EntityId = e.Guild.Id.ToDbLong(), Language = e.arguments.ToLower() });
                                 }
 
-                                language.Language = args.ToLower();
+                                language.Language = e.arguments.ToLower();
                                 await e.Channel.SendMessage(Utils.SuccessEmbed(locale, "Set locale to `{0}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk."));
                                 await context.SaveChangesAsync();
                             }
@@ -147,12 +147,12 @@ namespace Miki.Modules
             await new RuntimeModule(module_settings).InstallAsync(bot);
         }
 
-        public async Task DoListLocale(IDiscordMessage msg, string args)
+        public async Task DoListLocale(EventContext e)
         {
             await Utils.Embed
                 .SetTitle("Available locales")
                 .SetDescription("`" + string.Join("`, `", Locale.Locales.Keys) + "`")
-                .SendToChannel(msg.Channel.Id);
+                .SendToChannel(e.Channel.Id);
         }
     }
 }

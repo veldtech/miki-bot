@@ -22,6 +22,7 @@ namespace Miki
             await new PatreonModule().LoadEvents(bot);
             await new ReactionsModule().LoadEvents(bot);
             await new ServerCountModule().LoadEvents(bot);
+            await new SettingsModule().LoadEvents(bot);
         }
     }
 }

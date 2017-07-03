@@ -419,6 +419,7 @@
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
+    <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\WelcomeMessages.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="API\Rocket League\Objects\RocketLeagueOptions.cs" />

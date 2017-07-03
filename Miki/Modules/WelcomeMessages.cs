@@ -82,26 +82,26 @@ namespace Miki.Modules
 
                 module.UserJoinGuild = async (guild, user) =>
                 {
-                    Tuple<string, IDiscordMessageChannel> data = await GetMessage(guild.Id, EventMessageType.JOINSERVER, user);
+                    List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
 
                     if (data == null)
                     {
                         return;
                     }
 
-                    await data.Item2.SendMessage(data.Item1);
+                    data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
                 };
 
                 module.UserLeaveGuild = async (guild, user) =>
                 {
-                    Tuple<string, IDiscordMessageChannel> data = await GetMessage(guild.Id, EventMessageType.LEAVESERVER, user);
+                    List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
 
                     if (data == null)
                     {
                         return;
                     }
 
-                    await data.Item2.SendMessage(data.Item1);
+                    data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
                 };
             });
 
@@ -123,38 +123,42 @@ namespace Miki.Modules
             return true;
         }
 
-        public async Task<Tuple<string, IDiscordMessageChannel>> GetMessage(ulong id, EventMessageType type, IDiscordUser user)
+        public async Task<List<Tuple<string, IDiscordMessageChannel>>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-            long guildId = id.ToDbLong();
+            long guildId = guild.Id.ToDbLong();
+            List<IDiscordMessageChannel> channels = await guild.GetChannels();
+            List<Tuple<string, IDiscordMessageChannel>> output = new List<Tuple<string, IDiscordMessageChannel>>();
 
             using (var context = new MikiContext())
             {
-                EventMessage messageObject = await context.EventMessages.FindAsync(guildId, (int)type);
-
-                if(messageObject == null)
+                foreach (IDiscordMessageChannel c in channels)
                 {
-                    return null;
+                    EventMessage messageObject = await context.EventMessages.FindAsync(c.Id.ToDbLong(), (int)type);
+
+                    if (messageObject == null)
+                    {
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(messageObject.Message))
+                    {
+                        continue;
+                    }
+
+                    string modifiedMessage = messageObject.Message;
+
+                    modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
+                    modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
+
+                    modifiedMessage = modifiedMessage.Replace("-sc", user.Guild.UserCount.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
+
+                    modifiedMessage = modifiedMessage.Replace("-om", user.Guild.Owner.Mention);
+                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty(user.Guild.Owner.Nickname) ? user.Guild.Owner.Username : user.Guild.Owner.Nickname);
+
+                    output.Add(new Tuple<string, IDiscordMessageChannel>(modifiedMessage, c));
                 }
-
-                IDiscordMessageChannel channel = (await user.Guild.GetChannels()).Find(c => c.Id.ToDbLong() == messageObject.ChannelId); 
-
-                if (channel == null || string.IsNullOrEmpty(messageObject.Message))
-                {
-                    return null;
-                }
-
-                string modifiedMessage = messageObject.Message;
-
-                modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-                modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
-
-                modifiedMessage = modifiedMessage.Replace("-sc", user.Guild.UserCount.ToString());
-                modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
-
-                modifiedMessage = modifiedMessage.Replace("-om", user.Guild.Owner.Mention);
-                modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty(user.Guild.Owner.Nickname) ? user.Guild.Owner.Username : user.Guild.Owner.Nickname);
-
-                return new Tuple<string, IDiscordMessageChannel>(modifiedMessage, channel);
+                return output;
             }
         }
     }
