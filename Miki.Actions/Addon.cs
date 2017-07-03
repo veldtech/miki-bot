@@ -31,7 +31,7 @@ namespace Miki.Actions
                                 ">cuddle", ">cuddle [@user]", ">cuddle my pillow"
                                 );
 
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -45,15 +45,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} cuddles with {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} cuddles with {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} cuddles with {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} cuddles with {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -70,7 +70,7 @@ namespace Miki.Actions
                                 "I-i couldn't glare to that cute face.. Sorry :c",
                                 ">glare", ">glare [@user]", ">glare at senpai");
 
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -89,15 +89,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} glares at {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} glares at {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} glares at {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} glares at {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -113,7 +113,7 @@ namespace Miki.Actions
                                 "up top, down low too slow! High five your friends with this cool command",
                                 "Couldn't high five.",
                                 ">highfive", ">highfive [@user]", ">highfive this melon");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                  string[] images = new string[]
                                 {
@@ -131,15 +131,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} high fives at {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} high fives at {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} high fives at {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} high fives at {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -155,7 +155,7 @@ namespace Miki.Actions
                                 "hugs are great, spread hugs with this >hug command!",
                                 "Couldn't hug ;-;",
                                 ">hug", ">hug [@user]", ">hug with my pillow");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -184,15 +184,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} hugs {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} hugs {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} hugs {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} hugs {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -208,7 +208,7 @@ namespace Miki.Actions
                                 "Is someone not paying attention to you? Poke them to force attention!",
                                 "Couldn't poke?",
                                 ">poke", ">poke [@user]", ">poke sleeping friend");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -225,15 +225,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} pokes {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} pokes {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} pokes {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} pokes {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -249,7 +249,7 @@ namespace Miki.Actions
                                 "Someone being a jerk? Punch them. hard.",
                                 "Couldn't punch this person, too stronk",
                                 ">punch", ">punch [@user]", ">punch that one jerk across the street");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -268,15 +268,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} punches {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} punches {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} punches {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} punches {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -293,7 +293,7 @@ namespace Miki.Actions
                                 "Couldn't kiss",
                                 ">kiss", ">kiss [@user]", ">kiss this cactus");
 
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -313,15 +313,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} kisses {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} kisses {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} kisses {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} kisses {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -336,7 +336,7 @@ namespace Miki.Actions
                             command.Metadata = new EventMetadata("Give that adorable person a pat <3",
                                 "Couldn't give pat",
                                 ">pat", ">pat [@user]", ">pat miki");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -351,15 +351,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} pats {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} pats {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} pats {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} pats {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -374,7 +374,7 @@ namespace Miki.Actions
                             command.Metadata = new EventMetadata("Pet a cutie",
                                 "Couldn't pet",
                                 ">pet", ">pet [@user]", ">pet miki");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                   string[] images = new string[]
                                 {
@@ -389,15 +389,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} pets {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} pets {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} pets {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} pets {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -412,7 +412,7 @@ namespace Miki.Actions
                             command.Metadata = new EventMetadata("Slap a baka",
                                 "Couldn't slap, they ran away...",
                                 ">slap", ">slap [@user]", ">slap IA");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                 string[] images = new string[]
                                 {
@@ -431,15 +431,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} slaps {e.RemoveMentions(args)}";
+                                    embed.Title = $"{e.Author.Username} slaps {e.message.RemoveMentions(e.arguments)}";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} slaps {e.Author.Username}";
+                                    embed.Title = $"{e.message.Bot.Username} slaps {e.Author.Username}";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
@@ -454,7 +454,7 @@ namespace Miki.Actions
                             command.Metadata = new EventMetadata("Make someone's day by giving someone cake!",
                                     "Failed to give cake",
                                     ">cake", ">cake [@user]", ">cake Fuzen");
-                            command.ProcessCommand = async (e, args) =>
+                            command.ProcessCommand = async (e) =>
                             {
                                   string[] images = new string[]
                                 {
@@ -469,15 +469,15 @@ namespace Miki.Actions
 
                                 Random r = new Random();
 
-                                IDiscordEmbed embed = e.CreateEmbed();
+                                IDiscordEmbed embed = e.message.CreateEmbed();
 
-                                if (args.Length > 0)
+                                if (e.arguments.Length > 0)
                                 {
-                                    embed.Title = $"{e.Author.Username} feeds {e.RemoveMentions(args)} cake";
+                                    embed.Title = $"{e.Author.Username} feeds {e.message.RemoveMentions(e.arguments)} cake";
                                 }
                                 else
                                 {
-                                    embed.Title = $"{e.Bot.Username} feeds {e.Author.Username} cake";
+                                    embed.Title = $"{e.message.Bot.Username} feeds {e.Author.Username} cake";
                                 }
                                 embed.ImageUrl = images[r.Next(0, images.Length)];
 
