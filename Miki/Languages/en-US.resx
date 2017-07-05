@@ -798,7 +798,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_command_usage_profile" xml:space="preserve">
     <value>&gt;profile
-&gt;profile &lt;userid&gt;</value>
+&gt;profile &lt;user id&gt;</value>
   </data>
   <data name="miki_command_usage_toggledm" xml:space="preserve">
     <value>&gt;toggledm</value>
@@ -897,8 +897,8 @@ Fuzzy</comment>
     <value>are you done being married? Divorce today!</value>
   </data>
   <data name="miki_command_usage_divorce" xml:space="preserve">
-    <value>&gt;divorce @user
-&gt;divorce user</value>
+    <value>&gt;divorce &lt;mention&gt;
+&gt;divorce &lt;name&gt;</value>
   </data>
   <data name="miki_module_general_help_aliases" xml:space="preserve">
     <value>Aliases</value>
@@ -916,7 +916,7 @@ Fuzzy</comment>
     <value>Marry your soulmate &lt;3</value>
   </data>
   <data name="miki_command_usage_marry" xml:space="preserve">
-    <value>&gt;marry @user</value>
+    <value>&gt;marry &lt;mention&gt;</value>
   </data>
   <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
     <value>You're already proposing/married to this person.</value>
@@ -954,5 +954,119 @@ Fuzzy</comment>
   </data>
   <data name="miki_marriage_null" xml:space="preserve">
     <value>This user hasn't proposed to you!</value>
+  </data>
+  <data name="miki_admin_cannot_disable" xml:space="preserve">
+    <value>{0} cannot be disabled</value>
+  </data>
+  <data name="miki_command_description_acceptmarriage" xml:space="preserve">
+    <value>Find your true love, accept a marriage proposal!</value>
+  </data>
+  <data name="miki_command_description_ban" xml:space="preserve">
+    <value>Get rid of troublemakers and never see them again!</value>
+  </data>
+  <data name="miki_command_description_buymarriageslot" xml:space="preserve">
+    <value>Buy more marriage slots here, the price increases with 2500 for every slot, and caps at 10 slots.</value>
+  </data>
+  <data name="miki_command_description_clean" xml:space="preserve">
+    <value>Clean up most recent messages from miki!</value>
+  </data>
+  <data name="miki_command_description_daily" xml:space="preserve">
+    <value>Get daily mekos!</value>
+  </data>
+  <data name="miki_command_description_declinemarriage" xml:space="preserve">
+    <value>Decline marriages you or the other person proposed. This command can be used to remove your own proposal! use * to decline all marriages.</value>
+  </data>
+  <data name="miki_command_description_give" xml:space="preserve">
+    <value>Give love and mekos to your friends... mostly mekos.</value>
+  </data>
+  <data name="miki_command_description_kick" xml:space="preserve">
+    <value>Kick baddies with the power of Miki!</value>
+  </data>
+  <data name="miki_command_description_mekos" xml:space="preserve">
+    <value>Show your mekos to the world!</value>
+  </data>
+  <data name="miki_command_description_prune" xml:space="preserve">
+    <value>Clean up your </value>
+  </data>
+  <data name="miki_command_description_setcommand" xml:space="preserve">
+    <value>Disable or enable commands with this command! (do not disable this command)</value>
+  </data>
+  <data name="miki_command_description_setmodule" xml:space="preserve">
+    <value>Disable or enable modules and all its background workers with this command!</value>
+  </data>
+  <data name="miki_command_description_setrolelevel" xml:space="preserve">
+    <value>Allow users to gain roles when they reach a certain level!</value>
+  </data>
+  <data name="miki_command_description_showproposals" xml:space="preserve">
+    <value>Show your open proposals with this handy command!</value>
+  </data>
+  <data name="miki_command_description_softban" xml:space="preserve">
+    <value>Softban a person who's being a rude dude</value>
+  </data>
+  <data name="miki_command_description_syncavatar" xml:space="preserve">
+    <value>Synchronise your avatar with the miki database!</value>
+  </data>
+  <data name="miki_command_description_syncname" xml:space="preserve">
+    <value>Synchronise your name with the miki database!</value>
+  </data>
+  <data name="miki_command_usage_acceptmarriage" xml:space="preserve">
+    <value>&gt;acceptmarriage &lt;mention&gt;</value>
+  </data>
+  <data name="miki_command_usage_ban" xml:space="preserve">
+    <value>&gt;ban &lt;mention&gt; [reason]
+&gt;ban &lt;user id&gt; [reason]</value>
+  </data>
+  <data name="miki_command_usage_buymarriageslot" xml:space="preserve">
+    <value>&gt;buymarriageslot</value>
+  </data>
+  <data name="miki_command_usage_clean" xml:space="preserve">
+    <value>&gt;clean</value>
+  </data>
+  <data name="miki_command_usage_daily" xml:space="preserve">
+    <value>&gt;daily</value>
+  </data>
+  <data name="miki_command_usage_declinemarriage" xml:space="preserve">
+    <value>&gt;declinemarriage &lt;mention&gt;
+&gt; declinemarriage *</value>
+  </data>
+  <data name="miki_command_usage_give" xml:space="preserve">
+    <value>&gt;give &lt;user&gt; &lt;amount&gt;</value>
+  </data>
+  <data name="miki_command_usage_kick" xml:space="preserve">
+    <value>&gt;kick &lt;mention&gt; [reason]
+&gt;kick &lt;user id&gt; [reason]</value>
+  </data>
+  <data name="miki_command_usage_mekos" xml:space="preserve">
+    <value>&gt;mekos</value>
+  </data>
+  <data name="miki_command_usage_prune" xml:space="preserve">
+    <value>&gt;prune [amount]</value>
+  </data>
+  <data name="miki_command_usage_setcommand" xml:space="preserve">
+    <value>&gt;setcommand &lt;command name&gt; 1 to enable
+&gt;setcommand &lt;command name&gt; 0 to disable</value>
+  </data>
+  <data name="miki_command_usage_setmodule" xml:space="preserve">
+    <value>&gt;setmodule &lt;module name&gt; 1 to enable
+&gt;setmodule &lt;module name&gt; 0 to disable</value>
+  </data>
+  <data name="miki_command_usage_setrolelevel" xml:space="preserve">
+    <value>&gt;setrolelevel &lt;role name&gt; &lt;level&gt;</value>
+  </data>
+  <data name="miki_command_usage_showproposals" xml:space="preserve">
+    <value>&gt;showproposals</value>
+  </data>
+  <data name="miki_command_usage_softban" xml:space="preserve">
+    <value>&gt;softban &lt;mention&gt; [reason]
+&gt;softban &lt;user id&gt; [reason]</value>
+  </data>
+  <data name="miki_command_usage_syncavatar" xml:space="preserve">
+    <value>&gt;syncavatar</value>
+  </data>
+  <data name="miki_command_usage_syncname" xml:space="preserve">
+    <value>&gt;syncname</value>
+  </data>
+  <data name="miki_command_usage_toggleguildnotifications" xml:space="preserve">
+    <value>&gt;toggleguildnotifications</value>
   </data>
 </root>
