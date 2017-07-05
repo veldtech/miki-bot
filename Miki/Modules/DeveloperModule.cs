@@ -95,6 +95,9 @@ namespace Miki.Modules
                             }
                         };
                     }),
+                    new RuntimeCommandEvent("setmekos")
+                        .SetAccessibility(EventAccessibility.DEVELOPERONLY)
+                        .Default(DoSetMekos),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "setgame";
@@ -283,6 +286,20 @@ namespace Miki.Modules
 
             Bot.instance.Events.AddPrivateCommandHandler(message.message, c);
             await message.Channel.SendMessage("OK!");
+        }
+
+        private async Task DoSetMekos(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                User u = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
+                if (u == null)
+                {
+                    return;
+                }
+                u.Currency = int.Parse(e.arguments.Split(' ')[1]);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

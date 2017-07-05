@@ -142,14 +142,23 @@ namespace Miki.Modules
                                     {
                                         f.Name = locale.GetString("miki_generic_information");
                                         f.IsInline = true;
-                                        f.Value = "\n" + locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)) + "\n" + locale.GetString("miki_module_accounts_information_rank", rank);
+                                        f.Value = "\n" + 
+                                            locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)) 
+                                            + "\n" 
+                                            + locale.GetString("miki_module_accounts_information_rank", rank);
                                     });
+
+                                    int globalLevel = account.CalculateLevel(account.Total_Experience);
+                                    int globalRank = account.CalculateMaxExperience(account.Total_Experience);
 
                                     embed.AddField(f =>
                                     {
                                         f.Name = locale.GetString("miki_generic_global_information");
                                         f.IsInline = true;
-                                        f.Value = "\n" + locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(account.Total_Experience), account.Total_Experience, account.CalculateMaxExperience(account.Total_Experience)) + "\n" + locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank());
+                                        f.Value = "\n" + 
+                                        locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank)
+                                        + "\n"
+                                        + locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank());
                                     });
 
                                     embed.AddField(f =>
@@ -691,25 +700,7 @@ namespace Miki.Modules
                                         new RuntimeCommandEvent("yes")
                                             .Default(async (cont) =>
                                             {
-                                                if(user.Currency >= costForUpgrade)
-                                                {
-                                                    user.MarriageSlots++;
-                                                    user.Currency -= costForUpgrade;
-                                                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                                                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
-                                                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
-                                                    await context.SaveChangesAsync();
-                                                    cont.commandHandler.RequestDispose();
-                                                }
-                                                else
-                                                {
-                                                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                                                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-                                                    notEnoughMekosErrorEmbed.Description = $"You do not have enough mekos! You need {costForUpgrade - user.Currency} more mekos!";
-                                                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
-                                                    cont.commandHandler.RequestDispose();
-                                                }
+                                                await ConfirmBuyMarriageSlot(cont, costForUpgrade);
                                             }))
                                             .Build();
 
@@ -852,6 +843,34 @@ namespace Miki.Modules
             await new RuntimeModule(m).InstallAsync(bot);
 
             LoadAchievements();
+        }
+
+        private async Task ConfirmBuyMarriageSlot(EventContext cont, int costForUpgrade)
+        {
+            using (var context = new MikiContext())
+            {
+                User user = await context.Users.FindAsync(cont.Author.Id.ToDbLong());
+
+                if (user.Currency >= costForUpgrade)
+                {
+                    user.MarriageSlots++;
+                    user.Currency -= costForUpgrade;
+                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
+                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
+                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
+                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                    await context.SaveChangesAsync();
+                    cont.commandHandler.RequestDispose();
+                }
+                else
+                {
+                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
+                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
+                    notEnoughMekosErrorEmbed.Description = $"You do not have enough mekos! You need {costForUpgrade - user.Currency} more mekos!";
+                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                    cont.commandHandler.RequestDispose();
+                }
+            }
         }
 
         public void LoadAchievements()

@@ -5,6 +5,7 @@ using IA.SDK.Events;
 using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
 using Miki.Languages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,9 +75,6 @@ namespace Miki.Modules
                         x.Name = "softban";
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.BanMembers };
                         x.Accessibility = EventAccessibility.ADMINONLY;
-
-                        x.Metadata = new EventMetadata("Softban a person who's being a rude dude!", "I cannot softban this person!",
-                            ">softban [@user]", ">softban [@user] [reason]", ">softban [userid]", ">softban [userid] [reason]");
                         x.ProcessCommand = async(e) =>
                         {
                             List<string> arg = e.arguments.Split(' ').ToList();
@@ -161,7 +159,7 @@ namespace Miki.Modules
 
                             if(!command.CanBeDisabled)
                             {
-                                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} cannot be disabled"));
+                                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")));
                                 return;
                             }
 
@@ -172,7 +170,7 @@ namespace Miki.Modules
                                 }
                             }
                             await command.SetEnabled(e.Channel.Id, setValue);
-                            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?"Enabled":"Disabled") + $" {command.Name}"));
+                            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?locale.GetString("miki_generic_enabled"):locale.GetString("miki_generic_disabled")) + $" {command.Name}"));
                         };
                     }),
                     new RuntimeCommandEvent(x =>
@@ -205,7 +203,7 @@ namespace Miki.Modules
 
                             if(!m.CanBeDisabled && !setValue) 
                             {
-                                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} cannot be disabled"));
+                                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")));
                                 return;
                             }
 
@@ -217,17 +215,13 @@ namespace Miki.Modules
                                 }
                             }
                             await m.SetEnabled(e.Channel.Id, setValue);
-                            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?"Enabled":"Disabled") + $" {m.Name}"));
+                            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue)?locale.GetString("miki_generic_enabled"):locale.GetString("miki_generic_disabled")) + $" {m.Name}"));
                         };
                     }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "kick";
                         x.Accessibility = EventAccessibility.ADMINONLY;
-                        x.Metadata = new EventMetadata(
-                            "Kick baddies with the power of Miki!",
-                            "I do not have the permissions to kick this person :(",
-                            ">kick [@user]", ">kick [@user] [reason]", ">kick [userid]", ">kick [userid] [reason]");
                         x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.KickMembers };
                         x.ProcessCommand = async (e) =>
                         {
@@ -275,40 +269,39 @@ namespace Miki.Modules
                             await bannedUser.Kick();
                         };
                     }),
-                    new RuntimeCommandEvent(x =>
-                    {
-                        x.Name = "prune";
-                        x.GuildPermissions = new List<DiscordGuildPermission> { DiscordGuildPermission.ManageMessages };
-                        x.Accessibility = EventAccessibility.ADMINONLY;
-                        x.ProcessCommand = async (e) =>
-                        {
-                            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-                            IDiscordUser u = (await (e.Guild.GetUserAsync(bot.Client.GetShard(0).CurrentUser.Id)));
-                            if (!u.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
-                            {
-                                await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_error_no_access"));
-                                return;
-                            }
-
-                            string[] argsSplit = e.arguments.Split(' ');
-                            int amount = 100;
-                            if (!string.IsNullOrEmpty(argsSplit[0]))
-                            {
-                                amount = int.Parse(argsSplit[0]);
-                                if (e.message.MentionedUserIds.Count>0)
-                                {
-                                    await PruneAsync(e.message, amount, (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id);
-                                    return;
-                                }
-                            }
-                            await PruneAsync(e.message, amount);
-                        };
-                    })
+                    new RuntimeCommandEvent("prune")
+                        .SetAccessibility(EventAccessibility.ADMINONLY)
+                        .SetPermissions(DiscordGuildPermission.ManageMessages)
+                        .Default(DoPrune)
                 };
             });
 
             await module.InstallAsync(bot);
+        }
+
+        private async Task DoPrune(EventContext e)
+        {
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+
+            IDiscordUser u = (await (e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id)));
+            if (!u.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
+            {
+                await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_error_no_access"));
+                return;
+            }
+
+            string[] argsSplit = e.arguments.Split(' ');
+            int amount = 100;
+            if (!string.IsNullOrEmpty(argsSplit[0]))
+            {
+                amount = int.Parse(argsSplit[0]);
+                if (e.message.MentionedUserIds.Count > 0)
+                {
+                    await PruneAsync(e.message, amount, (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id);
+                    return;
+                }
+            }
+            await PruneAsync(e.message, amount);
         }
 
         public async Task PruneAsync(IDiscordMessage e, int amount)
@@ -326,7 +319,10 @@ namespace Miki.Modules
 
             for (int i = 0; i < amount; i++)
             {
-                deleteMessages.Add(messages.ElementAt(i));
+                if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
+                {
+                    deleteMessages.Add(messages.ElementAt(i));
+                }
             }
 
             if (deleteMessages.Count > 0)
@@ -357,7 +353,10 @@ namespace Miki.Modules
             {   
                 if (messages.ElementAt(i)?.Author.Id == target)
                 {
-                    deleteMessages.Add(messages[i]);
+                    if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
+                    {
+                        deleteMessages.Add(messages.ElementAt(i));
+                    }
                 }
             }
 

@@ -1,5 +1,6 @@
 ﻿using IA;
 using IA.SDK;
+using IA.SDK.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,19 @@ namespace Miki.Modules
 {
     class GamesModule
     {
-
-
         public async Task LoadEvents(Bot bot)
         {
             LoadBlackjack();
 
-            ModuleInstance i = new ModuleInstance(module =>
+            Module i = new Module(module =>
             {
-                module.name = "Games";
-                module.events = new List<CommandEvent>()
+                module.Name = "Games";
+                module.Events = new List<ICommandEvent>()
                 {
                     new CommandEvent(cmd =>
                     {
-                        cmd.name = "roulette";
-                        cmd.processCommand = (e, arg) =>
+                        cmd.Name = "roulette";
+                        cmd.ProcessCommand = async (e) =>
                         {
 
                         };
@@ -38,8 +37,6 @@ namespace Miki.Modules
             string mainText = "You have x points do you 'draw' or 'fold'";
             // draw => us drawing a new card.
             // fold => hey, lets get the dealers cards now. and see if we have lower points than the dealer.
-
-
 
         }
     }

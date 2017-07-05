@@ -59,5 +59,1782 @@ namespace Miki.Languages {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prueba tu suerte! Pregunta Miki especificas sobre los detalles de tu vida..
+        /// </summary>
+        internal static string miki_command_description_8ball {
+            get {
+                return ResourceManager.GetString("miki_command_description_8ball", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enseña informacion sobre el bot y su creador.
+        /// </summary>
+        internal static string miki_command_description_info {
+            get {
+                return ResourceManager.GetString("miki_command_description_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guarda y carga en certas lineas de texto.
+        /// </summary>
+        internal static string miki_command_description_pasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_pasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Habilitar el prefijo de tu servidor pro miki (opcion predeterminada: &gt;) a algo mas.
+        /// </summary>
+        internal static string miki_command_description_prefix {
+            get {
+                return ResourceManager.GetString("miki_command_description_prefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;8ball &lt;la pregunta&gt;.
+        /// </summary>
+        internal static string miki_command_usage_8ball {
+            get {
+                return ResourceManager.GetString("miki_command_usage_8ball", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;info.
+        /// </summary>
+        internal static string miki_command_usage_info {
+            get {
+                return ResourceManager.GetString("miki_command_usage_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pasta new &lt;palabra clave&gt; &lt;contenido de pasta&gt;
+        ///pasta + &lt;palabra clave&gt; &lt;contenido de pasta&gt;
+        ///pasta find &lt;palabra clave&gt;
+        ///pasta search &lt;palabra clave&gt;
+        ///pasta edit &lt;palabra clave&gt; &lt;contenido para editar&gt;
+        ///pasta change &lt;palabra clave&gt; &lt;contenido para editar&gt;
+        ///pasta who &lt;palabra clave&gt;
+        ///pasta whom &lt;palabra clave&gt;
+        ///pasta ? &lt;palabra clave&gt;
+        ///pasta upvote &lt;palabra clave&gt;
+        ///pasta &lt;3 &lt;palabra clave&gt;
+        ///pasta love &lt;palabra clave&gt;
+        ///pasta downvote &lt;palabra clave&gt;
+        ///pasta &lt;/3 &lt;palabra clave&gt;pasta hate &lt;palabra clave&gt;.
+        /// </summary>
+        internal static string miki_command_usage_pasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_pasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;prefijo ~.
+        /// </summary>
+        internal static string miki_command_usage_prefix {
+            get {
+                return ResourceManager.GetString("miki_command_usage_prefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Algo funcionó mal!.
+        /// </summary>
+        internal static string miki_error_message_generic {
+            get {
+                return ResourceManager.GetString("miki_error_message_generic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki ha encontrado una problema con su codigo. 
+        ///Manderemos su registro y instruciones por mensaje privado..
+        /// </summary>
+        internal static string miki_errors_enabled_message {
+            get {
+                return ResourceManager.GetString("miki_errors_enabled_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}s perfil global.
+        /// </summary>
+        internal static string miki_global_profile_user_header {
+            get {
+                return ResourceManager.GetString("miki_global_profile_user_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hola, soy **Miki**! A tu servicio! 
+        ///Intenta usar **&gt;help** para ver lo que yo puedo hacer! :notes:.
+        /// </summary>
+        internal static string miki_join_message {
+            get {
+                return ResourceManager.GetString("miki_join_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}s perfil local.
+        /// </summary>
+        internal static string miki_local_profile_user_header {
+            get {
+                return ResourceManager.GetString("miki_local_profile_user_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tienes mekos insufficientes.
+        /// </summary>
+        internal static string miki_mekos_insufficient {
+            get {
+                return ResourceManager.GetString("miki_mekos_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inhibilitado el c omando `{0}`!.
+        /// </summary>
+        internal static string miki_module_admin_disable_command {
+            get {
+                return ResourceManager.GetString("miki_module_admin_disable_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inhibilitado el modulo `{0}`!.
+        /// </summary>
+        internal static string miki_module_admin_disable_module {
+            get {
+                return ResourceManager.GetString("miki_module_admin_disable_module", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Habilitado el comando `{0}`!.
+        /// </summary>
+        internal static string miki_module_admin_enable_command {
+            get {
+                return ResourceManager.GetString("miki_module_admin_enable_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Habilitado el modulo `{0}`!.
+        /// </summary>
+        internal static string miki_module_admin_enable_module {
+            get {
+                return ResourceManager.GetString("miki_module_admin_enable_module", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modulo {0} es inhabilitado.
+        /// </summary>
+        internal static string miki_module_admin_error_module_disabled {
+            get {
+                return ResourceManager.GetString("miki_module_admin_error_module_disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 💁 Pateado por .
+        /// </summary>
+        internal static string miki_module_admin_kick_by {
+            get {
+                return ResourceManager.GetString("miki_module_admin_kick_by", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Has sido pateado de **{0}**!.
+        /// </summary>
+        internal static string miki_module_admin_kick_description {
+            get {
+                return ResourceManager.GetString("miki_module_admin_kick_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ⚠ Patada.
+        /// </summary>
+        internal static string miki_module_admin_kick_header {
+            get {
+                return ResourceManager.GetString("miki_module_admin_kick_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 💬 Razon.
+        /// </summary>
+        internal static string miki_module_admin_kick_reason {
+            get {
+                return ResourceManager.GetString("miki_module_admin_kick_reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No puedes borrar mas de 100 mensajes por comando..
+        /// </summary>
+        internal static string miki_module_admin_prune_error_max {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_error_max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No puedo borrar mensajes en esta canal ):.
+        /// </summary>
+        internal static string miki_module_admin_prune_error_no_access {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_error_no_access", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Se ha borrado {0} mensajes!.
+        /// </summary>
+        internal static string miki_module_admin_prune_success {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ✅ se ha borrado su mensaje de bienvenida.
+        /// </summary>
+        internal static string miki_module_eventmessages_delete_guildjoin {
+            get {
+                return ResourceManager.GetString("miki_module_eventmessages_delete_guildjoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ✅ nuevo mensaje de bienvenida cambiado a: `{0}`.
+        /// </summary>
+        internal static string miki_module_eventmessages_set_guildjoin {
+            get {
+                return ResourceManager.GetString("miki_module_eventmessages_set_guildjoin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No debas contar con esto.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_negative_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mi respuesta es no.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_negative_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mis fuentes dice que no.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_negative_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to La perspectiva no esté buena.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_negative_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lo dudo.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_negative_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Respuesta es confuso, trata otra vez.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_neutral_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pregunta mas después.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_neutral_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Es mejor no decirte ahora.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_neutral_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No puedo predecir ahora.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_neutral_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Te concentras y preguntas otra vez.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_neutral_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Es seguro.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Es decidamente así.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sin duda.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sí, definitivo.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puedes contar con ello.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muy probable.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_6 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perspectiva buena.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_7 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sí.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_8 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to los sigños dicen que sí.
+        /// </summary>
+        internal static string miki_module_fun_8ball_answer_positive_9 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_9", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🎱 {0}, tu pregunta ha sido contestado `{1}`.
+        /// </summary>
+        internal static string miki_module_fun_8ball_result {
+            get {
+                return ResourceManager.GetString("miki_module_fun_8ball_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to la parte bajo de sus labios.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to los angulos especiales que tus codos hacen.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_10 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_10", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to los hoyuelos de tus cachetes.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_11 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to tu cabello suave.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_12 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_12", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to el dedo mas pequeño de tu pie izquerdo.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to el dedo mas pequeño de tu pie derecho.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to el segundo pestaña de tu ojo izquerdo.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to la parte baja de tu barbilla.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to tu dedo raro en tu mano izquerdo.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_6 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to tu sonrisa adorable.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_7 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to tus ojos deslumbrante.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_8 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to tu dedo raro en tu mano derecho.
+        /// </summary>
+        internal static string miki_module_fun_compliment_body_9 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_body_9", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Me gusta.
+        /// </summary>
+        internal static string miki_module_fun_compliment_prefix_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_prefix_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yo amo.
+        /// </summary>
+        internal static string miki_module_fun_compliment_prefix_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_prefix_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yo adoro.
+        /// </summary>
+        internal static string miki_module_fun_compliment_prefix_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_prefix_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Me gusta mucho.
+        /// </summary>
+        internal static string miki_module_fun_compliment_prefix_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_prefix_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por alguna razon, me gusta.
+        /// </summary>
+        internal static string miki_module_fun_compliment_prefix_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_prefix_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mucho..
+        /// </summary>
+        internal static string miki_module_fun_compliment_suffix_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_suffix_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to un poco..
+        /// </summary>
+        internal static string miki_module_fun_compliment_suffix_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_suffix_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bastante..
+        /// </summary>
+        internal static string miki_module_fun_compliment_suffix_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_suffix_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mucho, eso es raro?.
+        /// </summary>
+        internal static string miki_module_fun_compliment_suffix_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_compliment_suffix_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No encontra ningunas imagenes en tu busca..
+        /// </summary>
+        internal static string miki_module_fun_image_error_no_image_found {
+            get {
+                return ResourceManager.GetString("miki_module_fun_image_error_no_image_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}, yo ha escogido `{1}`.
+        /// </summary>
+        internal static string miki_module_fun_pick {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No tengo nada de que escoge :( 
+        ///Utiliza comas (,) para separar seleciones .
+        /// </summary>
+        internal static string miki_module_fun_pick_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pick_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cuál es el vino más amargo? 
+        ///Vino mi suegra!
+        ///.
+        /// </summary>
+        internal static string miki_module_fun_pun_1 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un hombre va al circo en busca de empleo.
+        ///El director le pregunta:“¿Y usted qué sabe hacer?”
+        ///El hombre dice, “yo…imito a los pájaros.“ 
+        ///El director responde, “bueno… creo que no nos interesa, gracias.”
+        ///… y el hombre se fue volando..
+        /// </summary>
+        internal static string miki_module_fun_pun_10 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_10", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A: La nueva cocinera es un sol. 
+        ///B: ¿Cocina bien? 
+        ///A: No, lo quema todo..
+        /// </summary>
+        internal static string miki_module_fun_pun_11 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A: Padre, ¿qué puedo hacer por mis pecados?
+        ///B: Ora, hijo mío, ora. 
+        ///A: Las once y media, padre..
+        /// </summary>
+        internal static string miki_module_fun_pun_12 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_12", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cómo llama el vaquero a su hija? 
+        ///¡Hijaaaaaaaaaaaaaaaa! .
+        /// </summary>
+        internal static string miki_module_fun_pun_13 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_13", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Qué le dijo un techo a otro techo?
+        ///Te echo de menos..
+        /// </summary>
+        internal static string miki_module_fun_pun_14 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_14", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un pez pregunta a su amigo,
+        ///“¿Qué hace tu padre?” 
+        ///El otro dice: 
+        ///“Nada.”.
+        /// </summary>
+        internal static string miki_module_fun_pun_15 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un tipo y una mujer en la playa:
+        ///“Y usted, ¿no nada nada?” 
+        ///“No traje traje.”.
+        /// </summary>
+        internal static string miki_module_fun_pun_16 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cuántas estrellas hay en el cielo?
+        ///Cincuenta.
+        /// </summary>
+        internal static string miki_module_fun_pun_17 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_17", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cómo se queda un mago después de comer?
+        ///Magordito....
+        /// </summary>
+        internal static string miki_module_fun_pun_18 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_18", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Sabes por qué el mar no se seca?
+        ///¿Porque no tiene toalla?.
+        /// </summary>
+        internal static string miki_module_fun_pun_19 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_19", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Tú sabes el chiste de Pocoyó?
+        /// ¡No! 
+        /// Pues TAMPOCOYO..
+        /// </summary>
+        internal static string miki_module_fun_pun_2 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Para qué va una caja al gimnasio?
+        ///¡Para hacerse caja fuerte!.
+        /// </summary>
+        internal static string miki_module_fun_pun_20 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_20", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡¡Soldado, FIIIRME!
+        /// ¿Dónde firmo, mi capitán?.
+        /// </summary>
+        internal static string miki_module_fun_pun_21 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_21", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cariño, te veo mejor.
+        ///¿Sí? Pues estoy más gorda. 
+        ///Pues eso, te veo mejor....
+        /// </summary>
+        internal static string miki_module_fun_pun_22 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_22", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yo vivo a base de vitaminia C:
+        ///Computadora
+        ///Celular
+        ///Comida
+        ///Cama.
+        /// </summary>
+        internal static string miki_module_fun_pun_23 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_23", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soy un tipo saludable
+        ///Ah. ¿Comes sano y todo eso?  
+        ///No, la gente me saluda....
+        /// </summary>
+        internal static string miki_module_fun_pun_24 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_24", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buenas le llamamos por una encuesta. ¿Su nombre?
+        ///Adán.
+        ///¿Y el de su mujer?
+        ///Eva.
+        ///Increíble, ¿la serpiente vive aquí también?
+        ///Si un momento. ¡¡SUEGRAA!!, la buscan....
+        /// </summary>
+        internal static string miki_module_fun_pun_25 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_25", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Tienes wi-fi?
+        ///Sí
+        ///¿Y cuál es la clave?
+        ///Tener dinero y pagarlo..
+        /// </summary>
+        internal static string miki_module_fun_pun_26 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_26", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Papá, ¿qué se siente tener un hijo tan guapo?.
+        ///No sé hijo, pregúntale a tu abuelo....
+        /// </summary>
+        internal static string miki_module_fun_pun_27 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_27", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Le dice una madre a su hijo:
+        ///¡Me ha dicho un pajarito que te drogas!
+        ///¡La que se droga eres tu que hablas con pajaritos!.
+        /// </summary>
+        internal static string miki_module_fun_pun_28 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_28", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡A mí nadie me da órdenes! -
+        ///&quot;2% de batería. 
+        ///Conecte el cargador&quot;. 
+        ///Voy..
+        /// </summary>
+        internal static string miki_module_fun_pun_29 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_29", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amor, quiero que pasemos un lindo fin de semana.
+        ///Está bien, nos vemos el lunes....
+        /// </summary>
+        internal static string miki_module_fun_pun_3 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Como se dice en chino espejo?
+        ///Ahí toi.
+        /// </summary>
+        internal static string miki_module_fun_pun_30 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_30", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oye, pues mi hijo en su nuevo trabajo se siente como pez en el agua.
+        ///¿Qué hace? 
+        ///Nada....
+        /// </summary>
+        internal static string miki_module_fun_pun_31 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_31", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mi amor, estoy embarazada. ¿Qué te gustaría que fuera?
+        ///¿Una broma?..
+        /// </summary>
+        internal static string miki_module_fun_pun_32 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Papá, papá, ¿vos te casaste por la iglesia o por el civil?.
+        ///¡Por estúpido!..
+        /// </summary>
+        internal static string miki_module_fun_pun_33 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_33", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tía Teresa, ¿para qué te pintas?
+        ///Para estar más guapa.
+        ///¿Y tarda mucho en hacer efecto?.
+        /// </summary>
+        internal static string miki_module_fun_pun_34 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_34", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A que te dedicas?
+        ///Básicamente a respirar. No gano mucho, pero me da para vivir..
+        /// </summary>
+        internal static string miki_module_fun_pun_35 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_35", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cariño ¿tengo la nariz grande?
+        ///No, tienes una nariz común.
+        ///¿Ah, sí? 
+        ///Sí, ¡común tucán!.
+        /// </summary>
+        internal static string miki_module_fun_pun_36 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_36", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cuál es la diferencia entre un motor y un inodoro?
+        ///En que en el motor tu te sientas para correr, y en el inodoro tu corres para sentarte..
+        /// </summary>
+        internal static string miki_module_fun_pun_37 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_37", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Si &quot;car&quot; es carro, y &quot;men&quot; es hombre, entonces &quot;Carmen&quot; es un transformer.
+        /// </summary>
+        internal static string miki_module_fun_pun_38 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_38", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Qué le dice una piedra a otra piedra?
+        ///La vida es dura..
+        /// </summary>
+        internal static string miki_module_fun_pun_39 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_39", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Por qué los diabéticos no pueden vengarse?
+        ///Porque la venganza es dulce....
+        /// </summary>
+        internal static string miki_module_fun_pun_4 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Por qué se suicidó el libro de matemáticas?.
+        ///Porque tenia muchos problemas..
+        /// </summary>
+        internal static string miki_module_fun_pun_40 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_40", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mamá, tengo dos noticias, una buena y una mala
+        ///Primero la buena, hija
+        ///Pasé una prueba
+        ///Muy bien, ¿Y la mala?
+        ///Que era un Test de embarazo....
+        /// </summary>
+        internal static string miki_module_fun_pun_41 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_41", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Cómo se llama el primo vegetariano de Bruce Lee?
+        ///Pues Broco Lee....
+        /// </summary>
+        internal static string miki_module_fun_pun_42 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_42", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hola guapa, ¿me dices tu teléfono?
+        ///Un iPhone.
+        ///Pero el número.
+        ///El 5..
+        /// </summary>
+        internal static string miki_module_fun_pun_43 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_43", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Sabes que mi hermano anda en bicicleta desde los cuatro años?.
+        ///Mmm, pues ya debe estar lejos..
+        /// </summary>
+        internal static string miki_module_fun_pun_44 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_44", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mamá, aún no sé qué estudiar.
+        ///¿Qué te gusta?
+        ///Dormir….
+        /// </summary>
+        internal static string miki_module_fun_pun_45 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_45", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cariño, tengo dos noticias, una buena y otra mala. 
+        ///He dejado las drogas, 
+        ///pero no sé donde..
+        /// </summary>
+        internal static string miki_module_fun_pun_46 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_46", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Qué hace una persona con un sobre de ketchup en la oreja?
+        ///Escuchando salsa..
+        /// </summary>
+        internal static string miki_module_fun_pun_47 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_47", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hija, lo que hiciste no tiene nombre!.
+        ///Todavía no Papi, ¡pero espérate 9 meses y le pongo uno bien bonito!.
+        /// </summary>
+        internal static string miki_module_fun_pun_48 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_48", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un payaso le pide un aumento de sueldo a su jefe y este le contesta:
+        ///¡Qué grande, veinte años trabajando juntos, y esta es la primera vez que me haces reír!.
+        /// </summary>
+        internal static string miki_module_fun_pun_49 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_49", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Sabes que el otro día se cayó mi madre por el balcón y ahora está en el cielo?.
+        ///Pues, ¡cómo rebota tu vieja!..
+        /// </summary>
+        internal static string miki_module_fun_pun_5 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Me da una entrada para el teatro?
+        ///¿Para Los Miserables?
+        ///Mire, somos pobres pero respétenos..
+        /// </summary>
+        internal static string miki_module_fun_pun_50 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_50", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mamá, mamá mis amigos me molestan y dicen que tú te avergüenzas de mi.
+        ///Ya te he dicho que en la calle no me digas mamá....
+        /// </summary>
+        internal static string miki_module_fun_pun_51 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_51", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soy tan buena persona que no madrugo para que Dios ayude a otro..
+        /// </summary>
+        internal static string miki_module_fun_pun_52 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_52", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un día en Mercurio dura 1408 horas. Lo mismo que un lunes en la Tierra....
+        /// </summary>
+        internal static string miki_module_fun_pun_6 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to En un baile un chico dice:
+        ///¿Bailas?.
+        ///La chica contesta:
+        ///¡¡Sí!!.
+        ///Buenísimo, entonces puedo usar la silla..
+        /// </summary>
+        internal static string miki_module_fun_pun_7 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Era un hombre tan, pero tan flaco, que no tenía ni dedo gordo..
+        /// </summary>
+        internal static string miki_module_fun_pun_8 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to La diferencia entre un político y un ladrón es que a uno lo escoges tú y el otro te escoge a ti..
+        /// </summary>
+        internal static string miki_module_fun_pun_9 {
+            get {
+                return ResourceManager.GetString("miki_module_fun_pun_9", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}  lanzó **{1}**.
+        /// </summary>
+        internal static string miki_module_fun_roll_result {
+            get {
+                return ResourceManager.GetString("miki_module_fun_roll_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y el ganador de `{0}` es {1}.
+        /// </summary>
+        internal static string miki_module_fun_roulette_winner {
+            get {
+                return ResourceManager.GetString("miki_module_fun_roulette_winner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y el ganador es: {0}.
+        /// </summary>
+        internal static string miki_module_fun_roulette_winner_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_fun_roulette_winner_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tragaperras.
+        /// </summary>
+        internal static string miki_module_fun_slots_header {
+            get {
+                return ResourceManager.GetString("miki_module_fun_slots_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}🔸 se ha sumado a tu cuenta..
+        /// </summary>
+        internal static string miki_module_fun_slots_win_amount {
+            get {
+                return ResourceManager.GetString("miki_module_fun_slots_win_amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Has ganado!.
+        /// </summary>
+        internal static string miki_module_fun_slots_win_header {
+            get {
+                return ResourceManager.GetString("miki_module_fun_slots_win_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No puedo hacer ese tipo de matematicas!.
+        /// </summary>
+        internal static string miki_module_general_calc_error {
+            get {
+                return ResourceManager.GetString("miki_module_general_calc_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 📺 Canales.
+        /// </summary>
+        internal static string miki_module_general_guildinfo_channels {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_channels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 👑 El dueño es.
+        /// </summary>
+        internal static string miki_module_general_guildinfo_owned_by {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_owned_by", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 📜 Marcas .
+        /// </summary>
+        internal static string miki_module_general_guildinfo_roles {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🙎 Usarios.
+        /// </summary>
+        internal static string miki_module_general_guildinfo_users {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descripcion.
+        /// </summary>
+        internal static string miki_module_general_help_description {
+            get {
+                return ResourceManager.GetString("miki_module_general_help_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Un mensaje personal con todos mis comandos viene a camino! Utiliza `&gt;help [comando]` por mas informacion sobre este comando.
+        /// </summary>
+        internal static string miki_module_general_help_dm {
+            get {
+                return ResourceManager.GetString("miki_module_general_help_dm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage.
+        /// </summary>
+        internal static string miki_module_general_help_usage {
+            get {
+                return ResourceManager.GetString("miki_module_general_help_usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Documentacion.
+        /// </summary>
+        internal static string miki_module_general_info_docs {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_docs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hola todos! He creado un Patreon para dejar ustedes apoyar a Miki. Por favor de echarle un vistazo y suportarlo si puedes! .
+        /// </summary>
+        internal static string miki_module_general_info_donate_string {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_donate_string", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enlace.
+        /// </summary>
+        internal static string miki_module_general_info_links {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_links", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gracias especial a: Florestina, Mei, Rappy, Rie, Rosie.
+        /// </summary>
+        internal static string miki_module_general_info_made_by_description {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_made_by_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **Hecho por:** Veld.
+        /// </summary>
+        internal static string miki_module_general_info_made_by_header {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_made_by_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to patreon.
+        /// </summary>
+        internal static string miki_module_general_info_patreon {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_patreon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to subreddit.
+        /// </summary>
+        internal static string miki_module_general_info_reddit {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_reddit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servidor de suporte.
+        /// </summary>
+        internal static string miki_module_general_info_server {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Twitter.
+        /// </summary>
+        internal static string miki_module_general_info_twitter {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_twitter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sitio web.
+        /// </summary>
+        internal static string miki_module_general_info_website {
+            get {
+                return ResourceManager.GetString("miki_module_general_info_website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aqui te va!.
+        /// </summary>
+        internal static string miki_module_general_invite_dm {
+            get {
+                return ResourceManager.GetString("miki_module_general_invite_dm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Te mando un mensaje privado con el enlace.
+        /// </summary>
+        internal static string miki_module_general_invite_message {
+            get {
+                return ResourceManager.GetString("miki_module_general_invite_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No se puede cambiar tu prefijo a nada. Consulta &gt;help para averiguar lo que hace. .
+        /// </summary>
+        internal static string miki_module_general_prefix_error_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comando de ejemplo.
+        /// </summary>
+        internal static string miki_module_general_prefix_example_command_header {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_example_command_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ⚙️ Ha cambiado el prefijo!.
+        /// </summary>
+        internal static string miki_module_general_prefix_success_header {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_success_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tu prefijo se ha convertido a  **{0}**!.
+        /// </summary>
+        internal static string miki_module_general_prefix_success_message {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_success_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Definicion.
+        /// </summary>
+        internal static string miki_module_general_urban_definition {
+            get {
+                return ResourceManager.GetString("miki_module_general_urban_definition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ejemplo.
+        /// </summary>
+        internal static string miki_module_general_urban_example {
+            get {
+                return ResourceManager.GetString("miki_module_general_urban_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clasificacion.
+        /// </summary>
+        internal static string miki_module_general_urban_rating {
+            get {
+                return ResourceManager.GetString("miki_module_general_urban_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Querias decir?.
+        /// </summary>
+        internal static string miki_module_help_didyoumean {
+            get {
+                return ResourceManager.GetString("miki_module_help_didyoumean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comando no hallado.
+        /// </summary>
+        internal static string miki_module_help_error_null_header {
+            get {
+                return ResourceManager.GetString("miki_module_help_error_null_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Esto no es un comando. Para usar  `{0}help [comando]` por favor de utilizar el comando ya existente.
+        /// </summary>
+        internal static string miki_module_help_error_null_message {
+            get {
+                return ResourceManager.GetString("miki_module_help_error_null_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Esta pasta ya existe! Intenta otra vez con otra etiqueta.
+        /// </summary>
+        internal static string miki_module_pasta_create_error_already_exist {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_create_error_already_exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creado un nuevo pasta `{0}`!.
+        /// </summary>
+        internal static string miki_module_pasta_create_success {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_create_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Borrado su pasta `{0}`!.
+        /// </summary>
+        internal static string miki_module_pasta_delete_success {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_delete_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editado `{0}`!.
+        /// </summary>
+        internal static string miki_module_pasta_edit_success {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_edit_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No puedes {0} pastas que tu no creastes!.
+        /// </summary>
+        internal static string miki_module_pasta_error_no_permissions {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_no_permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Esta pasta no existe.
+        /// </summary>
+        internal static string miki_module_pasta_error_null {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor de entrar una de las etiquetas, o comandos.
+        /// </summary>
+        internal static string miki_module_pasta_error_search_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_search_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No se ha encontrado ninguna consulta de búsqueda. Por favor, especifique lo que desea buscar..
+        /// </summary>
+        internal static string miki_module_pasta_error_search_no_results {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_search_no_results", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor, especifique que pasta desea.
+        /// </summary>
+        internal static string miki_module_pasta_error_specify {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_specify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to comprobar.
+        /// </summary>
+        internal static string miki_module_pasta_error_specify_check {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_specify_check", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to eliminar.
+        /// </summary>
+        internal static string miki_module_pasta_error_specify_delete {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_specify_delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to editar.
+        /// </summary>
+        internal static string miki_module_pasta_error_specify_edit {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_specify_edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to votar a favor.
+        /// </summary>
+        internal static string miki_module_pasta_error_specify_upvote {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_error_specify_upvote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creó de.
+        /// </summary>
+        internal static string miki_module_pasta_identify_created_by {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_identify_created_by", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to La fecha de creación.
+        /// </summary>
+        internal static string miki_module_pasta_identify_date_created {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_identify_date_created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to valuacion.
+        /// </summary>
+        internal static string miki_module_pasta_identify_rating {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_identify_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Veces usado.
+        /// </summary>
+        internal static string miki_module_pasta_identify_times_used {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_identify_times_used", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lo siento, aun no tienes algun pasta.
+        /// </summary>
+        internal static string miki_module_pasta_mine_error_null {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_mine_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}s pastas.
+        /// </summary>
+        internal static string miki_module_pasta_mine_header {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_mine_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lo sentimos, no hallamos pastas con `{0}`.
+        /// </summary>
+        internal static string miki_module_pasta_search_error_no_results {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_search_error_no_results", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pagina {0} de {1}.
+        /// </summary>
+        internal static string miki_module_pasta_search_footer {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_search_footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🔎 he encontrado estos pasta.
+        /// </summary>
+        internal static string miki_module_pasta_search_header {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_search_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tu voto ha sido actualizado
+        ///Puntuacion actual: `{0}`.
+        /// </summary>
+        internal static string miki_module_pasta_vote_success {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_vote_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quien es {0}!?.
+        /// </summary>
+        internal static string miki_module_whois_header {
+            get {
+                return ResourceManager.GetString("miki_module_whois_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🙎 Personal.
+        /// </summary>
+        internal static string miki_module_whois_tag_personal {
+            get {
+                return ResourceManager.GetString("miki_module_whois_tag_personal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exito!.
+        /// </summary>
+        internal static string miki_success_message_generic {
+            get {
+                return ResourceManager.GetString("miki_success_message_generic", resourceCulture);
+            }
+        }
     }
 }

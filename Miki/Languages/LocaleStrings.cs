@@ -102,17 +102,35 @@ namespace Miki.Languages
                 {
                     lang = l.Language;
                 }
-                
 
-                string output = string.Format(Locales[lang].GetString(m), p);
+                ResourceManager resources = Locales[lang];
+                string output = null;
 
-                if(string.IsNullOrWhiteSpace(output))
+                if (InternalStringAvailable(m, resources))
                 {
-                    output = string.Format(Locales[defaultResource].GetString(m), p);
+                    output = InternalGetString(m, resources, p);
+
+                    if (string.IsNullOrWhiteSpace(output))
+                    {
+                        output = InternalGetString(m, Locales[defaultResource], p);
+                    }
+                }
+                else
+                {
+                    output = InternalGetString(m, Locales[defaultResource], p);
                 }
 
                 return output;
             }
+        }
+
+        private bool InternalStringAvailable(string m, ResourceManager lang)
+        {
+            return lang.GetString(m) != null;
+        }
+        private string InternalGetString(string m, ResourceManager lang, params object[] p)
+        {
+            return (p.Length == 0) ? lang.GetString(m) : string.Format(lang.GetString(m), p); ; 
         }
     }
 

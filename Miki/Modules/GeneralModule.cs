@@ -355,12 +355,14 @@ namespace Miki.Modules
                             };
                         }),
                     new RuntimeCommandEvent("urban")
-                        .Default(DoUrban)
+                        .Default(DoUrban),
+                    new RuntimeCommandEvent("stats")
+                        .Default(DoStats)
                 };
             }).InstallAsync(bot);
         }
 
-        public async Task DoPrefixDefault(EventContext e)
+        private async Task DoPrefixDefault(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
@@ -385,7 +387,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        public async Task DoPrefixHelp(EventContext e)
+        private async Task DoPrefixHelp(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
@@ -395,7 +397,72 @@ namespace Miki.Modules
                 .SendToChannel(e.Channel.Id);
         }
 
-        public async Task DoUrban(EventContext e)
+        private async Task DoStats(EventContext e)
+        {
+            //int servers = bot.Client.Guilds.Count;
+            //int channels = bot.Client.Guilds.Sum(a => a.Channels.Count);
+            //int members = bot.Client.Guilds.Sum(a => a.Channels.Sum(b => b.Users.Count));
+
+            TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
+
+            IDiscordEmbed embed = Utils.Embed;
+            embed.Title = "⚙️ Miki stats";
+            embed.Description = "General realtime stats about miki!";
+            embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
+
+            //embed.AddField(f =>
+            //{
+            //    f.Name = "🖥️ Servers";
+            //    f.Value = servers.ToString();
+            //    f.IsInline = true;
+            //});
+
+            //embed.AddField(f =>
+            //{
+            //    f.Name = "📺 Channels";
+            //    f.Value = channels.ToString();
+            //    f.IsInline = true;
+            //});
+
+            //embed.AddField(f =>
+            //{
+            //    f.Name = "👤 Users";
+            //    f.Value = members.ToString();
+            //    f.IsInline = true;
+            //});
+
+            //embed.AddField(f =>
+            //{
+            //    f.Name = "🐏 Ram";
+            //    f.Value = (memsize / 1024 / 1024).ToString() + "MB";
+            //    f.IsInline = true;
+            //});
+
+            //embed.AddField(f =>
+            //{
+            //    f.Name = "👷 Threads";
+            //    f.Value = threads.ToString();
+            //    f.IsInline = true;
+            //});
+
+            embed.AddField(f =>
+            {
+                f.Name = "💬 Commands";
+                f.Value = Bot.instance.Events.CommandsUsed().ToString();
+                f.IsInline = true;
+            });
+
+            embed.AddField(f =>
+            {
+                f.Name = "⏰ Uptime";
+                f.Value = timeSinceStart.ToTimeString();
+                f.IsInline = true;
+            });
+
+            await e.Channel.SendMessage(embed);
+        }
+
+        private async Task DoUrban(EventContext e)
         {
             if (string.IsNullOrEmpty(e.arguments)) return;
 

@@ -414,6 +414,7 @@
     <Compile Include="Models\Setting.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VoteCount.cs" />
+    <Compile Include="Modules\GamesModule.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
