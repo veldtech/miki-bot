@@ -184,6 +184,7 @@ namespace Miki.Modules
 
                             string[] BODY_PART = new string[]
                             {
+                                "that silly fringe of yours",
                                 "the lower part of your lips",
                                 "the smallest toe on your left foot",
                                 "the smallest toe on your right foot",
@@ -336,36 +337,6 @@ namespace Miki.Modules
                             {
                                 await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.ImageNotFound));
                             }
-                        };
-                    }),
-                    new CommandEvent(x =>
-                    {
-                        x.Name = "lewd";
-                        x.ProcessCommand = async (e) =>
-                        {
-                            string[] lewd = new string[]
-                            {
-                                "http://i.imgur.com/eG42EVs.png",
-                                "http://i.imgur.com/8shK3jh.png",
-                                "http://i.imgur.com/uLKC84x.jpg",
-                                "http://i.imgur.com/PZCwyyE.png",
-                                "http://i.imgur.com/KWklw30.png",
-                                "http://i.imgur.com/aoLsNgx.jpg",
-                                "http://i.imgur.com/wyJAMVt.jpg",
-                                "http://i.imgur.com/2Y5ZgHH.png",
-                                "http://i.imgur.com/OIZyqxL.jpg",
-                                "http://i.imgur.com/cejd1c0.gif",
-                                "http://i.imgur.com/Obl7JvE.png",
-                                "http://i.imgur.com/PFFmM1q.png",
-                                "http://i.imgur.com/2vopeCM.jpg",
-                                "http://i.imgur.com/U4Nk0e5.jpg",
-                                "http://i.imgur.com/Llf61b1.jpg",
-                                "http://i.imgur.com/3vYPbuO.jpg",
-                                "http://i.imgur.com/p1twVD4.png",
-                                "http://i.imgur.com/AsxaQ3D.gif",
-                                "http://i.imgur.com/On8Axls.gif"
-                            };
-                            await e.Channel.SendMessage(lewd[Global.random.Next(0, lewd.Length)]);
                         };
                     }),
                     new CommandEvent(x =>
