@@ -12,6 +12,7 @@ namespace Miki
         public static async Task LoadEvents(Bot bot)
         {
             await new AccountsModule().LoadEvents(bot);
+            await new ActionsModule().LoadEvents(bot);
             await new AdminModule().LoadEvents(bot);
             await new DeveloperModule().LoadEvents(bot);
             await new EventMessageModule().LoadEvents(bot);
