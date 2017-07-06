@@ -1069,4 +1069,162 @@ Fuzzy</comment>
   <data name="miki_command_usage_toggleguildnotifications" xml:space="preserve">
     <value>&gt;toggleguildnotifications</value>
   </data>
+  <data name="miki_command_description_ask" xml:space="preserve">
+    <value>Ask your friends silly things</value>
+  </data>
+  <data name="miki_command_description_bird" xml:space="preserve">
+    <value>Birbs are too cute to not to have a special command for!</value>
+  </data>
+  <data name="miki_command_description_cage" xml:space="preserve">
+    <value>NICK CAGE PICTURES</value>
+  </data>
+  <data name="miki_command_description_cat" xml:space="preserve">
+    <value>Meow, i am a cat picture generator!</value>
+  </data>
+  <data name="miki_command_description_compliment" xml:space="preserve">
+    <value>I'll compliment you personally with a special compliment</value>
+  </data>
+  <data name="miki_command_description_confused" xml:space="preserve">
+    <value>Show how confused you are by your friend's shitposting with the power of cute anime girls!</value>
+  </data>
+  <data name="miki_command_description_ctb" xml:space="preserve">
+    <value>Catch fruit and impress friends with this slick Catch the Beat command!</value>
+  </data>
+  <data name="miki_command_description_dog" xml:space="preserve">
+    <value>Cute animals for you hand picked by the miki staff!</value>
+  </data>
+  <data name="miki_command_description_e621" xml:space="preserve">
+    <value>Basically very hairy people doing lewd things</value>
+  </data>
+  <data name="miki_command_description_gelbooru" xml:space="preserve">
+    <value>Gelbooru images for you, you nasty dog</value>
+  </data>
+  <data name="miki_command_description_gif" xml:space="preserve">
+    <value>Gif me all the gifs!</value>
+  </data>
+  <data name="miki_command_description_img" xml:space="preserve">
+    <value>Get yourself an image with any tag!</value>
+  </data>
+  <data name="miki_command_description_lewd" xml:space="preserve">
+    <value>Is someone being a baka hentai? Show your disapproval with this LEWD image</value>
+  </data>
+  <data name="miki_command_description_lunch" xml:space="preserve">
+    <value>Woof woof! what's for lunch?!</value>
+  </data>
+  <data name="miki_command_description_mania" xml:space="preserve">
+    <value>Are you a typing king? show your osu!mania rank with this handy command!</value>
+  </data>
+  <data name="miki_command_description_osu" xml:space="preserve">
+    <value>Show your pride about your ability to click on circular objects!</value>
+  </data>
+  <data name="miki_command_description_pick" xml:space="preserve">
+    <value>Scared of taking decisions? I'll take them for you!</value>
+  </data>
+  <data name="miki_command_description_pout" xml:space="preserve">
+    <value>When you're disappointed, sad or you're mad at someone. Show them a big tsundere pout &gt;:T</value>
+  </data>
+  <data name="miki_command_description_pun" xml:space="preserve">
+    <value>Wouldn't it be punny if this was a pun as well?</value>
+  </data>
+  <data name="miki_command_description_roll" xml:space="preserve">
+    <value>Roll 1d20, higher than 17 to defeat this troll!</value>
+  </data>
+  <data name="miki_command_description_roulette" xml:space="preserve">
+    <value>Do fun giveaways, pick a random person from your server and give him fame and glory!</value>
+  </data>
+  <data name="miki_command_description_rule34" xml:space="preserve">
+    <value>Because there's nothing that doesn't have a porn version</value>
+  </data>
+  <data name="miki_command_description_safe" xml:space="preserve">
+    <value>Get safe for work images of cute anime girls!
+all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=list&gt;</value>
+  </data>
+  <data name="miki_command_description_slots" xml:space="preserve">
+    <value>Test your luck with these totally not rigged slot machines for your enjoyment!</value>
+  </data>
+  <data name="miki_command_description_smug" xml:space="preserve">
+    <value>When you win in a game of hearthstone </value>
+  </data>
+  <data name="miki_command_description_taiko" xml:space="preserve">
+    <value>don don don katsu don katsu don don katsu</value>
+  </data>
+  <data name="miki_command_usage_ask" xml:space="preserve">
+    <value>&gt;ask &lt;question&gt;</value>
+  </data>
+  <data name="miki_command_usage_bird" xml:space="preserve">
+    <value>&gt;bird</value>
+  </data>
+  <data name="miki_command_usage_cage" xml:space="preserve">
+    <value>&gt;cage</value>
+  </data>
+  <data name="miki_command_usage_cat" xml:space="preserve">
+    <value>&gt;cat</value>
+  </data>
+  <data name="miki_command_usage_compliment" xml:space="preserve">
+    <value>&gt;compliment</value>
+  </data>
+  <data name="miki_command_usage_confused" xml:space="preserve">
+    <value>&gt;confused</value>
+  </data>
+  <data name="miki_command_usage_ctb" xml:space="preserve">
+    <value>&gt;ctb &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_dog" xml:space="preserve">
+    <value>&gt;dog</value>
+  </data>
+  <data name="miki_command_usage_e621" xml:space="preserve">
+    <value>&gt;e621 &lt;e621 tags&gt;</value>
+  </data>
+  <data name="miki_command_usage_gelbooru" xml:space="preserve">
+    <value>&gt;gelbooru &lt;gelbooru tags&gt;</value>
+  </data>
+  <data name="miki_command_usage_gif" xml:space="preserve">
+    <value>&gt;gif [tags]</value>
+  </data>
+  <data name="miki_command_usage_img" xml:space="preserve">
+    <value>&gt;img [tags]</value>
+  </data>
+  <data name="miki_command_usage_lewd" xml:space="preserve">
+    <value>&gt;lewd</value>
+  </data>
+  <data name="miki_command_usage_lunch" xml:space="preserve">
+    <value>&gt;lunch</value>
+  </data>
+  <data name="miki_command_usage_mania" xml:space="preserve">
+    <value>&gt;mania &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_osu" xml:space="preserve">
+    <value>&gt;osu &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_pick" xml:space="preserve">
+    <value>&gt;pick &lt;option1&gt;,[option2],[...]</value>
+  </data>
+  <data name="miki_command_usage_pout" xml:space="preserve">
+    <value>&gt;pout</value>
+  </data>
+  <data name="miki_command_usage_pun" xml:space="preserve">
+    <value>&gt;pun</value>
+  </data>
+  <data name="miki_command_usage_roll" xml:space="preserve">
+    <value>&gt;roll [amount]
+&gt;roll [amount of dice]d[sides of dice]</value>
+  </data>
+  <data name="miki_command_usage_roulette" xml:space="preserve">
+    <value>&gt;roulette [text]</value>
+  </data>
+  <data name="miki_command_usage_rule34" xml:space="preserve">
+    <value>&gt;rule34 &lt;rule34 tags&gt;</value>
+  </data>
+  <data name="miki_command_usage_safe" xml:space="preserve">
+    <value>&gt;safe &lt;tags&gt;</value>
+  </data>
+  <data name="miki_command_usage_slots" xml:space="preserve">
+    <value>&gt;slots &lt;amount bet&gt;</value>
+  </data>
+  <data name="miki_command_usage_smug" xml:space="preserve">
+    <value>&gt;smug</value>
+  </data>
+  <data name="miki_command_usage_taiko" xml:space="preserve">
+    <value>&gt;taiko &lt;osu username&gt;</value>
+  </data>
 </root>
