@@ -56,7 +56,7 @@ namespace Miki.Modules
             IPost s = E621Post.Create(e.arguments, ImageRating.EXPLICIT);
 
             await Utils.Embed
-                .SetTitle("E621x")
+                .SetTitle("E621")
                 .SetImageUrl(s.ImageUrl)
                 .SendToChannel(e.Channel.Id);
         }
