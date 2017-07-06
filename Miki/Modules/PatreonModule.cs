@@ -87,9 +87,7 @@ namespace Miki.Modules
                             ">ask [@user] question");
                         x.ProcessCommand = async (e) =>
                         {
-                            string question = e.arguments.Substring(e.arguments.Split(' ').First().Length + 1);
                             string image = "http://i.imgur.com/AHPnL.gif";
-
                             IDiscordEmbed embed = Utils.Embed;
 
                             embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
@@ -99,7 +97,6 @@ namespace Miki.Modules
                                 if(e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
                                 {
                                    IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
-                                   question = "lewds";
                                    image = "http://i.imgur.com/AFcG8LU.gif";
                                     embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
                                 }
