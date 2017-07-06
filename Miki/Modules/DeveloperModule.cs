@@ -95,6 +95,9 @@ namespace Miki.Modules
                             }
                         };
                     }),
+                    new RuntimeCommandEvent("setdonator")
+                        .SetAccessibility(EventAccessibility.DEVELOPERONLY)
+                        .Default(DoSetDonator),
                     new RuntimeCommandEvent("setmekos")
                         .SetAccessibility(EventAccessibility.DEVELOPERONLY)
                         .Default(DoSetMekos),
@@ -139,74 +142,6 @@ namespace Miki.Modules
                         {
                             await Utils.Embed.SetTitle("SAY").SetDescription(e.arguments).SendToChannel(e.Channel.Id);
                         }),
-                    new RuntimeCommandEvent(x =>
-                    {
-                        x.Name = "stats";
-                        x.ProcessCommand = async (e) =>
-                        {
-                            //int servers = bot.Client.Guilds.Count;
-                            //int channels = bot.Client.Guilds.Sum(a => a.Channels.Count);
-                            //int members = bot.Client.Guilds.Sum(a => a.Channels.Sum(b => b.Users.Count));
-
-                            TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
-
-                            IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
-                            embed.Title = "⚙️ Miki stats";
-                            embed.Description = "General realtime stats about miki!";
-                            embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
-
-                            //embed.AddField(f =>
-                            //{
-                            //    f.Name = "🖥️ Servers";
-                            //    f.Value = servers.ToString();
-                            //    f.IsInline = true;
-                            //});
-
-                            //embed.AddField(f =>
-                            //{
-                            //    f.Name = "📺 Channels";
-                            //    f.Value = channels.ToString();
-                            //    f.IsInline = true;
-                            //});
-
-                            //embed.AddField(f =>
-                            //{
-                            //    f.Name = "👤 Users";
-                            //    f.Value = members.ToString();
-                            //    f.IsInline = true;
-                            //});
-
-                            //embed.AddField(f =>
-                            //{
-                            //    f.Name = "🐏 Ram";
-                            //    f.Value = (memsize / 1024 / 1024).ToString() + "MB";
-                            //    f.IsInline = true;
-                            //});
-
-                            //embed.AddField(f =>
-                            //{
-                            //    f.Name = "👷 Threads";
-                            //    f.Value = threads.ToString();
-                            //    f.IsInline = true;
-                            //});
-
-                            embed.AddField(f =>
-                            {
-                                f.Name = "💬 Commands";
-                                f.Value = bot.Events.CommandsUsed().ToString();
-                                f.IsInline = true;
-                            });
-
-                            embed.AddField(f =>
-                            {
-                                f.Name = "⏰ Uptime";
-                                f.Value = timeSinceStart.ToTimeString();
-                                f.IsInline = true;
-                            });
-
-                            await e.Channel.SendMessage(embed);
-                        };
-                    }),
                     new RuntimeCommandEvent(x =>
                     {
                         x.Name = "unload";
@@ -261,6 +196,35 @@ namespace Miki.Modules
                 };
             }).InstallAsync(bot);
         }
+
+        private async Task DoSetDonator(EventContext context)
+        {
+            using (MikiContext database = new MikiContext())
+            {
+                if (context.message.MentionedUserIds.Count > 0)
+                {
+                    Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
+                    if(a == null)
+                    {
+                        database.Achievements.Add(new Achievement() { Id = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
+                        await database.SaveChangesAsync();
+                    }
+
+                }
+                else
+                {
+                    ulong x = 0;
+                    ulong.TryParse(context.message.Content, out x);
+                    if (x != 0)
+                    {
+                        database.Achievements.Add(new Achievement() { Id = x.ToDbLong(), Name = "donator", Rank = 0 });
+                        await database.SaveChangesAsync();
+                    }
+                }
+                await context.Channel.SendMessage(":ok_hand:");
+            }
+        }
+
 
         private async Task DoCmdTest(EventContext message)
         {
