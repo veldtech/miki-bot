@@ -46,7 +46,7 @@ namespace Miki.Modules
                                     return;
                                 }
 
-                                if(await SetMessage(e.Guild.Id, e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
+                                if(await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
                                 {
                                     await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
                                 }
@@ -70,7 +70,7 @@ namespace Miki.Modules
                                     return;
                                 }
 
-                                if(await SetMessage(e.Guild.Id, e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
+                                if(await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
                                 {
                                     await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
                                 }
@@ -108,16 +108,26 @@ namespace Miki.Modules
             await new RuntimeModule(i).InstallAsync(bot);
         }
 
-        private async Task<bool> SetMessage(ulong id, string message, EventMessageType v, ulong channelid)
+        private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
         {
             using (var context = new MikiContext())
             {
-                context.EventMessages.Add(new EventMessage()
+                EventMessage messageInstance = await context.EventMessages.FindAsync(channelid.ToDbLong(), (short)v);
+
+                if (messageInstance == null)
                 {
-                    ChannelId = channelid.ToDbLong(),
-                    Message = message,
-                    EventType = (short)v
-                });
+                    context.EventMessages.Add(new EventMessage()
+                    {
+                        ChannelId = channelid.ToDbLong(),
+                        Message = message,
+                        EventType = (short)v
+                    });
+                }
+                else
+                {
+                    messageInstance.Message = message;
+                }
+
                 await context.SaveChangesAsync();
             }
             return true;
