@@ -1,5 +1,7 @@
-﻿using IA;
+﻿using Discord;
+using IA;
 using IA.Events;
+using IA.SDK;
 using IA.SDK.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -24,8 +26,8 @@ namespace Miki.Modules
 
         private async Task OnUpdateGuilds(Bot bot, IDiscordGuild g)
         {
-            await SendCarbon(bot);
-            await SendDiscordBotsOrg(bot, g);
+            //await SendCarbon(bot);
+            //await SendDiscordBotsOrg(bot, g);
             await SendDiscordPW(bot, g);
         }
 
@@ -58,12 +60,12 @@ namespace Miki.Modules
         {
             using (var client = new HttpClient())
             {
-                using (var content = new StringContent($"{{ \"server_count\": {bot.Client.Guilds.Count}}}", Encoding.UTF8, "application/json"))
+                using (var content = new StringContent("{\"shard_id\": " + Bot.instance.Client.GetShardIdFor((g as IProxy<IGuild>).ToNativeObject()) + ", \"shard_count\": " + Bot.instance.Client.Shards.Count + ", \"server_count\": " + Bot.instance.Client.GetShardFor((g as IProxy<IGuild>).ToNativeObject()).Guilds.Count + "}", Encoding.UTF8, "application/json"))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordPwKey);
-                    HttpResponseMessage response = await client.PostAsync("https://discordbots.org/api/bots/160105994217586689/stats", content);
+                    HttpResponseMessage response = await client.PostAsync("https://bots.discord.pw/api/bots/160105994217586689/stats", content);
                 }
             }
         }
     }
-}
+} 

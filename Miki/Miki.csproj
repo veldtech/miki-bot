@@ -314,6 +314,7 @@
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\LeaderboardsItem.cs" />
+    <Compile Include="API\Reminder\ReminderAPI.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
     <Compile Include="CommandLoader.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs" />

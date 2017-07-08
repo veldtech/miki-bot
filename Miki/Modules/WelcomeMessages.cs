@@ -40,10 +40,18 @@ namespace Miki.Modules
                             {
                                 if(string.IsNullOrEmpty(e.arguments))
                                 {
-                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
-                                    await e.Channel.SendMessage($"✅ deleted your welcome message");
-                                    await context.SaveChangesAsync();
-                                    return;
+                                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER);
+                                    if(leaveMessage != null)
+                                    {
+                                        context.EventMessages.Remove(leaveMessage);
+                                        await e.Channel.SendMessage($"✅ deleted your welcome message");
+                                        await context.SaveChangesAsync();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        await e.Channel.SendMessage($"⚠ no welcome message found!");
+                                    }
                                 }
 
                                 if(await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
@@ -64,10 +72,18 @@ namespace Miki.Modules
                             {
                                 if(string.IsNullOrEmpty(e.arguments))
                                 {
-                                    context.EventMessages.Remove(context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER));
-                                    await e.Channel.SendMessage($"✅ deleted your welcome message");
-                                    await context.SaveChangesAsync();
-                                    return;
+                                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.LEAVESERVER);
+                                    if(leaveMessage != null)
+                                    {
+                                        context.EventMessages.Remove(leaveMessage);
+                                        await e.Channel.SendMessage($"✅ deleted your leave message");
+                                        await context.SaveChangesAsync();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        await e.Channel.SendMessage($"⚠ no leave message found!");
+                                    }
                                 }
 
                                 if(await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
