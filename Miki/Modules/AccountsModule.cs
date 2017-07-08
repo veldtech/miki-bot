@@ -4,6 +4,7 @@ using Discord;
 using IA;
 using IA.Events;
 using IA.SDK;
+using IA.SDK.Builders;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
@@ -94,6 +95,7 @@ namespace Miki.Modules
                         x.ProcessCommand = async (e) =>
                         {
                             Stopwatch sw = new Stopwatch();
+
                             sw.Start();
 
                             using(var context = new MikiContext())
@@ -138,35 +140,26 @@ namespace Miki.Modules
 
                                     int rank = await account.GetLocalRank(e.Guild.Id);
 
-                                    embed.AddField(f =>
-                                    {
-                                        f.Name = locale.GetString("miki_generic_information");
-                                        f.IsInline = true;
-                                        f.Value = "\n" + 
-                                            locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)) 
-                                            + "\n" 
-                                            + locale.GetString("miki_module_accounts_information_rank", rank);
-                                    });
+                                    string infoValue = new MessageBuilder()
+                                        .NewLine()
+                                        .AppendText(locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)))
+                                        .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
+                                        .Build();
+
+                                    embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
 
                                     int globalLevel = account.CalculateLevel(account.Total_Experience);
                                     int globalRank = account.CalculateMaxExperience(account.Total_Experience);
 
-                                    embed.AddField(f =>
-                                    {
-                                        f.Name = locale.GetString("miki_generic_global_information");
-                                        f.IsInline = true;
-                                        f.Value = "\n" + 
-                                        locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank)
-                                        + "\n"
-                                        + locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank());
-                                    });
+                                    string globalInfoValue = new MessageBuilder()
+                                        .NewLine()
+                                        .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
+                                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()))
+                                        .Build();
 
-                                    embed.AddField(f =>
-                                    {
-                                        f.Name = locale.GetString("miki_generic_mekos");
-                                        f.IsInline = true;
-                                        f.Value = account.Currency + "🔸";
-                                    });
+                                    embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
+
+                                    embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
                                     List<Marriage> marriages = Marriage.GetMarriages(context, id);
                                     List<User> users = new List<User>();
@@ -186,7 +179,9 @@ namespace Miki.Modules
                                                 output += "💕 " + users[i].Name + " (_" + marriages[i].TimeOfMarriage.ToShortDateString() + "_)\n";
                                             }
                                         }
+
                                         output += "\n";
+
                                         embed.AddField(f =>
                                         {
                                             f.Name = locale.GetString("miki_module_accounts_profile_marriedto");
@@ -224,6 +219,7 @@ namespace Miki.Modules
                                     {
                                         Text = locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(), sw.ElapsedMilliseconds)
                                     };
+
                                     sw.Stop();
 
                                     await e.Channel.SendMessage(new RuntimeEmbed(embed));
@@ -385,8 +381,6 @@ namespace Miki.Modules
                     new CommandEvent(x =>
                     {
                         x.Name = "acceptmarriage";
-                        x.Metadata.description = "Find your true love, accept a marriage proposal!";
-                        x.Metadata.usage.Add(">acceptmarriage [@user]");
                         x.ProcessCommand = async (e) =>
                         {
                             if(e.message.MentionedUserIds.Count == 0)
@@ -707,7 +701,7 @@ namespace Miki.Modules
                                 Bot.instance.Events.AddPrivateCommandHandler(e.message, c);
                             }
                         };
-                    }),
+                    }),     
                     new CommandEvent(cmd =>
                     {
                         cmd.Name = "syncavatar";
