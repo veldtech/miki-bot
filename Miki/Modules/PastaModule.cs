@@ -53,6 +53,12 @@ namespace Miki.Modules
                         .On("hate", async(e)      => await VotePasta(e, false))
                         .On("mine", async(e)      => await MyPasta(e))
                         .On("my", async(e)        => await MyPasta(e))
+                        .On("pop", DoPastaLeaderboardsPopular)
+                        .On("top", DoPastaLeaderboardsLove),
+                    new RuntimeCommandEvent("pastatop")
+                        .Default(DoPastaLeaderboardsLove),
+                    new RuntimeCommandEvent("pastapop")
+                        .Default(DoPastaLeaderboardsPopular),
                 };
             });
 
@@ -86,6 +92,44 @@ namespace Miki.Modules
                     }
                 };
             });
+        }
+
+        private async Task DoPastaLeaderboardsPopular(EventContext context)
+        {
+            using (var d = new MikiContext())
+            {
+                List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, TimesUsed as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
+
+                IDiscordEmbed e = Utils.Embed
+                    .SetTitle("Most popular pastas")
+                    .SetColor(new IA.SDK.Color(1, 0.6f, 0.2f));
+
+                foreach (LeaderboardsItem t in leaderboards)
+                {
+                    e.AddInlineField(t.Name, (t == leaderboards.First() ? "👑 " + t.Value.ToString() : "✨ " + t.Value.ToString()));
+                }
+
+                await e.SendToChannel(context.Channel.Id);
+            }
+        }
+
+        private async Task DoPastaLeaderboardsLove(EventContext context)
+        {
+            using (var d = new MikiContext())
+            {
+                List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, ((SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 1) - (SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 0)) as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
+
+                IDiscordEmbed e = Utils.Embed
+                    .SetTitle("Top pastas")
+                    .SetColor(new IA.SDK.Color(1, 0, 0));
+                
+                foreach(LeaderboardsItem t in leaderboards)
+                {
+                    e.AddInlineField(t.Name, (t == leaderboards.First() ? "💖 " + t.Value.ToString() : (t.Value < 0 ? "💔 " : "❤ ") + t.Value.ToString()));
+                }
+
+                await e.SendToChannel(context.Channel.Id);
+            }
         }
 
         private async Task MyPasta(EventContext e)
