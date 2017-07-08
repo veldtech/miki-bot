@@ -1,6 +1,7 @@
 ﻿using Discord;
 using IA;
 using IA.Events;
+using IA.Extension;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
@@ -10,6 +11,7 @@ using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.API;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Objects;
@@ -633,7 +635,6 @@ namespace Miki.Modules
 
             await new RuntimeModule(module_fun)
                 .AddCommand(new RuntimeCommandEvent("remind")
-                    .SetAccessibility(EventAccessibility.DEVELOPERONLY)
                     .Default(DoRemind))
                 .InstallAsync(bot);
         }
@@ -658,15 +659,10 @@ namespace Miki.Modules
                 return;
             }
 
-            TimeSpan timeUntilReminder = new TimeSpan();
             string reminderText;
 
-            List<string> timeList = new List<string>();
-            timeList.AddRange(arguments);
-            timeList.RemoveRange(0, splitIndex);
-
             int count = arguments.Count;
-            arguments.RemoveRange(splitIndex - 1, count - (splitIndex));
+            arguments.RemoveRange(splitIndex, count - (splitIndex));
             reminderText = string.Join(" ", arguments);
 
             if (reminderText.StartsWith("me to "))
@@ -674,45 +670,17 @@ namespace Miki.Modules
                 reminderText = reminderText.Substring(6);
             }
 
-            for (int i = 1; i < timeList.Count; i++)
-            {
-                switch(timeList[i])
-                {
-                    case "seconds":
-                    case "second":
-                        int seconds = int.Parse(timeList[i - 1]);
-                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(0, 0, seconds));
-                        break;
-                    case "minutes":
-                    case "minute":
-                        int minutes = int.Parse(timeList[i - 1]);
-                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(0, minutes, 0));
-                        break;
-                    case "hours":
-                    case "hour":
-                        int hours = int.Parse(timeList[i - 1]);
-                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(hours, 0 , 0));
-                        break;
-                    case "days":
-                    case "day":
-                        int days = int.Parse(timeList[i - 1]);
-                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(days, 0, 0, 0));
-                        break;
-                }
-            }
+            TimeSpan timeUntilReminder = e.arguments.GetTimeFromString();
 
             await Utils.Embed
                 .SetTitle("👌 OK")
-                .SetDescription($"I'll remind you to {reminderText} in {timeUntilReminder.ToTimeString()}")
+                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString()}**")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
                 .SendToChannel(e.Channel.Id);
 
-            await Task.Delay(timeUntilReminder.Milliseconds);
-
-            await Utils.Embed
-                .SetTitle("Reminder")
-                .SetDescription($"You asked me to remind you to `{reminderText}")
-                .SendToUser(e.Author.Id);
+            await new ReminderAPI(e.Author.Id)
+                .Remind(reminderText, timeUntilReminder)
+                .Listen();
         }
 
         public async Task DoSafe(EventContext e)
