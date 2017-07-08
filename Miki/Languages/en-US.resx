@@ -1227,4 +1227,10 @@ all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
   <data name="miki_command_usage_taiko" xml:space="preserve">
     <value>&gt;taiko &lt;osu username&gt;</value>
   </data>
+  <data name="miki_command_description_remind" xml:space="preserve">
+    <value />
+  </data>
+  <data name="miki_command_usage_remind" xml:space="preserve">
+    <value>&gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds)</value>
+  </data>
 </root>

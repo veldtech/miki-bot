@@ -440,6 +440,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remind yourself to go to sleep before 4am!.
+        /// </summary>
+        internal static string miki_command_description_remind {
+            get {
+                return ResourceManager.GetString("miki_command_description_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Roll 1d20, higher than 17 to defeat this troll!.
         /// </summary>
         internal static string miki_command_description_roll {
@@ -945,6 +954,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_pun {
             get {
                 return ResourceManager.GetString("miki_command_usage_pun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds).
+        /// </summary>
+        internal static string miki_command_usage_remind {
+            get {
+                return ResourceManager.GetString("miki_command_usage_remind", resourceCulture);
             }
         }
         
