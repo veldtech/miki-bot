@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Miki.Models
+namespace Miki.Models.Interfaces
 {
-    class GuildUser
+    public interface IDatabaseUser : IDatabaseEntity
     {
-        public long Id { get; set; }
-
-        public int Experience { get; set; }
+        string Name { get; set; }
     }
 }

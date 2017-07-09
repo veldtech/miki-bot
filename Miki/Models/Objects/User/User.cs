@@ -13,12 +13,12 @@ using System.ComponentModel;
 namespace Miki.Models
 {
     [Table("Users")]
-    public class User
+    public class User : IDatabaseEntity
     {
         [Key]
         [Column("Id")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long user_id { get; set; }
+        public long Id { get; set; }
 
         [Column("Name")]
         public string Name { get; set; }
@@ -55,25 +55,6 @@ namespace Miki.Models
         [DefaultValue("getutcdate()")]
         public DateTime DateCreated { get; set; }
 
-        [NotMapped]
-        public ulong Id
-        {
-            get
-            {
-                unchecked
-                {
-                    return (ulong)user_id;
-                }
-            }
-            set
-            {
-                unchecked
-                {
-                    user_id = (long)value;
-                }
-            }
-        }
-
         public void AddCurrency(MikiContext context, User fromUser, int amount)
         {
             Currency += amount;
@@ -88,7 +69,7 @@ namespace Miki.Models
         {
             User user = new User()
             {
-                user_id = e.Author.Id.ToDbLong(),
+                Id = e.Author.Id.ToDbLong(),
                 Currency = 0,
                 AvatarUrl = "default",
                 HeaderUrl = "default",
@@ -151,7 +132,7 @@ namespace Miki.Models
         {
             using (var context = new MikiContext())
             {
-                LocalExperience l = await context.Experience.FindAsync(guildId.ToDbLong(), user_id);
+                LocalExperience l = await context.Experience.FindAsync(guildId.ToDbLong(), Id);
 
                 if(l == null)
                 {
@@ -165,7 +146,7 @@ namespace Miki.Models
 
         public bool IsDonator(MikiContext context)
         {
-            return context.Achievements.Find(user_id, "donator") != null;
+            return context.Achievements.Find(Id, "donator") != null;
         }
     }
 }
