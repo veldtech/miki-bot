@@ -45,11 +45,15 @@ namespace Miki.Accounts
 
                 using (var context = new MikiContext())
                 {
-                    User user = await context.Users.FindAsync(a.user_id);
+                    User user = await context.Users.FindAsync(a.Id);
                     user.AddCurrency(context, null, currencyAdded);
                     await context.SaveChangesAsync();
                 }
             };
+
+            Bot.instance.Client.GuildUpdated += Client_GuildUpdated;
+            Bot.instance.Client.UserJoined += Client_UserJoined;
+            Bot.instance.Client.UserLeft += Client_UserLeft;
         }
 
         public async Task CheckAsync(IDiscordMessage e)
@@ -74,11 +78,31 @@ namespace Miki.Accounts
 
                     try
                     {
-                        LocalExperience experience = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), a.user_id);
+                        LocalExperience experience = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), a.Id);
 
                         if (experience == null)
                         {
-                            experience = context.Experience.Add(new LocalExperience() { server_id = e.Guild.Id.ToDbLong(), user_id = a.user_id, Experience = 0, LastExperienceTime = DateTime.Now - new TimeSpan(1) });
+                            experience = context.Experience.Add(new LocalExperience() { server_id = e.Guild.Id.ToDbLong(), user_id = a.Id, Experience = 0, LastExperienceTime = DateTime.Now - new TimeSpan(1) });
+                        }
+
+                        GuildUser guildUser = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+
+                        if (guildUser == null)
+                        {
+                            int value = await context.Database.SqlQuery<int>
+                                ("select Sum(Experience) as value from LocalExperience where ServerId = @p0;", e.Guild.Id.ToDbLong())
+                                .FirstAsync();
+
+                            guildUser = context.GuildUsers.Add(new GuildUser()
+                            {
+                                Name = e.Guild.Name,
+                                Id = e.Guild.Id.ToDbLong(),
+                                Experience = value,
+                                UserCount = Bot.instance.Client.GetGuild(e.Guild.Id).Users.Count,
+                                LastRivalRenewed = DateTime.Now.AddYears(-1),
+                                LastRewardClaimed = DateTime.Now.AddYears(-1)
+                            });
+                            await context.SaveChangesAsync();
                         }
 
                         if (experience.LastExperienceTime == null)
@@ -92,6 +116,7 @@ namespace Miki.Accounts
 
                         experience.Experience += addedExperience;
                         a.Total_Experience += addedExperience;
+                        guildUser.Experience += addedExperience;
 
                         if (currentLocalLevel != a.CalculateLevel(experience.Experience))
                         {
@@ -115,7 +140,7 @@ namespace Miki.Accounts
             }
         }
 
-
+        #region Events
         public async Task LevelUpLocalAsync(IDiscordMessage e, User a, int l)
         {
             await OnLocalLevelUp.Invoke(a, e.Channel, l);
@@ -129,5 +154,44 @@ namespace Miki.Accounts
         {
             await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
         }
+
+        private async Task Client_GuildUpdated(Discord.WebSocket.SocketGuild arg1, Discord.WebSocket.SocketGuild arg2)
+        {
+            if (arg1.Name != arg2.Name)
+            {
+                using (MikiContext context = new MikiContext())
+                {
+                    GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong());
+                    g.Name = arg2.Name;
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+
+        private async Task Client_UserLeft(Discord.WebSocket.SocketGuildUser arg)
+        {
+            await UpdateGuildUserCountAsync(arg.Guild.Id);
+        }
+        private async Task Client_UserJoined(Discord.WebSocket.SocketGuildUser arg)
+        {
+            await UpdateGuildUserCountAsync(arg.Guild.Id);
+        }
+
+        private async Task UpdateGuildUserCountAsync(ulong id)
+        {
+            using (MikiContext context = new MikiContext())
+            {
+                GuildUser g = await context.GuildUsers.FindAsync(id.ToDbLong());
+
+                if(g == null)
+                {
+                    return;
+                }
+
+                g.UserCount = Bot.instance.Client.GetGuild(id).Users.Count;
+                await context.SaveChangesAsync();
+            }
+        }
+        #endregion
     }
 }

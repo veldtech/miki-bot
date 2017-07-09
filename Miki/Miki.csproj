@@ -395,26 +395,41 @@
     <Compile Include="Migrations\201706112117072_Revert-Marriages-To-Base.Designer.cs">
       <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706292313026_sync.cs" />
-    <Compile Include="Migrations\201706292313026_sync.Designer.cs">
-      <DependentUpon>201706292313026_sync.cs</DependentUpon>
+    <Compile Include="Migrations\201707080206413_Add-Guild-User.cs" />
+    <Compile Include="Migrations\201707080206413_Add-Guild-User.Designer.cs">
+      <DependentUpon>201707080206413_Add-Guild-User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707080223178_Add-Guild-User-Name.cs" />
+    <Compile Include="Migrations\201707080223178_Add-Guild-User-Name.Designer.cs">
+      <DependentUpon>201707080223178_Add-Guild-User-Name.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707082127510_Add-GuildUser-Rival-Count.cs" />
+    <Compile Include="Migrations\201707082127510_Add-GuildUser-Rival-Count.Designer.cs">
+      <DependentUpon>201707082127510_Add-GuildUser-Rival-Count.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707082218289_Add-GuildUser-Timer.cs" />
+    <Compile Include="Migrations\201707082218289_Add-GuildUser-Timer.Designer.cs">
+      <DependentUpon>201707082218289_Add-GuildUser-Timer.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Achievement.cs" />
-    <Compile Include="Models\CommandUsage.cs" />
-    <Compile Include="Models\Connections.cs" />
+    <Compile Include="Models\Objects\Guild\Timer.cs" />
+    <Compile Include="Models\Objects\User\Achievement.cs" />
+    <Compile Include="Models\Objects\User\CommandUsage.cs" />
+    <Compile Include="Models\Objects\User\Connections.cs" />
     <Compile Include="Models\Context\MikiContext.cs" />
-    <Compile Include="Models\EventMessages.cs" />
-    <Compile Include="Models\GlobalPasta.cs" />
-    <Compile Include="Models\GuildUser.cs" />
-    <Compile Include="Models\Language.cs" />
-    <Compile Include="Models\LevelRole.cs" />
-    <Compile Include="Models\LocalExperience.cs" />
-    <Compile Include="Models\Marriage.cs" />
-    <Compile Include="Models\PastaVote.cs" />
-    <Compile Include="Models\Setting.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\VoteCount.cs" />
+    <Compile Include="Models\Objects\Guild\EventMessages.cs" />
+    <Compile Include="Models\Objects\Global\GlobalPasta.cs" />
+    <Compile Include="Models\Objects\Guild\GuildUser.cs" />
+    <Compile Include="Models\Interfaces\IDatabaseEntity.cs" />
+    <Compile Include="Models\Interfaces\IDatabaseUser.cs" />
+    <Compile Include="Models\Objects\Channel\Language.cs" />
+    <Compile Include="Models\Objects\Guild\LevelRole.cs" />
+    <Compile Include="Models\Objects\Guild\LocalExperience.cs" />
+    <Compile Include="Models\Objects\User\Marriage.cs" />
+    <Compile Include="Models\Objects\Global\PastaVote.cs" />
+    <Compile Include="Models\Objects\Global\Setting.cs" />
+    <Compile Include="Models\Objects\User\User.cs" />
+    <Compile Include="Models\Objects\Global\VoteCount.cs" />
     <Compile Include="Modules\ActionsModule.cs" />
     <Compile Include="Modules\GamesModule.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
@@ -558,8 +573,17 @@
     <EmbeddedResource Include="Migrations\201706112117072_Revert-Marriages-To-Base.resx">
       <DependentUpon>201706112117072_Revert-Marriages-To-Base.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706292313026_sync.resx">
-      <DependentUpon>201706292313026_sync.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201707080206413_Add-Guild-User.resx">
+      <DependentUpon>201707080206413_Add-Guild-User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707080223178_Add-Guild-User-Name.resx">
+      <DependentUpon>201707080223178_Add-Guild-User-Name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707082127510_Add-GuildUser-Rival-Count.resx">
+      <DependentUpon>201707082127510_Add-GuildUser-Rival-Count.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707082218289_Add-GuildUser-Timer.resx">
+      <DependentUpon>201707082218289_Add-GuildUser-Timer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

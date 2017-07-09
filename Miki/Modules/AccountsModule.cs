@@ -33,7 +33,7 @@ namespace Miki.Modules
                 {
                     long guildId = g.Id.ToDbLong();
                     List<LevelRole> rolesObtained = context.LevelRoles.AsNoTracking().Where(p => p.GuildId == guildId && p.RequiredLevel == l).ToList();
-                    IDiscordUser u = await g.Guild.GetUserAsync(a.Id);
+                    IDiscordUser u = await g.Guild.GetUserAsync(a.Id.FromDbLong());
                     List<IDiscordRole> rolesGiven = new List<IDiscordRole>();
 
                     if (rolesObtained == null)
@@ -143,6 +143,7 @@ namespace Miki.Modules
                                     string infoValue = new MessageBuilder()
                                         .NewLine()
                                         .AppendText(locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)))
+                                        .NewLine()
                                         .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
                                         .Build();
 
@@ -154,6 +155,7 @@ namespace Miki.Modules
                                     string globalInfoValue = new MessageBuilder()
                                         .NewLine()
                                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
+                                        .NewLine()
                                         .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()))
                                         .Build();
 
@@ -199,7 +201,7 @@ namespace Miki.Modules
 
                                     embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"), favCommand);
 
-                                    string achievements = AchievementManager.Instance.PrintAchievements(context, account.Id);
+                                    string achievements = AchievementManager.Instance.PrintAchievements(context, account.Id.FromDbLong());
 
                                     embed.AddField(f =>
                                     {
@@ -250,7 +252,7 @@ namespace Miki.Modules
                                     }
                                     else if(users.Count == 1)
                                     {
-                                        Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, users.First().Id);
+                                        Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, users.First().Id.FromDbLong());
                                         if(currentMarriage == null)
                                         {
                                             await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
@@ -281,7 +283,7 @@ namespace Miki.Modules
                                         {
                                             foreach(User user in users)
                                             {
-                                                if(marriage.GetOther(e.Author.Id) == user.Id)
+                                                if(marriage.GetOther(e.Author.Id) == user.Id.FromDbLong())
                                                 {
                                                     await marriage.DivorceAsync(context);
                                                     done = true;
@@ -366,7 +368,7 @@ namespace Miki.Modules
                                     return;
                                 }
 
-                                if(await Marriage.ProposeAsync(context, currentUser.user_id, mentionedPerson.user_id))
+                                if(await Marriage.ProposeAsync(context, currentUser.Id, mentionedPerson.Id))
                                 {
                                     await e.Channel.SendMessage(
                                         $"💍 " + 
@@ -398,13 +400,13 @@ namespace Miki.Modules
                                     User person1 = await context.Users.FindAsync(marriage.Id1);
                                     User person2 = await context.Users.FindAsync(marriage.Id2);
 
-                                    if(person1.MarriageSlots < Marriage.GetMarriages(context, person1.user_id).Count)
+                                    if(person1.MarriageSlots < Marriage.GetMarriages(context, person1.Id).Count)
                                     {
                                         await e.Channel.SendMessage($"{person1.Name} do not have enough marriage slots, sorry :(");
                                         return;
                                     }
 
-                                    if(person2.MarriageSlots < Marriage.GetMarriages(context, person2.user_id).Count)
+                                    if(person2.MarriageSlots < Marriage.GetMarriages(context, person2.Id).Count)
                                     {
                                         await e.Channel.SendMessage($"{person2.Name} does not have enough marriage slots, sorry :(");
                                         return;

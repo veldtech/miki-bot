@@ -40,7 +40,7 @@ namespace Miki.Accounts.Achievements
             {
                 LevelPacket p = new LevelPacket()
                 {
-                    discordUser = await c.Guild.GetUserAsync(u.Id),
+                    discordUser = await c.Guild.GetUserAsync(u.Id.FromDbLong()),
                     discordChannel = c,
                     account = u,
                     level = l,
