@@ -84,7 +84,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        [Command("calc", "calculate")]
+        [Command(Name = "calc", Aliases = new string[] { "calculate" })]
         public async Task CalculateAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -100,7 +100,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command("guildinfo")]
+        [Command(Name = "guildinfo")]
         public async Task GuildInfoAsync(EventContext e)
         {
             IDiscordEmbed embed = Utils.Embed;
@@ -145,7 +145,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        [Command("help")]
+        [Command(Name = "help")]
         public async Task HelpAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -252,7 +252,7 @@ namespace Miki.Modules
             await e.Author.SendMessage(await Bot.instance.Events.ListCommandsInEmbed(e.message));
         }
 
-        [Command("info", "about")]
+        [Command(Name = "info", Aliases = new string[] { "about" })]
         public async Task InfoAsync(EventContext e)
         {
             IDiscordEmbed embed = Utils.Embed;
@@ -284,14 +284,14 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        [Command("donate", "patreon")]
+        [Command(Name = "donate", Aliases = new string[] { "patreon" })]
         public async Task DonateAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
             await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
         }
 
-        [Command("ping")]
+        [Command(Name = "ping")]
         public async Task PingAsync(EventContext e)
         {
             IDiscordMessage message = await e.Channel.SendMessage("Pong! ...");
@@ -301,7 +301,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command("invite")]
+        [Command(Name = "invite")]
         public async Task InviteAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -350,7 +350,7 @@ namespace Miki.Modules
                 .SendToChannel(e.Channel.Id);
         }
 
-        [Command("stats")]
+        [Command(Name = "stats")]
         public async Task StatsAsync(EventContext e)
         {
             //int servers = bot.Client.Guilds.Count;
@@ -416,7 +416,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(embed);
         }
 
-        [Command("urban")]
+        [Command(Name = "urban")]
         public async Task UrbanAsync(EventContext e)
         {
             if (string.IsNullOrEmpty(e.arguments)) return;
