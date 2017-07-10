@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using IA;
 using IA.Events;
+using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Extensions;
@@ -267,6 +268,12 @@ namespace Miki.Modules
                         .SendToChannel(context.Channel);
                 }
             }
+        }
+
+        [Command(Name = "attributetest")]
+        public async Task AttributeTest(EventContext e)
+        {
+            
         }
 
         private async Task DoGuildNewRival(EventContext context)
