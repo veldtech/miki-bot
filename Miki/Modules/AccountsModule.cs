@@ -20,15 +20,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using static Miki.Notification;
 
 namespace Miki.Modules
 {
     [Module("Accounts")]
     public class AccountsModule
     {
-        [ModuleInit]
-        public async Task Init(RuntimeModule module)
+        public AccountsModule(RuntimeModule module)
         {
             AccountManager.Instance.OnLocalLevelUp += async (a, g, l) =>
             {
@@ -59,6 +57,8 @@ namespace Miki.Modules
             module.MessageRecieved = async (msg) => await AccountManager.Instance.CheckAsync(msg);
 
             LoadAchievements();
+
+            Log.Done("init accounts");
         }
 
         [Command(Name = "buymarriageslot")]
@@ -793,11 +793,6 @@ namespace Miki.Modules
                         $" ⛪\n\n✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
                 }
             }
-        }
-
-        public async Task LoadEvents(Bot bot)
-        {
-
         }
 
         private async Task ConfirmBuyMarriageSlot(EventContext cont, int costForUpgrade)
