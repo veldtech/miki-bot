@@ -249,7 +249,7 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(embed);
 
-            await e.Author.SendMessage(await Bot.instance.Events.ListCommandsInEmbed(e.message));
+            await e.Author.SendMessage(await Bot.instance.Events.ListCommandsInEmbedAsync(e.message));
         }
 
         [Command(Name = "info", Aliases = new string[] { "about" })]
