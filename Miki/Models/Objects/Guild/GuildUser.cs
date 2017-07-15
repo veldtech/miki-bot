@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using IA;
+using IA.SDK.Interfaces;
 using Miki.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,24 @@ namespace Miki.Models
 
         public DateTime LastRivalRenewed { get; set; }
         public DateTime LastRewardClaimed { get; set; }
+
+        public static async Task Create(IDiscordGuild g)
+        {
+            using (var context = new MikiContext())
+            {
+                context.GuildUsers.Add(
+                    new GuildUser()
+                    {
+                        Id = g.Id.ToDbLong(),
+                        Name = g.Name,
+                        Experience = 0,
+                        RivalId = 0,
+                        UserCount = g.UserCount
+                    });
+
+                await context.SaveChangesAsync();
+            }
+        }
 
         // TODO: rework this
         public int CalculateLevel(int exp)
