@@ -1,5 +1,6 @@
 ﻿using IA;
 using IA.Events;
+using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
@@ -11,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    internal class EventMessageModule
+    [Module(Name = "eventmessages")]
+    public class EventMessageModule
     {
         /*
          * -u  = user's name
@@ -21,107 +23,89 @@ namespace Miki.Modules
          * -sc = server count 
          */
 
-        public async Task LoadEvents(Bot bot)
+        public EventMessageModule(RuntimeModule m)
         {
-            IModule i = new Module(module =>
+            m.UserJoinGuild = async (guild, user) =>
             {
-                module.Name = "welcomemessages";
-                module.Events = new List<ICommandEvent>()
+                List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
+
+                if (data == null)
                 {
-                    new CommandEvent(cmd =>
-                    {
-                        cmd.Name = "setwelcomemessage";
-                        cmd.Metadata.description = "Set a welcome message, set it to \"\" to remove it\n**Variables usable**\n-u : the person that joins\n-um: mention the person that joins\n-o : server owner's name\n-s : server's name";
+                    return;
+                }
 
-                        cmd.Accessibility = EventAccessibility.ADMINONLY;
-                        cmd.ProcessCommand = async (e) =>
-                        {
-                            using(var context = new MikiContext())
-                            {
-                                if(string.IsNullOrEmpty(e.arguments))
-                                {
-                                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER);
-                                    if(leaveMessage != null)
-                                    {
-                                        context.EventMessages.Remove(leaveMessage);
-                                        await e.Channel.SendMessage($"✅ deleted your welcome message");
-                                        await context.SaveChangesAsync();
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        await e.Channel.SendMessage($"⚠ no welcome message found!");
-                                    }
-                                }
+                data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
+            };
 
-                                if(await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
-                                {
-                                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
-                                }
-                                await context.SaveChangesAsync();
-                            }
-                        };
-                    }),
-                    new CommandEvent(cmd =>
-                    {
-                        cmd.Name = "setleavemessage";
-                        cmd.Accessibility = EventAccessibility.ADMINONLY;
-                        cmd.ProcessCommand = async (e) =>
-                        {
-                            using(var context = new MikiContext())
-                            {
-                                if(string.IsNullOrEmpty(e.arguments))
-                                {
-                                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.LEAVESERVER);
-                                    if(leaveMessage != null)
-                                    {
-                                        context.EventMessages.Remove(leaveMessage);
-                                        await e.Channel.SendMessage($"✅ deleted your leave message");
-                                        await context.SaveChangesAsync();
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        await e.Channel.SendMessage($"⚠ no leave message found!");
-                                    }
-                                }
+            m.UserLeaveGuild = async (guild, user) =>
+            {
+                List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
 
-                                if(await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
-                                {
-                                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
-                                }
-                                await context.SaveChangesAsync();
-                            }
-                        };
-                    }),
-                };
-
-                module.UserJoinGuild = async (guild, user) =>
+                if (data == null)
                 {
-                    List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
+                    return;
+                }
 
-                    if (data == null)
+                data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
+            };
+        }
+
+        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task SetWelcomeMessage(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                if (string.IsNullOrEmpty(e.arguments))
+                {
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER);
+                    if (leaveMessage != null)
                     {
+                        context.EventMessages.Remove(leaveMessage);
+                        await e.Channel.SendMessage($"✅ deleted your welcome message");
+                        await context.SaveChangesAsync();
                         return;
                     }
-
-                    data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
-                };
-
-                module.UserLeaveGuild = async (guild, user) =>
-                {
-                    List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
-
-                    if (data == null)
+                    else
                     {
+                        await e.Channel.SendMessage($"⚠ no welcome message found!");
+                    }
+                }
+
+                if (await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
+                {
+                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
+                }
+                await context.SaveChangesAsync();
+            }
+        }
+
+        [Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task SetLeaveMessage(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                if (string.IsNullOrEmpty(e.arguments))
+                {
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.LEAVESERVER);
+                    if (leaveMessage != null)
+                    {
+                        context.EventMessages.Remove(leaveMessage);
+                        await e.Channel.SendMessage($"✅ deleted your leave message");
+                        await context.SaveChangesAsync();
                         return;
                     }
+                    else
+                    {
+                        await e.Channel.SendMessage($"⚠ no leave message found!");
+                    }
+                }
 
-                    data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
-                };
-            });
-
-            await new RuntimeModule(i).InstallAsync(bot);
+                if (await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
+                {
+                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
+                }
+                await context.SaveChangesAsync();
+            }
         }
 
         private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)

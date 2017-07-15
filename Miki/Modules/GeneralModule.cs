@@ -6,6 +6,7 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.API.UrbanDictionary;
 using Miki.Languages;
+using Miki.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -20,6 +21,37 @@ namespace Miki.Modules
     [Module("General")]
     class GeneralModule
     {
+        public GeneralModule(RuntimeModule m)
+        {
+            Bot.instance.Events.AddCommandDoneEvent(x =>
+            {
+                x.Name = "--count-commands";
+                x.processEvent = async (msg, e, s) =>
+                {
+                    if (s)
+                    {
+                        using (var context = new MikiContext())
+                        {
+                            CommandUsage u = await context.CommandUsages.FindAsync(msg.Author.Id.ToDbLong(), e.Name);
+                            if (u == null)
+                            {
+                                u = context.CommandUsages.Add(new CommandUsage() { UserId = msg.Author.Id.ToDbLong(), Amount = 1, Name = e.Name });
+                            }
+                            else
+                            {
+                                u.Amount++;
+                            }
+
+                            User user = await context.Users.FindAsync(msg.Author.Id.ToDbLong());
+                            user.Total_Commands++;
+
+                            await context.SaveChangesAsync();
+                        }
+                    }
+                };
+            });
+        }
+
         [Command(Name = "avatar")]
         public async Task AvatarAsync(EventContext e)
         {
@@ -294,10 +326,21 @@ namespace Miki.Modules
         [Command(Name = "ping")]
         public async Task PingAsync(EventContext e)
         {
-            IDiscordMessage message = await e.Channel.SendMessage("Pong! ...");
+            IDiscordMessage message = await Utils.Embed
+                .SetTitle("Ping")
+                .SetDescription("Hold on, pinging services...")
+                .SendToChannel(e.Channel);
+
             if (message != null)
             {
-                await message.ModifyAsync("Pong! " + (message.Timestamp - e.message.Timestamp).TotalMilliseconds + "ms");
+                double ping = (message.Timestamp - e.message.Timestamp).TotalMilliseconds;
+
+                await message.ModifyAsync(
+                    Utils.Embed
+                        .SetTitle("Pong")
+                        .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
+                        .AddInlineField("Miki", ping + "ms")
+                        .AddInlineField("Discord", Bot.instance.Client.Latency + "ms"));
             }
         }
 
@@ -311,32 +354,6 @@ namespace Miki.Modules
 
             await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
-        }
-
-        [Command(Name = "prefix", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task PrefixAsync(EventContext e)
-        {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-            if (string.IsNullOrEmpty(e.arguments))
-            {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
-                return;
-            }
-
-            await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.arguments);
-
-            IDiscordEmbed embed = Utils.Embed;
-            embed.Title = locale.GetString("miki_module_general_prefix_success_header");
-            embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.arguments);
-
-            embed.AddField(f =>
-            {
-                f.Name = locale.GetString("miki_module_general_prefix_example_command_header");
-                f.Value = $"{e.arguments}profile";
-            });
-
-            await e.Channel.SendMessage(embed);
         }
 
         [Command(Name = "prefix", Accessibility = EventAccessibility.ADMINONLY, On = "?")]

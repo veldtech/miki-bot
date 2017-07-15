@@ -1,6 +1,7 @@
 ﻿using Discord;
 using IA;
 using IA.Events;
+using IA.Events.Attributes;
 using IA.Node;
 using IA.SDK;
 using IA.SDK.Events;
@@ -23,78 +24,11 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    internal class PastaModule
+    [Module("pasta")]
+    public class PastaModule
     {
-        public async Task LoadEvents(Bot bot)
-        {
-            IModule module_general = new Module(m =>
-            {
-                m.Name = "Pasta";
-                m.Events = new List<ICommandEvent>()
-                {
-                    new RuntimeCommandEvent("pasta")
-                        .Default(async (e)        => await GetPasta(e))
-                        .On("+", async (e)        => await CreatePasta(e))
-                        .On("new", async(e)       => await CreatePasta(e))
-                        .On("find", async(e)      => await SearchPasta(e))
-                        .On("search", async(e)    => await SearchPasta(e))
-                        .On("edit", async(e)      => await EditPasta(e))
-                        .On("change", async(e)    => await EditPasta(e))
-                        .On("remove", async(e)    => await DeletePasta(e))
-                        .On("delete", async(e)    => await DeletePasta(e))
-                        .On("who", async(e)       => await IdentifyPasta(e))
-                        .On("?", async(e)         => await IdentifyPasta(e))
-                        .On("whom", async(e)      => await IdentifyPasta(e))
-                        .On("upvote", async(e)    => await VotePasta(e, true))
-                        .On("love", async(e)      => await VotePasta(e, true))
-                        .On("<3", async(e)        => await VotePasta(e, true))
-                        .On("downvote", async(e)  => await VotePasta(e, false))
-                        .On("</3", async(e)       => await VotePasta(e, false))
-                        .On("hate", async(e)      => await VotePasta(e, false))
-                        .On("mine", async(e)      => await MyPasta(e))
-                        .On("my", async(e)        => await MyPasta(e))
-                        .On("pop", DoPastaLeaderboardsPopular)
-                        .On("top", DoPastaLeaderboardsLove),
-                    new RuntimeCommandEvent("pastatop")
-                        .Default(DoPastaLeaderboardsLove),
-                    new RuntimeCommandEvent("pastapop")
-                        .Default(DoPastaLeaderboardsPopular),
-                };
-            });
-
-            await new RuntimeModule(module_general).InstallAsync(bot);
-
-            // Internal::AddCommandDone
-            bot.Events.AddCommandDoneEvent(x =>
-            {
-                x.Name = "--count-commands";
-                x.processEvent = async (m, e, s) =>
-                {
-                    if (s)
-                    {
-                        using (var context = new MikiContext())
-                        {
-                            CommandUsage u = await context.CommandUsages.FindAsync(m.Author.Id.ToDbLong(), e.Name);
-                            if(u == null)
-                            {
-                                u = context.CommandUsages.Add(new CommandUsage() { UserId = m.Author.Id.ToDbLong(), Amount = 1, Name = e.Name });
-                            }
-                            else
-                            {
-                                u.Amount++;
-                            }
-
-                            User user = await context.Users.FindAsync(m.Author.Id.ToDbLong());
-                            user.Total_Commands++;
-
-                            await context.SaveChangesAsync();
-                        }
-                    }
-                };
-            });
-        }
-
-        private async Task DoPastaLeaderboardsPopular(EventContext context)
+        [Command(Name = "poppasta")]
+        public async Task DoPastaLeaderboardsPopular(EventContext context)
         {
             using (var d = new MikiContext())
             {
@@ -113,7 +47,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task DoPastaLeaderboardsLove(EventContext context)
+        [Command(Name = "toppasta")]
+        public async Task DoPastaLeaderboardsLove(EventContext context)
         {
             using (var d = new MikiContext())
             {
@@ -132,7 +67,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task MyPasta(EventContext e)
+        [Command(Name = "mypasta")]
+        public async Task MyPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -173,7 +109,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task CreatePasta(EventContext e)
+        [Command(Name = "createpasta")]
+        public async Task CreatePasta(EventContext e)
         {
             List<string> arguments = e.arguments.Split(' ').ToList();
 
@@ -213,7 +150,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task DeletePasta(EventContext e)
+        [Command(Name = "deletepasta")]
+        public async Task DeletePasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -253,7 +191,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task EditPasta(EventContext e)
+        [Command(Name = "editpasta")]
+        public async Task EditPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -293,7 +232,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task GetPasta(EventContext e)
+        [Command(Name = "pasta")]
+        public async Task GetPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -321,7 +261,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task IdentifyPasta(EventContext e)
+        [Command(Name = "infopasta")]
+        public async Task IdentifyPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -392,7 +333,8 @@ namespace Miki.Modules
             }
         }
 
-        private async Task SearchPasta(EventContext e)
+        [Command(Name = "searchpasta")]
+        public async Task SearchPasta(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
 
@@ -437,6 +379,18 @@ namespace Miki.Modules
                 }
                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"Sorry, but we couldn't find a pasta with `{arguments[0]}`"));
             }
+        }
+
+        [Command(Name = "lovepasta")]
+        public async Task LovePasta(EventContext e)
+        {
+            await VotePasta(e, true);
+        }
+
+        [Command(Name = "hatepasta")]
+        public async Task HatePasta(EventContext e)
+        {
+            await VotePasta(e, false);
         }
 
         private async Task VotePasta(EventContext e, bool vote)

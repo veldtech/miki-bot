@@ -1,15 +1,18 @@
 ﻿using IA;
 using IA.Events;
+using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
+using Miki.API.Patreon;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
+    [Module("patreon")]
     internal class PatreonModule
     {
         private string[] lunchposts = new string[]
@@ -71,53 +74,32 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
         };
 
-        public async Task LoadEvents(Bot bot)
+        [Command(Name = "ask")]
+        public async Task AskAsync(EventContext e)
         {
-            IModule m = new Module(module =>
+            string image = "http://i.imgur.com/AHPnL.gif";
+            IDiscordEmbed embed = Utils.Embed;
+
+            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
+
+            if (e.message.MentionedUserIds.Count > 0)
             {
-                module.Name = "patreon";
-                module.Events = new List<ICommandEvent>()
+                if (e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
                 {
-                    new CommandEvent(x =>
-                    {
-                        x.Name = "ask";
-                        x.Metadata = new EventMetadata(
-                            "Ask people things :)",
-                            "Couldn't ask this person :(",
-                            ">ask [@user] question");
-                        x.ProcessCommand = async (e) =>
-                        {
-                            string image = "http://i.imgur.com/AHPnL.gif";
-                            IDiscordEmbed embed = Utils.Embed;
+                    IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
+                    image = "http://i.imgur.com/AFcG8LU.gif";
+                    embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
+                }
+            }
 
-                            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
+            embed.ImageUrl = image;
+            await e.Channel.SendMessage(embed);
+    }
 
-                            if(e.message.MentionedUserIds.Count > 0)
-                            {
-                                if(e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
-                                {
-                                   IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
-                                   image = "http://i.imgur.com/AFcG8LU.gif";
-                                    embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
-                                }
-                            }
-
-                            embed.ImageUrl = image;
-                            await e.Channel.SendMessage(embed);
-                        };
-                    }),
-                    new CommandEvent(x =>
-                    {   
-                        x.Name  = "lunch";
-                        x.ProcessCommand = async (e) =>
-                        {
-                            await e.Channel.SendMessage("Woof woof! What's for lunch?\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
-                        };
-                    })
-                };
-            });
-
-            await new RuntimeModule(m).InstallAsync(bot);
+        [Command(Name = "lunch")]
+        public async Task LunchAsync(EventContext e)
+        {
+            await e.Channel.SendMessage("Woof woof! What's for lunch?\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
         }
     }
 }

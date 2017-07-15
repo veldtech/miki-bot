@@ -195,9 +195,17 @@ namespace Miki.Modules
 
                     int rank = await account.GetLocalRank(e.Guild.Id);
 
+                    EmojiBarSet onBarSet = new EmojiBarSet("<:mbaronright:334479818924228608>", "<:mbaronmid:334479818848468992>", "<:mbaronleft:334479819003789312>");
+                    EmojiBarSet offBarSet = new EmojiBarSet("<:mbaroffright:334479818714513430>", "<:mbaroffmid:334479818504536066>", "<:mbaroffleft:334479818949394442>");
+
+
+                    EmojiBar expBar = new EmojiBar(account.CalculateMaxExperience(localExp.Experience), onBarSet, offBarSet, 6);
+
                     string infoValue = new MessageBuilder()
                         .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)))
+                        .NewLine()
+                        .AppendText(await expBar.Print(localExp.Experience, e.Channel))
                         .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
                         .Build();
@@ -207,9 +215,13 @@ namespace Miki.Modules
                     int globalLevel = account.CalculateLevel(account.Total_Experience);
                     int globalRank = account.CalculateMaxExperience(account.Total_Experience);
 
+                    EmojiBar globalExpBar = new EmojiBar(account.CalculateMaxExperience(account.Total_Experience), onBarSet, offBarSet, 6);
+
                     string globalInfoValue = new MessageBuilder()
                         .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
+                        .NewLine()
+                        .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
                         .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()))
                         .Build();
@@ -219,9 +231,14 @@ namespace Miki.Modules
                     embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
                     List<Marriage> marriages = Marriage.GetMarriages(context, id);
+
+                    marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
+
                     List<User> users = new List<User>();
 
-                    for (int i = 0; i < marriages.Count; i++)
+                    int maxCount = marriages.Count;
+
+                    for (int i = 0; i < maxCount; i++)
                     {
                         users.Add(await context.Users.FindAsync(marriages[i].GetOther(id)));
                     }
@@ -229,7 +246,7 @@ namespace Miki.Modules
                     if (marriages.Count > 0)
                     {
                         string output = "";
-                        for (int i = 0; i < marriages.Count; i++)
+                        for (int i = 0; i < maxCount; i++)
                         {
                             if (marriages[i].GetOther(id) != 0 && marriages[i].TimeOfMarriage != null)
                             {
@@ -525,6 +542,12 @@ namespace Miki.Modules
 
                 await e.Channel.SendMessage(embed);
             }
+        }
+
+        [Command(Name = "rep")]
+        public async Task GiveReputationAsync(EventContext e)
+        {
+
         }
 
         [Command(Name = "give")]
@@ -1063,6 +1086,7 @@ namespace Miki.Modules
                     }
                 };
             }).CheckAsync;
+
             #endregion
   
             #region Misc Achievements

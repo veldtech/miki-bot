@@ -313,10 +313,13 @@
     <Compile Include="Accounts\Achievements\Objects\MessageAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
+    <Compile Include="Accounts\EmojiBar.cs" />
     <Compile Include="Accounts\LeaderboardsItem.cs" />
+    <Compile Include="API\Gambling\GamblingApi.cs" />
+    <Compile Include="API\Patreon\PatreonApi.cs" />
+    <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
     <Compile Include="API\Reminder\ReminderAPI.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
-    <Compile Include="CommandLoader.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs" />
     <Compile Include="Languages\cz-CZ.Designer.cs" />
     <Compile Include="Languages\da-DK.Designer.cs">
@@ -412,6 +415,7 @@
       <DependentUpon>201707082218289_Add-GuildUser-Timer.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
@@ -431,8 +435,10 @@
     <Compile Include="Models\Objects\User\User.cs" />
     <Compile Include="Models\Objects\Global\VoteCount.cs" />
     <Compile Include="Modules\ActionsModule.cs" />
+    <Compile Include="Modules\DonatorModule.cs" />
     <Compile Include="Modules\GamesModule.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
+    <Compile Include="Modules\GuildAccountsModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using IA;
 using IA.Events;
+using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Interfaces;
 using System;
@@ -13,21 +14,21 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
+    [Module("internal:servercount")]
     class ServerCountModule
     {
-        public async Task LoadEvents(Bot bot)
+        public ServerCountModule(RuntimeModule m)
         {
-            await new RuntimeModule("--servercount")
-            {
-                JoinedGuild = (g) => OnUpdateGuilds(bot, g),
-                LeftGuild = (g) => OnUpdateGuilds(bot, g)
-            }.InstallAsync(bot);
+            m.JoinedGuild = OnUpdateGuilds;
+            m.LeftGuild = OnUpdateGuilds;
         }
 
-        private async Task OnUpdateGuilds(Bot bot, IDiscordGuild g)
+        private async Task OnUpdateGuilds(IDiscordGuild g)
         {
-            //await SendCarbon(bot);
-            //await SendDiscordBotsOrg(bot, g);
+            Bot bot = Bot.instance;
+
+            await SendCarbon(bot);
+            await SendDiscordBotsOrg(bot, g);
             await SendDiscordPW(bot, g);
         }
 
