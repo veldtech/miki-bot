@@ -52,10 +52,10 @@ namespace Miki.Accounts.Achievements
                     return;
                 }
 
-                if (await Achievements[a.Rank].CheckAsync(context, packet))
+                if (await Achievements[a.Rank + 1].CheckAsync(context, packet))
                 {
-                    await Achievements[a.Rank].UnlockAsync(context, packet.discordChannel, packet.discordUser);
-                    await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank], packet.discordUser);
+                    await Achievements[a.Rank + 1].UnlockAsync(context, packet.discordChannel, packet.discordUser, a.Rank + 1);
+                    await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser);
                 }
             }
         }
