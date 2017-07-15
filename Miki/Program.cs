@@ -3,6 +3,7 @@ using IA;
 using IA.FileHandling;
 using IA.SDK;
 using Miki.Accounts;
+using Miki.API.Patreon;
 using Miki.Languages;
 using Miki.Models;
 using MySql.Data.MySqlClient;
@@ -79,11 +80,10 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.3.41";
+                x.Version = "0.3.71";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
-                x.EventLoaderMethod = (async (b) => { await EventLoader.LoadEvents(b); });
             });
 
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
