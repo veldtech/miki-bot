@@ -522,27 +522,13 @@ Fuzzy</comment>
     <value>Push your luck by asking Miki specific questions about your life!</value>
   </data>
   <data name="miki_command_description_pasta" xml:space="preserve">
-    <value>Save and load lines of text.</value>
+    <value>Get memes from all over the world!</value>
   </data>
   <data name="miki_command_usage_8ball" xml:space="preserve">
     <value>&gt;8ball &lt;question&gt;</value>
   </data>
   <data name="miki_command_usage_pasta" xml:space="preserve">
-    <value>&gt;pasta new &lt;keyword&gt; &lt;content of pasta&gt;
-&gt;pasta + &lt;keyword&gt; &lt;content of pasta&gt;
-&gt;pasta find &lt;keyword&gt;
-&gt;pasta search &lt;keyword&gt;
-&gt;pasta edit &lt;keyword&gt; &lt;content to edit&gt;
-&gt;pasta change &lt;keyword&gt; &lt;content to edit&gt;
-&gt;pasta who &lt;keyword&gt;
-&gt;pasta whom &lt;keyword&gt;
-&gt;pasta ? &lt;keyword&gt;
-&gt;pasta upvote &lt;keyword&gt;
-&gt;pasta &lt;3 &lt;keyword&gt;
-&gt;pasta love &lt;keyword&gt;
-&gt;pasta downvote &lt;keyword&gt;
-&gt;pasta &lt;/3 &lt;keyword&gt;
-&gt;pasta hate &lt;keyword&gt;</value>
+    <value>&gt;pasta &lt;keyword&gt;</value>
     <comment>Please do not change "pasta new", do change &lt;keyword&gt; stuff</comment>
   </data>
   <data name="miki_module_fun_8ball_result" xml:space="preserve">
@@ -634,7 +620,7 @@ Fuzzy</comment>
     <value>&gt;info</value>
   </data>
   <data name="miki_command_usage_prefix" xml:space="preserve">
-    <value>&gt;prefix ~</value>
+    <value>&gt;prefix</value>
   </data>
   <data name="miki_module_admin_disable_command" xml:space="preserve">
     <value>Disabled command `{0}`!</value>
@@ -1228,9 +1214,105 @@ all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
     <value>&gt;taiko &lt;osu username&gt;</value>
   </data>
   <data name="miki_command_description_remind" xml:space="preserve">
-    <value />
+    <value>Remind yourself to do things!</value>
   </data>
   <data name="miki_command_usage_remind" xml:space="preserve">
     <value>&gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds)</value>
+  </data>
+  <data name="miki_command_description_createpasta" xml:space="preserve">
+    <value>Create your own special pasta and share it with everyone!</value>
+  </data>
+  <data name="miki_command_description_deletepasta" xml:space="preserve">
+    <value>Regret making a pasta? delete it with this command!</value>
+  </data>
+  <data name="miki_command_description_editpasta" xml:space="preserve">
+    <value>Not happy with your current pasta? Edit it to be cool and with the meta again!</value>
+  </data>
+  <data name="miki_command_description_guildconfig" xml:space="preserve">
+    <value>Set up your guild account the way you'd like it to function</value>
+  </data>
+  <data name="miki_command_description_guildnewrival" xml:space="preserve">
+    <value>Set a (new) rival for your guild! time for some competition!</value>
+  </data>
+  <data name="miki_command_description_guildprofile" xml:space="preserve">
+    <value>This command shows all of your guild's statistics!</value>
+  </data>
+  <data name="miki_command_description_guildtop" xml:space="preserve">
+    <value>Check the top guilds based on experience!</value>
+  </data>
+  <data name="miki_command_description_guildweekly" xml:space="preserve">
+    <value>If you're winning from your rival, you get more rewards! get them with this command!</value>
+  </data>
+  <data name="miki_command_description_hatepasta" xml:space="preserve">
+    <value>Do you absolutely despise a pasta? Show your hatred with this command!</value>
+  </data>
+  <data name="miki_command_description_infopasta" xml:space="preserve">
+    <value>Want to know who made this pasta? use this command!</value>
+  </data>
+  <data name="miki_command_description_lovepasta" xml:space="preserve">
+    <value>Do you have a favourite pasta? Show your love by using this command!</value>
+  </data>
+  <data name="miki_command_description_mypasta" xml:space="preserve">
+    <value>Get a list of all your pastas!</value>
+  </data>
+  <data name="miki_command_description_poppasta" xml:space="preserve">
+    <value>This command shows the most used pastas</value>
+  </data>
+  <data name="miki_command_description_searchpasta" xml:space="preserve">
+    <value>Search through all available pastas and discover new and dank memes!</value>
+  </data>
+  <data name="miki_command_description_toppasta" xml:space="preserve">
+    <value>This command shows the most loved pastas!</value>
+  </data>
+  <data name="miki_command_usage_createpasta" xml:space="preserve">
+    <value>&gt;createpasta &lt;tag&gt; &lt;content&gt;</value>
+  </data>
+  <data name="miki_command_usage_deletepasta" xml:space="preserve">
+    <value>&gt;deletepasta &lt;tag&gt;</value>
+  </data>
+  <data name="miki_command_usage_editpasta" xml:space="preserve">
+    <value>&gt;editpasta &lt;tag&gt; &lt;new content&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildconfig" xml:space="preserve">
+    <value>&gt;guildconfig expneeded &lt;amount&gt;
+&gt;guildconfig visible &lt;yes:no&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildnewrival" xml:space="preserve">
+    <value>&gt;guildnewrival</value>
+  </data>
+  <data name="miki_command_usage_guildprofile" xml:space="preserve">
+    <value>&gt;guildprofile</value>
+  </data>
+  <data name="miki_command_usage_guildtop" xml:space="preserve">
+    <value>&gt;guildtop</value>
+  </data>
+  <data name="miki_command_usage_guildweekly" xml:space="preserve">
+    <value>&gt;guildweekly</value>
+  </data>
+  <data name="miki_command_usage_infopasta" xml:space="preserve">
+    <value>&gt;infopasta &lt;tag&gt;</value>
+  </data>
+  <data name="miki_command_usage_lovepasta" xml:space="preserve">
+    <value>&gt;lovepasta &lt;tag&gt;</value>
+  </data>
+  <data name="miki_command_usage_mypasta" xml:space="preserve">
+    <value>&gt;mypasta</value>
+  </data>
+  <data name="miki_command_usage_poppasta" xml:space="preserve">
+    <value>&gt;poppasta</value>
+  </data>
+  <data name="miki_command_usage_searchpasta" xml:space="preserve">
+    <value>&gt;searchpasta &lt;tag&gt; [page=1]</value>
+  </data>
+  <data name="miki_command_usage_toppasta" xml:space="preserve">
+    <value>&gt;toppasta</value>
+  </data>
+  <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
+    <value>You do not have the experience needed to claim rewards on this guild. Please hang around for a bit until you are allowed to! 
+
+You need atleast **{0}** experience before you can use this command on this server.</value>
+  </data>
+  <data name="miki_terms_weekly" xml:space="preserve">
+    <value>Weekly</value>
   </data>
 </root>

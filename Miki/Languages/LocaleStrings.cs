@@ -46,6 +46,8 @@ namespace Miki.Languages
 
             Locales.Add("pt-pt", pt_PT.ResourceManager);
 
+            Locales.Add("ru-ru", ru_RU.ResourceManager);
+
             Locales.Add("sv-se", sv_SE.ResourceManager);
 
             Locales.Add("zh-chs", zh_CHS.ResourceManager);
