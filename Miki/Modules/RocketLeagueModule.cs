@@ -164,12 +164,16 @@ namespace Miki.Modules
                     }
                     else
                     {
-                        RocketLeaguePlaylist playlist = new RocketLeaguePlaylist();
-                        playlist.Id = p.Id;
-                        playlist.Name = p.Name;
-                        playlist.PlatformId = p.PlatformId;
-                        playlist.Population = new RocketLeaguePopulation();
-                        playlist.Population.Players = p.Population.Players;
+                        RocketLeaguePlaylist playlist = new RocketLeaguePlaylist()
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            PlatformId = p.PlatformId,
+                            Population = new RocketLeaguePopulation()
+                            {
+                                Players = p.Population.Players
+                            }
+                        };
 
                         d.Add(p.Id, playlist);
                     }

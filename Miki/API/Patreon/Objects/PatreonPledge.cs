@@ -243,7 +243,9 @@ namespace Miki.API.Patreon
 
     public class Attributes
     {
-        public int amount_cents { get; set; }
+        [JsonProperty("amount_cents")]
+        public int AmountCents { get; set; }
+
         public string created_at { get; set; }
         public string declined_since { get; set; }
         public bool patron_pays_fees { get; set; }

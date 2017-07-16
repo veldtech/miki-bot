@@ -414,6 +414,14 @@
     <Compile Include="Migrations\201707082218289_Add-GuildUser-Timer.Designer.cs">
       <DependentUpon>201707082218289_Add-GuildUser-Timer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707151951421_add-config-to-guilduser.cs" />
+    <Compile Include="Migrations\201707151951421_add-config-to-guilduser.Designer.cs">
+      <DependentUpon>201707151951421_add-config-to-guilduser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201707152101148_add-reputation.cs" />
+    <Compile Include="Migrations\201707152101148_add-reputation.Designer.cs">
+      <DependentUpon>201707152101148_add-reputation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
@@ -594,6 +602,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707082218289_Add-GuildUser-Timer.resx">
       <DependentUpon>201707082218289_Add-GuildUser-Timer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707151951421_add-config-to-guilduser.resx">
+      <DependentUpon>201707151951421_add-config-to-guilduser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707152101148_add-reputation.resx">
+      <DependentUpon>201707152101148_add-reputation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -488,8 +488,10 @@ namespace Miki.Modules
                     "🍒", "🍒", "🍒", "🍒",
                 };
 
-                EmbedBuilder b = new EmbedBuilder();
-                b.Title = locale.GetString(Locale.SlotsHeader);
+                EmbedBuilder b = new EmbedBuilder()
+                {
+                    Title = locale.GetString(Locale.SlotsHeader)
+                };
 
                 Random r = new Random();
 
@@ -587,6 +589,7 @@ namespace Miki.Modules
             }
         }
 
+        // TODO: work this in again
         //[Command(Name = "slots", On = "all")]
         //public async Task SlotsAllAsync(EventContext e)
         //{
@@ -823,6 +826,5 @@ namespace Miki.Modules
                 await e.Channel.SendMessage(new RuntimeEmbed(b));
             }
         }
-
     }
 }

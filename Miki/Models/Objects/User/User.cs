@@ -55,6 +55,12 @@ namespace Miki.Models
         [DefaultValue("getutcdate()")]
         public DateTime DateCreated { get; set; }
 
+        [Column("Reputation")]
+        public int Reputation { get; set; }
+
+        public DateTime LastReputationGiven { get; set; }
+
+        // TODO: finish this
         public void AddCurrency(MikiContext context, User fromUser, int amount)
         {
             Currency += amount;
@@ -74,12 +80,14 @@ namespace Miki.Models
                 AvatarUrl = "default",
                 HeaderUrl = "default",
                 DateCreated = DateTime.Now,
-                LastDailyTime = DateTime.Parse("1/1/1753 12:00:00 AM"),
+                LastDailyTime = Utils.MinDbValue,
                 MarriageSlots = 5,
                 Name = e.Author.Username,
                 Title = "",
                 Total_Commands = 0,
-                Total_Experience = 0
+                Total_Experience = 0,
+                Reputation = 0,
+                LastReputationGiven = Utils.MinDbValue
             };
             context.Users.Add(user);
             return user;

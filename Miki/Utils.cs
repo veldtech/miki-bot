@@ -32,6 +32,8 @@ namespace Miki
               time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
         }
 
+        public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
+
         public static IDiscordEmbed Embed => new RuntimeEmbed(new EmbedBuilder());
 
         public static IDiscordEmbed ErrorEmbed(Locale locale, string message)

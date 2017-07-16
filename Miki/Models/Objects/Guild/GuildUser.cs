@@ -29,7 +29,11 @@ namespace Miki.Models
         public int UserCount { get; set; }
 
         public DateTime LastRivalRenewed { get; set; }
-        public DateTime LastRewardClaimed { get; set; }
+
+        #region Config
+        public int MinimalExperienceToGetRewards { get; set; }
+        public bool VisibleOnLeaderboards { get; set; } = true;
+        #endregion
 
         public static async Task Create(IDiscordGuild g)
         {
@@ -42,7 +46,9 @@ namespace Miki.Models
                         Name = g.Name,
                         Experience = 0,
                         RivalId = 0,
-                        UserCount = g.UserCount
+                        UserCount = g.UserCount,
+                        MinimalExperienceToGetRewards = 100,
+                        VisibleOnLeaderboards = true
                     });
 
                 await context.SaveChangesAsync();

@@ -555,7 +555,6 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Guild.Id);
 
-            int goldSent = 0;
             string[] arguments = e.arguments.Split(' ');
 
             if (arguments.Length < 2)
@@ -564,7 +563,7 @@ namespace Miki.Modules
                 return;
             }
 
-            if (!int.TryParse(arguments[1], out goldSent))
+            if (!int.TryParse(arguments[1], out int goldSent))
             {
                 await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!"));
                 return;
@@ -605,10 +604,12 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.Title = "Transaction failed!";
-                    embed.Description = "You do not have enough Mekos.";
-                    embed.Color = new Discord.Color(255, 0, 0);
+                    EmbedBuilder embed = new EmbedBuilder()
+                    {
+                        Title = "Transaction failed!",
+                        Description = "You do not have enough Mekos.",
+                        Color = new Discord.Color(255, 0, 0)
+                    };
                     await e.Channel.SendMessage(new RuntimeEmbed(embed));
                 }
             }

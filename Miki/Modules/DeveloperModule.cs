@@ -116,8 +116,7 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    ulong x = 0;
-                    ulong.TryParse(context.message.Content, out x);
+                    ulong.TryParse(context.message.Content, out ulong x);
                     if (x != 0)
                     {
                         database.Achievements.Add(new Achievement() { Id = x.ToDbLong(), Name = "donator", Rank = 0 });

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("Admin")]
+    [Module(Name = "Admin", CanBeDisabled = false)]
     public class AdminModule
     {
         [Command(Name = "ban", Accessibility = EventAccessibility.ADMINONLY)]
@@ -113,7 +113,7 @@ namespace Miki.Modules
 
         }
 
-        [Command(Name = "setcommand", Accessibility = EventAccessibility.ADMINONLY)]
+        [Command(Name = "setcommand", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
         public async Task SetCommandAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -154,7 +154,7 @@ namespace Miki.Modules
 
         }
 
-        [Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY)]
+        [Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
         public async Task SetModuleAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());

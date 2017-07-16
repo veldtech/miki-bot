@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Models
 {
+    // TODO: add more event types
     public enum EventMessageType
     {
         JOINSERVER = 0,

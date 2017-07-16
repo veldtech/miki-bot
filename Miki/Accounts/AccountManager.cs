@@ -36,11 +36,14 @@ namespace Miki.Accounts
                 int randomNumber = Global.random.Next(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
 
-                IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
-                embed.Title = locale.GetString("miki_accounts_level_up_header");
-                embed.Description = locale.GetString("miki_accounts_level_up_content", a.Name, l);
+                IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())
+                {
+                    Title = locale.GetString("miki_accounts_level_up_header"),
+                    Description = locale.GetString("miki_accounts_level_up_content", a.Name, l),
+                    Color = new IA.SDK.Color(1, 0.7f, 0.2f)
+                };
+
                 embed.AddField(x => { x.Name = locale.GetString("miki_generic_reward"); x.Value = "🔸" + currencyAdded.ToString(); });
-                embed.Color = new IA.SDK.Color(1, 0.7f, 0.2f);
                 await Notification.SendChannel(e, embed);
 
                 using (var context = new MikiContext())
@@ -100,7 +103,7 @@ namespace Miki.Accounts
                                 Experience = value,
                                 UserCount = Bot.instance.Client.GetGuild(e.Guild.Id).Users.Count,
                                 LastRivalRenewed = DateTime.Now.AddYears(-1),
-                                LastRewardClaimed = DateTime.Now.AddYears(-1)
+                                MinimalExperienceToGetRewards = 100,
                             });
                             await context.SaveChangesAsync();
                         }

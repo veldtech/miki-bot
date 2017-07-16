@@ -24,62 +24,86 @@ namespace Miki.Modules
         {
             using (MikiContext database = new MikiContext())
             {
+                Locale locale = Locale.GetEntity(context.Channel.Id);
+                LocalExperience thisUser = await database.Experience.FindAsync(context.Guild.Id.ToDbLong(), context.Author.Id.ToDbLong());
                 GuildUser thisGuild = await database.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
                 Timer timer = await database.Timers.FindAsync(context.Guild.Id.ToDbLong(), context.Author.Id.ToDbLong());
 
-                if (timer == null)
+                if (thisUser == null)
                 {
-                    timer = database.Timers.Add(new Timer()
-                    {
-                        GuildId = context.Guild.Id.ToDbLong(),
-                        UserId = context.Author.Id.ToDbLong(),
-                        Value = DateTime.Now.AddDays(-30)
-                    });
-                    await database.SaveChangesAsync();
+                    Log.ErrorAt("Guildweekly", "User is null");
+                    return;
                 }
 
-                if (timer.Value.AddDays(7) <= DateTime.Now)
+                if (thisGuild == null)
                 {
-                    SocketGuild guild = Bot.instance.Client.GetGuild(thisGuild.Id.FromDbLong());
+                    Log.ErrorAt("Guildweekly", "Guild is null");
+                    return;
+                }
 
-                    GuildUser rival = await thisGuild.GetRival();
-
-                    if (rival == null)
+                if (thisUser.Experience > thisGuild.MinimalExperienceToGetRewards)
+                {
+                    if (timer == null)
                     {
-                        await Utils.Embed
-                            .SetTitle("Weekly")
-                            .SetDescription("You have no rival yet, Server admins: use `>guildnewrival` to start matchmaking!")
-                            .SendToChannel(context.Channel);
-                        return;
+                        timer = database.Timers.Add(new Timer()
+                        {
+                            GuildId = context.Guild.Id.ToDbLong(),
+                            UserId = context.Author.Id.ToDbLong(),
+                            Value = DateTime.Now.AddDays(-30)
+                        });
+                        await database.SaveChangesAsync();
                     }
 
-                    if (rival.Experience > thisGuild.Experience)
+                    if (timer.Value.AddDays(7) <= DateTime.Now)
+                    {
+                        SocketGuild guild = Bot.instance.Client.GetGuild(thisGuild.Id.FromDbLong());
+
+                        GuildUser rival = await thisGuild.GetRival();
+
+                        if (rival == null)
+                        {
+                            await Utils.Embed
+                                .SetTitle(locale.GetString("miki_terms_weekly"))
+                                .SetDescription("You have no rival yet, Server admins: use `>guildnewrival` to start matchmaking!")
+                                .SendToChannel(context.Channel);
+                            return;
+                        }
+
+                        if (rival.Experience > thisGuild.Experience)
+                        {
+                            await Utils.Embed
+                                .SetTitle(locale.GetString("miki_terms_weekly"))
+                                .SetDescription("you got to have a higher level than your rival!")
+                                .SendToChannel(context.Channel);
+                            return;
+                        }
+
+                        int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
+
+                        User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
+                        user.Currency += mekosGained;
+
+                        await Utils.Embed
+                            .SetTitle(locale.GetString("miki_terms_weekly"))
+                            .AddInlineField("Mekos", mekosGained.ToString())
+                            .SendToChannel(context.Channel);
+
+                        timer.Value = DateTime.Now;
+                        await database.SaveChangesAsync();
+                    }
+                    else
                     {
                         await Utils.Embed
-                            .SetTitle("Weekly")
-                            .SetDescription("you got to have a higher level than your rival!")
+                            .SetTitle(locale.GetString("miki_terms_weekly"))
+                            .SetDescription("You've already used your weekly, available again in " + (timer.Value.AddDays(7) - DateTime.Now).ToTimeString())
                             .SendToChannel(context.Channel);
-                        return;
                     }
-
-                    int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
-
-                    User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
-                    user.Currency += mekosGained;
-
-                    await Utils.Embed
-                        .SetTitle("Weekly bonus")
-                        .AddInlineField("Mekos", mekosGained.ToString())
-                        .SendToChannel(context.Channel);
-
-                    timer.Value = DateTime.Now;
-                    await database.SaveChangesAsync();
                 }
                 else
                 {
                     await Utils.Embed
-                        .SetTitle("Weekly")
-                        .SetDescription("You've already used your weekly, available again in " + (timer.Value.AddDays(7) - DateTime.Now).ToTimeString())
+                        .SetTitle(locale.GetString("miki_terms_weekly"))
+                        .SetDescription(locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
                         .SendToChannel(context.Channel);
                 }
             }
@@ -92,8 +116,16 @@ namespace Miki.Modules
             {
                 GuildUser thisGuild = await db.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
 
-                List<GuildUser> rivalGuilds = db.GuildUsers.Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id).ToList();
+                if(thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
+                {
+                    await Utils.Embed
+                       .SetTitle("Rival")
+                       .SetDescription($"Please wait a day before doing this command again!")
+                       .SendToChannel(context.Channel);
+                    return;
+                }
 
+                List<GuildUser> rivalGuilds = db.GuildUsers.Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id).ToList();
 
                 if (rivalGuilds.Count == 0)
                 {
@@ -110,6 +142,8 @@ namespace Miki.Modules
 
                 thisGuild.RivalId = rivalGuild.Id;
                 rivalGuild.RivalId = thisGuild.Id;
+
+                thisGuild.LastRivalRenewed = DateTime.Now;
 
                 await db.SaveChangesAsync();
 
@@ -159,6 +193,65 @@ namespace Miki.Modules
                 }
 
                 await embed.SendToChannel(context.Channel);
+            }
+        }
+
+        [Command(Name = "guildconfig")]
+        public async Task SetGuildConfig(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                string[] arguments = e.arguments.Split(' ');
+                GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+
+                switch (arguments[0])
+                {
+                    case "expneeded":
+                    {
+                        if (arguments.Length > 1)
+                        {
+                            if (int.TryParse(arguments[1], out int value))
+                            {
+                                g.MinimalExperienceToGetRewards = value;
+                            }
+                        }
+                    } break;
+                    case "visible":
+                    {
+                        if (arguments.Length > 1)
+                        {
+                            if (arguments[1].ToLower() == "yes")
+                            {
+                                g.VisibleOnLeaderboards = true;
+                            }
+                            else if (arguments[1].ToLower() == "no")
+                            {
+                                g.VisibleOnLeaderboards = false;
+
+                            }
+                        }
+                    } break;
+                }
+                await context.SaveChangesAsync();
+            }
+        }
+
+        [Command(Name = "guildtop")]
+        public async Task GuildTop(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                var leaderboards = context.Database.SqlQuery<LeaderboardsItem>("SELECT TOP 12 Name, Experience as Value from [dbo].GuildUsers where VisibleOnLeaderboards = 1 order by Value desc").ToList();
+
+                IDiscordEmbed embed = Utils.Embed
+                    .SetTitle("Top Guilds");
+
+                foreach(LeaderboardsItem i in leaderboards)
+                {
+                    embed.AddInlineField(i.Name, i.Value.ToString());
+                }
+
+                await embed.SendToChannel(e.Channel);
             }
         }
     }

@@ -289,10 +289,14 @@ namespace Miki.Modules
 
                     User creator = await context.Users.FindAsync(pasta.creator_id);
 
-                    EmbedBuilder b = new EmbedBuilder();
-                    b.Author = new EmbedAuthorBuilder();
-                    b.Author.Name = pasta.Id.ToUpper();
-                    b.Color = new Discord.Color(47, 208, 192);
+                    EmbedBuilder b = new EmbedBuilder()
+                    {
+                        Author = new EmbedAuthorBuilder()
+                        {
+                            Name = pasta.Id.ToUpper()
+                        },
+                        Color = new Discord.Color(47, 208, 192)
+                    };
 
                     if (creator != null)
                     {

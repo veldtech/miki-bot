@@ -50,7 +50,7 @@ namespace Miki.API.Patreon
                 if (pledge == null) return 0;
                 if(DateTime.Parse(pledge.attributes.declined_since).AddMonths(1) <= DateTime.Now)
                 {
-                    return pledge.attributes.amount_cents;
+                    return pledge.attributes.AmountCents;
                 }
             }
             return 0;

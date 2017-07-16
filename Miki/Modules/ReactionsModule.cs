@@ -150,10 +150,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/baiMBP6.png"
             };
 
-            RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
-
-            em.ImageUrl = images[Global.random.Next(0, images.Length)];
-
+            RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder())
+            {
+                ImageUrl = images[Global.random.Next(0, images.Length)]
+            };
             await e.Channel.SendMessage(em);
         }
     }
