@@ -337,7 +337,7 @@ namespace Miki.Modules
 
                 await message.ModifyAsync(
                     Utils.Embed
-                        .SetTitle("Pong🏓")
+                        .SetTitle("Pong:ping_pong:")
                         .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
                         .AddInlineField("Miki", ping + "ms")
                         .AddInlineField("Discord", Bot.instance.Client.Latency + "ms"));
