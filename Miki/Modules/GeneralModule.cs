@@ -318,21 +318,12 @@ namespace Miki.Modules
             {
                 double ping = (message.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
-<<<<<<< HEAD
                 await Utils.Embed
                     .SetTitle("Pong")
                     .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
                     .AddInlineField("Miki", ping + "ms")
                     .AddInlineField("Discord", Bot.instance.Client.Latency + "ms")
                     .ModifyMessage(message);
-=======
-                await message.ModifyAsync(
-                    Utils.Embed
-                        .SetTitle(":ping_pong:Pong!")
-                        .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
-                        .AddInlineField("Miki", ping + "ms")
-                        .AddInlineField("Discord", Bot.instance.Client.Latency + "ms"));
->>>>>>> 78dc8422579a22c23df15a59fa67c0aaf9b2686e
             }
         }
 
