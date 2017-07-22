@@ -598,11 +598,11 @@ Fuzzy</comment>
   <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
     <value>Sorry, but we couldn't find a pasta with `{0}`</value>
   </data>
-  <data name="miki_module_pasta_search_footer" xml:space="preserve">
+  <data name="pasta_page_index" xml:space="preserve">
     <value>page {0} of {1}</value>
   </data>
   <data name="miki_module_pasta_search_header" xml:space="preserve">
-    <value>🔎 I found these pastas:</value>
+    <value>🔎 I found these pastas</value>
   </data>
   <data name="miki_module_pasta_vote_success" xml:space="preserve">
     <value>Your vote has been updated! Current Score: `{0}`</value>
@@ -1314,5 +1314,75 @@ You need atleast **{0}** experience before you can use this command on this serv
   </data>
   <data name="miki_terms_weekly" xml:space="preserve">
     <value>Weekly</value>
+  </data>
+  <data name="createpasta_error_no_content" xml:space="preserve">
+    <value>I couldn't find any content for this pasta, please specify what you want to make.</value>
+  </data>
+  <data name="infopasta_error_no_arg" xml:space="preserve">
+    <value>Please state which pasta you'd like to identify.</value>
+  </data>
+  <data name="infopasta_rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="lunch_line" xml:space="preserve">
+    <value>Woof woof! What's for lunch?</value>
+  </data>
+  <data name="miki_blackjack" xml:space="preserve">
+    <value>Blackjack</value>
+  </data>
+  <data name="miki_blackjack_cards_miki" xml:space="preserve">
+    <value>Miki ({0})</value>
+  </data>
+  <data name="miki_blackjack_cards_you" xml:space="preserve">
+    <value>You ({0})</value>
+  </data>
+  <data name="miki_blackjack_explanation" xml:space="preserve">
+    <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to Miki.</value>
+  </data>
+  <data name="miki_blackjack_hit" xml:space="preserve">
+    <value>use `hit` to draw a new card</value>
+  </data>
+  <data name="miki_blackjack_lose_description" xml:space="preserve">
+    <value>You lose your bet to the Miki.</value>
+  </data>
+  <data name="miki_blackjack_lose_title" xml:space="preserve">
+    <value>Miki wins!</value>
+  </data>
+  <data name="miki_blackjack_no_arg" xml:space="preserve">
+    <value>You didn't include the amount bet! Correct usage: 
+&gt;blackjack &lt;amount&gt;</value>
+  </data>
+  <data name="miki_blackjack_stay" xml:space="preserve">
+    <value>use `stay` to finalize your points.</value>
+  </data>
+  <data name="miki_blackjack_win_description" xml:space="preserve">
+    <value>Miki has not been able to beat your score and this means you get the jackpot. You gained {0} mekos!</value>
+  </data>
+  <data name="miki_blackjack_win_title" xml:space="preserve">
+    <value>You win!</value>
+  </data>
+  <data name="miki_command_description_blackjack" xml:space="preserve">
+    <value>Gamble away your mekos in a totally fair game of blackjack against Miki!</value>
+  </data>
+  <data name="miki_command_usage_blackjack" xml:space="preserve">
+    <value>&gt;blackjack &lt;amount&gt;</value>
+  </data>
+  <data name="mypasta_error_no_pastas" xml:space="preserve">
+    <value>Sorry, but you don't have any pastas yet..</value>
+  </data>
+  <data name="mypasta_title" xml:space="preserve">
+    <value>{0}'s pastas</value>
+  </data>
+  <data name="pasta_error_no_arg" xml:space="preserve">
+    <value>Please enter one of the tags, or commands.</value>
+  </data>
+  <data name="poppasta_title" xml:space="preserve">
+    <value>Most popular pastas</value>
+  </data>
+  <data name="searchpasta_error_no_arg" xml:space="preserve">
+    <value>Please specify the terms you want to search.</value>
+  </data>
+  <data name="toppasta_title" xml:space="preserve">
+    <value>Top pastas</value>
   </data>
 </root>

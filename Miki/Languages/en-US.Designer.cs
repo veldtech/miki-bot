@@ -61,6 +61,42 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I couldn&apos;t find any content for this pasta, please specify what you want to make..
+        /// </summary>
+        internal static string createpasta_error_no_content {
+            get {
+                return ResourceManager.GetString("createpasta_error_no_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please state which pasta you&apos;d like to identify..
+        /// </summary>
+        internal static string infopasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("infopasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rating.
+        /// </summary>
+        internal static string infopasta_rating {
+            get {
+                return ResourceManager.GetString("infopasta_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Woof woof! What&apos;s for lunch?.
+        /// </summary>
+        internal static string lunch_line {
+            get {
+                return ResourceManager.GetString("lunch_line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to **{0}** levelled up to level **{1}**!.
         /// </summary>
         internal static string miki_accounts_level_up_content {
@@ -84,6 +120,106 @@ namespace Miki.Languages {
         internal static string miki_admin_cannot_disable {
             get {
                 return ResourceManager.GetString("miki_admin_cannot_disable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack.
+        /// </summary>
+        internal static string miki_blackjack {
+            get {
+                return ResourceManager.GetString("miki_blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki ({0}).
+        /// </summary>
+        internal static string miki_blackjack_cards_miki {
+            get {
+                return ResourceManager.GetString("miki_blackjack_cards_miki", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You ({0}).
+        /// </summary>
+        internal static string miki_blackjack_cards_you {
+            get {
+                return ResourceManager.GetString("miki_blackjack_cards_you", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The one who&apos;s closest to 21 wins. All cards count their own number up to 10. Ties go to Miki..
+        /// </summary>
+        internal static string miki_blackjack_explanation {
+            get {
+                return ResourceManager.GetString("miki_blackjack_explanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to use `hit` to draw a new card.
+        /// </summary>
+        internal static string miki_blackjack_hit {
+            get {
+                return ResourceManager.GetString("miki_blackjack_hit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You lose your bet to the Miki..
+        /// </summary>
+        internal static string miki_blackjack_lose_description {
+            get {
+                return ResourceManager.GetString("miki_blackjack_lose_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki wins!.
+        /// </summary>
+        internal static string miki_blackjack_lose_title {
+            get {
+                return ResourceManager.GetString("miki_blackjack_lose_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You didn&apos;t include the amount bet! Correct usage: 
+        ///&gt;blackjack &lt;amount&gt;.
+        /// </summary>
+        internal static string miki_blackjack_no_arg {
+            get {
+                return ResourceManager.GetString("miki_blackjack_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to use `stay` to finalize your points..
+        /// </summary>
+        internal static string miki_blackjack_stay {
+            get {
+                return ResourceManager.GetString("miki_blackjack_stay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki has not been able to beat your score and this means you get the jackpot. You gained {0} mekos!.
+        /// </summary>
+        internal static string miki_blackjack_win_description {
+            get {
+                return ResourceManager.GetString("miki_blackjack_win_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You win!.
+        /// </summary>
+        internal static string miki_blackjack_win_title {
+            get {
+                return ResourceManager.GetString("miki_blackjack_win_title", resourceCulture);
             }
         }
         
@@ -148,6 +284,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_bird {
             get {
                 return ResourceManager.GetString("miki_command_description_bird", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gamble away your mekos in a totally fair game of blackjack against Miki!.
+        /// </summary>
+        internal static string miki_command_description_blackjack {
+            get {
+                return ResourceManager.GetString("miki_command_description_blackjack", resourceCulture);
             }
         }
         
@@ -780,6 +925,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_bird {
             get {
                 return ResourceManager.GetString("miki_command_usage_bird", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;blackjack &lt;amount&gt;.
+        /// </summary>
+        internal static string miki_command_usage_blackjack {
+            get {
+                return ResourceManager.GetString("miki_command_usage_blackjack", resourceCulture);
             }
         }
         
@@ -3273,16 +3427,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to page {0} of {1}.
-        /// </summary>
-        internal static string miki_module_pasta_search_footer {
-            get {
-                return ResourceManager.GetString("miki_module_pasta_search_footer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 🔎 I found these pastas:.
+        ///   Looks up a localized string similar to 🔎 I found these pastas.
         /// </summary>
         internal static string miki_module_pasta_search_header {
             get {
@@ -3377,6 +3522,69 @@ namespace Miki.Languages {
         internal static string miki_terms_weekly {
             get {
                 return ResourceManager.GetString("miki_terms_weekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, but you don&apos;t have any pastas yet...
+        /// </summary>
+        internal static string mypasta_error_no_pastas {
+            get {
+                return ResourceManager.GetString("mypasta_error_no_pastas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}&apos;s pastas.
+        /// </summary>
+        internal static string mypasta_title {
+            get {
+                return ResourceManager.GetString("mypasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter one of the tags, or commands..
+        /// </summary>
+        internal static string pasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("pasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to page {0} of {1}.
+        /// </summary>
+        internal static string pasta_page_index {
+            get {
+                return ResourceManager.GetString("pasta_page_index", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Most popular pastas.
+        /// </summary>
+        internal static string poppasta_title {
+            get {
+                return ResourceManager.GetString("poppasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please specify the terms you want to search..
+        /// </summary>
+        internal static string searchpasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("searchpasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top pastas.
+        /// </summary>
+        internal static string toppasta_title {
+            get {
+                return ResourceManager.GetString("toppasta_title", resourceCulture);
             }
         }
     }
