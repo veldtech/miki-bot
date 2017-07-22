@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
 using System.ComponentModel;
+using Miki.Accounts.Achievements;
 
 namespace Miki.Models
 {
@@ -59,15 +60,15 @@ namespace Miki.Models
         public int Reputation { get; set; }
 
         public DateTime LastReputationGiven { get; set; }
+        public short ReputationPointsLeft { get; set; }
 
         // TODO: finish this
-        public void AddCurrency(MikiContext context, User fromUser, int amount)
+        public async Task AddCurrencyAsync(IDiscordMessageChannel context, User fromUser, int amount)
         {
             Currency += amount;
-
-            if (fromUser != null)
+            if (context != null)
             {
-
+                 await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
             }
         }
 
