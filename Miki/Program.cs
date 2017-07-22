@@ -96,7 +96,7 @@ namespace Miki
                 {
                     e.Description = "Miki has encountered a problem in her code with your request. We will send you a log and instructions through PM.";
 
-                    await msg.Channel.SendMessage(e);
+                    await e.SendToChannel(msg.Channel);
 
                     e.Title = $"You used the '{cmd.Name}' and it crashed!";
                     e.Description = "Please screenshot this message and send it to the miki issue page (https://github.com/velddev/miki/issues)";
@@ -121,7 +121,7 @@ namespace Miki
                     return;
                 }
                 e.Description = "... but you've disabled error messages, so we won't send you a PM :)";
-                await msg.Channel.SendMessage(e);
+                await e.SendToChannel(msg.Channel);
             };
 
             bot.AddDeveloper(121919449996460033);

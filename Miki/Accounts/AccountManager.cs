@@ -33,8 +33,15 @@ namespace Miki.Accounts
             {
                 Locale locale = Locale.GetEntity(e.Id.ToDbLong());
 
-                int randomNumber = Global.random.Next(0, 10);
+                int randomNumber = MikiRandom.GetRandomNumber(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
+                    
+                using (var context = new MikiContext())
+                {
+                    User user = await context.Users.FindAsync(a.Id);
+                    await user.AddCurrencyAsync(e, null, currencyAdded);
+                    await context.SaveChangesAsync();
+                }
 
                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())
                 {
@@ -43,15 +50,8 @@ namespace Miki.Accounts
                     Color = new IA.SDK.Color(1, 0.7f, 0.2f)
                 };
 
-                embed.AddField(x => { x.Name = locale.GetString("miki_generic_reward"); x.Value = "🔸" + currencyAdded.ToString(); });
+                embed.AddField(locale.GetString("miki_generic_reward"), "🔸" + currencyAdded.ToString());
                 await Notification.SendChannel(e, embed);
-
-                using (var context = new MikiContext())
-                {
-                    User user = await context.Users.FindAsync(a.Id);
-                    user.AddCurrency(context, null, currencyAdded);
-                    await context.SaveChangesAsync();
-                }
             };
 
             Bot.instance.Client.GuildUpdated += Client_GuildUpdated;
@@ -115,7 +115,7 @@ namespace Miki.Accounts
 
                         int currentLocalLevel = a.CalculateLevel(experience.Experience);
                         int currentGlobalLevel = a.CalculateLevel(a.Total_Experience);
-                        int addedExperience = Global.random.Next(1, 10);
+                        int addedExperience = MikiRandom.GetRandomNumber(2, 10);
 
                         experience.Experience += addedExperience;
                         a.Total_Experience += addedExperience;
