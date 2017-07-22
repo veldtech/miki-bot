@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
+    // Translate status: completed
+
     [Module(Name = "reactions")]
     public class ReactionsModule
     {
@@ -51,7 +53,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[Global.random.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(em);
+            await em.SendToChannel(e.Channel);
 
         }
 
@@ -109,7 +111,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[Global.random.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(em);
+            await em.SendToChannel(e.Channel);
         }
 
         [Command(Name = "smug")]
@@ -154,7 +156,7 @@ namespace Miki.Modules
             {
                 ImageUrl = images[Global.random.Next(0, images.Length)]
             };
-            await e.Channel.SendMessage(em);
+            await em.SendToChannel(e.Channel);
         }
     }
 }

@@ -41,20 +41,10 @@ namespace Miki.Modules
 
             if (!string.IsNullOrWhiteSpace(reason))
             {
-                embed.AddField(f =>
-                {
-                    f.Name = "💬 Reason";
-                    f.Value = reason;
-                    f.IsInline = true;
-                });
+                embed.AddInlineField("💬 Reason", reason);
             }
 
-            embed.AddField(f =>
-            {
-                f.Name = "💁 Banned by";
-                f.Value = e.Author.Username + "#" + e.Author.Discriminator;
-                f.IsInline = true;
-            });
+            embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
             await bannedUser.Ban(e.Guild);
@@ -85,20 +75,10 @@ namespace Miki.Modules
 
             if (!string.IsNullOrWhiteSpace(reason))
             {
-                embed.AddField(f =>
-                {
-                    f.Name = "💬 Reason";
-                    f.Value = reason;
-                    f.IsInline = true;
-                });
+                embed.AddInlineField("💬 Reason", reason);
             }
 
-            embed.AddField(f =>
-            {
-                f.Name = "💁 Banned by";
-                f.Value = e.Author.Username + "#" + e.Author.Discriminator;
-                f.IsInline = true;
-            });
+            embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
             await bannedUser.Ban(e.Guild);
@@ -122,7 +102,7 @@ namespace Miki.Modules
             ICommandEvent command = Bot.instance.Events.CommandHandler.GetCommandEvent(arguments[0]);
             if (command == null)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command"));
+                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command").SendToChannel(e.Channel);
                 return;
             }
 
@@ -139,7 +119,7 @@ namespace Miki.Modules
 
             if (!command.CanBeDisabled)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")));
+                await Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")).SendToChannel(e.Channel);
                 return;
             }
 
@@ -150,7 +130,7 @@ namespace Miki.Modules
                 }
             }
             await command.SetEnabled(e.Channel.Id, setValue);
-            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {command.Name}"));
+            await Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {command.Name}").SendToChannel(e.Channel);
 
         }
 
@@ -163,7 +143,7 @@ namespace Miki.Modules
             IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
             if (m == null)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module"));
+                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module").SendToChannel(e.Channel);
                 return;
             }
 
@@ -180,7 +160,7 @@ namespace Miki.Modules
 
             if (!m.CanBeDisabled && !setValue)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")));
+                await Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`")).SendToChannel(e.Channel);
                 return;
             }
 
@@ -192,7 +172,7 @@ namespace Miki.Modules
                 }
             }
             await m.SetEnabled(e.Channel.Id, setValue);
-            await e.Channel.SendMessage(Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {m.Name}"));
+            await Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {m.Name}").SendToChannel(e.Channel);
 
         }
 
@@ -222,20 +202,10 @@ namespace Miki.Modules
 
             if (!string.IsNullOrWhiteSpace(reason))
             {
-                embed.AddField(f =>
-                {
-                    f.Name = locale.GetString("miki_module_admin_kick_reason");
-                    f.Value = reason;
-                    f.IsInline = true;
-                });
+                embed.AddInlineField(locale.GetString("miki_module_admin_kick_reason"), reason);
             }
 
-            embed.AddField(f =>
-            {
-                f.Name = locale.GetString("miki_module_admin_kick_by");
-                f.Value = e.Author.Username + "#" + e.Author.Discriminator;
-                f.IsInline = true;
-            });
+            embed.AddInlineField(locale.GetString("miki_module_admin_kick_by"), e.Author.Username + "#" + e.Author.Discriminator);
 
             embed.Color = new Color(1, 1, 0);
 

@@ -53,7 +53,7 @@ namespace Miki.API.RocketLeague
         public RocketLeagueSeasonCache(string k)
         {
             key = k;
-            UpdateCache();
+            UpdateCache().Wait();
         }
 
         public async Task UpdateCache()

@@ -30,17 +30,17 @@ namespace Miki.Modules
                     setting = context.Settings.Add(new Setting() { EntityId = e.Author.Id.ToDbLong(), EntityType = DatabaseEntityType.USER, IsEnabled = true, SettingId = DatabaseSettingId.PERSONALMESSAGE });
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
+                IDiscordEmbed embed = Utils.Embed;
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 setting.IsEnabled = !setting.IsEnabled;
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
 
                 embed.Description = locale.GetString("miki_module_settings_dm", aa);
-                embed.Color = (setting.IsEnabled) ? new Discord.Color(1, 0, 0) : new Discord.Color(0, 1, 0);
+                embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                await embed.SendToChannel(e.Channel);
             }
         }
 
@@ -56,17 +56,17 @@ namespace Miki.Modules
                     setting = context.Settings.Add(new Setting() { EntityId = e.Author.Id.ToDbLong(), EntityType = DatabaseEntityType.USER, IsEnabled = true, SettingId = DatabaseSettingId.ERRORMESSAGE });
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
+                IDiscordEmbed embed = Utils.Embed;
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
                 setting.IsEnabled = !setting.IsEnabled;
 
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
 
                 embed.Description = locale.GetString("miki_module_settings_error_dm", aa);
-                embed.Color = (setting.IsEnabled) ? new Discord.Color(1, 0, 0) : new Discord.Color(0, 1, 0);
+                embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                await embed.SendToChannel(e.Channel);
             }
         }
 
@@ -82,17 +82,17 @@ namespace Miki.Modules
                     setting = context.Settings.Add(new Setting() { EntityId = e.Guild.Id.ToDbLong(), EntityType = DatabaseEntityType.GUILD, IsEnabled = true, SettingId = DatabaseSettingId.CHANNELMESSAGE });
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
+                IDiscordEmbed embed = Utils.Embed;
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
                 setting.IsEnabled = !setting.IsEnabled;
 
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
 
                 embed.Description = locale.GetString("miki_module_settings_guild_notifications", aa);
-                embed.Color = (setting.IsEnabled) ? new Discord.Color(1, 0, 0) : new Discord.Color(0, 1, 0);
+                embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                await embed.SendToChannel(e.Channel);
             }
         }
 
@@ -101,22 +101,22 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                ChannelLanguage language = await context.Languages.FindAsync(e.Guild.Id.ToDbLong());
-                Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+                ChannelLanguage language = await context.Languages.FindAsync(e.Channel.Id.ToDbLong());
+                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 if (!Locale.Locales.ContainsKey(e.arguments.ToLower()))
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "{0} is not a valid language. use `>help setlocale` to see all of the memes xd"));
+                    await Utils.ErrorEmbed(locale, "{0} is not a valid language. use `>help setlocale` to see all of the memes xd").SendToChannel(e.Channel);
                     return;
                 }
 
                 if (language == null)
                 {
-                    language = context.Languages.Add(new ChannelLanguage() { EntityId = e.Guild.Id.ToDbLong(), Language = e.arguments.ToLower() });
+                    language = context.Languages.Add(new ChannelLanguage() { EntityId = e.Channel.Id.ToDbLong(), Language = e.arguments.ToLower() });
                 }
 
                 language.Language = e.arguments.ToLower();
-                await e.Channel.SendMessage(Utils.SuccessEmbed(locale, "Set locale to `{0}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk."));
+                await Utils.SuccessEmbed(locale, "Set locale to `{0}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk.").SendToChannel(e.Channel);
                 await context.SaveChangesAsync();
             }
         }
@@ -128,7 +128,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(e.arguments))
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")));
+                await Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")).SendToChannel(e.Channel);
                 return;
             }
 
@@ -138,13 +138,9 @@ namespace Miki.Modules
             embed.Title = locale.GetString("miki_module_general_prefix_success_header");
             embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.arguments);
 
-            embed.AddField(f =>
-            {
-                f.Name = locale.GetString("miki_module_general_prefix_example_command_header");
-                f.Value = $"{e.arguments}profile";
-            });
+            embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.arguments}profile");
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]

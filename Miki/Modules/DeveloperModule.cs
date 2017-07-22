@@ -54,7 +54,7 @@ namespace Miki.Modules
         public async Task SayEmbedAsync(EventContext e)
         {
 
-            await e.Channel.SendMessage(Utils.Embed.AddInlineField("SAY", e.arguments));
+            await Utils.Embed.AddInlineField("SAY", e.arguments).SendToChannel(e.Channel);
         }
 
         [Command(Name = "setgame", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -83,20 +83,15 @@ namespace Miki.Modules
         [Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
         public async Task DumpShards(EventContext context)
         {
-            EmbedBuilder embed = new EmbedBuilder();
+            IDiscordEmbed embed = Utils.Embed;
             embed.Title = "Shards";
 
             foreach (DiscordSocketClient c in Bot.instance.Client.Shards)
             {
-                embed.AddField(f =>
-                {
-                    f.Name = "Shard " + c.ShardId;
-                    f.Value = $"State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}";
-                    f.IsInline = true;
-                });
+                embed.AddInlineField("Shard " + c.ShardId, "State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
             }
 
-            await context.Channel.SendMessage(new RuntimeEmbed(embed));
+            await embed.SendToChannel(context.Channel);
         }
 
         [Command(Name = "setdonator", Accessibility = EventAccessibility.DEVELOPERONLY)]

@@ -51,7 +51,7 @@ namespace Miki.Modules
                 embed.Title = "Uh oh!";
                 embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-                await e.Channel.SendMessage(embed);
+                await embed.SendToChannel(e.Channel);
                 return;
             }
 
@@ -76,13 +76,13 @@ namespace Miki.Modules
                         }
                     }
 
-                    embed.AddField(f => { f.Name = "Season" + season.Id; f.Value = s; f.IsInline = true; });
+                    embed.AddInlineField("Season" + season.Id, s);
                 }
             }
 
             embed.ThumbnailUrl = user.AvatarUrl;
             embed.ImageUrl = user.SignatureUrl;
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
         public async Task GetUserSeason(EventContext e)
         {
@@ -103,7 +103,7 @@ namespace Miki.Modules
                 embed.Title = "Uh oh!";
                 embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-                await e.Channel.SendMessage(embed);
+                await embed.SendToChannel(e.Channel);
                 return;
             }
 
@@ -128,19 +128,14 @@ namespace Miki.Modules
                             {
                                 rank = t.Name + " " + stats.Division;
 
-                                embed.AddField(f =>
-                                {
-                                    f.Name = playlist.Name.Substring(7);
-                                    f.Value = $"Rank: {rank}\n\nMMR: {stats.RankPoints}\nMatches Played: {stats.MatchesPlayed}";
-                                    f.IsInline = true;
-                                });
+                                embed.AddInlineField(playlist.Name.Substring(7), $"Rank: {rank}\n\nMMR: {stats.RankPoints}\nMatches Played: {stats.MatchesPlayed}");
                             }
                         }
                     }
                 }
             }
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         public async Task GetNowPlaying(EventContext e)
@@ -194,15 +189,10 @@ namespace Miki.Modules
             embed.Title = "Now Playing!";
             foreach (RocketLeaguePlaylist p in d.Values)
             {
-                embed.AddField(f =>
-                {
-                    f.Name = api.playlists.Data.Find(z => { return z.Id == p.Id; }).Name;
-                    f.Value = p.Population.Players.ToString();
-                    f.IsInline = true;
-                });
+                embed.AddField(api.playlists.Data.Find(z => { return z.Id == p.Id; }).Name, p.Population.Players.ToString());
             }
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         public async Task SearchUser(EventContext e)
@@ -221,7 +211,7 @@ namespace Miki.Modules
 
             embed.Description = string.Join(", ", names);
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         public async Task<RocketLeagueUser> TryGetUser(string name, int platform)

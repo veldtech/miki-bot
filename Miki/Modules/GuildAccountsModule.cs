@@ -81,7 +81,7 @@ namespace Miki.Modules
                         int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
                         User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
-                        user.Currency += mekosGained;
+                        await user.AddCurrencyAsync(context.Channel, null, mekosGained);
 
                         await Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
@@ -196,7 +196,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "guildconfig")]
+        [Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SetGuildConfig(EventContext e)
         {
             using (var context = new MikiContext())
@@ -213,22 +213,22 @@ namespace Miki.Modules
                             if (int.TryParse(arguments[1], out int value))
                             {
                                 g.MinimalExperienceToGetRewards = value;
-                            }
+                                await Utils.Embed
+                                    .SetTitle("Config")
+                                    .SetDescription($"Your users need {g.MinimalExperienceToGetRewards} experience to use >guildweekly now!")
+                                    .SendToChannel(e.Channel);
+                                }
                         }
                     } break;
                     case "visible":
                     {
                         if (arguments.Length > 1)
                         {
-                            if (arguments[1].ToLower() == "yes")
-                            {
-                                g.VisibleOnLeaderboards = true;
-                            }
-                            else if (arguments[1].ToLower() == "no")
-                            {
-                                g.VisibleOnLeaderboards = false;
-
-                            }
+                            g.VisibleOnLeaderboards = arguments[1].GetInputBool();
+                            await Utils.Embed
+                                .SetTitle("Config")
+                                .SetDescription($"Your guild is {((g.VisibleOnLeaderboards) ? "" : "not")} visible on the leaderboards!")
+                                .SendToChannel(e.Channel);
                         }
                     } break;
                 }

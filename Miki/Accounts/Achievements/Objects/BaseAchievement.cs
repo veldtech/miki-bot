@@ -29,6 +29,7 @@ namespace Miki.Accounts.Achievements
 
         public virtual async Task<bool> CheckAsync(MikiContext context, BasePacket packet)
         {
+            await Task.Delay(0);
             return true;
         }
 

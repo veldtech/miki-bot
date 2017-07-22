@@ -35,7 +35,7 @@ namespace Miki.Modules
                 List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, TimesUsed as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
 
                 IDiscordEmbed e = Utils.Embed
-                    .SetTitle("Most popular pastas")
+                    .SetTitle(context.GetResource("poppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0.6f, 0.2f));
 
                 foreach (LeaderboardsItem t in leaderboards)
@@ -55,7 +55,7 @@ namespace Miki.Modules
                 List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, ((SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 1) - (SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 0)) as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
 
                 IDiscordEmbed e = Utils.Embed
-                    .SetTitle("Top pastas")
+                    .SetTitle(context.GetResource("toppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0, 0));
                 
                 foreach(LeaderboardsItem t in leaderboards)
@@ -70,7 +70,7 @@ namespace Miki.Modules
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             int page = 0;
             if (!string.IsNullOrWhiteSpace(e.arguments))
@@ -97,15 +97,17 @@ namespace Miki.Modules
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     IDiscordEmbed embed = Utils.Embed;
-                    embed.Title = e.Author.Username + "'s pastas";
+                    embed.Title = e.GetResource("mypasta_title", e.Author.Username);
                     embed.Description = resultString;
                     embed.CreateFooter();
-                    embed.Footer.Text = $"page {page + 1} of {(Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString()}";
+                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString());
 
-                    await e.Channel.SendMessage(embed);
+                    await embed.SendToChannel(e.Channel);
                     return;
                 }
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"Sorry, but you don't have any pastas yet.."));
+
+                await Utils.ErrorEmbed(locale, e.GetResource("mypasta_error_no_pastas"))
+                    .SendToChannel(e.Channel);
             }
         }
 
@@ -114,11 +116,11 @@ namespace Miki.Modules
         {
             List<string> arguments = e.arguments.Split(' ').ToList();
 
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if(arguments.Count < 2)
             {
-                await Utils.ErrorEmbed(locale, "I couldn't find any content for this pasta, please specify what you want to make.").SendToChannel(e.Channel.Id);
+                await Utils.ErrorEmbed(locale, e.GetResource("createpasta_error_no_content")).SendToChannel(e.Channel.Id);
                 return;
             }
 
@@ -135,13 +137,13 @@ namespace Miki.Modules
 
                     if (pasta != null)
                     {
-                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta already exist! try a different tag!"));
+                        await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_create_error_already_exist")).SendToChannel(e.Channel);
                         return;
                     }
 
                     context.Pastas.Add(new GlobalPasta() { Id = id, Text = string.Join(" ", arguments), CreatorId = e.Author.Id, date_created = DateTime.Now });
                     await context.SaveChangesAsync();
-                    await e.Channel.SendMessage(Utils.SuccessEmbed(locale, $"Created pasta `{id}`!"));
+                    await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
                 }
                 catch (Exception ex)
                 {
@@ -153,11 +155,11 @@ namespace Miki.Modules
         [Command(Name = "deletepasta")]
         public async Task DeletePasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, "Please specify which pasta you'd like to remove.")
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify")))
                     .SendToChannel(e.Channel.Id);
                 return;
             }
@@ -170,7 +172,7 @@ namespace Miki.Modules
 
                 if(pasta == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta doesn't exist! check the tag!"));
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                     return;
                 }
 
@@ -183,10 +185,10 @@ namespace Miki.Modules
 
                     await context.SaveChangesAsync();
 
-                    await e.Channel.SendMessage(Utils.SuccessEmbed(locale, $"Deleted pasta `{e.arguments}`!"));
+                    await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_delete_success", e.arguments)).SendToChannel(e.Channel);
                     return;
                 }
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta is not yours!"));
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_no_permissions", e.GetResource("miki_module_pasta_error_specify_delete"))).SendToChannel(e.Channel);
                 return;
             }
         }
@@ -194,11 +196,11 @@ namespace Miki.Modules
         [Command(Name = "editpasta")]
         public async Task EditPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, "Please specify which pasta you'd like to edit.")
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify_edit")))
                     .SendToChannel(e.Channel.Id);
                 return;
             }
@@ -235,11 +237,11 @@ namespace Miki.Modules
         [Command(Name = "pasta")]
         public async Task GetPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Please enter one of the tags, or commands."));
+                await Utils.ErrorEmbed(locale, e.GetResource("pasta_error_no_arg")).SendToChannel(e.Channel);
                 return;
             }
 
@@ -252,7 +254,7 @@ namespace Miki.Modules
                 GlobalPasta pasta = await context.Pastas.FindAsync(arguments[0]);
                 if (pasta == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"No pasta found with the name `{e.arguments}`"));
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_search_error_no_results", e.arguments)).SendToChannel(e.Channel);
                     return;
                 }
                 pasta.TimesUsed++;
@@ -264,11 +266,11 @@ namespace Miki.Modules
         [Command(Name = "infopasta")]
         public async Task IdentifyPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, "Please state which pasta you'd like to identify.")
+                await Utils.ErrorEmbed(locale, e.GetResource("infopasta_error_no_arg"))
                     .SendToChannel(e.Channel.Id);
                 return;
             }
@@ -283,51 +285,31 @@ namespace Miki.Modules
 
                     if(pasta == null)
                     {
-                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta doesn't exist!"));
+                        await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                         return;
                     }
 
                     User creator = await context.Users.FindAsync(pasta.creator_id);
 
-                    EmbedBuilder b = new EmbedBuilder()
-                    {
-                        Author = new EmbedAuthorBuilder()
-                        {
-                            Name = pasta.Id.ToUpper()
-                        },
-                        Color = new Discord.Color(47, 208, 192)
-                    };
+                    IDiscordEmbed b = Utils.Embed;
 
+                    b.SetAuthor(pasta.Id.ToUpper(), "", "");
+                    b.Color = new IA.SDK.Color(47, 208, 192);
+                   
                     if (creator != null)
                     {
-                        b.AddField(x =>
-                        {
-                            x.Name = "Created by";
-                            x.Value = $"{creator.Name} [{creator.Id}]";
-                            x.IsInline = true;
-                        });
+                        b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
                     }
 
-                    b.AddField(x =>
-                    {
-                        x.Name = "Date Created";
-                        x.Value = pasta.date_created.ToShortDateString();
-                        x.IsInline = true;
-                    });
+                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.date_created.ToShortDateString());
 
-                    b.AddInlineField("Times Used", pasta.TimesUsed);
+                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
 
-                    b.AddField(x =>
-                    {
-                        x.Name = "Rating";
+                    VoteCount v = pasta.GetVotes(context);
 
-                        VoteCount v = pasta.GetVotes(context);
+                    b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
 
-                        x.Value = $"⬆️ {v.Upvotes} ⬇️ {v.Downvotes}";
-                        x.IsInline = true;
-                    });
-
-                    await e.Channel.SendMessage(new RuntimeEmbed(b));
+                    await b.SendToChannel(e.Channel);
 
                 }
                 catch (Exception ex)
@@ -340,11 +322,11 @@ namespace Miki.Modules
         [Command(Name = "searchpasta")]
         public async Task SearchPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if(string.IsNullOrWhiteSpace(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, "Please specify the terms you want to search.")
+                await Utils.ErrorEmbed(locale, e.GetResource("searchpasta_error_no_arg"))
                     .SendToChannel(e.Channel.Id);
                 return;
             }
@@ -373,15 +355,17 @@ namespace Miki.Modules
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     IDiscordEmbed embed = Utils.Embed;
-                    embed.Title = "🔎 I found these pastas";
+                    embed.Title = e.GetResource("miki_module_pasta_search_header");
                     embed.Description = resultString;
                     embed.CreateFooter();
-                    embed.Footer.Text = $"page {page + 1} of {(Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString()}";
+                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString());
 
-                    await e.Channel.SendMessage(embed);
+                    await embed.SendToChannel(e.Channel);
                     return;
                 }
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, $"Sorry, but we couldn't find a pasta with `{arguments[0]}`"));
+
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_search_error_no_results", arguments[0]))
+                    .SendToChannel(e.Channel);
             }
         }
 
@@ -399,7 +383,7 @@ namespace Miki.Modules
 
         private async Task VotePasta(EventContext e, bool vote)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             using (var context = MikiContext.CreateNoCache())
             {
@@ -409,7 +393,7 @@ namespace Miki.Modules
 
                 if(pasta == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "This pasta doesn't exist :(("));
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                     return;
                 }
 
@@ -430,7 +414,7 @@ namespace Miki.Modules
 
                 var votecount = pasta.GetVotes(context);
 
-                await e.Channel.SendMessage(Utils.SuccessEmbed(locale, $"Your vote has been updated!\nCurrent Score: `{votecount.Upvotes - votecount.Downvotes}`"));
+                await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).SendToChannel(e.Channel);
             }
         }
     }

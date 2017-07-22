@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System;
 
 /// <summary>
 /// All image-board api post objects
@@ -713,6 +714,59 @@ namespace Miki.Objects
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
+    }
+
+    internal class YanderePost : BasePost, IPost
+    {
+        public string ImageUrl => throw new NotImplementedException();
+
+        public static SafebooruPost Create(string content, ImageRating r)
+        {
+            WebClient c = new WebClient();
+            byte[] b;
+            string[] command = content.Split(' ');
+
+            List<string> tags = new List<string>();
+
+            switch (r)
+            {
+                case ImageRating.EXPLICIT:
+                    {
+                        tags.Add("rating:explicit");
+                    }
+                    break;
+
+                case ImageRating.QUESTIONABLE:
+                    {
+                        tags.Add("rating:questionable");
+                    }
+                    break;
+
+                case ImageRating.SAFE:
+                    {
+                        tags.Add("rating:safe");
+                    }
+                    break;
+            }   
+
+            tags.AddRange(command);
+            RemoveBannedTerms(tags);
+            AddBannedTerms(tags);
+
+            string outputTags = GetTags(tags.ToArray());
+
+            b = c.DownloadData($"https://yande.re/post.json?tags={ outputTags }");
+            if (b != null)
+            {
+                string result = Encoding.UTF8.GetString(b);
+                List<SafebooruPost> d = JsonConvert.DeserializeObject<List<SafebooruPost>>(result);
+                if (d != null)
+                {
+                    return d[Global.random.Next(0, d.Count)];
+                }
+            }
+            return null;
+        }
     }
 
     internal enum ImageRating

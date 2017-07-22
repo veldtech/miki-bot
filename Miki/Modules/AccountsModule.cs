@@ -54,11 +54,9 @@ namespace Miki.Modules
                 }
             };
 
-            module.MessageRecieved = async (msg) => await AccountManager.Instance.CheckAsync(msg);
+            module.MessageRecieved = AccountManager.Instance.CheckAsync;
 
             LoadAchievements();
-
-            Log.Done("init accounts");
         }
 
         [Command(Name = "buymarriageslot")]
@@ -87,7 +85,7 @@ namespace Miki.Modules
                     }
 
                     embed.Color = new IA.SDK.Color(1f, 0.6f, 0.4f);
-                    await e.Channel.SendMessage(embed);
+                    await embed.SendToChannel(e.Channel);
                     return;
                 }
 
@@ -95,7 +93,7 @@ namespace Miki.Modules
 
                 embed.Description = $"Do you want to buy a marriage slot for **{costForUpgrade}**?\n\nType `>yes` to confirm.";
                 embed.Color = new IA.SDK.Color(0.4f, 0.6f, 1f);
-                await e.Channel.SendMessage(embed);
+                await embed.SendToChannel(e.Channel);
 
                 CommandHandler c = new CommandHandlerBuilder()
                     .AddPrefix(">")
@@ -175,18 +173,10 @@ namespace Miki.Modules
 
                 if (account != null)
                 {
-                    EmbedBuilder embed = new EmbedBuilder()
-                    {
-                        Description = account.Title,
-                        Author = new EmbedAuthorBuilder()
-                        {
-                            Name = locale.GetString("miki_global_profile_user_header", account.Name),
-                            Url = "https://patreon.com/mikibot",
-                            IconUrl = "http://veld.one/assets/profile-icon.png"
-                        },
-                    };
-
-                    embed.ThumbnailUrl = discordUser.AvatarUrl;
+                    IDiscordEmbed embed = Utils.Embed
+                        .SetDescription(account.Title)
+                        .SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), "http://veld.one/assets/profile-icon.png", "https://patreon.com/mikibot")
+                        .SetThumbnailUrl(discordUser.AvatarUrl);
 
                     long serverid = e.Guild.Id.ToDbLong();
 
@@ -202,12 +192,10 @@ namespace Miki.Modules
                     EmojiBar expBar = new EmojiBar(account.CalculateMaxExperience(localExp.Experience), onBarSet, offBarSet, 6);
 
                     string infoValue = new MessageBuilder()
-                        .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)))
-                        .NewLine()
                         .AppendText(await expBar.Print(localExp.Experience, e.Channel))
-                        .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
+                        .AppendText("Reputation: " + account.Reputation, MessageFormatting.PLAIN, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
@@ -218,12 +206,9 @@ namespace Miki.Modules
                     EmojiBar globalExpBar = new EmojiBar(account.CalculateMaxExperience(account.Total_Experience), onBarSet, offBarSet, 6);
 
                     string globalInfoValue = new MessageBuilder()
-                        .NewLine()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
-                        .NewLine()
                         .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-                        .NewLine()
-                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()))
+                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()), MessageFormatting.PLAIN, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -243,30 +228,27 @@ namespace Miki.Modules
                         users.Add(await context.Users.FindAsync(marriages[i].GetOther(id)));
                     }
 
+
                     if (marriages.Count > 0)
                     {
-                        string output = "";
+                        List<string> marriageStrings = new List<string>();
+
                         for (int i = 0; i < maxCount; i++)
                         {
                             if (marriages[i].GetOther(id) != 0 && marriages[i].TimeOfMarriage != null)
                             {
-                                output += "💕 " + users[i].Name + " (_" + marriages[i].TimeOfMarriage.ToShortDateString() + "_)\n";
+                                marriageStrings.Add("💕 " + users[i].Name + " (_" + marriages[i].TimeOfMarriage.ToShortDateString() + "_)");
                             }
                         }
 
-                        output += "\n";
-
-                        embed.AddField(f =>
-                        {
-                            f.Name = locale.GetString("miki_module_accounts_profile_marriedto");
-                            f.Value = output;
-                            f.IsInline = true;
-                        });
+                        embed.AddInlineField(
+                            locale.GetString("miki_module_accounts_profile_marriedto"),
+                            string.Join("\n", marriageStrings));
                     }
 
                     Random r = new Random((int)id - 3);
 
-                    embed.Color = new Discord.Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
+                    embed.Color = new IA.SDK.Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
 
                     List<CommandUsage> List = context.CommandUsages.Where(c => c.UserId == id).OrderByDescending(c => c.Amount).ToList();
                     string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : "none (yet!)";
@@ -275,32 +257,21 @@ namespace Miki.Modules
 
                     string achievements = AchievementManager.Instance.PrintAchievements(context, account.Id.FromDbLong());
 
-                    embed.AddField(f =>
-                    {
-                        f.Name = locale.GetString("miki_generic_achievements");
-                        f.Value = achievements != "" ? achievements : locale.GetString("miki_placeholder_null");
-                        f.IsInline = true;
-                    });
+                    embed.AddInlineField(
+                        locale.GetString("miki_generic_achievements"),
+                        achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
 
-                    embed.AddField(f =>
-                    {
-                        f.Name = locale.GetString("miki_module_accounts_profile_url");
-                        f.Value = "http://miki.veld.one/profile/" + account.Id;
-                        f.IsInline = true;
-                    });
+                    embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"), "http://miki.veld.one/profile/" + account.Id);
 
-                    embed.Footer = new EmbedFooterBuilder()
-                    {
-                        Text = locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(), sw.ElapsedMilliseconds)
-                    };
+                    embed.SetFooter(locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(), sw.ElapsedMilliseconds), "");
 
                     sw.Stop();
 
-                    await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                    await embed.SendToChannel(e.Channel);
                 }
                 else
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_null")));
+                    await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_null")).SendToChannel(e.Channel);
                 }
             }
         }
@@ -353,20 +324,20 @@ namespace Miki.Modules
 
                     if (users.Count == 0)
                     {
-                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
+                        await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                     }
                     else if (users.Count == 1)
                     {
                         Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, users.First().Id.FromDbLong());
                         if (currentMarriage == null)
                         {
-                            await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
+                            await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                             return;
                         }
 
                         if (currentMarriage.Proposing)
                         {
-                            await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
+                            await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                             return;
                         }
 
@@ -376,7 +347,7 @@ namespace Miki.Modules
                         embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                         embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, users.First().Name);
                         embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
-                        await e.Channel.SendMessage(embed);
+                        await embed.SendToChannel(e.Channel);
                         return;
                     }
                     else
@@ -397,7 +368,7 @@ namespace Miki.Modules
                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
                                     embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
-                                    await e.Channel.SendMessage(embed);
+                                    await embed.SendToChannel(e.Channel);
                                     break;
                                 }
                             }
@@ -411,7 +382,7 @@ namespace Miki.Modules
             {
                 if (e.Author.Id == e.message.MentionedUserIds.First())
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")));
+                    await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                     return;
                 }
 
@@ -428,7 +399,7 @@ namespace Miki.Modules
                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", user1, user2);
                     embed.Color = new IA.SDK.Color(0.6f, 0.4f, 0.1f);
-                    await e.Channel.SendMessage(embed);
+                    await embed.SendToChannel(e.Channel);
                 }
             }
         }
@@ -447,17 +418,13 @@ namespace Miki.Modules
                     proposalNames.Add($"{u.Name} [{u.Id}]");
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
+                IDiscordEmbed embed = Utils.Embed;
                 embed.Title = e.Author.Username;
                 embed.Description = "Here it shows both the people who you've proposed to, and who have proposed to you.";
 
                 string output = string.Join("\n", proposalNames);
 
-                embed.AddField(f =>
-                {
-                    f.Name = "Proposals Recieved";
-                    f.Value = string.IsNullOrEmpty(output) ? "none (yet!)" : output;
-                });
+                embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
                 proposals = Marriage.GetProposalsSent(context, e.Author.Id.ToDbLong());
                 proposalNames = new List<string>();
@@ -470,15 +437,11 @@ namespace Miki.Modules
 
                 output = string.Join("\n", proposalNames);
 
-                embed.AddField(f =>
-                {
-                    f.Name = "Proposals Sent";
-                    f.Value = string.IsNullOrEmpty(output) ? "none (yet!)" : output;
-                });
+                embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                embed.Color = new Discord.Color(1, 0.5f, 0);
+                embed.Color = new IA.SDK.Color(1, 0.5f, 0);
                 embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).AvatarUrl;
-                await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                await embed.SendToChannel(e.Channel);
             }
         }
 
@@ -540,14 +503,67 @@ namespace Miki.Modules
                 embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
                 embed.Color = new IA.SDK.Color(1f, 0.5f, 0.7f);
 
-                await e.Channel.SendMessage(embed);
+                await embed.SendToChannel(e.Channel);
             }
         }
 
         [Command(Name = "rep")]
         public async Task GiveReputationAsync(EventContext e)
         {
+            using (var context = new MikiContext())
+            {
+                User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
+                if (e.message.MentionedUserIds.Count == 0)
+                {
+                    await Utils.Embed
+                        .SetTitle("Reputation")
+                        .SetDescription("Here are your statistics on reputation points!\n\nTo give someone reputation, do `>rep <mention>`")
+                        .AddInlineField("Total Rep Received", giver.Reputation.ToString())
+                        .AddInlineField("Rep points reset in:", Utils.ToTimeString(DateTime.Now.AddDays(1).Date - DateTime.Now))
+                        .SendToChannel(e.Channel);
+                    return;
+                }
+
+                User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
+
+                if (giver.LastReputationGiven.Day != DateTime.Now.Day)
+                {
+                    giver.ReputationPointsLeft = 3;
+                    giver.LastReputationGiven = DateTime.Now;
+                }
+
+                if(giver.Id == receiver.Id)
+                {
+                    await Utils.Embed
+                    .SetTitle("Reputation")
+                    .SetDescription($"You cannot rep yourself.")
+                    .SendToChannel(e.Channel);
+                    return;
+                }
+
+                if (giver.ReputationPointsLeft > 0)
+                {
+                    giver.ReputationPointsLeft--;
+                    receiver.Reputation++;
+
+                    await Utils.Embed
+                        .SetTitle("Reputation")
+                        .SetDescription($"{giver.Name} has given {receiver.Name} 1 reputation! {receiver.Name} now has {receiver.Reputation} points!")
+                        .AddInlineField("Points left for today", giver.ReputationPointsLeft.ToString())
+                        .SendToChannel(e.Channel);
+                }
+                else
+                {
+                    await Utils.Embed
+                      .SetTitle("Reputation")
+                      .SetDescription($"You're out of points for today!")
+                      .SendToChannel(e.Channel);
+                }
+
+                await context.SaveChangesAsync();
+
+            }
         }
 
         [Command(Name = "give")]
@@ -559,25 +575,25 @@ namespace Miki.Modules
 
             if (arguments.Length < 2)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!"));
+                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!").SendToChannel(e.Channel);
                 return;
             }
 
             if (!int.TryParse(arguments[1], out int goldSent))
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!"));
+                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!").SendToChannel(e.Channel);
                 return;
             }
 
             if (goldSent <= 0)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!"));
+                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!").SendToChannel(e.Channel);
                 return;
             }
 
             if (e.message.MentionedUserIds.Count <= 0)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!"));
+                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!").SendToChannel(e.Channel);
                 return;
             }
 
@@ -586,31 +602,37 @@ namespace Miki.Modules
                 User sender = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
 
+                if(receiver == null)
+                {
+                    await Utils.ErrorEmbed(locale, "This user doesn't have a miki account yet.")
+                        .SendToChannel(e.Channel);
+                    return;
+                }
+
                 if (goldSent <= sender.Currency)
                 {
-                    receiver.AddCurrency(context, sender, goldSent);
-                    sender.AddCurrency(context, sender, -goldSent);
+                    await receiver.AddCurrencyAsync(e.Channel, sender, goldSent);
+                    await sender.AddCurrencyAsync(e.Channel, sender, -goldSent);
 
                     string reciever = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Username;
 
-                    EmbedBuilder em = new EmbedBuilder();
+                    IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
                     em.Description = $"{ e.Author.Username } just gave { reciever } { goldSent } mekos!";
 
-                    em.Color = new Discord.Color(255, 140, 0);
+                    em.Color = new IA.SDK.Color(255, 140, 0);
 
                     await context.SaveChangesAsync();
-                    await e.Channel.SendMessage(new RuntimeEmbed(em));
+                    await em.SendToChannel(e.Channel);
                 }
                 else
                 {
-                    EmbedBuilder embed = new EmbedBuilder()
-                    {
-                        Title = "Transaction failed!",
-                        Description = "You do not have enough Mekos.",
-                        Color = new Discord.Color(255, 0, 0)
-                    };
-                    await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                    IDiscordEmbed embed = Utils.Embed
+                        .SetTitle("Transaction failed!")
+                        .SetDescription("You do not have enough Mekos.")
+                        .SetColor(255, 0, 0);
+
+                    await embed.SendToChannel(e.Channel);
                 }
             }
         }
@@ -620,13 +642,13 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
                 if (u == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Your account doesn't exist in the database yet, please talk a bit more."));
+                    await Utils.ErrorEmbed(locale, "Your account doesn't exist in the database yet, please talk a bit more.").SendToChannel(e.Channel);
                     return;
                 }
 
@@ -643,10 +665,14 @@ namespace Miki.Modules
                     return;
                 }
 
-                u.Currency += dailyAmount;
+                await u.AddCurrencyAsync(e.Channel, null, dailyAmount);
                 u.LastDailyTime = DateTime.Now;
 
-                await e.Channel.SendMessage($"Received **{dailyAmount}** Mekos! You now have `{u.Currency}` Mekos");
+                await Utils.Embed
+                    .SetTitle(locale.GetString("Daily"))
+                    .SetDescription($"Received **{dailyAmount}** Mekos! You now have `{u.Currency}` Mekos")
+                    .SendToChannel(e.Channel);
+
                 await context.SaveChangesAsync();
             }
         }
@@ -698,7 +724,7 @@ namespace Miki.Modules
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "👌 OKAY";
             embed.Description = "I've synchronized your current avatar to Miki's database!";
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "syncname")]
@@ -718,7 +744,7 @@ namespace Miki.Modules
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "👌 OKAY";
             embed.Description = "I've synchronized your current name to Miki's database!";
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "setrolelevel")]
@@ -726,7 +752,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 List<string> allArgs = new List<string>();
                 allArgs.AddRange(e.arguments.Split(' '));
@@ -738,7 +764,7 @@ namespace Miki.Modules
 
                     if (role == null)
                     {
-                        await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Couldn't find this role, please try again!"));
+                        await Utils.ErrorEmbed(locale, "Couldn't find this role, please try again!").SendToChannel(e.Channel);
                         return;
                     }
 
@@ -750,7 +776,7 @@ namespace Miki.Modules
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Title = "Added Role!";
                         embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
-                        await e.Channel.SendMessage(embed);
+                        await embed.SendToChannel(e.Channel);
                     }
                     else
                     {
@@ -759,13 +785,13 @@ namespace Miki.Modules
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Title = "Updated Role!";
                         embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
-                        await e.Channel.SendMessage(embed);
+                        await embed.SendToChannel(e.Channel);
                     }
                     await context.SaveChangesAsync();
                 }
                 else
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating a this!"));
+                    await Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating a this!").SendToChannel(e.Channel);
                 }
             }
         }
@@ -791,19 +817,19 @@ namespace Miki.Modules
 
                 if (currentUser == null || mentionedPerson == null)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "miki_module_accounts_marry_error_null"));
+                    await Utils.ErrorEmbed(locale, "miki_module_accounts_marry_error_null").SendToChannel(e.Channel);
                     return;
                 }
 
                 if (mentionedPerson.Id == currentUser.Id)
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_null")));
+                    await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_null")).SendToChannel(e.Channel);
                     return;
                 }
 
                 if (await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
                 {
-                    await e.Channel.SendMessage(Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_exists")));
+                    await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_marry_error_exists")).SendToChannel(e.Channel);
                     return;
                 }
 
@@ -832,7 +858,7 @@ namespace Miki.Modules
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
                     notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
-                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                    await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
                     cont.commandHandler.RequestDispose();
                 }
@@ -841,7 +867,7 @@ namespace Miki.Modules
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
                     notEnoughMekosErrorEmbed.Description = $"You do not have enough mekos! You need {costForUpgrade - user.Currency} more mekos!";
-                    await cont.Channel.SendMessage(notEnoughMekosErrorEmbed);
+                    await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     cont.commandHandler.RequestDispose();
                 }
             }
@@ -915,16 +941,9 @@ namespace Miki.Modules
                         Icon = "📝",
                         CheckCommand = async (p) =>
                         {
-                            if(p.command.Name.ToLower() == "pasta")
+                            if(p.command.Name.ToLower() == "createpasta")
                             {
-                                if(p.message.Content.Split(' ').Length < 2) return false;
-
-                                switch(p.message.Content.Split(' ')[1])
-                                {
-                                    case "new":
-                                    case "+":
-                                    return true;
-                                }
+                                return true;
                             }
                             return false;
                         },
@@ -1261,7 +1280,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                EmbedBuilder embed = new EmbedBuilder();
+                IDiscordEmbed embed = Utils.Embed;
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 switch (t)
@@ -1269,7 +1288,7 @@ namespace Miki.Modules
                     case LeaderboardsType.Commands:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
-                            embed.Color = new Discord.Color(0.4f, 1.0f, 0.6f);
+                            embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
                             List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, total_commands as Value from Users order by Total_Commands desc;").ToList();
                             int i = 1;
                             foreach (LeaderboardsItem user in output)
@@ -1277,12 +1296,12 @@ namespace Miki.Modules
                                 embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} commands used!");
                                 i++;
                             }
-                            await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                            await embed.SendToChannel(e.Channel);
                         } break;
                     case LeaderboardsType.Currency:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
-                            embed.Color = new Discord.Color(1.0f, 0.6f, 0.4f);
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, Currency as Value from Users order by Currency desc;").ToList();
                             int i = 1;
                             foreach (LeaderboardsItem user in output)
@@ -1290,12 +1309,12 @@ namespace Miki.Modules
                                 embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} mekos!");
                                 i++;
                             }
-                            await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                            await embed.SendToChannel(e.Channel);
                         } break;
                     case LeaderboardsType.LocalExperience:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-                            embed.Color = new Discord.Color(1.0f, 0.6f, 0.4f);
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, exp.Experience as Value from Users inner join LocalExperience as exp ON exp.ServerId=@p0 AND exp.UserId = Id order by exp.Experience desc;", e.Guild.Id.ToDbLong()).ToList();
                             int i = 1;
                             foreach (LeaderboardsItem user in output)
@@ -1303,12 +1322,12 @@ namespace Miki.Modules
                                 embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} experience!");
                                 i++;
                             }
-                            await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                            await embed.SendToChannel(e.Channel);
                         } break;
                     case LeaderboardsType.Experience:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
-                            embed.Color = new Discord.Color(1.0f, 0.6f, 0.4f);
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, Total_Experience as Value from Users order by Total_Experience desc;", e.Guild.Id.ToDbLong()).ToList();
                             int i = 1;
                             foreach (LeaderboardsItem user in output)
@@ -1316,7 +1335,7 @@ namespace Miki.Modules
                                 embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} experience!");
                                 i++;
                             }
-                            await e.Channel.SendMessage(new RuntimeEmbed(embed));
+                            await embed.SendToChannel(e.Channel);
                         } break;
                 }
             }

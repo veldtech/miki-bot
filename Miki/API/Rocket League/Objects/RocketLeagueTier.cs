@@ -27,7 +27,7 @@ namespace Miki.API.RocketLeague
             {
                 if (LastUpdatedAt + UpdateSpan < DateTime.Now)
                 {
-                    UpdateCache();
+                    UpdateCache().Wait();
                 }
                 return internalData;
             }
@@ -50,7 +50,7 @@ namespace Miki.API.RocketLeague
         public RocketLeagueTierCache(string k)
         {
             key = k;
-            UpdateCache();
+            UpdateCache().Wait();
         }
 
         public async Task UpdateCache()

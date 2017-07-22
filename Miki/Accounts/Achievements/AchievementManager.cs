@@ -63,7 +63,7 @@ namespace Miki.Accounts.Achievements
 
             bot.Client.MessageReceived += async (e) =>
             {
-                if(OnMessageReceived == null)
+                if (OnMessageReceived == null)
                 {
                     return;
                 }
@@ -72,7 +72,7 @@ namespace Miki.Accounts.Achievements
                 {
                     message = new RuntimeMessage(e),
                     discordUser = new RuntimeUser(e.Author),
-                    discordChannel = new RuntimeMessageChannel(e.Channel)                    
+                    discordChannel = new RuntimeMessageChannel(e.Channel)
                 };
                 await OnMessageReceived?.Invoke(p);
             };
@@ -132,7 +132,7 @@ namespace Miki.Accounts.Achievements
             long id = userid.ToDbLong();
 
             List<Achievement> achievements = context.Achievements.Where(p => p.Id == id).ToList();
-            
+
             foreach (Achievement achievement in achievements)
             {
                 output += containers[achievement.Name].Achievements[achievement.Rank].Icon + " ";
@@ -149,7 +149,7 @@ namespace Miki.Accounts.Achievements
                 long id = user.Id.ToDbLong();
 
                 List<Achievement> achs = context.Achievements.Where(q => q.Id == id).ToList();
-                int achievementCount = achs.Sum(x => x.Rank+1);
+                int achievementCount = achs.Sum(x => x.Rank + 1);
 
                 AchievementPacket p = new AchievementPacket()
                 {
@@ -160,6 +160,17 @@ namespace Miki.Accounts.Achievements
 
                 await OnAchievementUnlocked?.Invoke(p);
             }
+        }
+        public async Task CallTransactionMadeEventAsync(IDiscordMessageChannel m, User receiver, User giver, int amount)
+        {
+            TransactionPacket p = new TransactionPacket();
+            p.discordChannel = m;
+            p.discordUser = new RuntimeUser(Bot.instance.Client.GetUser(receiver.Id.FromDbLong()));
+            p.giver = giver;
+            p.receiver = receiver;
+            p.amount = amount;
+
+            await OnTransaction?.Invoke(p);
         }
     }
 }

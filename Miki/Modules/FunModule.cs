@@ -108,11 +108,69 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
+        private string[] lunchposts = new string[]
+{
+            "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/lunchpost-1969?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/meian-alien?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/falcon-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/eternal-bark-engine-shall-we-feast?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/wuff-wuff-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/in-this-woof-monochrome-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/dogtone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/ufo-romance-in-the-nut-sky-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/necromastiff?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/the-dumbest-one-on-the-album?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/reach-fur-the-lunch-immurrtal-goat-from-psydo?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/pure-furries-whereabouts-of-the-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/pawdemic-picnic-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/moon-pup-homunculus-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/ancient-pups-song-firepsy-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/tummy-rumbling?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/fantasy-nation-lunchbreak-pupper-prayer-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/feast-of-the-crysanthemum-canine?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent-standalone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/present-world-oppahaul-lunch-mix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/food-circulating-melody-native-lunch-owo-remix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/a-lunch-sample",
+            "https://soundcloud.com/ghostcoffee-342990942/something-neato-my-dood",
+            "https://soundcloud.com/ghostcoffee-342990942/the-best-one",
+            "https://soundcloud.com/ghostcoffee-342990942/pure-gentlemen-whereabouts-of-the-style",
+            "https://soundcloud.com/ghostcoffee-342990942/scooby-goo",
+            "https://soundcloud.com/ghostcoffee-342990942/lunchstep",
+            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch",
+            "https://soundcloud.com/ghostcoffee-342990942/take-on-lunch",
+            "https://soundcloud.com/ghostcoffee-342990942/bonus-chief-keef-lunchus",
+            "https://soundcloud.com/ghostcoffee-342990942/lunch-signal",
+            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-2",
+            "https://soundcloud.com/ghostcoffee-342990942/wild-lunch",
+            "https://soundcloud.com/ghostcoffee-342990942/equivilant-1",
+            "https://soundcloud.com/ghostcoffee-342990942/exchange-1",
+            "https://soundcloud.com/ghostcoffee-342990942/gangnam-woof-1",
+            "https://soundcloud.com/ghostcoffee-342990942/hourai-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/lord-of-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/lunchvril-14th-1",
+            "https://soundcloud.com/ghostcoffee-342990942/making-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/megalunchovania",
+            "https://soundcloud.com/ghostcoffee-342990942/midnight-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/say-whats-for-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-1",
+            "https://soundcloud.com/ghostcoffee-342990942/stop-lunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/supah-woof-bros-3",
+            "https://soundcloud.com/ghostcoffee-342990942/the-worst-one-1",
+            "https://soundcloud.com/ghostcoffee-342990942/tnlunch-1",
+            "https://soundcloud.com/ghostcoffee-342990942/w-o-o-f-w-a-v-e-1",
+            "https://soundcloud.com/ghostcoffee-342990942/whats-for-woof-1",
+            "https://soundcloud.com/ghostcoffee-342990942/woofing-in-the-90s-1",
+            "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
+};
 
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
-            Locale l = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[Global.random.Next(0, reactions.Length)]) });
             await e.Channel.SendMessage(output);
@@ -286,7 +344,7 @@ namespace Miki.Modules
             }
             else
             {
-                await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+                await e.Channel.SendMessage(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
             }
         }
 
@@ -315,8 +373,14 @@ namespace Miki.Modules
             }
             else
             {
-                await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+                await e.Channel.SendMessage(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
             }
+        }
+
+        [Command(Name = "lunch")]
+        public async Task LunchAsync(EventContext e)
+        {
+            await e.Channel.SendMessage(e.GetResource("lunch_line") + "\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
         }
 
         [Command(Name = "mania")]
@@ -357,8 +421,8 @@ namespace Miki.Modules
             }
             string[] choices = e.arguments.Split(',');
 
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
-            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[Global.random.Next(0, choices.Length)] }));
+            Locale locale = e.Channel.GetLocale();
+            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.GetRandomNumber(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
@@ -415,12 +479,12 @@ namespace Miki.Modules
             await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.RollResult, new object[] { e.Author.Username, rollAmount }) + (rollCalc != "" ? " (" + rollCalc + ")" : ""));
         }
 
-        [Command(Name = "roulette")]
+        [Command(Name = "roulette")]    
         public async Task RouletteAsync(EventContext e)
         {
             IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
 
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (e.message.Content.Split(' ').Length == 1)
             {
@@ -443,149 +507,6 @@ namespace Miki.Modules
                 {
                     await e.Channel.SendFileAsync(mem, $"sig.png");
                 }
-            }
-        }
-
-        [Command(Name = "slots")]
-        public async Task SlotsAsync(EventContext e)
-        {
-            int moneyBet = 0;
-
-            using (var context = new MikiContext())
-            {
-                User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
-
-                if (!string.IsNullOrWhiteSpace(e.arguments))
-                {
-                    moneyBet = int.Parse(e.arguments);
-
-                    if (moneyBet > u.Currency)
-                    {
-                        await e.Channel.SendMessage(locale.GetString(Locale.InsufficientMekos));
-                        return;
-                    }
-                }
-
-                int moneyReturned = 0;
-
-                if (moneyBet <= 0)
-                {
-                    return;
-                }
-
-                string[] objects =
-                {
-                    "🍒", "🍒", "🍒", "🍒",
-                    "🍊", "🍊",
-                    "🍓", "🍓",
-                    "🍍","🍍",
-                    "🍇", "🍇",
-                    "⭐", "⭐",
-                    "🍍", "🍍",
-                    "🍓", "🍓",
-                    "🍊", "🍊", "🍊",
-                    "🍒", "🍒", "🍒", "🍒",
-                };
-
-                EmbedBuilder b = new EmbedBuilder()
-                {
-                    Title = locale.GetString(Locale.SlotsHeader)
-                };
-
-                Random r = new Random();
-
-                string[] objectsChosen =
-                {
-                    objects[r.Next(objects.Length)],
-                    objects[r.Next(objects.Length)],
-                    objects[r.Next(objects.Length)]
-                };
-
-                Dictionary<string, int> score = new Dictionary<string, int>();
-
-                foreach (string o in objectsChosen)
-                {
-                    if (score.ContainsKey(o))
-                    {
-                        score[o]++;
-                        continue;
-                    }
-                    score.Add(o, 1);
-                }
-
-                if (score.ContainsKey("🍒"))
-                {
-                    if (score["🍒"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 0.5f);
-                    }
-                    else if (score["🍒"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1f);
-                    }
-                }
-                if (score.ContainsKey("🍊"))
-                {
-                    if (score["🍊"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 0.8f);
-                    }
-                    else if (score["🍊"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1.5f);
-                    }
-                }
-                if (score.ContainsKey("🍓"))
-                {
-                    if (score["🍓"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1f);
-                    }
-                    else if (score["🍓"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 2f);
-                    }
-                }
-                if (score.ContainsKey("🍍"))
-                {
-                    if (score["🍍"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 4f);
-                    }
-                }
-                if (score.ContainsKey("🍇"))
-                {
-                    if (score["🍇"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 6f);
-                    }
-                }
-                if (score.ContainsKey("⭐"))
-                {
-                    if (score["⭐"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 12f);
-                    }
-                }
-
-                if (moneyReturned == 0)
-                {
-                    moneyReturned = -moneyBet;
-                }
-                else
-                {
-                    b.AddField(f =>
-                    {
-                        f.Name = locale.GetString(Locale.SlotsWinHeader);
-                        f.Value = locale.GetString(Locale.SlotsWinMessage, moneyReturned);
-                    });
-                }
-
-                b.Description = string.Join(" ", objectsChosen);
-                u.Currency += moneyReturned;
-                await context.SaveChangesAsync();
-                await e.Channel.SendMessage(new RuntimeEmbed(b));
             }
         }
 
@@ -649,7 +570,7 @@ namespace Miki.Modules
         [Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Guild.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             IPost s = null;
             if (e.arguments.ToLower().StartsWith("use"))
@@ -692,7 +613,7 @@ namespace Miki.Modules
 
             if (s == null)
             {
-                await e.Channel.SendMessage(Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!"));
+                await Utils.ErrorEmbed(locale, "We couldn't find an image with these tags!").SendToChannel(e.Channel);
                 return;
             }
 
@@ -728,7 +649,7 @@ namespace Miki.Modules
                     "🍒", "🍒", "🍒", "🍒",
                 };
 
-                EmbedBuilder b = new EmbedBuilder();
+                IDiscordEmbed b = Utils.Embed;
                 b.Title = locale.GetString(Locale.SlotsHeader);
 
                 Random r = new Random();
@@ -813,17 +734,13 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    b.AddField(f =>
-                    {
-                        f.Name = locale.GetString(Locale.SlotsWinHeader);
-                        f.Value = locale.GetString(Locale.SlotsWinMessage, moneyReturned);
-                    });
+                    b.AddField(locale.GetString(Locale.SlotsWinHeader), locale.GetString(Locale.SlotsWinMessage, moneyReturned));
                 }
 
                 b.Description = string.Join(" ", objectsChosen);
                 u.Currency += moneyReturned;
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessage(new RuntimeEmbed(b));
+                await b.SendToChannel(e.Channel);
             }
         }
     }

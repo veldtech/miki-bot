@@ -113,7 +113,7 @@ namespace Miki.Modules
                 l.GetString("miki_module_general_guildinfo_roles"),
                 string.Join(" ", roles));
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "calc", Aliases = new string[] { "calculate" })]
@@ -174,7 +174,7 @@ namespace Miki.Modules
                 "📜" + l.GetString("miki_module_general_guildinfo_roles"),
                 string.Join(", ", roleNames));
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "help")]
@@ -210,11 +210,7 @@ namespace Miki.Modules
 
                             if (c.Name.Contains(e.arguments))
                             {
-                                helpListEmbed.AddField(f =>
-                                {
-                                    f.Name = locale.GetString("miki_module_help_didyoumean");
-                                    f.Value = c.Name;
-                                });
+                                helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), c.Name);
                                 done = true;
                                 break;
                             }
@@ -223,11 +219,7 @@ namespace Miki.Modules
                             {
                                 if (alias.Contains(e.arguments))
                                 {
-                                    helpListEmbed.AddField(f =>
-                                    {
-                                        f.Name = locale.GetString("miki_module_help_didyoumean");
-                                        f.Value = c.Name;
-                                    });
+                                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), c.Name);
                                     done = true;
                                     break;
                                 }
@@ -240,11 +232,10 @@ namespace Miki.Modules
                         }
                     }
 
-                    await e.Channel.SendMessage(helpListEmbed);
+                    await helpListEmbed.SendToChannel(e.Channel);
                 }
                 else
                 {
-
                     if (Bot.instance.Events.CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
                     {
                         return;
@@ -269,7 +260,7 @@ namespace Miki.Modules
                         locale.GetString("miki_module_general_help_usage"),
                         (locale.HasString("miki_command_usage_" + ev.Name.ToLower())) ? locale.GetString("miki_command_usage_" + ev.Name.ToLower()) : locale.GetString("miki_placeholder_null"));
 
-                    await e.Channel.SendMessage(explainedHelpEmbed);
+                    await explainedHelpEmbed.SendToChannel(e.Channel);
                 }
                 return;
             }
@@ -279,9 +270,9 @@ namespace Miki.Modules
 
             embed.Color = new Color(0, 0.5f, 1);
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
 
-            await e.Author.SendMessage(await Bot.instance.Events.ListCommandsInEmbedAsync(e.message));
+            await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).SendToUser(e.Author);
         }
 
         [Command(Name = "info", Aliases = new string[] { "about" })]
@@ -295,25 +286,17 @@ namespace Miki.Modules
             embed.Color = new Color(1, 0.6f, 0.6f);
 
 
-            embed.AddField(f =>
-            {
-                f.Name = locale.GetString("miki_module_general_info_made_by_header");
-                f.Value = locale.GetString("miki_module_general_info_made_by_description");
-            });
+            embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
 
-            embed.AddField(f =>
-            {
-                f.Name = "Links";
-                f.Value =
+            embed.AddField("Links",
                 $"**{locale.GetString("miki_module_general_info_docs")}:** https://www.github.com/velddev/miki/wiki \n" +
                 $"**{locale.GetString("miki_module_general_info_patreon")}:** https://www.patreon.com/mikibot \n" +
                 $"**{locale.GetString("miki_module_general_info_twitter")}:** https://www.twitter.com/velddev / https://www.twitter.com/miki_discord \n" +
                 $"**{locale.GetString("miki_module_general_info_reddit")}:** https://www.reddit.com/r/mikibot \n" +
                 $"**{locale.GetString("miki_module_general_info_server")}:** https://discord.gg/55sAjsW \n" +
-                $"**{locale.GetString("miki_module_general_info_website")}:** http://miki.veld.one";
-            });
+                $"**{locale.GetString("miki_module_general_info_website")}:** http://miki.veld.one");
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -323,7 +306,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
         }
 
-        [Command(Name = "ping")]
+        [Command(Name = "ping", Aliases = new string[]{ "lag" })]
         public async Task PingAsync(EventContext e)
         {
             IDiscordMessage message = await Utils.Embed
@@ -335,12 +318,12 @@ namespace Miki.Modules
             {
                 double ping = (message.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
-                await message.ModifyAsync(
-                    Utils.Embed
-                        .SetTitle("Pong")
-                        .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
-                        .AddInlineField("Miki", ping + "ms")
-                        .AddInlineField("Discord", Bot.instance.Client.Latency + "ms"));
+                await Utils.Embed
+                    .SetTitle("Pong")
+                    .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
+                    .AddInlineField("Miki", ping + "ms")
+                    .AddInlineField("Discord", Bot.instance.Client.Latency + "ms")
+                    .ModifyMessage(message);
             }
         }
 
@@ -416,21 +399,11 @@ namespace Miki.Modules
             //    f.IsInline = true;
             //});
 
-            embed.AddField(f =>
-            {
-                f.Name = "💬 Commands";
-                f.Value = Bot.instance.Events.CommandsUsed().ToString();
-                f.IsInline = true;
-            });
+            embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
 
-            embed.AddField(f =>
-            {
-                f.Name = "⏰ Uptime";
-                f.Value = timeSinceStart.ToTimeString();
-                f.IsInline = true;
-            });
+            embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString());
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "urban")]
@@ -454,7 +427,7 @@ namespace Miki.Modules
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_example"), entry.Example);
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown);
 
-                await e.Channel.SendMessage(embed);
+                await embed.SendToChannel(e.Channel);
             }
             else
             {

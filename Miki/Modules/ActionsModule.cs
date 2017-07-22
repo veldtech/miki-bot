@@ -16,6 +16,28 @@ namespace Miki.Modules
     [Module("Actions")]
     public class ActionsModule
     {
+        [Command(Name = "ask")]
+        public async Task AskAsync(EventContext e)
+        {
+            string image = "http://i.imgur.com/AHPnL.gif";
+            IDiscordEmbed embed = Utils.Embed;
+
+            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
+
+            if (e.message.MentionedUserIds.Count > 0)
+            {
+                if (e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
+                {
+                    IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
+                    image = "http://i.imgur.com/AFcG8LU.gif";
+                    embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
+                }
+            }
+
+            embed.ImageUrl = image;
+            await embed.SendToChannel(e.Channel);
+        }
+
         [Command(Name = "cake")]
         public async Task CakeAsync(EventContext e)
         {
@@ -44,7 +66,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "cuddle")]
@@ -74,7 +96,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "glare")]
@@ -109,7 +131,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "highfive")]
@@ -143,7 +165,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "hug")]
@@ -188,7 +210,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "poke")]
@@ -221,7 +243,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "punch")]
@@ -256,7 +278,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "kiss")]
@@ -292,7 +314,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "pet")]
@@ -323,7 +345,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "slap")]
@@ -358,7 +380,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await e.Channel.SendMessage(embed);
+            await embed.SendToChannel(e.Channel);
         }
     }
 }
