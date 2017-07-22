@@ -14,6 +14,7 @@ namespace Miki.Languages
     public partial class Locale
     {
         public static Dictionary<string, ResourceManager> Locales = new Dictionary<string, ResourceManager>();
+        public static Dictionary<string, string> LocaleNames = new Dictionary<string, string>();
 
         private string defaultResource = "en-us";
         private long id;
@@ -29,29 +30,55 @@ namespace Miki.Languages
         public static void Load()
         {
             Locales.Add("ar-ae", ar_AE.ResourceManager);
+            LocaleNames.Add("arabic", "ar-ae");
 
             Locales.Add("cz-cz", cz_CZ.ResourceManager);
+            LocaleNames.Add("czech", "cz-cz");
 
             Locales.Add("da-dk", da_DK.ResourceManager);
+            LocaleNames.Add("danish", "da-dk");
+
             Locales.Add("de-de", de_DE.ResourceManager);
+            LocaleNames.Add("german", "de-de");
 
             Locales.Add("en-us", en_US.ResourceManager);
+            LocaleNames.Add("english", "en-us");
+
             Locales.Add("es-es", es_ES.ResourceManager);
+            LocaleNames.Add("spanish", "es-es");
+
+            Locales.Add("fi-fi", fi_FI.ResourceManager);
+            LocaleNames.Add("finnish", "fi-fi");
 
             Locales.Add("fr-fr", fr_FR.ResourceManager);
+            LocaleNames.Add("french", "fr-fr");
+
+            Locales.Add("he-he", he_HE.ResourceManager);
+            LocaleNames.Add("hebrew", "he-he");
 
             Locales.Add("ja-ja", ja.ResourceManager);
+            LocaleNames.Add("japanese", "ja-ja");
 
             Locales.Add("nl-nl", nl_NL.ResourceManager);
+            LocaleNames.Add("dutch", "nl-nl");
+
+            Locales.Add("no-no", no_NO.ResourceManager);
+            LocaleNames.Add("norwegian", "no-no");
 
             Locales.Add("pt-pt", pt_PT.ResourceManager);
+            LocaleNames.Add("portuguese", "pt-pt");
 
             Locales.Add("ru-ru", ru_RU.ResourceManager);
+            LocaleNames.Add("russian", "ru-ru");
 
             Locales.Add("sv-se", sv_SE.ResourceManager);
+            LocaleNames.Add("swedish", "sv-se");
 
             Locales.Add("zh-chs", zh_CHS.ResourceManager);
+            LocaleNames.Add("simplified chinese", "zh-chs");
+
             Locales.Add("zh-cht", zh_CHT.ResourceManager);
+            LocaleNames.Add("traditional chinese", "zh-cht");
         }
 
         public static Locale GetEntity(ulong id) => GetEntity(id.ToDbLong());
