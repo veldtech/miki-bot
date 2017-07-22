@@ -416,7 +416,7 @@
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_24" xml:space="preserve">
-    <value></value>
+    <value>「阿藤、勃たない」の噂、後を絶たない。</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_25" xml:space="preserve">
@@ -428,11 +428,11 @@
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_27" xml:space="preserve">
-    <value></value>
+    <value>「惣田麻衣よ。今田じいさんかい？」 「そうだ。毎夜、いまだ自慰三回」</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_28" xml:space="preserve">
-    <value></value>
+    <value>羊、鶏卵はようけ要らん</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_29" xml:space="preserve">
@@ -590,203 +590,247 @@
 </value>
   </data>
   <data name="miki_command_description_8ball" xml:space="preserve">
-    <value></value>
+    <value>あなたの人生に関するMikiの特定の質問をして、あなたの運を押してください！
+</value>
   </data>
   <data name="miki_command_description_pasta" xml:space="preserve">
-    <value></value>
+    <value>テキストの行を保存して読み込みます。</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_8ball" xml:space="preserve">
-    <value></value>
+    <value>&gt;8ball &lt;質問&gt;</value>
   </data>
   <data name="miki_command_usage_pasta" xml:space="preserve">
-    <value></value>
-    <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff</comment>
+    <value>pasta new &lt;キーワード&gt; &lt;パスタの内容&gt;
+pasta + &lt;キーワード&gt; &lt;パスタの内容&gt;
+pasta find &lt;キーワード&gt;
+pasta search &lt;キーワード&gt;
+pasta edit &lt;キーワード&gt; &lt;編集するコンテンツ&gt;
+pasta change &lt;キーワード&gt; &lt;編集するコンテンツ&gt;
+pasta who &lt;キーワード&gt;
+pasta whom &lt;keyword&gt;
+pasta ? &lt;キーワード&gt;
+pasta upvote &lt;キーワード&gt;
+pasta &lt;3 &lt;キーワード&gt;
+pasta love &lt;キーワード&gt;
+pasta downvote &lt;キーワード&gt;
+pasta &lt;/3 &lt;キーワード&gt;
+pasta hate &lt;キーワード&gt;</value>
+    <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff
+Fuzzy</comment>
   </data>
   <data name="miki_module_fun_8ball_result" xml:space="preserve">
-    <value></value>
+    <value>🎱{0}、あなたの質問に回答しました `{1}`
+</value>
   </data>
   <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
-    <value></value>
+    <value>あなたの検索で見つけた画像はありません:(
+</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
-    <value></value>
+    <value>このパスタはすでに存在しています！別の名前を試してください。
+</value>
   </data>
   <data name="miki_module_pasta_create_success" xml:space="preserve">
-    <value></value>
+    <value>`{0}`のパスタは作りました！</value>
   </data>
   <data name="miki_module_pasta_delete_success" xml:space="preserve">
-    <value></value>
+    <value>`{0}`のパスタは消しました！</value>
   </data>
   <data name="miki_module_pasta_edit_success" xml:space="preserve">
-    <value></value>
+    <value>`{0}`が編集されました！</value>
   </data>
   <data name="miki_module_pasta_error_no_permissions" xml:space="preserve">
-    <value></value>
+    <value>あなたがパスタを作らなかったは{0}できません。</value>
   </data>
   <data name="miki_module_pasta_error_null" xml:space="preserve">
-    <value></value>
+    <value>このパスタは存在してない！</value>
   </data>
   <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
-    <value></value>
+    <value>タグやコマンドを入力してください。</value>
   </data>
   <data name="miki_module_pasta_error_search_no_results" xml:space="preserve">
-    <value></value>
+    <value>検索条件を見つかりません。 何を探していますは指定してください。</value>
   </data>
   <data name="miki_module_pasta_error_specify" xml:space="preserve">
-    <value></value>
+    <value>どのパスタを{0}にするかを指定してください。
+</value>
   </data>
   <data name="miki_module_pasta_error_specify_check" xml:space="preserve">
-    <value></value>
+    <value>糺す</value>
   </data>
   <data name="miki_module_pasta_error_specify_delete" xml:space="preserve">
-    <value></value>
+    <value>消す</value>
   </data>
   <data name="miki_module_pasta_error_specify_edit" xml:space="preserve">
-    <value></value>
+    <value>変更</value>
   </data>
   <data name="miki_module_pasta_error_specify_upvote" xml:space="preserve">
-    <value></value>
+    <value>upvote</value>
   </data>
   <data name="miki_module_pasta_identify_created_by" xml:space="preserve">
-    <value></value>
+    <value>作者：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_identify_date_created" xml:space="preserve">
-    <value></value>
+    <value>作成日：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_identify_rating" xml:space="preserve">
-    <value></value>
+    <value>評点：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_identify_times_used" xml:space="preserve">
-    <value></value>
+    <value>使用回数：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_mine_error_null" xml:space="preserve">
-    <value></value>
+    <value>あいにく、あなたはまだパスタを作ったことがない。</value>
   </data>
   <data name="miki_module_pasta_mine_header" xml:space="preserve">
-    <value></value>
+    <value>{0}のパスタ</value>
   </data>
   <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
-    <value></value>
+    <value>申し訳ありませんですが、`{0}`って言うのパスタを見つかりませんでした。</value>
   </data>
   <data name="miki_module_pasta_search_footer" xml:space="preserve">
-    <value></value>
+    <value>ページ {0}/{1}</value>
   </data>
   <data name="miki_module_pasta_search_header" xml:space="preserve">
-    <value></value>
+    <value>🔎こちらのパスタを見つきました：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_vote_success" xml:space="preserve">
-    <value></value>
+    <value>あなたの一票は修正しました！現在評点：`{0}`</value>
   </data>
   <data name="miki_success_message_generic" xml:space="preserve">
-    <value></value>
+    <value>成功！</value>
   </data>
   <data name="miki_command_description_info" xml:space="preserve">
-    <value></value>
+    <value>ボットと開発者の情報を打ち出せます。</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_prefix" xml:space="preserve">
-    <value></value>
+    <value>あなたのサーバがMikiを呼べるのプレフィックス設定します（既定値： &gt; ）</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_info" xml:space="preserve">
-    <value></value>
+    <value>&gt;info</value>
   </data>
   <data name="miki_command_usage_prefix" xml:space="preserve">
-    <value></value>
+    <value>&gt;prefix ~</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_admin_disable_command" xml:space="preserve">
-    <value></value>
+    <value>`{0}`のコマンドを無効にしました！</value>
   </data>
   <data name="miki_module_admin_disable_module" xml:space="preserve">
-    <value></value>
+    <value>モジュール`{0}`を無効にしました！</value>
   </data>
   <data name="miki_module_admin_enable_command" xml:space="preserve">
-    <value></value>
+    <value>コマンド`{0}`を可能にしました！</value>
   </data>
   <data name="miki_module_admin_enable_module" xml:space="preserve">
-    <value></value>
+    <value>モジュール`{0}`を可能にしました！</value>
   </data>
   <data name="miki_module_admin_error_module_disabled" xml:space="preserve">
-    <value></value>
+    <value>モジュール`{0}`は無効です</value>
   </data>
   <data name="miki_module_admin_kick_by" xml:space="preserve">
-    <value></value>
+    <value>蹴った</value>
+    <comment>No, this is not a variable</comment>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
-    <value></value>
+    <value>あなたを**{0}**が追い出させました！</value>
   </data>
   <data name="miki_module_admin_kick_header" xml:space="preserve">
-    <value></value>
+    <value>⚠ 追い出しました</value>
   </data>
   <data name="miki_module_admin_kick_reason" xml:space="preserve">
-    <value></value>
+    <value>💬動機：</value>
   </data>
   <data name="miki_module_admin_prune_error_max" xml:space="preserve">
-    <value></value>
+    <value>一のコマンドで１００メッセージ以上削れません。</value>
   </data>
   <data name="miki_module_admin_prune_error_no_access" xml:space="preserve">
-    <value></value>
+    <value>ここのチャネルで私はメッセージを削るできません。😢</value>
   </data>
   <data name="miki_module_admin_prune_success" xml:space="preserve">
-    <value></value>
+    <value>{0}のメッセージを削れました！</value>
   </data>
   <data name="miki_module_general_calc_error" xml:space="preserve">
-    <value></value>
+    <value>そういうの数理はできません！</value>
   </data>
   <data name="miki_module_general_guildinfo_channels" xml:space="preserve">
-    <value></value>
+    <value>📺チャネル:</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_guildinfo_owned_by" xml:space="preserve">
-    <value></value>
+    <value>👑オーナー:</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_guildinfo_roles" xml:space="preserve">
-    <value></value>
+    <value>📜役:</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_guildinfo_users" xml:space="preserve">
-    <value></value>
+    <value>🙎ユーザ:</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_description" xml:space="preserve">
-    <value></value>
+    <value>情報:</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_dm" xml:space="preserve">
-    <value></value>
+    <value>あなたに私の全部のコマンドがあるメッセージを送りました！&apos;&gt;help [コマンド]&apos; が使えますと、このコマンドの使う方を教えられる。</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_usage" xml:space="preserve">
-    <value></value>
+    <value>使う方</value>
   </data>
   <data name="miki_module_general_info_docs" xml:space="preserve">
-    <value></value>
+    <value>文献集</value>
   </data>
   <data name="miki_module_general_info_donate_string" xml:space="preserve">
-    <value></value>
+    <value>ハーロみんな！Mikiを支えられる目的Patreonが作った！手を貸して！ お願いいたします ！</value>
   </data>
   <data name="miki_module_general_info_links" xml:space="preserve">
-    <value></value>
+    <value>リンク：</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_made_by_description" xml:space="preserve">
-    <value></value>
+    <value>特殊感謝へ： Florestina, Mei, Rappy, Rie &amp; Rosie.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_made_by_header" xml:space="preserve">
-    <value></value>
+    <value>**開発者**: Veld</value>
   </data>
   <data name="miki_module_general_info_patreon" xml:space="preserve">
-    <value></value>
+    <value>Patreon</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_reddit" xml:space="preserve">
-    <value></value>
+    <value>Subreddit</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_server" xml:space="preserve">
-    <value></value>
+    <value>サポートサーバ</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_twitter" xml:space="preserve">
-    <value></value>
+    <value>ツイッター</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_website" xml:space="preserve">
-    <value></value>
+    <value>サイト</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_invite_dm" xml:space="preserve">
-    <value></value>
+    <value>どうぞ！ヾ(≧∇≦*)ゝ</value>
   </data>
   <data name="miki_module_general_invite_message" xml:space="preserve">
-    <value></value>
+    <value>誘えるリンクがあるのPMを送られます。</value>
   </data>
   <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
     <value></value>
@@ -822,6 +866,626 @@
     <value></value>
   </data>
   <data name="miki_module_whois_tag_personal" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_accounts_level_up_content" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_accounts_level_up_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_leaderboards" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_profile" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_toggledm" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_toggleerrors" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_leaderboards" xml:space="preserve">
+    <value>&gt;leaderboards
+&gt;leaderboards local
+&gt;leaderboards mekos
+&gt;leaderboards commands </value>
+  </data>
+  <data name="miki_command_usage_profile" xml:space="preserve">
+    <value>&gt;profile
+&gt;profile &lt;@ユーザー&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_toggledm" xml:space="preserve">
+    <value>&gt;toggledm</value>
+  </data>
+  <data name="miki_command_usage_toggleerrors" xml:space="preserve">
+    <value>&gt;toggleerrors</value>
+  </data>
+  <data name="miki_generic_achievements" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_disabled" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_enabled" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_global_information" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_information" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_mekos" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_generic_reward" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_information_level" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_information_rank" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_commands_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_local_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_mekos_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_error_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_favourite_command" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_footer" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_marriedto" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_profile_url" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_settings_dm" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_settings_error_dm" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_settings_guild_notifications" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_placeholder_null" xml:space="preserve">
+    <value>何もいない！（今にはなー！）</value>
+  </data>
+  <data name="miki_module_general_urban_author" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_divorce_content" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_divorce_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_error_no_marriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_general_prefix_help" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_general_prefix_help_header" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_divorce" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_divorce" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_general_help_aliases" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_label_prefix" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_general_guildinfo_roles_count" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_general_guildinfo_voicechannels" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_marry" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_marry" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_marry_text" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_marry_text2" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_terms_mention" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_declinemarriage_description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_declinemarriage_usage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_marriage_all_declined" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_marriage_declined" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_marriage_no_mention" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_marriage_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_admin_cannot_disable" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_acceptmarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_ban" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_buymarriageslot" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_clean" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_daily" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_declinemarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_give" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_kick" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_mekos" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_prune" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_setcommand" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_setmodule" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_setrolelevel" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_showproposals" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_softban" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_syncavatar" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_syncname" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_acceptmarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_ban" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_buymarriageslot" xml:space="preserve">
+    <value>&gt;buymarriageslot</value>
+  </data>
+  <data name="miki_command_usage_clean" xml:space="preserve">
+    <value>&gt;clean</value>
+  </data>
+  <data name="miki_command_usage_daily" xml:space="preserve">
+    <value>&gt;daily</value>
+  </data>
+  <data name="miki_command_usage_declinemarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_give" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_kick" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_mekos" xml:space="preserve">
+    <value>&gt;mekos</value>
+  </data>
+  <data name="miki_command_usage_prune" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_setcommand" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_setmodule" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_setrolelevel" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_showproposals" xml:space="preserve">
+    <value>&gt;showproposals</value>
+  </data>
+  <data name="miki_command_usage_softban" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_syncavatar" xml:space="preserve">
+    <value>&gt;syncavatar</value>
+  </data>
+  <data name="miki_command_usage_syncname" xml:space="preserve">
+    <value>&gt;syncname</value>
+  </data>
+  <data name="miki_command_usage_toggleguildnotifications" xml:space="preserve">
+    <value>&gt;toggleguildnotifications</value>
+  </data>
+  <data name="miki_command_description_ask" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_bird" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_cage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_cat" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_compliment" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_confused" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_ctb" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_dog" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_e621" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_gelbooru" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_gif" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_img" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_lewd" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_lunch" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_mania" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_osu" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_pick" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_pout" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_pun" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_roll" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_roulette" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_rule34" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_safe" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_slots" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_smug" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_taiko" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_ask" xml:space="preserve">
+    <value>&gt;ask &lt;質問&gt;</value>
+  </data>
+  <data name="miki_command_usage_bird" xml:space="preserve">
+    <value>&gt;bird</value>
+  </data>
+  <data name="miki_command_usage_cage" xml:space="preserve">
+    <value>&gt;cage</value>
+  </data>
+  <data name="miki_command_usage_cat" xml:space="preserve">
+    <value>&gt;cat</value>
+  </data>
+  <data name="miki_command_usage_compliment" xml:space="preserve">
+    <value>&gt;compliment</value>
+  </data>
+  <data name="miki_command_usage_confused" xml:space="preserve">
+    <value>&gt;confused</value>
+  </data>
+  <data name="miki_command_usage_ctb" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_dog" xml:space="preserve">
+    <value>&gt;dog</value>
+  </data>
+  <data name="miki_command_usage_e621" xml:space="preserve">
+    <value>&gt;e621 &lt;e621のタグ&gt;</value>
+  </data>
+  <data name="miki_command_usage_gelbooru" xml:space="preserve">
+    <value>&gt;gelbooru &lt;gelbooruのタグ&gt;</value>
+  </data>
+  <data name="miki_command_usage_gif" xml:space="preserve">
+    <value>&gt;gif [タグ]</value>
+  </data>
+  <data name="miki_command_usage_img" xml:space="preserve">
+    <value>&gt;img [タグ]</value>
+  </data>
+  <data name="miki_command_usage_lewd" xml:space="preserve">
+    <value>&gt;lewd</value>
+  </data>
+  <data name="miki_command_usage_lunch" xml:space="preserve">
+    <value>&gt;lunch</value>
+  </data>
+  <data name="miki_command_usage_mania" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_osu" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_pick" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_pout" xml:space="preserve">
+    <value>&gt;pout</value>
+  </data>
+  <data name="miki_command_usage_pun" xml:space="preserve">
+    <value>&gt;pun</value>
+  </data>
+  <data name="miki_command_usage_roll" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_roulette" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_rule34" xml:space="preserve">
+    <value>&gt;rule34 &lt;rule34のタグ&gt;</value>
+  </data>
+  <data name="miki_command_usage_safe" xml:space="preserve">
+    <value>&gt;safe &lt;タグ&gt;</value>
+  </data>
+  <data name="miki_command_usage_slots" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_smug" xml:space="preserve">
+    <value>&gt;smug</value>
+  </data>
+  <data name="miki_command_usage_taiko" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_remind" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_remind" xml:space="preserve">
+    <value>&gt;remind me to &lt;行動&gt; in &lt;時&gt; (たとえば、二分と一十秒からっていうのなら： 2 minutes and 11 seconds)</value>
+  </data>
+  <data name="pasta_page_index" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_createpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_deletepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_editpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildconfig" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildnewrival" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildprofile" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildtop" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildweekly" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_hatepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_infopasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_lovepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_mypasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_poppasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_searchpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_toppasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_createpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_deletepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_editpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_guildconfig" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_guildnewrival" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_guildprofile" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_guildtop" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_guildweekly" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_infopasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_lovepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_mypasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_poppasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_searchpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_toppasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_terms_weekly" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="createpasta_error_no_content" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="infopasta_error_no_arg" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="infopasta_rating" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="lunch_line" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_cards_miki" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_cards_you" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_explanation" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_hit" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_lose_description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_lose_title" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_no_arg" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_stay" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_win_description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_win_title" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_blackjack" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_blackjack" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="mypasta_error_no_pastas" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="mypasta_title" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="pasta_error_no_arg" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="poppasta_title" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="searchpasta_error_no_arg" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="toppasta_title" xml:space="preserve">
     <value></value>
   </data>
 
