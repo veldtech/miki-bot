@@ -1217,277 +1217,283 @@ Fuzzy</comment>
     <value>Wanneer je teleurgesteld, verdrietig of boos op iemand bent. Laat zien hoe een grote tsundere pruilt &gt;:T</value>
   </data>
   <data name="miki_command_description_pun" xml:space="preserve">
-    <value></value>
+    <value>Zou het niet grappig zijn als dit ook een woordgrap was?</value>
   </data>
   <data name="miki_command_description_roll" xml:space="preserve">
-    <value></value>
+    <value>Roll 1d20, hoger dan 17 om deze trol te verslaan!</value>
   </data>
   <data name="miki_command_description_roulette" xml:space="preserve">
-    <value></value>
+    <value>Doe leuke giveaways, kies een willekeurig persoon van je server en geef ze roem en glorie!</value>
   </data>
   <data name="miki_command_description_rule34" xml:space="preserve">
-    <value></value>
+    <value>Omdat er niets is waar geen porno van bestaat.</value>
   </data>
   <data name="miki_command_description_safe" xml:space="preserve">
-    <value></value>
+    <value>Krijg fotos van hete anime meiden, maar veilig voor het werk! Alle tags kunnen hier gevonden worden: &lt;https://safebooru.org/index.php?page=tags&amp;s=list&gt;</value>
   </data>
   <data name="miki_command_description_slots" xml:space="preserve">
-    <value></value>
+    <value>Test je geluk met deze totaal niet beïnvloedde slotmachines, voor jouw plezier!</value>
   </data>
   <data name="miki_command_description_smug" xml:space="preserve">
-    <value></value>
+    <value>Wanneer je een hearthstonegame wint.</value>
   </data>
   <data name="miki_command_description_taiko" xml:space="preserve">
-    <value></value>
+    <value>don don don katsu don katsu don don katsu</value>
   </data>
   <data name="miki_command_usage_ask" xml:space="preserve">
-    <value></value>
+    <value>&gt;ask &lt;vraag&gt;</value>
   </data>
   <data name="miki_command_usage_bird" xml:space="preserve">
-    <value></value>
+    <value>&gt;bird</value>
   </data>
   <data name="miki_command_usage_cage" xml:space="preserve">
-    <value></value>
+    <value>&gt;cage</value>
   </data>
   <data name="miki_command_usage_cat" xml:space="preserve">
-    <value></value>
+    <value>&gt;cat</value>
   </data>
   <data name="miki_command_usage_compliment" xml:space="preserve">
-    <value></value>
+    <value>&gt;compliment</value>
   </data>
   <data name="miki_command_usage_confused" xml:space="preserve">
-    <value></value>
+    <value>&gt;confused</value>
   </data>
   <data name="miki_command_usage_ctb" xml:space="preserve">
-    <value></value>
+    <value>&gt;ctb &lt;osu gebruikersnaam&gt;</value>
   </data>
   <data name="miki_command_usage_dog" xml:space="preserve">
-    <value></value>
+    <value>&gt;dog</value>
   </data>
   <data name="miki_command_usage_e621" xml:space="preserve">
-    <value></value>
+    <value>&gt;e621 &lt;e621 tags&gt;</value>
   </data>
   <data name="miki_command_usage_gelbooru" xml:space="preserve">
-    <value></value>
+    <value>&gt;gelbooru &lt;gelbooru tags&gt;</value>
   </data>
   <data name="miki_command_usage_gif" xml:space="preserve">
-    <value></value>
+    <value>&gt;gif [tags]</value>
   </data>
   <data name="miki_command_usage_img" xml:space="preserve">
-    <value></value>
+    <value>&gt;img [tags]</value>
   </data>
   <data name="miki_command_usage_lewd" xml:space="preserve">
-    <value></value>
+    <value>&gt;lewd</value>
   </data>
   <data name="miki_command_usage_lunch" xml:space="preserve">
-    <value></value>
+    <value>&gt;lunch</value>
   </data>
   <data name="miki_command_usage_mania" xml:space="preserve">
-    <value></value>
+    <value>&gt;mania &lt;osu gebruikersnaaam&gt;</value>
   </data>
   <data name="miki_command_usage_osu" xml:space="preserve">
-    <value></value>
+    <value>&gt;osu &lt;osu gebruikersnaam&gt;</value>
   </data>
   <data name="miki_command_usage_pick" xml:space="preserve">
-    <value></value>
+    <value>&gt;pick &lt;optie1&gt;,[optie2],[...]</value>
   </data>
   <data name="miki_command_usage_pout" xml:space="preserve">
-    <value></value>
+    <value>&gt;pout</value>
   </data>
   <data name="miki_command_usage_pun" xml:space="preserve">
-    <value></value>
+    <value>&gt;pun</value>
   </data>
   <data name="miki_command_usage_roll" xml:space="preserve">
-    <value></value>
+    <value>&gt;roll [hoeveelheid]
+&gt;roll [hoeveelheid dobbelstenen]d[aantal zijden van dobbelsteen]</value>
   </data>
   <data name="miki_command_usage_roulette" xml:space="preserve">
-    <value></value>
+    <value>&gt;roulette [tekst]</value>
   </data>
   <data name="miki_command_usage_rule34" xml:space="preserve">
-    <value></value>
+    <value>&gt;rule34 &lt;rule34 tags&gt;</value>
   </data>
   <data name="miki_command_usage_safe" xml:space="preserve">
-    <value></value>
+    <value>&gt;safe &lt;tags&gt;</value>
   </data>
   <data name="miki_command_usage_slots" xml:space="preserve">
-    <value></value>
+    <value>&gt;slots &lt;te verwedden hoeveelheid&gt;</value>
   </data>
   <data name="miki_command_usage_smug" xml:space="preserve">
-    <value></value>
+    <value>&gt;smug</value>
   </data>
   <data name="miki_command_usage_taiko" xml:space="preserve">
-    <value></value>
+    <value>&gt;taiko &lt;osu gebruikersnaam&gt;</value>
   </data>
   <data name="miki_command_description_remind" xml:space="preserve">
-    <value></value>
+    <value>Herinner jezelf eraan om dingen te doen!</value>
   </data>
   <data name="miki_command_usage_remind" xml:space="preserve">
-    <value></value>
+    <value>&gt;remind me om &lt;actie&gt; in &lt;tijd&gt; (bijvoorbeeld 2 minutes and 11 seconds)</value>
+    <comment>I assume the time definition has to stay in English for miki to properly process this command?</comment>
   </data>
   <data name="pasta_page_index" xml:space="preserve">
-    <value></value>
+    <value>pagina {0} van {1}</value>
   </data>
   <data name="miki_command_description_createpasta" xml:space="preserve">
-    <value></value>
+    <value>Creëer je eigen speciale pasta en deel het met iedereen!</value>
   </data>
   <data name="miki_command_description_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>Spijt van een gecreëerde pasta? Verwijder hem met dit commando!</value>
   </data>
   <data name="miki_command_description_editpasta" xml:space="preserve">
-    <value></value>
+    <value>Niet blij met je huidige pasta? Bewerk hem en wees weer cool en meta!</value>
   </data>
   <data name="miki_command_description_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>Stel je guild account in op de manier waarop jij wilt.</value>
   </data>
   <data name="miki_command_description_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>Stel een (nieuwe) rivaal in voor je gilde! Tijd voor wat competitie!</value>
   </data>
   <data name="miki_command_description_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>Dit commando toont alle statistieken van je gilde!</value>
   </data>
   <data name="miki_command_description_guildtop" xml:space="preserve">
-    <value></value>
+    <value>Check de top gildes op basis van ervaringspunten!</value>
   </data>
   <data name="miki_command_description_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>Als je aan het winnen bent van je rivaal krijg je hogere beloningen! Verkrijg ze met dit commando!</value>
   </data>
   <data name="miki_command_description_hatepasta" xml:space="preserve">
-    <value></value>
+    <value>Heb je een absolute hekel aan een pasta? Toon je haat met dit commando!</value>
   </data>
   <data name="miki_command_description_infopasta" xml:space="preserve">
-    <value></value>
+    <value>Wil je weten wie een pasta gemaakt heeft? Gebruik dit commando!</value>
   </data>
   <data name="miki_command_description_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>Heb je een favoriete pasta? Toon je liefde door dit commando te gebruiken!</value>
   </data>
   <data name="miki_command_description_mypasta" xml:space="preserve">
-    <value></value>
+    <value>Krijg een lijst met al je pastas!</value>
   </data>
   <data name="miki_command_description_poppasta" xml:space="preserve">
-    <value></value>
+    <value>Dit commando toont de meest gebruikte pastas.</value>
   </data>
   <data name="miki_command_description_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>Zoek door alle beschikbare pastas en ontdek nieuwe memes!</value>
   </data>
   <data name="miki_command_description_toppasta" xml:space="preserve">
-    <value></value>
+    <value>Dit commando toont de meest geliefde pastas!</value>
   </data>
   <data name="miki_command_usage_createpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;createpasta &lt;tag&gt; &lt;inhoud&gt;</value>
   </data>
   <data name="miki_command_usage_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;deletepasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_editpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;editpasta &lt;tag&gt; &lt;nieuwe inhoud&gt;</value>
   </data>
   <data name="miki_command_usage_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildconfig expneeded &lt;hoeveelheid&gt;
+&gt;guildconfig visible &lt;yes:no&gt;</value>
   </data>
   <data name="miki_command_usage_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildnewrival</value>
   </data>
   <data name="miki_command_usage_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildprofile</value>
   </data>
   <data name="miki_command_usage_guildtop" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildtop</value>
   </data>
   <data name="miki_command_usage_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildweekly</value>
   </data>
   <data name="miki_command_usage_infopasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;infopasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;lovepasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_mypasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;mypasta</value>
   </data>
   <data name="miki_command_usage_poppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;poppasta</value>
   </data>
   <data name="miki_command_usage_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;searchpasta &lt;tag&gt; [pagina=1]</value>
   </data>
   <data name="miki_command_usage_toppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;toppasta</value>
   </data>
   <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
-    <value></value>
+    <value>Je hebt niet genoeg ervaringspunten om beloningen op te eisen voor dit gilde. Hang alsjeblieft een beetje rond totdat je toestemming hebt!
+
+Je hebt allerminst **{0}** ervaringspunten nodig voordat je in dit gilde gebruik kunt maken van dit commando.</value>
   </data>
   <data name="miki_terms_weekly" xml:space="preserve">
-    <value></value>
+    <value>Weekly</value>
   </data>
   <data name="createpasta_error_no_content" xml:space="preserve">
-    <value></value>
+    <value>Ik kon geen inhoud voor deze pasta vinden, specifiveer alsjeblieft wat je wilt maken.</value>
   </data>
   <data name="infopasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Vertel alsjeblieft welke pasta je wilt identificeren.</value>
   </data>
   <data name="infopasta_rating" xml:space="preserve">
-    <value></value>
+    <value>Rating</value>
   </data>
   <data name="lunch_line" xml:space="preserve">
-    <value></value>
+    <value>Woef woef! Wat lunchen we?</value>
   </data>
   <data name="miki_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Blackjack</value>
   </data>
   <data name="miki_blackjack_cards_miki" xml:space="preserve">
-    <value></value>
+    <value>Miki ({0})</value>
   </data>
   <data name="miki_blackjack_cards_you" xml:space="preserve">
-    <value></value>
+    <value>Jij ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
-    <value></value>
+    <value>Degene die het dichtst bij 21 eindigt wint. Alle kaarten tellen voor hun eigen nummer, tot wel 10! Gelijkspellen worden gewonnen door Miki.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value></value>
+    <value>Gebruik `hit` om een nieuwe kaart te trekken.</value>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
-    <value></value>
+    <value>Je verliest je inzet aan Miki.</value>
   </data>
   <data name="miki_blackjack_lose_title" xml:space="preserve">
-    <value></value>
+    <value>Miki wint!</value>
   </data>
   <data name="miki_blackjack_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Je hebt geen hoeveelheid ingezet! Correct gebruik:
+&gt;blackjack &lt;hoeveelheid&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value></value>
+    <value>Gebruik `stay` om de ronde te beëindigen.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
-    <value></value>
+    <value>Miki was er niet toe in staat je score te verslaan en dit betekent dat jij de jackpot wint. Je krijgt {0} mekos!</value>
   </data>
   <data name="miki_blackjack_win_title" xml:space="preserve">
-    <value></value>
+    <value>Jij wint!</value>
   </data>
   <data name="miki_command_description_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Vergok je mekos in een 100% eerlijk potje blackjack tegen Miki!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value></value>
+    <value>&gt;blackjack &lt;hoeveelheid&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
-    <value></value>
+    <value>Sorry, maar je hebt nog geen pastas...</value>
   </data>
   <data name="mypasta_title" xml:space="preserve">
-    <value></value>
+    <value>{0}&apos;s pastas</value>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Voer alsjeblieft één van de tags of commandos in.</value>
   </data>
   <data name="poppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Meest populaire pastas</value>
   </data>
   <data name="searchpasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Specificeer alsjeblieft je zoektermen.</value>
   </data>
   <data name="toppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Top pastas</value>
   </data>
 
 </root>
