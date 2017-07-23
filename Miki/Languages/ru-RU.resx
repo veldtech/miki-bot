@@ -1041,7 +1041,7 @@ Fuzzy</comment>
     <value>Позволяет пользователям получить роль по достижению определенного уровня!</value>
   </data>
   <data name="miki_command_description_showproposals" xml:space="preserve">
-    <value>Show your open proposals with this handy command!</value>
+    <value>Посмотрите на все предложения, которые Вы отправили или получили, с помощью этой команды!</value>
   </data>
   <data name="miki_command_description_softban" xml:space="preserve">
     <value>Накажите человека, который был груб с Вами.</value>
@@ -1297,100 +1297,105 @@ Fuzzy</comment>
     <value>&gt;remind me to &lt;действие&gt; in &lt;время&gt; (Например: 2 minutes and 11 seconds)</value>
   </data>
   <data name="pasta_page_index" xml:space="preserve">
-    <value></value>
+    <value>Страница {0} из {1}</value>
   </data>
   <data name="miki_command_description_createpasta" xml:space="preserve">
-    <value></value>
+    <value>Создайте свою собственную пасту и поделитесь ей со всеми!</value>
   </data>
   <data name="miki_command_description_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>Жалеете о созданной пасте? Удалите её с помощью этой команды!</value>
   </data>
   <data name="miki_command_description_editpasta" xml:space="preserve">
-    <value></value>
+    <value>Не удовлетворены пастами, которые у вас есть? Измените их, чтобы они смотрелись круче!</value>
   </data>
   <data name="miki_command_description_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>Настройте свой аккаунт гильдии так, как хотите!</value>
   </data>
   <data name="miki_command_description_guildnewrival" xml:space="preserve">
     <value></value>
   </data>
   <data name="miki_command_description_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>Эта команда покажет всю статистику Вашей гильдии!</value>
   </data>
   <data name="miki_command_description_guildtop" xml:space="preserve">
-    <value></value>
+    <value>Посмотрите на топовые (на основе опыта) гильдии!</value>
   </data>
   <data name="miki_command_description_guildweekly" xml:space="preserve">
     <value></value>
   </data>
   <data name="miki_command_description_hatepasta" xml:space="preserve">
-    <value></value>
+    <value>Вам совсем не нравится паста? Покажите свою ненависть с помощью этой команды!</value>
   </data>
   <data name="miki_command_description_infopasta" xml:space="preserve">
-    <value></value>
+    <value>Хотите узнать кто сделал пасту? Используйте эту команду!</value>
   </data>
   <data name="miki_command_description_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>У вас есть любимая паста? Покажите свою любовь благодаря этой команде!</value>
   </data>
   <data name="miki_command_description_mypasta" xml:space="preserve">
-    <value></value>
+    <value>Список всех Ваших паст!</value>
   </data>
   <data name="miki_command_description_poppasta" xml:space="preserve">
-    <value></value>
+    <value>Эта команда показывает самые используемые пасты.</value>
   </data>
   <data name="miki_command_description_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>Поищите новые пасты и откройте для себя новые мемасы!</value>
   </data>
   <data name="miki_command_description_toppasta" xml:space="preserve">
-    <value></value>
+    <value>Эта команда показывает самые популярные пасты! </value>
   </data>
   <data name="miki_command_usage_createpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;createpasta &lt;тег&gt; &lt;содержание&gt;</value>
   </data>
   <data name="miki_command_usage_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;deletepasta &lt;тег&gt;</value>
   </data>
   <data name="miki_command_usage_editpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;editpasta &lt;тег&gt; &lt;новое содержаник&gt;</value>
   </data>
   <data name="miki_command_usage_guildconfig" xml:space="preserve">
-    <value></value>
+    <value> &gt;guildconfig expneeded &lt;кол-во&gt;
+&gt;guildconfig visible &lt;да/нет&gt;</value>
   </data>
   <data name="miki_command_usage_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>
+ &gt;guildnewrival</value>
   </data>
   <data name="miki_command_usage_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>
+ &gt;guildprofile</value>
   </data>
   <data name="miki_command_usage_guildtop" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildtop</value>
   </data>
   <data name="miki_command_usage_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildweekly</value>
   </data>
   <data name="miki_command_usage_infopasta" xml:space="preserve">
-    <value></value>
+    <value> &gt;infopasta &lt;тег&gt;</value>
   </data>
   <data name="miki_command_usage_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;lovepasta &lt;тег&gt;</value>
   </data>
   <data name="miki_command_usage_mypasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;mypasta</value>
   </data>
   <data name="miki_command_usage_poppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;poppasta</value>
   </data>
   <data name="miki_command_usage_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;searchpasta &lt;тег&gt; [страница=1]</value>
   </data>
   <data name="miki_command_usage_toppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;toppasta</value>
   </data>
   <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
-    <value></value>
+    <value>У Вас недостаточно опыта, необходимого для получения наград. Рекомендуем подождать немного, пока Вы не накопите нужное количество опыта!
+
+Вам нужно хотя бы **{0}** опыта до того, как Вы сможете использовать эту команду в гильдии.</value>
   </data>
   <data name="miki_terms_weekly" xml:space="preserve">
-    <value></value>
+    <value>Еженедельные</value>
   </data>
   <data name="createpasta_error_no_content" xml:space="preserve">
     <value></value>
@@ -1399,67 +1404,68 @@ Fuzzy</comment>
     <value></value>
   </data>
   <data name="infopasta_rating" xml:space="preserve">
-    <value></value>
+    <value>Рейтинг</value>
   </data>
   <data name="lunch_line" xml:space="preserve">
-    <value></value>
+    <value>
+ Woof woof! What&apos;s for lunch?</value>
   </data>
   <data name="miki_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Блекджек</value>
   </data>
   <data name="miki_blackjack_cards_miki" xml:space="preserve">
-    <value></value>
+    <value>Miki ({0})</value>
   </data>
   <data name="miki_blackjack_cards_you" xml:space="preserve">
-    <value></value>
+    <value>Вы ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
     <value></value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value></value>
+    <value>Используйте `hit`, чтобы взять новую карту.</value>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
-    <value></value>
+    <value>Вы проиграли свою ставку Miki.</value>
   </data>
   <data name="miki_blackjack_lose_title" xml:space="preserve">
-    <value></value>
+    <value>Miki выигрывает!</value>
   </data>
   <data name="miki_blackjack_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Вы не указали ставку! Пример: &gt;blackjack &lt;кол-во&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value></value>
+    <value>Используйте `stay`, чтобы завершить игру.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
-    <value></value>
+    <value>Miki не смогла перебить Ваши очки и это значит, что вы получаете джекпот! Вы заработали {0} мекосов!</value>
   </data>
   <data name="miki_blackjack_win_title" xml:space="preserve">
-    <value></value>
+    <value>Вы выиграли!</value>
   </data>
   <data name="miki_command_description_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Проиграйте все свои мекосы в самой честной игре в блекджек против Miki!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value></value>
+    <value>&gt;blackjack &lt;кол-во&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
-    <value></value>
+    <value>Увы, но у Вас ещё нет никаких паст.</value>
   </data>
   <data name="mypasta_title" xml:space="preserve">
-    <value></value>
+    <value>Пасты {0}</value>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Пожалуйста, введите один из тегов или команд.</value>
   </data>
   <data name="poppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Самые популярные пасты</value>
   </data>
   <data name="searchpasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Пожалуйста, укажите запрос для поиска.</value>
   </data>
   <data name="toppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Топ пасты</value>
   </data>
 
 </root>
