@@ -106,7 +106,7 @@ namespace Miki.Modules
 
                 if (!Locale.LocaleNames.ContainsKey(e.arguments.ToLower()))
                 {
-                    await Utils.ErrorEmbed(locale, $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.").SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, $"{e.arguments} is not a valid language. Use `>listlocale` to check all languages available.").SendToChannel(e.Channel);
                     return;
                 }
 
@@ -118,7 +118,7 @@ namespace Miki.Modules
                 language.Language = Locale.LocaleNames[e.arguments.ToLower()];
                 await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e.Channel.GetLocale(), $"Set locale to `{e.arguments}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk.").SendToChannel(e.Channel);
+                await Utils.SuccessEmbed(e.Channel.GetLocale(), $"Set locale to `{e.arguments}`\n\n**WARNING:** This feature is still in beta. Use at your own risk.").SendToChannel(e.Channel);
             }
         }
 
