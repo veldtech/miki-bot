@@ -420,7 +420,7 @@ namespace Miki.Modules
 
                 IDiscordEmbed embed = Utils.Embed;
                 embed.Title = e.Author.Username;
-                embed.Description = "Here it shows both the people who you've proposed to, and who have proposed to you.";
+                embed.Description = "Here it shows both the people who you've proposed to and who have proposed to you.";
 
                 string output = string.Join("\n", proposalNames);
 
@@ -575,13 +575,13 @@ namespace Miki.Modules
 
             if (arguments.Length < 2)
             {
-                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
                 return;
             }
 
             if (!int.TryParse(arguments[1], out int goldSent))
             {
-                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has profile!").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
                 return;
             }
 
@@ -604,7 +604,7 @@ namespace Miki.Modules
 
                 if(receiver == null)
                 {
-                    await Utils.ErrorEmbed(locale, "This user doesn't have a miki account yet.")
+                    await Utils.ErrorEmbed(locale, "This user doesn't have a Miki account yet.")
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -764,7 +764,7 @@ namespace Miki.Modules
 
                     if (role == null)
                     {
-                        await Utils.ErrorEmbed(locale, "Couldn't find this role, please try again!").SendToChannel(e.Channel);
+                        await Utils.ErrorEmbed(locale, "Couldn't find this role. Please try again!").SendToChannel(e.Channel);
                         return;
                     }
 
@@ -791,7 +791,7 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    await Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating a this!").SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating this!").SendToChannel(e.Channel);
                 }
             }
         }
@@ -857,7 +857,7 @@ namespace Miki.Modules
                     user.Currency -= costForUpgrade;
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriageslot, you now have {user.MarriageSlots} slots!";
+                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriage slot, you now have {user.MarriageSlots} slots!";
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
                     cont.commandHandler.RequestDispose();
