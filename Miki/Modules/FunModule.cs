@@ -226,7 +226,7 @@ namespace Miki.Modules
                 "I love ",
                 "I admire ",
                 "I really enjoy ",
-                "For some reason i like "
+                "For some reason I like "
             };
 
             string[] BODY_PART = new string[]
@@ -248,11 +248,10 @@ namespace Miki.Modules
 
             string[] SUFFIX = new string[]
             {
-                " alot",
-                " a bit",
-                " quite a bit",
+                " a lot.",
+                " a bit.",
+                " quite a bit.",
                 " a lot, is that weird?",
-                ""
             };
 
             await e.Channel.SendMessage(I_LIKE[Global.random.Next(0, I_LIKE.Length)] + BODY_PART[Global.random.Next(0, BODY_PART.Length)] + SUFFIX[Global.random.Next(0, SUFFIX.Length)]);
