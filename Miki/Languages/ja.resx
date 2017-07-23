@@ -738,7 +738,7 @@ Fuzzy</comment>
     <value>モジュール`{0}`は無効です</value>
   </data>
   <data name="miki_module_admin_kick_by" xml:space="preserve">
-    <value>蹴った</value>
+    <value>追い出させる</value>
     <comment>No, this is not a variable</comment>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
@@ -893,7 +893,7 @@ Fuzzy</comment>
     <value>&gt;leaderboards
 &gt;leaderboards local
 &gt;leaderboards mekos
-&gt;leaderboards commands </value>
+&gt;leaderboards commands</value>
   </data>
   <data name="miki_command_usage_profile" xml:space="preserve">
     <value>&gt;profile
