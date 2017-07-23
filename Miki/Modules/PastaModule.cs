@@ -207,7 +207,7 @@ namespace Miki.Modules
 
             if(e.arguments.Split(' ').Length == 1)
             {
-                await Utils.ErrorEmbed(locale, "Please specify the content you'd like it to be edited to.")
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify_edit")))
                     .SendToChannel(e.Channel.Id);
                 return;
             }

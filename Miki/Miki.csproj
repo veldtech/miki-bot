@@ -339,6 +339,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>fr-FR.resx</DependentUpon>
     </Compile>
+    <Compile Include="Languages\he-HE.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>he-HE.resx</DependentUpon>
+    </Compile>
     <Compile Include="Languages\ja.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -349,6 +354,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>nl-NL.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Languages\no-NO.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>no-NO.resx</DependentUpon>
     </Compile>
     <Compile Include="Languages\pt-PT.Designer.cs" />
     <Compile Include="Languages\ru-RU.Designer.cs">
@@ -549,6 +559,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>fr-FR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Languages\he-HE.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>he-HE.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Languages\ja.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ja.Designer.cs</LastGenOutput>
@@ -556,6 +570,10 @@
     <EmbeddedResource Include="Languages\nl-NL.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>nl-NL.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\no-NO.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>no-NO.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Languages\pt-PT.resx" />
     <EmbeddedResource Include="Languages\ru-RU.resx">

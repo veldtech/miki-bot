@@ -38,6 +38,8 @@ namespace Miki
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
         }
 
+        public static IDiscordEmbed ErrorEmbed(this EventContext e, string message) => ErrorEmbed(e.Channel.GetLocale(), message);
+
         public static string GetResource(this EventContext c, string m, params object[] o) => Locale.GetEntity(c.Channel.Id).GetString(m, o);
 
         public static Locale GetLocale(this IDiscordMessageChannel c) => Locale.GetEntity(c.Id);

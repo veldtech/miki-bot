@@ -70,6 +70,96 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your users need {0} experience to use &gt;guildweekly now!.
+        /// </summary>
+        internal static string guildconfig_expneeded {
+            get {
+                return ResourceManager.GetString("guildconfig_expneeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your guild will no longer be seen on the leaderboards!.
+        /// </summary>
+        internal static string guildconfig_visibility_false {
+            get {
+                return ResourceManager.GetString("guildconfig_visibility_false", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your guild is visible on the leaderboards!.
+        /// </summary>
+        internal static string guildconfig_visibility_true {
+            get {
+                return ResourceManager.GetString("guildconfig_visibility_true", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We couldn&apos;t matchmake you right now, try again later!.
+        /// </summary>
+        internal static string guildnewrival_error_matchmaking_failed {
+            get {
+                return ResourceManager.GetString("guildnewrival_error_matchmaking_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait a day before doing this command again!.
+        /// </summary>
+        internal static string guildnewrival_error_timer_running {
+            get {
+                return ResourceManager.GetString("guildnewrival_error_timer_running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your new rival is **{0}**!.
+        /// </summary>
+        internal static string guildnewrival_success {
+            get {
+                return ResourceManager.GetString("guildnewrival_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Guilds.
+        /// </summary>
+        internal static string guildtop_title {
+            get {
+                return ResourceManager.GetString("guildtop_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to you got to have a higher level than your rival!.
+        /// </summary>
+        internal static string guildweekly_error_low_level {
+            get {
+                return ResourceManager.GetString("guildweekly_error_low_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have no rival yet, Server admins: use `&gt;guildnewrival` to start matchmaking!.
+        /// </summary>
+        internal static string guildweekly_error_no_rival {
+            get {
+                return ResourceManager.GetString("guildweekly_error_no_rival", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve already used your weekly, available again in {0}!.
+        /// </summary>
+        internal static string guildweekly_error_timer_running {
+            get {
+                return ResourceManager.GetString("guildweekly_error_timer_running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please state which pasta you&apos;d like to identify..
         /// </summary>
         internal static string infopasta_error_no_arg {
@@ -684,7 +774,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clean up your .
+        ///   Looks up a localized string similar to Clean up your messages in just a second!.
         /// </summary>
         internal static string miki_command_description_prune {
             get {
@@ -1708,7 +1798,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🔔 Divorce.
+        ///   Looks up a localized string similar to Divorce.
         /// </summary>
         internal static string miki_module_accounts_divorce_header {
             get {
@@ -1924,7 +2014,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💁 Kicked by.
+        ///   Looks up a localized string similar to Kicked by.
         /// </summary>
         internal static string miki_module_admin_kick_by {
             get {
@@ -1942,7 +2032,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⚠ KICK.
+        ///   Looks up a localized string similar to Kick.
         /// </summary>
         internal static string miki_module_admin_kick_header {
             get {
@@ -1951,7 +2041,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💬 Reason.
+        ///   Looks up a localized string similar to Reason.
         /// </summary>
         internal static string miki_module_admin_kick_reason {
             get {
@@ -3427,6 +3517,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to page {0} of {1}.
+        /// </summary>
+        internal static string miki_module_pasta_search_footer {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_search_footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 🔎 I found these pastas.
         /// </summary>
         internal static string miki_module_pasta_search_header {
@@ -3508,11 +3607,56 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Config.
+        /// </summary>
+        internal static string miki_terms_config {
+            get {
+                return ResourceManager.GetString("miki_terms_config", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience.
+        /// </summary>
+        internal static string miki_terms_experience {
+            get {
+                return ResourceManager.GetString("miki_terms_experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        internal static string miki_terms_level {
+            get {
+                return ResourceManager.GetString("miki_terms_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to mention.
         /// </summary>
         internal static string miki_terms_mention {
             get {
                 return ResourceManager.GetString("miki_terms_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rank.
+        /// </summary>
+        internal static string miki_terms_rank {
+            get {
+                return ResourceManager.GetString("miki_terms_rank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rival.
+        /// </summary>
+        internal static string miki_terms_rival {
+            get {
+                return ResourceManager.GetString("miki_terms_rival", resourceCulture);
             }
         }
         

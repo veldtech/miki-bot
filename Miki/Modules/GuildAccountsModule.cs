@@ -64,7 +64,7 @@ namespace Miki.Modules
                         {
                             await Utils.Embed
                                 .SetTitle(locale.GetString("miki_terms_weekly"))
-                                .SetDescription("You have no rival yet, Server admins: use `>guildnewrival` to start matchmaking!")
+                                .SetDescription(context.GetResource("guildweekly_error_no_rival"))
                                 .SendToChannel(context.Channel);
                             return;
                         }
@@ -73,7 +73,7 @@ namespace Miki.Modules
                         {
                             await Utils.Embed
                                 .SetTitle(locale.GetString("miki_terms_weekly"))
-                                .SetDescription("you got to have a higher level than your rival!")
+                                .SetDescription(context.GetResource("guildweekly_error_low_level"))
                                 .SendToChannel(context.Channel);
                             return;
                         }
@@ -95,7 +95,7 @@ namespace Miki.Modules
                     {
                         await Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
-                            .SetDescription("You've already used your weekly, available again in " + (timer.Value.AddDays(7) - DateTime.Now).ToTimeString())
+                            .SetDescription(context.GetResource("guildweekly_error_timer_running",(timer.Value.AddDays(7) - DateTime.Now).ToTimeString()))
                             .SendToChannel(context.Channel);
                     }
                 }
@@ -119,8 +119,8 @@ namespace Miki.Modules
                 if(thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
                     await Utils.Embed
-                       .SetTitle("Rival")
-                       .SetDescription($"Please wait a day before doing this command again!")
+                       .SetTitle(context.GetResource("miki_terms_rival"))
+                       .SetDescription(context.GetResource("guildnewrival_error_timer_running"))
                        .SendToChannel(context.Channel);
                     return;
                 }
@@ -129,9 +129,7 @@ namespace Miki.Modules
 
                 if (rivalGuilds.Count == 0)
                 {
-                    await Utils.Embed
-                        .SetTitle("Whoopsie!")
-                        .SetDescription("We couldn't matchmake you right now, try again later!")
+                    await context.ErrorEmbed(context.GetResource("guildnewrival_error_matchmaking_failed"))
                         .SendToChannel(context.Channel);
                     return;
                 }
@@ -148,8 +146,8 @@ namespace Miki.Modules
                 await db.SaveChangesAsync();
 
                 await Utils.Embed
-                    .SetTitle("Rival Set!")
-                    .SetDescription($"Your new rival is **{rivalGuild.Name}**!")
+                    .SetTitle(context.GetResource("miki_terms_rival"))
+                    .SetDescription(context.GetResource("guildnewrival_success"))
                     .SendToChannel(context.Channel);
             }
         }
@@ -181,15 +179,15 @@ namespace Miki.Modules
                     .SetAuthor(g.Name, context.Guild.AvatarUrl, "https://miki.veld.one")
                     .SetColor(0.1f, 0.6f, 1)
                     .SetThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
-                    .AddInlineField("Level", level.ToString())
-                    .AddInlineField("Experience [" + g.Experience + "/" + g.CalculateMaxExperience(g.Experience) + "]", await expBar.Print(g.Experience, context.Channel))
-                    .AddInlineField("Rank", "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
-                    .AddInlineField("Users", g.UserCount.ToString());
+                    .AddInlineField(context.GetResource("miki_terms_level"), level.ToString())
+                    .AddInlineField(context.GetResource("miki_terms_experience") + " [" + g.Experience + "/" + g.CalculateMaxExperience(g.Experience) + "]", await expBar.Print(g.Experience, context.Channel))
+                    .AddInlineField(context.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
+                    .AddInlineField(context.GetResource("miki_module_general_guildinfo_users"), g.UserCount.ToString());
 
                 if (g.RivalId != 0)
                 {
                     GuildUser rival = await g.GetRival();
-                    embed.AddInlineField("Rival", $"{rival.Name} [{rival.Experience}]");
+                    embed.AddInlineField(context.GetResource("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
                 }
 
                 await embed.SendToChannel(context.Channel);
@@ -213,11 +211,12 @@ namespace Miki.Modules
                             if (int.TryParse(arguments[1], out int value))
                             {
                                 g.MinimalExperienceToGetRewards = value;
+                                                                                  
                                 await Utils.Embed
-                                    .SetTitle("Config")
-                                    .SetDescription($"Your users need {g.MinimalExperienceToGetRewards} experience to use >guildweekly now!")
+                                    .SetTitle(e.GetResource("miki_terms_config"))
+                                    .SetDescription(e.GetResource("guildconfig_expneeded", value))
                                     .SendToChannel(e.Channel);
-                                }
+                            }
                         }
                     } break;
                     case "visible":
@@ -225,9 +224,12 @@ namespace Miki.Modules
                         if (arguments.Length > 1)
                         {
                             g.VisibleOnLeaderboards = arguments[1].GetInputBool();
+
+                            string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
+
                             await Utils.Embed
-                                .SetTitle("Config")
-                                .SetDescription($"Your guild is {((g.VisibleOnLeaderboards) ? "" : "not")} visible on the leaderboards!")
+                                .SetTitle(e.GetResource("miki_terms_config"))
+                                .SetDescription(resourceString)
                                 .SendToChannel(e.Channel);
                         }
                     } break;
@@ -244,7 +246,7 @@ namespace Miki.Modules
                 var leaderboards = context.Database.SqlQuery<LeaderboardsItem>("SELECT TOP 12 Name, Experience as Value from [dbo].GuildUsers where VisibleOnLeaderboards = 1 order by Value desc").ToList();
 
                 IDiscordEmbed embed = Utils.Embed
-                    .SetTitle("Top Guilds");
+                    .SetTitle(e.GetResource("guildtop_title"));
 
                 foreach(LeaderboardsItem i in leaderboards)
                 {

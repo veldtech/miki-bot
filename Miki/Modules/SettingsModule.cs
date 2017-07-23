@@ -104,9 +104,9 @@ namespace Miki.Modules
                 ChannelLanguage language = await context.Languages.FindAsync(e.Channel.Id.ToDbLong());
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-                if (!Locale.Locales.ContainsKey(e.arguments.ToLower()))
+                if (!Locale.LocaleNames.ContainsKey(e.arguments.ToLower()))
                 {
-                    await Utils.ErrorEmbed(locale, "{0} is not a valid language. use `>help setlocale` to see all of the memes xd").SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.").SendToChannel(e.Channel);
                     return;
                 }
 
@@ -115,9 +115,10 @@ namespace Miki.Modules
                     language = context.Languages.Add(new ChannelLanguage() { EntityId = e.Channel.Id.ToDbLong(), Language = e.arguments.ToLower() });
                 }
 
-                language.Language = e.arguments.ToLower();
-                await Utils.SuccessEmbed(locale, "Set locale to `{0}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk.").SendToChannel(e.Channel);
+                language.Language = Locale.LocaleNames[e.arguments.ToLower()];
                 await context.SaveChangesAsync();
+
+                await Utils.SuccessEmbed(e.Channel.GetLocale(), $"Set locale to `{e.arguments}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk.").SendToChannel(e.Channel);
             }
         }
 
@@ -148,7 +149,7 @@ namespace Miki.Modules
         {
             await Utils.Embed
                 .SetTitle("Available locales")
-                .SetDescription("`" + string.Join("`, `", Locale.Locales.Keys) + "`")
+                .SetDescription("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
                 .SendToChannel(e.Channel.Id);
         }
     }

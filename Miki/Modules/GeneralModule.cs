@@ -353,9 +353,9 @@ namespace Miki.Modules
         [Command(Name = "stats")]
         public async Task StatsAsync(EventContext e)
         {
-            //int servers = bot.Client.Guilds.Count;
-            //int channels = bot.Client.Guilds.Sum(a => a.Channels.Count);
-            //int members = bot.Client.Guilds.Sum(a => a.Channels.Sum(b => b.Users.Count));
+            int servers = Bot.instance.Client.Guilds.Count;
+            int channels = Bot.instance.Client.Guilds.Sum(a => a.Channels.Count);
+            int members = Bot.instance.Client.Guilds.Sum(a => a.Channels.Sum(b => b.Users.Count));
 
             TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
@@ -364,26 +364,11 @@ namespace Miki.Modules
             embed.Description = "General realtime stats about miki!";
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
-            //embed.AddField(f =>
-            //{
-            //    f.Name = "🖥️ Servers";
-            //    f.Value = servers.ToString();
-            //    f.IsInline = true;
-            //});
+            embed.AddInlineField("🖥️ Servers", servers.ToString());
 
-            //embed.AddField(f =>
-            //{
-            //    f.Name = "📺 Channels";
-            //    f.Value = channels.ToString();
-            //    f.IsInline = true;
-            //});
+            embed.AddInlineField("📺 Channels", channels.ToString());
 
-            //embed.AddField(f =>
-            //{
-            //    f.Name = "👤 Users";
-            //    f.Value = members.ToString();
-            //    f.IsInline = true;
-            //});
+            embed.AddInlineField("👤 Users", members.ToString());
 
             //embed.AddField(f =>
             //{
