@@ -346,7 +346,7 @@ Normal, c&apos;est un cou monté !</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_20" xml:space="preserve">
-    <value></value>
+    <value>C&apos;est la blague de la cravate : elle est longue et plate.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_21" xml:space="preserve">
@@ -358,7 +358,7 @@ Normal, c&apos;est un cou monté !</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_23" xml:space="preserve">
-    <value>Je ne suis pas photographe, mais je peux nous prendre en photo.</value>
+    <value>Je n&apos;ai pas de jumelles mais je les vois bien ensemble...</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_24" xml:space="preserve">
@@ -366,7 +366,7 @@ Normal, c&apos;est un cou monté !</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_25" xml:space="preserve">
-    <value>L’athéisme est une religion sans prophète. </value>
+    <value>L’athéisme est une religion sans prophète.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_26" xml:space="preserve">
@@ -397,7 +397,8 @@ Parce qu&apos;il avait perdu Savoie.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_31" xml:space="preserve">
-    <value></value>
+    <value>Ne cherche pas pourquoi un clavier coûte plus cher en France qu&apos;en Angleterre.
+C&apos;est qu&apos;un clavier AZERTY en vaut deux.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_32" xml:space="preserve">
@@ -405,11 +406,13 @@ Parce qu&apos;il avait perdu Savoie.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_33" xml:space="preserve">
-    <value></value>
+    <value>Quelle est la plus intelligente, la blonde, la rousse ou la brune ?
+La rousse parce que c’est un dictionnaire.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_34" xml:space="preserve">
-    <value></value>
+    <value>Quelle est la différence entre une échelle et un pistolet ?
+L&apos;échelle sert à monter, le pistolet sert à descendre.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_35" xml:space="preserve">
@@ -421,7 +424,8 @@ Parce qu&apos;il avait perdu Savoie.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_37" xml:space="preserve">
-    <value></value>
+    <value>Quel est le comble pour un ballon ?
+C&apos;est d&apos;éclater de rire !</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_38" xml:space="preserve">
@@ -429,11 +433,12 @@ Parce qu&apos;il avait perdu Savoie.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_39" xml:space="preserve">
-    <value>Je n&apos;arrivais plus bien à me rappeler comment envoyer un boomerang, mais ça m&apos;est revenu.</value>
+    <value>Je ne me rappelai plus comment envoyer un boomerang, mais ça m&apos;est revenu.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_4" xml:space="preserve">
-    <value></value>
+    <value>Qu&apos;est-ce qui est rose et qui aime l&apos;informatique ?
+Un porc-USB !</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_40" xml:space="preserve">
