@@ -49,7 +49,7 @@ namespace Miki.Modules
             if (user == null)
             {
                 embed.Title = "Uh oh!";
-                embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
+                embed.Description = $"Miki couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
                 await embed.SendToChannel(e.Channel);
                 return;
@@ -101,7 +101,7 @@ namespace Miki.Modules
             if (user == null)
             {
                 embed.Title = "Uh oh!";
-                embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
+                embed.Description = $"Miki couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
                 await embed.SendToChannel(e.Channel);
                 return;
@@ -240,14 +240,17 @@ namespace Miki.Modules
             {
                 case "steam":
                 case "pc":
+                case "valve":
                     return 1;
                 case "ps4":
                 case "playstation":
                 case "ps":
+                case "pspro":
                     return 2;
                 case "xbox":
                 case "xbone":
                 case "xboxone":
+                case "xboxx":
                     return 3;
             }
             return 1;
