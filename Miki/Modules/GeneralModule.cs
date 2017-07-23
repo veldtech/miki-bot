@@ -101,7 +101,7 @@ namespace Miki.Modules
 
             embed.AddInlineField(
                 l.GetString("miki_module_whois_tag_personal"),
-                $"User Id      : **{user.Id}**\nUsername: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty(user.Nickname) ? "" : $"({user.Nickname})")}**\nCreated at: **{user.CreatedAt.ToString()}**\nJoined at   : **{user.JoinedAt.ToString()}**\n");
+                $"User Id      : **{user.Id}**\nUsername: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty(user.Nickname) ? "" : $"({user.Nickname})")}**\nCreated on: **{user.CreatedAt.ToString()}**\nJoined on: **{user.JoinedAt.ToString()}**\n");
 
             List<string> roles = new List<string>();
             foreach (ulong i in user.RoleIds)
@@ -294,7 +294,7 @@ namespace Miki.Modules
                 $"**{locale.GetString("miki_module_general_info_twitter")}:** https://www.twitter.com/velddev / https://www.twitter.com/miki_discord \n" +
                 $"**{locale.GetString("miki_module_general_info_reddit")}:** https://www.reddit.com/r/mikibot \n" +
                 $"**{locale.GetString("miki_module_general_info_server")}:** https://discord.gg/55sAjsW \n" +
-                $"**{locale.GetString("miki_module_general_info_website")}:** http://miki.veld.one");
+                $"**{locale.GetString("miki_module_general_info_website")}:** http://miki.ai");
 
             await embed.SendToChannel(e.Channel);
         }
@@ -360,8 +360,8 @@ namespace Miki.Modules
             TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
             IDiscordEmbed embed = Utils.Embed;
-            embed.Title = "⚙️ Miki stats";
-            embed.Description = "General realtime stats about miki!";
+            embed.Title = "⚙️ Miki's stats";
+            embed.Description = "General realtime stats about Miki!";
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
             embed.AddInlineField("🖥️ Servers", servers.ToString());
@@ -372,7 +372,7 @@ namespace Miki.Modules
 
             //embed.AddField(f =>
             //{
-            //    f.Name = "🐏 Ram";
+            //    f.Name = "🐏 RAM";
             //    f.Value = (memsize / 1024 / 1024).ToString() + "MB";
             //    f.IsInline = true;
             //});
