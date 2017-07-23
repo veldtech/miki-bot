@@ -143,7 +143,7 @@ namespace Miki.Modules
             IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
             if (m == null)
             {
-                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module.").SendToChannel(e.Channel);
                 return;
             }
 
