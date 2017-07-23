@@ -80,7 +80,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.3.71";
+                x.Version = "0.4.0";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
@@ -99,7 +99,7 @@ namespace Miki
                     await e.SendToChannel(msg.Channel);
 
                     e.Title = $"You used the '{cmd.Name}' and it crashed!";
-                    e.Description = "Please screenshot this message and send it to the miki issue page (https://github.com/velddev/miki/issues)";
+                    e.Description = "Please screenshot this message and send it to the Miki issue page (https://github.com/velddev/miki/issues)";
                     e.AddField(f =>
                     {
                         f.Name = "Error Message";
@@ -115,7 +115,7 @@ namespace Miki
                     });
 
                     e.CreateFooter();
-                    e.Footer.Text = "Did you not want this message? use `>toggleerrors` to disable it!";
+                    e.Footer.Text = "Did you not want this message? Use `>toggleerrors` to disable it!";
 
                     await msg.Author.SendMessage(e);
                     return;
@@ -137,7 +137,7 @@ namespace Miki
         private async Task Client_JoinedGuild(IGuild arg)
         {
             ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-            await defaultChannel.SendMessage("Hello, I am **Miki**! At your service!\nTry to use **>help** to check out what i can do! :notes:");
+            await defaultChannel.SendMessage("Hello, I am **Miki**! At your service!\nTry to use **>help** to check out what I can do! :notes:");
         }
     }
 }
