@@ -176,9 +176,9 @@ namespace Miki.Modules
                 EmojiBar expBar = new EmojiBar(g.CalculateMaxExperience(g.Experience), onBarSet, offBarSet, 6);
 
                 IDiscordEmbed embed = Utils.Embed
-                    .SetAuthor(g.Name, context.Guild.AvatarUrl, "https://miki.veld.one")
+                    .SetAuthor(g.Name, context.Guild.AvatarUrl, "https://miki.ai")
                     .SetColor(0.1f, 0.6f, 1)
-                    .SetThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
+                    .SetThumbnailUrl("http://miki.ai/assets/img/transparentfuckingimage.png")
                     .AddInlineField(context.GetResource("miki_terms_level"), level.ToString())
                     .AddInlineField(context.GetResource("miki_terms_experience") + " [" + g.Experience + "/" + g.CalculateMaxExperience(g.Experience) + "]", await expBar.Print(g.Experience, context.Channel))
                     .AddInlineField(context.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
