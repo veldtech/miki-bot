@@ -34,7 +34,7 @@ namespace Miki.Modules
                 {
                     using (WebClient webClient = new WebClient())
                     {
-                        byte[] data = webClient.DownloadData("http://api.veld.one/yagami?text=" + e.arguments);
+                        byte[] data = webClient.DownloadData("http://api.miki.ai/yagami?text=" + e.arguments);
 
                         using (MemoryStream mem = new MemoryStream(data))
                         {
@@ -78,7 +78,7 @@ namespace Miki.Modules
 
                     using (WebClient webClient = new WebClient())
                     {
-                        byte[] data = webClient.DownloadData("http://api.veld.one/yugioh?url=" + url);
+                        byte[] data = webClient.DownloadData("http://api.miki.ai/yugioh?url=" + url);
 
                         using (MemoryStream mem = new MemoryStream(data))
                         {
