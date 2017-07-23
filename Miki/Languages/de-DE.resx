@@ -1321,166 +1321,170 @@ Fuzzy</comment>
     <value>&gt;remind me to &lt;Aktion&gt; in &lt;Zeit&gt; (z. B. 2 Minuten und 11 Sekunden)</value>
   </data>
   <data name="pasta_page_index" xml:space="preserve">
-    <value></value>
+    <value>Seite {0} von {1}</value>
   </data>
   <data name="miki_command_description_createpasta" xml:space="preserve">
-    <value></value>
+    <value>Erstelle deine eigene spezielle Pasta und teile sie mit allen!</value>
   </data>
   <data name="miki_command_description_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>Bereust du es, eine Pasta erstellt zu haben? Lösche sie mit diesem Befehl!</value>
   </data>
   <data name="miki_command_description_editpasta" xml:space="preserve">
-    <value></value>
+    <value>Nicht zufrieden mit deiner jetzigen Pasta? Bearbeite sie, um die Coolness zurückzubringen!</value>
   </data>
   <data name="miki_command_description_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>Erstelle deinen Server-Account so, wie du ihn gerne hättest.</value>
   </data>
   <data name="miki_command_description_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>Wähle deinen (neuen) Rivalen und tretet in einem erbarmungslosen Kampf gegeneinander an!</value>
   </data>
   <data name="miki_command_description_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>Dieser Befehl zeigt alle deine Serverstatistiken an!</value>
   </data>
   <data name="miki_command_description_guildtop" xml:space="preserve">
-    <value></value>
+    <value>Sehe die besten Server basierend auf dem Erfahrungslevel!</value>
   </data>
   <data name="miki_command_description_guildweekly" xml:space="preserve">
     <value></value>
   </data>
   <data name="miki_command_description_hatepasta" xml:space="preserve">
-    <value></value>
+    <value>Verabscheust du eine Pasta aufs übelste? Zeige es mit diesem Befehl!</value>
   </data>
   <data name="miki_command_description_infopasta" xml:space="preserve">
-    <value></value>
+    <value>Wolltest du schon immer mal wissen, wer eine Pasta erstellt hat? Dieser Befehl macht es möglich!</value>
   </data>
   <data name="miki_command_description_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>Gefällt dir eine Pasta? Dann zeige es mit diesem Befehl!</value>
   </data>
   <data name="miki_command_description_mypasta" xml:space="preserve">
-    <value></value>
+    <value>Zeigt eine Liste all deiner Pastas!</value>
   </data>
   <data name="miki_command_description_poppasta" xml:space="preserve">
-    <value></value>
+    <value>Dieser Befehl zeigt die meistgenutzten Pastas.</value>
   </data>
   <data name="miki_command_description_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>Durchsuche alle verfügbaren Pastas und gehe auf die Suche nach neuen Memes!</value>
   </data>
   <data name="miki_command_description_toppasta" xml:space="preserve">
-    <value></value>
+    <value>Dieser Befehl zeigt die meistgeliebten Pastas!</value>
   </data>
   <data name="miki_command_usage_createpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;createpasta &lt;tag&gt; &lt;Inhalt&gt;</value>
   </data>
   <data name="miki_command_usage_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;deletepasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_editpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;editpasta &lt;tag&gt; &lt;neuer Inhalt&gt;</value>
   </data>
   <data name="miki_command_usage_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildconfig expneeded &lt;Anzahl&gt;
+&gt;guildconfig visible &lt;yes:no&gt; (ja:nein)</value>
   </data>
   <data name="miki_command_usage_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildnewrevival</value>
   </data>
   <data name="miki_command_usage_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildprofile</value>
   </data>
   <data name="miki_command_usage_guildtop" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildtop</value>
   </data>
   <data name="miki_command_usage_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildweekly</value>
   </data>
   <data name="miki_command_usage_infopasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;infopasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;lovepasta &lt;tag&gt;</value>
   </data>
   <data name="miki_command_usage_mypasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;mypasta</value>
   </data>
   <data name="miki_command_usage_poppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;poppasta</value>
   </data>
   <data name="miki_command_usage_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;searchpasta &lt;tag&gt; [page=1]</value>
   </data>
   <data name="miki_command_usage_toppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;toppasta</value>
   </data>
   <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
-    <value></value>
+    <value>Du hast noch nicht die benötigte Erfahrung, um deine Belohnungen für diesen Server zu bekommen. Bitte vertreibe dir ein bisschen mehr Zeit hier, um dies zu erreichen.
+
+Du brauchst mindestens **{0}** Erfahrung, bevor du diesen Befehl in diesem Server benutzen kannst.</value>
   </data>
   <data name="miki_terms_weekly" xml:space="preserve">
-    <value></value>
+    <value>Wöchentlich</value>
   </data>
   <data name="createpasta_error_no_content" xml:space="preserve">
-    <value></value>
+    <value>Ich konnte keinen Inhalt für diese Pasta finden. Bitte spezifiziere, was du machen willst.</value>
   </data>
   <data name="infopasta_error_no_arg" xml:space="preserve">
     <value></value>
   </data>
   <data name="infopasta_rating" xml:space="preserve">
-    <value></value>
+    <value>Bewertung</value>
   </data>
   <data name="lunch_line" xml:space="preserve">
-    <value></value>
+    <value>Wuff Wuff! Was gibt&apos;s zum Mittag?</value>
   </data>
   <data name="miki_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Blackjack</value>
   </data>
   <data name="miki_blackjack_cards_miki" xml:space="preserve">
-    <value></value>
+    <value>Miki ({0})</value>
   </data>
   <data name="miki_blackjack_cards_you" xml:space="preserve">
-    <value></value>
+    <value>Du ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
-    <value></value>
+    <value>Derjenige, der näher an 21 ist, gewinnt. Derjenige, der über 21 ist, verliert. Alle Karten bis 10 werden als solche gewertet. Bei einem Untentschieden, gewinnt Miki.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value></value>
+    <value>Benutze `hit` um eine neue Karte zu ziehen.</value>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
-    <value></value>
+    <value>Du verlierst deinen Einsatz an Miki.</value>
   </data>
   <data name="miki_blackjack_lose_title" xml:space="preserve">
-    <value></value>
+    <value>Miki gewinnt!</value>
   </data>
   <data name="miki_blackjack_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Du hast deinen Einsatz vergessen! Korrekte Syntax:
+&gt;blackjack &lt;Einsatz&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value></value>
+    <value>Benutze `stay` um deine Punkte festzusetzen und auf das Ende der Runde zu warten.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
-    <value></value>
+    <value>Miki war nicht in der Lage, deine Punktzahl zu schlagen, was bedeutet, dass du den Jackpot gewinnst. Du erhältst {0} mekos!</value>
   </data>
   <data name="miki_blackjack_win_title" xml:space="preserve">
-    <value></value>
+    <value>Du gewinnst!</value>
   </data>
   <data name="miki_command_description_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Verzocke deine Mekos in einem sehr fairen Spiel, welches den vertrauenswürdigen Namen Blackjack trägt, gegen Miki selbst!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value></value>
+    <value>&gt;blackjack &lt;Anzahl&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
-    <value></value>
+    <value>Entschuldigung, aber du besitzt noch keine Pastas.</value>
   </data>
   <data name="mypasta_title" xml:space="preserve">
-    <value></value>
+    <value>{0}&apos;s Pastas</value>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Bitte gib einen Tag oder einen Befehl ein.</value>
   </data>
   <data name="poppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Die beliebtesten Pastas</value>
   </data>
   <data name="searchpasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Bitte spezifiziere die Inhalte, nach denen du suchst.</value>
   </data>
   <data name="toppasta_title" xml:space="preserve">
     <value></value>
