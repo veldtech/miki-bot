@@ -61,19 +61,19 @@ namespace Miki.Modules
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessage($"✅ deleted your welcome message");
+                        await e.Channel.SendMessage($"✅ Deleted your welcome message.");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessage($"⚠ no welcome message found!");
+                        await e.Channel.SendMessage($"⚠ No welcome message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
+                    await e.Channel.SendMessage($"✅ Your new welcome message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }
@@ -90,19 +90,19 @@ namespace Miki.Modules
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessage($"✅ deleted your leave message");
+                        await e.Channel.SendMessage($"✅ Deleted your leave message.");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessage($"⚠ no leave message found!");
+                        await e.Channel.SendMessage($"⚠ No leave message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
+                    await e.Channel.SendMessage($"✅ Your new leave message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }
