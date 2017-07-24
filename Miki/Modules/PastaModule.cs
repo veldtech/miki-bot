@@ -80,15 +80,26 @@ namespace Miki.Modules
                     page -= 1;
                 }
             }
-
-            long authorId = e.Author.Id.ToDbLong();
+            long userId;
+            string userName;
+            if (e.message.MentionedUserIds.Count() > 0)
+            {
+                ulong tempId = e.message.MentionedUserIds.First();
+                userId = tempId.toDbLong();
+                userName = await e.Guild.GetUserAsync(uid);
+            }
+            else
+            {
+                userId = e.Author.Id.ToDbLong();
+                userName = e.Author.Username;
+            }
 
             using (var context = MikiContext.CreateNoCache())
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
                 var pastasFound = context.Database.SqlQuery<PastaSearchResult>("select [GlobalPastas].id, count(*) OVER() AS total_count from [GlobalPastas] where CreatorID = @p0 ORDER BY id OFFSET @p1 ROWS FETCH NEXT 25 ROWS ONLY;",
-                    authorId, page * 25).ToList();
+                    userId, page * 25).ToList();
 
                 if (pastasFound?.Count > 0)
                 {
@@ -97,7 +108,7 @@ namespace Miki.Modules
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     IDiscordEmbed embed = Utils.Embed;
-                    embed.Title = e.GetResource("mypasta_title", e.Author.Username);
+                    embed.Title = e.GetResource("mypasta_title", userName);
                     embed.Description = resultString;
                     embed.CreateFooter();
                     embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString());
