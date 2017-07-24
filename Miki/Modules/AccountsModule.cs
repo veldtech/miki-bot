@@ -578,6 +578,12 @@ namespace Miki.Modules
                 await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
                 return;
             }
+            
+            if (arguments[1].Length > 9)
+            {
+                await Utils.ErrorEmbed(locale, "That's too many mekos! The most I can transfer at a time is `999,999,999`").SendToChannel(e.Channel);
+                return;
+            }
 
             if (!int.TryParse(arguments[1], out int goldSent))
             {
@@ -587,13 +593,13 @@ namespace Miki.Modules
 
             if (goldSent <= 0)
             {
-                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, "You have to send at least one meko.").SendToChannel(e.Channel);
                 return;
             }
 
             if (e.message.MentionedUserIds.Count <= 0)
             {
-                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. use `>help give` to find out how to use it!").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. Use `>help give` to find out how to use it!").SendToChannel(e.Channel);
                 return;
             }
 
