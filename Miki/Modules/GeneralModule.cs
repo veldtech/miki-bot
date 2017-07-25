@@ -71,51 +71,6 @@ namespace Miki.Modules
             await e.Channel.SendMessage(string.Join(".", e.Guild.AvatarUrl));
         }
 
-        [Command(Name = "whois")]
-        public async Task WhoIsAsync(EventContext e)
-        {
-            ulong id = 0;
-
-            if (string.IsNullOrEmpty(e.arguments))
-            {
-                id = e.Author.Id;
-            }
-            else if (e.message.MentionedUserIds.Count == 0)
-            {
-                id = ulong.Parse(e.arguments);
-            }
-            else
-            {
-                id = e.message.MentionedUserIds.First();
-            }
-
-            IDiscordUser user = await e.Guild.GetUserAsync(id);
-
-            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-            IDiscordEmbed embed = Utils.Embed;
-            embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname)}!?";
-            embed.Color = new Color(0.5f, 0, 1);
-
-            embed.ImageUrl = (await e.Guild.GetUserAsync(id)).AvatarUrl;
-
-            embed.AddInlineField(
-                l.GetString("miki_module_whois_tag_personal"),
-                $"User Id      : **{user.Id}**\nUsername: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty(user.Nickname) ? "" : $"({user.Nickname})")}**\nCreated at: **{user.CreatedAt.ToString()}**\nJoined at   : **{user.JoinedAt.ToString()}**\n");
-
-            List<string> roles = new List<string>();
-            foreach (ulong i in user.RoleIds)
-            {
-                roles.Add("`" + user.Guild.GetRole(i).Name + "`");
-            }
-
-            embed.AddInlineField(
-                l.GetString("miki_module_general_guildinfo_roles"),
-                string.Join(" ", roles));
-
-            await embed.SendToChannel(e.Channel);
-        }
-
         [Command(Name = "calc", Aliases = new string[] { "calculate" })]
         public async Task CalculateAsync(EventContext e)
         {
@@ -185,6 +140,7 @@ namespace Miki.Modules
             if (!string.IsNullOrEmpty(e.arguments))
             {
                 ICommandEvent ev = Bot.instance.Events.CommandHandler.GetCommandEvent(e.arguments);
+
                 if (ev == null)
                 {
                     IDiscordEmbed helpListEmbed = Utils.Embed;
@@ -193,6 +149,8 @@ namespace Miki.Modules
                     helpListEmbed.Color = new Color(1.0f, 0, 0);
 
                     bool done = false;
+
+                    SortedList<string, int> differenceHeurList = new SortedList<string, int>();
 
                     foreach (IModule a in Bot.instance.Events.Modules.Values)
                     {
@@ -208,22 +166,33 @@ namespace Miki.Modules
                                 break;
                             }
 
-                            if (c.Name.Contains(e.arguments))
-                            {
-                                helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), c.Name);
-                                done = true;
-                                break;
-                            }
+                            int difference = 0;
 
-                            foreach (string alias in c.Aliases)
+                            for (int i = 0; i < e.arguments.Length; i++)
                             {
-                                if (alias.Contains(e.arguments))
+                                char typedChar = e.arguments.ToLower()[i];
+                                bool found = false;
+                                for (int j = 0; j < c.Name.Length; j++)
                                 {
-                                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), c.Name);
-                                    done = true;
-                                    break;
+                                    char actualChar = c.Name.ToLower()[j];
+
+                                    if (typedChar == actualChar)
+                                    {
+                                        difference += Math.Abs(i - j);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+
+                                if(!found)
+                                {
+                                    difference += 15;
                                 }
                             }
+
+                            difference += Math.Abs(e.arguments.Length - c.Name.Length) * 5;
+
+                            differenceHeurList.Add(c.Name, difference);
                         }
 
                         if (done)
@@ -231,6 +200,9 @@ namespace Miki.Modules
                             break;
                         }
                     }
+
+                    var outputList = differenceHeurList.OrderBy(x => x.Value);
+                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), outputList.FirstOrDefault().Key);
 
                     await helpListEmbed.SendToChannel(e.Channel);
                 }
@@ -275,6 +247,13 @@ namespace Miki.Modules
             await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).SendToUser(e.Author);
         }
 
+        [Command(Name = "donate", Aliases = new string[] { "patreon" })]
+        public async Task DonateAsync(EventContext e)
+        {
+            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
+        }
+
         [Command(Name = "info", Aliases = new string[] { "about" })]
         public async Task InfoAsync(EventContext e)
         {
@@ -299,14 +278,19 @@ namespace Miki.Modules
             await embed.SendToChannel(e.Channel);
         }
 
-        [Command(Name = "donate", Aliases = new string[] { "patreon" })]
-        public async Task DonateAsync(EventContext e)
+        [Command(Name = "invite")]
+        public async Task InviteAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
+            Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
+
+            await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
+
+            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
+                + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 
-        [Command(Name = "ping", Aliases = new string[]{ "lag" })]
+        [Command(Name = "ping", Aliases = new string[] { "lag" })]
         public async Task PingAsync(EventContext e)
         {
             IDiscordMessage message = await Utils.Embed
@@ -327,19 +311,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "invite")]
-        public async Task InviteAsync(EventContext e)
-        {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
-
-            await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
-
-            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
-                + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
-        }
-
-        [Command(Name = "prefix", Accessibility = EventAccessibility.ADMINONLY, On = "?")]
+        [Command(Name = "prefix")]
         public async Task PrefixHelpAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -353,10 +325,6 @@ namespace Miki.Modules
         [Command(Name = "stats")]
         public async Task StatsAsync(EventContext e)
         {
-            int servers = Bot.instance.Client.Guilds.Count;
-            int channels = Bot.instance.Client.Guilds.Sum(a => a.Channels.Count);
-            int members = Bot.instance.Client.Guilds.Sum(a => a.Channels.Sum(b => b.Users.Count));
-
             TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
             IDiscordEmbed embed = Utils.Embed;
@@ -364,25 +332,7 @@ namespace Miki.Modules
             embed.Description = "General realtime stats about miki!";
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
-            embed.AddInlineField("🖥️ Servers", servers.ToString());
-
-            embed.AddInlineField("📺 Channels", channels.ToString());
-
-            embed.AddInlineField("👤 Users", members.ToString());
-
-            //embed.AddField(f =>
-            //{
-            //    f.Name = "🐏 Ram";
-            //    f.Value = (memsize / 1024 / 1024).ToString() + "MB";
-            //    f.IsInline = true;
-            //});
-
-            //embed.AddField(f =>
-            //{
-            //    f.Name = "👷 Threads";
-            //    f.Value = threads.ToString();
-            //    f.IsInline = true;
-            //});
+            embed.AddInlineField("🖥️ Servers", Bot.instance.Client.Guilds.Count.ToString());
 
             embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
 
@@ -420,5 +370,51 @@ namespace Miki.Modules
                     .SendToChannel(e.Channel.Id);
             }
         }
+
+        [Command(Name = "whois")]
+        public async Task WhoIsAsync(EventContext e)
+        {
+            ulong id = 0;
+
+            if (string.IsNullOrEmpty(e.arguments))
+            {
+                id = e.Author.Id;
+            }
+            else if (e.message.MentionedUserIds.Count == 0)
+            {
+                id = ulong.Parse(e.arguments);
+            }
+            else
+            {
+                id = e.message.MentionedUserIds.First();
+            }
+
+            IDiscordUser user = await e.Guild.GetUserAsync(id);
+
+            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
+
+            IDiscordEmbed embed = Utils.Embed;
+            embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname)}!?";
+            embed.Color = new Color(0.5f, 0, 1);
+
+            embed.ImageUrl = (await e.Guild.GetUserAsync(id)).AvatarUrl;
+
+            embed.AddInlineField(
+                l.GetString("miki_module_whois_tag_personal"),
+                $"User Id      : **{user.Id}**\nUsername: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty(user.Nickname) ? "" : $"({user.Nickname})")}**\nCreated at: **{user.CreatedAt.ToString()}**\nJoined at   : **{user.JoinedAt.ToString()}**\n");
+
+            List<string> roles = new List<string>();
+            foreach (ulong i in user.RoleIds)
+            {
+                roles.Add("`" + user.Guild.GetRole(i).Name + "`");
+            }
+
+            embed.AddInlineField(
+                l.GetString("miki_module_general_guildinfo_roles"),
+                string.Join(" ", roles));
+
+            await embed.SendToChannel(e.Channel);
+        }
+
     }
 }
