@@ -932,6 +932,23 @@ namespace Miki.Modules
             }).CheckAsync;
             AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
             {
+                x.Name = "fa";
+                x.Achievements = new List<CommandAchievement>()
+                {
+                    new CommandAchievement()
+                    {
+                        Name = "Lonely",
+                        Icon = "😭",
+
+                        CheckCommand = async (p) =>
+                        {
+                            return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+                        }
+                    }
+                };
+            }).CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
+            {
                 x.Name = "creator";
                 x.Achievements = new List<CommandAchievement>()
                 {
