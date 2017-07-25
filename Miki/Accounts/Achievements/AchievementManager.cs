@@ -163,14 +163,27 @@ namespace Miki.Accounts.Achievements
         }
         public async Task CallTransactionMadeEventAsync(IDiscordMessageChannel m, User receiver, User giver, int amount)
         {
-            TransactionPacket p = new TransactionPacket();
-            p.discordChannel = m;
-            p.discordUser = new RuntimeUser(Bot.instance.Client.GetUser(receiver.Id.FromDbLong()));
-            p.giver = giver;
-            p.receiver = receiver;
-            p.amount = amount;
+            try
+            {
+                TransactionPacket p = new TransactionPacket();
+                p.discordChannel = m;
+                p.discordUser = new RuntimeUser(Bot.instance.Client.GetUser(receiver.Id.FromDbLong()));
 
-            await OnTransaction?.Invoke(p);
+                if (giver != null)
+                {
+                    p.giver = giver;
+                }
+
+                p.receiver = receiver;
+
+                p.amount = amount;
+
+                await OnTransaction?.Invoke(p);
+            }
+            catch(Exception e)
+            {
+                Log.WarningAt("achievement check failed", e.ToString());
+            }
         }
     }
 }
