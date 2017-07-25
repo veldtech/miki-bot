@@ -62,10 +62,10 @@ namespace Miki.Models
         public DateTime LastReputationGiven { get; set; }
         public short ReputationPointsLeft { get; set; }
 
-        // TODO: finish this
         public async Task AddCurrencyAsync(IDiscordMessageChannel context, User fromUser, int amount)
         {
             Currency += amount;
+
             if (context != null)
             {
                  await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
