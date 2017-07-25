@@ -61,6 +61,33 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You get your bet back! woop woop!.
+        /// </summary>
+        internal static string blackjack_draw_description {
+            get {
+                return ResourceManager.GetString("blackjack_draw_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It&apos;s a draw!.
+        /// </summary>
+        internal static string blackjack_draw_title {
+            get {
+                return ResourceManager.GetString("blackjack_draw_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re already playing blackjack in this channel!.
+        /// </summary>
+        internal static string blackjack_error_instance_exists {
+            get {
+                return ResourceManager.GetString("blackjack_error_instance_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I couldn&apos;t find any content for this pasta, please specify what you want to make..
         /// </summary>
         internal static string createpasta_error_no_content {
@@ -3720,6 +3747,15 @@ namespace Miki.Languages {
         internal static string searchpasta_error_no_arg {
             get {
                 return ResourceManager.GetString("searchpasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

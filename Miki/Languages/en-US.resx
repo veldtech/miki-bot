@@ -130,14 +130,14 @@
     <comment>This message is called when miki joins a new guild</comment>
   </data>
   <data name="miki_global_profile_user_header" xml:space="preserve">
-    <value>{0}&apos;s global profile</value>
+    <value>{0}'s global profile</value>
   </data>
   <data name="miki_local_profile_user_header" xml:space="preserve">
-    <value>{0}&apos;s local profile</value>
+    <value>{0}'s local profile</value>
   </data>
   <data name="miki_mekos_insufficient" xml:space="preserve">
     <value>You have insufficient mekos.</value>
-    <comment>I feel this should be changed to &apos;You have insufficient mekos for this purchase&apos;. But that&apos;s just my personal input :3</comment>
+    <comment>I feel this should be changed to 'You have insufficient mekos for this purchase'. But that's just my personal input :3</comment>
   </data>
   <data name="miki_module_eventmessages_delete_guildjoin" xml:space="preserve">
     <value>✅ Deleted your welcome message.</value>
@@ -146,7 +146,7 @@
     <value>✅ New welcome message is set to: `{0}`</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
-    <value>Don&apos;t count on it.</value>
+    <value>Don't count on it.</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
     <value>My reply is no.</value>
@@ -155,8 +155,8 @@
     <value>My sources say no.</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
-    <value>Outlook isn&apos;t good.</value>
-    <comment>&quot;outlook isn&apos;t good&quot; is ew, but I&apos;ll leave it for someone else to decide</comment>
+    <value>Outlook isn't good.</value>
+    <comment>"outlook isn't good" is ew, but I'll leave it for someone else to decide</comment>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
     <value>Very doubtful.</value>
@@ -282,222 +282,222 @@
   </data>
   <data name="miki_module_fun_compliment_suffix_4" xml:space="preserve">
     <value>a lot, is that weird?</value>
-    <comment>miki_module_fun_compliment_suffix_5 &quot;too much.&quot;</comment>
+    <comment>miki_module_fun_compliment_suffix_5 "too much."</comment>
   </data>
   <data name="miki_module_fun_pick" xml:space="preserve">
     <value>{0}, I picked `{1}`</value>
   </data>
   <data name="miki_module_fun_pick_no_arg" xml:space="preserve">
-    <value>I&apos;ve got nothing to pick from! :( Use commas (,) to split choices.</value>
+    <value>I've got nothing to pick from! :( Use commas (,) to split choices.</value>
   </data>
   <data name="miki_module_fun_pun_1" xml:space="preserve">
-    <value>I can&apos;t believe I got fired from the calendar factory. All I did was take a day off.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I can't believe I got fired from the calendar factory. All I did was take a day off.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_10" xml:space="preserve">
     <value>When I get naked in the bathroom, the shower usually gets turned on.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_11" xml:space="preserve">
     <value>Thieves had broken into my house and stolen everything except my soap, shower gel, towels and deodorant. Dirty bastards.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_12" xml:space="preserve">
-    <value>What was Forrest Gump&apos;s email password? &apos;1forrest1&apos;</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>What was Forrest Gump's email password? '1forrest1'</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_13" xml:space="preserve">
-    <value>My first job was working in an orange juice factory, but I got canned - couldn&apos;t concentrate.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>My first job was working in an orange juice factory, but I got canned - couldn't concentrate.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_14" xml:space="preserve">
-    <value>I&apos;m on a seafood diet. Every time I see food, I eat it.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'm on a seafood diet. Every time I see food, I eat it.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_15" xml:space="preserve">
     <value>I wanna make a joke about sodium, but Na...</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_16" xml:space="preserve">
     <value>Why did the scientist install a knocker on his door? He wanted to win the No-bell prize!</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_17" xml:space="preserve">
     <value>A friend of mine tried to annoy me with bird puns, but I soon realized that toucan play at that game.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_18" xml:space="preserve">
     <value>Having sex in an elevator is wrong on so many levels.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_19" xml:space="preserve">
     <value>I was going to give him a nasty look, but he already had one.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_2" xml:space="preserve">
     <value>How did I escape Iraq? Iran.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_20" xml:space="preserve">
-    <value>A book just fell on my head. I&apos;ve only got my shelf to blame.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>A book just fell on my head. I've only got my shelf to blame.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_21" xml:space="preserve">
     <value>What do prisoners use to call each other? Cell phones.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_22" xml:space="preserve">
     <value>My math teacher called me average. How mean!</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_23" xml:space="preserve">
-    <value>I&apos;m no photographer, but I can picture us together.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'm no photographer, but I can picture us together.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_24" xml:space="preserve">
-    <value>How can you spot the blind guy at the nudist colony? It&apos;s not hard.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>How can you spot the blind guy at the nudist colony? It's not hard.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_25" xml:space="preserve">
     <value>Atheism is a non-prophet organization.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_26" xml:space="preserve">
     <value>What do you call people who are afraid of Santa Claus? Claustrophobic.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_27" xml:space="preserve">
     <value>A hole was found in the wall of a nudist camp. The police are looking into it.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_28" xml:space="preserve">
     <value>Which day do chickens hate the most? Friday.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_29" xml:space="preserve">
     <value>I hate insect puns, they really bug me.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_3" xml:space="preserve">
-    <value>I&apos;d tell you a chemistry joke, but I know I wouldn&apos;t get a reaction.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'd tell you a chemistry joke, but I know I wouldn't get a reaction.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_30" xml:space="preserve">
     <value>Did you hear about the Italian chef with a terminal illness? He pastaway.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_31" xml:space="preserve">
-    <value>Novice pirates make terrible singers because they can&apos;t hit the high seas.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>Novice pirates make terrible singers because they can't hit the high seas.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_32" xml:space="preserve">
     <value>Never discuss infinity with a mathematician, they can go on about it forever.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_33" xml:space="preserve">
-    <value>I like European food, so I decided to Russia over there because I was Hungary. After Czech&apos;ing the menu I ordered Turkey. When I was Finnished I told the waiter &quot;Spain good but there is Norway I could eat another bite&quot;.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I like European food, so I decided to Russia over there because I was Hungary. After Czech'ing the menu I ordered Turkey. When I was Finnished I told the waiter "Spain good but there is Norway I could eat another bite".</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_34" xml:space="preserve">
     <value>What did the sushi say to the bee? Wasabee.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_35" xml:space="preserve">
-    <value>Don&apos;t trust atoms, they make up everything.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>Don't trust atoms, they make up everything.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_36" xml:space="preserve">
     <value>Why was the parrot sent out of the classroom? Because he was using fowl language!</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_37" xml:space="preserve">
-    <value>Yesterday I accidentally swallowed some food coloring. The doctor says I&apos;m OK, but I feel like I&apos;ve dyed a little inside.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>Yesterday I accidentally swallowed some food coloring. The doctor says I'm OK, but I feel like I've dyed a little inside.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_38" xml:space="preserve">
-    <value>Why don&apos;t programmers like nature? It has too many bugs.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>Why don't programmers like nature? It has too many bugs.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_39" xml:space="preserve">
-    <value>I couldn&apos;t quite remember how to throw a boomerang, but eventually it came back to me.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I couldn't quite remember how to throw a boomerang, but eventually it came back to me.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_4" xml:space="preserve">
-    <value>I wasn&apos;t originally going to get a brain transplant, but then I changed my mind.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I wasn't originally going to get a brain transplant, but then I changed my mind.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_40" xml:space="preserve">
-    <value>When William joined the army he disliked the phrase &apos;fire at will&apos;.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3
+    <value>When William joined the army he disliked the phrase 'fire at will'.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3
 Fuzzy</comment>
   </data>
   <data name="miki_module_fun_pun_41" xml:space="preserve">
-    <value>I don&apos;t trust stairs because they&apos;re always up to something.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I don't trust stairs because they're always up to something.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_42" xml:space="preserve">
-    <value>So what if I don&apos;t know what &quot;apocalypse&quot; means!? It&apos;s not the end of the world!</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>So what if I don't know what "apocalypse" means!? It's not the end of the world!</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_43" xml:space="preserve">
-    <value>My friend&apos;s bakery burned down last night. Now his business is toast.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>My friend's bakery burned down last night. Now his business is toast.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_44" xml:space="preserve">
     <value>Police were called to a daycare where a three-year-old was resisting a rest.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_45" xml:space="preserve">
-    <value>Peter Pan punched a lost boy into the sky last week. They say he&apos;ll Neverland.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>Peter Pan punched a lost boy into the sky last week. They say he'll Neverland.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_46" xml:space="preserve">
     <value>I did a theatrical performance about puns. Really, it was just a play on words.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_47" xml:space="preserve">
     <value>The other day I held the door open for a clown. I thought it was a nice jester.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_48" xml:space="preserve">
     <value>What did the grape say when it got stepped on? Nothing - but it let out a little whine.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_49" xml:space="preserve">
     <value>The girl quit her job at the doughnut factory because she was fed up with the hole business.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_5" xml:space="preserve">
-    <value>I&apos;m glad I know sign language, it&apos;s pretty handy.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'm glad I know sign language, it's pretty handy.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_50" xml:space="preserve">
-    <value>There was a sign on the lawn at a drug rehab center that said &quot;Keep off the grass&quot;.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>There was a sign on the lawn at a drug rehab center that said "Keep off the grass".</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_51" xml:space="preserve">
     <value>Don’t have phone sex, you might get hearing aids.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_52" xml:space="preserve">
-    <value>You and I are like the front and back ends of a book; we&apos;ll always end up back together.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>You and I are like the front and back ends of a book; we'll always end up back together.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_6" xml:space="preserve">
     <value>Why was Cinderella thrown off the basketball team? She ran away from the ball.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_7" xml:space="preserve">
     <value>Did you hear about the guy who got hit in the head with a can of soda? He was lucky it was a soft drink.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_8" xml:space="preserve">
-    <value>I&apos;m reading a book about anti-gravity. It&apos;s impossible to put down.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'm reading a book about anti-gravity. It's impossible to put down.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_pun_9" xml:space="preserve">
-    <value>I&apos;m emotionally constipated. I haven&apos;t given a shit in days.</value>
-    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+    <value>I'm emotionally constipated. I haven't given a shit in days.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_roll_result" xml:space="preserve">
     <value>🎲 {0} rolled a **{1}**.</value>
@@ -528,7 +528,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_command_usage_pasta" xml:space="preserve">
     <value>&gt;pasta &lt;keyword&gt;</value>
-    <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff</comment>
+    <comment>Please do not change "pasta new", do change &lt;keyword&gt; stuff</comment>
   </data>
   <data name="miki_module_fun_8ball_result" xml:space="preserve">
     <value>🎱 {0}, your question has been answered `{1}`</value>
@@ -552,7 +552,7 @@ Fuzzy</comment>
     <value>You cannot {0} pastas you did not create!</value>
   </data>
   <data name="miki_module_pasta_error_null" xml:space="preserve">
-    <value>This pasta doesn&apos;t exist!</value>
+    <value>This pasta doesn't exist!</value>
   </data>
   <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
     <value>Please enter one of the tags or commands.</value>
@@ -589,13 +589,13 @@ Fuzzy</comment>
     <value>Times used</value>
   </data>
   <data name="miki_module_pasta_mine_error_null" xml:space="preserve">
-    <value>Sorry, but you haven&apos;t created any pastas yet.</value>
+    <value>Sorry, but you haven't created any pastas yet.</value>
   </data>
   <data name="miki_module_pasta_mine_header" xml:space="preserve">
-    <value>{0}&apos;s pastas</value>
+    <value>{0}'s pastas</value>
   </data>
   <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
-    <value>Sorry, but we couldn&apos;t find a pasta with `{0}`</value>
+    <value>Sorry, but we couldn't find a pasta with `{0}`</value>
   </data>
   <data name="miki_module_pasta_search_footer" xml:space="preserve">
     <value>page {0} of {1}</value>
@@ -613,7 +613,7 @@ Fuzzy</comment>
     <value>Shows information about the bot and its creator.</value>
   </data>
   <data name="miki_command_description_prefix" xml:space="preserve">
-    <value>Set your server&apos;s prefix for miki (default: &gt;) to something else</value>
+    <value>Set your server's prefix for miki (default: &gt;) to something else</value>
   </data>
   <data name="miki_command_usage_info" xml:space="preserve">
     <value>&gt;info</value>
@@ -637,16 +637,16 @@ Fuzzy</comment>
     <value>Module {0} is disabled.</value>
   </data>
   <data name="miki_module_admin_kick_by" xml:space="preserve">
-    <value>💁 Kicked by</value>
+    <value>Kicked by</value>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
-    <value>You&apos;ve been kicked from **{0}**!</value>
+    <value>You've been kicked from **{0}**!</value>
   </data>
   <data name="miki_module_admin_kick_header" xml:space="preserve">
-    <value>⚠ KICK</value>
+    <value>Kick</value>
   </data>
   <data name="miki_module_admin_kick_reason" xml:space="preserve">
-    <value>💬 Reason</value>
+    <value>Reason</value>
   </data>
   <data name="miki_module_admin_prune_error_max" xml:space="preserve">
     <value>You cannot prune more than 100 messages per command.</value>
@@ -677,7 +677,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_dm" xml:space="preserve">
     <value>A personal message with all my commands is on the way! Use `&gt;help [command]` for more information about specific commands!</value>
-    <comment>You can specifically say &quot;this command&quot; instead of being broad/vague because it&apos;s &quot;help COMMAND&quot; where the command is specifically being mentioned.</comment>
+    <comment>You can specifically say "this command" instead of being broad/vague because it's "help COMMAND" where the command is specifically being mentioned.</comment>
   </data>
   <data name="miki_module_general_help_usage" xml:space="preserve">
     <value>Usage</value>
@@ -717,7 +717,7 @@ Fuzzy</comment>
     <value>Here you go! :3</value>
   </data>
   <data name="miki_module_general_invite_message" xml:space="preserve">
-    <value>I&apos;ll send you a private message with an invite URL.</value>
+    <value>I'll send you a private message with an invite URL.</value>
   </data>
   <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
     <value>Cannot set your prefix to nothing. Please consult `&gt;help prefix` to find out what it does.</value>
@@ -768,13 +768,13 @@ Fuzzy</comment>
     <value>Check up on your progress to become a Miki Master!</value>
   </data>
   <data name="miki_command_description_toggledm" xml:space="preserve">
-    <value>Toggle Miki&apos;s ability to send you DM&apos;s!</value>
+    <value>Toggle Miki's ability to send you DM's!</value>
   </data>
   <data name="miki_command_description_toggleerrors" xml:space="preserve">
-    <value>Toggle Miki&apos;s ability to send you Error DM&apos;s!</value>
+    <value>Toggle Miki's ability to send you Error DM's!</value>
   </data>
   <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
-    <value>Toggle Miki&apos;s ability to send non-command messages in this channel!</value>
+    <value>Toggle Miki's ability to send non-command messages in this channel!</value>
   </data>
   <data name="miki_command_usage_leaderboards" xml:space="preserve">
     <value>&gt;leaderboards
@@ -832,7 +832,7 @@ Fuzzy</comment>
     <value>Leaderboards: Mekos</value>
   </data>
   <data name="miki_module_accounts_profile_error_null" xml:space="preserve">
-    <value>Profile {0} doesn&apos;t exist!</value>
+    <value>Profile {0} doesn't exist!</value>
   </data>
   <data name="miki_module_accounts_profile_favourite_command" xml:space="preserve">
     <value>Favourite Command</value>
@@ -841,7 +841,7 @@ Fuzzy</comment>
     <value>member since {0} | request took: {1}ms</value>
   </data>
   <data name="miki_module_accounts_profile_header" xml:space="preserve">
-    <value>{0]&apos;s Profile</value>
+    <value>{0]'s Profile</value>
   </data>
   <data name="miki_module_accounts_profile_marriedto" xml:space="preserve">
     <value>Married to</value>
@@ -868,10 +868,10 @@ Fuzzy</comment>
     <value>{0} has divorced {1}</value>
   </data>
   <data name="miki_module_accounts_divorce_header" xml:space="preserve">
-    <value>🔔 Divorce</value>
+    <value>Divorce</value>
   </data>
   <data name="miki_module_accounts_error_no_marriage" xml:space="preserve">
-    <value>You&apos;re not married to this person!</value>
+    <value>You're not married to this person!</value>
   </data>
   <data name="miki_module_general_prefix_help" xml:space="preserve">
     <value>Your current prefix is **{0}**!</value>
@@ -905,13 +905,13 @@ Fuzzy</comment>
     <value>&gt;marry &lt;mention&gt;</value>
   </data>
   <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
-    <value>You&apos;re already proposing/married to this person.</value>
+    <value>You're already proposing/married to this person.</value>
   </data>
   <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
-    <value>Please mention the person you&apos;re proposing to!</value>
+    <value>Please mention the person you're proposing to!</value>
   </data>
   <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
-    <value>You or the other person doesn&apos;t have a miki account yet. Make them talk more!</value>
+    <value>You or the other person doesn't have a miki account yet. Make them talk more!</value>
   </data>
   <data name="miki_module_accounts_marry_text" xml:space="preserve">
     <value>{0} has proposed to {1}!</value>
@@ -924,13 +924,13 @@ Fuzzy</comment>
     <comment>What is this?</comment>
   </data>
   <data name="miki_command_declinemarriage_description" xml:space="preserve">
-    <value>only when you really don&apos;t want to get married.</value>
+    <value>only when you really don't want to get married.</value>
   </data>
   <data name="miki_command_declinemarriage_usage" xml:space="preserve">
     <value>&gt;declinemarriage @user
 &gt;declinemarriage *</value>
     <comment>is it supposed to be &lt;@user&gt; or just @user
-it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</comment>
+it's a variable type thing, so we really shouldn't be changing it.</comment>
   </data>
   <data name="miki_marriage_all_declined" xml:space="preserve">
     <value>All proposals declined!</value>
@@ -943,7 +943,7 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <comment>I changed it from saying decline to reject as reject seems more fitting.</comment>
   </data>
   <data name="miki_marriage_null" xml:space="preserve">
-    <value>This user hasn&apos;t proposed to you!</value>
+    <value>This user hasn't proposed to you!</value>
   </data>
   <data name="miki_admin_cannot_disable" xml:space="preserve">
     <value>{0} cannot be disabled</value>
@@ -976,7 +976,7 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Show your mekos to the world!</value>
   </data>
   <data name="miki_command_description_prune" xml:space="preserve">
-    <value>Clean up your </value>
+    <value>Clean up your messages in just a second!</value>
   </data>
   <data name="miki_command_description_setcommand" xml:space="preserve">
     <value>Disable or enable commands with this command! (do not disable this command)</value>
@@ -991,7 +991,7 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Show your open proposals with this handy command!</value>
   </data>
   <data name="miki_command_description_softban" xml:space="preserve">
-    <value>Softban a person who&apos;s being a rude dude</value>
+    <value>Softban a person who's being a rude dude</value>
   </data>
   <data name="miki_command_description_syncavatar" xml:space="preserve">
     <value>Synchronise your avatar with the miki database!</value>
@@ -1072,10 +1072,10 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Meow, i am a cat picture generator!</value>
   </data>
   <data name="miki_command_description_compliment" xml:space="preserve">
-    <value>I&apos;ll compliment you personally with a special compliment</value>
+    <value>I'll compliment you personally with a special compliment</value>
   </data>
   <data name="miki_command_description_confused" xml:space="preserve">
-    <value>Show how confused you are by your friend&apos;s shitposting with the power of cute anime girls!</value>
+    <value>Show how confused you are by your friend's shitposting with the power of cute anime girls!</value>
   </data>
   <data name="miki_command_description_ctb" xml:space="preserve">
     <value>Catch fruit and impress friends with this slick Catch the Beat command!</value>
@@ -1099,7 +1099,7 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Is someone being a baka hentai? Show your disapproval with this LEWD image</value>
   </data>
   <data name="miki_command_description_lunch" xml:space="preserve">
-    <value>Woof woof! what&apos;s for lunch?!</value>
+    <value>Woof woof! what's for lunch?!</value>
   </data>
   <data name="miki_command_description_mania" xml:space="preserve">
     <value>Are you a typing king? show your osu!mania rank with this handy command!</value>
@@ -1108,13 +1108,13 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Show your pride about your ability to click on circular objects!</value>
   </data>
   <data name="miki_command_description_pick" xml:space="preserve">
-    <value>Scared of taking decisions? I&apos;ll take them for you!</value>
+    <value>Scared of taking decisions? I'll take them for you!</value>
   </data>
   <data name="miki_command_description_pout" xml:space="preserve">
-    <value>When you&apos;re disappointed, sad or you&apos;re mad at someone. Show them a big tsundere pout &gt;:T</value>
+    <value>When you're disappointed, sad or you're mad at someone. Show them a big tsundere pout &gt;:T</value>
   </data>
   <data name="miki_command_description_pun" xml:space="preserve">
-    <value>Wouldn&apos;t it be punny if this was a pun as well?</value>
+    <value>Wouldn't it be punny if this was a pun as well?</value>
   </data>
   <data name="miki_command_description_roll" xml:space="preserve">
     <value>Roll 1d20, higher than 17 to defeat this troll!</value>
@@ -1123,7 +1123,7 @@ it&apos;s a variable type thing, so we really shouldn&apos;t be changing it.</co
     <value>Do fun giveaways, pick a random person from your server and give him fame and glory!</value>
   </data>
   <data name="miki_command_description_rule34" xml:space="preserve">
-    <value>Because there&apos;s nothing that doesn&apos;t have a porn version</value>
+    <value>Because there's nothing that doesn't have a porn version</value>
   </data>
   <data name="miki_command_description_safe" xml:space="preserve">
     <value>Get safe for work images of cute anime girls!
@@ -1236,19 +1236,19 @@ all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
     <value>Not happy with your current pasta? Edit it to be cool and with the meta again!</value>
   </data>
   <data name="miki_command_description_guildconfig" xml:space="preserve">
-    <value>Set up your guild account the way you&apos;d like it to function</value>
+    <value>Set up your guild account the way you'd like it to function</value>
   </data>
   <data name="miki_command_description_guildnewrival" xml:space="preserve">
     <value>Set a (new) rival for your guild! time for some competition!</value>
   </data>
   <data name="miki_command_description_guildprofile" xml:space="preserve">
-    <value>This command shows all of your guild&apos;s statistics!</value>
+    <value>This command shows all of your guild's statistics!</value>
   </data>
   <data name="miki_command_description_guildtop" xml:space="preserve">
     <value>Check the top guilds based on experience!</value>
   </data>
   <data name="miki_command_description_guildweekly" xml:space="preserve">
-    <value>If you&apos;re winning from your rival, you get more rewards! get them with this command!</value>
+    <value>If you're winning from your rival, you get more rewards! get them with this command!</value>
   </data>
   <data name="miki_command_description_hatepasta" xml:space="preserve">
     <value>Do you absolutely despise a pasta? Show your hatred with this command!</value>
@@ -1323,16 +1323,16 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>Weekly</value>
   </data>
   <data name="createpasta_error_no_content" xml:space="preserve">
-    <value>I couldn&apos;t find any content for this pasta, please specify what you want to make.</value>
+    <value>I couldn't find any content for this pasta, please specify what you want to make.</value>
   </data>
   <data name="infopasta_error_no_arg" xml:space="preserve">
-    <value>Please state which pasta you&apos;d like to identify.</value>
+    <value>Please state which pasta you'd like to identify.</value>
   </data>
   <data name="infopasta_rating" xml:space="preserve">
     <value>Rating</value>
   </data>
   <data name="lunch_line" xml:space="preserve">
-    <value>Woof woof! What&apos;s for lunch?</value>
+    <value>Woof woof! What's for lunch?</value>
   </data>
   <data name="miki_blackjack" xml:space="preserve">
     <value>Blackjack</value>
@@ -1344,7 +1344,7 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>You ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
-    <value>The one who&apos;s closest to 21 wins. All cards count their own number up to 10. Ties go to Miki.</value>
+    <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to Miki.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
     <value>use `hit` to draw a new card</value>
@@ -1356,7 +1356,7 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>Miki wins!</value>
   </data>
   <data name="miki_blackjack_no_arg" xml:space="preserve">
-    <value>You didn&apos;t include the amount bet! Correct usage: 
+    <value>You didn't include the amount bet! Correct usage: 
 &gt;blackjack &lt;amount&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
@@ -1375,10 +1375,10 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>&gt;blackjack &lt;amount&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
-    <value>Sorry, but you don&apos;t have any pastas yet..</value>
+    <value>Sorry, but you don't have any pastas yet..</value>
   </data>
   <data name="mypasta_title" xml:space="preserve">
-    <value>{0}&apos;s pastas</value>
+    <value>{0}'s pastas</value>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
     <value>Please enter one of the tags, or commands.</value>
@@ -1392,5 +1392,61 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="toppasta_title" xml:space="preserve">
     <value>Top pastas</value>
   </data>
-
+  <data name="guildconfig_expneeded" xml:space="preserve">
+    <value>Your users need {0} experience to use &gt;guildweekly now!</value>
+  </data>
+  <data name="guildconfig_visibility_false" xml:space="preserve">
+    <value>Your guild will no longer be seen on the leaderboards!</value>
+  </data>
+  <data name="guildconfig_visibility_true" xml:space="preserve">
+    <value>Your guild is visible on the leaderboards!</value>
+  </data>
+  <data name="guildnewrival_error_matchmaking_failed" xml:space="preserve">
+    <value>We couldn't matchmake you right now, try again later!</value>
+  </data>
+  <data name="guildnewrival_error_timer_running" xml:space="preserve">
+    <value>Please wait a day before doing this command again!</value>
+  </data>
+  <data name="guildnewrival_success" xml:space="preserve">
+    <value>Your new rival is **{0}**!</value>
+  </data>
+  <data name="guildtop_title" xml:space="preserve">
+    <value>Top Guilds</value>
+  </data>
+  <data name="guildweekly_error_low_level" xml:space="preserve">
+    <value>you got to have a higher level than your rival!</value>
+  </data>
+  <data name="guildweekly_error_no_rival" xml:space="preserve">
+    <value>You have no rival yet, Server admins: use `&gt;guildnewrival` to start matchmaking!</value>
+  </data>
+  <data name="guildweekly_error_timer_running" xml:space="preserve">
+    <value>You've already used your weekly, available again in {0}!</value>
+  </data>
+  <data name="miki_terms_config" xml:space="preserve">
+    <value>Config</value>
+  </data>
+  <data name="miki_terms_experience" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="miki_terms_level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="miki_terms_rank" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="miki_terms_rival" xml:space="preserve">
+    <value>Rival</value>
+  </data>
+  <data name="blackjack_draw_description" xml:space="preserve">
+    <value>You get your bet back! woop woop!</value>
+  </data>
+  <data name="blackjack_draw_title" xml:space="preserve">
+    <value>It's a draw!</value>
+  </data>
+  <data name="blackjack_error_instance_exists" xml:space="preserve">
+    <value>You're already playing blackjack in this channel!</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
 </root>
