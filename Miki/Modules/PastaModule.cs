@@ -70,12 +70,14 @@ namespace Miki.Modules
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
+            
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             int page = 0;
             if (!string.IsNullOrWhiteSpace(e.arguments))
             {
-                if (int.TryParse(e.arguments, out page))
+                List<string> arguments = e.arguments.Split(' ').ToList();
+                if (int.TryParse(arguments[0], out page) || int.TryParse(arguments[0], out page))
                 {
                     page -= 1;
                 }
@@ -86,7 +88,7 @@ namespace Miki.Modules
             {
                 ulong tempId = e.message.MentionedUserIds.First();
                 userId = tempId.toDbLong();
-                userName = await e.Guild.GetUserAsync(uid);
+                userName = await e.Guild.GetUserAsync(uid).Username;
             }
             else
             {
