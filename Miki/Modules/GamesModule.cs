@@ -22,8 +22,21 @@ namespace Miki.Modules
         {
             Locale locale = e.Channel.GetLocale();
 
+            if (Bot.instance.Events.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
+            {
+                await e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
+                    .SendToChannel(e.Channel);
+
+                return;
+            }
+
             if (int.TryParse(e.arguments, out int bet))
             {
+                if(bet < 1)
+                {
+                    return;
+                }
+
                 using (var context = new MikiContext())
                 {
                     User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -33,7 +46,7 @@ namespace Miki.Modules
                     }
                     else
                     {
-                        await Utils.ErrorEmbed(locale, e.GetResource(""))
+                        await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
                             .SendToChannel(e.Channel);
                         return;
                     }
@@ -51,7 +64,9 @@ namespace Miki.Modules
                         .Default(async (ec) =>
                         {
                             await ec.message.DeleteAsync();
+
                             bm.player.AddToHand(bm.deck.DrawRandom());
+
                             if (bm.Worth(bm.player) > 21)
                             {
                                 await OnBlackjackDead(ec, bm, message, bet);
@@ -73,7 +88,14 @@ namespace Miki.Modules
                             {
                                 if (bm.Worth(bm.dealer) >= bm.Worth(bm.player))
                                 {
-                                    await OnBlackjackDead(ec, bm, message, bet);
+                                    if (bm.Worth(bm.dealer) == bm.Worth(bm.player))
+                                    {
+                                        await OnBlackjackDraw(ec, bm, message, bet);
+                                    }
+                                    else
+                                    {
+                                        await OnBlackjackDead(ec, bm, message, bet);
+                                    }
                                     dealerQuit = true;
                                 }
                                 else
@@ -233,7 +255,27 @@ namespace Miki.Modules
             }
         }
 
-        public async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
+        private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
+        {
+            e.commandHandler.RequestDispose();
+
+            using (var context = new MikiContext())
+            {
+                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+                if (user != null)
+                {
+                    await user.AddCurrencyAsync(e.Channel, null, bet);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            await bm.CreateEmbed(e)
+                .SetTitle(e.GetResource("blackjack_draw_title"))
+                .SetDescription(e.GetResource("blackjack_draw_description"))
+                .ModifyMessage(instanceMessage);
+        }
+
+        private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
             e.commandHandler.RequestDispose();
             await bm.CreateEmbed(e)
@@ -242,7 +284,7 @@ namespace Miki.Modules
                 .ModifyMessage(instanceMessage);
         }
 
-        public async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
+        private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
             e.commandHandler.RequestDispose();
             await bm.CreateEmbed(e)
@@ -263,7 +305,34 @@ namespace Miki.Modules
         }
     }
 
-    public class BlackjackManager
+    public class CardManager
+    {
+        Dictionary<ulong, CardHand> hands = new Dictionary<ulong, CardHand>();
+
+        CardSet deck = new CardSet();
+
+        public void AddPlayer(ulong userid)
+        {
+            if(!hands.ContainsKey(userid))
+            {
+                hands.Add(userid, new CardHand());
+            }   
+        }
+
+        public void DealAll()
+        {
+            foreach(CardHand h in hands.Values)
+            {
+                h.AddToHand(deck.DrawRandom());
+            }
+        }
+
+        public void DealTo(ulong userid)
+        {
+            hands[userid].AddToHand(deck.DrawRandom());
+        }
+    }
+    public class BlackjackManager : CardManager
     {
         public CardHand player = new CardHand();
         public CardHand dealer = new CardHand();
@@ -298,7 +367,7 @@ namespace Miki.Modules
         public IDiscordEmbed CreateEmbed(EventContext e)
         {
             return Utils.Embed
-                    .SetTitle(e.GetResource("miki_blackjack"))
+                    .SetTitle(e.GetResource("miki_blackjack") + " " + e.Author.Username)
                     .SetDescription(e.GetResource("miki_blackjack_explanation") + "\n" + e.GetResource("miki_blackjack_hit") + "\n" + e.GetResource("miki_blackjack_stay"))
                     .AddInlineField(e.GetResource("miki_blackjack_cards_you", Worth(player)), player.Print())
                     .AddInlineField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print());
@@ -310,12 +379,12 @@ namespace Miki.Modules
             hand.Hand.ForEach(card => x += CardWorth[card.value](x));
             return x;
         }
-
     }
 
     public class CardHand
     {
         public List<Card> Hand = new List<Card>();
+        bool isPublic = true;
 
         public void AddToHand(Card card)
         {

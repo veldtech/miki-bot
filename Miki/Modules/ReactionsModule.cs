@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    // Translate status: completed
-
     [Module(Name = "reactions")]
     public class ReactionsModule
     {
@@ -61,27 +59,27 @@ namespace Miki.Modules
         public async Task LewdAsync(EventContext e)
         {
             string[] lewd = new string[]
-                          {
-                                "http://i.imgur.com/eG42EVs.png",
-                                "http://i.imgur.com/8shK3jh.png",
-                                "http://i.imgur.com/uLKC84x.jpg",
-                                "http://i.imgur.com/PZCwyyE.png",
-                                "http://i.imgur.com/KWklw30.png",
-                                "http://i.imgur.com/aoLsNgx.jpg",
-                                "http://i.imgur.com/wyJAMVt.jpg",
-                                "http://i.imgur.com/2Y5ZgHH.png",
-                                "http://i.imgur.com/OIZyqxL.jpg",
-                                "http://i.imgur.com/cejd1c0.gif",
-                                "http://i.imgur.com/Obl7JvE.png",
-                                "http://i.imgur.com/PFFmM1q.png",
-                                "http://i.imgur.com/2vopeCM.jpg",
-                                "http://i.imgur.com/U4Nk0e5.jpg",
-                                "http://i.imgur.com/Llf61b1.jpg",
-                                "http://i.imgur.com/3vYPbuO.jpg",
-                                "http://i.imgur.com/p1twVD4.png",
-                                "http://i.imgur.com/AsxaQ3D.gif",
-                                "http://i.imgur.com/On8Axls.gif"
-                          };
+            {
+                "http://i.imgur.com/eG42EVs.png",
+                "http://i.imgur.com/8shK3jh.png",
+                "http://i.imgur.com/uLKC84x.jpg",
+                "http://i.imgur.com/PZCwyyE.png",
+                "http://i.imgur.com/KWklw30.png",
+                "http://i.imgur.com/aoLsNgx.jpg",
+                "http://i.imgur.com/wyJAMVt.jpg",
+                "http://i.imgur.com/2Y5ZgHH.png",
+                "http://i.imgur.com/OIZyqxL.jpg",
+                "http://i.imgur.com/cejd1c0.gif",
+                "http://i.imgur.com/Obl7JvE.png",
+                "http://i.imgur.com/PFFmM1q.png",
+                "http://i.imgur.com/2vopeCM.jpg",
+                "http://i.imgur.com/U4Nk0e5.jpg",
+                "http://i.imgur.com/Llf61b1.jpg",
+                "http://i.imgur.com/3vYPbuO.jpg",
+                "http://i.imgur.com/p1twVD4.png",
+                "http://i.imgur.com/AsxaQ3D.gif",
+                "http://i.imgur.com/On8Axls.gif"
+            };
 
             await Utils.Embed
                 .SetImageUrl(lewd[Global.random.Next(0, lewd.Length)])
