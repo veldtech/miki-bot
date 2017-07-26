@@ -468,6 +468,19 @@
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\GuildAccountsModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
+    <Compile Include="Modules\Overwatch\API\OverwatchApi.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchAchievements.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchAverageStats.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchGameplayStats.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchHeroes.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchOverallStats.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchGamemode.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchPlaytime.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchRegion.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchStats.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchUserResponse.cs" />
+    <Compile Include="Modules\Overwatch\Objects\RequestMetadata.cs" />
+    <Compile Include="Modules\Overwatch\OverwatchModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
@@ -483,10 +496,6 @@
     <Compile Include="API\Rocket League\Objects\RocketLeagueStats.cs" />
     <Compile Include="API\Rocket League\Objects\RocketLeagueTier.cs" />
     <Compile Include="API\Rocket League\Objects\RocketLeagueUser.cs" />
-    <Compile Include="Objects\OverwatchUserCompetitive.cs" />
-    <Compile Include="Objects\OverwatchUserData.cs" />
-    <Compile Include="Objects\OverwatchUserGames.cs" />
-    <Compile Include="Objects\OverwatchUserPlaytime.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Modules\AccountsModule.cs" />
     <Compile Include="Modules\AdminModule.cs" />
@@ -648,6 +657,7 @@
       <DependentUpon>201707170136413_add-rep.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

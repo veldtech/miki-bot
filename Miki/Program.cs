@@ -6,6 +6,7 @@ using Miki.Accounts;
 using Miki.API.Patreon;
 using Miki.Languages;
 using Miki.Models;
+using Miki.Modules.Overwatch.API;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -80,7 +81,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.0.1";
+                x.Version = "0.4.1";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
