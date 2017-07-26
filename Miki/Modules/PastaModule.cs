@@ -399,7 +399,7 @@ namespace Miki.Modules
 
                 long authorId = e.Author.Id.ToDbLong();
 
-                var voteObject = context.Votes.AsNoTracking().Where(q => q.Id == e.arguments && q.__UserId == authorId).FirstOrDefault();
+                var voteObject = context.Votes.Where(q => q.Id == e.arguments && q.__UserId == authorId).FirstOrDefault();
 
                 if (voteObject == null)
                 {
