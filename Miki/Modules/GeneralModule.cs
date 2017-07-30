@@ -7,6 +7,7 @@ using IA.SDK.Interfaces;
 using Miki.API.UrbanDictionary;
 using Miki.Languages;
 using Miki.Models;
+using NCalc;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -78,11 +79,28 @@ namespace Miki.Modules
 
             try
             {
-                var result = new DataTable().Compute(e.arguments, null);
-                await e.Channel.SendMessage(result.ToString());
+                Expression expression = new Expression(e.arguments);
+
+                expression.Parameters.Add("pi", Math.PI);
+
+                expression.EvaluateFunction += (name, x) =>
+                {
+                    if (name == "lerp")
+                    {
+                        double n = (double)x.Parameters[0].Evaluate();
+                        double v = (double)x.Parameters[1].Evaluate();
+                        double o = (double)x.Parameters[2].Evaluate();
+                        x.Result = (n * (1.0 - o)) + (v * o);
+                    }
+                };
+
+                await e.Channel.SendMessage(expression.Evaluate().ToString());
+                // var result = new DataTable().Compute(e.arguments, null);
+                // await e.Channel.SendMessage(result.ToString());
             }
-            catch
+            catch(Exception ex)
             {
+                Log.ErrorAt("calc", ex.Message);
                 await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error"));
             }
         }
