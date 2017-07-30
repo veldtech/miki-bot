@@ -78,7 +78,7 @@ namespace Miki.Modules
                 "https://66.media.tumblr.com/tumblr_ly6n2dCYM41rnw7hko1_500.gif",
                 "http://imgur.com/8kLQ55E.gif",
                 "https://66.media.tumblr.com/cb6bb8d0da432035722cd96835f20f0f/tumblr_nq2cyx3qYr1sa6ma2o1_500.gif",
-                "http://i824.photobucket.com/albums/zz162/dovaiv/tumblr_mxbswzL1qT1sq9yswo1_500.gif",
+                "http://imgur.com/zG60zPk.gif",
                 "http://33.media.tumblr.com/510818c33b426e9ba73f809daec3f045/tumblr_n2bye1AaeQ1tv44eho1_500.gif",
             };
 
