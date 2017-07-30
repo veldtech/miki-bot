@@ -16,6 +16,7 @@ using Miki.API;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Objects;
+using NCalc;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -24,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -433,49 +435,70 @@ namespace Miki.Modules
         [Command(Name = "roll")]
         public async Task RollAsync(EventContext e)
         {
-            string rollCalc = "";
-            string amount = "";
-            int rollAmount = 0;
+            string output = "";
 
-            if (e.arguments != "")
+            if(string.IsNullOrWhiteSpace(e.arguments))
             {
-                amount = e.arguments.Split(' ')[0];
-
-                if (amount.Split('d').Length > 1)
-                {
-                    for (int i = 0; i < int.Parse(amount.Split('d')[0]); i++)
-                    {
-                        int num = Mathm.Roll(int.Parse(amount.Split('d')[1]), 0);
-                        rollAmount += num;
-                        rollCalc += num + " + ";
-                    }
-                    rollCalc = rollCalc.Remove(rollCalc.Length - 3);
-                }
-                else
-                {
-                    try
-                    {
-                        rollAmount = Mathm.Roll(int.Parse(amount), 0);
-                    }
-                    catch
-                    {
-                        rollAmount = Mathm.Roll();
-
-                    }
-                }
+                output = MikiRandom.GetRandomNumber(100).ToString();
+            }
+            else if (int.TryParse(e.arguments, out int max))
+            {
+                output = MikiRandom.GetRandomNumber(max).ToString();
             }
             else
             {
-                rollAmount = Mathm.Roll();
+                string expression = e.arguments;
+
+                if (!string.IsNullOrWhiteSpace(expression))
+                {
+                    string[] parts = expression.Split(' ');
+
+                    foreach (string x in parts)
+                    {
+                        string replacableString = x.Trim('(', ')');
+                        int amount = 0;
+
+                        if (replacableString.StartsWith("r"))
+                        {
+                            string[] split = replacableString.TrimStart('r').Split('d');
+
+                            if (split.Length > 1)
+                            {
+                                if (int.TryParse(split[0], out int amountOfDice) && int.TryParse(split[1], out int sides))
+                                {
+                                    int a = 0;
+                                    for (int i = 0; i < amountOfDice; i++)
+                                    {
+                                        a += (MikiRandom.GetRandomNumber(sides) + 1);
+                                    }
+                                    amount = a;
+                                }
+                            }
+                            else
+                            {
+                                if (int.TryParse(split[0], out int sides))
+                                {
+                                    amount = MikiRandom.GetRandomNumber(sides) + 1;
+                                }
+                            }
+
+                            var regex = new Regex(Regex.Escape(x));
+
+                            expression = regex.Replace(expression, amount.ToString(), 1);
+                        }
+                    }
+                }
+                Expression doExpression = new Expression(expression);
+                output = doExpression.Evaluate().ToString();
+                output += $" ({expression})";
             }
 
-            if (rollAmount == 1)
+            if (output == "1" || output.StartsWith("1 "))
             {
                 await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new Accounts.Achievements.Objects.BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
             }
 
-
-            await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.RollResult, new object[] { e.Author.Username, rollAmount }) + (rollCalc != "" ? " (" + rollCalc + ")" : ""));
+            await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
 
         [Command(Name = "roulette")]    
@@ -508,19 +531,6 @@ namespace Miki.Modules
                 }
             }
         }
-
-        // TODO: work this in again
-        //[Command(Name = "slots", On = "all")]
-        //public async Task SlotsAllAsync(EventContext e)
-        //{
-        //    Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-        //    using (var context = new MikiContext())
-        //    {
-        //        User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-        //        await InternalSlotsAsync(e, e.Author.Id, locale, u.Currency);
-        //    }
-        //}
 
         [Command(Name = "remind")]
         public async Task DoRemind(EventContext e)
