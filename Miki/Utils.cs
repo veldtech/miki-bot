@@ -4,6 +4,7 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Languages;
 using System;
+using System.Collections.Generic;
 
 namespace Miki
 {
@@ -12,25 +13,83 @@ namespace Miki
         public static string ToTimeString(this int seconds)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return ((Math.Floor(time.TotalDays) > 0) ? (Math.Floor(time.TotalDays) + " day" + ((time.TotalDays > 1) ? "s" : "") + ", ") : "") +
-              ((time.Hours > 0) ? (time.Hours + " hour" + ((time.Hours > 1) ? "s" : "") + ", ") : "") +
-              ((time.Minutes > 0) ? (time.Minutes + " minutes and ") : "") +
-              time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
+            return time.ToTimeString();
         }
         public static string ToTimeString(this long seconds)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return ((Math.Floor(time.TotalDays) > 0) ? (Math.Floor(time.TotalDays) + " day" + ((time.TotalDays > 1) ? "s" : "") + ", ") : "") +
-              ((time.Hours > 0) ? (time.Hours + " hour" + ((time.Hours > 1) ? "s" : "") + ", ") : "") +
-              ((time.Minutes > 0) ? (time.Minutes + " minutes and ") : "") +
-              time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
+            return time.ToTimeString();
         }
         public static string ToTimeString(this TimeSpan time)
         {
-            return ((Math.Floor(time.TotalDays) > 0) ? (Math.Floor(time.TotalDays) + " day" + ((time.TotalDays > 1) ? "s" : "") + ", ") : "") +
-              ((time.Hours > 0) ? (time.Hours + " hour" + ((time.Hours > 1) ? "s" : "") + ", ") : "") +
-              ((time.Minutes > 0) ? (time.Minutes + " minutes and ") : "") +
-              time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
+            List<TimeValue> t = new List<TimeValue>();
+            if (Math.Floor(time.TotalDays) > 0)
+            {
+                if(Math.Floor(time.TotalDays) > 1)
+                {
+                    t.Add(new TimeValue("days", time.Days));
+                }
+                else
+                {
+                    t.Add(new TimeValue("day", time.Days));
+                }
+            }
+            if (time.Hours > 0)
+            {
+                if (time.Hours > 1)
+                {
+                    t.Add(new TimeValue("hours", time.Hours));
+                }
+                else
+                {
+                    t.Add(new TimeValue("hour", time.Hours));
+                }
+            }
+            if (time.Minutes > 0)
+            {
+                if (time.Minutes > 1)
+                {
+                    t.Add(new TimeValue("minutes", time.Minutes));
+                }
+                else
+                {
+                    t.Add(new TimeValue("minute", time.Minutes));
+                }
+            }
+            if (time.Seconds > 0)
+            {
+                if (time.Seconds > 1)
+                {
+                    t.Add(new TimeValue("seconds", time.Seconds));
+                }
+                else
+                {
+                    t.Add(new TimeValue("second", time.Seconds));
+                }
+            }
+
+            if (t.Count != 0)
+            {
+                List<string> s = new List<string>();
+                foreach(TimeValue v in t)
+                {
+                    s.Add(v.ToString());
+                }
+
+                string text = "";
+                if (t.Count > 1)
+                {
+                    text = string.Join(", ", s.ToArray(), 0, s.Count - 1);
+                    text += "and " + s[s.Count - 1].ToString();
+                }
+                else if(t.Count == 1)
+                {
+                    text = s[0].ToString();
+                }
+
+                return text;
+            }
+            return "";
         }
 
         public static bool GetInputBool(this string input)
@@ -73,7 +132,7 @@ namespace Miki
     {
         private static readonly Random getrandom = new Random();
         private static readonly object syncLock = new object();
-
+            
         public static int GetRandomNumber(int max)
         {
             lock (syncLock)
@@ -87,6 +146,23 @@ namespace Miki
             {
                 return getrandom.Next(min, max);
             }
+        }
+    }
+
+    public class TimeValue
+    {
+        public int Value { get; set; }
+        public string Identifier { get; set; }
+
+        public TimeValue(string i, int v)
+        {
+            Value = v;
+            Identifier = i;
+        }
+
+        public override string ToString()
+        {
+            return Value + " " + Identifier;
         }
     }
 }
