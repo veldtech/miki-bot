@@ -96,6 +96,12 @@ namespace Miki.Modules
             }
         }
 
+        [Command(Name = "config")]
+        public async Task ConfigAsync(EventContext e)
+        {
+
+        }
+
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SetLocale(EventContext e)
         {
