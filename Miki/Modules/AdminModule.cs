@@ -246,10 +246,17 @@ namespace Miki.Modules
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
 			if( messages.Count < amount )
-				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable;
+				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
 
-			Log.Warning( amount + " : " + _amount + " : " + messages.Count );
-
+			if( amount <= 1 )
+			{ // Update this to use localization.
+				PrefixInstance prefix = Bot.instance.Events.GetPrefixInstance( ">" );
+				await e.message.DeleteAsync();
+				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_no_messages", new object[] { prefix.Value } ) );
+				await errorMessage.SendToChannel( e.Channel );
+				return;
+			}
+			
 			for( int i = 0; i < amount; i++ )
 			{
 				if( target != 0 && messages[i]?.Author.Id != target ) 

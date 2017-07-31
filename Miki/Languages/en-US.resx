@@ -1449,4 +1449,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="String1" xml:space="preserve">
     <value />
   </data>
+  <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
+    <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
+  </data>
 </root>

@@ -2095,6 +2095,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry but I couldn&apos;t find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!.
+        /// </summary>
+        internal static string miki_module_admin_prune_no_messages {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_no_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted {0} messages!.
         /// </summary>
         internal static string miki_module_admin_prune_success {
