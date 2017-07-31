@@ -213,23 +213,25 @@ namespace Miki.Modules
             await bannedUser.Kick();
         }
 
-        [Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
+		// TODO: Consolidate these 3 functions into 1 smarter function.
+		// TODO: Add more onomatopoeia for the embed title to randomly select from for more style points.
+		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task PruneAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            IDiscordUser u = (await (e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id)));
-            if (!u.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
+            IDiscordUser invoker = (await (e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id)));
+            if (!invoker.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
             {
                 await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_error_no_access"));
                 return;
             }
 
             string[] argsSplit = e.arguments.Split(' ');
-            int amount = 100;
+            int amount = 101;
             if (!string.IsNullOrEmpty(argsSplit[0]))
             {
-                amount = int.Parse(argsSplit[0]);
+                amount = int.Parse(argsSplit[0]) + 1;
                 if (e.message.MentionedUserIds.Count > 0)
                 {
                     await PruneAsync(e.message, amount, (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id);
@@ -266,16 +268,21 @@ namespace Miki.Modules
             }
 
             Task.WaitAll();
+			
+			IDiscordEmbed embed = Utils.Embed;
+			embed.Title = "POW!";
+			embed.Description = locale.GetString( "miki_module_admin_prune_success", new object[] { deleteMessages.Count - 1 } );
+			embed.Color = Color.GetColor( IAColor.YELLOW );
 
-            IDiscordMessage m = await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_success", new object[] { deleteMessages.Count }));
-            await Task.Delay(5000);
-            await m.DeleteAsync();
-        }
+			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
+			await Task.Delay( 5000 );
+			await _dMessage.DeleteAsync();
+		}
         public async Task PruneAsync(IDiscordMessage e, int amount, ulong target)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            if (amount > 100)
+            if (amount > 101)
             {
                 await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_error_max"));
                 return;
@@ -302,9 +309,14 @@ namespace Miki.Modules
 
             Task.WaitAll();
 
-            IDiscordMessage m = await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_success", new object[] { deleteMessages.Count }));
+			IDiscordEmbed embed = Utils.Embed;
+			embed.Title = "POW!";
+			embed.Description = locale.GetString( "miki_module_admin_prune_success", new object[] { deleteMessages.Count - 1 } );
+			embed.Color = Color.GetColor( IAColor.YELLOW );
+
+			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
             await Task.Delay(5000);
-            await m.DeleteAsync();
+            await _dMessage.DeleteAsync();
         }
     }
 }
