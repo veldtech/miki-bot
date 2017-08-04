@@ -53,8 +53,9 @@ namespace Miki
                 Global.ImgurKey = reader.ReadLine();
                 Global.ImgurClientId = reader.ReadLine();
                 Global.DiscordPwKey = reader.ReadLine();
-                Global.DiscordBotsOrgKey = reader.ReadLine();
-                reader.Finish();
+				Global.DiscordBotsOrgKey = reader.ReadLine();
+				Global.SteamAPIKey = reader.ReadLine();
+				reader.Finish();
             }
             else
             {
@@ -67,8 +68,9 @@ namespace Miki
                 writer.Write("", "Imgur API Key (Mashape)");
                 writer.Write("", "Imgur Client ID (without Client-ID)");
                 writer.Write("", "Discord.pw API Key");
-                writer.Write("", "Discordbot.org API Key");
-                writer.Finish();
+				writer.Write("", "Discordbot.org API Key");
+				writer.Write( "", "SteamAPI Key" );
+				writer.Finish();
             }
         }
 
@@ -124,9 +126,10 @@ namespace Miki
                 await e.SendToChannel(msg.Channel);
             };
 
-            bot.AddDeveloper(121919449996460033);
+			bot.AddDeveloper( 121919449996460033 ); // Veld
+			bot.AddDeveloper( 203948399668494336 ); // Drummss
 
-            if (!string.IsNullOrEmpty(devId))
+			if (!string.IsNullOrEmpty(devId))
             {
                 bot.AddDeveloper(ulong.Parse(devId));
             }

@@ -33,7 +33,14 @@ namespace Miki
               time.Seconds + " second" + ((time.Seconds > 1) ? "s" : "") + ".\n";
         }
 
-        public static bool GetInputBool(this string input)
+		public static DateTime UnixToDateTime( long unix )
+		{
+			DateTime time = new DateTime( 1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc );
+			time = time.AddSeconds( unix ).ToLocalTime();
+			return time;
+		}
+
+		public static bool GetInputBool(this string input)
         {
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
         }
