@@ -241,17 +241,27 @@ namespace Miki.Modules
         [Command(Name = "guildtop")]
         public async Task GuildTop(EventContext e)
         {
+            int amountToSkip = 0;
+            int amountToTake = 12;
+
+            int.TryParse(e.arguments, out amountToSkip);
+
             using (var context = new MikiContext())
             {
-                var leaderboards = context.Database.SqlQuery<LeaderboardsItem>("SELECT TOP 12 Name, Experience as Value from [dbo].GuildUsers where VisibleOnLeaderboards = 1 order by Value desc").ToList();
+                List<GuildUser> leaderboards = context.GuildUsers.OrderByDescending(x => x.Experience)
+                                                                 .Skip(amountToSkip * amountToTake)
+                                                                 .Take(amountToTake)
+                                                                 .ToList();
 
                 IDiscordEmbed embed = Utils.Embed
                     .SetTitle(e.GetResource("guildtop_title"));
 
-                foreach(LeaderboardsItem i in leaderboards)
+                foreach(GuildUser i in leaderboards)
                 {
-                    embed.AddInlineField(i.Name, i.Value.ToString());
+                    embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
+
+                embed.SetFooter(e.GetResource("pasta_page_index", amountToSkip, "#"), null);
 
                 await embed.SendToChannel(e.Channel);
             }
