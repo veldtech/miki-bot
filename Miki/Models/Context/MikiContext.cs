@@ -25,6 +25,11 @@ namespace Miki.Models
         public DbSet<User> Users { get; set; }
         public DbSet<PastaVote> Votes { get; set; }
 
+        public MikiContext() : base("PostgreSql")
+        {
+
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
