@@ -12,6 +12,7 @@ using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.Accounts.Achievements.Objects;
 using Miki.API;
 using Miki.Languages;
 using Miki.Models;
@@ -423,7 +424,7 @@ namespace Miki.Modules
             string[] choices = e.arguments.Split(',');
 
             Locale locale = e.Channel.GetLocale();
-            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.GetRandomNumber(0, choices.Length)] }));
+            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
@@ -439,11 +440,11 @@ namespace Miki.Modules
 
             if(string.IsNullOrWhiteSpace(e.arguments))
             {
-                output = MikiRandom.GetRandomNumber(100).ToString();
+                output = MikiRandom.Next(100).ToString();
             }
             else if (int.TryParse(e.arguments, out int max))
             {
-                output = MikiRandom.GetRandomNumber(max).ToString();
+                output = MikiRandom.Next(max).ToString();
             }
             else
             {
@@ -469,7 +470,7 @@ namespace Miki.Modules
                                     int a = 0;
                                     for (int i = 0; i < amountOfDice; i++)
                                     {
-                                        a += (MikiRandom.GetRandomNumber(sides) + 1);
+                                        a += (MikiRandom.Next(sides) + 1);
                                     }
                                     amount = a;
                                 }
@@ -478,7 +479,7 @@ namespace Miki.Modules
                             {
                                 if (int.TryParse(split[0], out int sides))
                                 {
-                                    amount = MikiRandom.GetRandomNumber(sides) + 1;
+                                    amount = MikiRandom.Next(sides) + 1;
                                 }
                             }
 
@@ -495,7 +496,7 @@ namespace Miki.Modules
 
             if (output == "1" || output.StartsWith("1 "))
             {
-                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new Accounts.Achievements.Objects.BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
+                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
             }
 
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
