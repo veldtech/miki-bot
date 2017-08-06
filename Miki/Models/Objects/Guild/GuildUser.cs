@@ -89,8 +89,10 @@ namespace Miki.Models
         {
             using (var context = new MikiContext())
             {
-                int x = context.Database.SqlQuery<int>("Select COUNT(*) as rank from GuildUsers where GuildUsers.Experience >= @p0", Experience).First();
-                return x;
+                int rank = context.GuildUsers
+                    .Where(x => x.Experience > Experience)
+                    .Count();
+                return rank;
             }
         }
 

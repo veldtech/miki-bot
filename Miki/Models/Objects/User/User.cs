@@ -112,6 +112,7 @@ namespace Miki.Models
             }
             return Level;
         }
+            
         public int CalculateMaxExperience(int localExp)
         {
             int experience = localExp;
@@ -124,6 +125,7 @@ namespace Miki.Models
             }
             return output;
         }
+
         private int CalculateNextLevelIteration(int output, int level)
         {
             return 10 + (output + (level * 20));
@@ -133,7 +135,9 @@ namespace Miki.Models
         {
             using (var context = new MikiContext())
             {
-                int x = context.Database.SqlQuery<int>("Select COUNT(*) as rank from Users where Users.Total_Experience >= @p0", Total_Experience).First();
+                int x = context.Users
+                    .Where(u => u.Total_Experience > Total_Experience)
+                    .Count();
                 return x;
             }
         }
@@ -148,7 +152,10 @@ namespace Miki.Models
                     return -1;
                 }
 
-                int x = context.Database.SqlQuery<int>("Select COUNT(*) as rank from LocalExperience where LocalExperience.ServerId = @p0 AND LocalExperience.Experience >= @p1", guildId.ToDbLong(), l.Experience).First();
+                long gId = guildId.ToDbLong();
+                int x = context.Experience
+                    .Where(e => e.ServerId == gId && e.Experience > l.Experience)
+                    .Count();
                 return x;
             }
         }

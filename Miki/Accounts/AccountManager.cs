@@ -6,6 +6,7 @@ using Miki.Languages;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts
@@ -33,7 +34,7 @@ namespace Miki.Accounts
             {
                 Locale locale = Locale.GetEntity(e.Id.ToDbLong());
 
-                int randomNumber = MikiRandom.GetRandomNumber(0, 10);
+                int randomNumber = MikiRandom.Next(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
                     
                 using (var context = new MikiContext())
@@ -85,16 +86,18 @@ namespace Miki.Accounts
 
                         if (experience == null)
                         {
-                            experience = context.Experience.Add(new LocalExperience() { server_id = e.Guild.Id.ToDbLong(), user_id = a.Id, Experience = 0, LastExperienceTime = DateTime.Now - new TimeSpan(1) });
+                            experience = context.Experience.Add(new LocalExperience() { ServerId = e.Guild.Id.ToDbLong(), UserId = a.Id, Experience = 0, LastExperienceTime = DateTime.Now - new TimeSpan(1) });
                         }
 
                         GuildUser guildUser = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
                         if (guildUser == null)
                         {
-                            int value = await context.Database.SqlQuery<int>
-                                ("select Sum(Experience) as value from LocalExperience where ServerId = @p0;", e.Guild.Id.ToDbLong())
-                                .FirstAsync();
+                            long guildId = e.Guild.Id.ToDbLong();
+
+                            int value = context.Experience
+                                                .Where(x => x.ServerId == guildId)
+                                                .Sum(x => x.Experience);
 
                             guildUser = context.GuildUsers.Add(new GuildUser()
                             {
@@ -115,7 +118,7 @@ namespace Miki.Accounts
 
                         int currentLocalLevel = a.CalculateLevel(experience.Experience);
                         int currentGlobalLevel = a.CalculateLevel(a.Total_Experience);
-                        int addedExperience = MikiRandom.GetRandomNumber(2, 10);
+                        int addedExperience = MikiRandom.Next(2, 10);
 
                         experience.Experience += addedExperience;
                         a.Total_Experience += addedExperience;
