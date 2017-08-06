@@ -47,7 +47,7 @@ namespace Miki.Modules
             embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
+            await bannedUser.Ban(e.Guild, 1, reason);
         }
 
         [Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
@@ -81,7 +81,7 @@ namespace Miki.Modules
             embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
+            await bannedUser.Ban(e.Guild, 1, reason);
             await bannedUser.Unban(e.Guild);
 
         }
@@ -90,7 +90,6 @@ namespace Miki.Modules
         public async Task CleanAsync(EventContext e)
         {
             await PruneAsync(e.message, 100, Bot.instance.Client.GetShard(e.message.Discord.ShardId).CurrentUser.Id);
-
         }
 
         [Command(Name = "setcommand", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
@@ -102,20 +101,11 @@ namespace Miki.Modules
             ICommandEvent command = Bot.instance.Events.CommandHandler.GetCommandEvent(arguments[0]);
             if (command == null)
             {
-                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command/service").SendToChannel(e.Channel);
                 return;
             }
 
-            bool setValue = false;
-            switch (arguments[1])
-            {
-                case "yes":
-                case "y":
-                case "1":
-                case "true":
-                    setValue = true;
-                    break;
-            }
+            bool setValue = Utils.GetInputBool(arguments[2]);
 
             if (!command.CanBeDisabled)
             {
@@ -210,7 +200,7 @@ namespace Miki.Modules
             embed.Color = new Color(1, 1, 0);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Kick();
+            await bannedUser.Kick(reason);
         }
 
         [Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
@@ -302,7 +292,7 @@ namespace Miki.Modules
 
             Task.WaitAll();
 
-            IDiscordMessage m = await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_success", new object[] { deleteMessages.Count }));
+            IDiscordMessage m = await e.Channel.SendMessage(locale.GetString("miki_module_admin_prune_success", deleteMessages.Count));
             await Task.Delay(5000);
             await m.DeleteAsync();
         }
