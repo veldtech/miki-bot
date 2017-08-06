@@ -44,23 +44,27 @@ namespace Miki.Modules
 		[Command( Name = "steam" )]
 		public async Task SteamRequestHandler( EventContext context )
 		{
-
 			DateTime requestStart = DateTime.Now;
-
 			string[] args = context.arguments.Split( ' ' );
+
+			IDiscordEmbed embed = Utils.Embed;
+			string authorName = "Steam";
 
 			if( string.IsNullOrEmpty( context.arguments ) )
 			{
-				IDiscordEmbed embed = Utils.Embed;
-				embed.Title = "🕹️ Steam";
 				embed.Description = "Steam API at your fingertips.\nYou can find a list of commands by typing `>steam help`!";
-				await embed.SendToChannel( context.Channel );
 			} else
 			{
+				if( args[0] == "help" )
+				{
+					authorName = "Steam Help";
+					embed.Description = "Steam API at your fingertips.";
+					embed.AddInlineField( "Commands", "`>steam` \n`>steam user <vanity/steam64>`" );
+				}				
+
 				if( args[0] == "user" )
 				{
-					IDiscordEmbed embed = Utils.Embed;
-					embed.SetTitle( "🕹️ Steam Profile" );
+					authorName = "Steam Profile";
 
 					SteamApiUser user = await steam.GetSteamUser( args[1] );
 
@@ -79,6 +83,8 @@ namespace Miki.Modules
 					{
 						if( user.CurrentGameName != "???" )
 							embed.SetDescription( "Currently playing " + user.CurrentGameName );
+						else
+							embed.SetDescription( "Currently in-game" );
 						embed.Color = Color.GetColor( IAColor.GREEN );
 					} else if( user.PersonaState != 0 )
 					{
@@ -89,7 +95,7 @@ namespace Miki.Modules
 					embed.AddInlineField( "ID", user.SteamID );
 
 					embed.AddInlineField( "Real Name", user.RealName );
-					embed.AddInlineField( "Country", user.CountryCode );
+					embed.AddInlineField( "Country", ( user.CountryCode != "???" ? ":flag_" + user.CountryCode.ToLower() + ": " : "" ) + user.CountryCode );
 
 					embed.AddField( "Link", user.ProfileURL );
 
@@ -105,10 +111,11 @@ namespace Miki.Modules
 					embed.AddInlineField( "Level", userLevel );
 
 					embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
-					await embed.SendToChannel( context.Channel );
 				}
 			}
 
+			embed.SetAuthor( authorName, "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png", "" );
+			await embed.SendToChannel( context.Channel );
 		}
 
 		private string ToTimeString( TimeSpan time )
