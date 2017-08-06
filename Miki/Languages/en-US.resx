@@ -751,6 +751,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_whois_header" xml:space="preserve">
     <value>Who is {0}!?</value>
+    <comment>example: Who is Veld!?</comment>
   </data>
   <data name="miki_module_whois_tag_personal" xml:space="preserve">
     <value>🙎 Personal</value>
@@ -841,7 +842,7 @@ Fuzzy</comment>
     <value>member since {0} | request took: {1}ms</value>
   </data>
   <data name="miki_module_accounts_profile_header" xml:space="preserve">
-    <value>{0]'s Profile</value>
+    <value>{0}'s Profile</value>
   </data>
   <data name="miki_module_accounts_profile_marriedto" xml:space="preserve">
     <value>Married to</value>
@@ -851,12 +852,15 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_settings_dm" xml:space="preserve">
     <value>{0} direct messages</value>
+    <comment>example [enabled:disabled] direct messages</comment>
   </data>
   <data name="miki_module_settings_error_dm" xml:space="preserve">
     <value>{0} error notifications</value>
+    <comment>example [enabled:disabled] error notifications</comment>
   </data>
   <data name="miki_module_settings_guild_notifications" xml:space="preserve">
     <value>{0} guild notifications</value>
+    <comment>example [enabled:disabled] guild notifications</comment>
   </data>
   <data name="miki_placeholder_null" xml:space="preserve">
     <value>none (yet!)</value>
@@ -1066,7 +1070,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>Birbs are too cute to not to have a special command for!</value>
   </data>
   <data name="miki_command_description_cage" xml:space="preserve">
-    <value>NICK CAGE PICTURES</value>
+    <value>Pictures of world's best </value>
   </data>
   <data name="miki_command_description_cat" xml:space="preserve">
     <value>Meow, i am a cat picture generator!</value>
@@ -1225,6 +1229,7 @@ all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
   </data>
   <data name="pasta_page_index" xml:space="preserve">
     <value>page {0} of {1}</value>
+    <comment>example: page 1 of 32</comment>
   </data>
   <data name="miki_command_description_createpasta" xml:space="preserve">
     <value>Create your own special pasta and share it with everyone!</value>
@@ -1379,6 +1384,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   </data>
   <data name="mypasta_title" xml:space="preserve">
     <value>{0}'s pastas</value>
+    <comment>example: Veld's pastas</comment>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
     <value>Please enter one of the tags, or commands.</value>
@@ -1446,7 +1452,39 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="blackjack_error_instance_exists" xml:space="preserve">
     <value>You're already playing blackjack in this channel!</value>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+  <data name="pasta_error_out_of_index" xml:space="preserve">
+    <value>You don't have any pastas on this page!</value>
+  </data>
+  <data name="give_error_max_mekos" xml:space="preserve">
+    <value>Sorry, but I can only process 999.999 mekos per transaction!</value>
+  </data>
+  <data name="give_error_min_mekos" xml:space="preserve">
+    <value>You have to send at least 1 meko for this transaction to function.</value>
+  </data>
+  <data name="give_error_no_arg" xml:space="preserve">
+    <value>You didn't have both the amount you want to send and the user to send it to. Please fill them in like shown below!</value>
+  </data>
+  <data name="give_description" xml:space="preserve">
+    <value>{0} just gave {1} {2} mekos!</value>
+    <comment>example: Veld just gave Godweeb 120 mekos!</comment>
+  </data>
+  <data name="give_error_amount_unparsable" xml:space="preserve">
+    <value>We couldn't parse your second argument into numbers! Please use `&gt;help give` to see how to use this command!</value>
+  </data>
+  <data name="give_error_no_mention" xml:space="preserve">
+    <value>Please mention the person you want to give mekos to. Use `&gt;help give` to find out how to use it!</value>
+  </data>
+  <data name="user_error_no_account" xml:space="preserve">
+    <value>This user doesn't have a Miki account yet.</value>
+  </data>
+  <data name="user_error_insufficient_mekos" xml:space="preserve">
+    <value>You do not have enough mekos to do this!</value>
+  </data>
+  <data name="buymarriageslot_insufficient_mekos" xml:space="preserve">
+    <value>You do not have enough mekos! You need {0} more mekos!</value>
+  </data>
+  <data name="buymarriageslot_success" xml:space="preserve">
+    <value>You successfully purchased a new marriage slot, you now have {0} slots!</value>
+    <comment>example: You successfully purchased a new marriage slot, you now have 12 slots!</comment>
   </data>
 </root>
