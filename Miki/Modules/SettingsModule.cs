@@ -96,10 +96,36 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "config")]
+        [Command(Name = "showmodule")]
         public async Task ConfigAsync(EventContext e)
         {
+            IModule module = e.commandHandler.GetModule(e.arguments);
 
+            if (module != null)
+            {
+                IDiscordEmbed embed = Utils.Embed
+                                           .SetTitle(e.arguments);
+
+                string content = "";
+
+                foreach (RuntimeCommandEvent ev in module.Events.OrderBy((x) => x.Name))
+                {
+                    content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+                }
+
+                embed.AddInlineField("Events", content);
+
+                content = "";
+
+                foreach (IService ev in module.Services.OrderBy((x) => x.Name))
+                {
+                    content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+                }
+
+                embed.AddInlineField("Services", content);
+
+                await embed.SendToChannel(e.Channel);
+            }
         }
 
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
