@@ -13,6 +13,8 @@ using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Languages;
 using Miki.Models;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Accounts.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Miki.Modules
+namespace Miki.Modules.AccountsModule
 {
     [Module("Accounts")]
     public class AccountsModule
@@ -54,9 +56,11 @@ namespace Miki.Modules
                 }
             };
 
-            module.MessageRecieved = AccountManager.Instance.CheckAsync;
+            new AchievementsService()
+                .Install(module);
 
-            LoadAchievements();
+            new ExperienceTrackerService()
+                .Install(module);
         }
 
         [Command(Name = "buymarriageslot")]
@@ -575,31 +579,33 @@ namespace Miki.Modules
 
             if (arguments.Length < 2)
             {
-                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
-                return;
-            }
-            
-            if (arguments[1].Length > 9)
-            {
-                await Utils.ErrorEmbed(locale, "That's too many mekos! The most I can transfer at a time is `999,999,999`").SendToChannel(e.Channel);
-                return;
-            }
-
-            if (!int.TryParse(arguments[1], out int goldSent))
-            {
-                await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
-                return;
-            }
-
-            if (goldSent <= 0)
-            {
-                await Utils.ErrorEmbed(locale, "You have to send at least one meko.").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, "give_error_no_arg").SendToChannel(e.Channel);
                 return;
             }
 
             if (e.message.MentionedUserIds.Count <= 0)
             {
-                await Utils.ErrorEmbed(locale, "Please mention the person you want to give mekos to. Use `>help give` to find out how to use it!").SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, e.GetResource("give_error_no_mention")).SendToChannel(e.Channel);
+                return;
+            }
+
+            IDiscordUser receiverUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+
+            if (!int.TryParse(arguments[1], out int goldSent))
+            {
+                await Utils.ErrorEmbed(locale, e.GetResource("give_error_amount_unparsable")).SendToChannel(e.Channel);
+                return;
+            }
+
+            if (goldSent > 999999)
+            {
+                await Utils.ErrorEmbed(locale, e.GetResource("give_error_max_mekos")).SendToChannel(e.Channel);
+                return;
+            }
+
+            if (goldSent <= 0)
+            {
+                await Utils.ErrorEmbed(locale, e.GetResource("give_error_min_mekos")).SendToChannel(e.Channel);
                 return;
             }
 
@@ -610,7 +616,7 @@ namespace Miki.Modules
 
                 if(receiver == null)
                 {
-                    await Utils.ErrorEmbed(locale, "This user doesn't have a Miki account yet.")
+                    await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -624,7 +630,7 @@ namespace Miki.Modules
 
                     IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
-                    em.Description = $"{ e.Author.Username } just gave { reciever } { goldSent } mekos!";
+                    em.Description = e.GetResource("give_description");
 
                     em.Color = new IA.SDK.Color(255, 140, 0);
 
@@ -633,12 +639,8 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    IDiscordEmbed embed = Utils.Embed
-                        .SetTitle("Transaction failed!")
-                        .SetDescription("You do not have enough Mekos.")
-                        .SetColor(255, 0, 0);
-
-                    await embed.SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, e.GetResource("user_error_insufficient_mekos"))
+                        .SendToChannel(e.Channel);
                 }
             }
         }
@@ -654,7 +656,8 @@ namespace Miki.Modules
 
                 if (u == null)
                 {
-                    await Utils.ErrorEmbed(locale, "Your account doesn't exist in the database yet, please talk a bit more.").SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
+                        .SendToChannel(e.Channel);
                     return;
                 }
 
@@ -863,7 +866,7 @@ namespace Miki.Modules
                     user.Currency -= costForUpgrade;
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = $"You successfully purchased a new marriage slot, you now have {user.MarriageSlots} slots!";
+                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots);
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
                     cont.commandHandler.RequestDispose();
@@ -872,431 +875,11 @@ namespace Miki.Modules
                 {
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = $"You do not have enough mekos! You need {costForUpgrade - user.Currency} more mekos!";
+                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     cont.commandHandler.RequestDispose();
                 }
             }
-        }
-
-        public void LoadAchievements()
-        {
-            #region Achievement Achievements            
-            AchievementManager.Instance.OnAchievementUnlocked += new AchievementDataContainer<AchievementAchievement>(x =>
-            {
-                x.Name = "achievements";
-                x.Achievements = new List<AchievementAchievement>()
-                {
-                    new AchievementAchievement()
-                    {
-                        Name = "Underachiever",
-                        Icon = "✏️",
-                        CheckAchievement = async (p) =>
-                        {
-                            return p.count > 3;
-                        },
-                    },
-                    new AchievementAchievement()
-                    {
-                        Name = "Achiever",
-                        Icon = "🖊️",
-                        CheckAchievement = async (p) =>
-                        {
-                            return p.count > 5;
-                        },
-                    },
-                    new AchievementAchievement()
-                    {
-                        Name = "Overachiever",
-                        Icon = "🖋️",
-                        CheckAchievement = async (p) =>
-                        {
-                            return p.count > 12;
-                        },
-                    }
-                };
-            }).CheckAsync;
-            #endregion
-
-            #region Command Achievements
-            AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
-            {
-                x.Name = "info";
-                x.Achievements = new List<CommandAchievement>()
-                {
-                    new CommandAchievement()
-                    {
-                        Name = "Informed",
-                        Icon = "📚",
-
-                        CheckCommand = async (p) =>
-                        {
-                            return p.command.Name.ToLower() == "info";
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
-            {
-                x.Name = "fa";
-                x.Achievements = new List<CommandAchievement>()
-                {
-                    new CommandAchievement()
-                    {
-                        Name = "Lonely",
-                        Icon = "😭",
-
-                        CheckCommand = async (p) =>
-                        {
-                            return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
-            {
-                x.Name = "creator";
-                x.Achievements = new List<CommandAchievement>()
-                {
-                    new CommandAchievement()
-                    {
-                        Name = "Chef",
-                        Icon = "📝",
-                        CheckCommand = async (p) =>
-                        {
-                            if(p.command.Name.ToLower() == "createpasta")
-                            {
-                                return true;
-                            }
-                            return false;
-                        },
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnCommandUsed += new AchievementDataContainer<CommandAchievement>(x =>
-            {
-                x.Name = "noperms";
-                x.Achievements = new List<CommandAchievement>()
-                {
-                    new CommandAchievement()
-                    {
-                        Name = "NO! Don't touch that!",
-                        Icon = "😱",
-                        CheckCommand = async (p) =>
-                        {
-                            return Bot.instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
-                        },
-                    }
-                };
-            }).CheckAsync;
-            #endregion
-
-            #region Level Achievements
-            AchievementManager.Instance.OnLevelGained += new AchievementDataContainer<LevelAchievement>(x =>
-            {
-                x.Name = "levelachievements";
-                x.Achievements = new List<LevelAchievement>()
-                {
-                    new LevelAchievement()
-                    {
-                        Name = "Novice",
-                        Icon = "🎟",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 3;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Intermediate",
-                        Icon = "🎫",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 5;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Experienced",
-                        Icon = "🏵",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 10;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Expert",
-                        Icon = "🎗",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 20;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Sage",
-                        Icon = "🎖",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 30;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Master",
-                        Icon = "🏅",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 50;
-                        }
-                    },
-                    new LevelAchievement()
-                    {
-                        Name = "Legend",
-                        Icon = "💮",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 75;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            #endregion
-
-            #region Message Achievements
-            AchievementManager.Instance.OnMessageReceived += new AchievementDataContainer<MessageAchievement>(x =>
-            {
-                x.Name = "frog";
-                x.Achievements = new List<MessageAchievement>()
-                {
-                    new MessageAchievement()
-                    {
-                        Name = "Oh shit! Waddup",
-                        Icon = "🐸",
-                        CheckMessage = async (p) =>
-                        {
-                            return p.message.Content.Contains("dat boi");
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnMessageReceived += new AchievementDataContainer<MessageAchievement>(x =>
-            {
-                x.Name = "lenny";
-                x.Achievements = new List<MessageAchievement>()
-                {
-                    new MessageAchievement()
-                    {
-                        Name = "Lenny",
-                        Icon = "😏",
-                        CheckMessage = async (p) =>
-                        {
-                            return p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnMessageReceived += new AchievementDataContainer<MessageAchievement>(x =>
-            {
-                x.Name = "poi";
-                x.Achievements = new List<MessageAchievement>()
-                {
-                    new MessageAchievement()
-                    {
-                        Name = "Shipgirl",
-                        Icon = "⛵",
-                        CheckMessage = async (p) =>
-                        {
-                            return p.message.Content.Split(' ').Contains("poi");
-                        },
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnMessageReceived += new AchievementDataContainer<MessageAchievement>(x =>
-            {
-                x.Name = "goodluck";
-                x.Achievements = new List<MessageAchievement>()
-                {
-                    new MessageAchievement()
-                    {
-                        Name = "Lucky",
-                        Icon = "🍀",
-                        CheckMessage = async (p) =>
-                        {
-                            return (Global.random.Next(0, 10000000) == 5033943);
-                        },
-                    }
-                };
-            }).CheckAsync;
-
-            #endregion
-  
-            #region Misc Achievements
-            new AchievementDataContainer<BaseAchievement>(x =>
-            {
-                x.Name = "badluck";
-                x.Achievements = new List<BaseAchievement>()
-                {
-                    new BaseAchievement()
-                    {
-                        Name = "Unlucky",
-                        Icon = "🎲"
-                    }
-                };
-            });
-            #endregion
-
-            #region User Update Achievements
-            AchievementManager.Instance.OnUserUpdate += new AchievementDataContainer<UserUpdateAchievement>(x =>
-            {
-                x.Name = "contributor";
-                x.Achievements = new List<UserUpdateAchievement>()
-                {
-                    new UserUpdateAchievement()
-                    {
-                        Name = "Contributor",
-                        Icon = "⭐",
-
-                        CheckUserUpdate = async (p) =>
-                        {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Contributors"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnUserUpdate += new AchievementDataContainer<UserUpdateAchievement>(x =>
-            {
-                x.Name = "developer";
-                x.Achievements = new List<UserUpdateAchievement>()
-                {
-                    new UserUpdateAchievement()
-                    {
-                        Name = "Developer",
-                        Icon = "🌟",
-                        CheckUserUpdate = async (p) =>
-                        {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Developer"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnUserUpdate += new AchievementDataContainer<UserUpdateAchievement>(x =>
-            {
-                x.Name = "glitch";
-                x.Achievements = new List<UserUpdateAchievement>()
-                {
-                    new UserUpdateAchievement()
-                    {
-                        Name = "Glitch",
-                        Icon = "👾",
-                        CheckUserUpdate = async (p) =>
-                        {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Succesfully broke Miki"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            AchievementManager.Instance.OnUserUpdate += new AchievementDataContainer<UserUpdateAchievement>(x =>
-            {
-                x.Name = "donator";
-                x.Achievements = new List<UserUpdateAchievement>()
-                {
-                    new UserUpdateAchievement()
-                    {
-                        Name = "Donator",
-                        Icon = "💖",
-                        CheckUserUpdate = async (p) =>
-                        {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Donators"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            #endregion
-
-            #region Transaction Achievements
-            AchievementManager.Instance.OnTransaction += new AchievementDataContainer<TransactionAchievement>(x =>
-            {
-                x.Name = "meko";
-                x.Achievements = new List<TransactionAchievement>()
-                {
-                    new TransactionAchievement()
-                    {
-                        Name = "Loaded",
-                        Icon = "💵",
-                        CheckTransaction = async (p) =>
-                        {
-                            return p.receiver.Currency > 10000;
-                        }
-                    },
-                    new TransactionAchievement()
-                    {
-                        Name = "Rich",
-                        Icon = "💸",
-                        CheckTransaction = async (p) =>
-                        {
-                            return p.receiver.Currency > 50000;
-                        }
-                    },
-                    new TransactionAchievement()
-                    {
-                        Name = "Minted",
-                        Icon = "💲",
-                        CheckTransaction = async (p) =>
-                        {
-                            return p.receiver.Currency > 125000;
-                        }
-                    },
-                    new TransactionAchievement()
-                    {
-                        Name = "Millionaire",
-                        Icon = "🤑",
-                        CheckTransaction = async (p) =>
-                        {
-                            return p.receiver.Currency > 1000000;
-                        }
-                    }
-                };
-            }).CheckAsync;
-            #endregion
-
         }
 
         public async Task ShowLeaderboardsAsync(IDiscordMessage e, LeaderboardsType t = LeaderboardsType.Experience)
@@ -1312,11 +895,13 @@ namespace Miki.Modules
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
                             embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
-                            List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, total_commands as Value from Users order by Total_Commands desc;").ToList();
+                            List<User> output = context.Users.OrderByDescending(x => x.Total_Commands)
+                                                             .Take(12)
+                                                             .ToList();
                             int i = 1;
-                            foreach (LeaderboardsItem user in output)
+                            foreach (User user in output)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} commands used!");
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Total_Commands} commands used!");
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
@@ -1325,11 +910,13 @@ namespace Miki.Modules
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, Currency as Value from Users order by Currency desc;").ToList();
+                            List<User> output = context.Users.OrderByDescending(x => x.Currency)
+                                                                .Take(12)
+                                                                .ToList();
                             int i = 1;
-                            foreach (LeaderboardsItem user in output)
+                            foreach (User user in output)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} mekos!");
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Currency} mekos!");
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
@@ -1338,11 +925,14 @@ namespace Miki.Modules
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, exp.Experience as Value from Users inner join LocalExperience as exp ON exp.ServerId=@p0 AND exp.UserId = Id order by exp.Experience desc;", e.Guild.Id.ToDbLong()).ToList();
+                            long guildId = e.Guild.Id.ToDbLong();
+                            List<LocalExperience> output = context.Experience.Where(x => x.ServerId == guildId).OrderByDescending(x => x.Experience).ToList();
+                            List<User> users = context.Users.Where(x => output.Any(y => y.UserId == x.Id)).ToList();
+
                             int i = 1;
-                            foreach (LeaderboardsItem user in output)
+                            foreach (User user in users)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} experience!");
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{output.Find(x => x.UserId == user.Id).Experience} experience!");
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
@@ -1351,11 +941,13 @@ namespace Miki.Modules
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<LeaderboardsItem> output = context.Database.SqlQuery<LeaderboardsItem>("select top 12 name as Name, Total_Experience as Value from Users order by Total_Experience desc;", e.Guild.Id.ToDbLong()).ToList();
+                            List<User> output = context.Users.OrderByDescending(x => x.Total_Experience)
+                                                             .Take(12)
+                                                             .ToList();                                
                             int i = 1;
-                            foreach (LeaderboardsItem user in output)
+                            foreach (User user in output)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Value} experience!");
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Total_Experience} experience!");
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
