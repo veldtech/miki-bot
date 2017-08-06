@@ -163,64 +163,13 @@ namespace Miki.Modules
                 {
                     IDiscordEmbed helpListEmbed = Utils.Embed;
                     helpListEmbed.Title = locale.GetString("miki_module_help_error_null_header");
-                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message");
+                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message", await Bot.instance.Events.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
                     helpListEmbed.Color = new Color(1.0f, 0, 0);
 
-                    bool done = false;
+                    API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
+                    API.StringComparison.StringComparison best = comparer.GetBest(e.arguments);
 
-                    SortedList<string, int> differenceHeurList = new SortedList<string, int>();
-
-                    foreach (IModule a in Bot.instance.Events.Modules.Values)
-                    {
-                        foreach (ICommandEvent c in a.Events)
-                        {
-                            if (Bot.instance.Events.CommandHandler.GetUserAccessibility(e.message) < c.Accessibility)
-                            {
-                                continue;
-                            }
-
-                            if (done)
-                            {
-                                break;
-                            }
-
-                            int difference = 0;
-
-                            for (int i = 0; i < e.arguments.Length; i++)
-                            {
-                                char typedChar = e.arguments.ToLower()[i];
-                                bool found = false;
-                                for (int j = 0; j < c.Name.Length; j++)
-                                {
-                                    char actualChar = c.Name.ToLower()[j];
-
-                                    if (typedChar == actualChar)
-                                    {
-                                        difference += Math.Abs(i - j);
-                                        found = true;
-                                        break;
-                                    }
-                                }
-
-                                if(!found)
-                                {
-                                    difference += 15;
-                                }
-                            }
-
-                            difference += Math.Abs(e.arguments.Length - c.Name.Length) * 5;
-
-                            differenceHeurList.Add(c.Name, difference);
-                        }
-
-                        if (done)
-                        {
-                            break;
-                        }
-                    }
-
-                    var outputList = differenceHeurList.OrderBy(x => x.Value);
-                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), outputList.FirstOrDefault().Key);
+                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
                     await helpListEmbed.SendToChannel(e.Channel);
                 }

@@ -88,7 +88,30 @@ namespace Miki.Modules
 
             foreach (DiscordSocketClient c in Bot.instance.Client.Shards)
             {
-                embed.AddInlineField("Shard " + c.ShardId, "State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
+                embed.AddInlineField("Shard " + c.ShardId, $"State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
+            }
+
+            await embed.SendToChannel(context.Channel);
+        }
+
+        [Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SpellCheckAsync(EventContext context)
+        {
+            IDiscordEmbed embed = Utils.Embed;
+
+            embed.SetTitle("Spellcheck - top results");
+
+            API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
+            List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.arguments)
+                                                                 .OrderBy(z => z.score)
+                                                                 .ToList();
+            int x = 1;
+
+            foreach (API.StringComparison.StringComparison c in best)
+            {
+                embed.AddInlineField($"#{x}", c);
+                x++;
+                if (x > 16) break;
             }
 
             await embed.SendToChannel(context.Channel);
