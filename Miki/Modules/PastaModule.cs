@@ -32,15 +32,17 @@ namespace Miki.Modules
         {
             using (var d = new MikiContext())
             {
-                List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, TimesUsed as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
-
+                List<GlobalPasta> leaderboards = d.Pastas.OrderByDescending(x => x.TimesUsed)
+                                                         .Take(12)
+                                                         .ToList();
+                    
                 IDiscordEmbed e = Utils.Embed
                     .SetTitle(context.GetResource("poppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0.6f, 0.2f));
 
-                foreach (LeaderboardsItem t in leaderboards)
+                foreach (GlobalPasta t in leaderboards)
                 {
-                    e.AddInlineField(t.Name, (t == leaderboards.First() ? "👑 " + t.Value.ToString() : "✨ " + t.Value.ToString()));
+                    e.AddInlineField(t.Id, (t == leaderboards.First() ? "👑 " + t.TimesUsed.ToString() : "✨ " + t.TimesUsed.ToString()));
                 }
 
                 await e.SendToChannel(context.Channel.Id);
@@ -52,15 +54,18 @@ namespace Miki.Modules
         {
             using (var d = new MikiContext())
             {
-                List<LeaderboardsItem> leaderboards = d.Database.SqlQuery<LeaderboardsItem>("select TOP 12 Id as Name, ((SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 1) - (SELECT Count(*) from Votes where Id = c.Id AND PositiveVote = 0)) as Value from dbo.GlobalPastas as c order by Value DESC").ToList();
+                List<GlobalPasta> leaderboards = d.Pastas.OrderByDescending(x => d.Votes.Where(p => p.Id == x.Id).Count())
+                                                      .Take(12)
+                                                      .ToList();
 
                 IDiscordEmbed e = Utils.Embed
                     .SetTitle(context.GetResource("toppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0, 0));
                 
-                foreach(LeaderboardsItem t in leaderboards)
+                foreach(GlobalPasta t in leaderboards)
                 {
-                    e.AddInlineField(t.Name, (t == leaderboards.First() ? "💖 " + t.Value.ToString() : (t.Value < 0 ? "💔 " : "❤ ") + t.Value.ToString()));
+                    int amount = d.Votes.Where(p => p.Id == t.Id).Count();
+                    e.AddInlineField(t.Id, (t == leaderboards.First() ? "💖 " + amount : (amount < 0 ? "💔 " : "❤ ") + amount));
                 }
 
                 await e.SendToChannel(context.Channel.Id);
@@ -86,9 +91,8 @@ namespace Miki.Modules
             string userName;
             if (e.message.MentionedUserIds.Count() > 0)
             {
-                ulong tempId = e.message.MentionedUserIds.First();
-                userId = tempId.toDbLong();
-                userName = await e.Guild.GetUserAsync(uid).Username;
+                userId = e.message.MentionedUserIds.First().ToDbLong();
+                userName = (await e.Guild.GetUserAsync(userId.FromDbLong())).Username;
             }
             else
             {
@@ -96,12 +100,23 @@ namespace Miki.Modules
                 userName = e.Author.Username;
             }
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
+                var pastasFound = context.Pastas.Where(x => x.creator_id == userId)
+                                                .OrderByDescending(x => x.Id)
+                                                .Skip(page * 25)
+                                                .Take(25)
+                                                .ToList();
 
-                var pastasFound = context.Database.SqlQuery<PastaSearchResult>("select [GlobalPastas].id, count(*) OVER() AS total_count from [GlobalPastas] where CreatorID = @p0 ORDER BY id OFFSET @p1 ROWS FETCH NEXT 25 ROWS ONLY;",
-                    userId, page * 25).ToList();
+                var totalCount = context.Pastas.Where(x => x.creator_id == userId)
+                                               .Count();
+
+                if(page * 25 > totalCount)
+                {
+                    await Utils.ErrorEmbed(locale, e.GetResource("pasta_error_out_of_index"))
+                        .SendToChannel(e.Channel);
+                    return;
+                }
 
                 if (pastasFound?.Count > 0)
                 {
@@ -109,13 +124,11 @@ namespace Miki.Modules
 
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
-                    IDiscordEmbed embed = Utils.Embed;
-                    embed.Title = e.GetResource("mypasta_title", userName);
-                    embed.Description = resultString;
-                    embed.CreateFooter();
-                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString());
-
-                    await embed.SendToChannel(e.Channel);
+                    await Utils.Embed
+                        .SetTitle(e.GetResource("mypasta_title", userName))
+                        .SetDescription(resultString)
+                        .SetFooter(e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
+                        .SendToChannel(e.Channel);
                     return;
                 }
 
@@ -140,10 +153,8 @@ namespace Miki.Modules
             string id = arguments[0];
             arguments.RemoveAt(0);
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-
                 try
                 {
                     GlobalPasta pasta = await context.Pastas.FindAsync(id);
@@ -154,7 +165,7 @@ namespace Miki.Modules
                         return;
                     }
 
-                    context.Pastas.Add(new GlobalPasta() { Id = id, Text = string.Join(" ", arguments), CreatorId = e.Author.Id, date_created = DateTime.Now });
+                    context.Pastas.Add(new GlobalPasta() { Id = id, Text = string.Join(" ", arguments), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
                     await context.SaveChangesAsync();
                     await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
                 }
@@ -225,16 +236,14 @@ namespace Miki.Modules
                 return;
             }
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-
                 string tag = e.arguments.Split(' ')[0];
                 e.arguments = e.arguments.Substring(tag.Length + 1);
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.CreatorId == e.Author.Id || Bot.instance.Events.Developers.Contains(e.Author.Id))
+                if (p.creator_id == e.Author.Id.ToDbLong() || Bot.instance.Events.Developers.Contains(e.Author.Id))
                 {
                     p.Text = e.arguments;
                     await context.SaveChangesAsync();
@@ -355,11 +364,16 @@ namespace Miki.Modules
                 }
             }
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-                var pastasFound = context.Database.SqlQuery<PastaSearchResult>("select [GlobalPastas].Id, count(*) OVER() AS total_count from [GlobalPastas] where Id like @p0 ORDER BY id OFFSET @p1 ROWS FETCH NEXT 25 ROWS ONLY;",
-                    "%" + arguments[0] + "%", page * 25).ToList();
+                var pastasFound = context.Pastas.Where(x => x.Id.Contains(arguments[0]))
+                                                .OrderByDescending(x => x.Id)
+                                                .Skip(page * 25)
+                                                .Take(25)
+                                                .ToList();
+
+                var totalCount = context.Pastas.Where(x => x.Id.Contains(arguments[0]))
+                                               .Count();
 
                 if (pastasFound?.Count > 0)
                 {
@@ -371,7 +385,7 @@ namespace Miki.Modules
                     embed.Title = e.GetResource("miki_module_pasta_search_header");
                     embed.Description = resultString;
                     embed.CreateFooter();
-                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)pastasFound[0].Total_Count / 25)).ToString());
+                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString());
 
                     await embed.SendToChannel(e.Channel);
                     return;
@@ -396,12 +410,10 @@ namespace Miki.Modules
 
         private async Task VotePasta(EventContext e, bool vote)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            Locale locale = Locale.GetEntity(e.Channel.Id);
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-
                 var pasta = await context.Pastas.FindAsync(e.arguments);
 
                 if(pasta == null)
@@ -412,7 +424,8 @@ namespace Miki.Modules
 
                 long authorId = e.Author.Id.ToDbLong();
 
-                var voteObject = context.Votes.Where(q => q.Id == e.arguments && q.__UserId == authorId).FirstOrDefault();
+                var voteObject = context.Votes.Where(q => q.Id == e.arguments && q.__UserId == authorId)
+                                              .FirstOrDefault();
 
                 if (voteObject == null)
                 {
