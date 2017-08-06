@@ -140,7 +140,7 @@ namespace Miki.Accounts.Achievements
             return output;
         }
 
-        public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user)
+        public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)
         {
             if (achievement as AchievementAchievement != null) return;
 
@@ -154,6 +154,7 @@ namespace Miki.Accounts.Achievements
                 AchievementPacket p = new AchievementPacket()
                 {
                     discordUser = user,
+                    discordChannel = channel,
                     achievement = achievement,
                     count = achievementCount
                 };
