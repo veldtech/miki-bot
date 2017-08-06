@@ -167,9 +167,9 @@ namespace Miki.Modules
 
                 string[] objectsChosen =
                 {
-                    objects[MikiRandom.GetRandomNumber(objects.Length)],
-                    objects[MikiRandom.GetRandomNumber(objects.Length)],
-                    objects[MikiRandom.GetRandomNumber(objects.Length)]
+                    objects[MikiRandom.Next(objects.Length)],
+                    objects[MikiRandom.Next(objects.Length)],
+                    objects[MikiRandom.Next(objects.Length)]
                 };
 
                 Dictionary<string, int> score = new Dictionary<string, int>();
@@ -395,7 +395,7 @@ namespace Miki.Modules
         public string Print()
         {
             string output = "";
-            Hand.ForEach((x) => output += x.Print() + " ");
+            Hand.ForEach((x) => output += (isPublic) ? "?" : x.Print() + " ");
             return output;
         }
     }
@@ -462,7 +462,7 @@ namespace Miki.Modules
 
         public Card DrawRandom()
         {
-            int rn = MikiRandom.GetRandomNumber(0, Deck.Count);
+            int rn = MikiRandom.Next(0, Deck.Count);
             Card card = Deck[rn];
             Deck.RemoveAt(rn);
             return card;
