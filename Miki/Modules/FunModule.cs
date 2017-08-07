@@ -482,16 +482,25 @@ namespace Miki.Modules
         public async Task RouletteAsync(EventContext e)
         {
             IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
+			List<IDiscordUser> realUsers = new List<IDiscordUser>();
+
+			foreach( var user in users )
+			{
+				if( !user.IsBot )
+				{
+					realUsers.Add( user );
+				}
+			}
 
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             if (e.message.Content.Split(' ').Length == 1)
             {
-                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessageNoArg, new object[] { "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
+                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessageNoArg, new object[] { "<@" + realUsers[Global.random.Next(0, realUsers.Count)].Id + ">" }));
             }
             else
             {
-                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessage, new object[] { e.arguments, "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
+                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessage, new object[] { e.arguments, "<@" + realUsers[Global.random.Next(0, realUsers.Count)].Id + ">" }));
             }
         }
 
