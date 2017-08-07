@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 using SteamKit2;
 
 namespace Miki.API.Steam
 {
-	public class SteamApiUser
+	public class SteamUserInfo
 	{
+		#region Steam WebAPI Vars
 		protected string steamid;
 		protected string communityvisibilitystate;
 		protected int profilestate;
@@ -28,72 +30,9 @@ namespace Miki.API.Steam
 		protected string gameextrainfo;
 		protected string gameid;
 		protected string loccountrycode;
+		#endregion
 
-		public string SteamID
-		{
-			get
-			{
-				return steamid;
-			}
-		}
-
-		public DateTime LastLogOff
-		{
-			get
-			{
-				return Utils.UnixToDateTime( lastlogoff );
-			}
-		}
-
-		public string ProfileURL
-		{
-			get
-			{
-				return profileurl;
-			}
-		}
-
-		public string RealName
-		{
-			get
-			{
-				return !string.IsNullOrEmpty( realname ) ? realname : "???";
-			}
-		}
-
-		public int PersonaState
-		{
-			get
-			{
-				return personastate;
-			}
-		}
-
-		public DateTime TimeCreated
-		{
-			get
-			{
-				return Utils.UnixToDateTime( timecreated );
-			}
-		}
-
-		public string CurrentGameName
-		{
-			get
-			{
-				return !string.IsNullOrEmpty( gameextrainfo ) ? gameextrainfo : "???";
-			}
-		}
-
-		public string CountryCode
-		{
-			get
-			{
-				return !string.IsNullOrEmpty( loccountrycode ) ? loccountrycode : "???";
-			}
-		}
-
-		public SteamApiUser( KeyValue kvUser )
+		public SteamUserInfo( KeyValue kvUser )
 		{
 
 			steamid = kvUser["steamid"].AsString();
@@ -117,21 +56,75 @@ namespace Miki.API.Steam
 
 		}
 
+		public string SteamID
+		{
+			get
+			{
+				return steamid;
+			}
+		}
+		public DateTime LastLogOff
+		{
+			get
+			{
+				return Utils.UnixToDateTime( lastlogoff );
+			}
+		}
+		public string ProfileURL
+		{
+			get
+			{
+				return profileurl;
+			}
+		}
+		public string RealName
+		{
+			get
+			{
+				return !string.IsNullOrEmpty( realname ) ? realname : "???";
+			}
+		}
+		public int PersonaState
+		{
+			get
+			{
+				return personastate;
+			}
+		}
+		public DateTime TimeCreated
+		{
+			get
+			{
+				return Utils.UnixToDateTime( timecreated );
+			}
+		}
+		public string CurrentGameName
+		{
+			get
+			{
+				return !string.IsNullOrEmpty( gameextrainfo ) ? gameextrainfo : "???";
+			}
+		}
+		public string CountryCode
+		{
+			get
+			{
+				return !string.IsNullOrEmpty( loccountrycode ) ? loccountrycode : "???";
+			}
+		}
+
 		public string GetUsername()
 		{
 			return personaname;
 		}
-
 		public TimeSpan OfflineSince()
 		{
 			return DateTime.Now.Subtract( LastLogOff );
 		}
-
 		public string GetAvatarURL()
 		{
 			return avatarfull;
 		}
-
 		public string GetStatus()
 		{
 			switch( PersonaState )
@@ -158,15 +151,18 @@ namespace Miki.API.Steam
 					return "Offline";
 			}
 		}
-
 		public bool IsPlayingGame()
 		{
 			return string.IsNullOrEmpty( gameid ) ? false : true;
 		}
-
 		public string GetCurrentGameID()
 		{
 			return gameid;
+		}
+		public string GetCountryName()
+		{
+			CultureInfo cInfo = new CultureInfo( loccountrycode );
+			return cInfo.DisplayName;
 		}
 	}
 }

@@ -3,34 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 using SteamKit2;
 using RestSharp;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Miki.API.Steam
 {
 
 	class SteamApi
 	{
-
 		const string baseUrl = "http://api.steampowered.com";
+		const string storeApiUrl = "http://store.steampowered.com/api/";
 
 		private string steamKey;
 
 		private List<KeyValue> gameList;
 		private DateTime gameListLastUpdate;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="APIKey">SteamAPI Key</param>
 		public SteamApi( string _key )
 		{
 			steamKey = _key;
 		}
 
-		public async Task<SteamApiUser> GetSteamUser( string id )
+		public async Task<SteamUserInfo> GetSteamUser( string id )
 		{
 			long steamid;
 			bool isVanity = !long.TryParse( id, out steamid );
@@ -45,7 +43,7 @@ namespace Miki.API.Steam
 				KeyValue kvUser = await steamUser.GetPlayerSummaries2( steamids: steamid );
 				if( kvUser["players"].Children.Count > 0 )
 				{
-					return new SteamApiUser( kvUser["players"].Children[0] );
+					return new SteamUserInfo( kvUser["players"].Children[0] );
 				}
 				return null;
 			}
@@ -76,28 +74,28 @@ namespace Miki.API.Steam
 			}
 		}
 
-		public async Task<string> GetGameName( string appid )
+		public async Task<SteamGameInfo> GetGameInfo( string appid )
 		{
-			if( DateTime.Now.Subtract( gameListLastUpdate ).TotalMinutes >= 10 )
+			RestClient client = new RestClient( storeApiUrl );
+
+			RestRequest request = new RestRequest( "appdetails", Method.GET );
+			request.AddParameter( "appids", appid );
+			request.AddParameter( "cc", "UK" );
+
+			IRestResponse response = await client.ExecuteGetTaskAsync( request );
+
+			JObject appDetails = JObject.Parse( response.Content );
+
+			if( !(bool)appDetails[appid.ToString()]["success"] )
 			{
-				await UpdateInternalGameList();
+				return null;
 			}
 
-			KeyValue kvGame = gameList.Find( x => x["appid"].AsString() == appid );
-			return kvGame["name"].AsString();
-		}
+			JToken appData = appDetails[appid.ToString()]["data"];
 
-		private async Task UpdateInternalGameList()
-		{
-			using( dynamic steamApps = WebAPI.GetAsyncInterface( "ISteamApps", steamKey ) )
-			{
-				KeyValue kvGames = await steamApps.GetappList2();
-				gameList = kvGames["applist"]["apps"].Children;
-			}
+			return new SteamGameInfo( appData );
 		}
-
 	}
-
 
 	[Serializable]
 	public class NoUserFoundException : Exception

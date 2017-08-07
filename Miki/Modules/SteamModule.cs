@@ -44,7 +44,7 @@ namespace Miki.Modules
 		{
 			IDiscordEmbed embed = Utils.Embed;
 			embed.SetAuthor( steamAuthorName, steamAuthorIcon, "" );
-			embed.Description = "Steam API at your fingertips.\nYou can find a list of commands by typing `" + "" + "help steam`!";
+			embed.Description = "Steam API at your fingertips.\nYou can find a list of commands by typing `" + ">" + "help steam`!";
 			await embed.SendToChannel( context.Channel );
 		}
 
@@ -58,6 +58,7 @@ namespace Miki.Modules
 			await embed.SendToChannel( context.Channel );
 		}
 
+		// TODO: Comply to privacy rules.
 		// TODO: Show profile with link, eg; http://steamcommunity.com/id/<NameHere>/ or http://steamcommunity.com/profile/<SteamIDHere>/
 		[Command( Name = "steamuser" )]
 		public async Task SteamUserAsync( EventContext context )
@@ -68,7 +69,7 @@ namespace Miki.Modules
 			IDiscordEmbed embed = Utils.Embed;
 			embed.SetAuthor( "Steam Profile", steamAuthorIcon, "" );
 
-			SteamApiUser user = await steam.GetSteamUser( args[0] );
+			SteamUserInfo user = await steam.GetSteamUser( args[0] );
 
 			if( user == null )
 			{
@@ -118,6 +119,24 @@ namespace Miki.Modules
 			/* Level */
 			embed.AddInlineField( "Level", userLevel );
 
+			embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
+			await embed.SendToChannel( context.Channel );
+		}
+
+		public async Task SteamGameAsync( EventContext context )
+		{
+			DateTime requestStart = DateTime.Now;
+			string[] args = context.arguments.Split( ' ' );
+
+			IDiscordEmbed embed = Utils.Embed;
+			embed.SetAuthor( "Steam Game", steamAuthorIcon, "" );
+
+			SteamGameInfo gameInfo = await steam.GetGameInfo( args[0] );
+
+			embed.SetDescription( gameInfo.Name );
+			embed.SetThumbnailUrl( gameInfo.HeaderImage );
+
+			embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
 			await embed.SendToChannel( context.Channel );
 		}
 
