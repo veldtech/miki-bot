@@ -747,7 +747,7 @@ namespace Miki.Objects
                         tags.Add("rating:safe");
                     }
                     break;
-            }   
+            }
 
             tags.AddRange(command);
             RemoveBannedTerms(tags);

@@ -10,8 +10,8 @@
 
 namespace Miki.Languages {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace Miki.Languages {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class da_DK {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal da_DK() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Miki.Languages {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace Miki.Languages {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -68,7 +68,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_command_description_8ball", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -77,7 +77,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_command_description_pasta", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -86,7 +86,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_command_usage_8ball", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -95,7 +95,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_command_usage_pasta", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Noget gik galt!.
         /// </summary>
@@ -104,7 +104,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_error_message_generic", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Miki stødte på et problem i kørslen af anmodning. Vi vil sende dig en log og instruktioner via. DM.
         /// </summary>
@@ -113,7 +113,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_errors_enabled_message", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0}&apos;s globale profil.
         /// </summary>
@@ -122,7 +122,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_global_profile_user_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Hej, **Miki**! til tjeneste!
         ///Skrive **&gt;help** for at tjekke hvad jeg kan gøre! :notes:.
@@ -132,7 +132,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_join_message", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0}&apos;s lokale profil.
         /// </summary>
@@ -141,7 +141,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_local_profile_user_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Du har en utilstrækkelig mængde af mekos..
         /// </summary>
@@ -150,7 +150,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_mekos_insufficient", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -159,7 +159,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_admin_enabled_module", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ✅ Velkommen beskeden, blev slettet..
         /// </summary>
@@ -168,7 +168,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_eventmessages_delete_guildjoin", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to ✅ Ny Velkommen beskeden: `{0}`.
         /// </summary>
@@ -177,7 +177,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_eventmessages_set_guildjoin", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Lad være med at stole på det..
         /// </summary>
@@ -186,7 +186,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mit svar er, nej!.
         /// </summary>
@@ -195,7 +195,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mine kilder siger nej....
         /// </summary>
@@ -204,7 +204,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Svaret er knap så godt..
         /// </summary>
@@ -213,7 +213,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Stærkt tvivlsomt..
         /// </summary>
@@ -222,7 +222,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_negative_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Kunne ikke tyde dit svar. Prøv igen..
         /// </summary>
@@ -231,7 +231,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Spørg igen senere!.
         /// </summary>
@@ -240,7 +240,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg burde ikke give svaret nu....
         /// </summary>
@@ -249,7 +249,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Kan ikke forudsige dit svar, lige nu..
         /// </summary>
@@ -258,7 +258,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Koncentrer og spørg igen..
         /// </summary>
@@ -267,7 +267,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_neutral_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Det er uden tvivl.
         /// </summary>
@@ -276,7 +276,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Skæbnen har valgt det sådanne..
         /// </summary>
@@ -285,7 +285,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Uden tvivl.
         /// </summary>
@@ -294,7 +294,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Ja, helt sikkert!.
         /// </summary>
@@ -303,7 +303,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Ja, det kan du stole på..
         /// </summary>
@@ -312,7 +312,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Højst sandsynligt.
         /// </summary>
@@ -321,7 +321,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_6", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Resultatet ser godt ud!.
         /// </summary>
@@ -330,7 +330,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_7", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Ja.
         /// </summary>
@@ -339,7 +339,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_8", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Alt tyder på det er ja..
         /// </summary>
@@ -348,7 +348,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_answer_positive_9", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -357,7 +357,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_8ball_result", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to din underlæbe..
         /// </summary>
@@ -366,7 +366,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to alle de specielle vinkler dine albuer laver..
         /// </summary>
@@ -375,7 +375,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_10", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dine smilehuller..
         /// </summary>
@@ -384,7 +384,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_11", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dit bløde hår..
         /// </summary>
@@ -393,7 +393,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_12", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to den mindste tå på din venstre fod..
         /// </summary>
@@ -402,7 +402,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to den mindste tå på din højre fod..
         /// </summary>
@@ -411,7 +411,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to den anden øjenvippe fra dit venstre øje..
         /// </summary>
@@ -420,7 +420,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to den nedre del af din hage..
         /// </summary>
@@ -429,7 +429,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dine uhyggelige fingere på din venstre hånd..
         /// </summary>
@@ -438,7 +438,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_6", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dit søde smil..
         /// </summary>
@@ -447,7 +447,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_7", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dine blændende øjne..
         /// </summary>
@@ -456,7 +456,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_8", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to dine uhyggelige fingere på din højre hånd..
         /// </summary>
@@ -465,7 +465,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_body_9", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Det fint, det kan jeg lide..
         /// </summary>
@@ -474,7 +474,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_prefix_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg elsker.
         /// </summary>
@@ -483,7 +483,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_prefix_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to jeg beundrer.
         /// </summary>
@@ -492,7 +492,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_prefix_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg godt lide.
         /// </summary>
@@ -501,7 +501,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_prefix_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Af en eller anden årsag, så kan jeg godt lide.
         /// </summary>
@@ -510,7 +510,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_prefix_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to meget..
         /// </summary>
@@ -519,7 +519,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_suffix_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to en smule..
         /// </summary>
@@ -528,7 +528,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_suffix_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to en hel del..
         /// </summary>
@@ -537,7 +537,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_suffix_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to meget... Er det mærkeligt?.
         /// </summary>
@@ -546,7 +546,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_compliment_suffix_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -555,7 +555,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_image_error_no_image_found", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0}, Jeg valgte `{1}`.
         /// </summary>
@@ -564,7 +564,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pick", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg har intet at vælge imellem.
         ///Brug komma (,) til at separere valgmulighederne..
@@ -574,7 +574,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pick_no_arg", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -583,7 +583,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -592,7 +592,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_10", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -601,7 +601,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_11", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Hvad var Forrest Gump&apos;s adgangskode til hans email? &apos;1forrest1&apos;.
         /// </summary>
@@ -610,7 +610,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_12", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mit første job var i en appelsinjuice-fabrik, hvor jeg blev fyret. Jeg kunne ikke koncentrere mig..
         /// </summary>
@@ -619,7 +619,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_13", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -628,7 +628,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_14", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg ville fortælle en vittighed om Natrium men Na....
         /// </summary>
@@ -637,7 +637,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_15", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -646,7 +646,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_16", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -655,7 +655,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_17", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -664,7 +664,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_18", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -673,7 +673,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_19", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -682,7 +682,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_2", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -691,7 +691,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_20", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -700,7 +700,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_21", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -709,7 +709,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_22", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -718,7 +718,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_23", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -727,7 +727,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_24", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -736,7 +736,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_25", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -745,7 +745,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_26", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -754,7 +754,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_27", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -763,7 +763,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_28", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -772,7 +772,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_29", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -781,7 +781,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_3", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -790,7 +790,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_30", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -799,7 +799,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_31", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -808,7 +808,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_32", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -817,7 +817,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_33", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Hvad sagde sushien til honningbien? Wasabi.
         /// </summary>
@@ -826,7 +826,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_34", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jeg ville fortælle dine kemikere en vittighed, men jeg ved, at jeg ikke ville få en reaktion..
         /// </summary>
@@ -835,7 +835,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_35", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -844,7 +844,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_36", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -853,7 +853,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_37", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -862,7 +862,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_38", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -871,7 +871,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_39", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -880,7 +880,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_4", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -889,7 +889,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_40", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -898,7 +898,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_41", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -907,7 +907,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_42", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -916,7 +916,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_43", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -925,7 +925,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_44", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -934,7 +934,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_45", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -943,7 +943,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_46", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -952,7 +952,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_47", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -961,7 +961,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_48", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -970,7 +970,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_49", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -979,7 +979,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_5", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -988,7 +988,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_50", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -997,7 +997,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_51", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1006,7 +1006,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_52", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1015,7 +1015,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_6", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1024,7 +1024,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_7", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1033,7 +1033,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_8", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1042,7 +1042,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_pun_9", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0} rullede en **{1}**.
         /// </summary>
@@ -1051,7 +1051,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_roll_result", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Og vinderen af {0} er {1} !.
         /// </summary>
@@ -1060,7 +1060,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_roulette_winner", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Og vinderen er {0} !.
         /// </summary>
@@ -1069,7 +1069,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_roulette_winner_no_arg", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to slots.
         /// </summary>
@@ -1078,7 +1078,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_slots_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0}🔸 er blevet tilføjet din Miki konto..
         /// </summary>
@@ -1087,7 +1087,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_slots_win_amount", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Du vinder!.
         /// </summary>
@@ -1096,7 +1096,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_fun_slots_win_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1105,7 +1105,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_create_error_already_exist", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1114,7 +1114,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_create_success", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1123,7 +1123,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_delete_success", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1132,7 +1132,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_edit_success", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1141,7 +1141,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_no_permissions", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1150,7 +1150,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_null", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1159,7 +1159,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_search_no_arg", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1168,7 +1168,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_search_no_results", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1177,7 +1177,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_specify", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1186,7 +1186,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_specify_check", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1195,7 +1195,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_specify_delete", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1204,7 +1204,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_specify_edit", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1213,7 +1213,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_error_specify_upvote", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1222,7 +1222,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_identify_created_by", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1231,7 +1231,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_identify_date_created", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1240,7 +1240,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_identify_rating", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1249,7 +1249,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_identify_times_used", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1258,7 +1258,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_mine_error_null", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1267,7 +1267,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_mine_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1276,7 +1276,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_search_error_no_results", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1285,7 +1285,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_search_footer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1294,7 +1294,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_search_header", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -1303,7 +1303,7 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("miki_module_pasta_vote_success", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>

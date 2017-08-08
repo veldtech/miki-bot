@@ -501,7 +501,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
 
-        [Command(Name = "roulette")]    
+        [Command(Name = "roulette")]
         public async Task RouletteAsync(EventContext e)
         {
             IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();

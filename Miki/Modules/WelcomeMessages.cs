@@ -20,7 +20,7 @@ namespace Miki.Modules
          * -um = user's mention
          * -s  = server's name
          * -o  = owner's nickname
-         * -sc = server count 
+         * -sc = server count
          */
 
         public EventMessageModule(RuntimeModule m)

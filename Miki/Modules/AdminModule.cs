@@ -220,7 +220,7 @@ namespace Miki.Modules
 
 		}
 
-		public async Task PruneAsync( EventContext e, int _amount = 100, ulong _target = 0 ) 
+		public async Task PruneAsync( EventContext e, int _amount = 100, ulong _target = 0 )
 		{
 
 			Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
@@ -241,7 +241,7 @@ namespace Miki.Modules
 				await e.Channel.SendMessage( locale.GetString( "miki_module_admin_prune_error_max" ) );
 				return;
 			}
-			
+
 			List<IDiscordMessage> messages = await e.Channel.GetMessagesAsync( amount );
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
@@ -256,10 +256,10 @@ namespace Miki.Modules
 				await errorMessage.SendToChannel( e.Channel );
 				return;
 			}
-			
+
 			for( int i = 0; i < amount; i++ )
 			{
-				if( target != 0 && messages[i]?.Author.Id != target ) 
+				if( target != 0 && messages[i]?.Author.Id != target )
 					continue;
 
 				if( messages[i].Timestamp.AddDays( 14 ) > DateTime.Now )
@@ -275,7 +275,7 @@ namespace Miki.Modules
 
 			Task.WaitAll();
 
-			string[] titles = new string[] 
+			string[] titles = new string[]
 			{
 				"POW!",
 				"BANG!",

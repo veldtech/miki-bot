@@ -57,7 +57,7 @@ namespace Miki.Modules
                 IDiscordEmbed e = Utils.Embed
                     .SetTitle(context.GetResource("toppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0, 0));
-                
+
                 foreach(LeaderboardsItem t in leaderboards)
                 {
                     e.AddInlineField(t.Name, (t == leaderboards.First() ? "💖 " + t.Value.ToString() : (t.Value < 0 ? "💔 " : "❤ ") + t.Value.ToString()));
@@ -70,7 +70,7 @@ namespace Miki.Modules
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
-            
+
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             int page = 0;
@@ -259,7 +259,7 @@ namespace Miki.Modules
             }
 
             List<string> arguments = e.arguments.Split(' ').ToList();
-            
+
             using (var context = MikiContext.CreateNoCache())
             {
                 context.Set<GlobalPasta>().AsNoTracking();
@@ -308,7 +308,7 @@ namespace Miki.Modules
 
                     b.SetAuthor(pasta.Id.ToUpper(), "", "");
                     b.Color = new IA.SDK.Color(47, 208, 192);
-                   
+
                     if (creator != null)
                     {
                         b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
@@ -345,7 +345,7 @@ namespace Miki.Modules
             }
 
             List<string> arguments = e.arguments.Split(' ').ToList();
-            int page = 0;         
+            int page = 0;
 
             if (arguments.Count > 1)
             {
@@ -364,7 +364,7 @@ namespace Miki.Modules
                 if (pastasFound?.Count > 0)
                 {
                     string resultString = "";
-                        
+
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     IDiscordEmbed embed = Utils.Embed;
