@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch.Objects
 {
-    class OverwatchHeroes
+    public class OverwatchHeroes
     {
         public OverwatchPlaytime playtime { get; set; }
     }

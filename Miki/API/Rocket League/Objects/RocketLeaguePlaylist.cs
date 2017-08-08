@@ -3,8 +3,6 @@ using Newtonsoft.Json;
 using Rest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
@@ -23,6 +21,7 @@ namespace Miki.API.RocketLeague
         [JsonProperty("population")]
         public RocketLeaguePopulation Population { get; set; } = null;
     }
+
     public class RocketLeaguePopulation
     {
         [JsonProperty("players")]
@@ -31,11 +30,12 @@ namespace Miki.API.RocketLeague
         [JsonProperty("updatedAt")]
         internal ulong? UpdatedAt { get; set; }
     }
+
     internal class RocketLeaguePlaylistCache : ICacheable<RocketLeaguePlaylist>
     {
-        string key = "";
+        private string key = "";
 
-        List<RocketLeaguePlaylist> internalData = new List<RocketLeaguePlaylist>();
+        private List<RocketLeaguePlaylist> internalData = new List<RocketLeaguePlaylist>();
 
         public List<RocketLeaguePlaylist> Data
         {
@@ -52,11 +52,13 @@ namespace Miki.API.RocketLeague
                 internalData = value;
             }
         }
+
         public DateTime LastUpdatedAt
         {
             get;
             set;
         }
+
         public TimeSpan UpdateSpan
         {
             get;

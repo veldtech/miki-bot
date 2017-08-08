@@ -14,7 +14,7 @@ namespace Miki.Modules.Overwatch.Objects
         public double all_damage_done_avg_per_10_min { get; set; }
         public double medals_bronze { get; set; }
         public double final_blows_most_in_game { get; set; }
-        public double objective_time { get; set; }
+        public float objective_time { get; set; }
         public double time_spent_on_fire { get; set; }
         public double melee_final_blows { get; set; }
         public double all_damage_done { get; set; }

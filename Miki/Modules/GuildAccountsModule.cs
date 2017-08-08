@@ -95,7 +95,7 @@ namespace Miki.Modules
                     {
                         await Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
-                            .SetDescription(context.GetResource("guildweekly_error_timer_running",(timer.Value.AddDays(7) - DateTime.Now).ToTimeString()))
+                            .SetDescription(context.GetResource("guildweekly_error_timer_running",(timer.Value.AddDays(7) - DateTime.Now).ToTimeString(locale)))
                             .SendToChannel(context.Channel);
                     }
                 }

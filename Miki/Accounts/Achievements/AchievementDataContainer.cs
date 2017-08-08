@@ -3,7 +3,6 @@ using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
@@ -16,8 +15,8 @@ namespace Miki.Accounts.Achievements
 
         private AchievementDataContainer()
         {
-
         }
+
         public AchievementDataContainer(Action<AchievementDataContainer<T>> instance)
         {
             instance.Invoke(this);
@@ -30,7 +29,7 @@ namespace Miki.Accounts.Achievements
                 d.ParentName = Name;
             }
         }
-      
+
         public async Task CheckAsync(BasePacket packet)
         {
             using (var context = new MikiContext())
@@ -66,7 +65,7 @@ namespace Miki.Accounts.Achievements
 
             b.Name = Name;
 
-            foreach(BaseAchievement a in Achievements)
+            foreach (BaseAchievement a in Achievements)
             {
                 b.Achievements.Add(a);
             }

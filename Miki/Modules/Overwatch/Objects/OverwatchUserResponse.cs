@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch.Objects
 {
-    class OverwatchUserResponse
+    public class OverwatchUserResponse
     {
         [JsonProperty("us")]
         public OverwatchRegion America { get; set; }

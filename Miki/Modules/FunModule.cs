@@ -568,7 +568,7 @@ namespace Miki.Modules
 
             await Utils.Embed
                 .SetTitle("👌 OK")
-                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString()}**")
+                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
                 .SendToChannel(e.Channel.Id);
 

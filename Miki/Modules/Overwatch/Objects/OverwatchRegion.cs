@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch.Objects
 {
-    class OverwatchRegion
+    public class OverwatchRegion
     {
         public OverwatchHeroes heroes { get; set; }
         public OverwatchStats stats { get; set; }

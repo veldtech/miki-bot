@@ -1487,4 +1487,31 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>You successfully purchased a new marriage slot, you now have {0} slots!</value>
     <comment>example: You successfully purchased a new marriage slot, you now have 12 slots!</comment>
   </data>
+  <data name="time_and" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="time_day" xml:space="preserve">
+    <value>day</value>
+  </data>
+  <data name="time_days" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="time_hour" xml:space="preserve">
+    <value>hour</value>
+  </data>
+  <data name="time_hours" xml:space="preserve">
+    <value>hours</value>
+  </data>
+  <data name="time_minute" xml:space="preserve">
+    <value>minute</value>
+  </data>
+  <data name="time_minutes" xml:space="preserve">
+    <value>minutes</value>
+  </data>
+  <data name="time_second" xml:space="preserve">
+    <value>second</value>
+  </data>
+  <data name="time_seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
 </root>

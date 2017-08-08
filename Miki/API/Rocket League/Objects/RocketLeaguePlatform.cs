@@ -3,8 +3,6 @@ using Newtonsoft.Json;
 using Rest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
@@ -17,11 +15,12 @@ namespace Miki.API.RocketLeague
         [JsonProperty("name")]
         public string Name = "";
     }
+
     internal class RocketLeaguePlatformCache : ICacheable<RocketLeaguePlatform>
     {
-        string key = "";
+        private string key = "";
 
-        List<RocketLeaguePlatform> internalData = new List<RocketLeaguePlatform>();
+        private List<RocketLeaguePlatform> internalData = new List<RocketLeaguePlatform>();
 
         public List<RocketLeaguePlatform> Data
         {
@@ -38,11 +37,13 @@ namespace Miki.API.RocketLeague
                 internalData = value;
             }
         }
+
         public DateTime LastUpdatedAt
         {
             get;
             set;
         }
+
         public TimeSpan UpdateSpan
         {
             get;

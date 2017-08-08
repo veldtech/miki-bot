@@ -3832,6 +3832,87 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to and.
+        /// </summary>
+        internal static string time_and {
+            get {
+                return ResourceManager.GetString("time_and", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to day.
+        /// </summary>
+        internal static string time_day {
+            get {
+                return ResourceManager.GetString("time_day", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to days.
+        /// </summary>
+        internal static string time_days {
+            get {
+                return ResourceManager.GetString("time_days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hour.
+        /// </summary>
+        internal static string time_hour {
+            get {
+                return ResourceManager.GetString("time_hour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hours.
+        /// </summary>
+        internal static string time_hours {
+            get {
+                return ResourceManager.GetString("time_hours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minute.
+        /// </summary>
+        internal static string time_minute {
+            get {
+                return ResourceManager.GetString("time_minute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minutes.
+        /// </summary>
+        internal static string time_minutes {
+            get {
+                return ResourceManager.GetString("time_minutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to second.
+        /// </summary>
+        internal static string time_second {
+            get {
+                return ResourceManager.GetString("time_second", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        internal static string time_seconds {
+            get {
+                return ResourceManager.GetString("time_seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Top pastas.
         /// </summary>
         internal static string toppasta_title {

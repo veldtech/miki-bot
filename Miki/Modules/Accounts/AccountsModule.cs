@@ -14,7 +14,6 @@ using Miki.Accounts.Achievements.Objects;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Accounts.Services;
-using Miki.Modules.Accounts.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -524,7 +523,7 @@ namespace Miki.Modules.AccountsModule
                         .SetTitle("Reputation")
                         .SetDescription("Here are your statistics on reputation points!\n\nTo give someone reputation, do `>rep <mention>`")
                         .AddInlineField("Total Rep Received", giver.Reputation.ToString())
-                        .AddInlineField("Rep points reset in:", Utils.ToTimeString(DateTime.Now.AddDays(1).Date - DateTime.Now))
+                        .AddInlineField("Rep points reset in:", Utils.ToTimeString(DateTime.Now.AddDays(1).Date - DateTime.Now, e.Channel.GetLocale()))
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -670,7 +669,7 @@ namespace Miki.Modules.AccountsModule
 
                 if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
                 {
-                    await e.Channel.SendMessage($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString()}` before using it again.");
+                    await e.Channel.SendMessage($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.");
                     return;
                 }
 
@@ -847,7 +846,7 @@ namespace Miki.Modules.AccountsModule
                     await e.Channel.SendMessage(
                         $"💍 " +
                         locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**") +
-                        " 💍\n\n⛪ " + user.Mention + " " +
+                        " 💍\n\n⛪ " + user.Username + " " +
                         locale.GetString("miki_module_accounts_marry_text2") +
                         $" ⛪\n\n✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
                 }

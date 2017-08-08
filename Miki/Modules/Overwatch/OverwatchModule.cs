@@ -30,7 +30,7 @@ namespace Miki.Modules.Overwatch
 
             OverwatchUserResponse user = await InternalGetUser(e, username);
 
-            if(user != null)
+            if(user.Request != null)
             {
                 bool competitive = toggles.Contains("-c");
 
@@ -52,76 +52,72 @@ namespace Miki.Modules.Overwatch
                     region = GetBestRegion(user, competitive);
                 }
 
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle(string.Join("#", username) + "'s Overwatch Profile");
+                OverwatchUserContext c = new OverwatchUserContext(competitive, region);
 
-                if (competitive)
+                if(!c.isValid)
                 {
-                    var orderedPlaytime = region.heroes.playtime.competitive.OrderByDescending(x => x.Value);
-
-                    int seconds = (int)Math.Round(orderedPlaytime.First().Value * 60 * 60);
-
-                    await embed
-                        .SetThumbnailUrl(region.stats.competitive.OverallStats.avatar)
-                        .AddInlineField("MMR", region.stats.competitive.OverallStats.tier.ToString() + " (" + region.stats.competitive.OverallStats.comprank.ToString() + ")")
-                        .AddInlineField("KDA ratio", Math.Round(region.stats.competitive.GameStats.eliminations / region.stats.competitive.GameStats.deaths, 2).ToString())
-                        .AddInlineField("Favourite Character", orderedPlaytime.First().Key + " with " + Utils.ToTimeString(seconds))
-                        .AddInlineField("Winrate", (region.stats.competitive.OverallStats.win_rate) + "%")
-                        
+                    await e.ErrorEmbed("The user specified does not exist, or hasn't played on this specific region.")
                         .SendToChannel(e.Channel);
+                    return;
                 }
-                else
-                {
 
+                IDiscordEmbed embed = Utils.Embed
+                    .SetTitle(string.Join("#", username) + "'s Overwatch Profile")
+                    .SetThumbnailUrl(c.Stats.OverallStats.avatar);
+
+                    var orderedPlaytime = c.PlayTime.OrderByDescending(x => x.Value);
+
+                    float seconds = orderedPlaytime.First().Value.FromHoursToSeconds();
+
+                if (c.isCompetitive)
+                {
+                    embed.AddInlineField("MMR", c.Stats.OverallStats.tier.ToString() + " (" + c.Stats.OverallStats.comprank.ToString() + ")")
+                         .AddInlineField("Winrate", (c.Stats.OverallStats.win_rate) + "%");
                 }
+
+                embed.AddInlineField("Favourite Character", orderedPlaytime.First().Key + " with " + Utils.ToTimeString(seconds, e.Channel.GetLocale()))
+                     .AddInlineField("K/D/A ratio", Math.Round(c.Stats.GameStats.eliminations / c.Stats.GameStats.deaths, 2))
+                     .AddInlineField("Time Played", c.Stats.GameStats.time_played + " hours")
+                     .AddInlineField("Objective Time", c.Stats.GameStats.objective_time.FromHoursToSeconds().ToTimeString(e.Channel.GetLocale(), true));
+                
+                await embed.SendToChannel(e.Channel);
             }
             else
             {
-                // couldnt find xd
+                await e.ErrorEmbed("The user specified does not exist!")
+                    .SendToChannel(e.Channel);
+                return;
             }
             
         }
 
-        // worst function ever.
+        // still a bad function, but i digress
         public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
         {
-            float? timePlayed = 0f;
-            OverwatchRegion r = null;
+            List<OverwatchRegion> regions = new List<OverwatchRegion>();
+            regions.Add(u.America);
+            regions.Add(u.Europe);
+            regions.Add(u.Korea);
 
-            if(u.America != null)
+            return regions.OrderByDescending(x =>
             {
-                timePlayed = (compo) ? u.America.heroes.playtime.competitive?.Sum(x => x.Value) : u.America.heroes.playtime.quickplay?.Sum(x => x.Value);
-                r = u.America;
-            }
-
-            if(u.Europe != null)
-            {
-                float? t = (compo) ? u.Europe.heroes.playtime.competitive?.Sum(x => x.Value) : u.Europe.heroes.playtime.quickplay?.Sum(x => x.Value);
-                if(t > timePlayed || t == null)
+                float? value;
+                if (compo)
                 {
-                    timePlayed = t;
-                    r = u.Europe;
+                    value = x?.heroes?.playtime?.competitive?.Sum(y => y.Value);
                 }
-            }
-
-            if (u.Korea != null)
-            {
-                float? t = (compo) ? u.Korea.heroes.playtime.competitive?.Sum(x => x.Value) : u.Korea.heroes.playtime.quickplay?.Sum(x => x.Value);
-                if (t > timePlayed || t == null)
+                else
                 {
-                    timePlayed = t;
-                    r = u.Korea;
+                    value = x?.heroes?.playtime?.quickplay?.Sum(y => y.Value);
                 }
-            }
-
-            return r;
+                return value == null ? 0 : value;
+            }).FirstOrDefault();
         }
 
         public async Task<OverwatchUserResponse> InternalGetUser(EventContext e, string[] username)
         {
             if (username.Length <= 1)
             {
-                // no discriminator
                 return null;
             }
 
@@ -133,7 +129,6 @@ namespace Miki.Modules.Overwatch
             }
             else
             {
-                // no discriminator
                 return null;
             }
         }

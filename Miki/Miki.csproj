@@ -501,6 +501,7 @@
     <Compile Include="Modules\Overwatch\Objects\OverwatchPlaytime.cs" />
     <Compile Include="Modules\Overwatch\Objects\OverwatchRegion.cs" />
     <Compile Include="Modules\Overwatch\Objects\OverwatchStats.cs" />
+    <Compile Include="Modules\Overwatch\Objects\OverwatchUserContext.cs" />
     <Compile Include="Modules\Overwatch\Objects\OverwatchUserResponse.cs" />
     <Compile Include="Modules\Overwatch\Objects\RequestMetadata.cs" />
     <Compile Include="Modules\Overwatch\OverwatchModule.cs" />

@@ -94,14 +94,16 @@ namespace Miki.Modules
                     }
                 };
 
-                await e.Channel.SendMessage(expression.Evaluate().ToString());
+                object output = expression.Evaluate();
+
+                await e.Channel.SendMessage(output.ToString());
                 // var result = new DataTable().Compute(e.arguments, null);
                 // await e.Channel.SendMessage(result.ToString());
             }
             catch(Exception ex)
             {
                 Log.ErrorAt("calc", ex.Message);
-                await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error"));
+                await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
             }
         }
 
@@ -303,7 +305,7 @@ namespace Miki.Modules
 
             embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
 
-            embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString());
+            embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 
             await embed.SendToChannel(e.Channel);
         }

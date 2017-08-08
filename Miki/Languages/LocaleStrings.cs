@@ -1,12 +1,7 @@
 ﻿using IA;
 using Miki.Models;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.Languages
 {
@@ -22,6 +17,7 @@ namespace Miki.Languages
         private Locale()
         {
         }
+
         private Locale(long id)
         {
             this.id = id;
@@ -82,6 +78,7 @@ namespace Miki.Languages
         }
 
         public static Locale GetEntity(ulong id) => GetEntity(id.ToDbLong());
+
         public static Locale GetEntity(long id)
         {
             return new Locale(id);
@@ -157,9 +154,10 @@ namespace Miki.Languages
         {
             return lang.GetString(m) != null;
         }
+
         private string InternalGetString(string m, ResourceManager lang, params object[] p)
         {
-            return (p.Length == 0) ? lang.GetString(m) : string.Format(lang.GetString(m), p); ; 
+            return (p.Length == 0) ? lang.GetString(m) : string.Format(lang.GetString(m), p); ;
         }
     }
 

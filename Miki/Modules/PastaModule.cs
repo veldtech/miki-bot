@@ -5,6 +5,7 @@ using IA.Events.Attributes;
 using IA.Node;
 using IA.SDK;
 using IA.SDK.Events;
+using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
@@ -165,7 +166,7 @@ namespace Miki.Modules
                         return;
                     }
 
-                    context.Pastas.Add(new GlobalPasta() { Id = id, Text = string.Join(" ", arguments), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
+                    context.Pastas.Add(new GlobalPasta() { Id = id, Text = e.message.RemoveMentions(string.Join(" ", arguments)), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
                     await context.SaveChangesAsync();
                     await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
                 }

@@ -1,12 +1,8 @@
 ﻿using IA;
 using IA.SDK.Interfaces;
-using Miki;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
@@ -20,8 +16,8 @@ namespace Miki.Accounts.Achievements
 
         public BaseAchievement()
         {
-
         }
+
         public BaseAchievement(Action<BaseAchievement> act)
         {
             act.Invoke(this);
@@ -43,14 +39,14 @@ namespace Miki.Accounts.Achievements
         internal async Task UnlockAsync(MikiContext context, IDiscordMessageChannel channel, IDiscordUser user, int r = 0)
         {
             long userid = user.Id.ToDbLong();
-        
+
             Achievement a = await context.Achievements.FindAsync(userid, ParentName);
 
             if (a != null || r != 0)
             {
                 if (a.Rank == r - 1)
                 {
-                    a.Rank += 1;    
+                    a.Rank += 1;
                     await Notification.SendAchievement(this, channel, user);
                 }
             }

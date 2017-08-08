@@ -1,18 +1,17 @@
 ﻿using IA;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using IA.SDK.Interfaces;
-using System;
-using Discord;
 using IA.SDK;
-using Miki.Models;
-using System.Linq;
+using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements.Objects;
-using System.Data.SqlClient;
+using Miki.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
 {
     public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
+
     public delegate Task<bool> CheckCommandAchievement(User u, CommandEvent e);
 
     public class AchievementManager
@@ -24,12 +23,16 @@ namespace Miki.Accounts.Achievements
         private Dictionary<string, AchievementDataContainer<BaseAchievement>> containers = new Dictionary<string, AchievementDataContainer<BaseAchievement>>();
 
         public event Func<AchievementPacket, Task> OnAchievementUnlocked;
+
         public event Func<CommandPacket, Task> OnCommandUsed;
+
         public event Func<LevelPacket, Task> OnLevelGained;
+
         public event Func<MessageEventPacket, Task> OnMessageReceived;
+
         public event Func<TransactionPacket, Task> OnTransaction;
 
-        // Veld - WARNING: does not work with channel messages 
+        // Veld - WARNING: does not work with channel messages
         public event Func<UserUpdatePacket, Task> OnUserUpdate;
 
         private AchievementManager(Bot bot)
@@ -101,7 +104,6 @@ namespace Miki.Accounts.Achievements
                     await OnCommandUsed?.Invoke(p);
                 };
             });
-
         }
 
         internal void AddContainer(AchievementDataContainer<BaseAchievement> container)
@@ -162,6 +164,7 @@ namespace Miki.Accounts.Achievements
                 await OnAchievementUnlocked?.Invoke(p);
             }
         }
+
         public async Task CallTransactionMadeEventAsync(IDiscordMessageChannel m, User receiver, User giver, int amount)
         {
             try
@@ -181,7 +184,7 @@ namespace Miki.Accounts.Achievements
 
                 await OnTransaction?.Invoke(p);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.WarningAt("achievement check failed", e.ToString());
             }

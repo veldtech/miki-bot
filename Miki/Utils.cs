@@ -11,61 +11,66 @@ namespace Miki
 {
     public static class Utils
     {
-        public static string ToTimeString(this int seconds)
+        public static string ToTimeString(this int seconds, Locale localized, bool minified = false)
+        {
+            TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
+            return time.ToTimeString(localized, minified);
+        }
+        public static string ToTimeString(this float seconds, Locale localized, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString();
+            return time.ToTimeString(localized, minified);
         }
-        public static string ToTimeString(this long seconds)
+        public static string ToTimeString(this long seconds, Locale localized, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString();
+            return time.ToTimeString(localized, minified);
         }
-        public static string ToTimeString(this TimeSpan time)
+        public static string ToTimeString(this TimeSpan time, Locale localized, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if(Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue("days", time.Days));
+                    t.Add(new TimeValue(localized.GetString("time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue("day", time.Days));
+                    t.Add(new TimeValue(localized.GetString("time_days"), time.Days, minified));
                 }
             }
             if (time.Hours > 0)
             {
                 if (time.Hours > 1)
                 {
-                    t.Add(new TimeValue("hours", time.Hours));
+                    t.Add(new TimeValue(localized.GetString("time_hours"), time.Hours, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue("hour", time.Hours));
+                    t.Add(new TimeValue(localized.GetString("time_hour"), time.Hours, minified));
                 }
             }
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue("minutes", time.Minutes));
+                    t.Add(new TimeValue(localized.GetString("time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue("minute", time.Minutes));
+                    t.Add(new TimeValue(localized.GetString("time_minute"), time.Minutes, minified));
                 }
             }
             if (time.Seconds > 0)
             {
                 if (time.Seconds > 1)
                 {
-                    t.Add(new TimeValue("seconds", time.Seconds));
+                    t.Add(new TimeValue(localized.GetString("time_seconds"), time.Seconds, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue("second", time.Seconds));
+                    t.Add(new TimeValue(localized.GetString("time_second"), time.Seconds, minified));
                 }
             }
 
@@ -80,10 +85,19 @@ namespace Miki
                 string text = "";
                 if (t.Count > 1)
                 {
-                    text = string.Join(", ", s.ToArray(), 0, s.Count - 1);
-                    text += "and " + s[s.Count - 1].ToString();
+                    int offset = 1;
+                    if (minified)
+                    {
+                        offset = 0;
+                    }
+                    text = string.Join(", ", s.ToArray(), 0, s.Count - offset);
+
+                    if (!minified)
+                    {
+                        text += $", {localized.GetString("time_and")} " + s[s.Count - 1].ToString();
+                    }
                 }
-                else if(t.Count == 1)
+                else if (t.Count == 1)
                 {
                     text = s[0].ToString();
                 }
@@ -91,6 +105,11 @@ namespace Miki
                 return text;
             }
             return "";
+        }
+
+        public static float FromHoursToSeconds(this float value)
+        {
+            return (float)Math.Round(value * 60 * 60);
         }
 
         public static bool GetInputBool(this string input)
@@ -178,14 +197,25 @@ namespace Miki
         public int Value { get; set; }
         public string Identifier { get; set; }
 
-        public TimeValue(string i, int v)
+        bool minified;
+
+        public TimeValue(string i, int v, bool minified = false)
         {
             Value = v;
-            Identifier = i;
+            if (minified)
+            {
+                Identifier = i[0].ToString();
+            }
+            else
+            {
+                Identifier = i;
+            }
+            this.minified = minified;
         }
 
         public override string ToString()
         {
+            if (minified) return Value + Identifier;
             return Value + " " + Identifier;
         }
     }
