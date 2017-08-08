@@ -74,7 +74,7 @@ namespace Miki
         }
 
         public static async Task SendAchievement(AchievementDataContainer<BaseAchievement> d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
-        { 
+        {
             await SendAchievement(d.Achievements[rank], channel, user);
         }
         public static async Task SendAchievement(BaseAchievement d, IDiscordMessageChannel channel, IDiscordUser user)

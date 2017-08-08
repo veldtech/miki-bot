@@ -304,7 +304,7 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
 
-            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
+            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 

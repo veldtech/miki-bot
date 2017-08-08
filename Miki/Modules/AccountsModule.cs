@@ -578,7 +578,7 @@ namespace Miki.Modules
                 await Utils.ErrorEmbed(locale, "**Remember:** the usage is `>give <@user> <amount>`\n\nMake sure the person has a profile!").SendToChannel(e.Channel);
                 return;
             }
-            
+
             if (arguments[1].Length > 9)
             {
                 await Utils.ErrorEmbed(locale, "That's too many mekos! The most I can transfer at a time is `999,999,999`").SendToChannel(e.Channel);
@@ -881,7 +881,7 @@ namespace Miki.Modules
 
         public void LoadAchievements()
         {
-            #region Achievement Achievements            
+            #region Achievement Achievements
             AchievementManager.Instance.OnAchievementUnlocked += new AchievementDataContainer<AchievementAchievement>(x =>
             {
                 x.Name = "achievements";
@@ -1131,7 +1131,7 @@ namespace Miki.Modules
             }).CheckAsync;
 
             #endregion
-  
+
             #region Misc Achievements
             new AchievementDataContainer<BaseAchievement>(x =>
             {
@@ -1373,4 +1373,3 @@ namespace Miki.Modules
         Currency
     }
 }
- 

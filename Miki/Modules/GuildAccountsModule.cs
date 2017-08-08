@@ -211,7 +211,7 @@ namespace Miki.Modules
                             if (int.TryParse(arguments[1], out int value))
                             {
                                 g.MinimalExperienceToGetRewards = value;
-                                                                                  
+
                                 await Utils.Embed
                                     .SetTitle(e.GetResource("miki_terms_config"))
                                     .SetDescription(e.GetResource("guildconfig_expneeded", value))

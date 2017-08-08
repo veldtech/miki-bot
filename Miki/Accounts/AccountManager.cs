@@ -35,7 +35,7 @@ namespace Miki.Accounts
 
                 int randomNumber = MikiRandom.GetRandomNumber(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
-                    
+
                 using (var context = new MikiContext())
                 {
                     User user = await context.Users.FindAsync(a.Id);

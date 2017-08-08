@@ -159,7 +159,7 @@ namespace Miki.Languages
         }
         private string InternalGetString(string m, ResourceManager lang, params object[] p)
         {
-            return (p.Length == 0) ? lang.GetString(m) : string.Format(lang.GetString(m), p); ; 
+            return (p.Length == 0) ? lang.GetString(m) : string.Format(lang.GetString(m), p); ;
         }
     }
 

@@ -67,7 +67,7 @@ namespace Miki.Modules.Overwatch
                         .AddInlineField("KDA ratio", Math.Round(region.stats.competitive.GameStats.eliminations / region.stats.competitive.GameStats.deaths, 2).ToString())
                         .AddInlineField("Favourite Character", orderedPlaytime.First().Key + " with " + Utils.ToTimeString(seconds))
                         .AddInlineField("Winrate", (region.stats.competitive.OverallStats.win_rate) + "%")
-                        
+
                         .SendToChannel(e.Channel);
                 }
                 else
@@ -79,7 +79,7 @@ namespace Miki.Modules.Overwatch
             {
                 // couldnt find xd
             }
-            
+
         }
 
         // worst function ever.

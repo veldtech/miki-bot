@@ -327,7 +327,7 @@ namespace Miki.Modules
             if(!hands.ContainsKey(userid))
             {
                 hands.Add(userid, new CardHand());
-            }   
+            }
         }
 
         public void DealAll()
