@@ -340,6 +340,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your current balance is `{0}`..
+        /// </summary>
+        internal static string miki_blackjack_current_balance {
+            get {
+                return ResourceManager.GetString("miki_blackjack_current_balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The one who&apos;s closest to 21 wins. All cards count their own number up to 10. Ties go to Miki..
         /// </summary>
         internal static string miki_blackjack_explanation {
@@ -376,8 +385,16 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You didn&apos;t include the amount bet! Correct usage: 
-        ///&gt;blackjack &lt;amount&gt;.
+        ///   Looks up a localized string similar to Your new balance is `{0}`..
+        /// </summary>
+        internal static string miki_blackjack_new_balance {
+            get {
+                return ResourceManager.GetString("miki_blackjack_new_balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You didn&apos;t include the amount bet! Correct usage: &gt;blackjack &lt;amount&gt;.
         /// </summary>
         internal static string miki_blackjack_no_arg {
             get {
@@ -2167,6 +2184,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sorry but I couldn&apos;t find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!.
+        /// </summary>
+        internal static string miki_module_admin_prune_no_messages {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_no_messages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleted {0} messages!.
         /// </summary>
         internal static string miki_module_admin_prune_success {
@@ -3085,7 +3111,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to slots.
+        ///   Looks up a localized string similar to Slots.
         /// </summary>
         internal static string miki_module_fun_slots_header {
             get {
@@ -3094,7 +3120,25 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}🔸 has been added to your account..
+        ///   Looks up a localized string similar to {0}🔸 were lost. Your new balance is `{1}`..
+        /// </summary>
+        internal static string miki_module_fun_slots_lose_amount {
+            get {
+                return ResourceManager.GetString("miki_module_fun_slots_lose_amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You lose!.
+        /// </summary>
+        internal static string miki_module_fun_slots_lose_header {
+            get {
+                return ResourceManager.GetString("miki_module_fun_slots_lose_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}🔸 has been added to your account. Your new balance is `{1}`..
         /// </summary>
         internal static string miki_module_fun_slots_win_amount {
             get {

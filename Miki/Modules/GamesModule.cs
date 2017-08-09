@@ -241,12 +241,13 @@ namespace Miki.Modules
 
                 if (moneyReturned == 0)
                 {
-                    moneyReturned = -moneyBet;
-                }
+					moneyReturned = -moneyBet;
+					embed.AddField( locale.GetString( "miki_module_fun_slots_lose_header" ), locale.GetString( "miki_module_fun_slots_lose_amount", moneyBet, u.Currency - moneyBet ) );
+				}
                 else
                 {
-                    embed.AddField(locale.GetString(Locale.SlotsWinHeader), locale.GetString(Locale.SlotsWinMessage, moneyReturned));
-                }
+					embed.AddField( locale.GetString( Locale.SlotsWinHeader ), locale.GetString( Locale.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned ) );
+				}
 
                 embed.Description = string.Join(" ", objectsChosen);
                 await u.AddCurrencyAsync(e.Channel, null, moneyReturned);
@@ -259,9 +260,10 @@ namespace Miki.Modules
         {
             e.commandHandler.RequestDispose();
 
-            using (var context = new MikiContext())
+			User user;
+			using (var context = new MikiContext())
             {
-                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+                user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 if (user != null)
                 {
                     await user.AddCurrencyAsync(e.Channel, null, bet);
@@ -271,36 +273,45 @@ namespace Miki.Modules
 
             await bm.CreateEmbed(e)
                 .SetTitle(e.GetResource("blackjack_draw_title"))
-                .SetDescription(e.GetResource("blackjack_draw_description"))
+                .SetDescription( e.GetResource("blackjack_draw_description" ) + "\n" + e.GetResource( "miki_blackjack_current_balance", user.Currency ) )
                 .ModifyMessage(instanceMessage);
         }
 
         private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
             e.commandHandler.RequestDispose();
-            await bm.CreateEmbed(e)
+
+			User user;
+			using( var context = new MikiContext() )
+			{
+				user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+			}
+
+			await bm.CreateEmbed(e)
                 .SetTitle(e.GetResource("miki_blackjack_lose_title"))
-                .SetDescription(e.GetResource("miki_blackjack_lose_description"))
+                .SetDescription(e.GetResource("miki_blackjack_lose_description") + "\n" + e.GetResource( "miki_blackjack_new_balance", user.Currency ) )
                 .ModifyMessage(instanceMessage);
         }
 
         private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
             e.commandHandler.RequestDispose();
-            await bm.CreateEmbed(e)
-                .SetTitle(e.GetResource("miki_blackjack_win_title"))
-                .SetDescription(e.GetResource("miki_blackjack_win_description", bet *2))
-                .ModifyMessage(instanceMessage);
 
-            using (var context = new MikiContext())
-            {
-                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                if (user != null)
-                {
-                    await user.AddCurrencyAsync(e.Channel, null, bet * 2);
-                    await context.SaveChangesAsync();
-                }
-            }
+			User user;
+			using( var context = new MikiContext() )
+			{
+				user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+				if( user != null )
+				{
+					await user.AddCurrencyAsync( e.Channel, null, bet * 2 );
+					await context.SaveChangesAsync();
+				}
+			}
+
+			await bm.CreateEmbed(e)
+                .SetTitle(e.GetResource("miki_blackjack_win_title"))
+                .SetDescription( e.GetResource("miki_blackjack_win_description", bet *2 ) + "\n" + e.GetResource( "miki_blackjack_new_balance", user.Currency ) )
+                .ModifyMessage(instanceMessage);
 
         }
     }
