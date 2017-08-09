@@ -1,18 +1,15 @@
-﻿using IA.Events;
-using IA.SDK.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IA;
+using IA.Events;
 using IA.SDK;
+using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
-using IA;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Miki.Modules.Accounts.Services
 {
-    class AchievementsService : BaseService
+    internal class AchievementsService : BaseService
     {
         public AchievementsService()
         {
@@ -35,7 +32,7 @@ namespace Miki.Modules.Accounts.Services
             AchievementDataContainer<AchievementAchievement> AchievementAchievements = new AchievementDataContainer<AchievementAchievement>(x =>
              {
                  x.Name = "achievements";
-                x.Achievements = new List<AchievementAchievement>()
+                 x.Achievements = new List<AchievementAchievement>()
                 {
                     new AchievementAchievement()
                     {
@@ -65,7 +62,7 @@ namespace Miki.Modules.Accounts.Services
                     },
                 }
             };
-        });
+             });
 
             AchievementDataContainer<CommandAchievement> InfoAchievement = new AchievementDataContainer<CommandAchievement>(x =>
             {
@@ -96,7 +93,6 @@ namespace Miki.Modules.Accounts.Services
 
                                 CheckCommand = async (p) =>
                                 {
-
                                         return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                                 }
                             }
@@ -124,8 +120,8 @@ namespace Miki.Modules.Accounts.Services
             });
             AchievementDataContainer<CommandAchievement> NoPermissionAchievement = new AchievementDataContainer<CommandAchievement>(x =>
              {
-                x.Name = "noperms";
-                x.Achievements = new List<CommandAchievement>()
+                 x.Name = "noperms";
+                 x.Achievements = new List<CommandAchievement>()
                 {
                     new CommandAchievement()
                     {
@@ -319,7 +315,8 @@ namespace Miki.Modules.Accounts.Services
                 };
             });
 
-            #region Achievement Achievements            
+            #region Achievement Achievements
+
             AchievementManager.Instance.OnAchievementUnlocked += async (pa) =>
             {
                 if (await IsEnabled(pa.discordChannel.Id))
@@ -327,9 +324,11 @@ namespace Miki.Modules.Accounts.Services
                     await AchievementAchievements.CheckAsync(pa);
                 }
             };
-            #endregion
+
+            #endregion Achievement Achievements
 
             #region Command Achievements
+
             AchievementManager.Instance.OnCommandUsed += async (pa) =>
             {
                 if (await IsEnabled(pa.discordChannel.Id))
@@ -355,9 +354,11 @@ namespace Miki.Modules.Accounts.Services
                     await NoPermissionAchievement.CheckAsync(pa);
                 }
             };
-            #endregion
+
+            #endregion Command Achievements
 
             #region Level Achievements
+
             AchievementManager.Instance.OnLevelGained += async (pa) =>
             {
                 if (await IsEnabled(pa.discordChannel.Id))
@@ -365,9 +366,11 @@ namespace Miki.Modules.Accounts.Services
                     await LevelAchievement.CheckAsync(pa);
                 }
             };
-            #endregion
+
+            #endregion Level Achievements
 
             #region Message Achievements
+
             AchievementManager.Instance.OnMessageReceived += async (pa) =>
             {
                 if (await IsEnabled(pa.discordChannel.Id))
@@ -397,9 +400,10 @@ namespace Miki.Modules.Accounts.Services
                 }
             };
 
-            #endregion
+            #endregion Message Achievements
 
             #region Misc Achievements
+
             new AchievementDataContainer<BaseAchievement>(x =>
             {
                 x.Name = "badluck";
@@ -412,9 +416,11 @@ namespace Miki.Modules.Accounts.Services
                     }
                 };
             });
-            #endregion
+
+            #endregion Misc Achievements
 
             #region User Update Achievements (don't disable these)
+
             AchievementManager.Instance.OnUserUpdate += new AchievementDataContainer<UserUpdateAchievement>(x =>
             {
                 x.Name = "contributor";
@@ -516,9 +522,11 @@ namespace Miki.Modules.Accounts.Services
                     }
                 };
             }).CheckAsync;
-            #endregion
+
+            #endregion User Update Achievements (don't disable these)
 
             #region Transaction Achievements
+
             AchievementManager.Instance.OnTransaction += async (pa) =>
             {
                 if (await IsEnabled(pa.discordChannel.Id))
@@ -526,8 +534,8 @@ namespace Miki.Modules.Accounts.Services
                     await MekosAchievement.CheckAsync(pa);
                 }
             };
-            #endregion
 
+            #endregion Transaction Achievements
         }
     }
 }

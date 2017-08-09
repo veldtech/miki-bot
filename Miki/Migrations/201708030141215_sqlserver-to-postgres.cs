@@ -1,8 +1,7 @@
 namespace Miki.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class sqlservertopostgres : DbMigration
     {
         public override void Up()
@@ -17,7 +16,7 @@ namespace Miki.Migrations
             AlterColumn("dbo.Users", "DateCreated", c => c.DateTime(nullable: false));
             AlterColumn("dbo.Users", "LastReputationGiven", c => c.DateTime(nullable: false));
         }
-        
+
         public override void Down()
         {
             AlterColumn("dbo.Users", "LastReputationGiven", c => c.DateTime(nullable: false));

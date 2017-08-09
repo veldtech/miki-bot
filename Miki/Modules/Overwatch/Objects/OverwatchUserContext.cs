@@ -32,7 +32,6 @@ namespace Miki.Modules.Overwatch.Objects
                 _stats = response.stats.quickplay;
             }
 
-
             if (_stats == null)
             {
                 isValid = false;

@@ -1,14 +1,10 @@
 ﻿using Miki.Modules.Overwatch.Objects;
 using Rest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch.API
 {
-    class OverwatchAPI
+    internal class OverwatchAPI
     {
         public static async Task<OverwatchUserResponse> GetUser(string Name, int Identifier)
         {
@@ -16,7 +12,7 @@ namespace Miki.Modules.Overwatch.API
                 .AddHeader("user-agent", "velddev/miki")
                 .GetAsync<OverwatchUserResponse>();
 
-            if(userdata.Data == null)
+            if (userdata.Data == null)
             {
                 return null;
             }

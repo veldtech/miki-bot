@@ -1,26 +1,15 @@
-﻿using Discord;
-using IA;
-using IA.Events;
+﻿using IA;
 using IA.Events.Attributes;
-using IA.Node;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
-using Miki.Accounts;
-using Miki.Accounts.Achievements;
 using Miki.Languages;
 using Miki.Models;
-using Miki.Objects;
-using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Core.Objects;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -36,7 +25,7 @@ namespace Miki.Modules
                 List<GlobalPasta> leaderboards = d.Pastas.OrderByDescending(x => x.TimesUsed)
                                                          .Take(12)
                                                          .ToList();
-                    
+
                 IDiscordEmbed e = Utils.Embed
                     .SetTitle(context.GetResource("poppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0.6f, 0.2f));
@@ -62,8 +51,8 @@ namespace Miki.Modules
                 IDiscordEmbed e = Utils.Embed
                     .SetTitle(context.GetResource("toppasta_title"))
                     .SetColor(new IA.SDK.Color(1, 0, 0));
-                
-                foreach(GlobalPasta t in leaderboards)
+
+                foreach (GlobalPasta t in leaderboards)
                 {
                     int amount = d.Votes.Where(p => p.Id == t.Id).Count();
                     e.AddInlineField(t.Id, (t == leaderboards.First() ? "💖 " + amount : (amount < 0 ? "💔 " : "❤ ") + amount));
@@ -76,7 +65,6 @@ namespace Miki.Modules
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
-            
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             int page = 0;
@@ -112,7 +100,7 @@ namespace Miki.Modules
                 var totalCount = context.Pastas.Where(x => x.creator_id == userId)
                                                .Count();
 
-                if(page * 25 > totalCount)
+                if (page * 25 > totalCount)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("pasta_error_out_of_index"))
                         .SendToChannel(e.Channel);
@@ -145,7 +133,7 @@ namespace Miki.Modules
 
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            if(arguments.Count < 2)
+            if (arguments.Count < 2)
             {
                 await Utils.ErrorEmbed(locale, e.GetResource("createpasta_error_no_content")).SendToChannel(e.Channel.Id);
                 return;
@@ -195,13 +183,13 @@ namespace Miki.Modules
 
                 GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
-                if(pasta == null)
+                if (pasta == null)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                     return;
                 }
 
-                if(pasta.CanDeletePasta(e.Author.Id))
+                if (pasta.CanDeletePasta(e.Author.Id))
                 {
                     context.Pastas.Remove(pasta);
 
@@ -230,7 +218,7 @@ namespace Miki.Modules
                 return;
             }
 
-            if(e.arguments.Split(' ').Length == 1)
+            if (e.arguments.Split(' ').Length == 1)
             {
                 await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify_edit")))
                     .SendToChannel(e.Channel.Id);
@@ -269,7 +257,7 @@ namespace Miki.Modules
             }
 
             List<string> arguments = e.arguments.Split(' ').ToList();
-            
+
             using (var context = MikiContext.CreateNoCache())
             {
                 context.Set<GlobalPasta>().AsNoTracking();
@@ -306,7 +294,7 @@ namespace Miki.Modules
                 {
                     GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
-                    if(pasta == null)
+                    if (pasta == null)
                     {
                         await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                         return;
@@ -318,7 +306,7 @@ namespace Miki.Modules
 
                     b.SetAuthor(pasta.Id.ToUpper(), "", "");
                     b.Color = new IA.SDK.Color(47, 208, 192);
-                   
+
                     if (creator != null)
                     {
                         b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
@@ -333,7 +321,6 @@ namespace Miki.Modules
                     b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
 
                     await b.SendToChannel(e.Channel);
-
                 }
                 catch (Exception ex)
                 {
@@ -347,7 +334,7 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            if(string.IsNullOrWhiteSpace(e.arguments))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 await Utils.ErrorEmbed(locale, e.GetResource("searchpasta_error_no_arg"))
                     .SendToChannel(e.Channel.Id);
@@ -355,7 +342,7 @@ namespace Miki.Modules
             }
 
             List<string> arguments = e.arguments.Split(' ').ToList();
-            int page = 0;         
+            int page = 0;
 
             if (arguments.Count > 1)
             {
@@ -379,7 +366,7 @@ namespace Miki.Modules
                 if (pastasFound?.Count > 0)
                 {
                     string resultString = "";
-                        
+
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     IDiscordEmbed embed = Utils.Embed;
@@ -417,7 +404,7 @@ namespace Miki.Modules
             {
                 var pasta = await context.Pastas.FindAsync(e.arguments);
 
-                if(pasta == null)
+                if (pasta == null)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
                     return;

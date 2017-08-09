@@ -47,7 +47,7 @@ namespace Miki.Modules
             embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
+            await bannedUser.Ban(e.Guild, 1, reason);
         }
 
         [Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
@@ -81,7 +81,7 @@ namespace Miki.Modules
             embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
+            await bannedUser.Ban(e.Guild, 1, reason);
             await bannedUser.Unban(e.Guild);
 
         }
@@ -210,7 +210,7 @@ namespace Miki.Modules
             embed.Color = new Color(1, 1, 0);
 
             await bannedUser.SendMessage(embed);
-            await bannedUser.Kick();
+            await bannedUser.Kick(reason);
         }
 		// TODO: Add more onomatopoeia for the embed title to randomly select from for more style points.
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
@@ -289,12 +289,14 @@ namespace Miki.Modules
 			};
 
 			IDiscordEmbed embed = Utils.Embed;
-			embed.Title = titles[MikiRandom.GetRandomNumber( titles.Length - 1 )];
-			embed.Description = locale.GetString( "miki_module_admin_prune_success", new object[] { deleteMessages.Count - 1 } );
+			embed.Title = titles[MikiRandom.Next( titles.Length - 1 )];
+			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count - 1);
 			embed.Color = Color.GetColor( IAColor.YELLOW );
 
 			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
+
 			await Task.Delay( 5000 );
+
 			await _dMessage.DeleteAsync();
 
 		}

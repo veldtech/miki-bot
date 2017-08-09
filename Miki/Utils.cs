@@ -16,22 +16,25 @@ namespace Miki
             TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
             return time.ToTimeString(localized, minified);
         }
+
         public static string ToTimeString(this float seconds, Locale localized, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
             return time.ToTimeString(localized, minified);
         }
+
         public static string ToTimeString(this long seconds, Locale localized, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
             return time.ToTimeString(localized, minified);
         }
+
         public static string ToTimeString(this TimeSpan time, Locale localized, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
-                if(Math.Floor(time.TotalDays) > 1)
+                if (Math.Floor(time.TotalDays) > 1)
                 {
                     t.Add(new TimeValue(localized.GetString("time_days"), time.Days, minified));
                 }
@@ -77,7 +80,7 @@ namespace Miki
             if (t.Count != 0)
             {
                 List<string> s = new List<string>();
-                foreach(TimeValue v in t)
+                foreach (TimeValue v in t)
                 {
                     s.Add(v.ToString());
                 }
@@ -137,6 +140,7 @@ namespace Miki
                 Color = new IA.SDK.Color(1, 0, 0)
             };
         }
+
         public static IDiscordEmbed SuccessEmbed(Locale locale, string message)
         {
             return new RuntimeEmbed(new EmbedBuilder())
@@ -197,7 +201,7 @@ namespace Miki
         public int Value { get; set; }
         public string Identifier { get; set; }
 
-        bool minified;
+        private bool minified;
 
         public TimeValue(string i, int v, bool minified = false)
         {

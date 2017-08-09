@@ -8,19 +8,15 @@ using Miki.API.UrbanDictionary;
 using Miki.Languages;
 using Miki.Models;
 using NCalc;
-using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module("General")]
-    class GeneralModule
+    internal class GeneralModule
     {
         public GeneralModule(RuntimeModule m)
         {
@@ -97,10 +93,8 @@ namespace Miki.Modules
                 object output = expression.Evaluate();
 
                 await e.Channel.SendMessage(output.ToString());
-                // var result = new DataTable().Compute(e.arguments, null);
-                // await e.Channel.SendMessage(result.ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.ErrorAt("calc", ex.Message);
                 await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
@@ -192,7 +186,6 @@ namespace Miki.Modules
                             string.Join(", ", ev.Aliases));
                     }
 
-
                     explainedHelpEmbed.AddField(
                         locale.GetString("miki_module_general_help_description"),
                         (locale.HasString("miki_command_description_" + ev.Name.ToLower())) ? locale.GetString("miki_command_description_" + ev.Name.ToLower()) : locale.GetString("miki_placeholder_null"));
@@ -233,7 +226,6 @@ namespace Miki.Modules
             embed.Author.Name = "Miki " + Bot.instance.Version;
             embed.Color = new Color(1, 0.6f, 0.6f);
 
-
             embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
 
             embed.AddField("Links",
@@ -255,7 +247,7 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
 
-            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
+            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 
@@ -384,6 +376,5 @@ namespace Miki.Modules
 
             await embed.SendToChannel(e.Channel);
         }
-
     }
 }

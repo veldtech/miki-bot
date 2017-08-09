@@ -1,11 +1,6 @@
 ﻿using Miki.Models.Objects.Guild;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.Models
 {
@@ -27,7 +22,6 @@ namespace Miki.Models
 
         public MikiContext() : base("PostgreSql")
         {
-
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

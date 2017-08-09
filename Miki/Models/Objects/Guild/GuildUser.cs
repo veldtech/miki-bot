@@ -1,13 +1,10 @@
-﻿using Discord.WebSocket;
-using IA;
+﻿using IA;
 using IA.SDK.Interfaces;
 using Miki.Models.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Models
@@ -31,9 +28,11 @@ namespace Miki.Models
         public DateTime LastRivalRenewed { get; set; }
 
         #region Config
+
         public int MinimalExperienceToGetRewards { get; set; }
         public bool VisibleOnLeaderboards { get; set; } = true;
-        #endregion
+
+        #endregion Config
 
         public static async Task Create(IDiscordGuild g)
         {
@@ -68,6 +67,7 @@ namespace Miki.Models
             }
             return Level;
         }
+
         public int CalculateMaxExperience(int localExp)
         {
             int experience = localExp;
@@ -80,6 +80,7 @@ namespace Miki.Models
             }
             return output;
         }
+
         private int CalculateNextLevelIteration(int output, int level)
         {
             return 10 + (output + (level * 20));
@@ -98,7 +99,7 @@ namespace Miki.Models
 
         public async Task<GuildUser> GetRival()
         {
-            if(RivalId == 0)
+            if (RivalId == 0)
             {
                 return null;
             }

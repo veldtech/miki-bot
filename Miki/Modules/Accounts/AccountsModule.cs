@@ -10,7 +10,6 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
-using Miki.Accounts.Achievements.Objects;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Accounts.Services;
@@ -126,12 +125,14 @@ namespace Miki.Modules.AccountsModule
                         await ShowLeaderboardsAsync(e.message, LeaderboardsType.LocalExperience);
                     }
                     break;
+
                 case "commands":
                 case "cmds":
                     {
                         await ShowLeaderboardsAsync(e.message, LeaderboardsType.Commands);
                     }
                     break;
+
                 case "currency":
                 case "mekos":
                 case "money":
@@ -139,6 +140,7 @@ namespace Miki.Modules.AccountsModule
                         await ShowLeaderboardsAsync(e.message, LeaderboardsType.Currency);
                     }
                     break;
+
                 default:
                     {
                         await ShowLeaderboardsAsync(e.message);
@@ -191,7 +193,6 @@ namespace Miki.Modules.AccountsModule
                     EmojiBarSet onBarSet = new EmojiBarSet("<:mbaronright:334479818924228608>", "<:mbaronmid:334479818848468992>", "<:mbaronleft:334479819003789312>");
                     EmojiBarSet offBarSet = new EmojiBarSet("<:mbaroffright:334479818714513430>", "<:mbaroffmid:334479818504536066>", "<:mbaroffleft:334479818949394442>");
 
-
                     EmojiBar expBar = new EmojiBar(account.CalculateMaxExperience(localExp.Experience), onBarSet, offBarSet, 6);
 
                     string infoValue = new MessageBuilder()
@@ -230,7 +231,6 @@ namespace Miki.Modules.AccountsModule
                     {
                         users.Add(await context.Users.FindAsync(marriages[i].GetOther(id)));
                     }
-
 
                     if (marriages.Count > 0)
                     {
@@ -448,7 +448,7 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        [Command(Name ="acceptmarriage")]
+        [Command(Name = "acceptmarriage")]
         public async Task AcceptMarriageAsync(EventContext e)
         {
             if (e.message.MentionedUserIds.Count == 0)
@@ -536,7 +536,7 @@ namespace Miki.Modules.AccountsModule
                     giver.LastReputationGiven = DateTime.Now;
                 }
 
-                if(giver.Id == receiver.Id)
+                if (giver.Id == receiver.Id)
                 {
                     await Utils.Embed
                     .SetTitle("Reputation")
@@ -565,7 +565,6 @@ namespace Miki.Modules.AccountsModule
                 }
 
                 await context.SaveChangesAsync();
-
             }
         }
 
@@ -613,7 +612,7 @@ namespace Miki.Modules.AccountsModule
                 User sender = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
 
-                if(receiver == null)
+                if (receiver == null)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
                         .SendToChannel(e.Channel);
@@ -703,7 +702,6 @@ namespace Miki.Modules.AccountsModule
                 response.StatusCode == HttpStatusCode.Redirect) &&
                 response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
             {
-
                 // if the remote file was found, download oit
                 using (Stream inputStream = response.GetResponseStream())
                 using (Stream outputStream = File.OpenWrite(localFilename))
@@ -815,7 +813,6 @@ namespace Miki.Modules.AccountsModule
                 return;
             }
 
-
             using (MikiContext context = new MikiContext())
             {
                 User mentionedPerson = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
@@ -904,7 +901,9 @@ namespace Miki.Modules.AccountsModule
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
-                        } break;
+                        }
+                        break;
+
                     case LeaderboardsType.Currency:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
@@ -919,7 +918,9 @@ namespace Miki.Modules.AccountsModule
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
-                        } break;
+                        }
+                        break;
+
                     case LeaderboardsType.LocalExperience:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
@@ -935,14 +936,16 @@ namespace Miki.Modules.AccountsModule
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
-                        } break;
+                        }
+                        break;
+
                     case LeaderboardsType.Experience:
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             List<User> output = context.Users.OrderByDescending(x => x.Total_Experience)
                                                              .Take(12)
-                                                             .ToList();                                
+                                                             .ToList();
                             int i = 1;
                             foreach (User user in output)
                             {
@@ -950,7 +953,8 @@ namespace Miki.Modules.AccountsModule
                                 i++;
                             }
                             await embed.SendToChannel(e.Channel);
-                        } break;
+                        }
+                        break;
                 }
             }
         }
@@ -964,4 +968,3 @@ namespace Miki.Modules.AccountsModule
         Currency
     }
 }
- 

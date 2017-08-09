@@ -19,7 +19,9 @@ namespace Miki.Accounts
         public static AccountManager Instance => _instance;
 
         public event LevelUpDelegate OnLocalLevelUp;
+
         public event LevelUpDelegate OnGlobalLevelUp;
+
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
         private Bot bot;
@@ -36,7 +38,7 @@ namespace Miki.Accounts
 
                 int randomNumber = MikiRandom.Next(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
-                    
+
                 using (var context = new MikiContext())
                 {
                     User user = await context.Users.FindAsync(a.Id);
@@ -147,10 +149,12 @@ namespace Miki.Accounts
         }
 
         #region Events
+
         public async Task LevelUpLocalAsync(IDiscordMessage e, User a, int l)
         {
             await OnLocalLevelUp.Invoke(a, e.Channel, l);
         }
+
         public async Task LevelUpGlobalAsync(IDiscordMessage e, User a, int l)
         {
             await OnGlobalLevelUp.Invoke(a, e.Channel, l);
@@ -178,6 +182,7 @@ namespace Miki.Accounts
         {
             await UpdateGuildUserCountAsync(arg.Guild.Id);
         }
+
         private async Task Client_UserJoined(Discord.WebSocket.SocketGuildUser arg)
         {
             await UpdateGuildUserCountAsync(arg.Guild.Id);
@@ -189,7 +194,7 @@ namespace Miki.Accounts
             {
                 GuildUser g = await context.GuildUsers.FindAsync(id.ToDbLong());
 
-                if(g == null)
+                if (g == null)
                 {
                     return;
                 }
@@ -198,6 +203,7 @@ namespace Miki.Accounts
                 await context.SaveChangesAsync();
             }
         }
-        #endregion
+
+        #endregion Events
     }
 }

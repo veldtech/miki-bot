@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.API.StringComparison
 {
     public class StringComparer
     {
-        List<string> allComparableStrings = new List<string>();
+        private List<string> allComparableStrings = new List<string>();
 
         public StringComparer(params string[] stringList)
         {
             allComparableStrings.AddRange(stringList);
         }
+
         public StringComparer(IEnumerable<string> stringList)
         {
             allComparableStrings = stringList.ToList();

@@ -1,16 +1,12 @@
-﻿using Discord;
-using IA;
-using IA.Events;
+﻿using IA;
 using IA.Events.Attributes;
 using IA.Extension;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
-using IMDBNet;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
-using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.API;
@@ -19,7 +15,6 @@ using Miki.Models;
 using Miki.Objects;
 using NCalc;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +29,7 @@ namespace Miki.Modules
     [Module(Name = "Fun")]
     public class FunModule
     {
-        string[] puns = new string[]
+        private string[] puns = new string[]
         {
                 "miki_module_fun_pun_1",
                 "miki_module_fun_pun_2",
@@ -89,7 +84,8 @@ namespace Miki.Modules
                 "miki_module_fun_pun_51",
                 "miki_module_fun_pun_52",
         };
-        string[] reactions = new string[]
+
+        private string[] reactions = new string[]
         {
                 "miki_module_fun_8ball_answer_negative_1",
                 "miki_module_fun_8ball_answer_negative_2",
@@ -111,6 +107,7 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
+
         private string[] lunchposts = new string[]
 {
             "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
@@ -258,7 +255,6 @@ namespace Miki.Modules
             };
 
             await e.Channel.SendMessage(I_LIKE[Global.random.Next(0, I_LIKE.Length)] + BODY_PART[Global.random.Next(0, BODY_PART.Length)] + SUFFIX[Global.random.Next(0, SUFFIX.Length)]);
-
         }
 
         [Command(Name = "cage")]
@@ -273,7 +269,6 @@ namespace Miki.Modules
             using (WebClient webClient = new WebClient())
             {
                 byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=2&countryrank");
-
 
                 using (MemoryStream mem = new MemoryStream(data))
                 {
@@ -400,7 +395,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "osu")]
-        public async Task SendOsuSignatureAsync (EventContext e)
+        public async Task SendOsuSignatureAsync(EventContext e)
         {
             using (WebClient webClient = new WebClient())
             {
@@ -438,7 +433,7 @@ namespace Miki.Modules
         {
             string output = "";
 
-            if(string.IsNullOrWhiteSpace(e.arguments))
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 output = MikiRandom.Next(100).ToString();
             }
@@ -502,7 +497,7 @@ namespace Miki.Modules
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
 
-        [Command(Name = "roulette")]    
+        [Command(Name = "roulette")]
         public async Task RouletteAsync(EventContext e)
         {
             IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
@@ -539,15 +534,15 @@ namespace Miki.Modules
             List<string> arguments = e.arguments.Split(' ').ToList();
             int splitIndex = 0;
 
-            for(int i = 0; i < arguments.Count; i++)
+            for (int i = 0; i < arguments.Count; i++)
             {
-                if(arguments[i].ToLower() == "in")
+                if (arguments[i].ToLower() == "in")
                 {
                     splitIndex = i;
                 }
             }
 
-            if(splitIndex == 0)
+            if (splitIndex == 0)
             {
                 // throw error
                 return;
@@ -594,21 +589,25 @@ namespace Miki.Modules
                             s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "gelbooru":
                         {
                             s = GelbooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "konachan":
                         {
                             s = KonachanPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "e621":
                         {
                             s = E621Post.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     default:
                         {
                             await e.Channel.SendMessage("I do not support this image host :(");

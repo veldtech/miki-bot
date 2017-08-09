@@ -2,17 +2,9 @@
 using IA;
 using IA.FileHandling;
 using IA.SDK;
-using Miki.Accounts;
-using Miki.API.Patreon;
 using Miki.Languages;
 using Miki.Models;
-using Miki.Modules.Overwatch.API;
-using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Resources;
 using System.Threading.Tasks;
 
 namespace Miki
@@ -21,7 +13,7 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-          new Program().Start().GetAwaiter().GetResult();
+            new Program().Start().GetAwaiter().GetResult();
         }
 
         public static Bot bot;

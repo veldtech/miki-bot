@@ -1,17 +1,12 @@
-﻿using IA.SDK.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IA.Events;
 using IA.SDK;
-using IA.SDK.Events;
+using IA.SDK.Interfaces;
 using Miki.Accounts;
-using IA.Events;
+using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
-    class ExperienceTrackerService : BaseService
+    internal class ExperienceTrackerService : BaseService
     {
         public ExperienceTrackerService()
         {
@@ -32,7 +27,7 @@ namespace Miki.Modules.Accounts.Services
 
         public async Task Service_MessageReceived(IDiscordMessage m)
         {
-            if(await IsEnabled(m.Channel.Id))
+            if (await IsEnabled(m.Channel.Id))
             {
                 await AccountManager.Instance.CheckAsync(m);
             }

@@ -1,5 +1,4 @@
-﻿using Discord;
-using IA;
+﻿using IA;
 using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK;
@@ -7,16 +6,13 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Languages;
 using Miki.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module(Name = "settings")]
-    class SettingsModule
+    internal class SettingsModule
     {
         [Command(Name = "toggledm")]
         public async Task ToggleDmAsync(EventContext e)

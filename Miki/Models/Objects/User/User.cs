@@ -1,15 +1,12 @@
 ﻿using IA;
+using IA.SDK.Interfaces;
+using Miki.Accounts.Achievements;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using IA.SDK.Interfaces;
-using Miki.Accounts;
-using System.ComponentModel;
-using Miki.Accounts.Achievements;
 
 namespace Miki.Models
 {
@@ -68,7 +65,7 @@ namespace Miki.Models
 
             if (context != null)
             {
-                 await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
+                await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
             }
         }
 
@@ -112,7 +109,7 @@ namespace Miki.Models
             }
             return Level;
         }
-            
+
         public int CalculateMaxExperience(int localExp)
         {
             int experience = localExp;
@@ -141,13 +138,14 @@ namespace Miki.Models
                 return x;
             }
         }
+
         public async Task<int> GetLocalRank(ulong guildId)
         {
             using (var context = new MikiContext())
             {
                 LocalExperience l = await context.Experience.FindAsync(guildId.ToDbLong(), Id);
 
-                if(l == null)
+                if (l == null)
                 {
                     return -1;
                 }
