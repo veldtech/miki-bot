@@ -637,7 +637,7 @@ Fuzzy</comment>
     <value>Module {0} is disabled.</value>
   </data>
   <data name="miki_module_admin_kick_by" xml:space="preserve">
-    <value>Kicked by</value>
+    <value>By user</value>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
     <value>You've been kicked from **{0}**!</value>
@@ -1451,7 +1451,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="blackjack_error_instance_exists" xml:space="preserve">
     <value>You're already playing blackjack in this channel!</value>
   </data>
-   <data name="pasta_error_out_of_index" xml:space="preserve">
+  <data name="pasta_error_out_of_index" xml:space="preserve">
     <value>You don't have any pastas on this page!</value>
   </data>
   <data name="give_error_max_mekos" xml:space="preserve">
@@ -1512,7 +1512,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   </data>
   <data name="time_seconds" xml:space="preserve">
     <value>seconds</value>
-   </data>
+  </data>
   <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
     <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
   </data>
@@ -1528,7 +1528,28 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_module_fun_slots_lose_header" xml:space="preserve">
     <value>You lose!</value>
   </data>
-  <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
-    <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
+  <data name="ban_error_user_null" xml:space="preserve">
+    <value>Couldn't find the user you wanted to ban, please specify a user id or mention.</value>
+  </data>
+  <data name="ban_header" xml:space="preserve">
+    <value>You've been banned from {0}!</value>
+  </data>
+  <data name="ban_term" xml:space="preserve">
+    <value>Ban</value>
+  </data>
+  <data name="permission_ban_members" xml:space="preserve">
+    <value>Ban Members</value>
+  </data>
+  <data name="permission_error_low" xml:space="preserve">
+    <value>The person you're trying to {0} has an higher role than I do, I can't {0} people that have higher roles than I do.</value>
+  </data>
+  <data name="permission_kick_members" xml:space="preserve">
+    <value>Kick Members</value>
+  </data>
+  <data name="permission_needed_error" xml:space="preserve">
+    <value>Please give me the permission {0}</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
   </data>
 </root>

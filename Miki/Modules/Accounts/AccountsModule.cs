@@ -865,7 +865,7 @@ namespace Miki.Modules.AccountsModule
                     notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots);
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
-                    cont.commandHandler.RequestDispose();
+                    await cont.commandHandler.RequestDisposeAsync();
                 }
                 else
                 {
@@ -873,7 +873,7 @@ namespace Miki.Modules.AccountsModule
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
                     notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
-                    cont.commandHandler.RequestDispose();
+                    await cont.commandHandler.RequestDisposeAsync();
                 }
             }
         }

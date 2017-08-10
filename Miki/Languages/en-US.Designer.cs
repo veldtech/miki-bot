@@ -61,6 +61,33 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t find the user you wanted to ban, please specify a user id or mention..
+        /// </summary>
+        internal static string ban_error_user_null {
+            get {
+                return ResourceManager.GetString("ban_error_user_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve been banned from {0}!.
+        /// </summary>
+        internal static string ban_header {
+            get {
+                return ResourceManager.GetString("ban_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ban.
+        /// </summary>
+        internal static string ban_term {
+            get {
+                return ResourceManager.GetString("ban_term", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You get your bet back! woop woop!.
         /// </summary>
         internal static string blackjack_draw_description {
@@ -2130,7 +2157,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Kicked by.
+        ///   Looks up a localized string similar to By user.
         /// </summary>
         internal static string miki_module_admin_kick_by {
             get {
@@ -3858,6 +3885,42 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ban Members.
+        /// </summary>
+        internal static string permission_ban_members {
+            get {
+                return ResourceManager.GetString("permission_ban_members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The person you&apos;re trying to {0} has an higher role than I do, I can&apos;t {0} people that have higher roles than I do..
+        /// </summary>
+        internal static string permission_error_low {
+            get {
+                return ResourceManager.GetString("permission_error_low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kick Members.
+        /// </summary>
+        internal static string permission_kick_members {
+            get {
+                return ResourceManager.GetString("permission_kick_members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please give me the permission {0}.
+        /// </summary>
+        internal static string permission_needed_error {
+            get {
+                return ResourceManager.GetString("permission_needed_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Most popular pastas.
         /// </summary>
         internal static string poppasta_title {
@@ -3872,6 +3935,15 @@ namespace Miki.Languages {
         internal static string searchpasta_error_no_arg {
             get {
                 return ResourceManager.GetString("searchpasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
