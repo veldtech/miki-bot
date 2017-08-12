@@ -15,11 +15,12 @@ namespace Miki.API.RocketLeague
         [JsonProperty("tierName")]
         public string Name { get; set; } = "";
     }
+
     internal class RocketLeagueTierCache : ICacheable<RocketLeagueTier>
     {
-        string key = "";
+        private string key = "";
 
-        List<RocketLeagueTier> internalData = new List<RocketLeagueTier>();
+        private List<RocketLeagueTier> internalData = new List<RocketLeagueTier>();
 
         public List<RocketLeagueTier> Data
         {
@@ -36,11 +37,13 @@ namespace Miki.API.RocketLeague
                 internalData = value;
             }
         }
+
         public DateTime LastUpdatedAt
         {
             get;
             set;
         }
+
         public TimeSpan UpdateSpan
         {
             get;

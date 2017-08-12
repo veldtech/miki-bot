@@ -7,19 +7,16 @@ using IA.SDK.Interfaces;
 using Miki.API.UrbanDictionary;
 using Miki.Languages;
 using Miki.Models;
-using Newtonsoft.Json;
-using RestSharp;
+using NCalc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module("General")]
-    class GeneralModule
+    internal class GeneralModule
     {
         public GeneralModule(RuntimeModule m)
         {
@@ -78,12 +75,29 @@ namespace Miki.Modules
 
             try
             {
-                var result = new DataTable().Compute(e.arguments, null);
-                await e.Channel.SendMessage(result.ToString());
+                Expression expression = new Expression(e.arguments);
+
+                expression.Parameters.Add("pi", Math.PI);
+
+                expression.EvaluateFunction += (name, x) =>
+                {
+                    if (name == "lerp")
+                    {
+                        double n = (double)x.Parameters[0].Evaluate();
+                        double v = (double)x.Parameters[1].Evaluate();
+                        double o = (double)x.Parameters[2].Evaluate();
+                        x.Result = (n * (1.0 - o)) + (v * o);
+                    }
+                };
+
+                object output = expression.Evaluate();
+
+                await e.Channel.SendMessage(output.ToString());
             }
-            catch
+            catch (Exception ex)
             {
-                await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error"));
+                Log.ErrorAt("calc", ex.Message);
+                await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
             }
         }
 
@@ -145,64 +159,13 @@ namespace Miki.Modules
                 {
                     IDiscordEmbed helpListEmbed = Utils.Embed;
                     helpListEmbed.Title = locale.GetString("miki_module_help_error_null_header");
-                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message");
+                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message", await Bot.instance.Events.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
                     helpListEmbed.Color = new Color(1.0f, 0, 0);
 
-                    bool done = false;
+                    API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
+                    API.StringComparison.StringComparison best = comparer.GetBest(e.arguments);
 
-                    SortedList<string, int> differenceHeurList = new SortedList<string, int>();
-
-                    foreach (IModule a in Bot.instance.Events.Modules.Values)
-                    {
-                        foreach (ICommandEvent c in a.Events)
-                        {
-                            if (Bot.instance.Events.CommandHandler.GetUserAccessibility(e.message) < c.Accessibility)
-                            {
-                                continue;
-                            }
-
-                            if (done)
-                            {
-                                break;
-                            }
-
-                            int difference = 0;
-
-                            for (int i = 0; i < e.arguments.Length; i++)
-                            {
-                                char typedChar = e.arguments.ToLower()[i];
-                                bool found = false;
-                                for (int j = 0; j < c.Name.Length; j++)
-                                {
-                                    char actualChar = c.Name.ToLower()[j];
-
-                                    if (typedChar == actualChar)
-                                    {
-                                        difference += Math.Abs(i - j);
-                                        found = true;
-                                        break;
-                                    }
-                                }
-
-                                if(!found)
-                                {
-                                    difference += 15;
-                                }
-                            }
-
-                            difference += Math.Abs(e.arguments.Length - c.Name.Length) * 5;
-
-                            differenceHeurList.Add(c.Name, difference);
-                        }
-
-                        if (done)
-                        {
-                            break;
-                        }
-                    }
-
-                    var outputList = differenceHeurList.OrderBy(x => x.Value);
-                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), outputList.FirstOrDefault().Key);
+                    helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
                     await helpListEmbed.SendToChannel(e.Channel);
                 }
@@ -222,7 +185,6 @@ namespace Miki.Modules
                             locale.GetString("miki_module_general_help_aliases"),
                             string.Join(", ", ev.Aliases));
                     }
-
 
                     explainedHelpEmbed.AddField(
                         locale.GetString("miki_module_general_help_description"),
@@ -264,7 +226,6 @@ namespace Miki.Modules
             embed.Author.Name = "Miki " + Bot.instance.Version;
             embed.Color = new Color(1, 0.6f, 0.6f);
 
-
             embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
 
             embed.AddField("Links",
@@ -286,7 +247,7 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
 
-            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm") 
+            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 
@@ -336,7 +297,7 @@ namespace Miki.Modules
 
             embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
 
-            embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString());
+            embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 
             await embed.SendToChannel(e.Channel);
         }
@@ -415,6 +376,5 @@ namespace Miki.Modules
 
             await embed.SendToChannel(e.Channel);
         }
-
     }
 }

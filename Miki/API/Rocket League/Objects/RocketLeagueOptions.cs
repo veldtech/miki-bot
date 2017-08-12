@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
 {
@@ -12,7 +8,7 @@ namespace Miki.API.RocketLeague
         /// Your API key. You need this to use this library.
         /// </summary>
         public string ApiKey = "";
-        
+
         /// <summary>
         /// The delay for the caches to renew them. Default: 24 hours
         /// </summary>

@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.API.Patreon
 {
@@ -41,8 +36,7 @@ namespace Miki.API.Patreon
      public class PatreonCampaign : PatreonEntity
      {
          [JsonProperty("attributes")]
-         public PatreonCampaignAttribute Attributes { get; set; }    
-
+         public PatreonCampaignAttribute Attributes { get; set; }
      }
 
      public class PatreonPledge : PatreonEntity
@@ -146,7 +140,6 @@ namespace Miki.API.Patreon
 
      public class PatreonRelationships
      {
-
      }
 
      public class PatreonRelationshipItem
@@ -229,7 +222,6 @@ namespace Miki.API.Patreon
 
      public class PatreonReward
      {
-
      }
 
      public class PatreonAddress
@@ -238,7 +230,6 @@ namespace Miki.API.Patreon
 
      public class PatreonCard
      {
-
      }*/
 
     public class Attributes

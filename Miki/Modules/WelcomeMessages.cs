@@ -7,7 +7,6 @@ using IA.SDK.Interfaces;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -20,7 +19,7 @@ namespace Miki.Modules
          * -um = user's mention
          * -s  = server's name
          * -o  = owner's nickname
-         * -sc = server count 
+         * -sc = server count
          */
 
         public EventMessageModule(RuntimeModule m)

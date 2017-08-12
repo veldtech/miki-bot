@@ -2,16 +2,9 @@
 using IA;
 using IA.FileHandling;
 using IA.SDK;
-using Miki.Accounts;
-using Miki.API.Patreon;
 using Miki.Languages;
 using Miki.Models;
-using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Resources;
 using System.Threading.Tasks;
 
 namespace Miki
@@ -20,7 +13,7 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-          new Program().Start().GetAwaiter().GetResult();
+            new Program().Start().GetAwaiter().GetResult();
         }
 
         public static Bot bot;
@@ -29,8 +22,7 @@ namespace Miki
         private string devId;
 
         public async Task Start()
-        {
-            Locale.Load();
+              Locale.Load();
             timeSinceStartup = DateTime.Now;
 
             LoadApiKeyFromFile();
@@ -38,7 +30,8 @@ namespace Miki
             LoadDiscord();
 
             await bot.ConnectAsync();
-        }
+        }    {
+  
 
         private void LoadApiKeyFromFile()
         {
@@ -80,7 +73,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.0.1";
+                x.Version = "0.4.1";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;

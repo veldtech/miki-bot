@@ -2,24 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API.Patreon
 {
-    class PatreonApi
+    internal class PatreonApi
     {
-        string accessToken = "";
+        private string accessToken = "";
 
-        List<Included> Patrons { get; set; } = new List<Included>();
-        List<Datum> Pledges { get; set; } = new List<Datum>();
-
+        private List<Included> Patrons { get; set; } = new List<Included>();
+        private List<Datum> Pledges { get; set; } = new List<Datum>();
 
         public PatreonApi(string accessToken)
         {
             this.accessToken = accessToken;
-
-
         }
 
         public async Task<RootObject> GetAllPledgesAsync()
@@ -28,7 +24,7 @@ namespace Miki.API.Patreon
             rc.SetAuthorisation("Bearer", accessToken);
             RestResponse<RootObject> pledges = await rc.GetAsync<RootObject>();
 
-            if(pledges.Success)
+            if (pledges.Success)
             {
                 return pledges.Data;
             }
@@ -48,7 +44,7 @@ namespace Miki.API.Patreon
                 Datum pledge = pledges.Where(p => p.relationships.patron.data.id == user.id).FirstOrDefault();
 
                 if (pledge == null) return 0;
-                if(DateTime.Parse(pledge.attributes.declined_since).AddMonths(1) <= DateTime.Now)
+                if (DateTime.Parse(pledge.attributes.declined_since).AddMonths(1) <= DateTime.Now)
                 {
                     return pledge.attributes.AmountCents;
                 }

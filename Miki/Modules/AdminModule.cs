@@ -19,71 +19,110 @@ namespace Miki.Modules
         [Command(Name = "ban", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task BanAsync(EventContext e)
         {
-            List<string> arg = e.arguments.Split(' ').ToList();
-            IDiscordUser bannedUser = null;
-
-            if (e.message.MentionedUserIds.Count > 0)
+            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
             {
-                bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                List<string> arg = e.arguments.Split(' ').ToList();
+                IDiscordUser bannedUser = null;
+
+                if (e.message.MentionedUserIds.Count > 0)
+                {
+                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                    arg.RemoveAll(x => x.Contains(e.message.MentionedUserIds.First().ToString()));
+                }
+                else
+                {
+                    bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                    arg.RemoveAt(0);
+                }
+
+                if (bannedUser == null)
+                {
+                    await e.ErrorEmbed(e.GetResource("ban_error_user_null"))
+                        .SendToChannel(e.Channel);
+                }
+
+                if(bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                        .SendToChannel(e.Channel);
+                }
+
+                string reason = string.Join(" ", arg);
+
+                IDiscordEmbed embed = Utils.Embed;
+                embed.Title = "🛑 BAN";
+                embed.Description = e.GetResource("ban_header", $"**{e.Guild.Name}**");
+
+                if (!string.IsNullOrWhiteSpace(reason))
+                {
+                    embed.AddInlineField($"💬 {e.GetResource("miki_module_admin_kick_reason")}", reason);
+                }
+
+                embed.AddInlineField($"💁 {e.GetResource("miki_module_admin_kick_by")}", e.Author.Username + "#" + e.Author.Discriminator);
+
+                await bannedUser.SendMessage(embed);
+                await bannedUser.Ban(e.Guild, 1, reason);
             }
             else
             {
-                bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                await e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_ban_members")}`"))
+                    .SendToChannel(e.Channel);
             }
-
-            arg.RemoveAt(0);
-
-            string reason = string.Join(" ", arg);
-
-            IDiscordEmbed embed = Utils.Embed;
-            embed.Title = "🛑 BAN";
-            embed.Description = $"You've been banned from **{e.Guild.Name}**!";
-
-            if (!string.IsNullOrWhiteSpace(reason))
-            {
-                embed.AddInlineField("💬 Reason", reason);
-            }
-
-            embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
-
-            await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
         }
 
         [Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SoftbanAsync(EventContext e)
         {
-            List<string> arg = e.arguments.Split(' ').ToList();
-            IDiscordUser bannedUser = null;
-
-            if (e.message.MentionedUserIds.Count > 0)
+            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
             {
-                bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                List<string> arg = e.arguments.Split(' ').ToList();
+                IDiscordUser bannedUser = null;
+
+                if (e.message.MentionedUserIds.Count > 0)
+                {
+                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                }
+                else
+                {
+                    bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                }
+
+                if (bannedUser == null)
+                {
+                    await e.ErrorEmbed(e.GetResource("ban_error_user_null"))
+                        .SendToChannel(e.Channel);
+                }
+
+                if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                        .SendToChannel(e.Channel);
+                }
+
+                arg.RemoveAt(0);
+
+                string reason = string.Join(" ", arg);
+
+                IDiscordEmbed embed = Utils.Embed;
+                embed.Title = "⚠ SOFTBAN";
+                embed.Description = $"You've been banned from **{e.Guild.Name}**!";
+
+                if (!string.IsNullOrWhiteSpace(reason))
+                {
+                    embed.AddInlineField("💬 Reason", reason);
+                }
+
+                embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
+
+                await bannedUser.SendMessage(embed);
+                await bannedUser.Ban(e.Guild, 1, reason);
+                await bannedUser.Unban(e.Guild);
             }
             else
             {
-                bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                await e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_ban_members")}`"))
+                    .SendToChannel(e.Channel);
             }
-
-            arg.RemoveAt(0);
-
-            string reason = string.Join(" ", arg);
-
-            IDiscordEmbed embed = Utils.Embed;
-            embed.Title = "⚠ SOFTBAN";
-            embed.Description = $"You've been banned from **{e.Guild.Name}**!";
-
-            if (!string.IsNullOrWhiteSpace(reason))
-            {
-                embed.AddInlineField("💬 Reason", reason);
-            }
-
-            embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
-
-            await bannedUser.SendMessage(embed);
-            await bannedUser.Ban(e.Guild);
-            await bannedUser.Unban(e.Guild);
-
         }
 
         [Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
@@ -179,38 +218,58 @@ namespace Miki.Modules
         [Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task KickAsync(EventContext e)
         {
-            List<string> arg = e.arguments.Split(' ').ToList();
-            IDiscordUser bannedUser = null;
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-            if (e.message.MentionedUserIds.Count > 0)
+            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.KickMembers))
             {
-                bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                List<string> arg = e.arguments.Split(' ').ToList();
+                IDiscordUser bannedUser = null;
+                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+
+                if (e.message.MentionedUserIds.Count > 0)
+                {
+                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+                }
+                else
+                {
+                    bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                }
+
+                if (bannedUser == null)
+                {
+                    await e.ErrorEmbed(e.GetResource("ban_error_user_null"))
+                        .SendToChannel(e.Channel);
+                }
+
+                if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                        .SendToChannel(e.Channel);
+                }
+
+                arg.RemoveAt(0);
+
+                string reason = string.Join(" ", arg);
+
+                IDiscordEmbed embed = Utils.Embed;
+                embed.Title = locale.GetString("miki_module_admin_kick_header");
+                embed.Description = locale.GetString("miki_module_admin_kick_description", new object[] { e.Guild.Name });
+
+                if (!string.IsNullOrWhiteSpace(reason))
+                {
+                    embed.AddInlineField(locale.GetString("miki_module_admin_kick_reason"), reason);
+                }
+
+                embed.AddInlineField(locale.GetString("miki_module_admin_kick_by"), e.Author.Username + "#" + e.Author.Discriminator);
+
+                embed.Color = new Color(1, 1, 0);
+
+                await bannedUser.SendMessage(embed);
+                await bannedUser.Kick(reason);
             }
             else
             {
-                bannedUser = await e.Guild.GetUserAsync(ulong.Parse(e.arguments.Split(' ')[0]));
+                await e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_kick_members")}`"))
+                    .SendToChannel(e.Channel);
             }
-
-            arg.RemoveAt(0);
-
-            string reason = string.Join(" ", arg);
-
-            IDiscordEmbed embed = Utils.Embed;
-            embed.Title = locale.GetString("miki_module_admin_kick_header");
-            embed.Description = locale.GetString("miki_module_admin_kick_description", new object[] { e.Guild.Name });
-
-            if (!string.IsNullOrWhiteSpace(reason))
-            {
-                embed.AddInlineField(locale.GetString("miki_module_admin_kick_reason"), reason);
-            }
-
-            embed.AddInlineField(locale.GetString("miki_module_admin_kick_by"), e.Author.Username + "#" + e.Author.Discriminator);
-
-            embed.Color = new Color(1, 1, 0);
-
-            await bannedUser.SendMessage(embed);
-            await bannedUser.Kick();
         }
 		// TODO: Add more onomatopoeia for the embed title to randomly select from for more style points.
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
@@ -289,12 +348,14 @@ namespace Miki.Modules
 			};
 
 			IDiscordEmbed embed = Utils.Embed;
-			embed.Title = titles[MikiRandom.GetRandomNumber( titles.Length - 1 )];
-			embed.Description = locale.GetString( "miki_module_admin_prune_success", new object[] { deleteMessages.Count - 1 } );
+			embed.Title = titles[MikiRandom.Next( titles.Length - 1 )];
+			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count - 1);
 			embed.Color = Color.GetColor( IAColor.YELLOW );
 
 			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
+
 			await Task.Delay( 5000 );
+
 			await _dMessage.DeleteAsync();
 
 		}

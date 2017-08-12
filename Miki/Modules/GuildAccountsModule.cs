@@ -11,13 +11,12 @@ using Miki.Models.Objects.Guild;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module("Guild Accounts")]
-    class GuildAccountsModule
+    internal class GuildAccountsModule
     {
         [Command(Name = "guildweekly")]
         public async Task GuildWeekly(EventContext context)
@@ -95,7 +94,7 @@ namespace Miki.Modules
                     {
                         await Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
-                            .SetDescription(context.GetResource("guildweekly_error_timer_running",(timer.Value.AddDays(7) - DateTime.Now).ToTimeString()))
+                            .SetDescription(context.GetResource("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(locale)))
                             .SendToChannel(context.Channel);
                     }
                 }
@@ -116,7 +115,7 @@ namespace Miki.Modules
             {
                 GuildUser thisGuild = await db.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
 
-                if(thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
+                if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
                     await Utils.Embed
                        .SetTitle(context.GetResource("miki_terms_rival"))
@@ -205,34 +204,37 @@ namespace Miki.Modules
                 switch (arguments[0])
                 {
                     case "expneeded":
-                    {
-                        if (arguments.Length > 1)
                         {
-                            if (int.TryParse(arguments[1], out int value))
+                            if (arguments.Length > 1)
                             {
-                                g.MinimalExperienceToGetRewards = value;
-                                                                                  
+                                if (int.TryParse(arguments[1], out int value))
+                                {
+                                    g.MinimalExperienceToGetRewards = value;
+
+                                    await Utils.Embed
+                                        .SetTitle(e.GetResource("miki_terms_config"))
+                                        .SetDescription(e.GetResource("guildconfig_expneeded", value))
+                                        .SendToChannel(e.Channel);
+                                }
+                            }
+                        }
+                        break;
+
+                    case "visible":
+                        {
+                            if (arguments.Length > 1)
+                            {
+                                g.VisibleOnLeaderboards = arguments[1].GetInputBool();
+
+                                string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
+
                                 await Utils.Embed
                                     .SetTitle(e.GetResource("miki_terms_config"))
-                                    .SetDescription(e.GetResource("guildconfig_expneeded", value))
+                                    .SetDescription(resourceString)
                                     .SendToChannel(e.Channel);
                             }
                         }
-                    } break;
-                    case "visible":
-                    {
-                        if (arguments.Length > 1)
-                        {
-                            g.VisibleOnLeaderboards = arguments[1].GetInputBool();
-
-                            string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
-
-                            await Utils.Embed
-                                .SetTitle(e.GetResource("miki_terms_config"))
-                                .SetDescription(resourceString)
-                                .SendToChannel(e.Channel);
-                        }
-                    } break;
+                        break;
                 }
                 await context.SaveChangesAsync();
             }
@@ -241,17 +243,27 @@ namespace Miki.Modules
         [Command(Name = "guildtop")]
         public async Task GuildTop(EventContext e)
         {
+            int amountToSkip = 0;
+            int amountToTake = 12;
+
+            int.TryParse(e.arguments, out amountToSkip);
+
             using (var context = new MikiContext())
             {
-                var leaderboards = context.Database.SqlQuery<LeaderboardsItem>("SELECT TOP 12 Name, Experience as Value from [dbo].GuildUsers where VisibleOnLeaderboards = 1 order by Value desc").ToList();
+                List<GuildUser> leaderboards = context.GuildUsers.OrderByDescending(x => x.Experience)
+                                                                 .Skip(amountToSkip * amountToTake)
+                                                                 .Take(amountToTake)
+                                                                 .ToList();
 
                 IDiscordEmbed embed = Utils.Embed
                     .SetTitle(e.GetResource("guildtop_title"));
 
-                foreach(LeaderboardsItem i in leaderboards)
+                foreach (GuildUser i in leaderboards)
                 {
-                    embed.AddInlineField(i.Name, i.Value.ToString());
+                    embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
+
+                embed.SetFooter(e.GetResource("pasta_page_index", amountToSkip, "#"), null);
 
                 await embed.SendToChannel(e.Channel);
             }

@@ -1,29 +1,27 @@
-﻿using Discord;
-using IA;
-using IA.Events;
+﻿using IA;
 using IA.Events.Attributes;
 using IA.Extension;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
-using IMDBNet;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
-using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.Accounts.Achievements.Objects;
 using Miki.API;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Objects;
+using NCalc;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -31,7 +29,7 @@ namespace Miki.Modules
     [Module(Name = "Fun")]
     public class FunModule
     {
-        string[] puns = new string[]
+        private string[] puns = new string[]
         {
                 "miki_module_fun_pun_1",
                 "miki_module_fun_pun_2",
@@ -86,7 +84,8 @@ namespace Miki.Modules
                 "miki_module_fun_pun_51",
                 "miki_module_fun_pun_52",
         };
-        string[] reactions = new string[]
+
+        private string[] reactions = new string[]
         {
                 "miki_module_fun_8ball_answer_negative_1",
                 "miki_module_fun_8ball_answer_negative_2",
@@ -108,6 +107,7 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
+
         private string[] lunchposts = new string[]
 {
             "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
@@ -255,7 +255,6 @@ namespace Miki.Modules
             };
 
             await e.Channel.SendMessage(I_LIKE[Global.random.Next(0, I_LIKE.Length)] + BODY_PART[Global.random.Next(0, BODY_PART.Length)] + SUFFIX[Global.random.Next(0, SUFFIX.Length)]);
-
         }
 
         [Command(Name = "cage")]
@@ -270,7 +269,6 @@ namespace Miki.Modules
             using (WebClient webClient = new WebClient())
             {
                 byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=2&countryrank");
-
 
                 using (MemoryStream mem = new MemoryStream(data))
                 {
@@ -397,7 +395,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "osu")]
-        public async Task SendOsuSignatureAsync (EventContext e)
+        public async Task SendOsuSignatureAsync(EventContext e)
         {
             using (WebClient webClient = new WebClient())
             {
@@ -421,7 +419,7 @@ namespace Miki.Modules
             string[] choices = e.arguments.Split(',');
 
             Locale locale = e.Channel.GetLocale();
-            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.GetRandomNumber(0, choices.Length)] }));
+            await e.Channel.SendMessage(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
@@ -433,52 +431,73 @@ namespace Miki.Modules
         [Command(Name = "roll")]
         public async Task RollAsync(EventContext e)
         {
-            string rollCalc = "";
-            string amount = "";
-            int rollAmount = 0;
+            string output = "";
 
-            if (e.arguments != "")
+            if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                amount = e.arguments.Split(' ')[0];
-
-                if (amount.Split('d').Length > 1)
-                {
-                    for (int i = 0; i < int.Parse(amount.Split('d')[0]); i++)
-                    {
-                        int num = Mathm.Roll(int.Parse(amount.Split('d')[1]), 0);
-                        rollAmount += num;
-                        rollCalc += num + " + ";
-                    }
-                    rollCalc = rollCalc.Remove(rollCalc.Length - 3);
-                }
-                else
-                {
-                    try
-                    {
-                        rollAmount = Mathm.Roll(int.Parse(amount), 0);
-                    }
-                    catch
-                    {
-                        rollAmount = Mathm.Roll();
-
-                    }
-                }
+                output = MikiRandom.Next(100).ToString();
+            }
+            else if (int.TryParse(e.arguments, out int max))
+            {
+                output = MikiRandom.Next(max).ToString();
             }
             else
             {
-                rollAmount = Mathm.Roll();
+                string expression = e.arguments;
+
+                if (!string.IsNullOrWhiteSpace(expression))
+                {
+                    string[] parts = expression.Split(' ');
+
+                    foreach (string x in parts)
+                    {
+                        string replacableString = x.Trim('(', ')');
+                        int amount = 0;
+
+                        if (replacableString.StartsWith("r"))
+                        {
+                            string[] split = replacableString.TrimStart('r').Split('d');
+
+                            if (split.Length > 1)
+                            {
+                                if (int.TryParse(split[0], out int amountOfDice) && int.TryParse(split[1], out int sides))
+                                {
+                                    int a = 0;
+                                    for (int i = 0; i < amountOfDice; i++)
+                                    {
+                                        a += (MikiRandom.Next(sides) + 1);
+                                    }
+                                    amount = a;
+                                }
+                            }
+                            else
+                            {
+                                if (int.TryParse(split[0], out int sides))
+                                {
+                                    amount = MikiRandom.Next(sides) + 1;
+                                }
+                            }
+
+                            var regex = new Regex(Regex.Escape(x));
+
+                            expression = regex.Replace(expression, amount.ToString(), 1);
+                        }
+                    }
+                }
+                Expression doExpression = new Expression(expression);
+                output = doExpression.Evaluate().ToString();
+                output += $" ({expression})";
             }
 
-            if (rollAmount == 1)
+            if (output == "1" || output.StartsWith("1 "))
             {
-                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new Accounts.Achievements.Objects.BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
+                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
             }
 
-
-            await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.RollResult, new object[] { e.Author.Username, rollAmount }) + (rollCalc != "" ? " (" + rollCalc + ")" : ""));
+            await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
 
-        [Command(Name = "roulette")]    
+        [Command(Name = "roulette")]
         public async Task RouletteAsync(EventContext e)
         {
             IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
@@ -509,34 +528,21 @@ namespace Miki.Modules
             }
         }
 
-        // TODO: work this in again
-        //[Command(Name = "slots", On = "all")]
-        //public async Task SlotsAllAsync(EventContext e)
-        //{
-        //    Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-        //    using (var context = new MikiContext())
-        //    {
-        //        User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-        //        await InternalSlotsAsync(e, e.Author.Id, locale, u.Currency);
-        //    }
-        //}
-
         [Command(Name = "remind")]
         public async Task DoRemind(EventContext e)
         {
             List<string> arguments = e.arguments.Split(' ').ToList();
             int splitIndex = 0;
 
-            for(int i = 0; i < arguments.Count; i++)
+            for (int i = 0; i < arguments.Count; i++)
             {
-                if(arguments[i].ToLower() == "in")
+                if (arguments[i].ToLower() == "in")
                 {
                     splitIndex = i;
                 }
             }
 
-            if(splitIndex == 0)
+            if (splitIndex == 0)
             {
                 // throw error
                 return;
@@ -557,7 +563,7 @@ namespace Miki.Modules
 
             await Utils.Embed
                 .SetTitle("👌 OK")
-                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString()}**")
+                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**")
                 .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
                 .SendToChannel(e.Channel.Id);
 
@@ -583,21 +589,25 @@ namespace Miki.Modules
                             s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "gelbooru":
                         {
                             s = GelbooruPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "konachan":
                         {
                             s = KonachanPost.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     case "e621":
                         {
                             s = E621Post.Create(e.arguments, ImageRating.SAFE);
                         }
                         break;
+
                     default:
                         {
                             await e.Channel.SendMessage("I do not support this image host :(");

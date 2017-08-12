@@ -77,10 +77,12 @@ namespace Miki.Modules
                             }
                         }))
                         .AddCommand(
-                    new RuntimeCommandEvent("stay")
-                        .SetAliases("knock", "stand", "stop")
+                    new RuntimeCommandEvent("stand")
+                        .SetAliases("knock", "stay", "stop")
                         .Default(async (ec) =>
                         {
+                            bm.dealer.Hand.ForEach(x => x.isPublic = true);
+
                             await ec.message.DeleteAsync();
                             bool dealerQuit = false;
 
@@ -167,9 +169,9 @@ namespace Miki.Modules
 
                 string[] objectsChosen =
                 {
-                    objects[MikiRandom.GetRandomNumber(objects.Length)],
-                    objects[MikiRandom.GetRandomNumber(objects.Length)],
-                    objects[MikiRandom.GetRandomNumber(objects.Length)]
+                    objects[MikiRandom.Next(objects.Length)],
+                    objects[MikiRandom.Next(objects.Length)],
+                    objects[MikiRandom.Next(objects.Length)]
                 };
 
                 Dictionary<string, int> score = new Dictionary<string, int>();
@@ -258,9 +260,9 @@ namespace Miki.Modules
 
         private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
-            e.commandHandler.RequestDispose();
+            await e.commandHandler.RequestDisposeAsync();
 
-			User user;
+            User user;
 			using (var context = new MikiContext())
             {
                 user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -279,9 +281,9 @@ namespace Miki.Modules
 
         private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
-            e.commandHandler.RequestDispose();
+            await e.commandHandler.RequestDisposeAsync();
 
-			User user;
+            User user;
 			using( var context = new MikiContext() )
 			{
 				user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
@@ -295,9 +297,9 @@ namespace Miki.Modules
 
         private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
         {
-            e.commandHandler.RequestDispose();
+            await e.commandHandler.RequestDisposeAsync();
 
-			User user;
+            User user;
 			using( var context = new MikiContext() )
 			{
 				user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
@@ -354,25 +356,25 @@ namespace Miki.Modules
 
         public BlackjackManager()
         {
-            CardWorth.Add(CardValue.ACES, (x) => (x > 10) ? 1 : 11);
-            CardWorth.Add(CardValue.TWOS, (x) => 2);
+            CardWorth.Add(CardValue.ACES,   (x) => (x > 10) ? 1 : 11);
+            CardWorth.Add(CardValue.TWOS,   (x) => 2);
             CardWorth.Add(CardValue.THREES, (x) => 3);
-            CardWorth.Add(CardValue.FOURS, (x) => 4);
-            CardWorth.Add(CardValue.FIVES, (x) => 5);
-            CardWorth.Add(CardValue.SIXES, (x) => 6);
+            CardWorth.Add(CardValue.FOURS,  (x) => 4);
+            CardWorth.Add(CardValue.FIVES,  (x) => 5);
+            CardWorth.Add(CardValue.SIXES,  (x) => 6);
             CardWorth.Add(CardValue.SEVENS, (x) => 7);
             CardWorth.Add(CardValue.EIGHTS, (x) => 8);
-            CardWorth.Add(CardValue.NINES, (x) => 9);
-            CardWorth.Add(CardValue.TENS, (x) => 10);
-            CardWorth.Add(CardValue.JACKS, (x) => 10);
+            CardWorth.Add(CardValue.NINES,  (x) => 9);
+            CardWorth.Add(CardValue.TENS,   (x) => 10);
+            CardWorth.Add(CardValue.JACKS,  (x) => 10);
             CardWorth.Add(CardValue.QUEENS, (x) => 10);
-            CardWorth.Add(CardValue.KINGS, (x) => 10);
+            CardWorth.Add(CardValue.KINGS,  (x) => 10);
 
             player.AddToHand(deck.DrawRandom());
             player.AddToHand(deck.DrawRandom());
 
             dealer.AddToHand(deck.DrawRandom());
-            dealer.AddToHand(deck.DrawRandom());
+            dealer.AddToHand(deck.DrawRandom(false));
         }
 
         public IDiscordEmbed CreateEmbed(EventContext e)
@@ -387,7 +389,12 @@ namespace Miki.Modules
         public int Worth(CardHand hand)
         {
             int x = 0;
-            hand.Hand.ForEach(card => x += CardWorth[card.value](x));
+            hand.Hand.ForEach(card => {
+                if (card.isPublic)
+                {
+                    x += CardWorth[card.value](x);
+                }
+            });
             return x;
         }
     }
@@ -395,18 +402,17 @@ namespace Miki.Modules
     public class CardHand
     {
         public List<Card> Hand = new List<Card>();
-        bool isPublic = true;
-
+        
         public void AddToHand(Card card)
         {
             Hand.Add(card);
-            Hand.Sort((x, y) => y.value - x.value);
+            Hand.Sort((x, y) => ((y.isPublic) ? y.value : 0) - ((x.isPublic) ? x.value : 0));
         }
 
         public string Print()
         {
             string output = "";
-            Hand.ForEach((x) => output += x.Print() + " ");
+            Hand.ForEach((x) => output += x.Print());
             return output;
         }
     }
@@ -471,11 +477,12 @@ namespace Miki.Modules
             Deck.Add(new Card(CardType.SPADES, CardValue.KINGS));
         }
 
-        public Card DrawRandom()
+        public Card DrawRandom(bool isPublic = true)
         {
-            int rn = MikiRandom.GetRandomNumber(0, Deck.Count);
+            int rn = MikiRandom.Next(0, Deck.Count);
             Card card = Deck[rn];
             Deck.RemoveAt(rn);
+            card.isPublic = isPublic;
             return card;
         }
     }
@@ -484,6 +491,7 @@ namespace Miki.Modules
     {
         public CardType type;
         public CardValue value;
+        public bool isPublic = true;
 
         public Card(CardType t, CardValue v)
         {
@@ -494,6 +502,11 @@ namespace Miki.Modules
         public string Print()
         {
             string output = "";
+
+            if(!isPublic)
+            {
+                return "??";
+            }
 
             output += ":" + type.ToString().ToLower() + ":";
 
