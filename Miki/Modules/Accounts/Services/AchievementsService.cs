@@ -4,6 +4,7 @@ using IA.SDK;
 using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,64 +145,49 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "Novice",
                         Icon = "🎟",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 3;
-                        }
+                        CheckLevel = async (p) => p.level >= 3
                     },
                     new LevelAchievement()
                     {
                         Name = "Intermediate",
                         Icon = "🎫",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 5;
-                        }
+                        CheckLevel = async (p) => p.level >= 5
                     },
                     new LevelAchievement()
                     {
                         Name = "Experienced",
                         Icon = "🏵",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 10;
-                        }
+                        CheckLevel = async (p) => p.level >= 10
                     },
                     new LevelAchievement()
                     {
                         Name = "Expert",
                         Icon = "🎗",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 20;
-                        }
+                        CheckLevel = async (p) => p.level >= 20
                     },
                     new LevelAchievement()
                     {
                         Name = "Sage",
                         Icon = "🎖",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 30;
-                        }
+                        CheckLevel = async (p) => p.level >= 30
                     },
                     new LevelAchievement()
                     {
                         Name = "Master",
                         Icon = "🏅",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 50;
-                        }
+                        CheckLevel = async (p) => p.level >= 50
                     },
                     new LevelAchievement()
                     {
-                        Name = "Legend",
+                        Name = "Legend",    
                         Icon = "💮",
-                        CheckLevel = async (p) =>
-                        {
-                            return p.level >= 75;
-                        }
+                        CheckLevel = async (p) => p.level >= 100
+                    },
+                    new LevelAchievement()
+                    {
+                        Name = "Epic",
+                        Icon = "🌸",
+                        CheckLevel = async (p) => p.level >= 150,
                     }
                  };
              });
@@ -215,16 +201,19 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "Oh shit! Waddup",
                         Icon = "🐸",
-                        CheckMessage = async (p) =>
-                        {
-                            return p.message.Content.Contains("dat boi");
-                        }
+                        CheckMessage = async (p) => p.message.Content.Contains("dat boi")
+                    },
+                    new MessageAchievement()
+                    {
+                        Name = "It's wednesday my dudes!",
+                        Icon = "🇼",
+                        CheckMessage = async (p) => (p.message.Content.Contains("it") && p.message.Content.Contains("wednesday") && p.message.Content.Contains("dude") && DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                     }
                 };
             });
             AchievementDataContainer<MessageAchievement> LennyAchievement = new AchievementDataContainer<MessageAchievement>(x =>
             {
-                x.Name = "lenny";
+                x.Name = "lenny";   
                 x.Achievements = new List<MessageAchievement>()
                 {
                     new MessageAchievement()

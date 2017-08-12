@@ -17,7 +17,7 @@ namespace Miki.Modules
     [Module("Games")]
     public class GamesModule
     {
-        [Command(Name = "blackjack")]
+        [Command(Name = "blackjack", Aliases = new string[]{"bj"})]
         public async Task BlackjackAsync(EventContext e)
         {
             Locale locale = e.Channel.GetLocale();
@@ -52,7 +52,7 @@ namespace Miki.Modules
                     }
                 }
 
-                    BlackjackManager bm = new BlackjackManager();
+                BlackjackManager bm = new BlackjackManager();
 
                 IDiscordMessage message = await bm.CreateEmbed(e).SendToChannel(e.Channel);
 
@@ -122,7 +122,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "slots")]
+        [Command(Name = "slots", Aliases = new string[] { "s" })]
         public async Task SlotsAsync(EventContext e)
         {
             int moneyBet = 0;
@@ -244,11 +244,11 @@ namespace Miki.Modules
                 if (moneyReturned == 0)
                 {
 					moneyReturned = -moneyBet;
-					embed.AddField( locale.GetString( "miki_module_fun_slots_lose_header" ), locale.GetString( "miki_module_fun_slots_lose_amount", moneyBet, u.Currency - moneyBet ) );
+					embed.AddField(locale.GetString("miki_module_fun_slots_lose_header"), locale.GetString( "miki_module_fun_slots_lose_amount", moneyBet, u.Currency - moneyBet ));
 				}
                 else
                 {
-					embed.AddField( locale.GetString( Locale.SlotsWinHeader ), locale.GetString( Locale.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned ) );
+					embed.AddField(locale.GetString(Locale.SlotsWinHeader), locale.GetString(Locale.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
 				}
 
                 embed.Description = string.Join(" ", objectsChosen);
@@ -314,7 +314,6 @@ namespace Miki.Modules
                 .SetTitle(e.GetResource("miki_blackjack_win_title"))
                 .SetDescription( e.GetResource("miki_blackjack_win_description", bet *2 ) + "\n" + e.GetResource( "miki_blackjack_new_balance", user.Currency ) )
                 .ModifyMessage(instanceMessage);
-
         }
     }
 
@@ -345,6 +344,7 @@ namespace Miki.Modules
             hands[userid].AddToHand(deck.DrawRandom());
         }
     }
+
     public class BlackjackManager : CardManager
     {
         public CardHand player = new CardHand();
@@ -356,7 +356,7 @@ namespace Miki.Modules
 
         public BlackjackManager()
         {
-            CardWorth.Add(CardValue.ACES,   (x) => (x > 10) ? 1 : 11);
+            CardWorth.Add(CardValue.ACES,   (x) => (    x > 10) ? 1 : 11);
             CardWorth.Add(CardValue.TWOS,   (x) => 2);
             CardWorth.Add(CardValue.THREES, (x) => 3);
             CardWorth.Add(CardValue.FOURS,  (x) => 4);

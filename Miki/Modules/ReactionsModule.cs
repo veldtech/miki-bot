@@ -74,7 +74,8 @@ namespace Miki.Modules
                 "http://i.imgur.com/3vYPbuO.jpg",
                 "http://i.imgur.com/p1twVD4.png",
                 "http://i.imgur.com/AsxaQ3D.gif",
-                "http://i.imgur.com/On8Axls.gif"
+                "http://i.imgur.com/On8Axls.gif",
+                "http://i.imgur.com/yCqJlFc.gif"
             };
 
             await Utils.Embed
