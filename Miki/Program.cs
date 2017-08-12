@@ -21,7 +21,8 @@ namespace Miki
         public static DateTime timeSinceStartup;
         private string devId;
 
-        public async Task Start()
+        public async Task Start() {
+
               Locale.Load();
             timeSinceStartup = DateTime.Now;
 
@@ -30,7 +31,8 @@ namespace Miki
             LoadDiscord();
 
             await bot.ConnectAsync();
-        }    {
+
+        }
   
 
         private void LoadApiKeyFromFile()
