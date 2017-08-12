@@ -1,14 +1,9 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki.API.UrbanDictionary
 {
-    class UrbanDictionaryApi
+    internal class UrbanDictionaryApi
     {
         private string key = "";
 
@@ -23,12 +18,12 @@ namespace Miki.API.UrbanDictionary
 
             RestRequest r = new RestRequest();
             r.AddHeader("X-Mashape-Key", key);
-                r.AddHeader("Accept", "application/json");
+            r.AddHeader("Accept", "application/json");
 
             RestResponse entry = (RestResponse)client.Execute(r);
             UrbanDictionaryResponse post = JsonConvert.DeserializeObject<UrbanDictionaryResponse>(entry.Content);
 
-            if(post.Entries.Count == 0)
+            if (post.Entries.Count == 0)
             {
                 return null;
             }

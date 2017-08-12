@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Miki.API.Gambling
 {
-    class GamblingApi
+    internal class GamblingApi
     {
-
-        
     }
 
-    class GamblingSettings
+    internal class GamblingSettings
     {
         public SlotsSettings slotSettings = new SlotsSettings();
     }
 
-    class SlotsSettings
+    internal class SlotsSettings
     {
         private List<SlotsItem> items = new List<SlotsItem>();
 
@@ -26,13 +20,14 @@ namespace Miki.API.Gambling
             items.Add(item);
             return this;
         }
+
         public SlotsSettings AddItem(string emoji, float weight)
         {
             return AddItem(new SlotsItem(emoji, weight));
         }
     }
 
-    class SlotsItem
+    internal class SlotsItem
     {
         public SlotsItem(string emoji, float weight)
         {
@@ -44,9 +39,9 @@ namespace Miki.API.Gambling
         public float Weight { get; set; }
     }
 
-    class SlotsResponse
+    internal class SlotsResponse
     {
-        int MoneyBack { get; set; }
-        bool Win { get; set; }
+        private int MoneyBack { get; set; }
+        private bool Win { get; set; }
     }
 }

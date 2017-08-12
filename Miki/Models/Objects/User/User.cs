@@ -1,15 +1,12 @@
 ﻿using IA;
+using IA.SDK.Interfaces;
+using Miki.Accounts.Achievements;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using IA.SDK.Interfaces;
-using Miki.Accounts;
-using System.ComponentModel;
-using Miki.Accounts.Achievements;
 
 namespace Miki.Models
 {
@@ -68,7 +65,7 @@ namespace Miki.Models
 
             if (context != null)
             {
-                 await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
+                await AchievementManager.Instance.CallTransactionMadeEventAsync(context, this, fromUser, Currency);
             }
         }
 
@@ -112,6 +109,7 @@ namespace Miki.Models
             }
             return Level;
         }
+
         public int CalculateMaxExperience(int localExp)
         {
             int experience = localExp;
@@ -124,6 +122,7 @@ namespace Miki.Models
             }
             return output;
         }
+
         private int CalculateNextLevelIteration(int output, int level)
         {
             return 10 + (output + (level * 20));
@@ -133,22 +132,28 @@ namespace Miki.Models
         {
             using (var context = new MikiContext())
             {
-                int x = context.Database.SqlQuery<int>("Select COUNT(*) as rank from Users where Users.Total_Experience >= @p0", Total_Experience).First();
+                int x = context.Users
+                    .Where(u => u.Total_Experience > Total_Experience)
+                    .Count();
                 return x;
             }
         }
+
         public async Task<int> GetLocalRank(ulong guildId)
         {
             using (var context = new MikiContext())
             {
                 LocalExperience l = await context.Experience.FindAsync(guildId.ToDbLong(), Id);
 
-                if(l == null)
+                if (l == null)
                 {
                     return -1;
                 }
 
-                int x = context.Database.SqlQuery<int>("Select COUNT(*) as rank from LocalExperience where LocalExperience.ServerId = @p0 AND LocalExperience.Experience >= @p1", guildId.ToDbLong(), l.Experience).First();
+                long gId = guildId.ToDbLong();
+                int x = context.Experience
+                    .Where(e => e.ServerId == gId && e.Experience > l.Experience)
+                    .Count();
                 return x;
             }
         }

@@ -1,9 +1,6 @@
-﻿using IA;
-using IA.Events;
-using IA.Events.Attributes;
+﻿using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -52,7 +49,6 @@ namespace Miki.Modules
             em.ImageUrl = images[Global.random.Next(0, images.Length)];
 
             await em.SendToChannel(e.Channel);
-
         }
 
         [Command(Name = "lewd")]
@@ -78,7 +74,8 @@ namespace Miki.Modules
                 "http://i.imgur.com/3vYPbuO.jpg",
                 "http://i.imgur.com/p1twVD4.png",
                 "http://i.imgur.com/AsxaQ3D.gif",
-                "http://i.imgur.com/On8Axls.gif"
+                "http://i.imgur.com/On8Axls.gif",
+                "http://i.imgur.com/yCqJlFc.gif"
             };
 
             await Utils.Embed

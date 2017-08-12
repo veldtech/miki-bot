@@ -5,16 +5,9 @@ using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
-using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
-using Miki.Accounts;
-using Miki.Accounts.Achievements;
-using Miki.Languages;
 using Miki.Models;
-using Miki.Models.Objects.Guild;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +19,6 @@ namespace Miki.Modules
     {
         public DeveloperModule(RuntimeModule module)
         {
-
         }
 
         [Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -53,7 +45,6 @@ namespace Miki.Modules
         [Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayEmbedAsync(EventContext e)
         {
-
             await Utils.Embed.AddInlineField("SAY", e.arguments).SendToChannel(e.Channel);
         }
 
@@ -69,7 +60,7 @@ namespace Miki.Modules
             await e.message.Discord.SetGameAsync(e.arguments, "https://www.twitch.tv/velddev");
         }
 
-        [Command(Name ="changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ChangeAvatarAsync(EventContext e)
         {
             Image s = new Image(new FileStream("./" + e.arguments, FileMode.Open));
@@ -88,7 +79,30 @@ namespace Miki.Modules
 
             foreach (DiscordSocketClient c in Bot.instance.Client.Shards)
             {
-                embed.AddInlineField("Shard " + c.ShardId, "State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
+                embed.AddInlineField("Shard " + c.ShardId, $"State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
+            }
+
+            await embed.SendToChannel(context.Channel);
+        }
+
+        [Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SpellCheckAsync(EventContext context)
+        {
+            IDiscordEmbed embed = Utils.Embed;
+
+            embed.SetTitle("Spellcheck - top results");
+
+            API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
+            List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.arguments)
+                                                                 .OrderBy(z => z.score)
+                                                                 .ToList();
+            int x = 1;
+
+            foreach (API.StringComparison.StringComparison c in best)
+            {
+                embed.AddInlineField($"#{x}", c);
+                x++;
+                if (x > 16) break;
             }
 
             await embed.SendToChannel(context.Channel);
@@ -102,12 +116,11 @@ namespace Miki.Modules
                 if (context.message.MentionedUserIds.Count > 0)
                 {
                     Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
-                    if(a == null)
+                    if (a == null)
                     {
                         database.Achievements.Add(new Achievement() { Id = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
                         await database.SaveChangesAsync();
                     }
-
                 }
                 else
                 {

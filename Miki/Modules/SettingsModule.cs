@@ -1,5 +1,4 @@
-﻿using Discord;
-using IA;
+﻿using IA;
 using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK;
@@ -7,16 +6,13 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Languages;
 using Miki.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module(Name = "settings")]
-    class SettingsModule
+    internal class SettingsModule
     {
         [Command(Name = "toggledm")]
         public async Task ToggleDmAsync(EventContext e)
@@ -92,6 +88,38 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
+                await embed.SendToChannel(e.Channel);
+            }
+        }
+
+        [Command(Name = "showmodule")]
+        public async Task ConfigAsync(EventContext e)
+        {
+            IModule module = e.commandHandler.GetModule(e.arguments);
+
+            if (module != null)
+            {
+                IDiscordEmbed embed = Utils.Embed
+                                           .SetTitle(e.arguments);
+
+                string content = "";
+
+                foreach (RuntimeCommandEvent ev in module.Events.OrderBy((x) => x.Name))
+                {
+                    content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+                }
+
+                embed.AddInlineField("Events", content);
+
+                content = "";
+
+                foreach (IService ev in module.Services.OrderBy((x) => x.Name))
+                {
+                    content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+                }
+
+                embed.AddInlineField("Services", content);
+
                 await embed.SendToChannel(e.Channel);
             }
         }

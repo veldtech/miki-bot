@@ -1,8 +1,7 @@
 namespace Miki.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class RevertMarriagesToBase : DbMigration
     {
         public override void Up()
@@ -11,7 +10,7 @@ namespace Miki.Migrations
             DropColumn("dbo.Marriages", "TimesRemarried");
             DropColumn("dbo.Marriages", "Divorced");
         }
-        
+
         public override void Down()
         {
             AddColumn("dbo.Marriages", "Divorced", c => c.Boolean(nullable: false));

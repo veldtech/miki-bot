@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Models.Objects
+﻿namespace Miki.Models.Objects
 {
-    class ApiKeysModel
+    internal class ApiKeysModel
     {
         public string CarbonitexKey { get; set; }
         public string DiscordBotsOrgKey { get; set; }

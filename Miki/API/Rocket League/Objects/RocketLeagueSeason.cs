@@ -18,11 +18,12 @@ namespace Miki.API.RocketLeague
         [JsonProperty("endedOn")]
         public ulong? EndedOn;
     }
+
     internal class RocketLeagueSeasonCache : ICacheable<RocketLeagueSeason>
     {
-        string key = "";
+        private string key = "";
 
-        List<RocketLeagueSeason> internalData = new List<RocketLeagueSeason>();
+        private List<RocketLeagueSeason> internalData = new List<RocketLeagueSeason>();
 
         public List<RocketLeagueSeason> Data
         {
@@ -39,11 +40,13 @@ namespace Miki.API.RocketLeague
                 internalData = value;
             }
         }
+
         public DateTime LastUpdatedAt
         {
             get;
             set;
         }
+
         public TimeSpan UpdateSpan
         {
             get;

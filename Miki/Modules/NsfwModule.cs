@@ -1,27 +1,20 @@
-﻿using IA;
-using IA.Events;
-using IA.Events.Attributes;
+﻿using IA.Events.Attributes;
 using IA.SDK.Events;
-using IA.SDK.Interfaces;
 using Miki.Languages;
 using Miki.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
     [Module(Name = "nsfw", Nsfw = true)]
-    class NsfwModule
+    internal class NsfwModule
     {
         [Command(Name = "gelbooru", Aliases = new string[] { "gel" })]
         public async Task RunGelbooru(EventContext e)
         {
             IPost s = GelbooruPost.Create(e.arguments, ImageRating.EXPLICIT);
 
-            if(s == null)
+            if (s == null)
             {
                 await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
                     .SendToChannel(e.Channel);

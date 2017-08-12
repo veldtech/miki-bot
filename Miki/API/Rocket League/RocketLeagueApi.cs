@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IA.SDK;
 using Rest;
-using IA.SDK;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
 {
-    class RocketLeagueApi
+    internal class RocketLeagueApi
     {
-        string key = "";
+        private string key = "";
 
         public ICacheable<RocketLeaguePlatform> platforms;
         public ICacheable<RocketLeaguePlaylist> playlists;
@@ -44,7 +41,7 @@ namespace Miki.API.RocketLeague
             RestClient r = new RestClient($"https://api.rocketleaguestats.com/v1/player?unique_id={ name }&platform_id={ platform.ToString() }")
                 .SetAuthorisation("Bearer", key);
 
-            RestResponse <RocketLeagueUser> response = await r.GetAsync<RocketLeagueUser>();
+            RestResponse<RocketLeagueUser> response = await r.GetAsync<RocketLeagueUser>();
 
             return response.Data;
         }

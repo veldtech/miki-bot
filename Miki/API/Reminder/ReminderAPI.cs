@@ -1,19 +1,16 @@
 ﻿using IA.SDK.Builders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API
 {
     public class ReminderAPI
     {
-        ulong userId = 0;
+        private ulong userId = 0;
 
-        string value = Constants.NotDefined;
+        private string value = Constants.NotDefined;
 
-        TimeSpan timeTaken = new TimeSpan();
+        private TimeSpan timeTaken = new TimeSpan();
 
         public ReminderAPI(ulong receiver)
         {

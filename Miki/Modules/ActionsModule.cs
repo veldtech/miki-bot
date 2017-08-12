@@ -1,14 +1,10 @@
-﻿using IA;
-using IA.Events;
-using IA.Events.Attributes;
+﻿using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Extensions;
 using IA.SDK.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -50,6 +46,9 @@ namespace Miki.Modules
                 "http://i.imgur.com/Fuc4BX7.gif",
                 "http://i.imgur.com/VQjMsms.gif",
                 "http://i.imgur.com/ZwJJzQu.gif",
+                "http://i.imgur.com/NupHmFh.gif",
+                "http://i.imgur.com/5bnJJKq.gif",
+                "http://i.imgur.com/eIMcqa9.gif",
             };
 
             Random r = new Random();
@@ -74,12 +73,12 @@ namespace Miki.Modules
         {
             string[] images = new string[]
             {
-                "https://67.media.tumblr.com/f50da0e6874bc235383fc435e61cd1dc/tumblr_inline_o34yoyT60F1tlr3az_500.gif",
-                "https://66.media.tumblr.com/tumblr_ly6n2dCYM41rnw7hko1_500.gif",
+                "http://i.imgur.com/CEkg7K3.gif",
+                "http://i.imgur.com/K4lYduH.gif",
                 "http://imgur.com/8kLQ55E.gif",
-                "https://66.media.tumblr.com/cb6bb8d0da432035722cd96835f20f0f/tumblr_nq2cyx3qYr1sa6ma2o1_500.gif",
-                "http://i824.photobucket.com/albums/zz162/dovaiv/tumblr_mxbswzL1qT1sq9yswo1_500.gif",
-                "http://33.media.tumblr.com/510818c33b426e9ba73f809daec3f045/tumblr_n2bye1AaeQ1tv44eho1_500.gif",
+                "http://i.imgur.com/kd0F5bV.gif",
+                "http://imgur.com/zG60zPk.gif",
+                "http://i.imgur.com/ct76LIg.gif",
             };
 
             Random r = new Random();
@@ -104,22 +103,32 @@ namespace Miki.Modules
         {
             string[] images = new string[]
             {
-                "http://i.imgur.com/4pD5sX6.gif",
-                "https://s-media-cache-ak0.pinimg.com/originals/22/b4/0c/22b40c79d48026cf62c95c31428a89a9.gif",
-                "http://media.tumblr.com/a0a6f568bece2e789ec55304b049eb91/tumblr_inline_nmctxxyNkr1qf6el3.gif",
-                "http://i.imgur.com/7dQBZ1l.gif",
-                "http://33.media.tumblr.com/tumblr_m7xqc0bBeb1r56lqu.gif",
-                "http://static.tumblr.com/3a85b35bec4523001cff5230d241632f/oistman/ABrmmaavy/tumblr_static_tumblr_mchtm5jbjo1rdol9po1_500.gif",
-                "https://media.giphy.com/media/pKvo8d1PSpOOA/giphy.gif",
-                "https://m.popkey.co/cd04de/eA1Re.gif",
-                "https://media.tenor.co/images/386fb4996e952415422e4de3f7ff9273/tenor.gif",
-                "http://68.media.tumblr.com/585b32983c5e57a30d3509b2e469bb7e/tumblr_ni8qhvXhcm1sr6y44o1_500.gif",
-                "http://1.bp.blogspot.com/-2aRBZDBrkXA/U0xOOGakkII/AAAAAAAAA-M/0iwPpVvejGE/s1600/GEB08YD.gif",
+                "http://i.imgur.com/ba9Skjf.gif",
+                "http://i.imgur.com/V6oBWDn.gif",
+                "http://i.imgur.com/PWXcVQf.gif",
+                "http://i.imgur.com/nOwOSjA.gif",
+                "http://i.imgur.com/mG2Hm8s.gif",
+                "http://i.imgur.com/iiJCWns.gif",
+                "http://i.imgur.com/onUZvOi.gif",
+                "http://i.imgur.com/cZwkHOB.gif",
+                "http://i.imgur.com/uehetOS.gif",
+                "http://i.imgur.com/MAZIl3c.gif",
+                "http://i.imgur.com/C1u3GwL.gif",
+                "http://i.imgur.com/E7NniAn.gif",
+                "http://i.imgur.com/2RKfil2.gif",
+                "http://i.imgur.com/jcSpVTS.gif",
+                "http://i.imgur.com/r2X5YfC.gif",
+                "http://i.imgur.com/qGQry9o.gif",
+                "http://i.imgur.com/rRMUuQu.gif",
+                "http://i.imgur.com/v47st6k.gif",
+                "http://i.imgur.com/iiJCWns.gif",
+                "http://i.imgur.com/v47st6k.gif",
             };
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            IDiscordEmbed embed = Utils.Embed
+                .SetImageUrl(images[r.Next(0, images.Length)]);
 
             if (e.arguments.Length > 0)
             {
@@ -129,7 +138,6 @@ namespace Miki.Modules
             {
                 embed.Title = $"{e.message.Bot.Username} glares at {e.Author.Username}";
             }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
 
             await embed.SendToChannel(e.Channel);
         }
@@ -149,6 +157,11 @@ namespace Miki.Modules
                 "http://imgur.com/21e7SHD.gif",
                 "http://imgur.com/LOCVVvL.gif",
                 "http://imgur.com/h2KJJUA.gif",
+                "http://i.imgur.com/ZUe3F3P.gif",
+                "http://i.imgur.com/8xuO60E.gif",
+                "http://i.imgur.com/4tMP3wu.gif",
+                "http://i.imgur.com/F9odBEE.gif",
+                "http://i.imgur.com/U742vH8.gif"
             };
 
             Random r = new Random();
@@ -194,6 +207,7 @@ namespace Miki.Modules
                 "http://imgur.com/FVbzx1A.gif",
                 "http://imgur.com/gMLlFNC.gif",
                 "http://imgur.com/FOdbhav.gif",
+                "http://i.imgur.com/CEkg7K3.gif",
             };
 
             Random r = new Random();
@@ -298,6 +312,8 @@ namespace Miki.Modules
                 "http://imgur.com/PPw83Ug.gif",
                 "http://imgur.com/lZ7gAES.gif",
                 "http://imgur.com/Bftud8V.gif",
+                "http://i.imgur.com/AicG7H6.gif",
+                "http://i.imgur.com/ql3FvuU.gif",
             };
 
             Random r = new Random();
@@ -317,7 +333,7 @@ namespace Miki.Modules
             await embed.SendToChannel(e.Channel);
         }
 
-        [Command(Name = "pet")]
+        [Command(Name = "pat", Aliases = new string[] { "pet" })]
         public async Task PetAsync(EventContext e)
         {
             string[] images = new string[]

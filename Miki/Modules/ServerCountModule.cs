@@ -4,9 +4,7 @@ using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK;
 using IA.SDK.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -15,7 +13,7 @@ using System.Threading.Tasks;
 namespace Miki.Modules
 {
     [Module("internal:servercount")]
-    class ServerCountModule
+    internal class ServerCountModule
     {
         public ServerCountModule(RuntimeModule m)
         {
@@ -46,6 +44,7 @@ namespace Miki.Modules
                 string responseString = await response.Content.ReadAsStringAsync();
             }
         }
+
         private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
         {
             using (var client = new HttpClient())
@@ -57,6 +56,7 @@ namespace Miki.Modules
                 }
             }
         }
+
         private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
         {
             using (var client = new HttpClient())
@@ -69,4 +69,4 @@ namespace Miki.Modules
             }
         }
     }
-} 
+}

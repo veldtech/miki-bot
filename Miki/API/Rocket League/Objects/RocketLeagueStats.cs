@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.API.RocketLeague
+﻿namespace Miki.API.RocketLeague
 {
-    class RocketLeagueStats
+    internal class RocketLeagueStats
     {
         public int Wins { get; internal set; }
         public int Goals { get; internal set; }

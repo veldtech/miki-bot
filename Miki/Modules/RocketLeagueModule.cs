@@ -5,15 +5,13 @@ using IA.SDK.Interfaces;
 using Miki.API.RocketLeague;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    class RocketLeagueModule
+    internal class RocketLeagueModule
     {
-        RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
+        private RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
         {
             ApiKey = Global.RocketLeagueKey
         });
@@ -84,6 +82,7 @@ namespace Miki.Modules
             embed.ImageUrl = user.SignatureUrl;
             await embed.SendToChannel(e.Channel);
         }
+
         public async Task GetUserSeason(EventContext e)
         {
             int platform = 1;
@@ -241,10 +240,12 @@ namespace Miki.Modules
                 case "steam":
                 case "pc":
                     return 1;
+
                 case "ps4":
                 case "playstation":
                 case "ps":
                     return 2;
+
                 case "xbox":
                 case "xbone":
                 case "xboxone":

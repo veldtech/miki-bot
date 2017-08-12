@@ -1,16 +1,11 @@
-﻿using Discord;
-using IA;
+﻿using IA;
 using IA.SDK;
 using IA.SDK.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts
 {
-    class EmojiBar
+    internal class EmojiBar
     {
         public EmojiBarSet ValueOn = new EmojiBarSet();
         public EmojiBarSet ValueOff = new EmojiBarSet();
@@ -40,7 +35,7 @@ namespace Miki.Accounts
             int iteration = MaxValue / Width;
             int currentIteration = iteration;
 
-            for(int i = 0;  i < Width; i++)
+            for (int i = 0; i < Width; i++)
             {
                 output += (currentValue >= currentIteration) ? ValueOn.GetAppropriateSection(0, Width - 1, i) : ValueOff.GetAppropriateSection(0, Width - 1, i);
                 currentIteration += iteration;
@@ -50,7 +45,7 @@ namespace Miki.Accounts
         }
     }
 
-    class EmojiBarSet
+    internal class EmojiBarSet
     {
         public string Start = "[";
         public string Mid = "o";
@@ -58,8 +53,8 @@ namespace Miki.Accounts
 
         public EmojiBarSet()
         {
-
         }
+
         public EmojiBarSet(string start, string mid, string end)
         {
             Start = start;
