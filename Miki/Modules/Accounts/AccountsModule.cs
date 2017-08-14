@@ -15,6 +15,7 @@ using Miki.Models;
 using Miki.Modules.Accounts.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -33,7 +34,9 @@ namespace Miki.Modules.AccountsModule
                 using (var context = new MikiContext())
                 {
                     long guildId = g.Id.ToDbLong();
-                    List<LevelRole> rolesObtained = context.LevelRoles.AsNoTracking().Where(p => p.GuildId == guildId && p.RequiredLevel == l).ToList();
+                    List<LevelRole> rolesObtained = await context.LevelRoles.Where(p => p.GuildId == guildId && p.RequiredLevel == l)
+                                                                      .ToListAsync();
+
                     IDiscordUser u = await g.Guild.GetUserAsync(a.Id.FromDbLong());
                     List<IDiscordRole> rolesGiven = new List<IDiscordRole>();
 
@@ -115,7 +118,7 @@ namespace Miki.Modules.AccountsModule
 
         [Command(Name = "leaderboards")]
         public async Task LeaderboardsAsync(EventContext e)
-        {
+        {   
             switch (e.arguments.ToLower())
             {
                 case "local":
@@ -149,6 +152,7 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
+        // Veld - TODO: rewrite command
         [Command(Name = "profile")]
         public async Task ProfileAsync(EventContext e)
         {
@@ -212,7 +216,7 @@ namespace Miki.Modules.AccountsModule
                     string globalInfoValue = new MessageBuilder()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
                         .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()), MessageFormatting.PLAIN, false)
+                        .AppendText(locale.GetString("miki_module_accounts_information_rank", await account.GetGlobalRank()), MessageFormatting.PLAIN, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -221,7 +225,8 @@ namespace Miki.Modules.AccountsModule
 
                     List<Marriage> marriages = Marriage.GetMarriages(context, id);
 
-                    marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
+                    marriages = marriages.OrderBy(mar => mar.TimeOfMarriage)
+                                         .ToList();
 
                     List<User> users = new List<User>();
 
@@ -253,7 +258,10 @@ namespace Miki.Modules.AccountsModule
 
                     embed.Color = new IA.SDK.Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
 
-                    List<CommandUsage> List = context.CommandUsages.Where(c => c.UserId == id).OrderByDescending(c => c.Amount).ToList();
+                    List<CommandUsage> List = await context.CommandUsages.Where(c => c.UserId == id)
+                                                                         .OrderByDescending(c => c.Amount)
+                                                                         .ToListAsync();
+
                     string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : "none (yet!)";
 
                     embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"), favCommand);
@@ -323,7 +331,8 @@ namespace Miki.Modules.AccountsModule
             {
                 using (MikiContext context = new MikiContext())
                 {
-                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower()).ToList();
+                    List<User> users = await context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower())
+                                                          .ToListAsync();
 
                     if (users.Count == 0)
                     {
@@ -466,13 +475,13 @@ namespace Miki.Modules.AccountsModule
                     User person1 = await context.Users.FindAsync(marriage.Id1);
                     User person2 = await context.Users.FindAsync(marriage.Id2);
 
-                    if (person1.MarriageSlots < Marriage.GetMarriages(context, person1.Id).Count)
+                    if (person1.MarriageSlots < (Marriage.GetMarriages(context, person1.Id)).Count)
                     {
                         await e.Channel.SendMessage($"{person1.Name} do not have enough marriage slots, sorry :(");
                         return;
                     }
 
-                    if (person2.MarriageSlots < Marriage.GetMarriages(context, person2.Id).Count)
+                    if (person2.MarriageSlots < (Marriage.GetMarriages(context, person2.Id)).Count)
                     {
                         await e.Channel.SendMessage($"{person2.Name} does not have enough marriage slots, sorry :(");
                         return;
@@ -628,7 +637,7 @@ namespace Miki.Modules.AccountsModule
 
                     IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
-                    em.Description = e.GetResource("give_description");
+                    em.Description = e.GetResource("give_description", sender.Name, receiver.Name, goldSent);
 
                     em.Color = new IA.SDK.Color(255, 140, 0);
 
@@ -644,14 +653,16 @@ namespace Miki.Modules.AccountsModule
         }
 
         [Command(Name = "daily")]
-        public async Task GetDailyAsync(EventContext e)
+        public async Task   GetDailyAsync(EventContext e)
         {
+            Log.Message("Started Daily");
             using (var context = new MikiContext())
             {
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
+                Log.Message("Daily, Getting user");
                 if (u == null)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
@@ -665,6 +676,9 @@ namespace Miki.Modules.AccountsModule
                 {
                     dailyAmount *= 2;
                 }
+
+                Log.Message("Daily, Getting check donator");
+
 
                 if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
                 {
@@ -681,6 +695,8 @@ namespace Miki.Modules.AccountsModule
                     .SendToChannel(e.Channel);
 
                 await context.SaveChangesAsync();
+                Log.Message("Daily, committing");
+
             }
         }
 
@@ -891,9 +907,9 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
                             embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Total_Commands)
-                                                             .Take(12)
-                                                             .ToList();
+                            List<User> output = await context.Users.OrderByDescending(x => x.Total_Commands)
+                                                                   .Take(12)
+                                                                   .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
@@ -908,9 +924,9 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Currency)
+                            List<User> output = await context.Users.OrderByDescending(x => x.Currency)
                                                                 .Take(12)
-                                                                .ToList();
+                                                                .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
@@ -926,14 +942,20 @@ namespace Miki.Modules.AccountsModule
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             long guildId = e.Guild.Id.ToDbLong();
-                            List<LocalExperience> output = context.Experience.Where(x => x.ServerId == guildId).OrderByDescending(x => x.Experience).ToList();
-                            List<User> users = context.Users.Where(x => output.Any(y => y.UserId == x.Id)).ToList();
-
-                            int i = 1;
-                            foreach (User user in users)
+                            List<LocalExperience> output = await context.Experience
+                                                                            .Where(x => x.ServerId == guildId)
+                                                                            .OrderByDescending(x => x.Experience)
+                                                                            .Take(12)
+                                                                            .ToListAsync();
+                            List<User> users = new List<User>();
+                            for(int i = 0; i < output.Count; i++)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{output.Find(x => x.UserId == user.Id).Experience} experience!");
-                                i++;
+                                users.Add(await context.Users.FindAsync(output[i].UserId));
+                            }
+
+                            for(int i = 0; i < users.Count; i++)
+                            {
+                                embed.AddInlineField($"#{i + 1}: {string.Join("", users[i].Name.Take(16))}", $"{output[i].Experience} experience!");
                             }
                             await embed.SendToChannel(e.Channel);
                         }
@@ -943,9 +965,9 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Total_Experience)
+                            List<User> output = await context.Users.OrderByDescending(x => x.Total_Experience)
                                                              .Take(12)
-                                                             .ToList();
+                                                             .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
