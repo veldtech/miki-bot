@@ -1446,7 +1446,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="blackjack_error_instance_exists" xml:space="preserve">
     <value>You're already playing blackjack in this channel!</value>
   </data>
-  <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
+  <data name="miki_module_admin_prune_error_no_messages" xml:space="preserve">
     <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
   </data>
   <data name="miki_blackjack_current_balance" xml:space="preserve">
@@ -1461,7 +1461,10 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_module_fun_slots_lose_header" xml:space="preserve">
     <value>You lose!</value>
   </data>
-  <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
-    <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
+  <data name="miki_module_admin_prune_error_negative" xml:space="preserve">
+    <value>You can't enter a negative amount!</value>
+  </data>
+  <data name="miki_module_admin_prune_error_parse" xml:space="preserve">
+    <value>You must enter a whole number as the amount!</value>
   </data>
 </root>

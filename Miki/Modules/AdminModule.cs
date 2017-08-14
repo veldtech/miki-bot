@@ -140,8 +140,7 @@ namespace Miki.Modules
         public async Task CleanAsync(EventContext e)
         {
             await PruneAsync(e, _target: Bot.instance.Client.GetShardFor((e.Guild as IProxy<IGuild>).ToNativeObject()).CurrentUser.Id);
-
-        }
+		}
 
         [Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
         public async Task SetCommandAsync(EventContext e)
@@ -315,27 +314,46 @@ namespace Miki.Modules
 				return;
 			}
 
+			int amount = _amount;
 			string[] argsSplit = e.arguments.Split( ' ' );
-			int amount = string.IsNullOrEmpty( argsSplit[0] ) ? _amount : int.Parse( argsSplit[0] ) + 1;
 			ulong target = e.message.MentionedUserIds.Count > 0 ? ( await e.Guild.GetUserAsync( e.message.MentionedUserIds.First() ) ).Id : _target;
 
-			if(amount > 100)
+			if( !string.IsNullOrEmpty( argsSplit[0] ) )
 			{
-				await e.Channel.SendMessage( locale.GetString( "miki_module_admin_prune_error_max" ) );
-				return; 
+				if( int.TryParse( argsSplit[0], out amount ) )
+				{
+					if( amount < 0 )
+					{
+						IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_negative" ) );
+						await errorMessage.SendToChannel( e.Channel );
+						return;
+					}
+					if( amount > 100 )
+					{
+						IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_max" ) );
+						await errorMessage.SendToChannel( e.Channel );
+						return;
+					}
+				} else
+				{
+					IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_parse" ) );
+					await errorMessage.SendToChannel( e.Channel );
+					return;
+				}
 			}
-			
+
+			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
+
 			List<IDiscordMessage> messages = await e.Channel.GetMessagesAsync( amount );
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
 			if( messages.Count < amount )
 				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
 
-			if( amount <= 1 )
-			{ // Update this to use localization.
+			if( amount < 1 )
+			{
                 string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
-				await e.message.DeleteAsync();
-				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_no_messages", new object[] { prefix } ) );
+				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_no_messages", new object[] { prefix } ) );
 				await errorMessage.SendToChannel( e.Channel );
 				return;
 			}
@@ -373,7 +391,7 @@ namespace Miki.Modules
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = titles[MikiRandom.Next( titles.Length - 1 )];
-			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count - 1);
+			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count);
 			embed.Color = IA.SDK.Color.GetColor( IAColor.YELLOW );
 
 			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
