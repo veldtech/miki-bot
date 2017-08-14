@@ -30,118 +30,97 @@ namespace Miki.Modules
                 return;
             }
 
-            if (int.TryParse(e.arguments, out int bet))
-            {
-                if(bet < 1)
-                {
-                    return;
-                }
-
-                using (var context = new MikiContext())
-                {
-                    User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                    if(user.Currency >= bet)
-                    {
-                        await user.RemoveCurrencyAsync(context, null, bet);
-                    }
-                    else
-                    {
-                        await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-                            .SendToChannel(e.Channel);
-                        return;
-                    }
-                }
-
-                BlackjackManager bm = new BlackjackManager();
-
-                IDiscordMessage message = await bm.CreateEmbed(e).SendToChannel(e.Channel);
-
-                CommandHandler c = new CommandHandlerBuilder(Bot.instance.Events)
-                    .AddPrefix("")
-                    .SetOwner(e.message)
-                    .AddCommand(
-                    new RuntimeCommandEvent("hit")
-                        .Default(async (ec) =>
-                        {
-                            await ec.message.DeleteAsync();
-
-                            bm.player.AddToHand(bm.deck.DrawRandom());
-
-                            if (bm.Worth(bm.player) > 21)
-                            {
-                                await OnBlackjackDead(ec, bm, message, bet);
-                            }
-                            else
-                            {
-                                await bm.CreateEmbed(e).ModifyMessage(message);
-                            }
-                        }))
-                        .AddCommand(
-                    new RuntimeCommandEvent("stand")
-                        .SetAliases("knock", "stay", "stop")
-                        .Default(async (ec) =>
-                        {
-                            bm.dealer.Hand.ForEach(x => x.isPublic = true);
-
-                            await ec.message.DeleteAsync();
-                            bool dealerQuit = false;
-
-                            while (!dealerQuit)
-                            {
-                                if (bm.Worth(bm.dealer) >= bm.Worth(bm.player))
-                                {
-                                    if (bm.Worth(bm.dealer) == bm.Worth(bm.player))
-                                    {
-                                        await OnBlackjackDraw(ec, bm, message, bet);
-                                    }
-                                    else
-                                    {
-                                        await OnBlackjackDead(ec, bm, message, bet);
-                                    }
-                                    dealerQuit = true;
-                                }
-                                else
-                                {
-                                    bm.dealer.AddToHand(bm.deck.DrawRandom());
-                                    if (bm.Worth(bm.dealer) > 21)
-                                    {
-                                        await OnBlackjackWin(ec, bm, message, bet);
-                                        dealerQuit = true;
-                                    }
-                                }
-                                await Task.Delay(500);
-                            }
-                        })).Build();
-
-                Bot.instance.Events.AddPrivateCommandHandler(e.message, c);
-            }
-            else
-            {
-                await Utils.ErrorEmbed(e.Channel.GetLocale(), e.GetResource("miki_blackjack_no_arg"))
-                    .SendToChannel(e.Channel);
-            }
+			await ValidateBet( e, StartBlackjack );
         }
 
+		public async Task StartBlackjack( EventContext e, int bet ) {
+
+			using( var context = new MikiContext() )
+			{
+				User user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+				await user.RemoveCurrencyAsync( context, null, bet );
+			}
+
+			BlackjackManager bm = new BlackjackManager();
+
+			IDiscordMessage message = await bm.CreateEmbed( e ).SendToChannel( e.Channel );
+
+			CommandHandler c = new CommandHandlerBuilder( Bot.instance.Events )
+				.AddPrefix( "" )
+				.SetOwner( e.message )
+				.AddCommand(
+				new RuntimeCommandEvent( "hit" )
+					.Default( async ( ec ) =>
+					{
+						await ec.message.DeleteAsync();
+
+						bm.player.AddToHand( bm.deck.DrawRandom() );
+
+						if( bm.Worth( bm.player ) > 21 )
+						{
+							await OnBlackjackDead( ec, bm, message, bet );
+						}
+						else
+						{
+							await bm.CreateEmbed( e ).ModifyMessage( message );
+						}
+					} ) )
+				.AddCommand(
+				new RuntimeCommandEvent( "stand" )
+					.SetAliases( "knock", "stay", "stop" )
+					.Default( async ( ec ) =>
+					{
+						bm.dealer.Hand.ForEach( x => x.isPublic = true );
+
+						await ec.message.DeleteAsync();
+						bool dealerQuit = false;
+
+						while( !dealerQuit )
+						{
+							if( bm.Worth( bm.dealer ) >= bm.Worth( bm.player ) )
+							{
+								if( bm.Worth( bm.dealer ) == bm.Worth( bm.player ) )
+								{
+									await OnBlackjackDraw( ec, bm, message, bet );
+								}
+								else
+								{
+									await OnBlackjackDead( ec, bm, message, bet );
+								}
+								dealerQuit = true;
+							}
+							else
+							{
+								bm.dealer.AddToHand( bm.deck.DrawRandom() );
+								if( bm.Worth( bm.dealer ) > 21 )
+								{
+									await OnBlackjackWin( ec, bm, message, bet );
+									dealerQuit = true;
+								}
+							}
+							await Task.Delay( 500 );
+						}
+					} ) ).Build();
+
+			Bot.instance.Events.AddPrivateCommandHandler( e.message, c );
+
+		}
+
         [Command(Name = "slots", Aliases = new string[] { "s" })]
-        public async Task SlotsAsync(EventContext e)
+		public async Task SlotsAsync( EventContext e ) 
+		{
+			await ValidateBet( e, StartSlots );
+		}
+
+
+		public async Task StartSlots(EventContext e, int bet)
         {
-            int moneyBet = 0;
+            int moneyBet = bet;
 
             using (var context = new MikiContext())
             {
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-                if (!string.IsNullOrWhiteSpace(e.arguments))
-                {
-                    moneyBet = int.Parse(e.arguments);
-
-                    if (moneyBet > u.Currency)
-                    {
-                        await e.Channel.SendMessage(locale.GetString(Locale.InsufficientMekos));
-                        return;
-                    }
-                }
 
                 int moneyReturned = 0;
 
@@ -315,7 +294,82 @@ namespace Miki.Modules
                 .SetDescription( e.GetResource("miki_blackjack_win_description", bet *2 ) + "\n" + e.GetResource( "miki_blackjack_new_balance", user.Currency ) )
                 .ModifyMessage(instanceMessage);
         }
-    }
+
+		public async Task ValidateBet( EventContext e, Func<EventContext, int, Task> callback = null )
+		{
+
+			if( !string.IsNullOrEmpty( e.arguments ) )
+			{
+				int bet = 0;
+				int noAskLimit = 10000;
+
+				using( var context = new MikiContext() )
+				{
+					User user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+
+					if( int.TryParse( e.arguments, out bet ) )
+					{
+
+					}
+					else if( e.arguments.Contains( "all" ) || e.arguments.Contains( "*" ) )
+					{
+						bet = user.Currency;
+					}
+					else
+					{
+						await e.ErrorEmbed( e.GetResource( "miki_error_message_generic" ) ) // TODO: Update to more imformative message.
+							.SendToChannel( e.Channel );
+					}
+
+					if( bet < 1 )
+					{
+						await e.ErrorEmbed( e.GetResource( "miki_error_message_generic" ) ) // TODO: Update to more imformative message.
+							.SendToChannel( e.Channel );
+					}
+					else if( bet > user.Currency )
+					{
+						await e.ErrorEmbed( e.GetResource( "miki_mekos_insufficient" ) )
+						.SendToChannel( e.Channel );
+					}
+					else if( bet > noAskLimit )
+					{
+						IDiscordEmbed embed = Utils.Embed;
+						embed.Description = $"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `>yes` to confirm.";
+						embed.Color = new IA.SDK.Color( 0.4f, 0.6f, 1f );
+						await embed.SendToChannel( e.Channel );
+
+						CommandHandler confirmCommand = new CommandHandlerBuilder( Bot.instance.Events )
+						.AddPrefix( ">" )
+						.DisposeInSeconds( 20 )
+						.SetOwner( e.message )
+						.AddCommand(
+							new RuntimeCommandEvent( "yes" )
+							.Default( async ( ec ) =>
+							{
+								await ec.commandHandler.RequestDisposeAsync();
+								await ec.message.DeleteAsync();
+								await callback( e, bet );
+							} ) ).Build();
+
+						Bot.instance.Events.AddPrivateCommandHandler( e.message, confirmCommand );
+					}
+					else
+					{
+						await callback( e, bet );
+					}
+
+				}
+
+
+			}
+			else
+			{
+				await Utils.ErrorEmbed( e.Channel.GetLocale(), e.GetResource( "miki_blackjack_no_arg" ) )
+					.SendToChannel( e.Channel );
+			}
+
+		}
+	}
 
     public class CardManager
     {
