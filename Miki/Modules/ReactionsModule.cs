@@ -161,7 +161,19 @@ namespace Miki.Modules
 			{
 				"http://i.imgur.com/TTUBf2r.gif",
 				"http://i.imgur.com/o66oQyX.png",
-				"http://i.imgur.com/6AP78bD.png"
+				"http://i.imgur.com/6AP78bD.png",
+				"http://i.imgur.com/IvMvs2K.gif",
+				"http://i.imgur.com/0kdQ38I.gif",
+				"http://i.imgur.com/0kdQ38I.gif",
+				"http://i.imgur.com/YHYLO4E.gif",
+				"http://i.imgur.com/wXqxiDs.gif",
+				"http://i.imgur.com/jzafqAh.gif",
+				"http://i.imgur.com/2HPoWSf.gif",
+				"http://i.imgur.com/W7prbbo.gif",
+				"http://i.imgur.com/cKqKcG3.gif",
+				"http://i.imgur.com/GKO0EQD.gif",
+				"http://i.imgur.com/cu825ub.gif",
+				"http://i.imgur.com/TP6dYGh.gif"
 			};
 
 			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
