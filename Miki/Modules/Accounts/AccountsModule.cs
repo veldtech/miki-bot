@@ -494,8 +494,8 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        [Command(Name = "mekos")]
-        public async Task ShowMekosAsync(EventContext e)
+		[Command( Name = "mekos", Aliases = new string[] { "bal" } )]
+		public async Task ShowMekosAsync(EventContext e)
         {
             using (var context = new MikiContext())
             {
