@@ -860,10 +860,10 @@ namespace Miki.Modules.AccountsModule
                 {
                     user.MarriageSlots++;
                     user.Currency -= costForUpgrade;
-                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots);
-                    await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
+                    IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
+                    embed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
+                    embed.Description = cont.GetResource( "miki_marriage_buymarriageslot_success", user.MarriageSlots);
+                    await embed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
                     await cont.commandHandler.RequestDisposeAsync();
                 }
@@ -871,7 +871,7 @@ namespace Miki.Modules.AccountsModule
                 {
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
+                    notEnoughMekosErrorEmbed.Description = cont.GetResource( "miki_marriage_buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await cont.commandHandler.RequestDisposeAsync();
                 }

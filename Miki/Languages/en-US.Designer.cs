@@ -1798,6 +1798,24 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You do not have enough mekos for this..
+        /// </summary>
+        internal static string miki_marriage_buymarriageslot_insufficient_mekos {
+            get {
+                return ResourceManager.GetString("miki_marriage_buymarriageslot_insufficient_mekos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have successfully purchased a new marraige slot. You now have {0} slots..
+        /// </summary>
+        internal static string miki_marriage_buymarriageslot_success {
+            get {
+                return ResourceManager.GetString("miki_marriage_buymarriageslot_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The proposal has been declined..
         /// </summary>
         internal static string miki_marriage_declined {

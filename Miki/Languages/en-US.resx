@@ -1467,4 +1467,10 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_module_admin_prune_error_parse" xml:space="preserve">
     <value>You must enter a whole number as the amount!</value>
   </data>
+  <data name="miki_marriage_buymarriageslot_insufficient_mekos" xml:space="preserve">
+    <value>You do not have enough mekos for this.</value>
+  </data>
+  <data name="miki_marriage_buymarriageslot_success" xml:space="preserve">
+    <value>You have successfully purchased a new marraige slot. You now have {0} slots.</value>
+  </data>
 </root>
