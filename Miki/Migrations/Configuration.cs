@@ -33,7 +33,6 @@ namespace Miki.Migrations
                     (s, _) => new CachingProviderServices(s, transactionHandler, new RedisCachingPolicy())
                     );
             };
-
         }
     }
 

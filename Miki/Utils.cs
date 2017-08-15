@@ -115,14 +115,7 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
-		public static DateTime UnixToDateTime( long unix )
-		{
-			DateTime time = new DateTime( 1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc );
-			time = time.AddSeconds( unix ).ToLocalTime();
-			return time;
-		}
-
-		public static bool GetInputBool(this string input)
+        public static bool GetInputBool(this string input)
         {
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
         }

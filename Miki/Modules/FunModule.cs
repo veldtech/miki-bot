@@ -496,25 +496,22 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
+		
+		[Command( Name = "roulette" )]
+		public async Task RouletteAsync( EventContext e )
+		{
+			IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
+			List<IDiscordUser> realUsers = users.Where( user => !user.IsBot ).ToList();
 
-        [Command(Name = "roulette")]
-        public async Task RouletteAsync(EventContext e)
-        {
-            IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
+			string mention = "<@" + realUsers[Global.random.Next( 0, realUsers.Count )].Id + ">";
+			string send = string.IsNullOrEmpty( e.arguments ) ?
+				e.GetResource( Locale.RouletteMessageNoArg, new object[] { mention } ) :
+				e.GetResource( Locale.RouletteMessage, new object[] { e.arguments, mention } );
 
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			await e.Channel.SendMessage( send );
+		}
 
-            if (e.message.Content.Split(' ').Length == 1)
-            {
-                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessageNoArg, new object[] { "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
-            }
-            else
-            {
-                await e.Channel.SendMessage(locale.GetString(Locale.RouletteMessage, new object[] { e.arguments, "<@" + users.ElementAt(Global.random.Next(0, users.Count())).Id + ">" }));
-            }
-        }
-
-        [Command(Name = "taiko")]
+		[Command(Name = "taiko")]
         public async Task SendTaikoSignatureAsync(EventContext e)
         {
             using (WebClient webClient = new WebClient())

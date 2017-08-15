@@ -33,8 +33,8 @@ namespace Miki.Modules
 			await ValidateBet( e, StartBlackjack );
         }
 
-		public async Task StartBlackjack( EventContext e, int bet ) {
-
+		public async Task StartBlackjack( EventContext e, int bet )
+        {
 			using( var context = new MikiContext() )
 			{
 				User user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );

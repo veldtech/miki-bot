@@ -132,13 +132,14 @@ namespace Miki.Models
 
         public async Task<int> GetGlobalRank()
         {
+            int x = 0;
             using (var context = new MikiContext())
             {
-                int x = await context.Users
+                x = await context.Users
                     .Where(u => u.Total_Experience > Total_Experience)
                     .CountAsync();
-                return x + 1;
             }
+            return x + 1;
         }
 
         public async Task<int> GetLocalRank(ulong guildId)

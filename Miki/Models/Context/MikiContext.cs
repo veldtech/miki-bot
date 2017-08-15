@@ -24,7 +24,6 @@ namespace Miki.Models
 
         public MikiContext() : base("PostgreSql")
         {
-           
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

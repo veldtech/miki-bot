@@ -142,6 +142,7 @@ namespace Miki.Modules
             await PruneAsync(e, _target: Bot.instance.Client.GetShardFor((e.Guild as IProxy<IGuild>).ToNativeObject()).CurrentUser.Id);
 		}
 
+
         [Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
         public async Task SetCommandAsync(EventContext e)
         {
@@ -350,10 +351,11 @@ namespace Miki.Modules
 			if( messages.Count < amount )
 				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
 
-			if( amount < 1 )
-			{
+			if( amount <= 1 )
+			{ // Update this to use localization.
                 string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
-				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_no_messages", new object[] { prefix } ) );
+				await e.message.DeleteAsync();
+				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_no_messages", new object[] { prefix } ) );
 				await errorMessage.SendToChannel( e.Channel );
 				return;
 			}
@@ -392,6 +394,7 @@ namespace Miki.Modules
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = titles[MikiRandom.Next( titles.Length - 1 )];
 			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count);
+
 			embed.Color = IA.SDK.Color.GetColor( IAColor.YELLOW );
 
 			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );

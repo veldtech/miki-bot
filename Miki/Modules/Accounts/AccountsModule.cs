@@ -15,7 +15,6 @@ using Miki.Models;
 using Miki.Modules.Accounts.Services;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -34,9 +33,7 @@ namespace Miki.Modules.AccountsModule
                 using (var context = new MikiContext())
                 {
                     long guildId = g.Id.ToDbLong();
-                    List<LevelRole> rolesObtained = await context.LevelRoles.Where(p => p.GuildId == guildId && p.RequiredLevel == l)
-                                                                      .ToListAsync();
-
+                    List<LevelRole> rolesObtained = context.LevelRoles.AsNoTracking().Where(p => p.GuildId == guildId && p.RequiredLevel == l).ToList();
                     IDiscordUser u = await g.Guild.GetUserAsync(a.Id.FromDbLong());
                     List<IDiscordRole> rolesGiven = new List<IDiscordRole>();
 
@@ -116,65 +113,42 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-		[Command( Name = "leaderboards", Aliases = new string[] { "lb", "leaderboard" } )]
-		public async Task LeaderboardsAsync( EventContext e )
-		{
-			string[] args = e.arguments.Split( ' ' );
-			int pageNumber = 1;
+        [Command(Name = "leaderboards")]
+        public async Task LeaderboardsAsync(EventContext e)
+        {
+            switch (e.arguments.ToLower())
+            {
+                case "local":
+                case "server":
+                case "guild":
+                    {
+                        await ShowLeaderboardsAsync(e.message, LeaderboardsType.LocalExperience);
+                    }
+                    break;
 
-			if( args.Count() > 1 )
-			{
-				int.TryParse( args[1], out pageNumber );
-			}
-			else
-			{
-				if( int.TryParse( args[0], out int parseInt ) )
-				{
-					pageNumber = parseInt;
-				}
-			}
+                case "commands":
+                case "cmds":
+                    {
+                        await ShowLeaderboardsAsync(e.message, LeaderboardsType.Commands);
+                    }
+                    break;
 
-			switch( args[0].ToLower() )
-			{
-				case "local":
-				case "server":
-				case "guild":
-					{
-						await ShowLeaderboardsAsync( e.message, LeaderboardsType.LocalExperience, pageNumber );
-					}
-					break;
+                case "currency":
+                case "mekos":
+                case "money":
+                    {
+                        await ShowLeaderboardsAsync(e.message, LeaderboardsType.Currency);
+                    }
+                    break;
 
-				case "commands":
-				case "cmds":
-					{
-						await ShowLeaderboardsAsync( e.message, LeaderboardsType.Commands, pageNumber );
-					}
-					break;
+                default:
+                    {
+                        await ShowLeaderboardsAsync(e.message);
+                    }
+                    break;
+            }
+        }
 
-				case "currency":
-				case "mekos":
-				case "money":
-					{
-						await ShowLeaderboardsAsync( e.message, LeaderboardsType.Currency, pageNumber );
-					}
-					break;
-
-				case "rep":
-				case "reputation":
-					{
-						await ShowLeaderboardsAsync( e.message, LeaderboardsType.Reputation, pageNumber );
-					}
-					break;
-
-				default:
-					{
-						await ShowLeaderboardsAsync( e.message, page: pageNumber );
-					}
-					break;
-			}
-		}
-
-        // Veld - TODO: rewrite command
         [Command(Name = "profile")]
         public async Task ProfileAsync(EventContext e)
         {
@@ -238,7 +212,7 @@ namespace Miki.Modules.AccountsModule
                     string globalInfoValue = new MessageBuilder()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
                         .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-                        .AppendText(locale.GetString("miki_module_accounts_information_rank", await account.GetGlobalRank()), MessageFormatting.PLAIN, false)
+                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()), MessageFormatting.PLAIN, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -247,8 +221,7 @@ namespace Miki.Modules.AccountsModule
 
                     List<Marriage> marriages = Marriage.GetMarriages(context, id);
 
-                    marriages = marriages.OrderBy(mar => mar.TimeOfMarriage)
-                                         .ToList();
+                    marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
 
                     List<User> users = new List<User>();
 
@@ -280,10 +253,7 @@ namespace Miki.Modules.AccountsModule
 
                     embed.Color = new IA.SDK.Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
 
-                    List<CommandUsage> List = await context.CommandUsages.Where(c => c.UserId == id)
-                                                                         .OrderByDescending(c => c.Amount)
-                                                                         .ToListAsync();
-
+                    List<CommandUsage> List = context.CommandUsages.Where(c => c.UserId == id).OrderByDescending(c => c.Amount).ToList();
                     string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : "none (yet!)";
 
                     embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"), favCommand);
@@ -353,8 +323,7 @@ namespace Miki.Modules.AccountsModule
             {
                 using (MikiContext context = new MikiContext())
                 {
-                    List<User> users = await context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower())
-                                                          .ToListAsync();
+                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower()).ToList();
 
                     if (users.Count == 0)
                     {
@@ -497,13 +466,13 @@ namespace Miki.Modules.AccountsModule
                     User person1 = await context.Users.FindAsync(marriage.Id1);
                     User person2 = await context.Users.FindAsync(marriage.Id2);
 
-                    if (person1.MarriageSlots < (Marriage.GetMarriages(context, person1.Id)).Count)
+                    if (person1.MarriageSlots < Marriage.GetMarriages(context, person1.Id).Count)
                     {
                         await e.Channel.SendMessage($"{person1.Name} do not have enough marriage slots, sorry :(");
                         return;
                     }
 
-                    if (person2.MarriageSlots < (Marriage.GetMarriages(context, person2.Id)).Count)
+                    if (person2.MarriageSlots < Marriage.GetMarriages(context, person2.Id).Count)
                     {
                         await e.Channel.SendMessage($"{person2.Name} does not have enough marriage slots, sorry :(");
                         return;
@@ -525,42 +494,23 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-		[Command( Name = "mekos", Aliases = new string[] { "bal", "meko" } )]
-		public async Task ShowMekosAsync( EventContext e )
-		{
-			ulong targetId = e.message.MentionedUserIds.Count > 0 ? e.message.MentionedUserIds.First() : 0;
+        [Command(Name = "mekos")]
+        public async Task ShowMekosAsync(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-			if( e.message.MentionedUserIds.Count > 0 )
-			{
-				if( targetId == 0 )
-				{
-					await e.ErrorEmbed( "Mentioned user not found!" ).SendToChannel( e.Channel );
-					return;
-				}
-				else
-				{
-					IDiscordUser userCheck = await e.Guild.GetUserAsync( targetId );
-					if( userCheck.IsBot )
-					{
-						await e.ErrorEmbed( "You can't check a bot's mekos!" ).SendToChannel( e.Channel );
-					}
-				}
-			}
+                IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
+                embed.Title = "🔸 Mekos";
+                embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
+                embed.Color = new IA.SDK.Color(1f, 0.5f, 0.7f);
 
-			using( var context = new MikiContext() )
-			{
-				User user = await context.Users.FindAsync( targetId != 0 ? (long)targetId : e.Author.Id.ToDbLong() );
+                await embed.SendToChannel(e.Channel);
+            }
+        }
 
-				IDiscordEmbed embed = new RuntimeEmbed( new EmbedBuilder() );
-				embed.Title = "🔸 Mekos";
-				embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
-				embed.Color = new IA.SDK.Color( 1f, 0.5f, 0.7f );
-
-				await embed.SendToChannel( e.Channel );
-			}
-		}
-
-		[Command(Name = "rep")]
+        [Command(Name = "rep")]
         public async Task GiveReputationAsync(EventContext e)
         {
             using (var context = new MikiContext())
@@ -678,7 +628,7 @@ namespace Miki.Modules.AccountsModule
 
                     IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
-                    em.Description = e.GetResource("give_description", sender.Name, receiver.Name, goldSent);
+                    em.Description = e.GetResource("give_description");
 
                     em.Color = new IA.SDK.Color(255, 140, 0);
 
@@ -694,16 +644,14 @@ namespace Miki.Modules.AccountsModule
         }
 
         [Command(Name = "daily")]
-        public async Task   GetDailyAsync(EventContext e)
+        public async Task GetDailyAsync(EventContext e)
         {
-            Log.Message("Started Daily");
             using (var context = new MikiContext())
             {
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-                Log.Message("Daily, Getting user");
                 if (u == null)
                 {
                     await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
@@ -717,9 +665,6 @@ namespace Miki.Modules.AccountsModule
                 {
                     dailyAmount *= 2;
                 }
-
-                Log.Message("Daily, Getting check donator");
-
 
                 if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
                 {
@@ -736,8 +681,6 @@ namespace Miki.Modules.AccountsModule
                     .SendToChannel(e.Channel);
 
                 await context.SaveChangesAsync();
-                Log.Message("Daily, committing");
-
             }
         }
 
@@ -917,10 +860,10 @@ namespace Miki.Modules.AccountsModule
                 {
                     user.MarriageSlots++;
                     user.Currency -= costForUpgrade;
-                    IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
-                    embed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
-                    embed.Description = cont.GetResource( "miki_marriage_buymarriageslot_success", user.MarriageSlots);
-                    await embed.SendToChannel(cont.Channel);
+                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
+                    notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(0.4f, 1f, 0.6f);
+                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots);
+                    await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await context.SaveChangesAsync();
                     await cont.commandHandler.RequestDisposeAsync();
                 }
@@ -928,134 +871,100 @@ namespace Miki.Modules.AccountsModule
                 {
                     IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
                     notEnoughMekosErrorEmbed.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = cont.GetResource( "miki_marriage_buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
+                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
                     await notEnoughMekosErrorEmbed.SendToChannel(cont.Channel);
                     await cont.commandHandler.RequestDisposeAsync();
                 }
             }
         }
 
-        public async Task ShowLeaderboardsAsync(IDiscordMessage e, LeaderboardsType leaderboardType = LeaderboardsType.Experience, int page = 1 )
+        public async Task ShowLeaderboardsAsync(IDiscordMessage e, LeaderboardsType t = LeaderboardsType.Experience)
         {
             using (var context = new MikiContext())
-			{
-
+            {
+                IDiscordEmbed embed = Utils.Embed;
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-				int leaderboardPage = page - 1;
+                switch (t)
+                {
+                    case LeaderboardsType.Commands:
+                        {
+                            embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
+                            embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
+                            List<User> output = context.Users.OrderByDescending(x => x.Total_Commands)
+                                                             .Take(12)
+                                                             .ToList();
+                            int i = 1;
+                            foreach (User user in output)
+                            {
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Total_Commands} commands used!");
+                                i++;
+                            }
+                            await embed.SendToChannel(e.Channel);
+                        }
+                        break;
 
-				IDiscordEmbed embed = Utils.Embed;
-				embed.SetFooter( locale.GetString( "miki_module_accounts_leaderboards_page", leaderboardPage + 1, Math.Ceiling( context.Users.Count() / 12.0 ) ), "" );
+                    case LeaderboardsType.Currency:
+                        {
+                            embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
+                            List<User> output = context.Users.OrderByDescending(x => x.Currency)
+                                                                .Take(12)
+                                                                .ToList();
+                            int i = 1;
+                            foreach (User user in output)
+                            {
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Currency} mekos!");
+                                i++;
+                            }
+                            await embed.SendToChannel(e.Channel);
+                        }
+                        break;
 
-				switch( leaderboardType )
-				{
-					case LeaderboardsType.Commands:
-						{
-							embed.Title = locale.GetString( "miki_module_accounts_leaderboards_commands_header" );
-							embed.Color = new IA.SDK.Color( 0.4f, 1.0f, 0.6f );
-							List<User> output = await context.Users.OrderByDescending( x => x.Total_Commands )
-															.Skip( 12 * leaderboardPage )
-															.Take( 12 )
-															.ToListAsync();
-							int i = 1;
-							foreach( User user in output )
-							{
-								embed.AddInlineField( $"#{i + ( 12 * leaderboardPage )}: {string.Join( "", user.Name.Take( 16 ) )}", $"{user.Total_Commands} commands used!" );
-								i++;
-							}
-							await embed.SendToChannel( e.Channel );
-						}
-						break;
+                    case LeaderboardsType.LocalExperience:
+                        {
+                            embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
+                            long guildId = e.Guild.Id.ToDbLong();
+                            List<LocalExperience> output = context.Experience.Where(x => x.ServerId == guildId).OrderByDescending(x => x.Experience).ToList();
+                            List<User> users = context.Users.Where(x => output.Any(y => y.UserId == x.Id)).ToList();
 
-					case LeaderboardsType.Currency:
-						{
-							embed.Title = locale.GetString( "miki_module_accounts_leaderboards_mekos_header" );
-							embed.Color = new IA.SDK.Color( 1.0f, 0.6f, 0.4f );
-							List<User> output = await context.Users.OrderByDescending( x => x.Currency )
-															.Skip( 12 * leaderboardPage )
-															.Take( 12 )
-															.ToListAsync();
-							int i = 1;
-							foreach( User user in output )
-							{
-								embed.AddInlineField( $"#{i + ( 12 * leaderboardPage )}: {string.Join( "", user.Name.Take( 16 ) )}", $"{user.Currency} mekos!" );
-								i++;
-							}
-							await embed.SendToChannel( e.Channel );
-						}
-						break;
-            
-					case LeaderboardsType.LocalExperience:
-						{
-							embed.Title = locale.GetString( "miki_module_accounts_leaderboards_local_header" );
-							embed.Color = new IA.SDK.Color( 1.0f, 0.6f, 0.4f );
-							long guildId = e.Guild.Id.ToDbLong();
-							List<LocalExperience> output = await context.Experience
-																			.Where( x => x.ServerId == guildId )
-																			.OrderByDescending( x => x.Experience )
-																			.Skip( 12 * leaderboardPage )
-																			.Take( 12 )
-																			.ToListAsync();
-							List<User> users = new List<User>();
-							for( int i = 0; i < output.Count; i++ )
-							{
-								users.Add( await context.Users.FindAsync( output[i].UserId ) );
-							}
+                            int i = 1;
+                            foreach (User user in users)
+                            {
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{output.Find(x => x.UserId == user.Id).Experience} experience!");
+                                i++;
+                            }
+                            await embed.SendToChannel(e.Channel);
+                        }
+                        break;
 
-							for( int i = 0; i < users.Count; i++ )
-							{
-								embed.AddInlineField( $"#{i + ( 12 * leaderboardPage ) + 1}: {string.Join( "", users[i].Name.Take( 16 ) )}", $"{output[i].Experience} experience!" );
-							}
-							await embed.SendToChannel( e.Channel );
-						}
-						break;
-
-					case LeaderboardsType.Experience:
-						{
-							embed.Title = locale.GetString( "miki_module_accounts_leaderboards_header" );
-							embed.Color = new IA.SDK.Color( 1.0f, 0.6f, 0.4f );
-							List<User> output = await context.Users.OrderByDescending( x => x.Total_Experience )
-															.Skip( 12 * leaderboardPage )
-															.Take( 12 )
-															.ToListAsync();
-							int i = 1;
-							foreach( User user in output )
-							{
-								embed.AddInlineField( $"#{i + ( 12 * leaderboardPage )}: {string.Join( "", user.Name.Take( 16 ) )}", $"{user.Total_Experience} experience!" );
-								i++;
-							}
-							await embed.SendToChannel( e.Channel );
-						}
-						break;
-
-					case LeaderboardsType.Reputation:
-						{
-							embed.Title = locale.GetString( "miki_module_accounts_leaderboards_reputation_header" );
-							embed.Color = new IA.SDK.Color( 1.0f, 0.6f, 0.4f );
-							List<User> output = await context.Users.OrderByDescending( x => x.Reputation )
-															.Skip( 12 * leaderboardPage )
-															.Take( 12 )
-															.ToListAsync();
-							int i = 1;
-							foreach( User user in output )
-							{
-								embed.AddInlineField( $"#{i + ( 12 * leaderboardPage )}: {string.Join( "", user.Name.Take( 16 ) )}", $"{user.Reputation} reputation!" );
-								i++;
-							}
-							await embed.SendToChannel( e.Channel );
-						}
-						break;
-				}
+                    case LeaderboardsType.Experience:
+                        {
+                            embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
+                            embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
+                            List<User> output = context.Users.OrderByDescending(x => x.Total_Experience)
+                                                             .Take(12)
+                                                             .ToList();
+                            int i = 1;
+                            foreach (User user in output)
+                            {
+                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{user.Total_Experience} experience!");
+                                i++;
+                            }
+                            await embed.SendToChannel(e.Channel);
+                        }
+                        break;
+                }
             }
         }
     }
 
-	public enum LeaderboardsType
-	{
-		LocalExperience,
-		Experience,
-		Commands,
-		Currency,
-		Reputation
-	}
+    public enum LeaderboardsType
+    {
+        LocalExperience,
+        Experience,
+        Commands,
+        Currency
+    }
 }

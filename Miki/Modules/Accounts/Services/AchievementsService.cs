@@ -97,6 +97,16 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                         }
+                    },
+                    new CommandAchievement()
+                    {
+                        Name = "Lonely",
+                        Icon = "😭",
+
+                        CheckCommand = async (p) =>
+                        {
+                                return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+                        }
                     }
                 };
             });
@@ -208,7 +218,7 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "It's wednesday my dudes!",
                         Icon = "🇼",
-                        CheckMessage = async (p) => false
+                        CheckMessage = async (p) => (p.message.Content.Contains("it") && p.message.Content.Contains("wednesday") && p.message.Content.Contains("dude") && DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                     }
                 };
             });
@@ -323,20 +333,20 @@ namespace Miki.Modules.Accounts.Services
             AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
             AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
             AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
-
             #endregion Command Achievements
 
             #region Level Achievements
-
             AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
 
             #endregion Level Achievements
 
             #region Message Achievements
+
             AchievementManager.Instance.OnMessageReceived += FrogAchievement.CheckAsync;
             AchievementManager.Instance.OnMessageReceived += LennyAchievement.CheckAsync;
             AchievementManager.Instance.OnMessageReceived += PoiAchievement.CheckAsync;
             AchievementManager.Instance.OnMessageReceived += LuckyAchievement.CheckAsync;
+
             #endregion Message Achievements
 
             #region Misc Achievements
