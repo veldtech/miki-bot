@@ -21,7 +21,7 @@ namespace Miki.Accounts.Achievements
         {
             instance.Invoke(this);
 
-            AchievementDataContainer<BaseAchievement> castedContainer = this.ToBase();
+            AchievementDataContainer<BaseAchievement> castedContainer = ToBase();
             AchievementManager.Instance.AddContainer(castedContainer);
 
             foreach (T d in Achievements)

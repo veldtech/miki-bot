@@ -20,6 +20,7 @@ namespace Miki.Modules.Accounts.Services
         public override void Install(IModule m)
         {
             base.Install(m);
+            AchievementManager.Instance.provider = this;
             LoadAchievements();
         }
 
@@ -86,18 +87,18 @@ namespace Miki.Modules.Accounts.Services
             {
                 x.Name = "fa";
                 x.Achievements = new List<CommandAchievement>()
-                        {
-                            new CommandAchievement()
-                            {
-                                Name = "Lonely",
-                                Icon = "😭",
+                {
+                    new CommandAchievement()
+                    {
+                        Name = "Lonely",
+                        Icon = "😭",
 
-                                CheckCommand = async (p) =>
-                                {
-                                        return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
-                                }
-                            }
-                        };
+                        CheckCommand = async (p) =>
+                        {
+                            return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+                        }
+                    }
+                };
             });
             AchievementDataContainer<CommandAchievement> ChefAchievement = new AchievementDataContainer<CommandAchievement>(x =>
             {
@@ -207,7 +208,7 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "It's wednesday my dudes!",
                         Icon = "🇼",
-                        CheckMessage = async (p) => (p.message.Content.Contains("it") && p.message.Content.Contains("wednesday") && p.message.Content.Contains("dude") && DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
+                        CheckMessage = async (p) => false
                     }
                 };
             });
@@ -318,77 +319,24 @@ namespace Miki.Modules.Accounts.Services
 
             #region Command Achievements
 
-            AchievementManager.Instance.OnCommandUsed += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await InfoAchievement.CheckAsync(pa);
-                }
-            };
-            AchievementManager.Instance.OnCommandUsed += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await LonelyAchievement.CheckAsync(pa);
-                }
-            };
-            AchievementManager.Instance.OnCommandUsed += async (pa) =>
-            {
-                await ChefAchievement.CheckAsync(pa);
-            };
-            AchievementManager.Instance.OnCommandUsed += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await NoPermissionAchievement.CheckAsync(pa);
-                }
-            };
+            AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
 
             #endregion Command Achievements
 
             #region Level Achievements
 
-            AchievementManager.Instance.OnLevelGained += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await LevelAchievement.CheckAsync(pa);
-                }
-            };
+            AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
 
             #endregion Level Achievements
 
             #region Message Achievements
-
-            AchievementManager.Instance.OnMessageReceived += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await FrogAchievement.CheckAsync(pa);
-                }
-            };
-            AchievementManager.Instance.OnMessageReceived += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await LennyAchievement.CheckAsync(pa);
-                }
-            };
-            AchievementManager.Instance.OnMessageReceived += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await PoiAchievement.CheckAsync(pa);
-                }
-            };
-            AchievementManager.Instance.OnMessageReceived += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await LuckyAchievement.CheckAsync(pa);
-                }
-            };
-
+            AchievementManager.Instance.OnMessageReceived += FrogAchievement.CheckAsync;
+            AchievementManager.Instance.OnMessageReceived += LennyAchievement.CheckAsync;
+            AchievementManager.Instance.OnMessageReceived += PoiAchievement.CheckAsync;
+            AchievementManager.Instance.OnMessageReceived += LuckyAchievement.CheckAsync;
             #endregion Message Achievements
 
             #region Misc Achievements
@@ -516,13 +464,7 @@ namespace Miki.Modules.Accounts.Services
 
             #region Transaction Achievements
 
-            AchievementManager.Instance.OnTransaction += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await MekosAchievement.CheckAsync(pa);
-                }
-            };
+            AchievementManager.Instance.OnTransaction += MekosAchievement.CheckAsync;
 
             #endregion Transaction Achievements
         }

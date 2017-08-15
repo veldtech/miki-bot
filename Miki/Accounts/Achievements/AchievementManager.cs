@@ -18,6 +18,7 @@ namespace Miki.Accounts.Achievements
     {
         private static AchievementManager _instance = new AchievementManager(Bot.instance);
         public static AchievementManager Instance => _instance;
+        internal IService provider = null;
 
         private Bot bot;
         private Dictionary<string, AchievementDataContainer<BaseAchievement>> containers = new Dictionary<string, AchievementDataContainer<BaseAchievement>>();
@@ -41,27 +42,33 @@ namespace Miki.Accounts.Achievements
 
             AccountManager.Instance.OnGlobalLevelUp += async (u, c, l) =>
             {
-                LevelPacket p = new LevelPacket()
+                if (await provider.IsEnabled(c.Id))
                 {
-                    discordUser = await c.Guild.GetUserAsync(u.Id.FromDbLong()),
-                    discordChannel = c,
-                    account = u,
-                    level = l,
-                };
-                await OnLevelGained?.Invoke(p);
+                    LevelPacket p = new LevelPacket()
+                    {
+                        discordUser = await c.Guild.GetUserAsync(u.Id.FromDbLong()),
+                        discordChannel = c,
+                        account = u,
+                        level = l,
+                    };
+                    await OnLevelGained?.Invoke(p);
+                }
             };
             AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
             {
-                TransactionPacket p = new TransactionPacket()
+                if (await provider.IsEnabled(msg.Channel.Id))
                 {
-                    discordUser = msg.Author,
-                    discordChannel = msg.Channel,
-                    giver = u1,
-                    receiver = u2,
-                    amount = amount
-                };
+                    TransactionPacket p = new TransactionPacket()
+                    {
+                        discordUser = msg.Author,
+                        discordChannel = msg.Channel,
+                        giver = u1,
+                        receiver = u2,
+                        amount = amount
+                    };
 
-                await OnTransaction?.Invoke(p);
+                    await OnTransaction?.Invoke(p);
+                }
             };
 
             bot.Client.MessageReceived += async (e) =>
@@ -71,13 +78,16 @@ namespace Miki.Accounts.Achievements
                     return;
                 }
 
-                MessageEventPacket p = new MessageEventPacket()
+                if (await provider.IsEnabled(e.Channel.Id))
                 {
-                    message = new RuntimeMessage(e),
-                    discordUser = new RuntimeUser(e.Author),
-                    discordChannel = new RuntimeMessageChannel(e.Channel)
-                };
-                await OnMessageReceived?.Invoke(p);
+                    MessageEventPacket p = new MessageEventPacket()
+                    {
+                        message = new RuntimeMessage(e),
+                        discordUser = new RuntimeUser(e.Author),
+                        discordChannel = new RuntimeMessageChannel(e.Channel)
+                    };
+                    await OnMessageReceived?.Invoke(p);
+                }
             };
             bot.Client.UserUpdated += async (ub, ua) =>
             {
@@ -137,7 +147,13 @@ namespace Miki.Accounts.Achievements
 
             foreach (Achievement achievement in achievements)
             {
-                output += containers[achievement.Name].Achievements[achievement.Rank].Icon + " ";
+                if (containers.ContainsKey(achievement.Name))
+                {
+                    if (containers[achievement.Name].Achievements.Count > achievement.Rank)
+                    {
+                        output += containers[achievement.Name].Achievements[achievement.Rank].Icon + " ";
+                    }
+                }
             }
             return output;
         }
@@ -186,6 +202,7 @@ namespace Miki.Accounts.Achievements
             }
             catch (Exception e)
             {
+                await MeruUtils.ReportErrorAsync(e);
                 Log.WarningAt("achievement check failed", e.ToString());
             }
         }
