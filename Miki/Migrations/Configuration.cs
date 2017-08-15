@@ -1,5 +1,8 @@
 namespace Miki.Migrations
 {
+    using EFCache;
+    using System.Data.Entity;
+    using System.Data.Entity.Core.Common;
     using System.Data.Entity.Migrations;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Miki.Models.MikiContext>
