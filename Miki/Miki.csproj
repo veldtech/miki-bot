@@ -493,7 +493,6 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
-    <Compile Include="Models\Objects\RedisCachingPolicy.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
     <Compile Include="Models\Objects\User\Connections.cs" />

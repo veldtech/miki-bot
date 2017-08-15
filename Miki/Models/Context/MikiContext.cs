@@ -1,9 +1,11 @@
-﻿using Miki.Models.Objects.Guild;
+﻿using Miki.Migrations;
+using Miki.Models.Objects.Guild;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace Miki.Models
 {
+    [DbConfigurationType(typeof(Configuration))]
     public class MikiContext : DbContext
     {
         public DbSet<Achievement> Achievements { get; set; }
@@ -22,6 +24,7 @@ namespace Miki.Models
 
         public MikiContext() : base("PostgreSql")
         {
+           
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

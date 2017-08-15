@@ -86,7 +86,6 @@ namespace Miki
 
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
             {
-                await Global.ravenClient.CaptureAsync(new SharpRaven.Data.SentryEvent(ex));
 
                 /*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
@@ -124,6 +123,7 @@ namespace Miki
                 //await e.SendToChannel(msg.Channel);
                 */
             };
+            bot.OnError = async (ex) => await Global.ravenClient.CaptureAsync(new SharpRaven.Data.SentryEvent(ex));
 
             bot.AddDeveloper(121919449996460033);
 
