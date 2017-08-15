@@ -6,6 +6,7 @@ using Miki.Languages;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,7 +44,7 @@ namespace Miki.Accounts
                 {
                     User user = await context.Users.FindAsync(a.Id);
                     await user.AddCurrencyAsync(e, null, currencyAdded);
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync().ConfigureAwait(false);
                 }
 
                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())
@@ -54,7 +55,7 @@ namespace Miki.Accounts
                 };
 
                 embed.AddField(locale.GetString("miki_generic_reward"), "🔸" + currencyAdded.ToString());
-                await Notification.SendChannel(e, embed);
+                await Notification.SendChannel(e, embed).ConfigureAwait(false);
             };
 
             Bot.instance.Client.GuildUpdated += Client_GuildUpdated;
@@ -82,7 +83,7 @@ namespace Miki.Accounts
                         a = User.Create(context, e);
                     }
 
-                    try
+                    await MeruUtils.TryAsync(async () =>
                     {
                         LocalExperience experience = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), a.Id);
 
@@ -97,9 +98,9 @@ namespace Miki.Accounts
                         {
                             long guildId = e.Guild.Id.ToDbLong();
 
-                            int value = context.Experience
+                            int value = await context.Experience
                                                 .Where(x => x.ServerId == guildId)
-                                                .Sum(x => x.Experience);
+                                                .SumAsync(x => x.Experience);
 
                             guildUser = context.GuildUsers.Add(new GuildUser()
                             {
@@ -130,6 +131,7 @@ namespace Miki.Accounts
                         {
                             await LevelUpLocalAsync(e, a, currentLocalLevel + 1);
                         }
+
                         if (currentGlobalLevel != a.CalculateLevel(a.Total_Experience))
                         {
                             await LevelUpGlobalAsync(e, a, currentGlobalLevel + 1);
@@ -137,11 +139,11 @@ namespace Miki.Accounts
 
                         experience.LastExperienceTime = DateTime.Now;
                         lastTimeExpGranted[e.Author.Id] = DateTime.Now;
-                    }
-                    catch (Exception ex)
+                    },
+                    async (ex) =>
                     {
                         Log.ErrorAt("Accounts.Check", ex.Message + ex.StackTrace + ex.Source);
-                    }
+                    });
 
                     await context.SaveChangesAsync();
                 }

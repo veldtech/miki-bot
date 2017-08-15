@@ -91,12 +91,15 @@ namespace Miki
 
         public static bool CanSendNotification(ulong id, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
+            bool output = true;
+            Setting setting = null;
+
             using (var context = new MikiContext())
             {
-                Setting setting = context.Settings.Find(id.ToDbLong(), entityType, settingId);
-                if (setting != null) return setting.IsEnabled;
-                return true;
+                setting = context.Settings.Find(id.ToDbLong(), entityType, settingId);
+                if (setting != null) output = setting.IsEnabled;
             }
+            return output;
         }
     }
 }

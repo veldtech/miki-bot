@@ -10,6 +10,7 @@ using Miki.Models;
 using Miki.Models.Objects.Guild;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -124,7 +125,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                List<GuildUser> rivalGuilds = db.GuildUsers.Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id).ToList();
+                List<GuildUser> rivalGuilds = await db.GuildUsers.Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id).ToListAsync();
 
                 if (rivalGuilds.Count == 0)
                 {
@@ -250,10 +251,10 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                List<GuildUser> leaderboards = context.GuildUsers.OrderByDescending(x => x.Experience)
-                                                                 .Skip(amountToSkip * amountToTake)
-                                                                 .Take(amountToTake)
-                                                                 .ToList();
+                List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
+                                                                      .Skip(amountToSkip * amountToTake)
+                                                                      .Take(amountToTake)
+                                                                      .ToListAsync();
 
                 IDiscordEmbed embed = Utils.Embed
                     .SetTitle(e.GetResource("guildtop_title"));

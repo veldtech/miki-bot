@@ -9,6 +9,7 @@ using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -144,24 +145,17 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                try
-                {
-                    GlobalPasta pasta = await context.Pastas.FindAsync(id);
+                GlobalPasta pasta = await context.Pastas.FindAsync(id);
 
-                    if (pasta != null)
-                    {
-                        await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_create_error_already_exist")).SendToChannel(e.Channel);
-                        return;
-                    }
-
-                    context.Pastas.Add(new GlobalPasta() { Id = id, Text = e.message.RemoveMentions(string.Join(" ", arguments)), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
-                    await context.SaveChangesAsync();
-                    await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
-                }
-                catch (Exception ex)
+                if (pasta != null)
                 {
-                    Log.ErrorAt("IdentifyPasta", ex.Message);
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_create_error_already_exist")).SendToChannel(e.Channel);
+                    return;
                 }
+
+                context.Pastas.Add(new GlobalPasta() { Id = id, Text = e.message.RemoveMentions(string.Join(" ", arguments)), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
+                await context.SaveChangesAsync();
+                await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
             }
         }
 
@@ -290,42 +284,35 @@ namespace Miki.Modules
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
-                try
+                GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
+
+                if (pasta == null)
                 {
-                    GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
-
-                    if (pasta == null)
-                    {
-                        await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
-                        return;
-                    }
-
-                    User creator = await context.Users.FindAsync(pasta.creator_id);
-
-                    IDiscordEmbed b = Utils.Embed;
-
-                    b.SetAuthor(pasta.Id.ToUpper(), "", "");
-                    b.Color = new IA.SDK.Color(47, 208, 192);
-
-                    if (creator != null)
-                    {
-                        b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
-                    }
-
-                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.date_created.ToShortDateString());
-
-                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
-
-                    VoteCount v = pasta.GetVotes(context);
-
-                    b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
-
-                    await b.SendToChannel(e.Channel);
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
+                    return;
                 }
-                catch (Exception ex)
+
+                User creator = await context.Users.FindAsync(pasta.creator_id);
+
+                IDiscordEmbed b = Utils.Embed;
+
+                b.SetAuthor(pasta.Id.ToUpper(), "", "");
+                b.Color = new IA.SDK.Color(47, 208, 192);
+
+                if (creator != null)
                 {
-                    Log.ErrorAt("IdentifyPasta", ex.Message);
+                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
                 }
+
+                b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.date_created.ToShortDateString());
+
+                b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
+
+                VoteCount v = pasta.GetVotes(context);
+
+                b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
+
+                await b.SendToChannel(e.Channel);
             }
         }
 
@@ -352,16 +339,19 @@ namespace Miki.Modules
                 }
             }
 
+            string query = arguments[0];
+
             using (var context = new MikiContext())
             {
-                var pastasFound = context.Pastas.Where(x => x.Id.Contains(arguments[0]))
-                                                .OrderByDescending(x => x.Id)
-                                                .Skip(page * 25)
-                                                .Take(25)
-                                                .ToList();
+                var pastasFound = await context.Pastas.Where(x => x.Id.Contains(query))
+                                                      .OrderByDescending(x => x.Id)
+                                                      .Skip(25 * page)
+                                                      .Take(25)
+                                                      .ToListAsync();
 
-                var totalCount = context.Pastas.Where(x => x.Id.Contains(arguments[0]))
-                                               .Count();
+
+                var totalCount = await context.Pastas.Where(x => x.Id.Contains(query))
+                                                     .CountAsync();
 
                 if (pastasFound?.Count > 0)
                 {

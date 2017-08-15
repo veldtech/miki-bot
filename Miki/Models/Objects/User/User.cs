@@ -2,9 +2,11 @@
 using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -128,14 +130,14 @@ namespace Miki.Models
             return 10 + (output + (level * 20));
         }
 
-        public int GetGlobalRank()
+        public async Task<int> GetGlobalRank()
         {
             using (var context = new MikiContext())
             {
-                int x = context.Users
+                int x = await context.Users
                     .Where(u => u.Total_Experience > Total_Experience)
-                    .Count();
-                return x;
+                    .CountAsync();
+                return x + 1;
             }
         }
 
@@ -151,10 +153,10 @@ namespace Miki.Models
                 }
 
                 long gId = guildId.ToDbLong();
-                int x = context.Experience
+                int x = await context.Experience
                     .Where(e => e.ServerId == gId && e.Experience > l.Experience)
-                    .Count();
-                return x;
+                    .CountAsync();
+                return x + 1;
             }
         }
 

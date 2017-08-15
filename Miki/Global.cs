@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpRaven;
+using System;
 
 namespace Miki
 {
@@ -8,6 +9,7 @@ namespace Miki
     public class Global
     {
         public static Random random = new Random();
+        public static RavenClient ravenClient;
 
         public static int shardCount = 1;
 
@@ -23,6 +25,7 @@ namespace Miki
         public static string ImgurClientId = "";
 
         public static string RocketLeagueKey = "";
+        public static string SharpRavenKey = "";
 
         #endregion API Keys
     }

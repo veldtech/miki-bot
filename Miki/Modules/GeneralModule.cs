@@ -40,7 +40,10 @@ namespace Miki.Modules
                             }
 
                             User user = await context.Users.FindAsync(msg.Author.Id.ToDbLong());
-                            user.Total_Commands++;
+                            if(user != null)
+                            {
+                                user.Total_Commands++;
+                            }
 
                             await context.SaveChangesAsync();
                         }
@@ -73,7 +76,7 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            try
+            await MeruUtils.TryAsync(async () =>
             {
                 Expression expression = new Expression(e.arguments);
 
@@ -93,12 +96,12 @@ namespace Miki.Modules
                 object output = expression.Evaluate();
 
                 await e.Channel.SendMessage(output.ToString());
-            }
-            catch (Exception ex)
+            },
+            async (ex) =>
             {
                 Log.ErrorAt("calc", ex.Message);
                 await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
-            }
+            });
         }
 
         [Command(Name = "guildinfo")]
