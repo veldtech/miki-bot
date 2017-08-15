@@ -1933,6 +1933,24 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to page {0} of {1}.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_page {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards: Reputation.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_reputation_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_reputation_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You&apos;re already proposing/married to this person..
         /// </summary>
         internal static string miki_module_accounts_marry_error_exists {

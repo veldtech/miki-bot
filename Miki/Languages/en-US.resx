@@ -1473,4 +1473,10 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_marriage_buymarriageslot_success" xml:space="preserve">
     <value>You have successfully purchased a new marraige slot. You now have {0} slots.</value>
   </data>
+  <data name="miki_module_accounts_leaderboards_page" xml:space="preserve">
+    <value>page {0} of {1}</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
+    <value>Leaderboards: Reputation</value>
+  </data>
 </root>
