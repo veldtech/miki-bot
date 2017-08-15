@@ -780,6 +780,7 @@ Fuzzy</comment>
     <value>&gt;leaderboards
 &gt;leaderboards local
 &gt;leaderboards mekos
+&gt;leaderboards reputation
 &gt;leaderboards commands</value>
   </data>
   <data name="miki_command_usage_profile" xml:space="preserve">
@@ -1010,7 +1011,8 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>&gt;buymarriageslot</value>
   </data>
   <data name="miki_command_usage_clean" xml:space="preserve">
-    <value>&gt;clean</value>
+    <value>&gt;clean
+&gt;clean &lt;amount&gt;</value>
   </data>
   <data name="miki_command_usage_daily" xml:space="preserve">
     <value>&gt;daily</value>
@@ -1030,7 +1032,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>&gt;mekos</value>
   </data>
   <data name="miki_command_usage_prune" xml:space="preserve">
-    <value>&gt;prune [amount]</value>
+    <value>&gt;prune [amount] [@User]</value>
   </data>
   <data name="miki_command_usage_setcommand" xml:space="preserve">
     <value>&gt;setcommand &lt;command name&gt; 1 to enable
@@ -1372,7 +1374,7 @@ You need atleast **{0}** experience before you can use this command on this serv
     <value>Gamble away your mekos in a totally fair game of blackjack against Miki!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value>&gt;blackjack &lt;amount&gt;</value>
+    <value>&gt;blackjack &lt;amount|all&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
     <value>Sorry, but you don't have any pastas yet..</value>

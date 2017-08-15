@@ -525,23 +525,39 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-		[Command( Name = "mekos", Aliases = new string[] { "bal" } )]
-		public async Task ShowMekosAsync(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+		[Command( Name = "mekos", Aliases = new string[] { "bal", "meko" } )]
+		public async Task ShowMekosAsync( EventContext e )
+		{
+			ulong targetId = e.message.MentionedUserIds.Count > 0 ? e.message.MentionedUserIds.First() : 0;
 
-                IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
-                embed.Title = "🔸 Mekos";
-                embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
-                embed.Color = new IA.SDK.Color(1f, 0.5f, 0.7f);
+			if( targetId == 0 )
+			{
+				await e.ErrorEmbed( "Mentioned user not found!" ).SendToChannel( e.Channel );
+				return;
+			}
+			else
+			{
+				IDiscordUser userCheck = await e.Guild.GetUserAsync( targetId );
+				if( userCheck.IsBot )
+				{
+					await e.ErrorEmbed( "You can't check a bot's mekos!" ).SendToChannel( e.Channel );
+				}
+			}
 
-                await embed.SendToChannel(e.Channel);
-            }
-        }
+			using( var context = new MikiContext() )
+			{
+				User user = await context.Users.FindAsync( targetId != 0 ? (long)targetId : e.Author.Id.ToDbLong() );
 
-        [Command(Name = "rep")]
+				IDiscordEmbed embed = new RuntimeEmbed( new EmbedBuilder() );
+				embed.Title = "🔸 Mekos";
+				embed.Description = $"{user.Name} has **{user.Currency}** mekos!";
+				embed.Color = new IA.SDK.Color( 1f, 0.5f, 0.7f );
+
+				await embed.SendToChannel( e.Channel );
+			}
+		}
+
+		[Command(Name = "rep")]
         public async Task GiveReputationAsync(EventContext e)
         {
             using (var context = new MikiContext())

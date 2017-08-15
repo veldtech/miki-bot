@@ -1064,7 +1064,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;blackjack &lt;amount&gt;.
+        ///   Looks up a localized string similar to &gt;blackjack &lt;amount|all&gt;.
         /// </summary>
         internal static string miki_command_usage_blackjack {
             get {
@@ -1100,7 +1100,8 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;clean.
+        ///   Looks up a localized string similar to &gt;clean
+        ///&gt;clean &lt;amount&gt;.
         /// </summary>
         internal static string miki_command_usage_clean {
             get {
@@ -1323,6 +1324,7 @@ namespace Miki.Languages {
         ///   Looks up a localized string similar to &gt;leaderboards
         ///&gt;leaderboards local
         ///&gt;leaderboards mekos
+        ///&gt;leaderboards reputation
         ///&gt;leaderboards commands.
         /// </summary>
         internal static string miki_command_usage_leaderboards {
@@ -1459,7 +1461,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;prune [amount].
+        ///   Looks up a localized string similar to &gt;prune [amount] [@User].
         /// </summary>
         internal static string miki_command_usage_prune {
             get {
