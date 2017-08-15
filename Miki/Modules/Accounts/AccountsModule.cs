@@ -530,17 +530,20 @@ namespace Miki.Modules.AccountsModule
 		{
 			ulong targetId = e.message.MentionedUserIds.Count > 0 ? e.message.MentionedUserIds.First() : 0;
 
-			if( targetId == 0 )
+			if( e.message.MentionedUserIds.Count > 0 )
 			{
-				await e.ErrorEmbed( "Mentioned user not found!" ).SendToChannel( e.Channel );
-				return;
-			}
-			else
-			{
-				IDiscordUser userCheck = await e.Guild.GetUserAsync( targetId );
-				if( userCheck.IsBot )
+				if( targetId == 0 )
 				{
-					await e.ErrorEmbed( "You can't check a bot's mekos!" ).SendToChannel( e.Channel );
+					await e.ErrorEmbed( "Mentioned user not found!" ).SendToChannel( e.Channel );
+					return;
+				}
+				else
+				{
+					IDiscordUser userCheck = await e.Guild.GetUserAsync( targetId );
+					if( userCheck.IsBot )
+					{
+						await e.ErrorEmbed( "You can't check a bot's mekos!" ).SendToChannel( e.Channel );
+					}
 				}
 			}
 
