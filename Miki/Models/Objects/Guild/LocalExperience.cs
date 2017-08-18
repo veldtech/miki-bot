@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 
 namespace Miki.Models
 {
@@ -19,5 +20,21 @@ namespace Miki.Models
 
         [Column("LastExperienceTime")]
         public DateTime LastExperienceTime { get; set; }
+
+        public static async Task<LocalExperience> CreateAsync(MikiContext context, long ServerId, long userId)
+        {
+            LocalExperience experience = null;
+
+            experience = new LocalExperience();
+            experience.ServerId = ServerId;
+            experience.UserId = userId;
+            experience.Experience = 0;
+            experience.LastExperienceTime = Utils.MinDbValue;
+
+            experience = context.Experience.Add(experience);
+            await context.SaveChangesAsync();
+
+            return experience;
+        }
     }
 }

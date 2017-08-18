@@ -71,7 +71,7 @@ namespace Miki.Models
             }
         }
 
-        public static User Create(MikiContext context, IDiscordMessage e)
+        public static async Task<User> CreateAsync(IDiscordMessage e)
         {
             User user = new User()
             {
@@ -89,7 +89,13 @@ namespace Miki.Models
                 Reputation = 0,
                 LastReputationGiven = Utils.MinDbValue
             };
-            context.Users.Add(user);
+
+            using (var context = new MikiContext())
+            {
+                context.Users.Add(user);
+                await context.SaveChangesAsync();
+            }
+
             return user;
         }
 
@@ -99,7 +105,7 @@ namespace Miki.Models
             await context.SaveChangesAsync();
         }
 
-        public int CalculateLevel(int exp)
+        public static int CalculateLevel(int exp)
         {
             int experience = exp;
             int Level = 0;
@@ -112,7 +118,7 @@ namespace Miki.Models
             return Level;
         }
 
-        public int CalculateMaxExperience(int localExp)
+        public static int CalculateMaxExperience(int localExp)
         {
             int experience = localExp;
             int Level = 0;
@@ -125,12 +131,12 @@ namespace Miki.Models
             return output;
         }
 
-        private int CalculateNextLevelIteration(int output, int level)
+        private static int CalculateNextLevelIteration(int output, int level)
         {
             return 10 + (output + (level * 20));
         }
 
-        public async Task<int> GetGlobalRank()
+        public async Task<int> GetGlobalRankAsync()
         {
             int x = 0;
             using (var context = new MikiContext())

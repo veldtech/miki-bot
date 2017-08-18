@@ -1,5 +1,8 @@
-﻿using Miki.Migrations;
+using IA;
+using IA.Migrations;
+using Miki.Migrations;
 using Miki.Models.Objects.Guild;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
@@ -29,13 +32,6 @@ namespace Miki.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
-        }
-
-        public static MikiContext CreateNoCache()
-        {
-            MikiContext m = new MikiContext();
-            m.Configuration.LazyLoadingEnabled = false;
-            return m;
         }
     }
 }
