@@ -15,6 +15,7 @@ using Miki.Models;
 using Miki.Modules.Accounts.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -33,7 +34,10 @@ namespace Miki.Modules.AccountsModule
                 using (var context = new MikiContext())
                 {
                     long guildId = g.Id.ToDbLong();
-                    List<LevelRole> rolesObtained = context.LevelRoles.AsNoTracking().Where(p => p.GuildId == guildId && p.RequiredLevel == l).ToList();
+                    List<LevelRole> rolesObtained = context.LevelRoles.AsNoTracking()
+                                                                      .Where(p => p.GuildId == guildId && p.RequiredLevel == l)
+                                                                      .ToList();
+
                     IDiscordUser u = await g.Guild.GetUserAsync(a.Id.FromDbLong());
                     List<IDiscordRole> rolesGiven = new List<IDiscordRole>();
 
@@ -193,10 +197,10 @@ namespace Miki.Modules.AccountsModule
                     EmojiBarSet onBarSet = new EmojiBarSet("<:mbaronright:334479818924228608>", "<:mbaronmid:334479818848468992>", "<:mbaronleft:334479819003789312>");
                     EmojiBarSet offBarSet = new EmojiBarSet("<:mbaroffright:334479818714513430>", "<:mbaroffmid:334479818504536066>", "<:mbaroffleft:334479818949394442>");
 
-                    EmojiBar expBar = new EmojiBar(account.CalculateMaxExperience(localExp.Experience), onBarSet, offBarSet, 6);
+                    EmojiBar expBar = new EmojiBar(User.CalculateMaxExperience(localExp.Experience), onBarSet, offBarSet, 6);
 
                     string infoValue = new MessageBuilder()
-                        .AppendText(locale.GetString("miki_module_accounts_information_level", account.CalculateLevel(localExp.Experience), localExp.Experience, account.CalculateMaxExperience(localExp.Experience)))
+                        .AppendText(locale.GetString("miki_module_accounts_information_level", User.CalculateLevel(localExp.Experience), localExp.Experience, User.CalculateMaxExperience(localExp.Experience)))
                         .AppendText(await expBar.Print(localExp.Experience, e.Channel))
                         .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
                         .AppendText("Reputation: " + account.Reputation, MessageFormatting.PLAIN, false)
@@ -204,15 +208,15 @@ namespace Miki.Modules.AccountsModule
 
                     embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
 
-                    int globalLevel = account.CalculateLevel(account.Total_Experience);
-                    int globalRank = account.CalculateMaxExperience(account.Total_Experience);
+                    int globalLevel = User.CalculateLevel(account.Total_Experience);
+                    int globalRank = User.CalculateMaxExperience(account.Total_Experience);
 
-                    EmojiBar globalExpBar = new EmojiBar(account.CalculateMaxExperience(account.Total_Experience), onBarSet, offBarSet, 6);
+                    EmojiBar globalExpBar = new EmojiBar(User.CalculateMaxExperience(account.Total_Experience), onBarSet, offBarSet, 6);
 
                     string globalInfoValue = new MessageBuilder()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
                         .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-                        .AppendText(locale.GetString("miki_module_accounts_information_rank", account.GetGlobalRank()), MessageFormatting.PLAIN, false)
+                        .AppendText(locale.GetString("miki_module_accounts_information_rank", await account.GetGlobalRankAsync()), MessageFormatting.PLAIN, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -628,7 +632,7 @@ namespace Miki.Modules.AccountsModule
 
                     IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
-                    em.Description = e.GetResource("give_description");
+                    em.Description = e.GetResource("give_description", sender.Name, receiver.Name, goldSent);
 
                     em.Color = new IA.SDK.Color(255, 140, 0);
 
@@ -891,9 +895,10 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
                             embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Total_Commands)
+                            List<User> output = await context.Users
+                                                             .OrderByDescending(x => x.Total_Commands)
                                                              .Take(12)
-                                                             .ToList();
+                                                             .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
@@ -908,9 +913,9 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Currency)
+                            List<User> output = await context.Users.OrderByDescending(x => x.Currency)
                                                                 .Take(12)
-                                                                .ToList();
+                                                                .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
@@ -926,14 +931,21 @@ namespace Miki.Modules.AccountsModule
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
                             long guildId = e.Guild.Id.ToDbLong();
-                            List<LocalExperience> output = context.Experience.Where(x => x.ServerId == guildId).OrderByDescending(x => x.Experience).ToList();
-                            List<User> users = context.Users.Where(x => output.Any(y => y.UserId == x.Id)).ToList();
+                            var output = await context.Experience
+                                                      .Where(x => x.ServerId == guildId)
+                                                      .OrderByDescending(x => x.Experience)
+                                                      .Take(12)
+                                                      .Join(context.Users, x=> x.UserId, x => x.Id, (x, y) => new {
+                                                          UserId = y.Id,
+                                                          Experience = x.Experience,
+                                                          Name = y.Name         
+                                                      })
+                                                      .AsNoTracking()
+                                                      .ToListAsync();
 
-                            int i = 1;
-                            foreach (User user in users)
+                            for (int i = 0; i < output.Count; i++)
                             {
-                                embed.AddInlineField($"#{i}: {string.Join("", user.Name.Take(16))}", $"{output.Find(x => x.UserId == user.Id).Experience} experience!");
-                                i++;
+                                embed.AddInlineField($"#{i+1}: {string.Join("", output[i].Name.Take(16))}", $"{output[i].Experience} experience!");
                             }
                             await embed.SendToChannel(e.Channel);
                         }
@@ -943,9 +955,10 @@ namespace Miki.Modules.AccountsModule
                         {
                             embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
                             embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-                            List<User> output = context.Users.OrderByDescending(x => x.Total_Experience)
+                            List<User> output = await context.Users
+                                                             .OrderByDescending(x => x.Total_Experience)
                                                              .Take(12)
-                                                             .ToList();
+                                                             .ToListAsync();
                             int i = 1;
                             foreach (User user in output)
                             {
