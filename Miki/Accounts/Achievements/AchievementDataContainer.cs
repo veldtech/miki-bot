@@ -2,29 +2,31 @@
 using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
 {
-    public class AchievementDataContainer<T> where T : BaseAchievement
+    public class AchievementDataContainer
     {
         public string Name = Constants.NotDefined;
 
-        public List<T> Achievements = new List<T>();
+        public List<BaseAchievement> Achievements = new List<BaseAchievement>();
 
         private AchievementDataContainer()
         {
         }
 
-        public AchievementDataContainer(Action<AchievementDataContainer<T>> instance)
+        public AchievementDataContainer(Action<AchievementDataContainer> instance)
         {
             instance.Invoke(this);
 
-            AchievementDataContainer<BaseAchievement> castedContainer = ToBase();
-            AchievementManager.Instance.AddContainer(castedContainer);
+            AchievementDataContainer castedContainer = ToBase();
+            AchievementManager.Instance.AddContainer(this);
 
-            foreach (T d in Achievements)
+            foreach (BaseAchievement d in Achievements)
             {
                 d.ParentName = Name;
             }
@@ -32,36 +34,44 @@ namespace Miki.Accounts.Achievements
 
         public async Task CheckAsync(BasePacket packet)
         {
+            await InternalCheckAsync(packet);
+        }
+
+        private async Task InternalCheckAsync(BasePacket packet)
+        {
+            Achievement a = null;
+            long userId = packet.discordUser.Id.ToDbLong();
+
             using (var context = new MikiContext())
             {
-                Achievement a = await context.Achievements.FindAsync(packet.discordUser.Id.ToDbLong(), Name);
+                a = await context.Achievements.FindAsync(userId, Name);
+            }
 
-                if (a == null)
+            if (a == null)
+            {
+                if (await Achievements[0].CheckAsync(packet))
                 {
-                    if (await Achievements[0].CheckAsync(context, packet))
-                    {
-                        await Achievements[0].UnlockAsync(context, packet.discordChannel, packet.discordUser);
-                        await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
-                    }
-                    return;
+                    await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
+                    //await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
                 }
+                return;
+            }
 
-                if (a.Rank >= Achievements.Count - 1)
-                {
-                    return;
-                }
+            if (a.Rank >= Achievements.Count - 1)
+            {
+                return;
+            }
 
-                if (await Achievements[a.Rank + 1].CheckAsync(context, packet))
-                {
-                    await Achievements[a.Rank + 1].UnlockAsync(context, packet.discordChannel, packet.discordUser, a.Rank + 1);
-                    await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
-                }
+            if (await Achievements[a.Rank + 1].CheckAsync(packet))
+            {
+                await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
+                //await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
             }
         }
 
-        public AchievementDataContainer<BaseAchievement> ToBase()
+        public AchievementDataContainer ToBase()
         {
-            AchievementDataContainer<BaseAchievement> b = new AchievementDataContainer<BaseAchievement>();
+            AchievementDataContainer b = new AchievementDataContainer();
 
             b.Name = Name;
 

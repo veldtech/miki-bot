@@ -8,7 +8,7 @@ namespace Miki.Accounts.Achievements.Objects
     {
         public Func<TransactionPacket, Task<bool>> CheckTransaction;
 
-        public override async Task<bool> CheckAsync(MikiContext context, BasePacket packet)
+        public override async Task<bool> CheckAsync(BasePacket packet)
         {
             return await CheckTransaction(packet as TransactionPacket);
         }

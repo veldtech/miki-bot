@@ -8,7 +8,7 @@ namespace Miki.Accounts.Achievements.Objects
     {
         public Func<CommandPacket, Task<bool>> CheckCommand;
 
-        public override async Task<bool> CheckAsync(MikiContext context, BasePacket packet)
+        public override async Task<bool> CheckAsync(BasePacket packet)
         {
             return await CheckCommand(packet as CommandPacket);
         }

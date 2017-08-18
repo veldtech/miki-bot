@@ -5,6 +5,8 @@ using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ namespace Miki.Accounts.Achievements
         internal IService provider = null;
 
         private Bot bot;
-        private Dictionary<string, AchievementDataContainer<BaseAchievement>> containers = new Dictionary<string, AchievementDataContainer<BaseAchievement>>();
+        private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
         public event Func<AchievementPacket, Task> OnAchievementUnlocked;
 
@@ -29,12 +31,8 @@ namespace Miki.Accounts.Achievements
 
         public event Func<LevelPacket, Task> OnLevelGained;
 
-        public event Func<MessageEventPacket, Task> OnMessageReceived;
-
         public event Func<TransactionPacket, Task> OnTransaction;
 
-        // Veld - WARNING: does not work with channel messages
-        public event Func<UserUpdatePacket, Task> OnUserUpdate;
 
         private AchievementManager(Bot bot)
         {
@@ -70,34 +68,6 @@ namespace Miki.Accounts.Achievements
                     await OnTransaction?.Invoke(p);
                 }
             };
-
-            bot.Client.MessageReceived += async (e) =>
-            {
-                if (OnMessageReceived == null)
-                {
-                    return;
-                }
-
-                if (await provider.IsEnabled(e.Channel.Id))
-                {
-                    MessageEventPacket p = new MessageEventPacket()
-                    {
-                        message = new RuntimeMessage(e),
-                        discordUser = new RuntimeUser(e.Author),
-                        discordChannel = new RuntimeMessageChannel(e.Channel)
-                    };
-                    await OnMessageReceived?.Invoke(p);
-                }
-            };
-            bot.Client.UserUpdated += async (ub, ua) =>
-            {
-                UserUpdatePacket p = new UserUpdatePacket()
-                {
-                    discordUser = new RuntimeUser(ub),
-                    userNew = new RuntimeUser(ua)
-                };
-                await OnUserUpdate?.Invoke(p);
-            };
             bot.Events.AddCommandDoneEvent(x =>
             {
                 x.Name = "--achievement-manager-command";
@@ -116,7 +86,7 @@ namespace Miki.Accounts.Achievements
             });
         }
 
-        internal void AddContainer(AchievementDataContainer<BaseAchievement> container)
+        internal void AddContainer(AchievementDataContainer container)
         {
             if (containers.ContainsKey(container.Name))
             {
@@ -127,7 +97,7 @@ namespace Miki.Accounts.Achievements
             containers.Add(container.Name, container);
         }
 
-        public AchievementDataContainer<BaseAchievement> GetContainerById(string id)
+        public AchievementDataContainer GetContainerById(string id)
         {
             if (containers.ContainsKey(id))
             {
@@ -162,12 +132,15 @@ namespace Miki.Accounts.Achievements
         {
             if (achievement as AchievementAchievement != null) return;
 
+            long id = user.Id.ToDbLong();
+
+
             using (var context = new MikiContext())
             {
-                long id = user.Id.ToDbLong();
-
-                List<Achievement> achs = context.Achievements.Where(q => q.Id == id).ToList();
-                int achievementCount = achs.Sum(x => x.Rank + 1);
+                int achievementCount = await context.Achievements
+                                                            .AsNoTracking()
+                                                            .Where(q => q.Id == id)
+                                                            .CountAsync();
 
                 AchievementPacket p = new AchievementPacket()
                 {
@@ -198,7 +171,10 @@ namespace Miki.Accounts.Achievements
 
                 p.amount = amount;
 
-                await OnTransaction?.Invoke(p);
+                if (OnTransaction != null)
+                {
+                    await OnTransaction?.Invoke(p);
+                }
             }
             catch (Exception e)
             {

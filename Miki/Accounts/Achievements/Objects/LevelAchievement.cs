@@ -8,7 +8,7 @@ namespace Miki.Accounts.Achievements.Objects
     {
         public Func<LevelPacket, Task<bool>> CheckLevel;
 
-        public override async Task<bool> CheckAsync(MikiContext context, BasePacket packet)
+        public override async Task<bool> CheckAsync(BasePacket packet)
         {
             return await CheckLevel(packet as LevelPacket);
         }
