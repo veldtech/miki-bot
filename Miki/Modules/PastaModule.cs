@@ -171,10 +171,8 @@ namespace Miki.Modules
                 return;
             }
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-
                 GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
                 if (pasta == null)
@@ -252,7 +250,7 @@ namespace Miki.Modules
 
             List<string> arguments = e.arguments.Split(' ').ToList();
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
                 context.Set<GlobalPasta>().AsNoTracking();
 
@@ -280,10 +278,8 @@ namespace Miki.Modules
                 return;
             }
 
-            using (var context = MikiContext.CreateNoCache())
+            using (var context = new MikiContext())
             {
-                context.Set<GlobalPasta>().AsNoTracking();
-
                 GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
                 if (pasta == null)
