@@ -307,3 +307,4 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 .vs/Miki/v15/.suo
+Miki/App.config
