@@ -1,10 +1,14 @@
 ﻿using Discord;
+using EFCache;
+using EFCache.RedisCache;
 using IA;
 using IA.FileHandling;
 using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
 using Nito.AsyncEx;
+using StackExchange.Redis;
+using StatsdClient;
 using System;
 using System.Threading.Tasks;
 
@@ -84,7 +88,10 @@ namespace Miki
                 x.ConsoleLogLevel = LogLevel.ALL;
             });
 
-            Global.ravenClient = new SharpRaven.RavenClient(Global.SharpRavenKey);
+            if (!string.IsNullOrWhiteSpace(Global.SharpRavenKey))
+            {
+                Global.ravenClient = new SharpRaven.RavenClient(Global.SharpRavenKey);
+            }
 
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
             {
@@ -125,7 +132,7 @@ namespace Miki
                 //await e.SendToChannel(msg.Channel);
                 */
             };
-            bot.OnError = async (ex) => await Global.ravenClient.CaptureAsync(new SharpRaven.Data.SentryEvent(ex));
+            bot.OnError = async (ex) => Log.Message(ex.ToString());
 
             bot.AddDeveloper(121919449996460033);
 
