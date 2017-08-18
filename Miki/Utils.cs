@@ -6,11 +6,19 @@ using Miki.Languages;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace Miki
 {
-    public static class Utils
+    public static class Utils   
     {
+        public static DateTime UnixToDateTime(long unix)
+        {
+            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            time = time.AddSeconds(unix).ToLocalTime();
+            return time;
+        }
+
         public static string ToTimeString(this int seconds, Locale localized, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
@@ -118,6 +126,14 @@ namespace Miki
         public static bool GetInputBool(this string input)
         {
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
+        }
+
+        public static async Task ForEachAsync<T>(this IEnumerable<T> list, Func<T, Task> func)
+        {
+            foreach(T x in list)
+            {
+                await func(x);
+            }
         }
 
         public static IDiscordEmbed ErrorEmbed(this EventContext e, string message) => ErrorEmbed(e.Channel.GetLocale(), message);
