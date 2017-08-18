@@ -61,21 +61,27 @@ namespace Miki
 
         public static async Task SendChannel(IDiscordMessageChannel channel, string message)
         {
-            if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+            if (channel.Guild.CurrentUser.HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
-                await channel.SendMessage(message);
+                if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+                {
+                    await channel.SendMessage(message);
+                }
             }
         }
 
         public static async Task SendChannel(IDiscordMessageChannel channel, IDiscordEmbed message)
         {
-            if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+            if (channel.Guild.CurrentUser.HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
-                await message.SendToChannel(channel);
+                if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+                {
+                    await message.SendToChannel(channel);
+                }
             }
         }
 
-        public static async Task SendAchievement(AchievementDataContainer<BaseAchievement> d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
+        public static async Task SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
         {
             await SendAchievement(d.Achievements[rank], channel, user);
         }
