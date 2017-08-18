@@ -25,6 +25,7 @@ namespace Miki
         public static string ImgurClientId = "";
 
         public static string RocketLeagueKey = "";
+        public static string SteamAPIKey = "";
         public static string SharpRavenKey = "";
 
         #endregion API Keys
