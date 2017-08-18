@@ -61,6 +61,22 @@ namespace Miki.Modules
             await e.message.Discord.SetGameAsync(e.arguments, "https://www.twitch.tv/velddev");
         }
 
+        [Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task IgnoreIdAsync(EventContext e)
+        {
+            if (ulong.TryParse(e.arguments, out ulong id))
+            {
+                Bot.instance.Events.Ignore(id);
+                await e.Channel.SendMessage(":ok_hand:");
+            }
+        }
+
+        [Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task ShowCacheAsync(EventContext e)
+        {
+            await e.Channel.SendMessage("Yes, this is Veld, my developer.");
+        }
+
         [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ChangeAvatarAsync(EventContext e)
         {
