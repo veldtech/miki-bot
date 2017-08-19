@@ -356,6 +356,12 @@
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\EmojiBar.cs" />
     <Compile Include="Accounts\LeaderboardsItem.cs" />
+    <Compile Include="API\Cards\CardManager.cs" />
+    <Compile Include="API\Cards\CardSet.cs" />
+    <Compile Include="API\Cards\Enums\CardType.cs" />
+    <Compile Include="API\Cards\Enums\CardValue.cs" />
+    <Compile Include="API\Cards\Objects\Card.cs" />
+    <Compile Include="API\Cards\Objects\CardHand.cs" />
     <Compile Include="API\Gambling\GamblingApi.cs" />
     <Compile Include="API\Patreon\PatreonApi.cs" />
     <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
@@ -524,6 +530,7 @@
     <Compile Include="Modules\ActionsModule.cs" />
     <Compile Include="Modules\DonatorModule.cs" />
     <Compile Include="Modules\Gambling\GamesModule.cs" />
+    <Compile Include="Modules\Gambling\Managers\BlackjackManager.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\GuildAccountsModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
