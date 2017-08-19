@@ -2085,6 +2085,24 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t check a bot&apos;s mekos!.
+        /// </summary>
+        internal static string miki_module_accounts_mekos_bot {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_mekos_bot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mentioned user not found!.
+        /// </summary>
+        internal static string miki_module_accounts_mekos_no_user {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_mekos_no_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Profile {0} doesn&apos;t exist!.
         /// </summary>
         internal static string miki_module_accounts_profile_error_null {
@@ -3863,6 +3881,15 @@ namespace Miki.Languages {
         internal static string miki_terms_weekly {
             get {
                 return ResourceManager.GetString("miki_terms_weekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has **{1}** mekos!.
+        /// </summary>
+        internal static string miki_user_mekos {
+            get {
+                return ResourceManager.GetString("miki_user_mekos", resourceCulture);
             }
         }
         
