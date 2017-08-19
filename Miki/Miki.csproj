@@ -526,7 +526,10 @@
     <Compile Include="Modules\GamesModule.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\GuildAccountsModule.cs" />
+    <Compile Include="Modules\MarriageModule.cs" />
+    <Compile Include="Modules\MekosModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
+    <Compile Include="Modules\OsuModule.cs" />
     <Compile Include="Modules\Overwatch\API\OverwatchApi.cs" />
     <Compile Include="Modules\Overwatch\Objects\OverwatchAchievements.cs" />
     <Compile Include="Modules\Overwatch\Objects\OverwatchAverageStats.cs" />
@@ -738,6 +741,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 xcopy /s /y "C:\Users\Veld\Documents\miki\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
