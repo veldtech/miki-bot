@@ -1552,4 +1552,13 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="String1" xml:space="preserve">
     <value />
   </data>
+  <data name="miki_error_gambling_no_arg" xml:space="preserve">
+    <value>You can't use this command with no arguments. Please specify a bet amount.</value>
+  </data>
+  <data name="miki_error_gambling_parse_error" xml:space="preserve">
+    <value>You can only enter whole numbers, `all` or `*`.</value>
+  </data>
+  <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
+    <value>You must bet one or more mekos.</value>
+  </data>
 </root>

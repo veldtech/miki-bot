@@ -297,7 +297,6 @@ namespace Miki.Modules
 
 		public async Task ValidateBet( EventContext e, Func<EventContext, int, Task> callback = null )
 		{
-
 			if( !string.IsNullOrEmpty( e.arguments ) )
 			{
 				int bet = 0;
@@ -317,21 +316,24 @@ namespace Miki.Modules
 					}
 					else
 					{
-						await e.ErrorEmbed( e.GetResource( "miki_error_message_generic" ) ) // TODO: Update to more imformative message.
+						await e.ErrorEmbed( e.GetResource( "miki_error_gambling_parse_error" ) )
 							.SendToChannel( e.Channel );
+						return;
 					}
 
 					if( bet < 1 )
 					{
-						await e.ErrorEmbed( e.GetResource( "miki_error_message_generic" ) ) // TODO: Update to more imformative message.
+						await e.ErrorEmbed( e.GetResource( "miki_error_gambling_zero_or_less" ) )
 							.SendToChannel( e.Channel );
+						return;
 					}
 					else if( bet > user.Currency )
 					{
 						await e.ErrorEmbed( e.GetResource( "miki_mekos_insufficient" ) )
-						.SendToChannel( e.Channel );
+							.SendToChannel( e.Channel );
+						return;
 					}
-					else if( bet > noAskLimit )
+					else if( bet >= noAskLimit )
 					{
 						IDiscordEmbed embed = Utils.Embed;
 						embed.Description = $"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `>yes` to confirm.";
@@ -339,7 +341,7 @@ namespace Miki.Modules
 						await embed.SendToChannel( e.Channel );
 
 						CommandHandler confirmCommand = new CommandHandlerBuilder( Bot.instance.Events )
-						.AddPrefix( ">" )
+						.AddPrefix( "" )
 						.DisposeInSeconds( 20 )
 						.SetOwner( e.message )
 						.AddCommand(
@@ -357,15 +359,13 @@ namespace Miki.Modules
 					{
 						await callback( e, bet );
 					}
-
 				}
-
-
 			}
 			else
 			{
-				await Utils.ErrorEmbed( e.Channel.GetLocale(), e.GetResource( "miki_blackjack_no_arg" ) )
+				await Utils.ErrorEmbed( e.Channel.GetLocale(), e.GetResource( "miki_error_gambling_no_arg" ) )
 					.SendToChannel( e.Channel );
+				return;
 			}
 
 		}

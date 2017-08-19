@@ -1759,6 +1759,33 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t use this command with no arguments. Please specify a bet amount..
+        /// </summary>
+        internal static string miki_error_gambling_no_arg {
+            get {
+                return ResourceManager.GetString("miki_error_gambling_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only enter whole numbers, `all` or `*`..
+        /// </summary>
+        internal static string miki_error_gambling_parse_error {
+            get {
+                return ResourceManager.GetString("miki_error_gambling_parse_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must bet one or more mekos..
+        /// </summary>
+        internal static string miki_error_gambling_zero_or_less {
+            get {
+                return ResourceManager.GetString("miki_error_gambling_zero_or_less", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Something went wrong!.
         /// </summary>
         internal static string miki_error_message_generic {
