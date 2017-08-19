@@ -1513,7 +1513,7 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="time_seconds" xml:space="preserve">
     <value>seconds</value>
   </data>
-  <data name="miki_module_admin_prune_no_messages" xml:space="preserve">
+  <data name="miki_module_admin_prune_error_no_messages" xml:space="preserve">
     <value>Sorry but I couldn't find any messages to delete with that query! Try `{0}help prune` for tips out how to use this command!</value>
   </data>
   <data name="miki_blackjack_current_balance" xml:space="preserve">
@@ -1561,11 +1561,23 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
     <value>You must bet one or more mekos.</value>
   </data>
+  <data name="miki_module_accounts_leaderboards_page" xml:space="preserve">
+    <value>page {0} of {1}</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
+    <value>Leaderboards: Reputation</value>
+  </data>
   <data name="miki_module_accounts_mekos_bot" xml:space="preserve">
     <value>You can't check a bot's mekos!</value>
   </data>
   <data name="miki_module_accounts_mekos_no_user" xml:space="preserve">
     <value>Mentioned user not found!</value>
+  </data>
+  <data name="miki_module_admin_prune_error_negative" xml:space="preserve">
+    <value>You can't enter a negative amount!</value>
+  </data>
+  <data name="miki_module_admin_prune_error_parse" xml:space="preserve">
+    <value>You must enter a whole number as the amount!</value>
   </data>
   <data name="miki_user_mekos" xml:space="preserve">
     <value>{0} has **{1}** mekos!</value>
