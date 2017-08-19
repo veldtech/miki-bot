@@ -220,13 +220,7 @@ namespace Miki.Objects
 
     internal class GelbooruPost : BasePost, IPost
     {
-        public string ImageUrl
-        {
-            get
-            {
-                return "http:" + FileUrl;
-            }
-        }
+        public string ImageUrl => "http:" + FileUrl;
 
         public static GelbooruPost Create(string content, ImageRating r)
         {
