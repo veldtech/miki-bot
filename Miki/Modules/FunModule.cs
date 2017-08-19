@@ -431,7 +431,7 @@ namespace Miki.Modules
         [Command(Name = "roll")]
         public async Task RollAsync(EventContext e)
         {
-            string output = "";
+            string output;
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
@@ -491,7 +491,11 @@ namespace Miki.Modules
 
             if (output == "1" || output.StartsWith("1 "))
             {
-                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket() { discordUser = e.Author, discordChannel = e.Channel });
+                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket()
+                {
+                    discordUser = e.Author,
+                    discordChannel = e.Channel
+                });
             }
 
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
@@ -505,8 +509,8 @@ namespace Miki.Modules
 
 			string mention = "<@" + realUsers[Global.random.Next( 0, realUsers.Count )].Id + ">";
 			string send = string.IsNullOrEmpty( e.arguments ) ?
-				e.GetResource( Locale.RouletteMessageNoArg, new object[] { mention } ) :
-				e.GetResource( Locale.RouletteMessage, new object[] { e.arguments, mention } );
+				e.GetResource( Locale.RouletteMessageNoArg, mention) :      
+				e.GetResource( Locale.RouletteMessage, e.arguments, mention );
 
 			await e.Channel.SendMessage( send );
 		}
@@ -545,11 +549,9 @@ namespace Miki.Modules
                 return;
             }
 
-            string reminderText;
-
             int count = arguments.Count;
             arguments.RemoveRange(splitIndex, count - (splitIndex));
-            reminderText = string.Join(" ", arguments);
+            string reminderText = string.Join(" ", arguments);
 
             if (reminderText.StartsWith("me to "))
             {
@@ -624,130 +626,6 @@ namespace Miki.Modules
             }
 
             await e.Channel.SendMessage(s.ImageUrl);
-        }
-
-        private async Task InternalSlotsAsync(EventContext e, ulong userid, Locale locale, int amount)
-        {
-            int moneyBet = 0;
-
-            using (var context = new MikiContext())
-            {
-                User u = await context.Users.FindAsync(userid.ToDbLong());
-
-                int moneyReturned = 0;
-
-                if (moneyBet <= 0)
-                {
-                    return;
-                }
-
-                string[] objects =
-                {
-                    "🍒", "🍒", "🍒", "🍒",
-                    "🍊", "🍊",
-                    "🍓", "🍓",
-                    "🍍","🍍",
-                    "🍇", "🍇",
-                    "⭐", "⭐",
-                    "🍍", "🍍",
-                    "🍓", "🍓",
-                    "🍊", "🍊", "🍊",
-                    "🍒", "🍒", "🍒", "🍒",
-                };
-
-                IDiscordEmbed b = Utils.Embed;
-                b.Title = locale.GetString(Locale.SlotsHeader);
-
-                Random r = new Random();
-
-                string[] objectsChosen =
-                {
-                    objects[r.Next(objects.Length)],
-                    objects[r.Next(objects.Length)],
-                    objects[r.Next(objects.Length)]
-                };
-
-                Dictionary<string, int> score = new Dictionary<string, int>();
-
-                foreach (string o in objectsChosen)
-                {
-                    if (score.ContainsKey(o))
-                    {
-                        score[o]++;
-                        continue;
-                    }
-                    score.Add(o, 1);
-                }
-
-                if (score.ContainsKey("🍒"))
-                {
-                    if (score["🍒"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 0.5f);
-                    }
-                    else if (score["🍒"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1f);
-                    }
-                }
-                if (score.ContainsKey("🍊"))
-                {
-                    if (score["🍊"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 0.8f);
-                    }
-                    else if (score["🍊"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1.5f);
-                    }
-                }
-                if (score.ContainsKey("🍓"))
-                {
-                    if (score["🍓"] == 2)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1f);
-                    }
-                    else if (score["🍓"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 2f);
-                    }
-                }
-                if (score.ContainsKey("🍍"))
-                {
-                    if (score["🍍"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 4f);
-                    }
-                }
-                if (score.ContainsKey("🍇"))
-                {
-                    if (score["🍇"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 6f);
-                    }
-                }
-                if (score.ContainsKey("⭐"))
-                {
-                    if (score["⭐"] == 3)
-                    {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 12f);
-                    }
-                }
-
-                if (moneyReturned == 0)
-                {
-                    moneyReturned = -moneyBet;
-                }
-                else
-                {
-                    b.AddField(locale.GetString(Locale.SlotsWinHeader), locale.GetString(Locale.SlotsWinMessage, moneyReturned));
-                }
-
-                b.Description = string.Join(" ", objectsChosen);
-                u.Currency += moneyReturned;
-                await context.SaveChangesAsync();
-                await b.SendToChannel(e.Channel);
-            }
         }
     }
 }
