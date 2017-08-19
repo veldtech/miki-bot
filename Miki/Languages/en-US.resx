@@ -1561,6 +1561,12 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
     <value>You must bet one or more mekos.</value>
   </data>
+  <data name="miki_module_accounts_leaderboards_page" xml:space="preserve">
+    <value>page {0} of {1}</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
+    <value>Leaderboards: Reputation</value>
+  </data>
   <data name="miki_module_accounts_mekos_bot" xml:space="preserve">
     <value>You can't check a bot's mekos!</value>
   </data>
