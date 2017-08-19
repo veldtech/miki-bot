@@ -14,7 +14,6 @@ namespace Miki
         public static int shardCount = 1;
 
         #region API Keys
-
         public static string ApiKey = "";
         public static string CarbonitexKey = "";
         public static string DiscordPwKey = "";
@@ -28,6 +27,7 @@ namespace Miki
         public static string SteamAPIKey = "";
         public static string SharpRavenKey = "";
 
+        public static string DatadogKey { get; internal set; }
         #endregion API Keys
     }
 
