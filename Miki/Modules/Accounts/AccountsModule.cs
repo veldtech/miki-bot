@@ -556,7 +556,6 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-
 		[Command(Name = "rep")]
         public async Task GiveReputationAsync(EventContext e)
         {
