@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-/// <summary>
-/// All image-board api post objects
-/// </summary>
 namespace Miki.Objects
 {
     public class BasePost
     {
-        protected static List<string> bannedTags = new List<string>()
+        private static readonly List<string> BannedTags = new List<string>()
         {
             "loli",
             "shota",
@@ -42,23 +39,19 @@ namespace Miki.Objects
                 }
             }
 
-            string outputTags = "";
-            for (int i = 0; i < output.Count; i++)
-            {
-                outputTags += output[i] + "+";
-            }
+            string outputTags = string.Join("+", output);
             outputTags.Remove(outputTags.Length - 1);
             return outputTags;
         }
 
         protected static void RemoveBannedTerms(List<string> tags)
         {
-            tags.RemoveAll(p => bannedTags.Contains(p));
+            tags.RemoveAll(p => BannedTags.Contains(p));
         }
 
         protected static void AddBannedTerms(List<string> tags)
         {
-            bannedTags.ForEach(p => tags.Add("-" + p));
+            BannedTags.ForEach(p => tags.Add("-" + p));
         }
     }
 
