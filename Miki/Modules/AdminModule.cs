@@ -302,11 +302,11 @@ namespace Miki.Modules
 			await PruneAsync(e, 100, 0);
 		}
 
-		public async Task PruneAsync( EventContext e, int _amount = 100, ulong _target = 0 ) 
-		{   
+		public async Task PruneAsync( EventContext e, int _amount = 100, ulong _target = 0 )
+		{
 			Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
 
-			IDiscordUser invoker = await e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id);
+			IDiscordUser invoker = await e.Guild.GetUserAsync( Bot.instance.Client.GetShard( 0 ).CurrentUser.Id );
 			if( !invoker.HasPermissions( e.Channel, DiscordGuildPermission.ManageMessages ) )
 			{
 				await e.Channel.SendMessage( locale.GetString( "miki_module_admin_prune_error_no_access" ) );
@@ -333,7 +333,8 @@ namespace Miki.Modules
 						await errorMessage.SendToChannel( e.Channel );
 						return;
 					}
-				} else
+				}
+				else
 				{
 					IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_error_parse" ) );
 					await errorMessage.SendToChannel( e.Channel );
@@ -343,26 +344,26 @@ namespace Miki.Modules
 
 			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
 
-            List<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount);
+			List<IDiscordMessage> messages = await e.Channel.GetMessagesAsync( amount );
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
-            if (messages.Count < amount)
-            {
-                amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
-            }
+			if( messages.Count < amount )
+			{
+				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
+			}
 
-            if (amount <= 1)
-            { // Update this to use localization.
-                string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
-                await e.message.DeleteAsync();
-                IDiscordEmbed errorMessage = Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_no_messages", new object[] { prefix }));
-                await errorMessage.SendToChannel(e.Channel);
-                return;
-            }
-			
+			if( amount <= 1 )
+			{
+				string prefix = await PrefixInstance.Default.GetForGuildAsync( e.Guild.Id );
+				await e.message.DeleteAsync();
+				IDiscordEmbed errorMessage = Utils.ErrorEmbed( e, locale.GetString( "miki_module_admin_prune_no_messages", new object[] { prefix } ) );
+				await errorMessage.SendToChannel( e.Channel );
+				return;
+			}
+
 			for( int i = 0; i < amount; i++ )
 			{
-				if( target != 0 && messages[i]?.Author.Id != target ) 
+				if( target != 0 && messages[i]?.Author.Id != target )
 					continue;
 
 				if( messages[i].Timestamp.AddDays( 14 ) > DateTime.Now )
@@ -378,7 +379,7 @@ namespace Miki.Modules
 
 			Task.WaitAll();
 
-			string[] titles = new string[] 
+			string[] titles = new string[]
 			{
 				"POW!",
 				"BANG!",
@@ -393,15 +394,15 @@ namespace Miki.Modules
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = titles[MikiRandom.Next( titles.Length - 1 )];
-			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count);
+			embed.Description = e.GetResource( "miki_module_admin_prune_success", deleteMessages.Count );
 
 			embed.Color = IA.SDK.Color.GetColor( IAColor.YELLOW );
 
 			IDiscordMessage _dMessage = await embed.SendToChannel( e.Channel );
 
-			await Task.Delay(5000);
+			await Task.Delay( 5000 );
 
 			await _dMessage.DeleteAsync();
 		}
-    }
+	}
 }
