@@ -92,10 +92,12 @@ namespace Miki.Modules.Overwatch
         // still a bad function, but i digress
         public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
         {
-            List<OverwatchRegion> regions = new List<OverwatchRegion>();
-            regions.Add(u.America);
-            regions.Add(u.Europe);
-            regions.Add(u.Korea);
+            List<OverwatchRegion> regions = new List<OverwatchRegion>
+            {
+                u.America,
+                u.Europe,
+                u.Korea
+            };
 
             return regions.OrderByDescending(x =>
             {
@@ -108,7 +110,7 @@ namespace Miki.Modules.Overwatch
                 {
                     value = x?.heroes?.playtime?.quickplay?.Sum(y => y.Value);
                 }
-                return value == null ? 0 : value;
+                return value ?? 0;
             }).FirstOrDefault();
         }
 
