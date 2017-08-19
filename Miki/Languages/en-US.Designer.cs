@@ -196,6 +196,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This guild doesn&apos;t have a profile yet..
+        /// </summary>
+        internal static string guild_error_null {
+            get {
+                return ResourceManager.GetString("guild_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your users need {0} experience to use &gt;guildweekly now!.
         /// </summary>
         internal static string guildconfig_expneeded {
@@ -4025,15 +4034,6 @@ namespace Miki.Languages {
         internal static string searchpasta_error_no_arg {
             get {
                 return ResourceManager.GetString("searchpasta_error_no_arg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
