@@ -123,6 +123,13 @@ namespace Miki.Modules
             {
                 GuildUser thisGuild = await db.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
 
+                if (thisGuild == null)
+                {
+                    await context.ErrorEmbed(context.GetResource("guild_error_null"))
+                        .SendToChannel(context.Channel);
+                    return;
+                }
+
                 if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
                     await Utils.Embed
@@ -132,7 +139,9 @@ namespace Miki.Modules
                     return;
                 }
 
-                List<GuildUser> rivalGuilds = await db.GuildUsers.Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id).ToListAsync();
+                List<GuildUser> rivalGuilds = await db.GuildUsers
+                    .Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id)
+                    .ToListAsync();
 
                 if (rivalGuilds.Count == 0)
                 {
@@ -162,8 +171,6 @@ namespace Miki.Modules
         [Command(Name = "guildprofile")]
         public async Task GuildProfile(EventContext context)
         {
-            Locale locale = Locale.GetEntity(context.Channel.Id);
-
             using (MikiContext database = new MikiContext())
             {
                 GuildUser g = await database.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
@@ -204,7 +211,7 @@ namespace Miki.Modules
         [Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SetGuildConfig(EventContext e)
         {
-            using (var context = new MikiContext())
+            using (MikiContext context = new MikiContext())
             {
                 string[] arguments = e.arguments.Split(' ');
                 GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
@@ -251,10 +258,8 @@ namespace Miki.Modules
         [Command(Name = "guildtop")]
         public async Task GuildTop(EventContext e)
         {
-            int amountToSkip = 0;
             int amountToTake = 12;
-
-            int.TryParse(e.arguments, out amountToSkip);
+            int.TryParse(e.arguments, out int amountToSkip);
 
             using (var context = new MikiContext())
             {
@@ -271,8 +276,7 @@ namespace Miki.Modules
                     embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
 
-                embed.SetFooter(e.GetResource("pasta_page_index", amountToSkip, "#"), null);
-
+                embed.SetFooter(e.GetResource("pasta_page_index", amountToSkip, "#  "), null);
                 await embed.SendToChannel(e.Channel);
             }
         }
