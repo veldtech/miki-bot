@@ -8,7 +8,6 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace Miki.Models
 {
-    [DbConfigurationType(typeof(Configuration))]
     public class MikiContext : DbContext
     {
         public DbSet<Achievement> Achievements { get; set; }
