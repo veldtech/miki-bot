@@ -231,8 +231,9 @@ namespace Miki.Modules
 				}
 
                 embed.Description = string.Join(" ", objectsChosen);
-                await u.AddCurrencyAsync(e.Channel, null, moneyReturned);
+                await u.AddCurrencyAsync(moneyReturned, e.Channel);
                 await context.SaveChangesAsync();
+
                 await embed.SendToChannel(e.Channel);
             }
         }
@@ -247,7 +248,7 @@ namespace Miki.Modules
                 user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 if (user != null)
                 {
-                    await user.AddCurrencyAsync(e.Channel, null, bet);
+                    await user.AddCurrencyAsync(bet, e.Channel);
                     await context.SaveChangesAsync();
                 }
             }
@@ -284,7 +285,7 @@ namespace Miki.Modules
 				user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
 				if( user != null )
 				{
-					await user.AddCurrencyAsync( e.Channel, null, bet * 2 );
+					await user.AddCurrencyAsync(bet * 2, e.Channel);
 					await context.SaveChangesAsync();
 				}
 			}

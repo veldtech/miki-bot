@@ -42,8 +42,16 @@ namespace Miki.Accounts
                 using (var context = new MikiContext())
                 {
                     User user = await context.Users.FindAsync(e.Id);
-                    await user.AddCurrencyAsync(e, null, currencyAdded);
-                    await context.SaveChangesAsync().ConfigureAwait(false);
+
+                    if (user != null)
+                    {
+                        await user.AddCurrencyAsync(currencyAdded, e);
+                        await context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        Log.Warning("User levelled up was null.");
+                    }
                 }
 
                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())

@@ -81,7 +81,14 @@ namespace Miki.Modules
                         int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
                         User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
-                        await user.AddCurrencyAsync(context.Channel, null, mekosGained);
+
+                        if (user == null)
+                        {
+                            // TODO: Add response
+                            return;
+                        }
+
+                        await user.AddCurrencyAsync(mekosGained, context.Channel);
 
                         await Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))

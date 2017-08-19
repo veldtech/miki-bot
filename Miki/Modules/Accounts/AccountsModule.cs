@@ -187,7 +187,7 @@ namespace Miki.Modules.AccountsModule
                 long id = 0;
                 ulong uid = 0;
 
-                if (e.message.MentionedUserIds.Count() > 0)
+                if (e.message.MentionedUserIds.Any())
                 {
                     uid = e.message.MentionedUserIds.First();
                     id = uid.ToDbLong();
@@ -225,7 +225,7 @@ namespace Miki.Modules.AccountsModule
                         .AppendText(locale.GetString("miki_module_accounts_information_level", User.CalculateLevel(localExp.Experience), localExp.Experience, User.CalculateMaxExperience(localExp.Experience)))
                         .AppendText(await expBar.Print(localExp.Experience, e.Channel))
                         .AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
-                        .AppendText("Reputation: " + account.Reputation, MessageFormatting.PLAIN, false)
+                        .AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
@@ -238,7 +238,7 @@ namespace Miki.Modules.AccountsModule
                     string globalInfoValue = new MessageBuilder()
                         .AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, globalRank))
                         .AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-                        .AppendText(locale.GetString("miki_module_accounts_information_rank", await account.GetGlobalRankAsync()), MessageFormatting.PLAIN, false)
+                        .AppendText(locale.GetString("miki_module_accounts_information_rank", await account.GetGlobalRankAsync()), MessageFormatting.Plain, false)
                         .Build();
 
                     embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -264,7 +264,7 @@ namespace Miki.Modules.AccountsModule
 
                         for (int i = 0; i < maxCount; i++)
                         {
-                            if (marriages[i].GetOther(id) != 0 && marriages[i].TimeOfMarriage != null)
+                            if (marriages[i].GetOther(id) != 0)
                             {
                                 marriageStrings.Add("💕 " + users[i].Name + " (_" + marriages[i].TimeOfMarriage.ToShortDateString() + "_)");
                             }
@@ -310,7 +310,7 @@ namespace Miki.Modules.AccountsModule
         {
             Locale locale = Locale.GetEntity(e.Channel.Id);
 
-            using (var context = new MikiContext())
+            using (MikiContext context = new MikiContext())
             {
                 if (e.arguments == "*")
                 {
@@ -634,8 +634,6 @@ namespace Miki.Modules.AccountsModule
                 return;
             }
 
-            IDiscordUser receiverUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
-
             if (!int.TryParse(arguments[1], out int goldSent))
             {
                 await Utils.ErrorEmbed(locale, e.GetResource("give_error_amount_unparsable")).SendToChannel(e.Channel);
@@ -654,9 +652,16 @@ namespace Miki.Modules.AccountsModule
                 return;
             }
 
-            using (var context = new MikiContext())
+            using (MikiContext context = new MikiContext())
             {
                 User sender = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+                if (sender == null)
+                {
+                    // HOW THE FUCK?!
+                    return;
+                }
+
                 User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
 
                 if (receiver == null)
@@ -668,10 +673,8 @@ namespace Miki.Modules.AccountsModule
 
                 if (goldSent <= sender.Currency)
                 {
-                    await receiver.AddCurrencyAsync(e.Channel, sender, goldSent);
-                    await sender.AddCurrencyAsync(e.Channel, sender, -goldSent);
-
-                    string reciever = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Username;
+                    await receiver.AddCurrencyAsync(goldSent, e.Channel, sender);
+                    await sender.AddCurrencyAsync(-goldSent, e.Channel, sender);
 
                     IDiscordEmbed em = Utils.Embed;
                     em.Title = "🔸 transaction";
@@ -719,7 +722,7 @@ namespace Miki.Modules.AccountsModule
                     return;
                 }
 
-                await u.AddCurrencyAsync(e.Channel, null, dailyAmount);
+                await u.AddCurrencyAsync(dailyAmount, e.Channel);
                 u.LastDailyTime = DateTime.Now;
 
                 await Utils.Embed
