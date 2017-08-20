@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using IA;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
-using Miki.Objects;
+using Miki.API.Imageboards.Objects;
 using Newtonsoft.Json;
 
 namespace Miki.API.Imageboards

@@ -123,7 +123,7 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
-        public static bool GetInputBool(this string input)
+        public static bool ToBool(this string input)
         {
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
         }

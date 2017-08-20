@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Miki.API.Imageboards.Interfaces;
-using Miki.Objects;
+using Miki.API.Imageboards.Objects;
 
 namespace Miki.API.Imageboards
 {
