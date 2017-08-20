@@ -183,6 +183,7 @@ namespace Miki.Modules
             ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>("https://konachan.com/post.json?tags="));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>("https://yande.re/post.json?tags="));
         }
 
         [Command(Name = "8ball")]
