@@ -77,6 +77,12 @@ namespace Miki.Modules
             await e.Channel.SendMessage("Yes, this is Veld, my developer.");
         }
 
+        [Command(Name = "qembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task QueryEmbedAsync(EventContext e)
+        {
+            await new RuntimeEmbed().Query(e.arguments).SendToChannel(e.Channel);
+        }
+
         [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ChangeAvatarAsync(EventContext e)
         {

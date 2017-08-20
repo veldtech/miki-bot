@@ -10,8 +10,10 @@ using Imgur.API.Models;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.API;
+using Miki.API.Imageboards;
+using Miki.API.Imageboards.Enums;
+using Miki.API.Imageboards.Interfaces;
 using Miki.Languages;
-using Miki.Models;
 using Miki.Objects;
 using NCalc;
 using Newtonsoft.Json;
@@ -23,13 +25,14 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IA.Events;
 
 namespace Miki.Modules
 {
     [Module(Name = "Fun")]
     public class FunModule
     {
-        private string[] puns = new string[]
+        private string[] puns =
         {
                 "miki_module_fun_pun_1",
                 "miki_module_fun_pun_2",
@@ -84,8 +87,7 @@ namespace Miki.Modules
                 "miki_module_fun_pun_51",
                 "miki_module_fun_pun_52",
         };
-
-        private string[] reactions = new string[]
+        private string[] reactions =
         {
                 "miki_module_fun_8ball_answer_negative_1",
                 "miki_module_fun_8ball_answer_negative_2",
@@ -107,8 +109,7 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
-
-        private string[] lunchposts = new string[]
+        private string[] lunchposts =
 {
             "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
             "https://soundcloud.com/ghostcoffee-342990942/lunchpost-1969?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
@@ -167,6 +168,23 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
 };
 
+        public FunModule(RuntimeModule m)
+        {
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
+            {
+               QueryKey = "http://e621.net/post/index.json?limit=1&tags=",
+               ExplicitTag = "rating:e",
+               QuestionableTag = "rating:q",
+               SafeTag = "rating:s",
+               NetUseCredentials = true,
+               NetHeaders = new List<string>() { "User-Agent: Other" }
+            }));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>("https://konachan.com/post.json?tags="));
+        }
+
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
@@ -179,7 +197,7 @@ namespace Miki.Modules
         [Command(Name = "bird")]
         public async Task BirdAsync(EventContext e)
         {
-            string[] bird = new string[]
+            string[] bird =
             {
                 "http://i.imgur.com/aN948tq.jpg",
                 "http://i.imgur.com/cYPsbR5.jpg",
@@ -220,7 +238,7 @@ namespace Miki.Modules
         [Command(Name = "compliment")]
         public async Task ComplimentAsync(EventContext e)
         {
-            string[] I_LIKE = new string[]
+            string[] I_LIKE =
             {
                 "I like ",
                 "I love ",
@@ -229,7 +247,7 @@ namespace Miki.Modules
                 "For some reason I like "
             };
 
-            string[] BODY_PART = new string[]
+            string[] BODY_PART =
             {
                 "that silly fringe of yours",
                 "the lower part of your lips",
@@ -246,7 +264,7 @@ namespace Miki.Modules
                 "your smooth hair"
             };
 
-            string[] SUFFIX = new string[]
+            string[] SUFFIX =
             {
                 " a lot.",
                 " a bit.",
@@ -280,7 +298,7 @@ namespace Miki.Modules
         [Command(Name = "dog")]
         public async Task DogAsync(EventContext e)
         {
-            string[] dog = new string[]
+            string[] dog =
             {
                 "http://i.imgur.com/KOjUbMQ.jpg",
                 "http://i.imgur.com/owJKr7y.jpg",
@@ -576,7 +594,7 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            IPost s = null;
+            ILinkable s = null;
             if (e.arguments.ToLower().StartsWith("use"))
             {
                 string[] a = e.arguments.Split(' ');
@@ -585,25 +603,25 @@ namespace Miki.Modules
                 {
                     case "safebooru":
                         {
-                            s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
+                            s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
                         }
                         break;
 
                     case "gelbooru":
                         {
-                            s = GelbooruPost.Create(e.arguments, ImageRating.SAFE);
+                            s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
                         }
                         break;
 
                     case "konachan":
                         {
-                            s = KonachanPost.Create(e.arguments, ImageRating.SAFE);
+                            s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(e.arguments, ImageboardRating.SAFE);
                         }
                         break;
 
                     case "e621":
                         {
-                            s = E621Post.Create(e.arguments, ImageRating.SAFE);
+                            s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.arguments, ImageboardRating.SAFE);
                         }
                         break;
 
@@ -616,7 +634,7 @@ namespace Miki.Modules
             }
             else
             {
-                s = SafebooruPost.Create(e.arguments, ImageRating.SAFE);
+                s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
             }
 
             if (s == null)
@@ -625,7 +643,7 @@ namespace Miki.Modules
                 return;
             }
 
-            await e.Channel.SendMessage(s.ImageUrl);
+            await e.Channel.SendMessage(s.Url);
         }
     }
 }

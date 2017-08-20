@@ -565,11 +565,13 @@ namespace Miki.Modules.AccountsModule
 
                 if (e.message.MentionedUserIds.Count == 0)
                 {
+                    TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
+
                     await Utils.Embed
                         .SetTitle("Reputation")
                         .SetDescription("Here are your statistics on reputation points!\n\nTo give someone reputation, do `>rep <mention>`")
                         .AddInlineField("Total Rep Received", giver.Reputation.ToString())
-                        .AddInlineField("Rep points reset in:", Utils.ToTimeString(DateTime.Now.AddDays(1).Date - DateTime.Now, e.Channel.GetLocale()))
+                        .AddInlineField("Rep points reset in:", pointReset.ToTimeString(e.Channel.GetLocale()))
                         .SendToChannel(e.Channel);
                     return;
                 }

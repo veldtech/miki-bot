@@ -363,6 +363,11 @@
     <Compile Include="API\Cards\Objects\Card.cs" />
     <Compile Include="API\Cards\Objects\CardHand.cs" />
     <Compile Include="API\Gambling\GamblingApi.cs" />
+    <Compile Include="API\Imageboards\ImageboardConfigurations.cs" />
+    <Compile Include="API\Imageboards\ImageboardPost.cs" />
+    <Compile Include="API\Imageboards\Enums\ImageboardRating.cs" />
+    <Compile Include="API\Imageboards\ImageboardProviderPool.cs" />
+    <Compile Include="API\Imageboards\Interfaces\ILinkable.cs" />
     <Compile Include="API\Patreon\PatreonApi.cs" />
     <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
     <Compile Include="API\Reminder\ReminderAPI.cs" />

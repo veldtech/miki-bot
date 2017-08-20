@@ -3,132 +3,34 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using Miki.API.Imageboards;
+using Miki.API.Imageboards.Interfaces;
 
 namespace Miki.Objects
 {
-    public class BasePost
+    public class BooruPost : ILinkable
     {
-        private static readonly List<string> BannedTags = new List<string>()
-        {
-            "loli",
-            "shota",
-            "gore",
-            "vore",
-            "death"
-        };
-
-        protected static string GetTags(string[] tags)
-        {
-            List<string> output = new List<string>();
-
-            for (int i = 0; i < tags.Length; i++)
-            {
-                if (tags[i] == "awoo")
-                {
-                    output.Add("inubashiri_momiji");
-                    continue;
-                }
-                if (tags[i] == "miki")
-                {
-                    output.Add("sf-a2_miki");
-                    continue;
-                }
-                if (!string.IsNullOrWhiteSpace(tags[i]))
-                {
-                    output.Add(tags[i]);
-                }
-            }
-
-            string outputTags = string.Join("+", output);
-            outputTags.Remove(outputTags.Length - 1);
-            return outputTags;
-        }
-
-        protected static void RemoveBannedTerms(List<string> tags)
-        {
-            tags.RemoveAll(p => BannedTags.Contains(p));
-        }
-
-        protected static void AddBannedTerms(List<string> tags)
-        {
-            BannedTags.ForEach(p => tags.Add("-" + p));
-        }
-    }
-
-    internal interface IPost
-    {
-        string ImageUrl { get; }
-    }
-
-    internal class E621Post : BasePost, IPost
-    {
-        public string ImageUrl
-        {
-            get
-            {
-                return FileUrl;
-            }
-        }
-
-        public static E621Post Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-
-            c.UseDefaultCredentials = true;
-            c.Credentials = CredentialCache.DefaultCredentials;
-
-            c.Headers.Add("User-Agent: Other");
-
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:e");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:q");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:s");
-                    }
-                    break;
-            }
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData("http://e621.net/post/index.json?limit=1&tags=" + outputTags);
-
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<E621Post> d = JsonConvert.DeserializeObject<List<E621Post>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
-
-        [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Url => "";
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
+
+        [JsonProperty("width")]
+        public string Width { get; set; }
+
+        [JsonProperty("height")]
+        public string Height { get; set; }
+
+        [JsonProperty("score")]
+        public string Score { get; set; }
+    }
+
+    internal class E621Post : BooruPost, ILinkable
+    {
+        public new string Url => FileUrl;
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }
@@ -147,9 +49,6 @@ namespace Miki.Objects
 
         [JsonProperty("source")]
         public string Source { get; set; }
-
-        [JsonProperty("score")]
-        public string Score { get; set; }
 
         [JsonProperty("fav_count")]
         public string FavouriteCount { get; set; }
@@ -190,12 +89,6 @@ namespace Miki.Objects
         [JsonProperty("status")]
         public string Status { get; set; }
 
-        [JsonProperty("width")]
-        public string Width { get; set; }
-
-        [JsonProperty("height")]
-        public string Height { get; set; }
-
         [JsonProperty("has_comments")]
         public string HasComments { get; set; }
 
@@ -218,68 +111,15 @@ namespace Miki.Objects
         public List<string> Sources { get; set; } = new List<string>();
     }
 
-    internal class GelbooruPost : BasePost, IPost
+    internal class GelbooruPost : BooruPost, ILinkable
     {
-        public string ImageUrl => "http:" + FileUrl;
-
-        public static GelbooruPost Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:explicit");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:questionable");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:safe");
-                    }
-                    break;
-            }
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags=" + outputTags);
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<GelbooruPost> d = JsonConvert.DeserializeObject<List<GelbooruPost>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
+        public new string Url => "http:" + FileUrl;
 
         [JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }
-
-        [JsonProperty("height")]
-        public string Height { get; set; }
-
-        [JsonProperty("width")]
-        public string Width { get; set; }
 
         [JsonProperty("image")]
         public string Image { get; set; }
@@ -305,17 +145,10 @@ namespace Miki.Objects
         [JsonProperty("sample_width")]
         public string SampleWidth { get; set; }
 
-        [JsonProperty("score")]
-        public string Score { get; set; }
-
-        [JsonProperty("tags")]
-        public string Tags { get; set; }
-
         [JsonProperty("file_url")]
         public string FileUrl { get; set; }
     }
 
-    // TODO: Add ImgurPost.Create()
     internal class ImgurPost
     {
         [JsonProperty("data")]
@@ -328,69 +161,12 @@ namespace Miki.Objects
         public string Status { get; set; }
     }
 
-    internal class KonachanPost : BasePost, IPost
+    internal class KonachanPost : BooruPost, ILinkable
     {
-        public string ImageUrl
-        {
-            get
-            {
-                return "http:" + FileUrl;
-            }
-        }
-
-        public static KonachanPost Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:e");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:q");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:s");
-                    }
-                    break;
-            }
-
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData($"https://konachan.com/post.json?tags={outputTags}");
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<KonachanPost> d = JsonConvert.DeserializeObject<List<KonachanPost>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
+        public new string Url => "http:" + FileUrl;
 
         [JsonProperty("id")]
         public string Id { get; set; }
-
-        [JsonProperty("tags")]
-        public string Tags { get; set; }
 
         [JsonProperty("created_at")]
         public string CreatedAt { get; set; }
@@ -406,9 +182,6 @@ namespace Miki.Objects
 
         [JsonProperty("source")]
         public string Source { get; set; }
-
-        [JsonProperty("score")]
-        public string Score { get; set; }
 
         [JsonProperty("md5")]
         public string MD5 { get; set; }
@@ -473,12 +246,6 @@ namespace Miki.Objects
         [JsonProperty("status")]
         public string Status { get; set; }
 
-        [JsonProperty("width")]
-        public string Width { get; set; }
-
-        [JsonProperty("height")]
-        public string Height { get; set; }
-
         [JsonProperty("is_held")]
         public string IsHeld { get; set; }
 
@@ -495,71 +262,15 @@ namespace Miki.Objects
         public List<string> Frames { get; set; }
     }
 
-    internal class Rule34Post : BasePost, IPost
+    internal class Rule34Post : BooruPost, ILinkable
     {
-        public string ImageUrl
-        {
-            get
-            {
-                return $"http://img.rule34.xxx/images/{Directory}/{Image}";
-            }
-        }
-
-        public static Rule34Post Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:explicit");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:questionable");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:safe");
-                    }
-                    break;
-            }
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData($"http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags={ outputTags }");
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<Rule34Post> d = JsonConvert.DeserializeObject<List<Rule34Post>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
+        public new string Url => $"http://img.rule34.xxx/images/{Directory}/{Image}";
 
         [JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }
-
-        [JsonProperty("height")]
-        public string Height { get; set; }
 
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -587,86 +298,18 @@ namespace Miki.Objects
 
         [JsonProperty("sample_width")]
         public string SampleWidth { get; set; }
-
-        [JsonProperty("score")]
-        public string Score { get; set; }
-
-        [JsonProperty("tags")]
-        public string Tags { get; set; }
-
-        [JsonProperty("width")]
-        public string Width { get; set; }
     }
 
-    internal class SafebooruPost : BasePost, IPost
+    internal class SafebooruPost : BooruPost, ILinkable
     {
-        public string ImageUrl
-        {
-            get
-            {
-                return $"https://safebooru.org/{ ((Sample) ? "samples" : "images") }/{Directory}/{((Sample) ? "sample_" : "")}{Image}";
-            }
-        }
-
-        public static SafebooruPost Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:explicit");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:questionable");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:safe");
-                    }
-                    break;
-            }
-
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData($"https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags={ outputTags }");
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<SafebooruPost> d = JsonConvert.DeserializeObject<List<SafebooruPost>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
+        public new string Url =>
+            $"https://safebooru.org/{ ((Sample) ? "samples" : "images")}/{Directory}/{((Sample) ? "sample_" : "")}{Image}";
 
         [JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]
         public string Hash { get; set; }
-
-        [JsonProperty("width")]
-        public int Width { get; set; }
-
-        [JsonProperty("height")]
-        public int Height { get; set; }
 
         [JsonProperty("id")]
         public ulong Id { get; set; }
@@ -694,72 +337,9 @@ namespace Miki.Objects
 
         [JsonProperty("sample_width")]
         public int SampleWidth { get; set; }
-
-        [JsonProperty("score")]
-        public double Score { get; set; }
-
-        [JsonProperty("tags")]
-        public string Tags { get; set; }
     }
 
-    internal class YanderePost : BasePost, IPost
+    internal class YanderePost
     {
-        public string ImageUrl => throw new NotImplementedException();
-
-        public static SafebooruPost Create(string content, ImageRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            string[] command = content.Split(' ');
-
-            List<string> tags = new List<string>();
-
-            switch (r)
-            {
-                case ImageRating.EXPLICIT:
-                    {
-                        tags.Add("rating:explicit");
-                    }
-                    break;
-
-                case ImageRating.QUESTIONABLE:
-                    {
-                        tags.Add("rating:questionable");
-                    }
-                    break;
-
-                case ImageRating.SAFE:
-                    {
-                        tags.Add("rating:safe");
-                    }
-                    break;
-            }
-
-            tags.AddRange(command);
-            RemoveBannedTerms(tags);
-            AddBannedTerms(tags);
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData($"https://yande.re/post.json?tags={ outputTags }");
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-                List<SafebooruPost> d = JsonConvert.DeserializeObject<List<SafebooruPost>>(result);
-                if (d != null)
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
-            }
-            return null;
-        }
-    }
-
-    internal enum ImageRating
-    {
-        NONE,
-        SAFE,
-        QUESTIONABLE,
-        EXPLICIT
     }
 }
