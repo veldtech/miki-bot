@@ -752,7 +752,7 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>
-xcopy /s /y "C:\Users\Veld\Documents\miki\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"</PostBuildEvent>
+xcopy /s /y "C:\Users\Veld\Documents\miki\packages\NLua.1.3.2.1\lib\native\*.*" "$(TargetDir)"
     </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
