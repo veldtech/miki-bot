@@ -239,7 +239,7 @@ namespace Miki.Modules
                         {
                             if (arguments.Length > 1)
                             {
-                                g.VisibleOnLeaderboards = arguments[1].GetInputBool();
+                                g.VisibleOnLeaderboards = arguments[1].ToBool();
 
                                 string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
 
