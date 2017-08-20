@@ -1,8 +1,24 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace Miki.Objects
+namespace Miki.API.Imageboards.Objects
 {
+    internal class ImgurPost
+    {
+        [JsonProperty("data")]
+        public List<ImgurImage> Entries { get; set; }
+
+        [JsonProperty("success")]
+        public string Success { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+    }
+
     public class ImgurImage
     {
         [JsonProperty("id")]

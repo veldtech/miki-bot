@@ -368,6 +368,15 @@
     <Compile Include="API\Imageboards\Enums\ImageboardRating.cs" />
     <Compile Include="API\Imageboards\ImageboardProviderPool.cs" />
     <Compile Include="API\Imageboards\Interfaces\ILinkable.cs" />
+    <Compile Include="API\Imageboards\Objects\BooruPost.cs" />
+    <Compile Include="API\Imageboards\Objects\CatApiPost.cs" />
+    <Compile Include="API\Imageboards\Objects\E621Post.cs" />
+    <Compile Include="API\Imageboards\Objects\GelbooruPost.cs" />
+    <Compile Include="API\Imageboards\Objects\ImgurPost.cs" />
+    <Compile Include="API\Imageboards\Objects\KonachanPost.cs" />
+    <Compile Include="API\Imageboards\Objects\Rule34Post.cs" />
+    <Compile Include="API\Imageboards\Objects\SafebooruPost.cs" />
+    <Compile Include="API\Imageboards\Objects\YanderePost.cs" />
     <Compile Include="API\Patreon\PatreonApi.cs" />
     <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
     <Compile Include="API\Reminder\ReminderAPI.cs" />
@@ -579,9 +588,6 @@
     <Compile Include="Modules\FunModule.cs" />
     <Compile Include="Modules\PastaModule.cs" />
     <Compile Include="ObjectDumper.cs" />
-    <Compile Include="Objects\CatImage.cs" />
-    <Compile Include="Objects\Posts.cs" />
-    <Compile Include="Objects\Imgur\ImgurImage.cs" />
     <Compile Include="API\Rocket League\RocketLeagueApi.cs" />
     <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryEntryInformation.cs" />
     <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryInformation.cs" />

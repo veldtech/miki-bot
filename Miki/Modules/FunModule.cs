@@ -14,7 +14,6 @@ using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.Languages;
-using Miki.Objects;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -26,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IA.Events;
+using Miki.API.Imageboards.Objects;
 
 namespace Miki.Modules
 {
