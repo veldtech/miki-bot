@@ -27,7 +27,6 @@ using System.Threading.Tasks;
 using IA.Events;
 using Miki.API.Imageboards.Objects;
 
-//Will Veld Notice This?
 namespace Miki.Modules
 {
     [Module(Name = "Fun")]
