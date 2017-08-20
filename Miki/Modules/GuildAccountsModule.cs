@@ -163,7 +163,7 @@ namespace Miki.Modules
 
                 await Utils.Embed
                     .SetTitle(context.GetResource("miki_terms_rival"))
-                    .SetDescription(context.GetResource("guildnewrival_success"))
+                    .SetDescription(context.GetResource("guildnewrival_success", rivalGuild.Name))
                     .SendToChannel(context.Channel);
             }
         }
