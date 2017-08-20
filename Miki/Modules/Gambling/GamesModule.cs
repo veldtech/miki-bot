@@ -8,6 +8,7 @@ using Miki.Languages;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -185,6 +186,17 @@ namespace Miki.Modules
                 .ModifyMessage(instanceMessage);
         }
 
+        [Command(Name = "flip")]
+        public async Task FlipAsync(EventContext e)
+        {
+            await ValidateBet(e, StartFlip);
+        }
+
+        private async Task StartFlip(EventContext e, int bet)
+        {
+            
+        }
+
         [Command(Name = "slots", Aliases = new[] {"s"})]
         public async Task SlotsAsync(EventContext e)
         {
@@ -193,8 +205,6 @@ namespace Miki.Modules
 
         public async Task StartSlots(EventContext e, int bet)
         {
-            int moneyBet = bet;
-
             using (var context = new MikiContext())
             {
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -202,7 +212,7 @@ namespace Miki.Modules
 
                 int moneyReturned = 0;
 
-                if (moneyBet <= 0)
+                if (bet <= 0)
                 {
                     return;
                 }
@@ -210,11 +220,13 @@ namespace Miki.Modules
                 string[] objects =
                 {
                     "🍒", "🍒", "🍒", "🍒",
-                    "🍊", "🍊",
+                    "🍊", "🍊", "🍊",
                     "🍓", "🍓",
                     "🍍", "🍍",
                     "🍇", "🍇",
+                    "🍉", "🍉",
                     "⭐", "⭐",
+                    "🍉",
                     "🍍", "🍍",
                     "🍓", "🍓",
                     "🍊", "🍊", "🍊",
@@ -247,74 +259,85 @@ namespace Miki.Modules
                 {
                     if (score["🍒"] == 2)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 0.5f);
+                        moneyReturned = (int) Math.Ceiling(bet * 0.5f);
                     }
                     else if (score["🍒"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 1f);
+                        moneyReturned = (int) Math.Ceiling(bet * 1f);
                     }
                 }
                 if (score.ContainsKey("🍊"))
                 {
                     if (score["🍊"] == 2)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 0.8f);
+                        moneyReturned = (int) Math.Ceiling(bet * 0.8f);
                     }
                     else if (score["🍊"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 1.5f);
+                        moneyReturned = (int) Math.Ceiling(bet * 1.5f);
                     }
                 }
                 if (score.ContainsKey("🍓"))
                 {
                     if (score["🍓"] == 2)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 1f);
+                        moneyReturned = (int) Math.Ceiling(bet * 1f);
                     }
                     else if (score["🍓"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 2f);
+                        moneyReturned = (int) Math.Ceiling(bet * 2f);
                     }
                 }
                 if (score.ContainsKey("🍍"))
                 {
                     if (score["🍍"] == 2)
                     {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1f);
+                        moneyReturned = (int)Math.Ceiling(bet * 1f);
                     }
                     if (score["🍍"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 4f);
+                        moneyReturned = (int) Math.Ceiling(bet * 4f);
                     }
                 }
                 if (score.ContainsKey("🍇"))
                 {
                     if (score["🍇"] == 2)
                     {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 1.2f);
+                        moneyReturned = (int)Math.Ceiling(bet * 1.2f);
                     }
                     if (score["🍇"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 6f);
+                        moneyReturned = (int) Math.Ceiling(bet * 6f);
+                    }
+                }
+                if (score.ContainsKey("🍉"))
+                {
+                    if (score["🍉"] == 2)
+                    {
+                        moneyReturned = (int)Math.Ceiling(bet * 1.5f);
+                    }
+                    if (score["🍉"] == 3)
+                    {
+                        moneyReturned = (int)Math.Ceiling(bet * 10f);
                     }
                 }
                 if (score.ContainsKey("⭐"))
                 {
                     if (score["⭐"] == 2)
                     {
-                        moneyReturned = (int)Math.Ceiling(moneyBet * 2f);
+                        moneyReturned = (int)Math.Ceiling(bet * 2f);
                     }
                     if (score["⭐"] == 3)
                     {
-                        moneyReturned = (int) Math.Ceiling(moneyBet * 12f);
+                        moneyReturned = (int) Math.Ceiling(bet * 12f);
                     }
                 }
 
                 if (moneyReturned == 0)
                 {
-                    moneyReturned = -moneyBet;
+                    moneyReturned = -bet;
                     embed.AddField(locale.GetString("miki_module_fun_slots_lose_header"),
-                        locale.GetString("miki_module_fun_slots_lose_amount", moneyBet, u.Currency - moneyBet));
+                        locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
                 }
                 else
                 {
@@ -322,7 +345,7 @@ namespace Miki.Modules
                         locale.GetString(Locale.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
                 }
 
-                embed.Description = string.Join(" ", objectsChosen);
+                embed.Description = string.Join(" ", objectsChosen);    
                 await u.AddCurrencyAsync(moneyReturned, e.Channel);
                 await context.SaveChangesAsync();
 
@@ -334,16 +357,17 @@ namespace Miki.Modules
         {
             if (!string.IsNullOrEmpty(e.arguments))
             {
-                int bet = 0;
-                int noAskLimit = 10000;
+                int bet;
+                const int noAskLimit = 10000;
 
-                using (var context = new MikiContext())
+                using (MikiContext context = new MikiContext())
                 {
                     User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
                     if (user == null)
                     {
                         // TODO: add user null error
+                        return;
                     }
 
                     if (int.TryParse(e.arguments, out bet))
@@ -389,14 +413,20 @@ namespace Miki.Modules
                                     {
                                         await ec.commandHandler.RequestDisposeAsync();
                                         await ec.message.DeleteAsync();
-                                        await callback(e, bet);
+                                        if (callback != null)
+                                        {
+                                            await callback(e, bet);
+                                        }
                                     })).Build();
 
                         Bot.instance.Events.AddPrivateCommandHandler(e.message, confirmCommand);
                     }
                     else
                     {
-                        await callback(e, bet);
+                        if (callback != null)
+                        {
+                            await callback(e, bet);
+                        }
                     }
                 }
             }
@@ -404,7 +434,6 @@ namespace Miki.Modules
             {
                 await Utils.ErrorEmbed(e.Channel.GetLocale(), e.GetResource("miki_error_gambling_no_arg"))
                     .SendToChannel(e.Channel);
-                return;
             }
         }
     }
