@@ -41,7 +41,7 @@ namespace Miki.Accounts
 
                 using (var context = new MikiContext())
                 {
-                    User user = await context.Users.FindAsync(e.Id);
+                    User user = await context.Users.FindAsync(a.Id);
 
                     if (user != null)
                     {
