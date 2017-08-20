@@ -1,4 +1,4 @@
-﻿using IA;
+using IA;
 using IA.Events.Attributes;
 using IA.Extension;
 using IA.SDK;
@@ -281,20 +281,6 @@ namespace Miki.Modules
             await e.Channel.SendMessage("http://www.placecage.com/c/" + Global.random.Next(100, 1500) + "/" + Global.random.Next(100, 1500));
         }
 
-        [Command(Name = "ctb")]
-        public async Task SendCatchTheBeatSignatureAsync(EventContext e)
-        {
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=2&countryrank");
-
-                using (MemoryStream mem = new MemoryStream(data))
-                {
-                    await e.Channel.SendFileAsync(mem, $"{e.arguments}.png");
-                }
-            }
-        }
-
         [Command(Name = "dog")]
         public async Task DogAsync(EventContext e)
         {
@@ -396,34 +382,6 @@ namespace Miki.Modules
         public async Task LunchAsync(EventContext e)
         {
             await e.Channel.SendMessage(e.GetResource("lunch_line") + "\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
-        }
-
-        [Command(Name = "mania")]
-        public async Task SendManiaSignatureAsync(EventContext e)
-        {
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=3&countryrank");
-
-                using (MemoryStream mem = new MemoryStream(data))
-                {
-                    await e.Channel.SendFileAsync(mem, $"sig.png");
-                }
-            }
-        }
-
-        [Command(Name = "osu")]
-        public async Task SendOsuSignatureAsync(EventContext e)
-        {
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&countryrank");
-
-                using (MemoryStream mem = new MemoryStream(data))
-                {
-                    await e.Channel.SendFileAsync(mem, $"sig.png");
-                }
-            }
         }
 
         [Command(Name = "pick")]
@@ -533,20 +491,6 @@ namespace Miki.Modules
 			await e.Channel.SendMessage( send );
 		}
 
-		[Command(Name = "taiko")]
-        public async Task SendTaikoSignatureAsync(EventContext e)
-        {
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" + e.arguments + "&mode=1&countryrank");
-
-                using (MemoryStream mem = new MemoryStream(data))
-                {
-                    await e.Channel.SendFileAsync(mem, $"sig.png");
-                }
-            }
-        }
-
         [Command(Name = "remind")]
         public async Task DoRemind(EventContext e)
         {
@@ -645,5 +589,31 @@ namespace Miki.Modules
 
             await e.Channel.SendMessage(s.Url);
         }
+
+        [Command( Name = "greentext", Aliases = new string[] { "green", "gt" } )]
+        public async Task GreentextAsync( EventContext e )
+        {
+            string[] images = new string[]
+            {
+                "http://i.imgur.com/4YWLl8k.png",
+                "http://i.imgur.com/Y0ceUvy.jpg",
+                "http://i.imgur.com/iT0JmUQ.jpg",
+                "http://i.imgur.com/oDomO9J.jpg",
+                "http://i.imgur.com/KiXLoow.jpg",
+                "http://i.imgur.com/8ImcmvP.jpg",
+                "http://i.imgur.com/CBNW6A5.png",
+                "http://i.imgur.com/N9pu80t.jpg",
+                "http://i.imgur.com/csTRvKz.jpg",
+                "http://i.imgur.com/WkFbLtP.png",
+                "http://i.imgur.com/h4a8wPH.png"
+            };
+
+            RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
+            {
+                ImageUrl = images[Global.random.Next( 0, images.Length )]
+            };
+            await em.SendToChannel( e.Channel );
+        }
+
     }
 }
