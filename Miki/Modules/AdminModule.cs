@@ -149,23 +149,14 @@ namespace Miki.Modules
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
             string[] arguments = e.arguments.Split(' ');
-            ICommandEvent command = Bot.instance.Events.CommandHandler.GetCommandEvent(arguments[0]);
+            IEvent command = Bot.instance.Events.CommandHandler.GetEvent(arguments[0]);
             if (command == null)
             {
                 await Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command").SendToChannel(e.Channel);
                 return;
             }
 
-            bool setValue = false;
-            switch (arguments[1])
-            {
-                case "yes":
-                case "y":
-                case "1":
-                case "true":
-                    setValue = true;
-                    break;
-            }
+            bool setValue = arguments[1].ToBool();
 
             if (!command.CanBeDisabled)
             {
