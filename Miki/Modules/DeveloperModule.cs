@@ -170,6 +170,23 @@ namespace Miki.Modules
                 }
                 u.Currency = int.Parse(e.arguments.Split(' ')[1]);
                 await context.SaveChangesAsync();
+                await e.Channel.SendMessage(":ok_hand:");
+            }
+        }
+
+        [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SetExp(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                LocalExperience u = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), e.message.MentionedUserIds.First().ToDbLong());
+                if (u == null)
+                {
+                    return;
+                }
+                u.Experience = int.Parse(e.arguments.Split(' ')[1]);
+                await context.SaveChangesAsync();
+                await e.Channel.SendMessage(":ok_hand:");
             }
         }
     }
