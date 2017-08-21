@@ -478,19 +478,19 @@ namespace Miki.Modules
             await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
         }
 		
-		[Command( Name = "roulette" )]
-		public async Task RouletteAsync( EventContext e )
-		{
-			IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
-			List<IDiscordUser> realUsers = users.Where( user => !user.IsBot ).ToList();
+	[Command( Name = "roulette" )]
+	public async Task RouletteAsync( EventContext e )
+	{
+		IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
+		List<IDiscordUser> realUsers = users.Where( user => !user.IsBot ).ToList();
 
-			string mention = "<@" + realUsers[Global.random.Next( 0, realUsers.Count )].Id + ">";
-			string send = string.IsNullOrEmpty( e.arguments ) ?
-				e.GetResource( Locale.RouletteMessageNoArg, mention) :      
-				e.GetResource( Locale.RouletteMessage, e.arguments, mention );
+		string mention = "<@" + realUsers[Global.random.Next( 0, realUsers.Count )].Id + ">";
+		string send = string.IsNullOrEmpty( e.arguments ) ?
+			e.GetResource( Locale.RouletteMessageNoArg, mention) :      
+			e.GetResource( Locale.RouletteMessage, e.arguments, mention );
 
-			await e.Channel.SendMessage( send );
-		}
+		await e.Channel.SendMessage( send );
+	}
 
         [Command(Name = "remind")]
         public async Task DoRemind(EventContext e)
@@ -596,17 +596,41 @@ namespace Miki.Modules
         {
             string[] images = new string[]
             {
-                "http://i.imgur.com/4YWLl8k.png",
-                "http://i.imgur.com/Y0ceUvy.jpg",
-                "http://i.imgur.com/iT0JmUQ.jpg",
-                "http://i.imgur.com/oDomO9J.jpg",
-                "http://i.imgur.com/KiXLoow.jpg",
-                "http://i.imgur.com/8ImcmvP.jpg",
-                "http://i.imgur.com/CBNW6A5.png",
-                "http://i.imgur.com/N9pu80t.jpg",
-                "http://i.imgur.com/csTRvKz.jpg",
-                "http://i.imgur.com/WkFbLtP.png",
-                "http://i.imgur.com/h4a8wPH.png"
+                "http://i.imgur.com/J2DLbV4.png",
+                "http://i.imgur.com/H0kDub9.jpg",
+                "http://i.imgur.com/pBOG489.jpg",
+                "http://i.imgur.com/dIxeGOe.jpg",
+                "http://i.imgur.com/p7lFyrY.jpg",
+                "http://i.imgur.com/8qPmX5V.jpg",
+                "http://i.imgur.com/u9orsoj.png",
+                "http://i.imgur.com/EQGpV8A.jpg",
+                "http://i.imgur.com/qGv3Xj1.jpg",
+                "http://i.imgur.com/svPd0ol.png",
+                "http://i.imgur.com/KFArF4B.png",
+		"http://i.imgur.com/6Dv3W8V.png",
+		"http://i.imgur.com/TJPnX57.png",
+		"http://i.imgur.com/jle1rXs.png",
+		"http://i.imgur.com/6V2wcjt.png",
+		"http://i.imgur.com/KW5dBMg.jpg",
+		"http://i.imgur.com/vdrAAuI.png",
+		"http://i.imgur.com/QnRkQ7q.png",
+		"http://i.imgur.com/sjNWj0r.jpg",
+		"http://i.imgur.com/SXj7kg7.jpg",
+		"http://i.imgur.com/MH7gvJj.png",
+		"http://i.imgur.com/eVwqceu.jpg",
+		"http://i.imgur.com/JDOySvx.png",
+		"http://i.imgur.com/fetJh3C.jpg",
+		"http://i.imgur.com/iRKMtHT.png",
+		"http://i.imgur.com/uxLqZXl.jpg",
+		"http://i.imgur.com/6RDjjzP.jpg",
+		"http://i.imgur.com/hNqXdxF.png",
+		"http://i.imgur.com/xADVyFD.jpg",
+		"http://i.imgur.com/JH8WqAg.jpg",
+		"http://i.imgur.com/LvodsHR.jpg",
+		"http://i.imgur.com/4y4wI21.jpg",
+		"http://i.imgur.com/y6REP8l.png",
+		"http://i.imgur.com/8gQdkwx.jpg",
+		"http://i.imgur.com/JVBkdyo.jpg"
             };
 
             RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
