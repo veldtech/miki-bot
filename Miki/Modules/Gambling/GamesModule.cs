@@ -194,7 +194,45 @@ namespace Miki.Modules
 
         private async Task StartFlip(EventContext e, int bet)
         {
-            
+            string[] arguments = e.arguments.Split(' ');
+
+            if (arguments.Length < 2)
+            {
+                return;
+            }
+
+            int pickedSide = -1;
+
+            if (arguments[1].ToLower() == "heads" || arguments[1].ToLower() == "h") pickedSide = 1;
+            else if (arguments[1].ToLower() == "tails" || arguments[1].ToLower() == "t") pickedSide = 0;
+
+            if (pickedSide == -1)
+            {
+                return;
+            }
+
+            string headsUrl = "https://miki.ai/assets/img/miki-default-heads.png";
+            string tailsUrl = "https://miki.ai/assets/img/miki-default-tails.png";
+
+            if (e.arguments.Contains("-bonus"))
+            {
+                headsUrl = "https://miki.ai/assets/img/miki-secret-heads.png";
+                tailsUrl = "https://miki.ai/assets/img/miki-secret-tails.png";
+            }
+
+            int side = MikiRandom.Next(2);
+            string imageUrl = side == 1 ? headsUrl : tailsUrl;
+
+            bool win = (side == pickedSide);
+
+
+
+            IDiscordEmbed embed = Utils.Embed
+                .SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.AvatarUrl,
+                    "https://patreon.com/mikibot")
+                .SetImageUrl(imageUrl);
+
+            await embed.SendToChannel(e.Channel);
         }
 
         [Command(Name = "slots", Aliases = new[] {"s"})]
@@ -370,11 +408,13 @@ namespace Miki.Modules
                         return;
                     }
 
-                    if (int.TryParse(e.arguments, out bet))
+                    string checkArg = e.arguments.Split(' ')[0];
+
+                    if (int.TryParse(checkArg, out bet))
                     {
 
                     }
-                    else if (e.arguments.ToLower() == "all" || e.arguments == "*")
+                    else if (checkArg.ToLower() == "all" || e.arguments == "*")
                     {
                         bet = user.Currency;
                     }

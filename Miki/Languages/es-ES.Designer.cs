@@ -61,7 +61,189 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Prueba tu suerte! Pregunta Miki especificas sobre los detalles de tu vida..
+        ///   Looks up a localized string similar to No pude encontrar algún contenido con esta pasta, por favor especifica lo que quieres realizar..
+        /// </summary>
+        internal static string createpasta_error_no_content {
+            get {
+                return ResourceManager.GetString("createpasta_error_no_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor especifica cada cas.
+        /// </summary>
+        internal static string infopasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("infopasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calificación.
+        /// </summary>
+        internal static string infopasta_rating {
+            get {
+                return ResourceManager.GetString("infopasta_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Guau guau! ¿Qué hay para almorzar?.
+        /// </summary>
+        internal static string lunch_line {
+            get {
+                return ResourceManager.GetString("lunch_line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡**{0}** subió al nivel **{1}**.
+        /// </summary>
+        internal static string miki_accounts_level_up_content {
+            get {
+                return ResourceManager.GetString("miki_accounts_level_up_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☀️️ ¡Subida de nivel!.
+        /// </summary>
+        internal static string miki_accounts_level_up_header {
+            get {
+                return ResourceManager.GetString("miki_accounts_level_up_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} no puede ser deshabilitado.
+        /// </summary>
+        internal static string miki_admin_cannot_disable {
+            get {
+                return ResourceManager.GetString("miki_admin_cannot_disable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack.
+        /// </summary>
+        internal static string miki_blackjack {
+            get {
+                return ResourceManager.GetString("miki_blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki ({0}).
+        /// </summary>
+        internal static string miki_blackjack_cards_miki {
+            get {
+                return ResourceManager.GetString("miki_blackjack_cards_miki", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tú ({0}).
+        /// </summary>
+        internal static string miki_blackjack_cards_you {
+            get {
+                return ResourceManager.GetString("miki_blackjack_cards_you", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aquel que está cerca de 21 victorias. Todas las cartas cuentan su propio número hasta máximo 10. Los empates van a Miki..
+        /// </summary>
+        internal static string miki_blackjack_explanation {
+            get {
+                return ResourceManager.GetString("miki_blackjack_explanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utiliza `hit` para una nueva carta..
+        /// </summary>
+        internal static string miki_blackjack_hit {
+            get {
+                return ResourceManager.GetString("miki_blackjack_hit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perdiste tu apuesta contra Miki..
+        /// </summary>
+        internal static string miki_blackjack_lose_description {
+            get {
+                return ResourceManager.GetString("miki_blackjack_lose_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Miki gana!.
+        /// </summary>
+        internal static string miki_blackjack_lose_title {
+            get {
+                return ResourceManager.GetString("miki_blackjack_lose_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡No has incluido la cantidad de apuesta! Uso correcto: 
+        ///&gt;blackjack &lt;cantidad&gt;.
+        /// </summary>
+        internal static string miki_blackjack_no_arg {
+            get {
+                return ResourceManager.GetString("miki_blackjack_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utiliza `stay` para terminar tus puntos..
+        /// </summary>
+        internal static string miki_blackjack_stay {
+            get {
+                return ResourceManager.GetString("miki_blackjack_stay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miki no pudo apostar tus puntos y significa que tu ganas. ¡Ganaste {0} mekos!.
+        /// </summary>
+        internal static string miki_blackjack_win_description {
+            get {
+                return ResourceManager.GetString("miki_blackjack_win_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Tú ganas!.
+        /// </summary>
+        internal static string miki_blackjack_win_title {
+            get {
+                return ResourceManager.GetString("miki_blackjack_win_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to solo cuando no quieras casarte..
+        /// </summary>
+        internal static string miki_command_declinemarriage_description {
+            get {
+                return ResourceManager.GetString("miki_command_declinemarriage_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;declinemarriage @usuario
+        ///&gt;declinemarriage *.
+        /// </summary>
+        internal static string miki_command_declinemarriage_usage {
+            get {
+                return ResourceManager.GetString("miki_command_declinemarriage_usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Prueba tu suerte preguntándole a Miki preguntas especificas sobre tu vida!.
         /// </summary>
         internal static string miki_command_description_8ball {
             get {
@@ -70,7 +252,277 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enseña informacion sobre el bot y su creador.
+        ///   Looks up a localized string similar to ¡Encuentra tu verdadero amor, acepta la propuesta de matrimonio!.
+        /// </summary>
+        internal static string miki_command_description_acceptmarriage {
+            get {
+                return ResourceManager.GetString("miki_command_description_acceptmarriage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pregunta a tus amigos cosas tontas.
+        /// </summary>
+        internal static string miki_command_description_ask {
+            get {
+                return ResourceManager.GetString("miki_command_description_ask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Desházte de los problemáticos y nunca los volverás a ver!.
+        /// </summary>
+        internal static string miki_command_description_ban {
+            get {
+                return ResourceManager.GetString("miki_command_description_ban", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Los pájaros son tan lindos como para tener un comando especialmente dedicado a ellos!.
+        /// </summary>
+        internal static string miki_command_description_bird {
+            get {
+                return ResourceManager.GetString("miki_command_description_bird", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Apuesta todos tus mekos en un juego totalmente justo de blackjack contra Miki!.
+        /// </summary>
+        internal static string miki_command_description_blackjack {
+            get {
+                return ResourceManager.GetString("miki_command_description_blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compra más puestos de matrimonio aquí, el precio incrementa a 2500 por cada puesto, y alcanza hasta 10 puestos..
+        /// </summary>
+        internal static string miki_command_description_buymarriageslot {
+            get {
+                return ResourceManager.GetString("miki_command_description_buymarriageslot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FOTOS DE NICK CAGE.
+        /// </summary>
+        internal static string miki_command_description_cage {
+            get {
+                return ResourceManager.GetString("miki_command_description_cage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miau, ¡soy un generador de fotos de gatitos!.
+        /// </summary>
+        internal static string miki_command_description_cat {
+            get {
+                return ResourceManager.GetString("miki_command_description_cat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Limpia los mensajes más recientes de Miki!.
+        /// </summary>
+        internal static string miki_command_description_clean {
+            get {
+                return ResourceManager.GetString("miki_command_description_clean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Te elogiaré personalmente con un cumplido especial.
+        /// </summary>
+        internal static string miki_command_description_compliment {
+            get {
+                return ResourceManager.GetString("miki_command_description_compliment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Muestra que tan confuso estás por el shitposting con el poder de las lindas chicas anime!.
+        /// </summary>
+        internal static string miki_command_description_confused {
+            get {
+                return ResourceManager.GetString("miki_command_description_confused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Crea tu propia pasta especial y compártela con todos!.
+        /// </summary>
+        internal static string miki_command_description_createpasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_createpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Atrapa frutas e impresiona a tus amigos con este comando de Catch the Beat!.
+        /// </summary>
+        internal static string miki_command_description_ctb {
+            get {
+                return ResourceManager.GetString("miki_command_description_ctb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Obtén mekos diarios!.
+        /// </summary>
+        internal static string miki_command_description_daily {
+            get {
+                return ResourceManager.GetString("miki_command_description_daily", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rechaza matrimonios que tú u otra persona propuso/propusiste. ¡Este comando puede ser utilizado para eliminar tu propia propuesta! Utiliza * para rechazar todos los matrimonios..
+        /// </summary>
+        internal static string miki_command_description_declinemarriage {
+            get {
+                return ResourceManager.GetString("miki_command_description_declinemarriage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Te arrepentiste de hacer una pasta? ¡Elimínalo este comando!.
+        /// </summary>
+        internal static string miki_command_description_deletepasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_deletepasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿estás cansado de tu matrimonio? ¡Divórciate hoy!.
+        /// </summary>
+        internal static string miki_command_description_divorce {
+            get {
+                return ResourceManager.GetString("miki_command_description_divorce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Animas lindos para ti elegidos por el staff de Miki!.
+        /// </summary>
+        internal static string miki_command_description_dog {
+            get {
+                return ResourceManager.GetString("miki_command_description_dog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Básicamente gente muy peluda haciendo cosas lascivas.
+        /// </summary>
+        internal static string miki_command_description_e621 {
+            get {
+                return ResourceManager.GetString("miki_command_description_e621", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿No estás satisfecho con tu pasta actual? ¡Edítalo para que sea cool y con la meta de nuevo!.
+        /// </summary>
+        internal static string miki_command_description_editpasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_editpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imágenes de Gelbooru para ti, perro.
+        /// </summary>
+        internal static string miki_command_description_gelbooru {
+            get {
+                return ResourceManager.GetString("miki_command_description_gelbooru", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Giféame todo!.
+        /// </summary>
+        internal static string miki_command_description_gif {
+            get {
+                return ResourceManager.GetString("miki_command_description_gif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regala amor y mekos a tus amigos... más bien mekos..
+        /// </summary>
+        internal static string miki_command_description_give {
+            get {
+                return ResourceManager.GetString("miki_command_description_give", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configura tu cuenta del servidor a la manera en que te gustaría que funcionara..
+        /// </summary>
+        internal static string miki_command_description_guildconfig {
+            get {
+                return ResourceManager.GetString("miki_command_description_guildconfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Configura un (nuevo) rival para tu servidor! ¡Tiempo para competir!.
+        /// </summary>
+        internal static string miki_command_description_guildnewrival {
+            get {
+                return ResourceManager.GetString("miki_command_description_guildnewrival", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Este comando muestra todas las estadísticas del servidor!.
+        /// </summary>
+        internal static string miki_command_description_guildprofile {
+            get {
+                return ResourceManager.GetString("miki_command_description_guildprofile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Checa los mejores servidores basados en experiencia!.
+        /// </summary>
+        internal static string miki_command_description_guildtop {
+            get {
+                return ResourceManager.GetString("miki_command_description_guildtop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Si le ganas a tu rival, tendrás más recompensas! ¡Obténlas con este comando!.
+        /// </summary>
+        internal static string miki_command_description_guildweekly {
+            get {
+                return ResourceManager.GetString("miki_command_description_guildweekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Absolutamente detestas esta pasta? ¡Muestra tu odio con este comando!.
+        /// </summary>
+        internal static string miki_command_description_hatepasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_hatepasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Obtén una imagén con cualquier etiqueta!.
+        /// </summary>
+        internal static string miki_command_description_img {
+            get {
+                return ResourceManager.GetString("miki_command_description_img", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enseña informacion sobre el bot y su creador..
         /// </summary>
         internal static string miki_command_description_info {
             get {
@@ -79,7 +531,106 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Guarda y carga en certas lineas de texto.
+        ///   Looks up a localized string similar to ¿Quieres saber quién hizo esta pasta? ¡Utiliza este comando!.
+        /// </summary>
+        internal static string miki_command_description_infopasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_infopasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Expulsa a los inútiles con el poder de Miki!.
+        /// </summary>
+        internal static string miki_command_description_kick {
+            get {
+                return ResourceManager.GetString("miki_command_description_kick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Echa un vistazo a los Élites de Miki!.
+        /// </summary>
+        internal static string miki_command_description_leaderboards {
+            get {
+                return ResourceManager.GetString("miki_command_description_leaderboards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Está alguien siendo un baka hentai? Muestra tu desaprobación con esta imágen LASCIVA.
+        /// </summary>
+        internal static string miki_command_description_lewd {
+            get {
+                return ResourceManager.GetString("miki_command_description_lewd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Tienes una pasta favorita? ¡Muestra tu amor con este comando!.
+        /// </summary>
+        internal static string miki_command_description_lovepasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_lovepasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Guau guau! ¡¿Qué hay para almorzar?!.
+        /// </summary>
+        internal static string miki_command_description_lunch {
+            get {
+                return ResourceManager.GetString("miki_command_description_lunch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Eres una &quot;máquina de escribir&quot;? ¡Muestra tu rank de osu!mania con este comando!.
+        /// </summary>
+        internal static string miki_command_description_mania {
+            get {
+                return ResourceManager.GetString("miki_command_description_mania", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cásate con tu alma gemela &lt;3.
+        /// </summary>
+        internal static string miki_command_description_marry {
+            get {
+                return ResourceManager.GetString("miki_command_description_marry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Muesta .
+        /// </summary>
+        internal static string miki_command_description_mekos {
+            get {
+                return ResourceManager.GetString("miki_command_description_mekos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Obtén una lista de todas tus pastas!.
+        /// </summary>
+        internal static string miki_command_description_mypasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_mypasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Muestra tu orgullo con tu habilidad de hacer clic en objetos circulares!.
+        /// </summary>
+        internal static string miki_command_description_osu {
+            get {
+                return ResourceManager.GetString("miki_command_description_osu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guarda y carga líneas de texto.
         /// </summary>
         internal static string miki_command_description_pasta {
             get {
@@ -88,7 +639,34 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Habilitar el prefijo de tu servidor pro miki (opcion predeterminada: &gt;) a algo mas.
+        ///   Looks up a localized string similar to ¿Asustado de tomar decisiones? ¡Las tomaré por ti!.
+        /// </summary>
+        internal static string miki_command_description_pick {
+            get {
+                return ResourceManager.GetString("miki_command_description_pick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Este comando muestra las pastas más usadas..
+        /// </summary>
+        internal static string miki_command_description_poppasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_poppasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cuando estés enojado, triste o frustrado con alguien. Muéstrales un gran abadejo tsundere &gt;:T.
+        /// </summary>
+        internal static string miki_command_description_pout {
+            get {
+                return ResourceManager.GetString("miki_command_description_pout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cambia el prefijo del servidor para Miki (por defecto: &gt;) a algo más.
         /// </summary>
         internal static string miki_command_description_prefix {
             get {
@@ -97,11 +675,483 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;8ball &lt;la pregunta&gt;.
+        ///   Looks up a localized string similar to ¡Echa un vistazo en tu progreso a convertirte en un Maestro de Miki!.
+        /// </summary>
+        internal static string miki_command_description_profile {
+            get {
+                return ResourceManager.GetString("miki_command_description_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limpia tu .
+        /// </summary>
+        internal static string miki_command_description_prune {
+            get {
+                return ResourceManager.GetString("miki_command_description_prune", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Había un perro que se llamaba Chiste, salió a la calle, lo atropelló un carro ¡pero el chiste no se acabó! pues este comando recopila algunos de los mejores chistes (que logramos encontrar).
+        /// </summary>
+        internal static string miki_command_description_pun {
+            get {
+                return ResourceManager.GetString("miki_command_description_pun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Recuérdate de hacer tareas!.
+        /// </summary>
+        internal static string miki_command_description_remind {
+            get {
+                return ResourceManager.GetString("miki_command_description_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Gira un dado 1d20, más alto que 17 para derrotar a este troll!.
+        /// </summary>
+        internal static string miki_command_description_roll {
+            get {
+                return ResourceManager.GetString("miki_command_description_roll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Realiza rifas, escoge a una persona aleatoria de tu servidor y dales fama y gloria!.
+        /// </summary>
+        internal static string miki_command_description_roulette {
+            get {
+                return ResourceManager.GetString("miki_command_description_roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por que no hay nada que no tenga una versión porno..
+        /// </summary>
+        internal static string miki_command_description_rule34 {
+            get {
+                return ResourceManager.GetString("miki_command_description_rule34", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Obtén imágenes para todas las edades de chicas anime lindas! Todas las etiquetas las encontrarás aquí: &lt;https://safebooru.org/index.php?page=tags&amp;s=list&gt;.
+        /// </summary>
+        internal static string miki_command_description_safe {
+            get {
+                return ResourceManager.GetString("miki_command_description_safe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Busca entre todas las pastas disponibles y descubre nuevos y deliciosos memes!.
+        /// </summary>
+        internal static string miki_command_description_searchpasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Habilita o deshabilita comandos con este comando! (no deshabilites este comando).
+        /// </summary>
+        internal static string miki_command_description_setcommand {
+            get {
+                return ResourceManager.GetString("miki_command_description_setcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Habilita o deshabilita módulos y todos los ayudantes de fondo con este comando!.
+        /// </summary>
+        internal static string miki_command_description_setmodule {
+            get {
+                return ResourceManager.GetString("miki_command_description_setmodule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Permite a los usuarios ganar roles cuando ellos lleguen a un cierto nivel!.
+        /// </summary>
+        internal static string miki_command_description_setrolelevel {
+            get {
+                return ResourceManager.GetString("miki_command_description_setrolelevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Muestra tus propuestas abiertas con este comando útil!.
+        /// </summary>
+        internal static string miki_command_description_showproposals {
+            get {
+                return ResourceManager.GetString("miki_command_description_showproposals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Prueba tu suerte con esta totalmente no forzada máquina tragamonedas para tu diversión!.
+        /// </summary>
+        internal static string miki_command_description_slots {
+            get {
+                return ResourceManager.GetString("miki_command_description_slots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cuando ganas un juego de Hearthstone..
+        /// </summary>
+        internal static string miki_command_description_smug {
+            get {
+                return ResourceManager.GetString("miki_command_description_smug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bloquea temporalmente a una persona quién está siendo un viejo rudo.
+        /// </summary>
+        internal static string miki_command_description_softban {
+            get {
+                return ResourceManager.GetString("miki_command_description_softban", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Sincroniza tu avatar con la base de datos de Miki!.
+        /// </summary>
+        internal static string miki_command_description_syncavatar {
+            get {
+                return ResourceManager.GetString("miki_command_description_syncavatar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Sincroniza tu nombre con la base de datos de Miki!.
+        /// </summary>
+        internal static string miki_command_description_syncname {
+            get {
+                return ResourceManager.GetString("miki_command_description_syncname", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to don don don katsu don katsu don don katsu.
+        /// </summary>
+        internal static string miki_command_description_taiko {
+            get {
+                return ResourceManager.GetString("miki_command_description_taiko", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Alterna la habilidad de Miki para enviarte MDs!.
+        /// </summary>
+        internal static string miki_command_description_toggledm {
+            get {
+                return ResourceManager.GetString("miki_command_description_toggledm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Alterna la habilidad de Miki para enviarte MDs sobre errores!.
+        /// </summary>
+        internal static string miki_command_description_toggleerrors {
+            get {
+                return ResourceManager.GetString("miki_command_description_toggleerrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Alterna la habilidad de Miki para enviar mensajes no invocados por comandos en este canal!.
+        /// </summary>
+        internal static string miki_command_description_toggleguildnotifications {
+            get {
+                return ResourceManager.GetString("miki_command_description_toggleguildnotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Este comando muestra las pastas más amadas!.
+        /// </summary>
+        internal static string miki_command_description_toppasta {
+            get {
+                return ResourceManager.GetString("miki_command_description_toppasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;8ball &lt;pregunta&gt;.
         /// </summary>
         internal static string miki_command_usage_8ball {
             get {
                 return ResourceManager.GetString("miki_command_usage_8ball", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;acceptmarriage &lt;mencion&gt;.
+        /// </summary>
+        internal static string miki_command_usage_acceptmarriage {
+            get {
+                return ResourceManager.GetString("miki_command_usage_acceptmarriage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;ask &lt;pregunta&gt;.
+        /// </summary>
+        internal static string miki_command_usage_ask {
+            get {
+                return ResourceManager.GetString("miki_command_usage_ask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;ban &lt;mención&gt; [razón]
+        ///&gt;ban &lt;id de usuario&gt; [razón].
+        /// </summary>
+        internal static string miki_command_usage_ban {
+            get {
+                return ResourceManager.GetString("miki_command_usage_ban", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;bird.
+        /// </summary>
+        internal static string miki_command_usage_bird {
+            get {
+                return ResourceManager.GetString("miki_command_usage_bird", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;blackjack &lt;cantidad&gt;.
+        /// </summary>
+        internal static string miki_command_usage_blackjack {
+            get {
+                return ResourceManager.GetString("miki_command_usage_blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;buymarriageslot.
+        /// </summary>
+        internal static string miki_command_usage_buymarriageslot {
+            get {
+                return ResourceManager.GetString("miki_command_usage_buymarriageslot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;cage.
+        /// </summary>
+        internal static string miki_command_usage_cage {
+            get {
+                return ResourceManager.GetString("miki_command_usage_cage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;cat.
+        /// </summary>
+        internal static string miki_command_usage_cat {
+            get {
+                return ResourceManager.GetString("miki_command_usage_cat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;clean.
+        /// </summary>
+        internal static string miki_command_usage_clean {
+            get {
+                return ResourceManager.GetString("miki_command_usage_clean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;compliment.
+        /// </summary>
+        internal static string miki_command_usage_compliment {
+            get {
+                return ResourceManager.GetString("miki_command_usage_compliment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;confused.
+        /// </summary>
+        internal static string miki_command_usage_confused {
+            get {
+                return ResourceManager.GetString("miki_command_usage_confused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;createpasta &lt;etiqueta&gt; &lt;contenido&gt;.
+        /// </summary>
+        internal static string miki_command_usage_createpasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_createpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;ctb &lt;nombre de usuario de osu!&gt;.
+        /// </summary>
+        internal static string miki_command_usage_ctb {
+            get {
+                return ResourceManager.GetString("miki_command_usage_ctb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;daily.
+        /// </summary>
+        internal static string miki_command_usage_daily {
+            get {
+                return ResourceManager.GetString("miki_command_usage_daily", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;declinemarriage &lt;mención&gt;
+        ///&gt;declinemarriage *.
+        /// </summary>
+        internal static string miki_command_usage_declinemarriage {
+            get {
+                return ResourceManager.GetString("miki_command_usage_declinemarriage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;deletepasta &lt;etiqueta&gt;.
+        /// </summary>
+        internal static string miki_command_usage_deletepasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_deletepasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;divorce &lt;mencion&gt;
+        ///&gt;divorce &lt;nombre&gt;.
+        /// </summary>
+        internal static string miki_command_usage_divorce {
+            get {
+                return ResourceManager.GetString("miki_command_usage_divorce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;dog.
+        /// </summary>
+        internal static string miki_command_usage_dog {
+            get {
+                return ResourceManager.GetString("miki_command_usage_dog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;e621 &lt;etiquetas de e621&gt;.
+        /// </summary>
+        internal static string miki_command_usage_e621 {
+            get {
+                return ResourceManager.GetString("miki_command_usage_e621", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;editpasta &lt;etiqueta&gt; &lt;nuevo contenido&gt;.
+        /// </summary>
+        internal static string miki_command_usage_editpasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_editpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;gelbooru &lt;etiquetas de gelbooru&gt;.
+        /// </summary>
+        internal static string miki_command_usage_gelbooru {
+            get {
+                return ResourceManager.GetString("miki_command_usage_gelbooru", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;gif [etiquetas].
+        /// </summary>
+        internal static string miki_command_usage_gif {
+            get {
+                return ResourceManager.GetString("miki_command_usage_gif", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;give &lt;usuario&gt; &lt;cantidad&gt;.
+        /// </summary>
+        internal static string miki_command_usage_give {
+            get {
+                return ResourceManager.GetString("miki_command_usage_give", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;guildconfig expneeded &lt;cantidad&gt;
+        ///&gt;guildconfig visible &lt;yes:no&gt;.
+        /// </summary>
+        internal static string miki_command_usage_guildconfig {
+            get {
+                return ResourceManager.GetString("miki_command_usage_guildconfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;guildnewrival.
+        /// </summary>
+        internal static string miki_command_usage_guildnewrival {
+            get {
+                return ResourceManager.GetString("miki_command_usage_guildnewrival", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;guildprofile.
+        /// </summary>
+        internal static string miki_command_usage_guildprofile {
+            get {
+                return ResourceManager.GetString("miki_command_usage_guildprofile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;guildtop.
+        /// </summary>
+        internal static string miki_command_usage_guildtop {
+            get {
+                return ResourceManager.GetString("miki_command_usage_guildtop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;guildweekly.
+        /// </summary>
+        internal static string miki_command_usage_guildweekly {
+            get {
+                return ResourceManager.GetString("miki_command_usage_guildweekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;img [etiquetas].
+        /// </summary>
+        internal static string miki_command_usage_img {
+            get {
+                return ResourceManager.GetString("miki_command_usage_img", resourceCulture);
             }
         }
         
@@ -115,8 +1165,111 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to pasta new &lt;palabra clave&gt; &lt;contenido de pasta&gt;
-        ///pasta + &lt;palabra clave&gt; &lt;contenido de pasta&gt;
+        ///   Looks up a localized string similar to &gt;infopasta &lt;etiqueta&gt;.
+        /// </summary>
+        internal static string miki_command_usage_infopasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_infopasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;kick &lt;mención&gt; [razón]
+        ///&gt;kick &lt;id de usuario&gt; [razón].
+        /// </summary>
+        internal static string miki_command_usage_kick {
+            get {
+                return ResourceManager.GetString("miki_command_usage_kick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;leaderboards
+        ///&gt;leaderboards local
+        ///&gt;leaderboards mekos
+        ///&gt;leaderboards commands.
+        /// </summary>
+        internal static string miki_command_usage_leaderboards {
+            get {
+                return ResourceManager.GetString("miki_command_usage_leaderboards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;lewd.
+        /// </summary>
+        internal static string miki_command_usage_lewd {
+            get {
+                return ResourceManager.GetString("miki_command_usage_lewd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;lovepasta &lt;etiqueta&gt;.
+        /// </summary>
+        internal static string miki_command_usage_lovepasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_lovepasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;lunch.
+        /// </summary>
+        internal static string miki_command_usage_lunch {
+            get {
+                return ResourceManager.GetString("miki_command_usage_lunch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;mania &lt;nombre de usuario de osu!&gt;.
+        /// </summary>
+        internal static string miki_command_usage_mania {
+            get {
+                return ResourceManager.GetString("miki_command_usage_mania", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;marry &lt;mencion&gt;.
+        /// </summary>
+        internal static string miki_command_usage_marry {
+            get {
+                return ResourceManager.GetString("miki_command_usage_marry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;mekos.
+        /// </summary>
+        internal static string miki_command_usage_mekos {
+            get {
+                return ResourceManager.GetString("miki_command_usage_mekos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;mypasta.
+        /// </summary>
+        internal static string miki_command_usage_mypasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_mypasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;osu &lt;nombre de usuario de osu!&gt;.
+        /// </summary>
+        internal static string miki_command_usage_osu {
+            get {
+                return ResourceManager.GetString("miki_command_usage_osu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pasta new &lt;palabra clave&gt; &lt;contenido de la pasta&gt;
+        ///pasta + &lt;palabra clave&gt; &lt;contenido de la pasta&gt;
         ///pasta find &lt;palabra clave&gt;
         ///pasta search &lt;palabra clave&gt;
         ///pasta edit &lt;palabra clave&gt; &lt;contenido para editar&gt;
@@ -128,11 +1281,39 @@ namespace Miki.Languages {
         ///pasta &lt;3 &lt;palabra clave&gt;
         ///pasta love &lt;palabra clave&gt;
         ///pasta downvote &lt;palabra clave&gt;
-        ///pasta &lt;/3 &lt;palabra clave&gt;pasta hate &lt;palabra clave&gt;.
+        ///pasta &lt;/3 &lt;palabra clave&gt;pasta hate &lt;palabra clave&gt;
+        ///pasta hate &lt;p [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string miki_command_usage_pasta {
             get {
                 return ResourceManager.GetString("miki_command_usage_pasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;pick &lt;opción1&gt;,[opción2],[...].
+        /// </summary>
+        internal static string miki_command_usage_pick {
+            get {
+                return ResourceManager.GetString("miki_command_usage_pick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;poppasta.
+        /// </summary>
+        internal static string miki_command_usage_poppasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_poppasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;pout.
+        /// </summary>
+        internal static string miki_command_usage_pout {
+            get {
+                return ResourceManager.GetString("miki_command_usage_pout", resourceCulture);
             }
         }
         
@@ -146,7 +1327,219 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Algo funcionó mal!.
+        ///   Looks up a localized string similar to &gt;profile
+        ///&gt;profile &lt;id de usuario&gt;.
+        /// </summary>
+        internal static string miki_command_usage_profile {
+            get {
+                return ResourceManager.GetString("miki_command_usage_profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;prune [cantidad].
+        /// </summary>
+        internal static string miki_command_usage_prune {
+            get {
+                return ResourceManager.GetString("miki_command_usage_prune", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;pun.
+        /// </summary>
+        internal static string miki_command_usage_pun {
+            get {
+                return ResourceManager.GetString("miki_command_usage_pun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;remind me to &lt;acción&gt; in &lt;tiempo&gt; (e.g. 2 minutes and 11 seconds; por ahora el tiempo debe estar escrito en inglés, esto será arreglado en el futuro).
+        /// </summary>
+        internal static string miki_command_usage_remind {
+            get {
+                return ResourceManager.GetString("miki_command_usage_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;roll [cantidad]
+        ///&gt;roll [cantidad del dado]d[lados del dado].
+        /// </summary>
+        internal static string miki_command_usage_roll {
+            get {
+                return ResourceManager.GetString("miki_command_usage_roll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;roulette [texto].
+        /// </summary>
+        internal static string miki_command_usage_roulette {
+            get {
+                return ResourceManager.GetString("miki_command_usage_roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;rule34 &lt;etiquetas&gt;.
+        /// </summary>
+        internal static string miki_command_usage_rule34 {
+            get {
+                return ResourceManager.GetString("miki_command_usage_rule34", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;safe &lt;etiquetas&gt;.
+        /// </summary>
+        internal static string miki_command_usage_safe {
+            get {
+                return ResourceManager.GetString("miki_command_usage_safe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;searchpasta &lt;etiqueta&gt; [page=1].
+        /// </summary>
+        internal static string miki_command_usage_searchpasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;setcommand &lt;nombre del comando&gt; 1 para habilitar
+        ///&gt;setcommand &lt;nombre del comando&gt; 0 para deshabilitar.
+        /// </summary>
+        internal static string miki_command_usage_setcommand {
+            get {
+                return ResourceManager.GetString("miki_command_usage_setcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;setmodule &lt;nombre del módulo&gt; 1 para habilitar
+        ///&gt;setmodule &lt;nombre del módulo&gt; 0 para deshabilitar.
+        /// </summary>
+        internal static string miki_command_usage_setmodule {
+            get {
+                return ResourceManager.GetString("miki_command_usage_setmodule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;setrolelevel &lt;nombre del rol&gt; &lt;nivel&gt;.
+        /// </summary>
+        internal static string miki_command_usage_setrolelevel {
+            get {
+                return ResourceManager.GetString("miki_command_usage_setrolelevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;showproposals.
+        /// </summary>
+        internal static string miki_command_usage_showproposals {
+            get {
+                return ResourceManager.GetString("miki_command_usage_showproposals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;slots &lt;cantidad a apostar&gt;.
+        /// </summary>
+        internal static string miki_command_usage_slots {
+            get {
+                return ResourceManager.GetString("miki_command_usage_slots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;smug.
+        /// </summary>
+        internal static string miki_command_usage_smug {
+            get {
+                return ResourceManager.GetString("miki_command_usage_smug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;softban &lt;mención&gt; [razón]
+        ///&gt;softban &lt;id de usuario&gt; [razón].
+        /// </summary>
+        internal static string miki_command_usage_softban {
+            get {
+                return ResourceManager.GetString("miki_command_usage_softban", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;syncavatar.
+        /// </summary>
+        internal static string miki_command_usage_syncavatar {
+            get {
+                return ResourceManager.GetString("miki_command_usage_syncavatar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;syncname.
+        /// </summary>
+        internal static string miki_command_usage_syncname {
+            get {
+                return ResourceManager.GetString("miki_command_usage_syncname", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;taiko &lt;nombre de usuario de osu!&gt;.
+        /// </summary>
+        internal static string miki_command_usage_taiko {
+            get {
+                return ResourceManager.GetString("miki_command_usage_taiko", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;toggledm.
+        /// </summary>
+        internal static string miki_command_usage_toggledm {
+            get {
+                return ResourceManager.GetString("miki_command_usage_toggledm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;toggleerrors.
+        /// </summary>
+        internal static string miki_command_usage_toggleerrors {
+            get {
+                return ResourceManager.GetString("miki_command_usage_toggleerrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;toggleguildnotifications.
+        /// </summary>
+        internal static string miki_command_usage_toggleguildnotifications {
+            get {
+                return ResourceManager.GetString("miki_command_usage_toggleguildnotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;toppasta.
+        /// </summary>
+        internal static string miki_command_usage_toppasta {
+            get {
+                return ResourceManager.GetString("miki_command_usage_toppasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Algo salió mal!.
         /// </summary>
         internal static string miki_error_message_generic {
             get {
@@ -155,8 +1548,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Miki ha encontrado una problema con su codigo. 
-        ///Manderemos su registro y instruciones por mensaje privado..
+        ///   Looks up a localized string similar to Miki ha encontrado un problema con su código. Te enviaremos un registro y instrucciones por DM..
         /// </summary>
         internal static string miki_errors_enabled_message {
             get {
@@ -165,7 +1557,70 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}s perfil global.
+        ///   Looks up a localized string similar to Logros.
+        /// </summary>
+        internal static string miki_generic_achievements {
+            get {
+                return ResourceManager.GetString("miki_generic_achievements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to deshabilitado.
+        /// </summary>
+        internal static string miki_generic_disabled {
+            get {
+                return ResourceManager.GetString("miki_generic_disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to habilitado.
+        /// </summary>
+        internal static string miki_generic_enabled {
+            get {
+                return ResourceManager.GetString("miki_generic_enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Información Global.
+        /// </summary>
+        internal static string miki_generic_global_information {
+            get {
+                return ResourceManager.GetString("miki_generic_global_information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Información.
+        /// </summary>
+        internal static string miki_generic_information {
+            get {
+                return ResourceManager.GetString("miki_generic_information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mekos.
+        /// </summary>
+        internal static string miki_generic_mekos {
+            get {
+                return ResourceManager.GetString("miki_generic_mekos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recompensa.
+        /// </summary>
+        internal static string miki_generic_reward {
+            get {
+                return ResourceManager.GetString("miki_generic_reward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perfil global de {0}.
         /// </summary>
         internal static string miki_global_profile_user_header {
             get {
@@ -174,8 +1629,18 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hola, soy **Miki**! A tu servicio! 
-        ///Intenta usar **&gt;help** para ver lo que yo puedo hacer! :notes:.
+        ///   Looks up a localized string similar to No tienes experiencia necesaria para reclamar recompensas para este servidor. ¡Por favor espera hasta que seas permitido a hacer esto!
+        ///
+        ///Necesitas por lo menos **{0}** puntos de experiencia antes de usar este comando en este servidor..
+        /// </summary>
+        internal static string miki_guildweekly_insufficient_exp {
+            get {
+                return ResourceManager.GetString("miki_guildweekly_insufficient_exp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Hola! ¡Soy **Miki**! ¡Utiliza **&gt;help** para saber qué puedo hacer! :notes:.
         /// </summary>
         internal static string miki_join_message {
             get {
@@ -184,7 +1649,16 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}s perfil local.
+        ///   Looks up a localized string similar to Prefijo.
+        /// </summary>
+        internal static string miki_label_prefix {
+            get {
+                return ResourceManager.GetString("miki_label_prefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perfil local de {0}.
         /// </summary>
         internal static string miki_local_profile_user_header {
             get {
@@ -193,7 +1667,43 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tienes mekos insufficientes.
+        ///   Looks up a localized string similar to ¡Todas las propuestas han sido rechazadas!.
+        /// </summary>
+        internal static string miki_marriage_all_declined {
+            get {
+                return ResourceManager.GetString("miki_marriage_all_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to La propuesta ha sido rechazada..
+        /// </summary>
+        internal static string miki_marriage_declined {
+            get {
+                return ResourceManager.GetString("miki_marriage_declined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor menciona a la persona a la cual quieres rechazar..
+        /// </summary>
+        internal static string miki_marriage_no_mention {
+            get {
+                return ResourceManager.GetString("miki_marriage_no_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡El usuario no se ha propuesto a ti!.
+        /// </summary>
+        internal static string miki_marriage_null {
+            get {
+                return ResourceManager.GetString("miki_marriage_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tienes mekos insufficientes..
         /// </summary>
         internal static string miki_mekos_insufficient {
             get {
@@ -202,7 +1712,187 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inhibilitado el c omando `{0}`!.
+        ///   Looks up a localized string similar to {0} se divorció {1}.
+        /// </summary>
+        internal static string miki_module_accounts_divorce_content {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_divorce_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🔔 Divorcio.
+        /// </summary>
+        internal static string miki_module_accounts_divorce_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_divorce_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡No te has casado con esa persona!.
+        /// </summary>
+        internal static string miki_module_accounts_error_no_marriage {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_error_no_marriage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nivel: {0} ({1}/{2}).
+        /// </summary>
+        internal static string miki_module_accounts_information_level {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_information_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rank: #{0}.
+        /// </summary>
+        internal static string miki_module_accounts_information_rank {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_information_rank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards: Uso de comandos.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_commands_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_commands_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards: Experiencia global.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards: Experiencia local.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_local_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_local_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leaderboards: Mekos.
+        /// </summary>
+        internal static string miki_module_accounts_leaderboards_mekos_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_leaderboards_mekos_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ya le propusiste matrimonio o te casaste con esa persona..
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_exists {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Por favor menciona a la persona a la cual le estás proponiendo!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_no_mention {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_no_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tú o la otra persona no tienen una cuenta de Miki aún. ¡Házlos hablar más!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_error_null {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡{0} le ha propuesto matriomonio a {1}!.
+        /// </summary>
+        internal static string miki_module_accounts_marry_text {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿Aceptas?.
+        /// </summary>
+        internal static string miki_module_accounts_marry_text2 {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_marry_text2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡El perfil de {0} no existe!.
+        /// </summary>
+        internal static string miki_module_accounts_profile_error_null {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comando favorito.
+        /// </summary>
+        internal static string miki_module_accounts_profile_favourite_command {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_favourite_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miembro desde {0} | La solicitud demoró: {1}ms.
+        /// </summary>
+        internal static string miki_module_accounts_profile_footer {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_footer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Perfil de {0}.
+        /// </summary>
+        internal static string miki_module_accounts_profile_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Casado con:.
+        /// </summary>
+        internal static string miki_module_accounts_profile_marriedto {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_marriedto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL del perfil:.
+        /// </summary>
+        internal static string miki_module_accounts_profile_url {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_profile_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Inhabilitado el comando `{0}`!.
         /// </summary>
         internal static string miki_module_admin_disable_command {
             get {
@@ -211,7 +1901,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inhibilitado el modulo `{0}`!.
+        ///   Looks up a localized string similar to ¡Inhabilitado el módulo `{0}`!.
         /// </summary>
         internal static string miki_module_admin_disable_module {
             get {
@@ -220,7 +1910,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Habilitado el comando `{0}`!.
+        ///   Looks up a localized string similar to ¡Habilitado el comando `{0}`!.
         /// </summary>
         internal static string miki_module_admin_enable_command {
             get {
@@ -229,7 +1919,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Habilitado el modulo `{0}`!.
+        ///   Looks up a localized string similar to ¡Habilitado el módulo `{0}`!.
         /// </summary>
         internal static string miki_module_admin_enable_module {
             get {
@@ -238,7 +1928,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Modulo {0} es inhabilitado.
+        ///   Looks up a localized string similar to El módulo {0} está inhabilitado..
         /// </summary>
         internal static string miki_module_admin_error_module_disabled {
             get {
@@ -247,7 +1937,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💁 Pateado por .
+        ///   Looks up a localized string similar to 💁 Expulsado por.
         /// </summary>
         internal static string miki_module_admin_kick_by {
             get {
@@ -256,7 +1946,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Has sido pateado de **{0}**!.
+        ///   Looks up a localized string similar to ¡Has sido expulsado de **{0}**!.
         /// </summary>
         internal static string miki_module_admin_kick_description {
             get {
@@ -265,7 +1955,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⚠ Patada.
+        ///   Looks up a localized string similar to ⚠ EXPULSIÓN.
         /// </summary>
         internal static string miki_module_admin_kick_header {
             get {
@@ -274,7 +1964,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💬 Razon.
+        ///   Looks up a localized string similar to 💬 Razón.
         /// </summary>
         internal static string miki_module_admin_kick_reason {
             get {
@@ -292,7 +1982,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No puedo borrar mensajes en esta canal ):.
+        ///   Looks up a localized string similar to No puedo borrar mensajes en este canal ):.
         /// </summary>
         internal static string miki_module_admin_prune_error_no_access {
             get {
@@ -301,7 +1991,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Se ha borrado {0} mensajes!.
+        ///   Looks up a localized string similar to ¡Se han borrado {0} mensajes!.
         /// </summary>
         internal static string miki_module_admin_prune_success {
             get {
@@ -310,7 +2000,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ✅ se ha borrado su mensaje de bienvenida.
+        ///   Looks up a localized string similar to ✅ Eliminado tu mensaje de bienvenida.
         /// </summary>
         internal static string miki_module_eventmessages_delete_guildjoin {
             get {
@@ -319,7 +2009,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ✅ nuevo mensaje de bienvenida cambiado a: `{0}`.
+        ///   Looks up a localized string similar to ✅ Nuevo mensaje de bienvenida cambiado a: `{0}`.
         /// </summary>
         internal static string miki_module_eventmessages_set_guildjoin {
             get {
@@ -328,7 +2018,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No debas contar con esto.
+        ///   Looks up a localized string similar to No debas contar con esto..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_negative_1 {
             get {
@@ -337,7 +2027,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mi respuesta es no.
+        ///   Looks up a localized string similar to Mi respuesta es no..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_negative_2 {
             get {
@@ -346,7 +2036,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mis fuentes dice que no.
+        ///   Looks up a localized string similar to Mis fuentes dice que no..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_negative_3 {
             get {
@@ -355,7 +2045,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to La perspectiva no esté buena.
+        ///   Looks up a localized string similar to La perspectiva no es buena..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_negative_4 {
             get {
@@ -364,7 +2054,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lo dudo.
+        ///   Looks up a localized string similar to Muy dudoso..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_negative_5 {
             get {
@@ -373,7 +2063,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Respuesta es confuso, trata otra vez.
+        ///   Looks up a localized string similar to Respuesta vaga, intenta de nuevo..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_neutral_1 {
             get {
@@ -382,7 +2072,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pregunta mas después.
+        ///   Looks up a localized string similar to Pregunta después..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_neutral_2 {
             get {
@@ -391,7 +2081,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Es mejor no decirte ahora.
+        ///   Looks up a localized string similar to Es mejor no decirte ahora..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_neutral_3 {
             get {
@@ -400,7 +2090,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No puedo predecir ahora.
+        ///   Looks up a localized string similar to No puedo predecir ahora..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_neutral_4 {
             get {
@@ -409,7 +2099,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Te concentras y preguntas otra vez.
+        ///   Looks up a localized string similar to Concéntrate y pregunta de nuevo..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_neutral_5 {
             get {
@@ -418,7 +2108,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Es seguro.
+        ///   Looks up a localized string similar to Es cierto..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_1 {
             get {
@@ -427,7 +2117,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Es decidamente así.
+        ///   Looks up a localized string similar to Es decidamente así..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_2 {
             get {
@@ -436,7 +2126,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sin duda.
+        ///   Looks up a localized string similar to Sin duda..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_3 {
             get {
@@ -445,7 +2135,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sí, definitivo.
+        ///   Looks up a localized string similar to Sí, definitivamente..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_4 {
             get {
@@ -454,7 +2144,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Puedes contar con ello.
+        ///   Looks up a localized string similar to Puedes contar con ello..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_5 {
             get {
@@ -463,7 +2153,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Muy probable.
+        ///   Looks up a localized string similar to Muy probable..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_6 {
             get {
@@ -472,7 +2162,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Perspectiva buena.
+        ///   Looks up a localized string similar to La perspectiva es buena..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_7 {
             get {
@@ -481,7 +2171,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sí.
+        ///   Looks up a localized string similar to Sí..
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_8 {
             get {
@@ -490,7 +2180,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to los sigños dicen que sí.
+        ///   Looks up a localized string similar to Las señales dicen que sí.
         /// </summary>
         internal static string miki_module_fun_8ball_answer_positive_9 {
             get {
@@ -499,7 +2189,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🎱 {0}, tu pregunta ha sido contestado `{1}`.
+        ///   Looks up a localized string similar to 🎱 {0}, tu pregunta ha sido contestada `{1}`.
         /// </summary>
         internal static string miki_module_fun_8ball_result {
             get {
@@ -517,7 +2207,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to los angulos especiales que tus codos hacen.
+        ///   Looks up a localized string similar to los ángulos especiales que tus codos hacen que.
         /// </summary>
         internal static string miki_module_fun_compliment_body_10 {
             get {
@@ -598,7 +2288,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to tus ojos deslumbrante.
+        ///   Looks up a localized string similar to esos ojos deslumbrantes tuyos.
         /// </summary>
         internal static string miki_module_fun_compliment_body_8 {
             get {
@@ -634,7 +2324,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yo adoro.
+        ///   Looks up a localized string similar to Yo admiro.
         /// </summary>
         internal static string miki_module_fun_compliment_prefix_3 {
             get {
@@ -643,7 +2333,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Me gusta mucho.
+        ///   Looks up a localized string similar to Realmente disfruto.
         /// </summary>
         internal static string miki_module_fun_compliment_prefix_4 {
             get {
@@ -652,7 +2342,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Por alguna razon, me gusta.
+        ///   Looks up a localized string similar to Por alguna razón, me gusta.
         /// </summary>
         internal static string miki_module_fun_compliment_prefix_5 {
             get {
@@ -688,7 +2378,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to mucho, eso es raro?.
+        ///   Looks up a localized string similar to mucho, ¿eso es raro?.
         /// </summary>
         internal static string miki_module_fun_compliment_suffix_4 {
             get {
@@ -697,7 +2387,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No encontra ningunas imagenes en tu busca..
+        ///   Looks up a localized string similar to No se encontraron imágenes en tu búsqueda :(.
         /// </summary>
         internal static string miki_module_fun_image_error_no_image_found {
             get {
@@ -706,7 +2396,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}, yo ha escogido `{1}`.
+        ///   Looks up a localized string similar to {0}, escogí `{1}`.
         /// </summary>
         internal static string miki_module_fun_pick {
             get {
@@ -715,8 +2405,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No tengo nada de que escoge :( 
-        ///Utiliza comas (,) para separar seleciones .
+        ///   Looks up a localized string similar to ¡No tengo nada de que escoger! :( Utiliza comas (,) para separar selecciones..
         /// </summary>
         internal static string miki_module_fun_pick_no_arg {
             get {
@@ -725,9 +2414,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ¿Cuál es el vino más amargo? 
-        ///Vino mi suegra!
-        ///.
+        ///   Looks up a localized string similar to ¿Cuál es el vino más amargo? ¡Vino mi suegra!.
         /// </summary>
         internal static string miki_module_fun_pun_1 {
             get {
@@ -771,8 +2458,8 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ¿Cómo llama el vaquero a su hija? 
-        ///¡Hijaaaaaaaaaaaaaaaa! .
+        ///   Looks up a localized string similar to ¿Cómo llama el vaquero a su hija?
+        ///¡Hijaaaaaaaaaaaaaaaa!.
         /// </summary>
         internal static string miki_module_fun_pun_13 {
             get {
@@ -814,8 +2501,9 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ¿Cuántas estrellas hay en el cielo?
-        ///Cincuenta.
+        ///   Looks up a localized string similar to A: Jaimito, ¿sabes cómo me imagino la escuela ideal?
+        ///B: ¿Cómo, Pepito?
+        ///A: Cerrada.
         /// </summary>
         internal static string miki_module_fun_pun_17 {
             get {
@@ -845,8 +2533,8 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to ¿Tú sabes el chiste de Pocoyó?
-        /// ¡No! 
-        /// Pues TAMPOCOYO..
+        ///¡No! 
+        ///Pues TAMPOCOYO..
         /// </summary>
         internal static string miki_module_fun_pun_2 {
             get {
@@ -866,7 +2554,7 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to ¡¡Soldado, FIIIRME!
-        /// ¿Dónde firmo, mi capitán?.
+        ///¿Dónde firmo, mi capitán?.
         /// </summary>
         internal static string miki_module_fun_pun_21 {
             get {
@@ -886,7 +2574,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yo vivo a base de vitaminia C:
+        ///   Looks up a localized string similar to Yo vivo a base de vitamina C:
         ///Computadora
         ///Celular
         ///Comida
@@ -979,8 +2667,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ¿Como se dice en chino espejo?
-        ///Ahí toi.
+        ///   Looks up a localized string similar to Tú definitivamente necesitas más que un bot. Tu servidor más suave y brillante, de adentro hacia afuera. Cámbiate a Miki y notarás la diferencia (*kiki majens to maiself*).
         /// </summary>
         internal static string miki_module_fun_pun_30 {
             get {
@@ -1031,7 +2718,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A que te dedicas?
+        ///   Looks up a localized string similar to ¿A que te dedicas?
         ///Básicamente a respirar. No gano mucho, pero me da para vivir..
         /// </summary>
         internal static string miki_module_fun_pun_35 {
@@ -1279,7 +2966,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}  lanzó **{1}**.
+        ///   Looks up a localized string similar to 🎲 {0} tiró un **{1}**.
         /// </summary>
         internal static string miki_module_fun_roll_result {
             get {
@@ -1288,7 +2975,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Y el ganador de `{0}` es {1}.
+        ///   Looks up a localized string similar to Y el ganador de `{0}` es {1}..
         /// </summary>
         internal static string miki_module_fun_roulette_winner {
             get {
@@ -1306,7 +2993,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tragaperras.
+        ///   Looks up a localized string similar to Tragamonedas.
         /// </summary>
         internal static string miki_module_fun_slots_header {
             get {
@@ -1315,7 +3002,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}🔸 se ha sumado a tu cuenta..
+        ///   Looks up a localized string similar to {0}🔸 se han sumado a tu cuenta..
         /// </summary>
         internal static string miki_module_fun_slots_win_amount {
             get {
@@ -1324,7 +3011,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Has ganado!.
+        ///   Looks up a localized string similar to ¡Ganaste!.
         /// </summary>
         internal static string miki_module_fun_slots_win_header {
             get {
@@ -1333,7 +3020,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No puedo hacer ese tipo de matematicas!.
+        ///   Looks up a localized string similar to ¡No puedo hacer ese tipo de matemáticas!.
         /// </summary>
         internal static string miki_module_general_calc_error {
             get {
@@ -1351,7 +3038,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 👑 El dueño es.
+        ///   Looks up a localized string similar to 👑 Adueñado por.
         /// </summary>
         internal static string miki_module_general_guildinfo_owned_by {
             get {
@@ -1360,7 +3047,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 📜 Marcas .
+        ///   Looks up a localized string similar to 📜 Roles.
         /// </summary>
         internal static string miki_module_general_guildinfo_roles {
             get {
@@ -1369,7 +3056,16 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🙎 Usarios.
+        ///   Looks up a localized string similar to Conteo de roles.
+        /// </summary>
+        internal static string miki_module_general_guildinfo_roles_count {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_roles_count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🙎 Usuarios.
         /// </summary>
         internal static string miki_module_general_guildinfo_users {
             get {
@@ -1378,7 +3074,25 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Descripcion.
+        ///   Looks up a localized string similar to Canales de voz.
+        /// </summary>
+        internal static string miki_module_general_guildinfo_voicechannels {
+            get {
+                return ResourceManager.GetString("miki_module_general_guildinfo_voicechannels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alias.
+        /// </summary>
+        internal static string miki_module_general_help_aliases {
+            get {
+                return ResourceManager.GetString("miki_module_general_help_aliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descripción.
         /// </summary>
         internal static string miki_module_general_help_description {
             get {
@@ -1387,7 +3101,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Un mensaje personal con todos mis comandos viene a camino! Utiliza `&gt;help [comando]` por mas informacion sobre este comando.
+        ///   Looks up a localized string similar to ¡Un mensaje personal con todos mis comandos está en camino! ¡Utiliza `&gt;help [comando]` para mas información sobre un comando específico!.
         /// </summary>
         internal static string miki_module_general_help_dm {
             get {
@@ -1396,7 +3110,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Usage.
+        ///   Looks up a localized string similar to Uso.
         /// </summary>
         internal static string miki_module_general_help_usage {
             get {
@@ -1405,7 +3119,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Documentacion.
+        ///   Looks up a localized string similar to Documentación.
         /// </summary>
         internal static string miki_module_general_info_docs {
             get {
@@ -1414,7 +3128,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hola todos! He creado un Patreon para dejar ustedes apoyar a Miki. Por favor de echarle un vistazo y suportarlo si puedes! .
+        ///   Looks up a localized string similar to ¡Hola a todos! He creado un Patreon para permitirle a la gente apoyar a Miki. ¡Por favor échale un vistazo y apóyanos si puedes!.
         /// </summary>
         internal static string miki_module_general_info_donate_string {
             get {
@@ -1423,7 +3137,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enlace.
+        ///   Looks up a localized string similar to Enlaces.
         /// </summary>
         internal static string miki_module_general_info_links {
             get {
@@ -1432,7 +3146,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gracias especial a: Florestina, Mei, Rappy, Rie, Rosie.
+        ///   Looks up a localized string similar to Agradecimientos especiales a: Florestina, Mei, Rappy, Rie, Rosie.
         /// </summary>
         internal static string miki_module_general_info_made_by_description {
             get {
@@ -1495,7 +3209,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Aqui te va!.
+        ///   Looks up a localized string similar to ¡Aqui está! :3.
         /// </summary>
         internal static string miki_module_general_invite_dm {
             get {
@@ -1504,7 +3218,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Te mando un mensaje privado con el enlace.
+        ///   Looks up a localized string similar to Te enviaré un mensaje privado con el enlace de invitación..
         /// </summary>
         internal static string miki_module_general_invite_message {
             get {
@@ -1513,7 +3227,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No se puede cambiar tu prefijo a nada. Consulta &gt;help para averiguar lo que hace. .
+        ///   Looks up a localized string similar to No se puede cambiar tu prefijo a nada. Consulta `&gt;help prefix` para averiguar lo que hace..
         /// </summary>
         internal static string miki_module_general_prefix_error_no_arg {
             get {
@@ -1531,7 +3245,25 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⚙️ Ha cambiado el prefijo!.
+        ///   Looks up a localized string similar to ¡Tu prefijo actual es **{0}**!.
+        /// </summary>
+        internal static string miki_module_general_prefix_help {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefijo.
+        /// </summary>
+        internal static string miki_module_general_prefix_help_header {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_help_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ⚙️ ¡Prefijo cambiado!.
         /// </summary>
         internal static string miki_module_general_prefix_success_header {
             get {
@@ -1540,7 +3272,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tu prefijo se ha convertido a  **{0}**!.
+        ///   Looks up a localized string similar to ¡Tu prefijo se ha cambiado a  **{0}**!.
         /// </summary>
         internal static string miki_module_general_prefix_success_message {
             get {
@@ -1549,7 +3281,16 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Definicion.
+        ///   Looks up a localized string similar to por {0}.
+        /// </summary>
+        internal static string miki_module_general_urban_author {
+            get {
+                return ResourceManager.GetString("miki_module_general_urban_author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Definición.
         /// </summary>
         internal static string miki_module_general_urban_definition {
             get {
@@ -1567,7 +3308,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clasificacion.
+        ///   Looks up a localized string similar to Clasificación.
         /// </summary>
         internal static string miki_module_general_urban_rating {
             get {
@@ -1576,7 +3317,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Querias decir?.
+        ///   Looks up a localized string similar to ¿Quisiste decir?.
         /// </summary>
         internal static string miki_module_help_didyoumean {
             get {
@@ -1585,7 +3326,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Comando no hallado.
+        ///   Looks up a localized string similar to Comando no encontrado..
         /// </summary>
         internal static string miki_module_help_error_null_header {
             get {
@@ -1594,7 +3335,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Esto no es un comando. Para usar  `{0}help [comando]` por favor de utilizar el comando ya existente.
+        ///   Looks up a localized string similar to Esto no es un comando. ¡Para usar `{0}help [comando]` por favor utiliza el comando ya existente!.
         /// </summary>
         internal static string miki_module_help_error_null_message {
             get {
@@ -1603,7 +3344,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Esta pasta ya existe! Intenta otra vez con otra etiqueta.
+        ///   Looks up a localized string similar to ¡Esta pasta ya existe! Intenta un nombre diferente..
         /// </summary>
         internal static string miki_module_pasta_create_error_already_exist {
             get {
@@ -1612,7 +3353,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creado un nuevo pasta `{0}`!.
+        ///   Looks up a localized string similar to ¡Pasta `{0}` creada!.
         /// </summary>
         internal static string miki_module_pasta_create_success {
             get {
@@ -1621,7 +3362,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Borrado su pasta `{0}`!.
+        ///   Looks up a localized string similar to ¡Pasta `{0}` eliminada!.
         /// </summary>
         internal static string miki_module_pasta_delete_success {
             get {
@@ -1630,7 +3371,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Editado `{0}`!.
+        ///   Looks up a localized string similar to ¡`{0}` editado!.
         /// </summary>
         internal static string miki_module_pasta_edit_success {
             get {
@@ -1639,7 +3380,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No puedes {0} pastas que tu no creastes!.
+        ///   Looks up a localized string similar to ¡No puedes {0} pastas que tu no creastes!.
         /// </summary>
         internal static string miki_module_pasta_error_no_permissions {
             get {
@@ -1648,7 +3389,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Esta pasta no existe.
+        ///   Looks up a localized string similar to ¡Esta pasta no existe!.
         /// </summary>
         internal static string miki_module_pasta_error_null {
             get {
@@ -1657,7 +3398,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Por favor de entrar una de las etiquetas, o comandos.
+        ///   Looks up a localized string similar to Por favor ingresa una de las etiquetas o comandos.
         /// </summary>
         internal static string miki_module_pasta_error_search_no_arg {
             get {
@@ -1666,7 +3407,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No se ha encontrado ninguna consulta de búsqueda. Por favor, especifique lo que desea buscar..
+        ///   Looks up a localized string similar to No se ha encontrado ninguna consulta de búsqueda. Por favor especifica lo que deseas buscar..
         /// </summary>
         internal static string miki_module_pasta_error_search_no_results {
             get {
@@ -1675,7 +3416,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Por favor, especifique que pasta desea.
+        ///   Looks up a localized string similar to Por favor, especifica que pasta deseas para {0}..
         /// </summary>
         internal static string miki_module_pasta_error_specify {
             get {
@@ -1720,7 +3461,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creó de.
+        ///   Looks up a localized string similar to Creado por.
         /// </summary>
         internal static string miki_module_pasta_identify_created_by {
             get {
@@ -1738,7 +3479,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to valuacion.
+        ///   Looks up a localized string similar to Calificación.
         /// </summary>
         internal static string miki_module_pasta_identify_rating {
             get {
@@ -1756,7 +3497,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lo siento, aun no tienes algun pasta.
+        ///   Looks up a localized string similar to Lo siento, aun no tienes algún pasta creada..
         /// </summary>
         internal static string miki_module_pasta_mine_error_null {
             get {
@@ -1765,7 +3506,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}s pastas.
+        ///   Looks up a localized string similar to Pastas de {0}.
         /// </summary>
         internal static string miki_module_pasta_mine_header {
             get {
@@ -1774,7 +3515,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lo sentimos, no hallamos pastas con `{0}`.
+        ///   Looks up a localized string similar to Lo sentimos, no se han encontrado pastas con `{0}`.
         /// </summary>
         internal static string miki_module_pasta_search_error_no_results {
             get {
@@ -1792,7 +3533,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🔎 he encontrado estos pasta.
+        ///   Looks up a localized string similar to 🔎 Encontré estas pastas:.
         /// </summary>
         internal static string miki_module_pasta_search_header {
             get {
@@ -1801,8 +3542,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tu voto ha sido actualizado
-        ///Puntuacion actual: `{0}`.
+        ///   Looks up a localized string similar to ¡Tu voto ha sido actualizado! Puntuación actual: `{0}`.
         /// </summary>
         internal static string miki_module_pasta_vote_success {
             get {
@@ -1811,7 +3551,34 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Quien es {0}!?.
+        ///   Looks up a localized string similar to {0} mensajes directos.
+        /// </summary>
+        internal static string miki_module_settings_dm {
+            get {
+                return ResourceManager.GetString("miki_module_settings_dm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} notificaciones de error.
+        /// </summary>
+        internal static string miki_module_settings_error_dm {
+            get {
+                return ResourceManager.GetString("miki_module_settings_error_dm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} notificaciones del servidor.
+        /// </summary>
+        internal static string miki_module_settings_guild_notifications {
+            get {
+                return ResourceManager.GetString("miki_module_settings_guild_notifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¿¡Quién es {0}!?.
         /// </summary>
         internal static string miki_module_whois_header {
             get {
@@ -1829,11 +3596,101 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exito!.
+        ///   Looks up a localized string similar to nada (¡aún!).
+        /// </summary>
+        internal static string miki_placeholder_null {
+            get {
+                return ResourceManager.GetString("miki_placeholder_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ¡Listo!.
         /// </summary>
         internal static string miki_success_message_generic {
             get {
                 return ResourceManager.GetString("miki_success_message_generic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mención.
+        /// </summary>
+        internal static string miki_terms_mention {
+            get {
+                return ResourceManager.GetString("miki_terms_mention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Semanal.
+        /// </summary>
+        internal static string miki_terms_weekly {
+            get {
+                return ResourceManager.GetString("miki_terms_weekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lo siento, pero no tienes pastas aun....
+        /// </summary>
+        internal static string mypasta_error_no_pastas {
+            get {
+                return ResourceManager.GetString("mypasta_error_no_pastas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pastas de {0}.
+        /// </summary>
+        internal static string mypasta_title {
+            get {
+                return ResourceManager.GetString("mypasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor ingresa uno de los comandos..
+        /// </summary>
+        internal static string pasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("pasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to página {0} of {1}.
+        /// </summary>
+        internal static string pasta_page_index {
+            get {
+                return ResourceManager.GetString("pasta_page_index", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pastas más populares.
+        /// </summary>
+        internal static string poppasta_title {
+            get {
+                return ResourceManager.GetString("poppasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Por favor especifica los términos que deseas buscar..
+        /// </summary>
+        internal static string searchpasta_error_no_arg {
+            get {
+                return ResourceManager.GetString("searchpasta_error_no_arg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pastas más populares.
+        /// </summary>
+        internal static string toppasta_title {
+            get {
+                return ResourceManager.GetString("toppasta_title", resourceCulture);
             }
         }
     }
