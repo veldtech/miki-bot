@@ -49,7 +49,7 @@ namespace Miki.Modules
             };
         }
 
-        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "swm" } )] )]
+        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "swm" } )]
         public async Task SetWelcomeMessage(EventContext e)
         {
             using (var context = new MikiContext())
@@ -78,7 +78,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "slm" } )])]
+        [Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "slm" } )]
         public async Task SetLeaveMessage(EventContext e)
         {
             using (var context = new MikiContext())
