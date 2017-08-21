@@ -109,78 +109,95 @@ namespace Miki.Modules
             await em.SendToChannel(e.Channel);
         }
 
-		[Command( Name = "smug" )]
-		public async Task SmugAsync( EventContext e )
+	[Command( Name = "smug" )]
+	public async Task SmugAsync( EventContext e )
+	{
+		string[] images = new string[]
 		{
-			string[] images = new string[]
-			{
-				"http://i.imgur.com/zUwqrhM.png",
-				"http://i.imgur.com/TYqPh89.jpg",
-				"http://i.imgur.com/xyOSaCt.png",
-				"http://i.imgur.com/gyw0ifl.png",
-				"http://i.imgur.com/kk0xvtx.png",
-				"http://i.imgur.com/UIuyUne.jpg",
-				"http://i.imgur.com/9zgIjY1.jpg",
-				"http://i.imgur.com/Ku1ONAD.jpg",
-				"http://i.imgur.com/7lB5bRT.jpg",
-				"http://i.imgur.com/BoVHipF.jpg",
-				"http://i.imgur.com/vN48mwz.png",
-				"http://i.imgur.com/fGI4zLe.jpg",
-				"http://i.imgur.com/Gc4gmwQ.jpg",
-				"http://i.imgur.com/JMrmKt7.jpg",
-				"http://i.imgur.com/a7sbJz2.jpg",
-				"http://i.imgur.com/NebmjhR.png",
-				"http://i.imgur.com/5ccbrFI.png",
-				"http://i.imgur.com/XJL4Vmo.jpg",
-				"http://i.imgur.com/eg0q1ez.png",
-				"http://i.imgur.com/JJFxxmA.jpg",
-				"http://i.imgur.com/2cTDF3b.jpg",
-				"http://i.imgur.com/Xc0Duqv.png",
-				"http://i.imgur.com/YgMdPkd.jpg",
-				"http://i.imgur.com/BvAv6an.jpg",
-				"http://i.imgur.com/KRLP5JT.jpg",
-				"http://i.imgur.com/yXcsCK3.jpg",
-				"http://i.imgur.com/QXG56kG.png",
-				"http://i.imgur.com/OFBz1YJ.png",
-				"http://i.imgur.com/9ulVckY.png",
-				"http://i.imgur.com/VLXeSJK.png",
-				"http://i.imgur.com/baiMBP6.png"
-			};
+			"http://i.imgur.com/zUwqrhM.png",
+			"http://i.imgur.com/TYqPh89.jpg",
+			"http://i.imgur.com/xyOSaCt.png",
+			"http://i.imgur.com/gyw0ifl.png",
+			"http://i.imgur.com/kk0xvtx.png",
+			"http://i.imgur.com/UIuyUne.jpg",
+			"http://i.imgur.com/9zgIjY1.jpg",
+			"http://i.imgur.com/Ku1ONAD.jpg",
+			"http://i.imgur.com/7lB5bRT.jpg",
+			"http://i.imgur.com/BoVHipF.jpg",
+			"http://i.imgur.com/vN48mwz.png",
+			"http://i.imgur.com/fGI4zLe.jpg",
+			"http://i.imgur.com/Gc4gmwQ.jpg",
+			"http://i.imgur.com/JMrmKt7.jpg",
+			"http://i.imgur.com/a7sbJz2.jpg",
+			"http://i.imgur.com/NebmjhR.png",
+			"http://i.imgur.com/5ccbrFI.png",
+			"http://i.imgur.com/XJL4Vmo.jpg",
+			"http://i.imgur.com/eg0q1ez.png",
+			"http://i.imgur.com/JJFxxmA.jpg",
+			"http://i.imgur.com/2cTDF3b.jpg",
+			"http://i.imgur.com/Xc0Duqv.png",
+			"http://i.imgur.com/YgMdPkd.jpg",
+			"http://i.imgur.com/BvAv6an.jpg",
+			"http://i.imgur.com/KRLP5JT.jpg",
+			"http://i.imgur.com/yXcsCK3.jpg",
+			"http://i.imgur.com/QXG56kG.png",
+			"http://i.imgur.com/OFBz1YJ.png",
+			"http://i.imgur.com/9ulVckY.png",
+			"http://i.imgur.com/VLXeSJK.png",
+			"http://i.imgur.com/baiMBP6.png"
+		};
 
-			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
-			{
-				ImageUrl = images[Global.random.Next( 0, images.Length )]
-			};
-			await em.SendToChannel( e.Channel );
-		}
-
-		[Command( Name = "cry" )]
-		public async Task CryAsync( EventContext e )
+		RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
 		{
-			string[] images = new string[]
-			{
-				"http://i.imgur.com/TTUBf2r.gif",
-				"http://i.imgur.com/o66oQyX.png",
-				"http://i.imgur.com/6AP78bD.png",
-				"http://i.imgur.com/IvMvs2K.gif",
-				"http://i.imgur.com/0kdQ38I.gif",
-				"http://i.imgur.com/0kdQ38I.gif",
-				"http://i.imgur.com/YHYLO4E.gif",
-				"http://i.imgur.com/wXqxiDs.gif",
-				"http://i.imgur.com/jzafqAh.gif",
-				"http://i.imgur.com/2HPoWSf.gif",
-				"http://i.imgur.com/W7prbbo.gif",
-				"http://i.imgur.com/cKqKcG3.gif",
-				"http://i.imgur.com/GKO0EQD.gif",
-				"http://i.imgur.com/cu825ub.gif",
-				"http://i.imgur.com/TP6dYGh.gif"
-			};
+			ImageUrl = images[Global.random.Next( 0, images.Length )]
+		};
+		await em.SendToChannel( e.Channel );
+	}
 
-			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
-			{
-				ImageUrl = images[Global.random.Next( 0, images.Length )]
-			};
-			await em.SendToChannel( e.Channel );
+	[Command( Name = "cry" )]
+	public async Task CryAsync( EventContext e )
+	{
+		string[] images = new string[]
+		{
+			"http://i.imgur.com/TTUBf2r.gif",
+			"http://i.imgur.com/o66oQyX.png",
+			"http://i.imgur.com/6AP78bD.png",
+			"http://i.imgur.com/IvMvs2K.gif",
+			"http://i.imgur.com/0kdQ38I.gif",
+			"http://i.imgur.com/0kdQ38I.gif",
+			"http://i.imgur.com/YHYLO4E.gif",
+			"http://i.imgur.com/wXqxiDs.gif",
+			"http://i.imgur.com/jzafqAh.gif",
+			"http://i.imgur.com/2HPoWSf.gif",
+			"http://i.imgur.com/W7prbbo.gif",
+			"http://i.imgur.com/cKqKcG3.gif",
+			"http://i.imgur.com/GKO0EQD.gif",
+			"http://i.imgur.com/cu825ub.gif",
+			"http://i.imgur.com/TP6dYGh.gif"
+		};
+
+		RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
+		{
+			ImageUrl = images[Global.random.Next( 0, images.Length )]
+		};
+		await em.SendToChannel( e.Channel );
 		}
 	}
+	
+        [Command( Name = "f", Aliases = new string[] { "respect" } )]
+        public async Task GreentextAsync( EventContext e )
+        {
+            string[] images = new string[]
+            {
+                "http://i.imgur.com/WPNM7JY.jpg",
+                "http://i.imgur.com/iAlNfsI.png",
+                "http://i.imgur.com/FCTtmSR.png",
+                "http://i.imgur.com/ATWUuwP.jpg",
+                "http://i.imgur.com/tznmDi6.jpg",
+                "http://i.imgur.com/RqPQ7Sy.gif",
+                "http://i.imgur.com/3K75Z0V.jpg",
+                "http://i.imgur.com/j3ZDL9U.gif",
+                "http://i.imgur.com/oiXQwb8.jpg",
+                "http://i.imgur.com/ssjCUvU.png"
+        };
 }
