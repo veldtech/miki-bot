@@ -200,4 +200,11 @@ namespace Miki.Modules
                 "http://i.imgur.com/oiXQwb8.jpg",
                 "http://i.imgur.com/ssjCUvU.png"
         };
+		
+		RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
+		{
+			ImageUrl = images[Global.random.Next( 0, images.Length )]
+		};
+		await em.SendToChannel( e.Channel );
+		}
 }
