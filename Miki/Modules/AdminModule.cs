@@ -48,7 +48,7 @@ namespace Miki.Modules
 
                 if(bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
                 {
-                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                    await e.ErrorEmbed(e.GetResource("permission_error_low", "ban"))
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -105,7 +105,7 @@ namespace Miki.Modules
 
                 if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
                 {
-                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                    await e.ErrorEmbed(e.GetResource("permission_error_low", "softban"))
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -141,7 +141,6 @@ namespace Miki.Modules
         {
             await PruneAsync(e, _target: Bot.instance.Client.GetShardFor((e.Guild as IProxy<IGuild>).ToNativeObject()).CurrentUser.Id);
 		}
-
 
         [Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
         public async Task SetCommandAsync(EventContext e)
@@ -255,7 +254,7 @@ namespace Miki.Modules
 
                 if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
                 {
-                    await e.ErrorEmbed(e.GetResource("permission_error_low"))
+                    await e.ErrorEmbed(e.GetResource("permission_error_low", "kick"))
                         .SendToChannel(e.Channel);
                     return;
                 }

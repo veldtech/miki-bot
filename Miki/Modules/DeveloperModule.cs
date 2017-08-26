@@ -174,6 +174,14 @@ namespace Miki.Modules
             }
         }
 
+        [Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task FindUserById(EventContext e)
+        {
+            IDiscordUser u = new RuntimeUser(Bot.instance.Client.GetUser(ulong.Parse(e.arguments)));
+
+            await e.Channel.SendMessage(u.Username + "#" + u.Discriminator);
+        }
+
         [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetExp(EventContext e)
         {

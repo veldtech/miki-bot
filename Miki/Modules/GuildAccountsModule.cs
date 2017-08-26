@@ -193,9 +193,20 @@ namespace Miki.Modules
                     .SetAuthor(g.Name, context.Guild.AvatarUrl, "https://miki.veld.one")
                     .SetColor(0.1f, 0.6f, 1)
                     .SetThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
-                    .AddInlineField(context.GetResource("miki_terms_level"), level.ToString())
-                    .AddInlineField(context.GetResource("miki_terms_experience") + " [" + g.Experience + "/" + g.CalculateMaxExperience(g.Experience) + "]", await expBar.Print(g.Experience, context.Channel))
-                    .AddInlineField(context.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
+                    .AddInlineField(context.GetResource("miki_terms_level"), level.ToString());
+
+                string expBarString = await expBar.Print(g.Experience, context.Channel);
+
+                if (string.IsNullOrWhiteSpace(expBarString))
+                { 
+                    embed.AddInlineField(context.GetResource("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
+                }
+                else
+                {
+                    embed.AddInlineField(context.GetResource("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
+                }
+
+                embed.AddInlineField(context.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
                     .AddInlineField(context.GetResource("miki_module_general_guildinfo_users"), g.UserCount.ToString());
 
                 if (g.RivalId != 0)
@@ -263,6 +274,8 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
+                int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+
                 List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
                                                                       .Skip(amountToSkip * amountToTake)
                                                                       .Take(amountToTake)
@@ -276,7 +289,7 @@ namespace Miki.Modules
                     embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
 
-                embed.SetFooter(e.GetResource("pasta_page_index", amountToSkip, "#  "), null);
+                embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);
                 await embed.SendToChannel(e.Channel);
             }
         }

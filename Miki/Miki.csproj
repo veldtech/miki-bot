@@ -386,8 +386,16 @@
     <Compile Include="API\Steam\SteamApi.cs" />
     <Compile Include="API\StringComparison\StringComparer.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
-    <Compile Include="Languages\ar-AE.Designer.cs" />
-    <Compile Include="Languages\cz-CZ.Designer.cs" />
+    <Compile Include="Languages\ar-AE.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ar-AE.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Languages\cz-CZ.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>cz-CZ.resx</DependentUpon>
+    </Compile>
     <Compile Include="Languages\da-DK.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -403,7 +411,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>es-ES.resx</DependentUpon>
     </Compile>
-    <Compile Include="Languages\fi-FI.Designer.cs" />
+    <Compile Include="Languages\fi-FI.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>fi-FI.resx</DependentUpon>
+    </Compile>
     <Compile Include="Languages\fr-FR.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -435,15 +447,31 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>no-NO.resx</DependentUpon>
     </Compile>
-    <Compile Include="Languages\pt-PT.Designer.cs" />
+    <Compile Include="Languages\pt-PT.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>pt-PT.resx</DependentUpon>
+    </Compile>
     <Compile Include="Languages\ru-RU.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ru-RU.resx</DependentUpon>
     </Compile>
-    <Compile Include="Languages\sv-SE.Designer.cs" />
-    <Compile Include="Languages\zh-CHS.Designer.cs" />
-    <Compile Include="Languages\zh-CHT.Designer.cs" />
+    <Compile Include="Languages\sv-SE.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>sv-SE.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Languages\zh-CHS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>zh-CHS.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Languages\zh-CHT.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>zh-CHT.resx</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201705071816182_Initial.cs" />
     <Compile Include="Migrations\201705071816182_Initial.Designer.cs">
       <DependentUpon>201705071816182_Initial.cs</DependentUpon>
@@ -638,8 +666,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Languages\ar-AE.resx" />
-    <EmbeddedResource Include="Languages\cz-CZ.resx" />
+    <EmbeddedResource Include="Languages\ar-AE.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ar-AE.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\cz-CZ.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>cz-CZ.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Languages\da-DK.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>da-DK.Designer.cs</LastGenOutput>
@@ -652,7 +686,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>es-ES.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Languages\fi-FI.resx" />
+    <EmbeddedResource Include="Languages\fi-FI.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>fi-FI.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Languages\fr-FR.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>fr-FR.Designer.cs</LastGenOutput>
@@ -677,14 +714,26 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>no-NO.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Languages\pt-PT.resx" />
+    <EmbeddedResource Include="Languages\pt-PT.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>pt-PT.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Languages\ru-RU.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ru-RU.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Languages\sv-SE.resx" />
-    <EmbeddedResource Include="Languages\zh-CHS.resx" />
-    <EmbeddedResource Include="Languages\zh-CHT.resx" />
+    <EmbeddedResource Include="Languages\sv-SE.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>sv-SE.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh-CHS.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>zh-CHS.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh-CHT.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>zh-CHT.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705071816182_Initial.resx">
       <DependentUpon>201705071816182_Initial.cs</DependentUpon>
     </EmbeddedResource>

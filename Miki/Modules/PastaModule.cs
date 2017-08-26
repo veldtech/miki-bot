@@ -117,7 +117,7 @@ namespace Miki.Modules
                     await Utils.Embed
                         .SetTitle(e.GetResource("mypasta_title", userName))
                         .SetDescription(resultString)
-                        .SetFooter(e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
+                        .SetFooter(e.GetResource("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -359,7 +359,7 @@ namespace Miki.Modules
                     embed.Title = e.GetResource("miki_module_pasta_search_header");
                     embed.Description = resultString;
                     embed.CreateFooter();
-                    embed.Footer.Text = e.GetResource("pasta_page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString());
+                    embed.Footer.Text = e.GetResource("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString());
 
                     await embed.SendToChannel(e.Channel);
                     return;

@@ -417,13 +417,12 @@ namespace Miki.Modules.AccountsModule
                 {
                     int levelrequirement = int.Parse(allArgs[allArgs.Count - 1]);
                     allArgs.RemoveAt(allArgs.Count - 1);
-                    IDiscordRole role =
-                        e.Guild.Roles.Find(r => r.Name.ToLower() ==
-                                                string.Join(" ", allArgs).TrimEnd(' ').TrimStart(' ').ToLower());
+                    IDiscordRole role = e.Guild.Roles
+                        .Find(r => r.Name.ToLower() ==  string.Join(" ", allArgs).TrimEnd(' ').TrimStart(' ').ToLower());
 
                     if (role == null)
                     {
-                        await Utils.ErrorEmbed(locale, "Couldn't find this role. Please try again!")
+                        await e.ErrorEmbed(e.GetResource("error_role_not_found"))
                             .SendToChannel(e.Channel);
                         return;
                     }
@@ -440,8 +439,13 @@ namespace Miki.Modules.AccountsModule
 
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Title = "Added Role!";
-                        embed.Description =
-                            $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
+                        embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
+
+                        if (!e.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.ManageRoles))
+                        {
+                            embed.AddInlineField(e.GetResource("miki_warning"), e.GetResource("setrolelevel_error_no_permissions", $"`{e.GetResource("permission_manage_roles")}`"));
+                        }
+
                         await embed.SendToChannel(e.Channel);
                     }
                     else
@@ -450,16 +454,14 @@ namespace Miki.Modules.AccountsModule
 
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Title = "Updated Role!";
-                        embed.Description =
-                            $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
+                        embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
                         await embed.SendToChannel(e.Channel);
                     }
                     await context.SaveChangesAsync();
                 }
                 else
                 {
-                    await Utils.ErrorEmbed(locale,
-                            "Make sure to fill out both the role and the level when creating this!")
+                    await Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating this!")
                         .SendToChannel(e.Channel);
                 }
             }
@@ -474,7 +476,7 @@ namespace Miki.Modules.AccountsModule
 
                 IDiscordEmbed embed = Utils.Embed;
                 embed.SetFooter(
-                    locale.GetString("miki_module_accounts_leaderboards_page", page + 1,
+                    locale.GetString("page_index", page + 1,
                         Math.Ceiling(context.Users.Count() / 12.0)), "");
 
                 switch (leaderboardType)

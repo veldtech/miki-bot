@@ -597,9 +597,6 @@ Fuzzy</comment>
   <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
     <value>Sorry, but we couldn't find a pasta with `{0}`</value>
   </data>
-  <data name="miki_module_pasta_search_footer" xml:space="preserve">
-    <value>page {0} of {1}</value>
-  </data>
   <data name="miki_module_pasta_search_header" xml:space="preserve">
     <value>🔎 I found these pastas</value>
   </data>
@@ -698,8 +695,8 @@ Fuzzy</comment>
   <data name="miki_module_general_info_made_by_header" xml:space="preserve">
     <value>**Made by:** Veld</value>
   </data>
-  <data name="miki_module_general_info_patreon" xml:space="preserve">
-    <value>patreon</value>
+  <data name="social_patreon" xml:space="preserve">
+    <value>Patreon</value>
   </data>
   <data name="miki_module_general_info_reddit" xml:space="preserve">
     <value>subreddit</value>
@@ -754,7 +751,7 @@ Fuzzy</comment>
     <comment>example: Who is Veld!?</comment>
   </data>
   <data name="miki_module_whois_tag_personal" xml:space="preserve">
-    <value>🙎 Personal</value>
+    <value>Personal</value>
   </data>
   <data name="miki_accounts_level_up_content" xml:space="preserve">
     <value>**{0}** levelled up to level **{1}**!</value>
@@ -982,7 +979,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
   <data name="miki_command_description_prune" xml:space="preserve">
     <value>Clean up your messages in just a second!</value>
   </data>
-  <data name="miki_command_description_setcommand" xml:space="preserve">
+  <data name="miki_command_description_setevent" xml:space="preserve">
     <value>Disable or enable commands with this command! (do not disable this command)</value>
   </data>
   <data name="miki_command_description_setmodule" xml:space="preserve">
@@ -1036,7 +1033,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
   <data name="miki_command_usage_prune" xml:space="preserve">
     <value>&gt;prune [amount]</value>
   </data>
-  <data name="miki_command_usage_setcommand" xml:space="preserve">
+  <data name="miki_command_usage_setevent" xml:space="preserve">
     <value>&gt;setcommand &lt;command name&gt; 1 to enable
 &gt;setcommand &lt;command name&gt; 0 to disable</value>
   </data>
@@ -1227,7 +1224,7 @@ all tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
   <data name="miki_command_usage_remind" xml:space="preserve">
     <value>&gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds)</value>
   </data>
-  <data name="pasta_page_index" xml:space="preserve">
+  <data name="page_index" xml:space="preserve">
     <value>page {0} of {1}</value>
     <comment>example: page 1 of 32</comment>
   </data>
@@ -1555,9 +1552,6 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
     <value>You must bet one or more mekos.</value>
   </data>
-  <data name="miki_module_accounts_leaderboards_page" xml:space="preserve">
-    <value>page {0} of {1}</value>
-  </data>
   <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
     <value>Leaderboards: Reputation</value>
   </data>
@@ -1581,5 +1575,82 @@ You need atleast **{0}** experience before you can use this command on this serv
   </data>
   <data name="time_and" xml:space="preserve">
     <value>and</value>
+  </data>
+  <data name="discord_servers" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="error_role_not_found" xml:space="preserve">
+    <value>Couldn't find this role. Please try again!</value>
+  </data>
+  <data name="error_term_invalid" xml:space="preserve">
+    <value>This term couldn't been found!</value>
+  </data>
+  <data name="flip_description_lose" xml:space="preserve">
+    <value>You've lost! no mekos for you!</value>
+  </data>
+  <data name="flip_description_win" xml:space="preserve">
+    <value>You win! you gained {0} mekos as a reward!</value>
+  </data>
+  <data name="miki_command_description_flip" xml:space="preserve">
+    <value>Flip a coin and let's see who's the lucky one after!</value>
+  </data>
+  <data name="miki_command_description_ping" xml:space="preserve">
+    <value>Check how fast miki is at the moment! (higher ms means lower response rate!)</value>
+  </data>
+  <data name="miki_command_usage_flip" xml:space="preserve">
+    <value>&gt;flip &lt;amount&gt;&lt;tails:heads&gt; [-bonus]</value>
+  </data>
+  <data name="miki_command_usage_ping" xml:space="preserve">
+    <value>&gt;ping</value>
+  </data>
+  <data name="miki_warning" xml:space="preserve">
+    <value>Hold on!</value>
+  </data>
+  <data name="permission_manage_roles" xml:space="preserve">
+    <value>Manage Roles</value>
+  </data>
+  <data name="ping_placeholder" xml:space="preserve">
+    <value>Hold on, pinging services...</value>
+  </data>
+  <data name="setrolelevel_error_no_permissions" xml:space="preserve">
+    <value>It appears Miki cannot grant roles, please fix this by adding the {0} role!</value>
+  </data>
+  <data name="stats_description" xml:space="preserve">
+    <value>General realtime stats about miki!</value>
+  </data>
+  <data name="miki_command_description_help" xml:space="preserve">
+    <value>Why are you looking at this, you obviously know how to use this command.</value>
+  </data>
+  <data name="miki_command_description_setleavemessage" xml:space="preserve">
+    <value>Want to pursue people that leave your message! use this amazing command!</value>
+  </data>
+  <data name="miki_command_description_setwelcomemessage" xml:space="preserve">
+    <value>Greet a friend, foe or stranger with this automated command!</value>
+  </data>
+  <data name="miki_command_usage_help" xml:space="preserve">
+    <value>&gt;help
+&gt;help &lt;command&gt;</value>
+  </data>
+  <data name="miki_command_usage_setleavemessage" xml:space="preserve">
+    <value>&gt;setleavemessage
+&gt;setleavemessage &lt;message&gt;
+
+-u = username
+-um = user mention
+-o = guild owner
+-om = guild owner mention
+-g = guild name
+-c = guild count</value>
+  </data>
+  <data name="miki_command_usage_setwelcomemessage" xml:space="preserve">
+    <value>&gt;setwelcomemessage
+&gt;setwelcomemessage &lt;message&gt;
+
+-u = username
+-um = user mention
+-o = guild owner
+-om = guild owner mention
+-g = guild name
+-c = guild count</value>
   </data>
 </root>

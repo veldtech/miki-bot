@@ -34,7 +34,9 @@ namespace Miki.Accounts
 
             OnLocalLevelUp += async (a, e, l) =>
             {
+                long guildId = e.Guild.Id.ToDbLong();
                 Locale locale = Locale.GetEntity(e.Id.ToDbLong());
+                List<LevelRole> rolesObtained = new List<LevelRole>();
 
                 int randomNumber = MikiRandom.Next(0, 10);
                 int currencyAdded = (l * 10 + randomNumber);
@@ -52,6 +54,17 @@ namespace Miki.Accounts
                     {
                         Log.Warning("User levelled up was null.");
                     }
+
+                     rolesObtained = context.LevelRoles.AsNoTracking()
+                        .Where(p => p.GuildId == guildId && p.RequiredLevel == l)
+                        .ToList();
+                }
+
+                List<string> allRolesAdded = new List<string>();
+
+                foreach(IDiscordRole role in rolesObtained)
+                {
+                    allRolesAdded.Add("Role: " + role.Name);
                 }
 
                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())
@@ -61,7 +74,7 @@ namespace Miki.Accounts
                     Color = new IA.SDK.Color(1, 0.7f, 0.2f)
                 };
 
-                embed.AddField(locale.GetString("miki_generic_reward"), "🔸" + currencyAdded.ToString());
+                embed.AddField(locale.GetString("miki_generic_reward"), "🔸" + currencyAdded.ToString() + "\n" + string.Join("\n", allRolesAdded));
                 await Notification.SendChannel(e, embed);
             };
 

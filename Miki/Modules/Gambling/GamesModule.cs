@@ -101,7 +101,20 @@ namespace Miki.Modules
             {
                 if (bm.Worth(bm.dealer) >= bm.Worth(bm.player))
                 {
-                    if (charlie && bm.dealer.Hand.Count == 5)
+                    if (charlie)
+                    {
+                        if (bm.dealer.Hand.Count == 5)
+                        {
+                            if (bm.Worth(bm.dealer) == bm.Worth(bm.player))
+                            {
+                                await OnBlackjackDraw(e, bm, instanceMessage, bet);
+                                return;
+                            }
+                            await OnBlackjackDead(e, bm, instanceMessage, bet);
+                            return;
+                        }
+                    }
+                    else
                     {
                         if (bm.Worth(bm.dealer) == bm.Worth(bm.player))
                         {
@@ -196,6 +209,11 @@ namespace Miki.Modules
         {
             string[] arguments = e.arguments.Split(' ');
 
+            if (bet <= 0)
+            {
+                return;
+            }
+
             if (arguments.Length < 2)
             {
                 return;
@@ -224,12 +242,34 @@ namespace Miki.Modules
             string imageUrl = side == 1 ? headsUrl : tailsUrl;
 
             bool win = (side == pickedSide);
+            int currencyNow = 0;
 
+            using (MikiContext context = new MikiContext())
+            {
+                User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+                if (!win) bet = -bet;
+                u.Currency += bet;
+                currencyNow = u.Currency;
+                await context.SaveChangesAsync();
+            }
 
+            string output = "";
+
+            if(win)
+            {
+                output = e.GetResource("flip_description_win", $"`{bet}`");
+            }
+            else
+            {
+                output = e.GetResource("flip_description_lose");
+            }
+
+            output += "\n" + e.GetResource("miki_blackjack_new_balance", currencyNow);
 
             IDiscordEmbed embed = Utils.Embed
                 .SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.AvatarUrl,
                     "https://patreon.com/mikibot")
+                .SetDescription(output)
                 .SetImageUrl(imageUrl);
 
             await embed.SendToChannel(e.Channel);

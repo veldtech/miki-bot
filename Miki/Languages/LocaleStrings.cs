@@ -17,7 +17,6 @@ namespace Miki.Languages
         private Locale()
         {
         }
-
         private Locale(long id)
         {
             this.id = id;
@@ -78,7 +77,6 @@ namespace Miki.Languages
         }
 
         public static Locale GetEntity(ulong id) => GetEntity(id.ToDbLong());
-
         public static Locale GetEntity(long id)
         {
             return new Locale(id);

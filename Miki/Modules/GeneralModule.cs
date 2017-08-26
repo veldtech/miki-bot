@@ -99,7 +99,6 @@ namespace Miki.Modules
             },
             async (ex) =>
             {
-                Log.ErrorAt("calc", ex.Message);
                 await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
             });
         }
@@ -231,9 +230,9 @@ namespace Miki.Modules
 
             embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
 
-            embed.AddField("Links",
+            embed.AddField(e.GetResource("miki_module_general_info_links"),
                 $"**{locale.GetString("miki_module_general_info_docs")}:** https://www.github.com/velddev/miki/wiki \n" +
-                $"**{locale.GetString("miki_module_general_info_patreon")}:** https://www.patreon.com/mikibot \n" +
+                $"**{locale.GetString("social_patreon")}:** https://www.patreon.com/mikibot \n" +
                 $"**{locale.GetString("miki_module_general_info_twitter")}:** https://www.twitter.com/velddev / https://www.twitter.com/miki_discord \n" +
                 $"**{locale.GetString("miki_module_general_info_reddit")}:** https://www.reddit.com/r/mikibot \n" +
                 $"**{locale.GetString("miki_module_general_info_server")}:** https://discord.gg/55sAjsW \n" +
@@ -257,21 +256,25 @@ namespace Miki.Modules
         [Command(Name = "ping", Aliases = new string[] { "lag" })]
         public async Task PingAsync(EventContext e)
         {
-            IDiscordMessage message = await Utils.Embed
+            Task<IDiscordMessage> message = Utils.Embed
                 .SetTitle("Ping")
-                .SetDescription("Hold on, pinging services...")
+                .SetDescription(e.GetResource("ping_placeholder"))
                 .SendToChannel(e.Channel);
 
-            if (message != null)
+            IDiscordMessage returnedMessage = await message;
+
+            Task.WaitAll(message);
+
+            if (returnedMessage != null)
             {
-                double ping = (message.Timestamp - e.message.Timestamp).TotalMilliseconds;
+                double ping = (returnedMessage.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
                 await Utils.Embed
                     .SetTitle("Pong")
                     .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
                     .AddInlineField("Miki", ping + "ms")
                     .AddInlineField("Discord", Bot.instance.Client.Latency + "ms")
-                    .ModifyMessage(message);
+                    .ModifyMessage(returnedMessage);
             }
         }
 
@@ -293,13 +296,11 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "⚙️ Miki stats";
-            embed.Description = "General realtime stats about miki!";
+            embed.Description = e.GetResource("stats_description");
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
-            embed.AddInlineField("🖥️ Servers", Bot.instance.Client.Guilds.Count.ToString());
-
+            embed.AddInlineField($"🖥️ {e.GetResource("discord_servers")}", Bot.instance.Client.Guilds.Count.ToString());
             embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
-
             embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 
             await embed.SendToChannel(e.Channel);
@@ -330,7 +331,7 @@ namespace Miki.Modules
             }
             else
             {
-                await Utils.ErrorEmbed(locale, "This term couldn't been found!")
+                await Utils.ErrorEmbed(locale, e.GetResource("error_term_invalid"))
                     .SendToChannel(e.Channel.Id);
             }
         }
