@@ -1653,4 +1653,7 @@ You need atleast **{0}** experience before you can use this command on this serv
 -g = guild name
 -c = guild count</value>
   </data>
+  <data name="flip_header" xml:space="preserve">
+    <value>Flip</value>
+  </data>
 </root>

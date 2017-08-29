@@ -577,7 +577,6 @@
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\GuildAccountsModule.cs" />
     <Compile Include="Modules\MarriageModule.cs" />
-    <Compile Include="Modules\MekosModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
     <Compile Include="Modules\OsuModule.cs" />
     <Compile Include="Modules\Overwatch\API\OverwatchApi.cs" />
@@ -616,7 +615,6 @@
     <Compile Include="Modules\DeveloperModule.cs" />
     <Compile Include="Modules\FunModule.cs" />
     <Compile Include="Modules\PastaModule.cs" />
-    <Compile Include="ObjectDumper.cs" />
     <Compile Include="API\Rocket League\RocketLeagueApi.cs" />
     <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryEntryInformation.cs" />
     <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryInformation.cs" />
@@ -633,24 +631,6 @@
       <DependentUpon>en-US.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Meru\Meru.Commands\Meru.Commands.csproj">
-      <Project>{c733b761-b55f-4272-b03a-c4cc49257ef6}</Project>
-      <Name>Meru.Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Meru\Meru.SDK\Meru.SDK.csproj">
-      <Project>{b8ffa60f-2c45-449f-ad4d-cf1c5a3075d4}</Project>
-      <Name>Meru.SDK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Meru\Meru\Meru.csproj">
-      <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
-      <Name>Meru</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Meru\RestClient\RestClient.csproj">
-      <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
-      <Name>RestClient</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -797,7 +777,20 @@
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Meru-old\Meru.SDK\Meru.SDK.csproj">
+      <Project>{b8ffa60f-2c45-449f-ad4d-cf1c5a3075d4}</Project>
+      <Name>Meru.SDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Meru-old\Meru\Meru.csproj">
+      <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
+      <Name>Meru</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Meru-old\RestClient\RestClient.csproj">
+      <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
+      <Name>RestClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

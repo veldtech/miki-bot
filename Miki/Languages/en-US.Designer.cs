@@ -187,6 +187,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Flip.
+        /// </summary>
+        internal static string flip_header {
+            get {
+                return ResourceManager.GetString("flip_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} just gave {1} {2} mekos!.
         /// </summary>
         internal static string give_description {
