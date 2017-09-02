@@ -53,6 +53,13 @@ namespace Miki.Modules
                     return;
                 }
 
+                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
+                        .SendToChannel(e.Channel);
+                    return;
+                }
+
                 string reason = string.Join(" ", arg);
 
                 IDiscordEmbed embed = Utils.Embed;
@@ -106,6 +113,13 @@ namespace Miki.Modules
                 if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_error_low", "softban"))
+                        .SendToChannel(e.Channel);
+                    return;
+                }
+
+                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .SendToChannel(e.Channel);
                     return;
                 }
@@ -255,6 +269,13 @@ namespace Miki.Modules
                 if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_error_low", "kick"))
+                        .SendToChannel(e.Channel);
+                    return;
+                }
+
+                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                {
+                    await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .SendToChannel(e.Channel);
                     return;
                 }
