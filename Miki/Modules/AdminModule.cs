@@ -53,7 +53,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                if(bannedUser.Hierarchy >= e.Author.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .SendToChannel(e.Channel);
@@ -117,7 +117,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                if(bannedUser.Hierarchy >= e.Author.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .SendToChannel(e.Channel);
@@ -273,7 +273,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if(e.Author.Hierarchy >= bannedUser.Hierarchy)
+                if(bannedUser.Hierarchy >= e.Author.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .SendToChannel(e.Channel);
