@@ -107,6 +107,17 @@ namespace Miki.Modules
             }
         }
 
+        // log add welcome "asdasd";
+        public async Task LogAsync(EventContext e)
+        {
+
+        }
+
+        public bool Accept(string x)
+        {
+            
+        }
+
         private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
         {
             using (var context = new MikiContext())
