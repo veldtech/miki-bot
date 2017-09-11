@@ -82,13 +82,18 @@ namespace Miki.Modules
                 {
                     await OnBlackjackHold(e, bm, instanceMessage, bet, true);
                     return;
-                }
+                } 
+				else if ( bm.Worth( bm.player ) == 21 && bm.Worth( bm.dealer ) != 21 ) 
+				{
+					await OnBlackjackWin( e, bm, instanceMessage, bet );
+					return;
+				}
                 await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
             }
         }
 
         private async Task OnBlackjackHold(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
-            int bet, bool charlie = false)
+            int bet, bool charlie = false )
         {
             bm.dealer.Hand.ForEach(x => x.isPublic = true);
 
@@ -481,7 +486,7 @@ namespace Miki.Modules
                             .SendToChannel(e.Channel);
                         return;
                     }
-                    else if (bet >= noAskLimit)
+                    else if (bet > noAskLimit)
                     {
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Description =
