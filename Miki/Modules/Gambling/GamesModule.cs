@@ -82,13 +82,18 @@ namespace Miki.Modules
                 {
                     await OnBlackjackHold(e, bm, instanceMessage, bet, true);
                     return;
-                } 
-				else if ( bm.Worth( bm.player ) == 21 && bm.Worth( bm.dealer ) != 21 ) 
+                }
+				else if( bm.Worth( bm.player ) == 21 && bm.Worth( bm.dealer ) != 21 )
 				{
 					await OnBlackjackWin( e, bm, instanceMessage, bet );
 					return;
 				}
-                await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
+				else if( bm.Worth( bm.dealer ) == 21 && bm.Worth( bm.player ) != 21 )
+				{
+					await OnBlackjackDead( e, bm, instanceMessage, bet );
+					return;
+				}
+				await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
             }
         }
 

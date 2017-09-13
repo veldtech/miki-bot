@@ -406,77 +406,63 @@ namespace Miki.Modules
         }
 
         [Command(Name = "roll")]
-        public async Task RollAsync(EventContext e)
-        {
-            string output;
+		public async Task RollAsync( EventContext e )
+		{
+			string rollResult;
 
-            if (string.IsNullOrWhiteSpace(e.arguments))
-            {
-                output = MikiRandom.Next(100).ToString();
-            }
-            else if (int.TryParse(e.arguments, out int max))
-            {
-                output = MikiRandom.Next(max).ToString();
-            }
-            else
-            {
-                string expression = e.arguments;
+			if( string.IsNullOrWhiteSpace( e.arguments ) ) // No Arguments.
+			{
+				rollResult = MikiRandom.Next( 100 ).ToString();
+			}
+			else
+			{
+				if( int.TryParse( e.arguments, out int max ) ) // Simple number argument.
+				{
+					rollResult = MikiRandom.Next( max ).ToString();
+				}
+				else // Assume the user has entered an advanced expression.
+				{
+					Regex regex = new Regex( @"(?<dieCount>\d+)d(?<dieSides>\d+)" );
+					string fullExpression = e.arguments;
+					int expressionCount = 0;
 
-                if (!string.IsNullOrWhiteSpace(expression))
-                {
-                    string[] parts = expression.Split(' ');
+					foreach( Match match in regex.Matches( e.arguments ) )
+					{
+						GroupCollection groupCollection = match.Groups;
+						int dieCount = int.Parse( groupCollection["dieCount"].Value );
+						int dieSides = int.Parse( groupCollection["dieSides"].Value );
+						string partialExpression = "";
 
-                    foreach (string x in parts)
-                    {
-                        string replacableString = x.Trim('(', ')');
-                        int amount = 0;
+						for( int i = 0; i < dieCount; i++ )
+						{
+							partialExpression += MikiRandom.Next( dieSides ).ToString();
+							if( i + 1 < dieCount )
+								partialExpression += " + ";
+						}
 
-                        if (replacableString.StartsWith("r"))
-                        {
-                            string[] split = replacableString.TrimStart('r').Split('d');
+						fullExpression = regex.Replace( fullExpression, $"( {partialExpression} )", 1 );
+						expressionCount++;
+					}
 
-                            if (split.Length > 1)
-                            {
-                                if (int.TryParse(split[0], out int amountOfDice) && int.TryParse(split[1], out int sides))
-                                {
-                                    int a = 0;
-                                    for (int i = 0; i < amountOfDice; i++)
-                                    {
-                                        a += (MikiRandom.Next(sides) + 1);
-                                    }
-                                    amount = a;
-                                }
-                            }
-                            else
-                            {
-                                if (int.TryParse(split[0], out int sides))
-                                {
-                                    amount = MikiRandom.Next(sides) + 1;
-                                }
-                            }
+					if( expressionCount > 1 )
+						fullExpression = $"( {fullExpression} )";
 
-                            var regex = new Regex(Regex.Escape(x));
+					Expression evaluation = new Expression( fullExpression );
+					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`" ;
+				}
+			}
 
-                            expression = regex.Replace(expression, amount.ToString(), 1);
-                        }
-                    }
-                }
-                Expression doExpression = new Expression(expression);
-                output = doExpression.Evaluate().ToString();
-                output += $" ({expression})";
-            }
+			if( rollResult == "1" || rollResult.StartsWith( "1 " ) )
+			{
+				await AchievementManager.Instance.GetContainerById( "badluck" ).CheckAsync( new BasePacket()
+				{
+					discordUser = e.Author,
+					discordChannel = e.Channel
+				} );
+			}
 
-            if (output == "1" || output.StartsWith("1 "))
-            {
-                await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket()
-                {
-                    discordUser = e.Author,
-                    discordChannel = e.Channel
-                });
-            }
-
-            await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, output));
-        }
+			await e.Channel.SendMessage( e.GetResource( Locale.RollResult, e.Author.Username, rollResult ) );
+		}
 		
 		[Command( Name = "roulette" )]
 		public async Task RouletteAsync( EventContext e )
