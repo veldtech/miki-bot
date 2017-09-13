@@ -461,6 +461,9 @@ namespace Miki.Modules
 				} );
 			}
 
+			rollResult = Regex.Replace( rollResult, @"(\s)\s+", "$1" );
+			rollResult = Regex.Replace( rollResult, @"(\S)([^\d\s])", "$1 $2" );
+
 			await e.Channel.SendMessage( e.GetResource( Locale.RollResult, e.Author.Username, rollResult ) );
 		}
 		
