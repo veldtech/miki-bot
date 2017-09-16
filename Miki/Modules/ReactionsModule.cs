@@ -27,7 +27,6 @@ namespace Miki.Modules
                 "http://i.imgur.com/U9N4oGR.jpg",
                 "http://i.imgur.com/GA0ZtvR.jpg",
                 "http://i.imgur.com/NQ2e3Dq.gifv",
-		"http://i.imgur.com/TP6dYGh.gif",
                 "http://i.imgur.com/5HTugJ6.jpg",
                 "http://i.imgur.com/MJrBLij.png",
                 "http://i.imgur.com/JgjCHPd.jpg",
@@ -168,6 +167,7 @@ namespace Miki.Modules
 			string[] images = new string[]
 			{
 				"http://i.imgur.com/TTUBf2r.gif",
+				"http://i.imgur.com/TP6dYGh.gif",
 				"http://i.imgur.com/o66oQyX.png",
 				"http://i.imgur.com/6AP78bD.png",
 				"http://i.imgur.com/IvMvs2K.gif",
