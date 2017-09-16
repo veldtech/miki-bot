@@ -27,6 +27,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/U9N4oGR.jpg",
                 "http://i.imgur.com/GA0ZtvR.jpg",
                 "http://i.imgur.com/NQ2e3Dq.gifv",
+		"http://i.imgur.com/TP6dYGh.gif",
                 "http://i.imgur.com/5HTugJ6.jpg",
                 "http://i.imgur.com/MJrBLij.png",
                 "http://i.imgur.com/JgjCHPd.jpg",
