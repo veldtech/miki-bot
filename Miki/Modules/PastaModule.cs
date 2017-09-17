@@ -372,6 +372,64 @@ namespace Miki.Modules
             }
         }
 
+		[Command(Name = "lovedpasta", Aliases = new string[] { "lovedpastas", "favouritepastas", "lovepastalist" } )]
+		public async Task LovePastaList( EventContext e )
+		{
+			await FavouritePastaList( e );
+		}
+
+		[Command( Name = "hatedpasta", Aliases = new string[] { "hatedpastas", "hatepastalist" } )]
+		public async Task HatePastaList( EventContext e )
+		{
+			await FavouritePastaList( e, false );
+		}
+
+		public async Task FavouritePastaList( EventContext e, bool lovedPastas = true )
+		{
+			IDiscordUser targetUser = e.Author;
+			float totalPerPage = 25f;
+			int page = 0;
+
+			if( e.message.MentionedUserIds.Count() >= 1 )
+			{
+				targetUser = await e.Guild.GetUserAsync( e.message.MentionedUserIds.First() );
+				string[] args = e.arguments.Split( ' ' );
+				int.TryParse( (args.Count() > 1 ? args[1] : "0"), out page );
+			}
+			else
+			{
+				int.TryParse( e.arguments, out page );
+			}
+
+			using( MikiContext context = new MikiContext() )
+			{
+				long authorId = targetUser.Id.ToDbLong();
+				IEnumerable<PastaVote> pastaVotes = context.Votes.Where( x => x.__UserId == authorId && x.PositiveVote == lovedPastas );
+				
+				int maxPage = (int)Math.Ceiling( pastaVotes.Count() / totalPerPage );
+				page = page > maxPage - 1 ? maxPage - 1 : page;
+
+				if( pastaVotes.Count() <= 0 )
+				{
+					await Utils.ErrorEmbed( e, $"Looks like {( e.message.MentionedUserIds.Count() >= 1 ? "they" : "you" )} haven't {(lovedPastas ? "loved" : "hated")} any pastas yet! :(" ).SendToChannel( e.Channel.Id );
+					return;
+				}
+
+				IDiscordEmbed embed = Utils.Embed;
+				List<PastaVote> neededPastas = pastaVotes.Skip( (int)totalPerPage * page ).Take( (int)totalPerPage ).ToList();
+
+				string resultString = "";
+				neededPastas.ForEach( x => { resultString += "`" + x.Id + "` "; } );
+
+				string useName = string.IsNullOrEmpty( e.Author.Nickname ) ? e.Author.Username : e.Author.Nickname;
+				embed.SetTitle( $"{( lovedPastas ? "Loved" : "Hated" )} Pastas - {useName}" );
+				embed.SetDescription( resultString );
+				embed.SetFooter( $"page {page + 1} of {Math.Ceiling( pastaVotes.Count() / totalPerPage )}", "" );
+
+				await embed.SendToChannel( e.Channel );
+			}
+		}
+
         [Command(Name = "lovepasta")]
         public async Task LovePasta(EventContext e)
         {
