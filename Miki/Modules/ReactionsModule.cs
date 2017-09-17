@@ -257,5 +257,22 @@ namespace Miki.Modules
 			};
 			await em.SendToChannel( e.Channel );
 		}
+	        
+		[Command(Name = "stare")]
+        	public async Task StareAsync(EventContext e)
+        	{
+        		string[] images = new string[]
+           		{
+                		"http://i.imgur.com/Bp9vfcf.gif",
+                		"http://i.imgur.com/7nFd5ve.gif",
+                		"http://i.imgur.com/rmfWuM0.gif"
+           		};
+
+	        RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
+
+       		em.ImageUrl = images[Global.random.Next(0, images.Length)];
+
+	        await em.SendToChannel(e.Channel);
+        	}
 	}
 }
