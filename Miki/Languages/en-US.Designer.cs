@@ -133,6 +133,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to all.
+        /// </summary>
+        internal static string common_string_all {
+            get {
+                return ResourceManager.GetString("common_string_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I couldn&apos;t find any content for this pasta, please specify what you want to make..
         /// </summary>
         internal static string createpasta_error_no_content {
@@ -2332,6 +2341,107 @@ namespace Miki.Languages {
         internal static string miki_module_accounts_profile_url {
             get {
                 return ResourceManager.GetString("miki_module_accounts_profile_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here are your statistics on reputation points!
+        ///
+        ///To give someone reputation, do `&gt;rep &lt;mention&gt; [\&quot;all\&quot;|amount]`.
+        /// </summary>
+        internal static string miki_module_accounts_rep_description {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You do not have {0} points to give!.
+        /// </summary>
+        internal static string miki_module_accounts_rep_error_insufficient {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_error_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re out of points for today!.
+        /// </summary>
+        internal static string miki_module_accounts_rep_error_none {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_error_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot rep yourself..
+        /// </summary>
+        internal static string miki_module_accounts_rep_error_self {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_error_self", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t give 0 points!.
+        /// </summary>
+        internal static string miki_module_accounts_rep_error_zero {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_error_zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reputation.
+        /// </summary>
+        internal static string miki_module_accounts_rep_header {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points left for today.
+        /// </summary>
+        internal static string miki_module_accounts_rep_points_left {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_points_left", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rep Points Remaining.
+        /// </summary>
+        internal static string miki_module_accounts_rep_remaining {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_remaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rep Point Reset.
+        /// </summary>
+        internal static string miki_module_accounts_rep_reset {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has given {1} {2} reputation! {1} now has {3} points!.
+        /// </summary>
+        internal static string miki_module_accounts_rep_success {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Rep Received.
+        /// </summary>
+        internal static string miki_module_accounts_rep_total_received {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_rep_total_received", resourceCulture);
             }
         }
         
