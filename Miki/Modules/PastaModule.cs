@@ -386,6 +386,7 @@ namespace Miki.Modules
 
 		public async Task FavouritePastaList( EventContext e, bool lovedPastas = true )
 		{
+			Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
 			IDiscordUser targetUser = e.Author;
 			float totalPerPage = 25f;
 			int page = 0;
@@ -411,7 +412,13 @@ namespace Miki.Modules
 
 				if( pastaVotes.Count() <= 0 )
 				{
-					await Utils.ErrorEmbed( e, $"Looks like {( e.message.MentionedUserIds.Count() >= 1 ? "they" : "you" )} haven't {(lovedPastas ? "loved" : "hated")} any pastas yet! :(" ).SendToChannel( e.Channel.Id );
+					string loveString = ( lovedPastas ? locale.GetString( "miki_module_pasta_loved" ) : locale.GetString( "miki_module_pasta_hated" ) );
+					string errorString = locale.GetString( "miki_module_pasta_favlist_self_none", loveString );
+					if( e.message.MentionedUserIds.Count() >= 1 )
+					{
+						errorString = locale.GetString( "miki_module_pasta_favlist_mention_none", loveString );
+					}
+					await Utils.ErrorEmbed( e, errorString ).SendToChannel( e.Channel.Id );
 					return;
 				}
 
@@ -422,9 +429,9 @@ namespace Miki.Modules
 				neededPastas.ForEach( x => { resultString += "`" + x.Id + "` "; } );
 
 				string useName = string.IsNullOrEmpty( e.Author.Nickname ) ? e.Author.Username : e.Author.Nickname;
-				embed.SetTitle( $"{( lovedPastas ? "Loved" : "Hated" )} Pastas - {useName}" );
+				embed.SetTitle( $"{( lovedPastas ? locale.GetString( "miki_module_pasta_loved_header" ) : locale.GetString( "miki_module_pasta_hated_header" ) )} - {useName}" );
 				embed.SetDescription( resultString );
-				embed.SetFooter( $"page {page + 1} of {Math.Ceiling( pastaVotes.Count() / totalPerPage )}", "" );
+				embed.SetFooter( locale.GetString( "page_index", page + 1, Math.Ceiling( pastaVotes.Count() / totalPerPage ) ), "" );
 
 				await embed.SendToChannel( e.Channel );
 			}
