@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("Guild Accounts")]
+    [Module("Guild Accounts", Aliases = new string[] { "weekly" })]
     internal class GuildAccountsModule
     {
         [Command(Name = "guildweekly")]
