@@ -280,32 +280,17 @@ namespace Miki.Modules.AccountsModule
 			{
 				Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
 				User giver = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+				List<ulong> targetUsers = new List<ulong>();
 				string[] args = e.arguments.Split( ' ' );
 				int repAmount = 1;
 
-				if( args.Length > 1 && args[1] == locale.GetString( "common_string_all" ) )
+				if( giver.LastReputationGiven.Day != DateTime.Now.Day )
 				{
-					repAmount = giver.ReputationPointsLeft;
-				}
-				else if( args.Length > 1 && int.TryParse( args[1], out repAmount ) )
-				{
-					if( repAmount > giver.ReputationPointsLeft )
-					{
-						await Utils.Embed
-						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
-						.SetDescription( locale.GetString( "miki_module_accounts_rep_header", repAmount ) )
-						.SendToChannel( e.Channel );
-					}
-					else if( repAmount == 0 )
-					{
-						await Utils.Embed
-						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
-						.SetDescription( locale.GetString( "miki_module_accounts_rep_error_zero" ) )
-						.SendToChannel( e.Channel );
-					}
+					giver.ReputationPointsLeft = 3;
+					giver.LastReputationGiven = DateTime.Now;
 				}
 
-				if( e.message.MentionedUserIds.Count == 0 )
+				if( e.message.MentionedUserIds.Count() == 0 )
 				{
 					TimeSpan pointReset = ( DateTime.Now.AddDays( 1 ).Date - DateTime.Now );
 
@@ -318,16 +303,39 @@ namespace Miki.Modules.AccountsModule
 						.SendToChannel( e.Channel );
 					return;
 				}
-
-				User receiver = await context.Users.FindAsync( e.message.MentionedUserIds.First().ToDbLong() );
-
-				if( giver.LastReputationGiven.Day != DateTime.Now.Day )
+				else if( e.message.MentionedUserIds.Count() == 1 )
 				{
-					giver.ReputationPointsLeft = 3;
-					giver.LastReputationGiven = DateTime.Now;
+					if( args.Length > 1 && ( args[1] == locale.GetString( "common_string_all" ) || args[1] == "*" ) )
+					{
+						repAmount = giver.ReputationPointsLeft;
+					}
+					else if( args.Length > 1 && int.TryParse( args[1], out repAmount ) )
+					{
+						if( repAmount > giver.ReputationPointsLeft )
+						{
+							await Utils.Embed
+								.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+								.SetDescription( locale.GetString( "miki_module_accounts_rep_error_insufficient", repAmount ) )
+								.SendToChannel( e.Channel );
+							return;
+						}
+						else if( repAmount == 0 )
+						{
+							await Utils.Embed
+								.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+								.SetDescription( locale.GetString( "miki_module_accounts_rep_error_zero" ) )
+								.SendToChannel( e.Channel );
+							return;
+						}
+					}
+					targetUsers.Add( e.message.MentionedUserIds.First() );
+				}
+				else if( e.message.MentionedUserIds.Count() > 1 )
+				{
+					targetUsers = e.message.MentionedUserIds.ToList();
 				}
 
-				if( giver.Id == receiver.Id )
+				if( targetUsers.Contains( giver.Id.FromDbLong() ) )
 				{
 					await Utils.Embed
 						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
@@ -335,9 +343,18 @@ namespace Miki.Modules.AccountsModule
 						.SendToChannel( e.Channel );
 					return;
 				}
-
-				if( giver.ReputationPointsLeft > 0 )
+				else if( targetUsers.Count() > giver.ReputationPointsLeft )
 				{
+					await Utils.Embed
+						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+						.SetDescription( locale.GetString( "miki_module_accounts_rep_error_insufficient", repAmount ) )
+						.SendToChannel( e.Channel );
+					return;
+				}
+
+				foreach( ulong user in targetUsers )
+				{
+					User receiver = await context.Users.FindAsync( user.ToDbLong() );
 					giver.ReputationPointsLeft -= (short)repAmount;
 					receiver.Reputation += repAmount;
 
@@ -345,13 +362,6 @@ namespace Miki.Modules.AccountsModule
 						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
 						.SetDescription( locale.GetString( "miki_module_accounts_rep_success", giver.Name, receiver.Name, repAmount, receiver.Reputation ) )
 						.AddInlineField( locale.GetString( "miki_module_accounts_rep_points_left" ), giver.ReputationPointsLeft.ToString() )
-						.SendToChannel( e.Channel );
-				}
-				else
-				{
-					await Utils.Embed
-						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
-						.SetDescription( locale.GetString( "miki_module_accounts_rep_error_none" ) )
 						.SendToChannel( e.Channel );
 				}
 

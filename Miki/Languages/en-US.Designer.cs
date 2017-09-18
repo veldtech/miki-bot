@@ -19,7 +19,7 @@ namespace Miki.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class en_US {
@@ -2428,7 +2428,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} has given {1} {2} reputation! {1} now has {3} points!.
+        ///   Looks up a localized string similar to {0} has given {1} **{2}** reputation! {1} now has **{3}** points!.
         /// </summary>
         internal static string miki_module_accounts_rep_success {
             get {
@@ -3967,6 +3967,42 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Looks like they haven&apos;t {0} any pastas yet! :(.
+        /// </summary>
+        internal static string miki_module_pasta_favlist_mention_none {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_favlist_mention_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Looks like you haven&apos;t {0} any pastas yet! :(.
+        /// </summary>
+        internal static string miki_module_pasta_favlist_self_none {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_favlist_self_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hated.
+        /// </summary>
+        internal static string miki_module_pasta_hated {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_hated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hated Pastas.
+        /// </summary>
+        internal static string miki_module_pasta_hated_header {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_hated_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created by.
         /// </summary>
         internal static string miki_module_pasta_identify_created_by {
@@ -3999,6 +4035,24 @@ namespace Miki.Languages {
         internal static string miki_module_pasta_identify_times_used {
             get {
                 return ResourceManager.GetString("miki_module_pasta_identify_times_used", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to loved.
+        /// </summary>
+        internal static string miki_module_pasta_loved {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_loved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loved Pastas.
+        /// </summary>
+        internal static string miki_module_pasta_loved_header {
+            get {
+                return ResourceManager.GetString("miki_module_pasta_loved_header", resourceCulture);
             }
         }
         

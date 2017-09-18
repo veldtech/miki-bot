@@ -1689,7 +1689,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
     <value>Rep Point Reset</value>
   </data>
   <data name="miki_module_accounts_rep_success" xml:space="preserve">
-    <value>{0} has given {1} {2} reputation! {1} now has {3} points!</value>
+    <value>{0} has given {1} **{2}** reputation! {1} now has **{3}** points!</value>
   </data>
   <data name="miki_module_accounts_rep_total_received" xml:space="preserve">
     <value>Total Rep Received</value>
