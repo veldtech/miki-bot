@@ -185,7 +185,7 @@ namespace Miki.Modules
                 {
                     context.Pastas.Remove(pasta);
 
-                    List<PastaVote> votes = context.Votes.AsNoTracking().Where(p => p.Id.Equals(e.arguments)).ToList();
+                    List<PastaVote> votes = context.Votes.Where(p => p.Id == e.arguments).ToList();
                     context.Votes.RemoveRange(votes);
 
                     await context.SaveChangesAsync();
