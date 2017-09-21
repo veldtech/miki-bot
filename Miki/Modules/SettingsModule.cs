@@ -145,14 +145,22 @@ namespace Miki.Modules
 
 			modules.Sort();
 
-			string output = "";
+			string firstColumn = "", secondColumn = "";
 
-			foreach( var module in modules )
+			for(int i = 0; i < modules.Count(); i++)
 			{
-				output += $"{( await e.commandHandler.GetModule( module ).IsEnabled( e.Channel.Id ) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>" )} {module}\n";
+				string output = $"{( await e.commandHandler.GetModule( modules[i] ).IsEnabled( e.Channel.Id ) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>" )} {modules[i]}\n";
+				if(i < modules.Count() / 2 + 1)
+				{
+					firstColumn += output; 
+				} 
+				else 
+				{
+					secondColumn += output;
+				}
 			}
 
-			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).SetDescription( output ).SendToChannel( e.Channel );
+			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).AddInlineField( "Column 1", firstColumn ).AddInlineField( "Column 2", secondColumn ).SendToChannel( e.Channel );
 		}
 
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
