@@ -446,7 +446,7 @@ namespace Miki.Modules.AccountsModule
 
             if (arguments.Length < 2)
             {
-                await Utils.ErrorEmbed( locale, e.GetResource("give_error_no_arg")).SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, e.GetResource("give_error_no_arg")).SendToChannel(e.Channel);
                 return;
             }
 
