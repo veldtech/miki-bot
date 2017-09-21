@@ -35,7 +35,7 @@ namespace Miki.Modules
                 return;
             }
 
-            await ValidateBet(e, StartBlackjack);
+            await ValidateBet(e, StartBlackjack, 9999999);
         }
 
         public async Task StartBlackjack(EventContext e, int bet)
@@ -83,12 +83,22 @@ namespace Miki.Modules
                     await OnBlackjackHold(e, bm, instanceMessage, bet, true);
                     return;
                 }
-                await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
+				else if( bm.Worth( bm.player ) == 21 && bm.Worth( bm.dealer ) != 21 )
+				{
+					await OnBlackjackWin( e, bm, instanceMessage, bet );
+					return;
+				}
+				else if( bm.Worth( bm.dealer ) == 21 && bm.Worth( bm.player ) != 21 )
+				{
+					await OnBlackjackDead( e, bm, instanceMessage, bet );
+					return;
+				}
+				await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
             }
         }
 
         private async Task OnBlackjackHold(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
-            int bet, bool charlie = false)
+            int bet, bool charlie = false )
         {
             bm.dealer.Hand.ForEach(x => x.isPublic = true);
 
@@ -202,7 +212,7 @@ namespace Miki.Modules
         [Command(Name = "flip")]
         public async Task FlipAsync(EventContext e)
         {
-            await ValidateBet(e, StartFlip);
+            await ValidateBet(e, StartFlip, 9999);
         }
 
         private async Task StartFlip(EventContext e, int bet)
@@ -278,7 +288,7 @@ namespace Miki.Modules
         [Command(Name = "slots", Aliases = new[] {"s"})]
         public async Task SlotsAsync(EventContext e)
         {
-            await ValidateBet(e, StartSlots);
+            await ValidateBet(e, StartSlots, 99999);
         }
 
         public async Task StartSlots(EventContext e, int bet)
@@ -431,7 +441,7 @@ namespace Miki.Modules
             }
         }
 
-        public async Task ValidateBet(EventContext e, Func<EventContext, int, Task> callback = null)
+        public async Task ValidateBet(EventContext e, Func<EventContext, int, Task> callback = null, int maxBet = 1000000)
         {
             if (!string.IsNullOrEmpty(e.arguments))
             {
@@ -475,7 +485,13 @@ namespace Miki.Modules
                         await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
                             .SendToChannel(e.Channel);
                     }
-                    else if (bet >= noAskLimit)
+                    else if (bet >= maxBet)
+                    {
+                        await e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
+                            .SendToChannel(e.Channel);
+                        return;
+                    }
+                    else if (bet > noAskLimit)
                     {
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Description =

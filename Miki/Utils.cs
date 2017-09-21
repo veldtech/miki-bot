@@ -14,7 +14,7 @@ namespace Miki
     {
         public static DateTime UnixToDateTime(long unix)
         {
-            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             time = time.AddSeconds(unix).ToLocalTime();
             return time;
         }
