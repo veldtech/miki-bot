@@ -161,7 +161,7 @@ namespace Miki.Modules
                     modifiedMessage = modifiedMessage.Replace("-uc", user.Guild.UserCount.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
 
-                    modifiedMessage = modifiedMessage.Replace("-ro", allUsers[MikiRandom.Next(0, allUsers.Count)].GetName());   
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].GetName());   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
