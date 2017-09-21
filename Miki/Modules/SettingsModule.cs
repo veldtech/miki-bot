@@ -8,6 +8,7 @@ using Miki.Languages;
 using Miki.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Miki.Modules
 {
@@ -123,6 +124,36 @@ namespace Miki.Modules
                 await embed.SendToChannel(e.Channel);
             }
         }
+
+		[Command( Name = "showmodules" )]
+		public async Task ShowModulesAsync( EventContext e )
+		{
+			List<string> modules = new List<string>();
+			CommandHandler commandHandler = Bot.instance.Events.CommandHandler;
+			EventAccessibility userEventAccessibility = commandHandler.GetUserAccessibility( e.message );
+
+			foreach( ICommandEvent ev in commandHandler.Commands.Values )
+			{
+				if( userEventAccessibility >= ev.Accessibility )
+				{
+					if( ev.Module != null && !modules.Contains( ev.Module.Name.ToUpper() ) )
+					{
+						modules.Add( ev.Module.Name.ToUpper() );
+					}
+				}
+			}
+
+			modules.Sort();
+
+			string output = "";
+
+			foreach( var module in modules )
+			{
+				output += $"{( await e.commandHandler.GetModule( module ).IsEnabled( e.Channel.Id ) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>" )} {module}\n";
+			}
+
+			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).SetDescription( output ).SendToChannel( e.Channel );
+		}
 
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SetLocale(EventContext e)
