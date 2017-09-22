@@ -22,6 +22,87 @@ namespace Miki.Modules
     [Module("Gambling")]
     public class GamblingModule
     {
+		[Command(Name = "rps")]
+		public async Task RPSAsync( EventContext e )
+		{
+			await ValidateBet( e, StartRPS );
+		}
+
+		public async Task StartRPS( EventContext e, int bet )
+		{
+			float rewardMultiplier = 2f;
+			string[] args = e.arguments.Split( ' ' );
+
+			if( args.Length < 2 )
+			{
+				await e.ErrorEmbed( "You need to choose a weapon!" ).SendToChannel( e.Channel );
+			} 
+			else
+			{
+				User user;
+				RPSManager rps = new RPSManager();
+				IDiscordEmbed resultMessage = Utils.Embed.SetTitle( "Rock, Paper, Scissors!" );
+
+				if( rps.GetWeaponFromString( args[1], out RPSWeapon playerWeapon ) )
+				{
+					RPSWeapon botWeapon = rps.GetRandomWeapon();
+
+					using( var context = new MikiContext() )
+					{
+						user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+						if( user != null )
+						{
+							await user.RemoveCurrencyAsync( context, null, bet );
+							await context.SaveChangesAsync();
+						}
+					}
+
+					resultMessage.SetDescription( $"{playerWeapon.name.ToUpper()} {playerWeapon.emoji} vs. {botWeapon.emoji} {botWeapon.name.ToUpper()}" );
+
+					if( playerWeapon == botWeapon )
+					{
+						using( var context = new MikiContext() )
+						{
+							user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+							if( user != null )
+							{
+								await user.AddCurrencyAsync( bet, e.Channel );
+								await context.SaveChangesAsync();
+							}
+						}
+						resultMessage.Description += $"\n\nYou drew! `{bet}` mekos were returned and your new balance is `{user.Currency}`.";
+					}
+					else
+					{
+						switch( rps.CalculateVictory( playerWeapon, botWeapon ) )
+						{
+							case RPSManager.VictoryStatus.WIN:
+								using( var context = new MikiContext() )
+								{
+									user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+									if( user != null )
+									{
+										await user.AddCurrencyAsync( (int)( bet * rewardMultiplier ), e.Channel );
+										await context.SaveChangesAsync();
+									}
+								}
+								resultMessage.Description += $"\n\nYou won `{(int)( bet * rewardMultiplier - bet )}` mekos! Your new balance is `{user.Currency}`.";
+								break;
+							case RPSManager.VictoryStatus.LOSE:
+								resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
+								break;
+						}
+					}
+				}
+				else
+				{
+					await resultMessage.SetDescription( $"Invalid weapon!" ).SendToChannel( e.Channel );
+					return;
+				}
+				await resultMessage.SendToChannel( e.Channel );
+			}
+		}
+
         [Command(Name = "blackjack", Aliases = new[] {"bj"})]
         public async Task BlackjackAsync(EventContext e)
         {
@@ -299,11 +380,6 @@ namespace Miki.Modules
                 Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
                 int moneyReturned = 0;
-
-                if (bet <= 0)
-                {
-                    return;
-                }
 
                 string[] objects =
                 {
