@@ -107,17 +107,6 @@ namespace Miki.Modules
             }
         }
 
-        // log add welcome "asdasd";
-        public async Task LogAsync(EventContext e)
-        {
-
-        }
-
-        public bool Accept(string x)
-        {
-            
-        }
-
         private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
         {
             using (var context = new MikiContext())
@@ -166,16 +155,23 @@ namespace Miki.Modules
                     }
 
                     string modifiedMessage = messageObject.Message;
+                    List<IDiscordUser> allUsers = await c.GetUsersAsync();
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
+                    modifiedMessage = modifiedMessage.Replace("-uc", user.Guild.UserCount.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
 
-                    modifiedMessage = modifiedMessage.Replace("-sc", user.Guild.UserCount.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].GetName());   
+
+                    modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
 
                     modifiedMessage = modifiedMessage.Replace("-om", user.Guild.Owner.Mention);
                     modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty(user.Guild.Owner.Nickname) ? user.Guild.Owner.Username : user.Guild.Owner.Nickname);
 
+                    modifiedMessage = modifiedMessage.Replace("-cc", user.Guild.ChannelCount.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", user.Guild.VoiceChannelCount.ToString());
+                    
                     output.Add(new Tuple<string, IDiscordMessageChannel>(modifiedMessage, c));
                 }
                 return output;

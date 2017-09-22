@@ -18,7 +18,7 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-            AsyncContext.Run(() => new Program().Start());
+                AsyncContext.Run(() => new Program().Start());
         }
 
         public static Bot bot;
@@ -26,9 +26,9 @@ namespace Miki
         public static DateTime timeSinceStartup;
         private string devId;
 
-        public async Task Start() {
-
-              Locale.Load();
+        public async Task Start()
+        {
+            Locale.Load();
             timeSinceStartup = DateTime.Now;
 
             LoadApiKeyFromFile();
@@ -36,8 +36,8 @@ namespace Miki
             LoadDiscord();
 
             await bot.ConnectAsync();
-
         }
+
   
 
         private void LoadApiKeyFromFile()

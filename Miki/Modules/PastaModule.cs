@@ -170,34 +170,32 @@ namespace Miki.Modules
                     .SendToChannel(e.Channel.Id);
                 return;
             }
-			else 
-			{
-				using( var context = new MikiContext() )
-				{
-					GlobalPasta pasta = await context.Pastas.FindAsync( e.arguments );
 
-					if( pasta == null )
-					{
-						await Utils.ErrorEmbed( locale, e.GetResource( "miki_module_pasta_error_null" ) ).SendToChannel( e.Channel );
-						return;
-					}
+            using (var context = new MikiContext())
+            {
+                GlobalPasta pasta = await context.Pastas.FindAsync(e.arguments);
 
-					if( pasta.CanDeletePasta( e.Author.Id ) )
-					{
-						context.Pastas.Remove( pasta );
+                if (pasta == null)
+                {
+                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
+                    return;
+                }
 
-						List<PastaVote> votes = context.Votes.AsNoTracking().Where( p => p.Id.Equals( e.arguments ) ).ToList();
-						context.Votes.RemoveRange( votes );
+                if (pasta.CanDeletePasta(e.Author.Id))
+                {
+                    context.Pastas.Remove(pasta);
 
-						await context.SaveChangesAsync();
+                    List<PastaVote> votes = context.Votes.Where(p => p.Id == e.arguments).ToList();
+                    context.Votes.RemoveRange(votes);
 
-						await Utils.SuccessEmbed( locale, e.GetResource( "miki_module_pasta_delete_success", e.arguments ) ).SendToChannel( e.Channel );
-						return;
-					}
-					await Utils.ErrorEmbed( locale, e.GetResource( "miki_module_pasta_error_no_permissions", e.GetResource( "miki_module_pasta_error_specify_delete" ) ) ).SendToChannel( e.Channel );
-					return;
-				}
-			}
+                    await context.SaveChangesAsync();
+
+                    await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_delete_success", e.arguments)).SendToChannel(e.Channel);
+                    return;
+                }
+                await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_no_permissions", e.GetResource("miki_module_pasta_error_specify_delete"))).SendToChannel(e.Channel);
+                return;
+            }
         }
 
         [Command(Name = "editpasta")]
