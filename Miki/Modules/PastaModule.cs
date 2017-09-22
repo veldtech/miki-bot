@@ -341,7 +341,7 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                var pastasFound = await context.Pastas.Where(x => x.Id.Contains(query))
+                var pastasFound = await context.Pastas.Where(x => x.Id.ToLower().Contains(query.ToLower()))
                                                       .OrderByDescending(x => x.Id)
                                                       .Skip(25 * page)
                                                       .Take(25)
@@ -371,6 +371,71 @@ namespace Miki.Modules
                     .SendToChannel(e.Channel);
             }
         }
+
+		[Command(Name = "lovedpasta", Aliases = new string[] { "lovedpastas", "favouritepastas", "lovepastalist" } )]
+		public async Task LovePastaList( EventContext e )
+		{
+			await FavouritePastaList( e );
+		}
+
+		[Command( Name = "hatedpasta", Aliases = new string[] { "hatedpastas", "hatepastalist" } )]
+		public async Task HatePastaList( EventContext e )
+		{
+			await FavouritePastaList( e, false );
+		}
+
+		public async Task FavouritePastaList( EventContext e, bool lovedPastas = true )
+		{
+			Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
+			IDiscordUser targetUser = e.Author;
+			float totalPerPage = 25f;
+			int page = 0;
+
+			if( e.message.MentionedUserIds.Count() >= 1 )
+			{
+				targetUser = await e.Guild.GetUserAsync( e.message.MentionedUserIds.First() );
+				string[] args = e.arguments.Split( ' ' );
+				int.TryParse( (args.Count() > 1 ? args[1] : "0"), out page );
+			}
+			else
+			{
+				int.TryParse( e.arguments, out page );
+			}
+
+			using( MikiContext context = new MikiContext() )
+			{
+				long authorId = targetUser.Id.ToDbLong();
+				IEnumerable<PastaVote> pastaVotes = context.Votes.Where( x => x.__UserId == authorId && x.PositiveVote == lovedPastas );
+				
+				int maxPage = (int)Math.Ceiling( pastaVotes.Count() / totalPerPage );
+				page = page > maxPage - 1 ? maxPage - 1 : page;
+
+				if( pastaVotes.Count() <= 0 )
+				{
+					string loveString = ( lovedPastas ? locale.GetString( "miki_module_pasta_loved" ) : locale.GetString( "miki_module_pasta_hated" ) );
+					string errorString = locale.GetString( "miki_module_pasta_favlist_self_none", loveString );
+					if( e.message.MentionedUserIds.Count() >= 1 )
+					{
+						errorString = locale.GetString( "miki_module_pasta_favlist_mention_none", loveString );
+					}
+					await Utils.ErrorEmbed( e, errorString ).SendToChannel( e.Channel.Id );
+					return;
+				}
+
+				IDiscordEmbed embed = Utils.Embed;
+				List<PastaVote> neededPastas = pastaVotes.Skip( (int)totalPerPage * page ).Take( (int)totalPerPage ).ToList();
+
+				string resultString = "";
+				neededPastas.ForEach( x => { resultString += "`" + x.Id + "` "; } );
+
+				string useName = string.IsNullOrEmpty( e.Author.Nickname ) ? e.Author.Username : e.Author.Nickname;
+				embed.SetTitle( $"{( lovedPastas ? locale.GetString( "miki_module_pasta_loved_header" ) : locale.GetString( "miki_module_pasta_hated_header" ) )} - {useName}" );
+				embed.SetDescription( resultString );
+				embed.SetFooter( locale.GetString( "page_index", page + 1, Math.Ceiling( pastaVotes.Count() / totalPerPage ) ), "" );
+
+				await embed.SendToChannel( e.Channel );
+			}
+		}
 
         [Command(Name = "lovepasta")]
         public async Task LovePasta(EventContext e)

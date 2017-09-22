@@ -1656,4 +1656,22 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="flip_header" xml:space="preserve">
     <value>Flip</value>
   </data>
+  <data name="miki_module_pasta_favlist_mention_none" xml:space="preserve">
+    <value>Looks like they haven't {0} any pastas yet! :(</value>
+  </data>
+  <data name="miki_module_pasta_favlist_self_none" xml:space="preserve">
+    <value>Looks like you haven't {0} any pastas yet! :(</value>
+  </data>
+  <data name="miki_module_pasta_hated" xml:space="preserve">
+    <value>hated</value>
+  </data>
+  <data name="miki_module_pasta_hated_header" xml:space="preserve">
+    <value>Hated Pastas</value>
+  </data>
+  <data name="miki_module_pasta_loved" xml:space="preserve">
+    <value>loved</value>
+  </data>
+  <data name="miki_module_pasta_loved_header" xml:space="preserve">
+    <value>Loved Pastas</value>
+  </data>
 </root>
