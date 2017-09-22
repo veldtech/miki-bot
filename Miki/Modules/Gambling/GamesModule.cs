@@ -361,7 +361,7 @@ namespace Miki.Modules
                 .SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.AvatarUrl,
                     "https://patreon.com/mikibot")
                 .SetDescription(output)
-                .SetImageUrl(imageUrl);
+                .SetThumbnailUrl(imageUrl);
 
             await embed.SendToChannel(e.Channel);
         }

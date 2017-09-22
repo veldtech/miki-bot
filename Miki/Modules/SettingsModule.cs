@@ -100,8 +100,7 @@ namespace Miki.Modules
 
             if (module != null)
             {
-                IDiscordEmbed embed = Utils.Embed
-                                           .SetTitle(e.arguments);
+                IDiscordEmbed embed = Utils.Embed.SetTitle( e.arguments.ToUpper() );
 
                 string content = "";
 
@@ -119,7 +118,7 @@ namespace Miki.Modules
                     content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
                 }
 
-                embed.AddInlineField("Services", content);
+                if( !string.IsNullOrEmpty( content ) ) embed.AddInlineField("Services", content);
 
                 await embed.SendToChannel(e.Channel);
             }
