@@ -19,7 +19,7 @@ namespace Miki.Modules
     [Module("Guild Accounts")]
     internal class GuildAccountsModule
     {
-        [Command(Name = "guildweekly")]
+        [Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
         public async Task GuildWeekly(EventContext context)
         {
             using (MikiContext database = new MikiContext())
