@@ -1656,6 +1656,44 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="flip_header" xml:space="preserve">
     <value>Flip</value>
   </data>
+  <data name="common_string_all" xml:space="preserve">
+    <value>all</value>
+  </data>
+  <data name="miki_module_accounts_rep_description" xml:space="preserve">
+    <value>Here are your statistics on reputation points!
+
+To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_insufficient" xml:space="preserve">
+    <value>You do not have {0} points to give!</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_none" xml:space="preserve">
+    <value>You're out of points for today!</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_self" xml:space="preserve">
+    <value>You cannot rep yourself.</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_zero" xml:space="preserve">
+    <value>You can't give 0 points!</value>
+  </data>
+  <data name="miki_module_accounts_rep_header" xml:space="preserve">
+    <value>Reputation</value>
+  </data>
+  <data name="miki_module_accounts_rep_points_left" xml:space="preserve">
+    <value>Points left for today</value>
+  </data>
+  <data name="miki_module_accounts_rep_remaining" xml:space="preserve">
+    <value>Rep Points Remaining</value>
+  </data>
+  <data name="miki_module_accounts_rep_reset" xml:space="preserve">
+    <value>Rep Point Reset</value>
+  </data>
+  <data name="miki_module_accounts_rep_success" xml:space="preserve">
+    <value>{0} has given {1} **{2}** reputation! {1} now has **{3}** points!</value>
+  </data>
+  <data name="miki_module_accounts_rep_total_received" xml:space="preserve">
+    <value>Total Rep Received</value>
+  </data>
   <data name="miki_module_pasta_favlist_mention_none" xml:space="preserve">
     <value>Looks like they haven't {0} any pastas yet! :(</value>
   </data>

@@ -69,7 +69,7 @@ namespace Miki.Modules.AccountsModule
         public async Task LeaderboardsAsync(EventContext e)
         {
             string[] args = e.arguments.Split(' ');
-            int pageNumber = 0;
+            int pageNumber = 1;
 
             if (args.Count() > 1)
             {
@@ -273,67 +273,101 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        [Command(Name = "rep")]
-        public async Task GiveReputationAsync(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+		[Command( Name = "rep" )]
+		public async Task GiveReputationAsync( EventContext e )
+		{
+			using( var context = new MikiContext() )
+			{
+				Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
+				User giver = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
+				List<ulong> targetUsers = new List<ulong>();
+				string[] args = e.arguments.Split( ' ' );
+				int repAmount = 1;
 
-                if (e.message.MentionedUserIds.Count == 0)
-                {
-                    TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
+				if( giver.LastReputationGiven.Day != DateTime.Now.Day )
+				{
+					giver.ReputationPointsLeft = 3;
+					giver.LastReputationGiven = DateTime.Now;
+				}
 
-                    await Utils.Embed
-                        .SetTitle("Reputation")
-                        .SetDescription(
-                            "Here are your statistics on reputation points!\n\nTo give someone reputation, do `>rep <mention>`")
-                        .AddInlineField("Total Rep Received", giver.Reputation.ToString())
-                        .AddInlineField("Rep points reset in:", pointReset.ToTimeString(e.Channel.GetLocale()))
-                        .SendToChannel(e.Channel);
-                    return;
-                }
+				if( e.message.MentionedUserIds.Count() == 0 )
+				{
+					TimeSpan pointReset = ( DateTime.Now.AddDays( 1 ).Date - DateTime.Now );
 
-                User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
+					await Utils.Embed
+						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+						.SetDescription( locale.GetString( "miki_module_accounts_rep_description" ) )
+						.AddInlineField( locale.GetString( "miki_module_accounts_rep_total_received" ), giver.Reputation.ToString() )
+						.AddInlineField( locale.GetString( "miki_module_accounts_rep_reset" ), pointReset.ToTimeString( e.Channel.GetLocale() ) )
+						.AddInlineField( locale.GetString( "miki_module_accounts_rep_remaining" ), giver.ReputationPointsLeft )
+						.SendToChannel( e.Channel );
+					return;
+				}
+				else if( e.message.MentionedUserIds.Count() == 1 )
+				{
+					if( args.Length > 1 && ( args[1] == locale.GetString( "common_string_all" ) || args[1] == "*" ) )
+					{
+						repAmount = giver.ReputationPointsLeft;
+					}
+					else if( args.Length > 1 && int.TryParse( args[1], out repAmount ) )
+					{
+						if( repAmount > giver.ReputationPointsLeft )
+						{
+							await Utils.Embed
+								.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+								.SetDescription( locale.GetString( "miki_module_accounts_rep_error_insufficient", repAmount ) )
+								.SendToChannel( e.Channel );
+							return;
+						}
+						else if( repAmount == 0 )
+						{
+							await Utils.Embed
+								.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+								.SetDescription( locale.GetString( "miki_module_accounts_rep_error_zero" ) )
+								.SendToChannel( e.Channel );
+							return;
+						}
+					}
+					targetUsers.Add( e.message.MentionedUserIds.First() );
+				}
+				else if( e.message.MentionedUserIds.Count() > 1 )
+				{
+					targetUsers = e.message.MentionedUserIds.ToList();
+				}
 
-                if (giver.LastReputationGiven.Day != DateTime.Now.Day)
-                {
-                    giver.ReputationPointsLeft = 3;
-                    giver.LastReputationGiven = DateTime.Now;
-                }
+				if( targetUsers.Contains( giver.Id.FromDbLong() ) )
+				{
+					await Utils.Embed
+						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+						.SetDescription( locale.GetString( "miki_module_accounts_rep_error_self" ) )
+						.SendToChannel( e.Channel );
+					return;
+				}
+				else if( targetUsers.Count() > giver.ReputationPointsLeft )
+				{
+					await Utils.Embed
+						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+						.SetDescription( locale.GetString( "miki_module_accounts_rep_error_insufficient", repAmount ) )
+						.SendToChannel( e.Channel );
+					return;
+				}
 
-                if (giver.Id == receiver.Id)
-                {
-                    await Utils.Embed
-                        .SetTitle("Reputation")
-                        .SetDescription($"You cannot rep yourself.")
-                        .SendToChannel(e.Channel);
-                    return;
-                }
+				foreach( ulong user in targetUsers )
+				{
+					User receiver = await context.Users.FindAsync( user.ToDbLong() );
+					giver.ReputationPointsLeft -= (short)repAmount;
+					receiver.Reputation += repAmount;
 
-                if (giver.ReputationPointsLeft > 0)
-                {
-                    giver.ReputationPointsLeft--;
-                    receiver.Reputation++;
+					await Utils.Embed
+						.SetTitle( locale.GetString( "miki_module_accounts_rep_header" ) )
+						.SetDescription( locale.GetString( "miki_module_accounts_rep_success", giver.Name, receiver.Name, repAmount, receiver.Reputation ) )
+						.AddInlineField( locale.GetString( "miki_module_accounts_rep_points_left" ), giver.ReputationPointsLeft.ToString() )
+						.SendToChannel( e.Channel );
+				}
 
-                    await Utils.Embed
-                        .SetTitle("Reputation")
-                        .SetDescription(
-                            $"{giver.Name} has given {receiver.Name} 1 reputation! {receiver.Name} now has {receiver.Reputation} points!")
-                        .AddInlineField("Points left for today", giver.ReputationPointsLeft.ToString())
-                        .SendToChannel(e.Channel);
-                }
-                else
-                {
-                    await Utils.Embed
-                        .SetTitle("Reputation")
-                        .SetDescription($"You're out of points for today!")
-                        .SendToChannel(e.Channel);
-                }
-
-                await context.SaveChangesAsync();
-            }
-        }
+				await context.SaveChangesAsync();
+			}
+		}
 
         [Command(Name = "syncavatar")]
         public async Task SyncAvatarAsync(EventContext e)
@@ -620,16 +654,14 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardsType leaderboardType = LeaderboardsType.Experience, int page = 0)
+        public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardsType leaderboardType = LeaderboardsType.Experience, int page = 1)
         {
             using (var context = new MikiContext())
             {
                 Locale locale = Locale.GetEntity(mContext.Channel.Id.ToDbLong());
 
                 IDiscordEmbed embed = Utils.Embed;
-                embed.SetFooter(
-                    locale.GetString("page_index", page + 1,
-                        Math.Ceiling(context.Users.Count() / 12.0)), "");
+                embed.SetFooter( locale.GetString( "page_index", page, Math.Ceiling( context.Users.Count() / 12f ) ), "");
 
                 switch (leaderboardType)
                 {
@@ -700,9 +732,7 @@ namespace Miki.Modules.AccountsModule
                                     $"{output[i].Experience} experience!");
                             }
 
-                            embed.SetFooter(
-                                locale.GetString("page_index", page + 1,
-                                    Math.Ceiling(amountOfUsers / 12.0)), "");
+                            embed.SetFooter( locale.GetString ("page_index", page + 1, Math.Ceiling( amountOfUsers / 12f ) ), "" );
 
                             await embed.SendToChannel(mContext.Channel);
                         }
