@@ -383,7 +383,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/AicG7H6.gif",
                 "http://i.imgur.com/ql3FvuU.gif",
                 "http://i.imgur.com/XLjH6zQ.gif",
-                "http://i.imgur.com/hrT0CNB.mp4",
+                "http://i.imgur.com/hrT0CNB.gifv",
                 "http://i.imgur.com/W7arBvy.gif",
                 "http://i.imgur.com/W9htMol.gif",
                 "http://i.imgur.com/IVOBC8p.gif"
