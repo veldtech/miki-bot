@@ -19,7 +19,7 @@ namespace Miki.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class en_US {
@@ -525,6 +525,15 @@ namespace Miki.Languages {
         internal static string miki_blackjack_win_title {
             get {
                 return ResourceManager.GetString("miki_blackjack_win_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give your friends reputation for being such good friends.
+        /// </summary>
+        internal static string miki_comamnd_description_rep {
+            get {
+                return ResourceManager.GetString("miki_comamnd_description_rep", resourceCulture);
             }
         }
         
@@ -1057,6 +1066,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_roulette {
             get {
                 return ResourceManager.GetString("miki_command_description_roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play rock paper and scissors to win the big money now!.
+        /// </summary>
+        internal static string miki_command_description_rps {
+            get {
+                return ResourceManager.GetString("miki_command_description_rps", resourceCulture);
             }
         }
         
@@ -1729,6 +1747,16 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;rep
+        ///&gt;rep &lt;mention&gt; [mention...].
+        /// </summary>
+        internal static string miki_command_usage_rep {
+            get {
+                return ResourceManager.GetString("miki_command_usage_rep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;roll [amount]
         ///&gt;roll [amount of dice]d[sides of dice].
         /// </summary>
@@ -1744,6 +1772,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_roulette {
             get {
                 return ResourceManager.GetString("miki_command_usage_roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;rps &lt;bet&gt; &lt;r/p/s&gt;.
+        /// </summary>
+        internal static string miki_command_usage_rps {
+            get {
+                return ResourceManager.GetString("miki_command_usage_rps", resourceCulture);
             }
         }
         

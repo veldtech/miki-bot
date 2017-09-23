@@ -578,6 +578,8 @@
     <Compile Include="Modules\Gambling\Managers\RPS\Objects\RPSWeapon.cs" />
     <Compile Include="Modules\GeneralModule.cs" />
     <Compile Include="Modules\GuildAccountsModule.cs" />
+    <Compile Include="Modules\Logging\Interpreter\LogQueryInterpreter.cs" />
+    <Compile Include="Modules\Logging\WelcomeMessages.cs" />
     <Compile Include="Modules\MarriageModule.cs" />
     <Compile Include="Modules\NsfwModule.cs" />
     <Compile Include="Modules\OsuModule.cs" />
@@ -786,6 +788,10 @@
     <ProjectReference Include="..\..\Meru\Meru\Meru.csproj">
       <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
       <Name>Meru</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Meru\RestClient\RestClient.csproj">
+      <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
+      <Name>RestClient</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

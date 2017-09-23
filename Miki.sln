@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru", "..\Meru\Meru\Meru.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru.SDK", "..\Meru\Meru.SDK\Meru.SDK.csproj", "{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient", "..\Meru\RestClient\RestClient.csproj", "{48155A63-8E59-4042-8130-7AD40315B8A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}.TestResponses|Any CPU.Build.0 = Release|Any CPU
 		{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}.TestResponses|x64.ActiveCfg = Release|x64
 		{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}.TestResponses|x64.Build.0 = Release|x64
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Debug|x64.Build.0 = Debug|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Release|x64.ActiveCfg = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.Release|x64.Build.0 = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.TestResponses|Any CPU.ActiveCfg = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.TestResponses|Any CPU.Build.0 = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.TestResponses|x64.ActiveCfg = Release|Any CPU
+		{48155A63-8E59-4042-8130-7AD40315B8A9}.TestResponses|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

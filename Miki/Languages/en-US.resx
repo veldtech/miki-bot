@@ -1712,4 +1712,17 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   <data name="miki_module_pasta_loved_header" xml:space="preserve">
     <value>Loved Pastas</value>
   </data>
+  <data name="miki_comamnd_description_rep" xml:space="preserve">
+    <value>Give your friends reputation for being such good friends</value>
+  </data>
+  <data name="miki_command_description_rps" xml:space="preserve">
+    <value>Play rock paper and scissors to win the big money now!</value>
+  </data>
+  <data name="miki_command_usage_rep" xml:space="preserve">
+    <value>&gt;rep
+&gt;rep &lt;mention&gt; [mention...]</value>
+  </data>
+  <data name="miki_command_usage_rps" xml:space="preserve">
+    <value>&gt;rps &lt;bet&gt; &lt;r/p/s&gt;</value>
+  </data>
 </root>

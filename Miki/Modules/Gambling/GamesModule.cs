@@ -25,7 +25,7 @@ namespace Miki.Modules
 		[Command(Name = "rps")]
 		public async Task RPSAsync( EventContext e )
 		{
-			await ValidateBet( e, StartRPS );
+			await ValidateBet(e, StartRPS, 10000);
 		}
 
 		public async Task StartRPS( EventContext e, int bet )
@@ -116,7 +116,7 @@ namespace Miki.Modules
                 return;
             }
 
-            await ValidateBet(e, StartBlackjack, 9999999);
+            await ValidateBet(e, StartBlackjack);
         }
 
         public async Task StartBlackjack(EventContext e, int bet)
@@ -293,7 +293,7 @@ namespace Miki.Modules
         [Command(Name = "flip")]
         public async Task FlipAsync(EventContext e)
         {
-            await ValidateBet(e, StartFlip, 9999);
+            await ValidateBet(e, StartFlip, 10000);
         }
 
         private async Task StartFlip(EventContext e, int bet)
@@ -561,7 +561,7 @@ namespace Miki.Modules
                         await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
                             .SendToChannel(e.Channel);
                     }
-                    else if (bet >= maxBet)
+                    else if (bet > maxBet)
                     {
                         await e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
                             .SendToChannel(e.Channel);
