@@ -405,66 +405,66 @@ namespace Miki.Modules
             await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(puns[Global.random.Next(0, puns.Length)]));
         }
 
-        [Command(Name = "roll")]
-		public async Task RollAsync( EventContext e )
+		[Command(Name = "roll")]
+		public async Task RollAsync(EventContext e)
 		{
 			string rollResult;
 
-			if( string.IsNullOrWhiteSpace( e.arguments ) ) // No Arguments.
+			if (string.IsNullOrWhiteSpace(e.arguments)) // No Arguments.
 			{
-				rollResult = MikiRandom.Next( 100 ).ToString();
+				rollResult = MikiRandom.Next(1, 100).ToString();
 			}
 			else
 			{
-				if( int.TryParse( e.arguments, out int max ) ) // Simple number argument.
+				if (int.TryParse(e.arguments, out int max)) // Simple number argument.
 				{
-					rollResult = MikiRandom.Next( max ).ToString();
+					rollResult = MikiRandom.Next(1, max).ToString();
 				}
 				else // Assume the user has entered an advanced expression.
 				{
-					Regex regex = new Regex( @"(?<dieCount>\d+)d(?<dieSides>\d+)" );
+					Regex regex = new Regex(@"(?<dieCount>\d+)d(?<dieSides>\d+)");
 					string fullExpression = e.arguments;
 					int expressionCount = 0;
 
-					foreach( Match match in regex.Matches( e.arguments ) )
+					foreach (Match match in regex.Matches(e.arguments))
 					{
 						GroupCollection groupCollection = match.Groups;
-						int dieCount = int.Parse( groupCollection["dieCount"].Value );
-						int dieSides = int.Parse( groupCollection["dieSides"].Value );
+						int dieCount = int.Parse(groupCollection["dieCount"].Value);
+						int dieSides = int.Parse(groupCollection["dieSides"].Value);
 						string partialExpression = "";
 
-						for( int i = 0; i < dieCount; i++ )
+						for (int i = 0; i < dieCount; i++)
 						{
-							partialExpression += MikiRandom.Next( dieSides ).ToString();
-							if( i + 1 < dieCount )
+							partialExpression += MikiRandom.Next(1, dieSides).ToString();
+							if (i + 1 < dieCount)
 								partialExpression += " + ";
 						}
 
-						fullExpression = regex.Replace( fullExpression, $"( {partialExpression} )", 1 );
+						fullExpression = regex.Replace(fullExpression, $"( {partialExpression} )", 1);
 						expressionCount++;
 					}
 
-					if( expressionCount > 1 )
+					if (expressionCount > 1)
 						fullExpression = $"( {fullExpression} )";
 
-					Expression evaluation = new Expression( fullExpression );
-					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`" ;
+					Expression evaluation = new Expression(fullExpression);
+					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`";
 				}
 			}
 
-			if( rollResult == "1" || rollResult.StartsWith( "1 " ) )
+			if (rollResult == "1" || rollResult.StartsWith("1 "))
 			{
-				await AchievementManager.Instance.GetContainerById( "badluck" ).CheckAsync( new BasePacket()
+				await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket()
 				{
 					discordUser = e.Author,
 					discordChannel = e.Channel
-				} );
+				});
 			}
 
-			rollResult = Regex.Replace( rollResult, @"(\s)\s+", "$1" );
-			rollResult = Regex.Replace( rollResult, @"(\S)([^\d\s])", "$1 $2" );
+			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
+			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
-			await e.Channel.SendMessage( e.GetResource( Locale.RollResult, e.Author.Username, rollResult ) );
+			await e.Channel.SendMessage(e.GetResource(Locale.RollResult, e.Author.Username, rollResult));
 		}
 		
 		[Command( Name = "roulette" )]
