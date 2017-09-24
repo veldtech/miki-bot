@@ -123,7 +123,11 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
-        public static bool ToBool(this string input)
+		public static bool IsAll(string input, Locale locale = null)
+		{
+			return ((input == locale?.GetString("common_string_all")) || (input == "*"));
+		}
+		public static bool ToBool(this string input)
         {
             return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
         }
@@ -137,6 +141,7 @@ namespace Miki
         }
 
         public static IDiscordEmbed ErrorEmbed(this EventContext e, string message) => ErrorEmbed(e.Channel.GetLocale(), message);
+		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message, params object[] args) => ErrorEmbed(e.Channel.GetLocale(), string.Format(message, args));
 
         public static string GetResource(this EventContext c, string m, params object[] o) => Locale.GetEntity(c.Channel.Id).GetString(m, o);
 
