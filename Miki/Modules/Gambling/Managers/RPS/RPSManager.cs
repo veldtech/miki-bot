@@ -10,63 +10,57 @@ namespace Miki.Modules.Gambling.Managers
 {
 	class RPSManager
 	{
+		// safe pattern for singletons
+		private static RPSManager _instance = new RPSManager();
+		public static RPSManager Instance => _instance;
+
 		public enum VictoryStatus
 		{
-			WIN,
-			DRAW,
-			LOSE
+			DRAW = 0,
+			WIN = 1,
+			LOSE = 2,
 		}
 
 		List<RPSWeapon> weapons = new List<RPSWeapon>();
 
 		public RPSManager()
 		{
-			weapons.Add( new RPSWeapon( "scissors", Aliases: new string[] { "s" }, Emoji: ":scissors:" ) );
-			weapons.Add( new RPSWeapon( "paper", Aliases: new string[] { "p" }, Emoji: ":page_facing_up:" ) );
-			weapons.Add( new RPSWeapon( "rock", Aliases: new string[] { "r" }, Emoji: ":full_moon:" ) );
+			weapons.Add(new RPSWeapon("scissors", emoji: ":scissors:"));
+			weapons.Add(new RPSWeapon("paper", emoji: ":page_facing_up:"));
+			weapons.Add(new RPSWeapon("rock", emoji: ":full_moon:"));
 		}
 
 		public string[] GetAllWeapons()
 		{
-			string[] returnWeapons = new string[weapons.Count() - 1];
-			for( int i = 0; i < weapons.Count(); i++ )
-				returnWeapons[i] = weapons[i].name;
-
-			return returnWeapons;
+			return weapons
+				.Select(x => x.Name)
+				.ToArray();
 		}
 
 		public RPSWeapon GetRandomWeapon()
 		{
-			return weapons[MikiRandom.Next( weapons.Count() )];
+			return weapons[MikiRandom.Next(weapons.Count())];
 		}
 
-		public RPSWeapon GetWeaponFromString( string name )
+		public RPSWeapon Parse(string name)
 		{
-			return weapons.Where( weapon => weapon.name == name || ( weapon.aliases != null && weapon.aliases.Contains( name ) ) ).First();
+			// Thanks to fuzen
+			return weapons
+				.Where(w => w.Name[0] == name[0])
+				.First();
 		}
 
-		public bool GetWeaponFromString( string name, out RPSWeapon weapon )
+		public bool TryParse(string name, out RPSWeapon weapon)
 		{
-			weapon = GetWeaponFromString( name );
+			weapon = Parse(name);
 			return weapon != null;
 		}
 
-		public VictoryStatus CalculateVictory( RPSWeapon challenge, RPSWeapon opponent )
+		public VictoryStatus CalculateVictory(RPSWeapon player, RPSWeapon cpu)
 		{
-			int cIndex = weapons.IndexOf( challenge );
-			int oIndex = weapons.IndexOf( opponent );
-
-			// If opponent index is greater than challenger index and is also odd then win.
-			// If opponent index is less than challenger index and is also even then win.
-			// If challenger index is the last in the list and opponent index is the first in the list then win.
-			if( ( oIndex > cIndex && oIndex % 2 != 0 ) || ( oIndex < cIndex && oIndex % 2 == 0 ) || ( cIndex == weapons.Count() - 1 && oIndex == 0 ) )
-			{
-				return VictoryStatus.WIN;
-			}
-			else
-			{
-				return VictoryStatus.LOSE;
-			}
+			int playerIndex = weapons.IndexOf(player);
+			int cpuIndex = weapons.IndexOf(cpu);
+			return (VictoryStatus)((cpuIndex - playerIndex + 3) % weapons.Count);
 		}
 	}
 }

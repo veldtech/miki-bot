@@ -28,78 +28,83 @@ namespace Miki.Modules
 			await ValidateBet(e, StartRPS, 10000);
 		}
 
-		public async Task StartRPS( EventContext e, int bet )
+		public async Task StartRPS(EventContext e, int bet)
 		{
 			float rewardMultiplier = 2f;
-			string[] args = e.arguments.Split( ' ' );
+			string[] args = e.arguments.Split(' ');
 
-			if( args.Length < 2 )
+			if (args.Length < 2)
 			{
-				await e.ErrorEmbed( "You need to choose a weapon!" ).SendToChannel( e.Channel );
-			} 
+				await e.ErrorEmbed("You need to choose a weapon!").SendToChannel(e.Channel);
+			}
 			else
 			{
 				User user;
-				RPSManager rps = new RPSManager();
-				IDiscordEmbed resultMessage = Utils.Embed.SetTitle( "Rock, Paper, Scissors!" );
+				RPSManager rps = RPSManager.Instance;
+				IDiscordEmbed resultMessage = Utils.Embed
+					.SetTitle("Rock, Paper, Scissors!");
 
-				if( rps.GetWeaponFromString( args[1], out RPSWeapon playerWeapon ) )
+				if (rps.TryParse(args[1], out RPSWeapon playerWeapon))
 				{
 					RPSWeapon botWeapon = rps.GetRandomWeapon();
 
-					using( var context = new MikiContext() )
+					using (var context = new MikiContext())
 					{
-						user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
-						if( user != null )
+						user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+						if (user != null)
 						{
-							await user.RemoveCurrencyAsync( context, null, bet );
+							await user.RemoveCurrencyAsync(context, null, bet);
 							await context.SaveChangesAsync();
 						}
 					}
 
-					resultMessage.SetDescription( $"{playerWeapon.name.ToUpper()} {playerWeapon.emoji} vs. {botWeapon.emoji} {botWeapon.name.ToUpper()}" );
+					resultMessage.SetDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
 
-					if( playerWeapon == botWeapon )
+					switch (rps.CalculateVictory(playerWeapon, botWeapon))
 					{
-						using( var context = new MikiContext() )
+						case RPSManager.VictoryStatus.WIN:
 						{
-							user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
-							if( user != null )
+							using (var context = new MikiContext())
 							{
-								await user.AddCurrencyAsync( bet, e.Channel );
-								await context.SaveChangesAsync();
-							}
-						}
-						resultMessage.Description += $"\n\nYou drew! `{bet}` mekos were returned and your new balance is `{user.Currency}`.";
-					}
-					else
-					{
-						switch( rps.CalculateVictory( playerWeapon, botWeapon ) )
-						{
-							case RPSManager.VictoryStatus.WIN:
-								using( var context = new MikiContext() )
+								user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+								if (user != null)
 								{
-									user = await context.Users.FindAsync( e.Author.Id.ToDbLong() );
-									if( user != null )
-									{
-										await user.AddCurrencyAsync( (int)( bet * rewardMultiplier ), e.Channel );
-										await context.SaveChangesAsync();
-									}
+									await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.Channel);
+									await context.SaveChangesAsync();
 								}
-								resultMessage.Description += $"\n\nYou won `{(int)( bet * rewardMultiplier - bet )}` mekos! Your new balance is `{user.Currency}`.";
-								break;
-							case RPSManager.VictoryStatus.LOSE:
-								resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
-								break;
+							}
+							resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier - bet)}` mekos! Your new balance is `{user.Currency}`.";
+							break;
 						}
+
+						case RPSManager.VictoryStatus.LOSE:
+						{
+							resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
+						}
+						break;
+
+						case RPSManager.VictoryStatus.DRAW:
+						{
+							using (var context = new MikiContext())
+							{
+								user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+								if (user != null)
+								{
+									await user.AddCurrencyAsync((bet), e.Channel);
+									await context.SaveChangesAsync();
+								}
+							}
+							resultMessage.Description += $"\n\nIt's a draw! your mekos were refunded! Your new balance is `{user.Currency}`.";
+						}
+						break;
 					}
 				}
 				else
 				{
-					await resultMessage.SetDescription( $"Invalid weapon!" ).SendToChannel( e.Channel );
+					await resultMessage.SetDescription("Invalid weapon!").SendToChannel(e.Channel);
 					return;
 				}
-				await resultMessage.SendToChannel( e.Channel );
+				await resultMessage.SendToChannel(e.Channel);
 			}
 		}
 
