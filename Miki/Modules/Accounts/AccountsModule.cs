@@ -654,26 +654,28 @@ namespace Miki.Modules.AccountsModule
 			{
 				Locale locale = Locale.GetEntity(mContext.Channel.Id.ToDbLong());
 
-				IDiscordEmbed embed = Utils.Embed;
-				embed.SetFooter(locale.GetString("page_index", page, Math.Ceiling(context.Users.Count() / 12f)), "");
+				int p = Math.Max(page - 1, 0);
+
+				IDiscordEmbed embed = Utils.Embed
+					.SetColor(1.0f, 0.6f, 0.4f)
+					.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)), "");
 
 				switch (leaderboardType)
 				{
 					case LeaderboardsType.Commands:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
-						embed.Color = new IA.SDK.Color(0.4f, 1.0f, 0.6f);
-						List<User> output = await context.Users.OrderByDescending(x => x.Total_Commands)
-							.Skip(12 * (Math.Max(page - 1, 0)))
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Total_Commands)
+							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
-						int i = 1;
-						foreach (User user in output)
+
+						for(int i = 0; i < output.Count; i++)
 						{
-							embed.AddInlineField($"#{i + (12 * page)}: {string.Join("", user.Name.Take(16))}",
-								$"{user.Total_Commands} commands used!");
-							i++;
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}", $"{output[i].Total_Commands} commands used!");
 						}
+						
 						await embed.SendToChannel(mContext.Channel);
 					}
 					break;
@@ -681,18 +683,16 @@ namespace Miki.Modules.AccountsModule
 					case LeaderboardsType.Currency:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
-						embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-						List<User> output = await context.Users.OrderByDescending(x => x.Currency)
-							.Skip(12 * (Math.Max(page - 1, 0)))
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Currency)
+							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
 
-						int i = 1;
-						foreach (User user in output)
+						for (int i = 0; i < output.Count; i++)
 						{
-							embed.AddInlineField($"#{i + (12 * page)}: {string.Join("", user.Name.Take(16))}",
-								$"{user.Currency} mekos!");
-							i++;
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Currency} mekos!");
 						}
 						await embed.SendToChannel(mContext.Channel);
 					}
@@ -701,17 +701,15 @@ namespace Miki.Modules.AccountsModule
 					case LeaderboardsType.LocalExperience:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-						embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
 						long guildId = mContext.Guild.Id.ToDbLong();
 						List<LocalExperience> output = await context.Experience
 							.Where(x => x.ServerId == guildId)
 							.OrderByDescending(x => x.Experience)
-							.Skip(12 * (Math.Max(page - 1, 0)))
+							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
 
 						int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
-
 
 						List<User> users = new List<User>();
 
@@ -722,11 +720,9 @@ namespace Miki.Modules.AccountsModule
 
 						for (int i = 0; i < users.Count; i++)
 						{
-							embed.AddInlineField($"#{i + (12 * page) + 1} : {string.Join("", users[i].Name.Take(16))}",
+							embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
 								$"{output[i].Experience} experience!");
 						}
-
-						embed.SetFooter(locale.GetString("page_index", page + 1, Math.Ceiling(amountOfUsers / 12f)), "");
 
 						await embed.SendToChannel(mContext.Channel);
 					}
@@ -735,17 +731,16 @@ namespace Miki.Modules.AccountsModule
 					case LeaderboardsType.Experience:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
-						embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-						List<User> output = await context.Users.OrderByDescending(x => x.Total_Experience)
-							.Skip(12 * (Math.Max(page - 1, 0)))
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Total_Experience)
+							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
-						int i = 1;
-						foreach (User user in output)
+
+						for (int i = 0; i < output.Count; i++)
 						{
-							embed.AddInlineField($"#{i + (12 * page)}: {string.Join("", user.Name.Take(16))}",
-								$"{user.Total_Experience} experience!");
-							i++;
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Total_Experience} experience!");
 						}
 						await embed.SendToChannel(mContext.Channel);
 					}
@@ -754,17 +749,16 @@ namespace Miki.Modules.AccountsModule
 					case LeaderboardsType.Reputation:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_reputation_header");
-						embed.Color = new IA.SDK.Color(1.0f, 0.6f, 0.4f);
-						List<User> output = await context.Users.OrderByDescending(x => x.Reputation)
-							.Skip(12 * (Math.Max(page - 1, 0)))
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Reputation)
+							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
-						int i = 1;
-						foreach (User user in output)
+						
+						for (int i = 0; i < output.Count; i++)
 						{
-							embed.AddInlineField($"#{i + (12 * page)}: {string.Join("", user.Name.Take(16))}",
-								$"{user.Reputation} reputation!");
-							i++;
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Reputation} reputation!");
 						}
 						await embed.SendToChannel(mContext.Channel);
 					}
