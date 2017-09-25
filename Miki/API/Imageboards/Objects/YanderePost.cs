@@ -11,8 +11,10 @@ namespace Miki.API.Imageboards.Objects
     internal class YanderePost : BooruPost, ILinkable
     {
         public string Url => file_url;
+		public string SourceUrl => source;
+		public string Provider => "Yande.re";
 
-        public int created_at { get; set; }
+		public int created_at { get; set; }
         public int updated_at { get; set; }
         public int creator_id { get; set; }
         public object approver_id { get; set; }

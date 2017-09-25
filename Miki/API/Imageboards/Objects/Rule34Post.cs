@@ -10,9 +10,11 @@ namespace Miki.API.Imageboards.Objects
 {
     internal class Rule34Post : BooruPost, ILinkable
     {
-        public new string Url => $"http://img.rule34.xxx/images/{Directory}/{Image}";
+        public string Url => $"http://img.rule34.xxx/images/{Directory}/{Image}";
+		public string SourceUrl => "";
+		public string Provider => "Rule34";
 
-        [JsonProperty("directory")]
+		[JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]

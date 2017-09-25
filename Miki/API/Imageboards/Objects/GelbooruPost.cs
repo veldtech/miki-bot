@@ -10,9 +10,11 @@ namespace Miki.API.Imageboards.Objects
 {
     internal class GelbooruPost : BooruPost, ILinkable
     {
-        public new string Url => "http:" + FileUrl;
+        public string Url => FileUrl;
+		public string SourceUrl => "";
+		public string Provider => "Gelbooru";
 
-        [JsonProperty("directory")]
+		[JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]

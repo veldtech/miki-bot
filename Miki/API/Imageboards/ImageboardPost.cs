@@ -81,12 +81,16 @@ namespace Miki.API.Imageboards
 
                 Log.Message(typeof(T).ToString());
 
-                List<T> d = JsonConvert.DeserializeObject<List<T>>(result);
+				JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+				List<T> d = JsonConvert.DeserializeObject<List<T>>(result, settings);
 
-                if (d.Any())
-                {
-                    return d[Global.random.Next(0, d.Count)];
-                }
+				if (d != null)
+				{
+					if (d.Any())
+					{
+						return d[Global.random.Next(0, d.Count)];
+					}
+				}
             }
             return default(T);
         }
