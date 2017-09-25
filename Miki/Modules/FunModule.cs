@@ -412,13 +412,13 @@ namespace Miki.Modules
 
 			if (string.IsNullOrWhiteSpace(e.arguments)) // No Arguments.
 			{
-				rollResult = MikiRandom.Next(1, 100).ToString();
+				rollResult = MikiRandom.Roll(100).ToString();
 			}
 			else
 			{
 				if (int.TryParse(e.arguments, out int max)) // Simple number argument.
 				{
-					rollResult = MikiRandom.Next(1, max).ToString();
+					rollResult = MikiRandom.Roll(max).ToString();
 				}
 				else // Assume the user has entered an advanced expression.
 				{
@@ -435,7 +435,7 @@ namespace Miki.Modules
 
 						for (int i = 0; i < dieCount; i++)
 						{
-							partialExpression += MikiRandom.Next(1, dieSides).ToString();
+							partialExpression += MikiRandom.Roll(dieSides).ToString();
 							if (i + 1 < dieCount)
 								partialExpression += " + ";
 						}

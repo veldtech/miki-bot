@@ -6,10 +6,12 @@ using IA.FileHandling;
 using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
+using Miki.Modules.Gambling.Managers;
 using Nito.AsyncEx;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Miki
@@ -37,8 +39,6 @@ namespace Miki
 
             await bot.ConnectAsync();
         }
-
-  
 
         private void LoadApiKeyFromFile()
         {

@@ -189,6 +189,11 @@ namespace Miki
             return Next(0, maxValue);
         }
 
+		public static int Roll(int maxValue)
+		{
+			return Next(0, maxValue) + 1;
+		}
+
         public static int Next(int minValue, int maxValue)
         {
             if (minValue > maxValue)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using IA;
+using System.Diagnostics;
 
 namespace Miki.Modules.Gambling.Managers
 {
@@ -28,6 +29,7 @@ namespace Miki.Modules.Gambling.Managers
 			weapons.Add(new RPSWeapon("scissors", emoji: ":scissors:"));
 			weapons.Add(new RPSWeapon("paper", emoji: ":page_facing_up:"));
 			weapons.Add(new RPSWeapon("rock", emoji: ":full_moon:"));
+			RunTests();
 		}
 
 		public string[] GetAllWeapons()
@@ -50,6 +52,19 @@ namespace Miki.Modules.Gambling.Managers
 				.First();
 		}
 
+		public void RunTests()
+		{
+			Debug.Assert(CalculateVictory(0, 1) == VictoryStatus.WIN);
+			Debug.Assert(CalculateVictory(1, 2) == VictoryStatus.WIN);
+			Debug.Assert(CalculateVictory(2, 0) == VictoryStatus.WIN);
+			Debug.Assert(CalculateVictory(0, 0) == VictoryStatus.DRAW);
+			Debug.Assert(CalculateVictory(1, 1) == VictoryStatus.DRAW);
+			Debug.Assert(CalculateVictory(2, 2) == VictoryStatus.DRAW);
+			Debug.Assert(CalculateVictory(1, 0) == VictoryStatus.LOSE);
+			Debug.Assert(CalculateVictory(2, 1) == VictoryStatus.LOSE);
+			Debug.Assert(CalculateVictory(0, 2) == VictoryStatus.LOSE);
+		}
+
 		public bool TryParse(string name, out RPSWeapon weapon)
 		{
 			weapon = Parse(name);
@@ -60,7 +75,11 @@ namespace Miki.Modules.Gambling.Managers
 		{
 			int playerIndex = weapons.IndexOf(player);
 			int cpuIndex = weapons.IndexOf(cpu);
-			return (VictoryStatus)((cpuIndex - playerIndex + 3) % weapons.Count);
+			return CalculateVictory(playerIndex, cpuIndex);
+		}
+		public VictoryStatus CalculateVictory(int player, int cpu)
+		{
+			return (VictoryStatus)((cpu - player + 3) % weapons.Count);
 		}
 	}
 }
