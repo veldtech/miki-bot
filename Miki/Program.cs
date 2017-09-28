@@ -20,7 +20,7 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-                AsyncContext.Run(() => new Program().Start());
+			AsyncContext.Run(() => new Program().Start());
         }
 
         public static Bot bot;
@@ -82,7 +82,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.2";
+                x.Version = "0.4.3";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
