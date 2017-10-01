@@ -293,13 +293,13 @@ namespace Miki.Modules
         public async Task StatsAsync(EventContext e)
         {
             TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
-
+            
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "⚙️ Miki stats";
             embed.Description = e.GetResource("stats_description");
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
-            embed.AddInlineField($"🖥️ {e.GetResource("discord_servers")}", Bot.instance.Client.Guilds.Count.ToString());
+            embed.AddInlineField($"🖥️ {e.GetResource("discord_guilds")}", Bot.instance.Client.Guilds.Count.ToString());
             embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
             embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 
