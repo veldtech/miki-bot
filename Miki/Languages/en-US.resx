@@ -1576,8 +1576,8 @@ You need atleast **{0}** experience before you can use this command on this serv
   <data name="time_and" xml:space="preserve">
     <value>and</value>
   </data>
-  <data name="discord_servers" xml:space="preserve">
-    <value>Servers</value>
+  <data name="discord_guild" xml:space="preserve">
+    <value>Guilds</value>
   </data>
   <data name="error_role_not_found" xml:space="preserve">
     <value>Couldn't find this role. Please try again!</value>
