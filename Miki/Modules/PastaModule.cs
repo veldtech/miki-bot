@@ -340,7 +340,7 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 var pastasFound = await context.Pastas.Where(x => x.Id.ToLower().Contains(query.ToLower()))
-                                                      .OrderByDescending(x => x.Id)
+                                                      .OrderByAscending(x => x.Id)
                                                       .Skip(25 * page)
                                                       .Take(25)
                                                       .ToListAsync();
