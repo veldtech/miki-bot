@@ -20,7 +20,7 @@ Below you will find a basic workflow of how the branches should work. Please fol
       * *(e.g., hf_fixmarrycommand)*
     * **helper_name_date**: For helper-related changes (such as cleaning up code, web documentation updates, etc), that need to be approved by Veld before they can be merged into any other branches.
       * *(e.g., helper_veld_201610 or helper_documentation_201610)*
-* Make your changes in your branch that you have just created.
+* Make your changes in the branch you have just created.
 * Commit those changes, and then push the branch to the remote git repository.
 * When changes are approved, and are ready for release, the branch will be merged into the **master** branch.
   * *Note: The working branch at this time will be deleted from the repository.*
