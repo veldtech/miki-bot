@@ -586,8 +586,14 @@ namespace Miki.Modules
                                         await ec.commandHandler.RequestDisposeAsync();
                                         await ec.message.DeleteAsync();
                                         if (callback != null)
-                                        {
-                                            await callback(e, bet);
+										{
+											if (bet > user.Currency)
+											{
+												await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
+													.SendToChannel(e.Channel);
+												return;
+											}
+											await callback(e, bet);
                                         }
                                     })).Build();
 
