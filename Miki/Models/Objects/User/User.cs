@@ -73,31 +73,35 @@ namespace Miki.Models
 
         public static async Task<User> CreateAsync(IDiscordMessage e)
         {
-            User user = new User()
-            {
-                Id = e.Author.Id.ToDbLong(),
-                Currency = 0,
-                AvatarUrl = "default",
-                HeaderUrl = "default",
-                DateCreated = DateTime.Now,
-                LastDailyTime = Utils.MinDbValue,
-                MarriageSlots = 5,
-                Name = e.Author.Username,
-                Title = "",
-                Total_Commands = 0,
-                Total_Experience = 0,
-                Reputation = 0,
-                LastReputationGiven = Utils.MinDbValue
-            };
-
-            using (var context = new MikiContext())
-            {
-                context.Users.Add(user);
-                await context.SaveChangesAsync();
-            }
-
-            return user;
+			return await CreateAsync(e.Author);
         }
+		public static async Task<User> CreateAsync(IDiscordUser u)
+		{
+			User user = new User()
+			{
+				Id = u.Id.ToDbLong(),
+				Currency = 0,
+				AvatarUrl = "default",
+				HeaderUrl = "default",
+				DateCreated = DateTime.Now,
+				LastDailyTime = Utils.MinDbValue,
+				MarriageSlots = 5,
+				Name = u.Username,
+				Title = "",
+				Total_Commands = 0,
+				Total_Experience = 0,
+				Reputation = 0,
+				LastReputationGiven = Utils.MinDbValue
+			};
+
+			using (var context = new MikiContext())
+			{
+				context.Users.Add(user);
+				await context.SaveChangesAsync();
+			}
+
+			return user;
+		}
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
         {

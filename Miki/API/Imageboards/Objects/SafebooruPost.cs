@@ -10,10 +10,12 @@ namespace Miki.API.Imageboards.Objects
 {
     internal class SafebooruPost : BooruPost, ILinkable
     {
-        public new string Url =>
+        public string Url =>
             $"https://safebooru.org/{ ((Sample) ? "samples" : "images")}/{Directory}/{((Sample) ? "sample_" : "")}{Image}";
+		public string SourceUrl => $"https://safebooru.org/{ ((Sample) ? "samples" : "images")}/{Directory}";
+		public string Provider => "Safebooru";
 
-        [JsonProperty("directory")]
+		[JsonProperty("directory")]
         public string Directory { get; set; }
 
         [JsonProperty("hash")]

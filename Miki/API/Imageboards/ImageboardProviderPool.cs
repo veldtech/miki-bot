@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
+using Newtonsoft.Json;
 
 namespace Miki.API.Imageboards
 {
@@ -25,7 +26,7 @@ namespace Miki.API.Imageboards
             {
                 if (Providers.TryGetValue(typeof(T), out ImageboardProvider<BooruPost> value))
                 {
-                    ImageboardProvider<T> output = new ImageboardProvider<T>(value.Config);
+					ImageboardProvider<T> output = new ImageboardProvider<T>(value.Config);
                     return output;
                 }
             }

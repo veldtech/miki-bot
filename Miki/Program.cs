@@ -6,10 +6,12 @@ using IA.FileHandling;
 using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
+using Miki.Modules.Gambling.Managers;
 using Nito.AsyncEx;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Miki
@@ -18,7 +20,7 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-                AsyncContext.Run(() => new Program().Start());
+			AsyncContext.Run(() => new Program().Start());
         }
 
         public static Bot bot;
@@ -37,8 +39,6 @@ namespace Miki
 
             await bot.ConnectAsync();
         }
-
-  
 
         private void LoadApiKeyFromFile()
         {
@@ -82,7 +82,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.2";
+                x.Version = "0.4.3";
                 x.Token = Global.ApiKey;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;

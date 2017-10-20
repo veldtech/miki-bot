@@ -42,12 +42,12 @@ namespace Miki.Modules
                 "http://i.imgur.com/GmIXuso.png",
                 "http://i.imgur.com/UM8XpgR.gif",
                 "http://i.imgur.com/GhoKM0u.gif",
-		"http://i.imgur.com/ehskzgF.gif",
-		"http://i.imgur.com/2biawgF.gif",
-		"http://i.imgur.com/D2WXDbd.gif",
-		"http://i.imgur.com/1ogeK3A.gif",
-		"http://i.imgur.com/djNBrtj.jpg",
-		"http://i.imgur.com/VyabzAv.jpg"
+				"http://i.imgur.com/ehskzgF.gif",
+				"http://i.imgur.com/2biawgF.gif",
+				"http://i.imgur.com/D2WXDbd.gif",
+				"http://i.imgur.com/1ogeK3A.gif",
+				"http://i.imgur.com/djNBrtj.jpg",
+				"http://i.imgur.com/VyabzAv.jpg"
             };
 
             RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
@@ -82,7 +82,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/kRaopT0.gif",
                 "http://i.imgur.com/On8Axls.gif",
                 "http://i.imgur.com/yCqJlFc.gif",
-		"http://i.imgur.com/jlTqATG.gif"
+				"http://i.imgur.com/jlTqATG.gif"
             };
 
             await Utils.Embed
@@ -259,20 +259,20 @@ namespace Miki.Modules
 		}
 	        
 		[Command(Name = "stare")]
-        	public async Task StareAsync(EventContext e)
-        	{
-        		string[] images = new string[]
-           		{
-                		"http://i.imgur.com/Bp9vfcf.gif",
-                		"http://i.imgur.com/7nFd5ve.gif",
-                		"http://i.imgur.com/rmfWuM0.gif"
-           		};
+        public async Task StareAsync(EventContext e)
+        {
+        	string[] images = new string[]
+           	{
+                	"http://i.imgur.com/Bp9vfcf.gif",
+                	"http://i.imgur.com/7nFd5ve.gif",
+                	"http://i.imgur.com/rmfWuM0.gif"
+           	};
 
-	        RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
+			RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
        		em.ImageUrl = images[Global.random.Next(0, images.Length)];
 
-	        await em.SendToChannel(e.Channel);
-        	}
+			await em.SendToChannel(e.Channel);
+        }
 	}
 }

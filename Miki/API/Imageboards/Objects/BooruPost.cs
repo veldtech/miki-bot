@@ -3,10 +3,8 @@ using Newtonsoft.Json;
 
 namespace Miki.API.Imageboards.Objects
 {
-    public class BooruPost : ILinkable
+    public class BooruPost
     {
-        public string Url => "";
-
         [JsonProperty("tags")]
         public string Tags { get; set; }
 

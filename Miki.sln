@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki", "Miki\Miki.csproj", "{887400DC-EC86-475C-B7E7-C73DCEA49560}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru", "..\Meru\Meru\Meru.csproj", "{E4B74DD1-8CCB-4FCC-9BDE-0F79C43211E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru", "..\Meru-old\Meru\Meru.csproj", "{E4B74DD1-8CCB-4FCC-9BDE-0F79C43211E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru.SDK", "..\Meru\Meru.SDK\Meru.SDK.csproj", "{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meru.SDK", "..\Meru-old\Meru.SDK\Meru.SDK.csproj", "{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient", "..\Meru\RestClient\RestClient.csproj", "{48155A63-8E59-4042-8130-7AD40315B8A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient", "..\Meru-old\RestClient\RestClient.csproj", "{48155A63-8E59-4042-8130-7AD40315B8A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

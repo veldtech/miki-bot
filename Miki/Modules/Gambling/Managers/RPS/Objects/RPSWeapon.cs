@@ -8,15 +8,13 @@ namespace Miki.Modules.Gambling.Managers
 {
 	class RPSWeapon
 	{
-		public string name;
-		public string[] aliases;
-		public string emoji;
+		public string Name;
+		public string Emoji;
 
-		public RPSWeapon( string _name, string[] Aliases = null, string Emoji = null )
+		public RPSWeapon(string name, string emoji = null)
 		{
-			name = _name;
-			aliases = Aliases;
-			emoji = Emoji;
+			Name = name;
+			Emoji = emoji;
 		}
 	}
 }

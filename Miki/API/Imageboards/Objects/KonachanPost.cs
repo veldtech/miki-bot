@@ -10,9 +10,11 @@ namespace Miki.API.Imageboards.Objects
 {
     internal class KonachanPost : BooruPost, ILinkable
     {
-        public new string Url => "http:" + FileUrl;
+        public string Url => "http:" + FileUrl;
+		public string SourceUrl => Source;
+		public string Provider => "Konachan";
 
-        [JsonProperty("id")]
+		[JsonProperty("id")]
         public string Id { get; set; }
 
         [JsonProperty("created_at")]

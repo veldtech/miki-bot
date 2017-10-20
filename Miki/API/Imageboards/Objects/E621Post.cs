@@ -10,9 +10,11 @@ namespace Miki.API.Imageboards.Objects
 {
     internal class E621Post : BooruPost, ILinkable
     {
-        public new string Url => FileUrl;
+        public string Url => FileUrl;
+		public string SourceUrl => Source;
+		public string Provider => "E621";
 
-        [JsonProperty("id")]
+		[JsonProperty("id")]
         public string Id { get; set; }
 
         [JsonProperty("description")]
