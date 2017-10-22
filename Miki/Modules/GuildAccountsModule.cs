@@ -41,7 +41,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if (thisUser.Experience > thisGuild.MinimalExperienceToGetRewards)
+                if (thisUser.Experience >= thisGuild.MinimalExperienceToGetRewards)
                 {
                     if (timer == null)
                     {
