@@ -1,4 +1,4 @@
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+	#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using Discord;
 using IA;
@@ -284,17 +284,26 @@ namespace Miki.Modules.AccountsModule
 				string[] args = e.arguments.Split(' ');
 				short repAmount = 1;
 
+				bool mentionedSelf = mentionedUsers.RemoveAll(x => x == e.Author.Id) > 0;
+
 				if (giver.LastReputationGiven.Day != DateTime.Now.Day)
 				{
 					giver.ReputationPointsLeft = 3;
 					giver.LastReputationGiven = DateTime.Now;
 				}
 
+				IDiscordEmbed embed = Utils.Embed;
+
+				if(mentionedSelf)
+				{
+					embed.SetFooter(e.GetResource("warning_mention_self"), "");
+				}
+
 				if (mentionedUsers.Count == 0)
 				{
 					TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
 
-					await Utils.Embed
+					await embed
 						.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
 						.SetDescription(locale.GetString("miki_module_accounts_rep_description"))
 						.AddInlineField(locale.GetString("miki_module_accounts_rep_total_received"), giver.Reputation.ToString())
@@ -324,8 +333,6 @@ namespace Miki.Modules.AccountsModule
 						return;
 					}
 
-					mentionedUsers.Remove(e.Author.Id);
-
 					if(mentionedUsers.Count * repAmount > giver.ReputationPointsLeft)
 					{
 						await e.ErrorEmbed("You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left.",
@@ -335,8 +342,7 @@ namespace Miki.Modules.AccountsModule
 					}
 				}
 
-				IDiscordEmbed embed = Utils.Embed
-					.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
+				embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
 					.SetDescription("You've successfully given reputation");
 
 				foreach (ulong user in mentionedUsers)

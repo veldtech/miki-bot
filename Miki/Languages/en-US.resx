@@ -1725,4 +1725,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   <data name="miki_command_usage_rps" xml:space="preserve">
     <value>&gt;rps &lt;bet&gt; &lt;r/p/s&gt;</value>
   </data>
+  <data name="warning_mention_self" xml:space="preserve">
+    <value>We saw you tried to mention yourself. You can't do this!</value>
+  </data>
 </root>
