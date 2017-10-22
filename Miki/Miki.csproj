@@ -781,15 +781,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Meru-old\Meru.SDK\Meru.SDK.csproj">
+    <ProjectReference Include="..\..\Meru\Meru.SDK\Meru.SDK.csproj">
       <Project>{b8ffa60f-2c45-449f-ad4d-cf1c5a3075d4}</Project>
       <Name>Meru.SDK</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Meru-old\Meru\Meru.csproj">
+    <ProjectReference Include="..\..\Meru\Meru\Meru.csproj">
       <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
       <Name>Meru</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Meru-old\RestClient\RestClient.csproj">
+    <ProjectReference Include="..\..\Meru\RestClient\RestClient.csproj">
       <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
       <Name>RestClient</Name>
     </ProjectReference>

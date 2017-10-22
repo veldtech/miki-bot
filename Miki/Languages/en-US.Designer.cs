@@ -19,7 +19,7 @@ namespace Miki.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class en_US {
@@ -4531,6 +4531,15 @@ namespace Miki.Languages {
         internal static string user_error_no_account {
             get {
                 return ResourceManager.GetString("user_error_no_account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We saw you tried to mention yourself. You can&apos;t do this!.
+        /// </summary>
+        internal static string warning_mention_self {
+            get {
+                return ResourceManager.GetString("warning_mention_self", resourceCulture);
             }
         }
     }
