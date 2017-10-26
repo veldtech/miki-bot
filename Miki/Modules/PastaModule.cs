@@ -430,7 +430,7 @@ namespace Miki.Modules
 				string resultString = "";
 				neededPastas.ForEach( x => { resultString += "`" + x.Id + "` "; } );
 
-				string useName = string.IsNullOrEmpty( e.Author.Nickname ) ? e.Author.Username : e.Author.Nickname;
+				string useName = string.IsNullOrEmpty( targetUser.Nickname ) ? targetUser.Username : targetUser.Nickname;
 				embed.SetTitle( $"{( lovedPastas ? locale.GetString( "miki_module_pasta_loved_header" ) : locale.GetString( "miki_module_pasta_hated_header" ) )} - {useName}" );
 				embed.SetDescription( resultString );
 				embed.SetFooter( locale.GetString( "page_index", page + 1, Math.Ceiling( pastaVotes.Count() / totalPerPage ) ), "" );
