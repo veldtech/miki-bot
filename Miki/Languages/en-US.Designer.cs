@@ -531,9 +531,9 @@ namespace Miki.Languages {
         /// <summary>
         ///   Looks up a localized string similar to Give your friends reputation for being such good friends.
         /// </summary>
-        internal static string miki_comamnd_description_rep {
+        internal static string miki_command_description_rep {
             get {
-                return ResourceManager.GetString("miki_comamnd_description_rep", resourceCulture);
+                return ResourceManager.GetString("miki_command_description_rep", resourceCulture);
             }
         }
         
