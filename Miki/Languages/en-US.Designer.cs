@@ -538,21 +538,11 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to only when you really don&apos;t want to get married..
+        ///   Looks up a localized string similar to Get Miki's invite link, so you can put her on your server!.
         /// </summary>
-        internal static string miki_command_declinemarriage_description {
+        internal static string miki_command_description_invite {
             get {
-                return ResourceManager.GetString("miki_command_declinemarriage_description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;declinemarriage @user
-        ///&gt;declinemarriage *.
-        /// </summary>
-        internal static string miki_command_declinemarriage_usage {
-            get {
-                return ResourceManager.GetString("miki_command_declinemarriage_usage", resourceCulture);
+                return ResourceManager.GetString("miki_command_description_invite", resourceCulture);
             }
         }
         
@@ -868,6 +858,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_infopasta {
             get {
                 return ResourceManager.GetString("miki_command_description_infopasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get the link to invite Miki to your server!.
+        /// </summary>
+        internal static string miki_command_description_invite {
+            get {
+                return ResourceManager.GetString("miki_command_description_invite", resourceCulture);
             }
         }
         
@@ -1558,6 +1557,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_infopasta {
             get {
                 return ResourceManager.GetString("miki_command_usage_infopasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;invite.
+        /// </summary>
+        internal static string miki_command_usage_invite {
+            get {
+                return ResourceManager.GetString("miki_command_usage_invite", resourceCulture);
             }
         }
         
