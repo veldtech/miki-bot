@@ -72,7 +72,7 @@ namespace Miki.Modules
             if (!string.IsNullOrWhiteSpace(e.arguments))
             {
                 List<string> arguments = e.arguments.Split(' ').ToList();
-                if (int.TryParse(arguments[0], out page) || int.TryParse(arguments[0], out page))
+                if (int.TryParse(arguments[0], out page))
                 {
                     page -= 1;
                 }
@@ -394,10 +394,12 @@ namespace Miki.Modules
 				targetUser = await e.Guild.GetUserAsync( e.message.MentionedUserIds.First() );
 				string[] args = e.arguments.Split( ' ' );
 				int.TryParse( (args.Count() > 1 ? args[1] : "0"), out page );
+				page -= page <= 0 ? 0 : 1;
 			}
 			else
 			{
 				int.TryParse( e.arguments, out page );
+				page -= 1;
 			}
 
 			using( MikiContext context = new MikiContext() )
@@ -405,8 +407,10 @@ namespace Miki.Modules
 				long authorId = targetUser.Id.ToDbLong();
 				IEnumerable<PastaVote> pastaVotes = context.Votes.Where( x => x.__UserId == authorId && x.PositiveVote == lovedPastas );
 				
-				int maxPage = (int)Math.Ceiling( pastaVotes.Count() / totalPerPage );
-				page = page > maxPage - 1 ? maxPage - 1 : page;
+				int maxPage = (int)Math.Floor( pastaVotes.Count() / totalPerPage );
+				page = page > maxPage ? maxPage : page;
+				page = page < 0 ? 0 : page;
+				
 
 				if( pastaVotes.Count() <= 0 )
 				{
