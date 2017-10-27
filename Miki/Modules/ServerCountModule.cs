@@ -36,7 +36,7 @@ namespace Miki.Modules
             {
                 var values = new Dictionary<string, string>
                 {
-                   { "key", Global.CarbonitexKey },
+                   { "key", Global.config.CarbonKey },
                    { "servercount", bot.Client.Guilds.Count.ToString() }
                 };
                 FormUrlEncodedContent content = new FormUrlEncodedContent(values);
@@ -51,7 +51,7 @@ namespace Miki.Modules
             {
                 using (var content = new StringContent($"{{ \"server_count\": {bot.Client.Guilds.Count}}}", Encoding.UTF8, "application/json"))
                 {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordBotsOrgKey);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.config.DiscordBotsOrgKey);
                     HttpResponseMessage response = await client.PostAsync("https://discordbots.org/api/bots/160105994217586689/stats", content);
                 }
             }
@@ -63,7 +63,7 @@ namespace Miki.Modules
             {
                 using (var content = new StringContent("{\"shard_id\": " + Bot.instance.Client.GetShardIdFor((g as IProxy<IGuild>).ToNativeObject()) + ", \"shard_count\": " + Bot.instance.Client.Shards.Count + ", \"server_count\": " + Bot.instance.Client.GetShardFor((g as IProxy<IGuild>).ToNativeObject()).Guilds.Count + "}", Encoding.UTF8, "application/json"))
                 {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.DiscordPwKey);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Global.config.DiscordPwKey);
                     HttpResponseMessage response = await client.PostAsync("https://bots.discord.pw/api/bots/160105994217586689/stats", content);
                 }
             }

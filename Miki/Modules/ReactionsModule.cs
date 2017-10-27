@@ -52,7 +52,7 @@ namespace Miki.Modules
 
             RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
-            em.ImageUrl = images[Global.random.Next(0, images.Length)];
+            em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
             await em.SendToChannel(e.Channel);
         }
@@ -86,7 +86,7 @@ namespace Miki.Modules
             };
 
             await Utils.Embed
-                .SetImageUrl(lewd[Global.random.Next(0, lewd.Length)])
+                .SetImageUrl(lewd[MikiRandom.Next(0, lewd.Length)])
                 .SendToChannel(e.Channel.Id);
         }
 
@@ -111,7 +111,7 @@ namespace Miki.Modules
 
             RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
-            em.ImageUrl = images[Global.random.Next(0, images.Length)];
+            em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
             await em.SendToChannel(e.Channel);
         }
@@ -156,7 +156,7 @@ namespace Miki.Modules
 
 			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
 			{
-				ImageUrl = images[Global.random.Next( 0, images.Length )]
+				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
 			await em.SendToChannel( e.Channel );
 		}
@@ -253,7 +253,7 @@ namespace Miki.Modules
 
 			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
 			{
-				ImageUrl = images[Global.random.Next( 0, images.Length )]
+				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
 			await em.SendToChannel( e.Channel );
 		}
@@ -270,7 +270,7 @@ namespace Miki.Modules
 
 			RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
-       		em.ImageUrl = images[Global.random.Next(0, images.Length)];
+       		em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
 			await em.SendToChannel(e.Channel);
         }

@@ -11,9 +11,9 @@ namespace Miki.Modules
 {
     internal class RocketLeagueModule
     {
-        private RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
-        {
-            ApiKey = Global.RocketLeagueKey
+		private RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
+		{
+			ApiKey = Global.config.RocketLeagueKey
         });
 
         public async Task LoadEvent(Bot bot)
