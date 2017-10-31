@@ -924,15 +924,6 @@ Fuzzy</comment>
     <value>mention</value>
     <comment>What is this?</comment>
   </data>
-  <data name="miki_command_declinemarriage_description" xml:space="preserve">
-    <value>only when you really don't want to get married.</value>
-  </data>
-  <data name="miki_command_declinemarriage_usage" xml:space="preserve">
-    <value>&gt;declinemarriage @user
-&gt;declinemarriage *</value>
-    <comment>is it supposed to be &lt;@user&gt; or just @user
-it's a variable type thing, so we really shouldn't be changing it.</comment>
-  </data>
   <data name="miki_marriage_all_declined" xml:space="preserve">
     <value>All proposals declined!</value>
   </data>
@@ -965,10 +956,13 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>Get daily mekos!</value>
   </data>
   <data name="miki_command_description_declinemarriage" xml:space="preserve">
-    <value>Decline marriages you or the other person proposed. This command can be used to remove your own proposal! use * to decline all marriages.</value>
+    <value>Decline marriages you or the other person proposed. This command can be used to remove your own proposal! Use * to decline all marriages.</value>
   </data>
   <data name="miki_command_description_give" xml:space="preserve">
     <value>Give love and mekos to your friends... mostly mekos.</value>
+  </data>
+    <data name="miki_command_description_invite" xml:space="preserve">
+    <value>Get Miki's invite link, so you can put her on your server!</value>
   </data>
   <data name="miki_command_description_kick" xml:space="preserve">
     <value>Kick baddies with the power of Miki!</value>
@@ -1018,7 +1012,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
   </data>
   <data name="miki_command_usage_declinemarriage" xml:space="preserve">
     <value>&gt;declinemarriage &lt;mention&gt;
-&gt; declinemarriage *</value>
+&gt;declinemarriage *</value>
   </data>
   <data name="miki_command_usage_give" xml:space="preserve">
     <value>&gt;give &lt;user&gt; &lt;amount&gt;</value>
@@ -1026,6 +1020,9 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
   <data name="miki_command_usage_kick" xml:space="preserve">
     <value>&gt;kick &lt;mention&gt; [reason]
 &gt;kick &lt;user id&gt; [reason]</value>
+  </data>
+  <data name="miki_command_usage_invite" xml:space="preserve">
+    <value>&gt;invite</value>
   </data>
   <data name="miki_command_usage_mekos" xml:space="preserve">
     <value>&gt;mekos</value>
@@ -1712,7 +1709,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   <data name="miki_module_pasta_loved_header" xml:space="preserve">
     <value>Loved Pastas</value>
   </data>
-  <data name="miki_comamnd_description_rep" xml:space="preserve">
+  <data name="miki_command_description_rep" xml:space="preserve">
     <value>Give your friends reputation for being such good friends</value>
   </data>
   <data name="miki_command_description_rps" xml:space="preserve">
@@ -1720,7 +1717,8 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   </data>
   <data name="miki_command_usage_rep" xml:space="preserve">
     <value>&gt;rep
-&gt;rep &lt;mention&gt; [mention...]</value>
+&gt;rep &lt;mention&gt; [mention...]
+&gt;rep &lt;mention&gt; &lt;amount|all&gt;</value>
   </data>
   <data name="miki_command_usage_rps" xml:space="preserve">
     <value>&gt;rps &lt;bet&gt; &lt;r/p/s&gt;</value>
