@@ -7,6 +7,7 @@ using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Gambling.Managers;
+using Miki.Tests;
 using Newtonsoft.Json;
 using Nito.AsyncEx;
 using StackExchange.Redis;
@@ -34,6 +35,12 @@ namespace Miki
 
 			LoadConfig();
             LoadDiscord();
+
+			// Run this only when in debug mode.
+			if (Debugger.IsAttached)
+			{
+				TestCase.Run();
+			}
 
             await bot.ConnectAsync();
         }
