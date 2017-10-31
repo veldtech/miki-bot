@@ -43,13 +43,13 @@ namespace Miki
             if (FileReader.FileExist("settings.json", "miki"))
             {
                 FileReader reader = new FileReader("settings.json", "miki");
-				JsonConvert.DeserializeObject<Config>(reader.ReadAll());			
+				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());			
                 reader.Finish();
             }
             else
             {
                 FileWriter writer = new FileWriter("settings.json", "miki");
-                writer.Write(JsonConvert.SerializeObject(Global.config));
+                writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
                 writer.Finish();
             }
         }
