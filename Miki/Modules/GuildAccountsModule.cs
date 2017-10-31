@@ -78,7 +78,7 @@ namespace Miki.Modules
                             return;
                         }
 
-                        int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
+                        int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
                         User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
 
@@ -150,7 +150,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                int random = Global.random.Next(0, rivalGuilds.Count);
+                int random = MikiRandom.Next(0, rivalGuilds.Count);
 
                 GuildUser rivalGuild = await db.GuildUsers.FindAsync(rivalGuilds[random].Id);
 

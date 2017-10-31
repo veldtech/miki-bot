@@ -191,7 +191,7 @@ namespace Miki.Modules
         {
             Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[Global.random.Next(0, reactions.Length)]) });
+            string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[MikiRandom.Next(0, reactions.Length)]) });
             await e.Channel.SendMessage(output);
         }
 
@@ -223,7 +223,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/2nukcqZ.jpg",
                 "http://i.imgur.com/BxwgwHh.jpg"
             };
-            await e.Channel.SendMessage(bird[Global.random.Next(0, bird.Length)]);
+            await e.Channel.SendMessage(bird[MikiRandom.Next(0, bird.Length)]);
         }
 
         [Command(Name = "cat")]
@@ -273,13 +273,13 @@ namespace Miki.Modules
                 " a lot, is that weird?",
             };
 
-            await e.Channel.SendMessage(I_LIKE[Global.random.Next(0, I_LIKE.Length)] + BODY_PART[Global.random.Next(0, BODY_PART.Length)] + SUFFIX[Global.random.Next(0, SUFFIX.Length)]);
+            await e.Channel.SendMessage(I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
         }
 
         [Command(Name = "cage")]
         public async Task CageAsync(EventContext e)
         {
-            await e.Channel.SendMessage("http://www.placecage.com/c/" + Global.random.Next(100, 1500) + "/" + Global.random.Next(100, 1500));
+            await e.Channel.SendMessage("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
         }
 
         [Command(Name = "dog")]
@@ -318,7 +318,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/uIX5RVf.jpg",
                 "http://i.imgur.com/49Da81l.jpg"
             };
-            await e.Channel.SendMessage(dog[Global.random.Next(0, dog.Length)]);
+            await e.Channel.SendMessage(dog[MikiRandom.Next(0, dog.Length)]);
         }
 
         [Command(Name = "gif")]
@@ -326,7 +326,7 @@ namespace Miki.Modules
         {
             if (string.IsNullOrEmpty(e.arguments)) return;
 
-            var client = new MashapeClient(Global.ImgurClientId, Global.ImgurKey);
+            var client = new MashapeClient(Global.config.ImgurClientId, Global.config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.arguments} ext:gif");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -340,7 +340,7 @@ namespace Miki.Modules
 
             if (actualImages.Count > 0)
             {
-                IGalleryImage i = actualImages[Global.random.Next(0, actualImages.Count)];
+                IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
                 await e.Channel.SendMessage(i.Link);
             }
@@ -355,7 +355,7 @@ namespace Miki.Modules
         {
             if (string.IsNullOrEmpty(e.arguments)) return;
 
-            var client = new MashapeClient(Global.ImgurClientId, Global.ImgurKey);
+            var client = new MashapeClient(Global.config.ImgurClientId, Global.config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.arguments}");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -369,7 +369,7 @@ namespace Miki.Modules
 
             if (actualImages.Count > 0)
             {
-                IGalleryImage i = actualImages[Global.random.Next(0, actualImages.Count)];
+                IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
                 await e.Channel.SendMessage(i.Link);
             }
@@ -382,7 +382,7 @@ namespace Miki.Modules
         [Command(Name = "lunch")]
         public async Task LunchAsync(EventContext e)
         {
-            await e.Channel.SendMessage(e.GetResource("lunch_line") + "\n" + lunchposts[Global.random.Next(0, lunchposts.Length)]);
+            await e.Channel.SendMessage(e.GetResource("lunch_line") + "\n" + lunchposts[MikiRandom.Next(0, lunchposts.Length)]);
         }
 
         [Command(Name = "pick")]
@@ -402,7 +402,7 @@ namespace Miki.Modules
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
         {
-            await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(puns[Global.random.Next(0, puns.Length)]));
+            await e.Channel.SendMessage(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(puns[MikiRandom.Next(0, puns.Length)]));
         }
 
 		[Command(Name = "roll")]
@@ -473,7 +473,7 @@ namespace Miki.Modules
 			IEnumerable<IDiscordUser> users = await e.Channel.GetUsersAsync();
 			List<IDiscordUser> realUsers = users.Where( user => !user.IsBot ).ToList();
 
-			string mention = "<@" + realUsers[Global.random.Next( 0, realUsers.Count )].Id + ">";
+			string mention = "<@" + realUsers[MikiRandom.Next( 0, realUsers.Count )].Id + ">";
 			string send = string.IsNullOrEmpty( e.arguments ) ?
 				e.GetResource( Locale.RouletteMessageNoArg, mention) :      
 				e.GetResource( Locale.RouletteMessage, e.arguments, mention );
@@ -634,7 +634,7 @@ namespace Miki.Modules
 
             RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
             {
-                ImageUrl = images[Global.random.Next( 0, images.Length )]
+                ImageUrl = images[MikiRandom.Next( 0, images.Length )]
             };
             await em.SendToChannel( e.Channel );
         }
