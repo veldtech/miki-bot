@@ -11,6 +11,8 @@ namespace Miki.Models
     public class MikiContext : DbContext
     {
         public DbSet<Achievement> Achievements { get; set; }
+		public DbSet<BadgesOwned> BadgesOwned { get; set; }
+		public DbSet<BadgeResources> BadgeResources { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
         public DbSet<EventMessage> EventMessages { get; set; }
         public DbSet<LocalExperience> Experience { get; set; }
@@ -19,7 +21,8 @@ namespace Miki.Models
         public DbSet<LevelRole> LevelRoles { get; set; }
         public DbSet<Marriage> Marriages { get; set; }
         public DbSet<GlobalPasta> Pastas { get; set; }
-        public DbSet<Setting> Settings { get; set; }
+		public DbSet<PinnedBadges> PinnedBadges { get; set; }
+		public DbSet<Setting> Settings { get; set; }
         public DbSet<Timer> Timers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<PastaVote> Votes { get; set; }

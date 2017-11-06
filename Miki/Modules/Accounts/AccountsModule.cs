@@ -156,7 +156,7 @@ namespace Miki.Modules.AccountsModule
 					IDiscordEmbed embed = Utils.Embed
 						.SetDescription(account.Title)
 						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name),
-							"http://veld.one/assets/profile-icon.png", "https://patreon.com/mikibot")
+							"http://veld.one/assets/profile-icon.png", "https://miki.ai/profile/" + account.Id)
 						.SetThumbnailUrl(discordUser.AvatarUrl);
 
 					long serverid = e.Guild.Id.ToDbLong();
@@ -247,21 +247,13 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
 
-					string achievements =
-						AchievementManager.Instance.PrintAchievements(context, account.Id.FromDbLong());
-
-					embed.AddInlineField(
-						locale.GetString("miki_generic_achievements"),
-						achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
-
-					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
-						"http://miki.veld.one/profile/" + account.Id);
-
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
 							sw.ElapsedMilliseconds), "");
 
 					sw.Stop();
+
+					embed.SetImageUrl("https://cdn.discordapp.com/attachments/259343729586864139/376404060707880972/121919449996460033.png");
 
 					await embed.SendToChannel(e.Channel);
 				}
@@ -651,6 +643,20 @@ namespace Miki.Modules.AccountsModule
 					await Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating this!")
 						.SendToChannel(e.Channel);
 				}
+			}
+		}
+
+		[Command(Name = "mybadges")]
+		public async Task MyBadgesAsync(EventContext e)
+		{
+			int page = 0;
+			using (var context = new MikiContext())
+			{
+				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+				string output = string.Join<long>(" ", u.BadgesOwned.Select(x => x.Id).ToList());
+
+				await e.Channel.SendMessage(output.DefaultIfEmpty("none, yet!"));
 			}
 		}
 

@@ -47,5 +47,14 @@ namespace Miki
 
 		[JsonProperty("datadog_key")]
 		public string DatadogKey { get; set; } = "";
+
+		/// <summary>
+		/// Api route
+		/// </summary>
+		[JsonProperty("miki_api_base_url")]
+		public string MikiApiBaseUrl { get; set; } = "https://api.miki.ai/";
+
+		[JsonProperty("miki_api_key")]
+		public string MikiApiKey { get; set; } = "";
 	}
 }

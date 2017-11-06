@@ -663,7 +663,7 @@ Fuzzy</comment>
   <data name="miki_module_general_guildinfo_owned_by" xml:space="preserve">
     <value>Owned by</value>
   </data>
-  <data name="miki_module_general_guildinfo_roles" xml:space="preserve">
+  <data name="term_roles" xml:space="preserve">
     <value>Roles</value>
   </data>
   <data name="miki_module_general_guildinfo_users" xml:space="preserve">
@@ -961,7 +961,7 @@ Fuzzy</comment>
   <data name="miki_command_description_give" xml:space="preserve">
     <value>Give love and mekos to your friends... mostly mekos.</value>
   </data>
-    <data name="miki_command_description_invite" xml:space="preserve">
+  <data name="miki_command_description_invite" xml:space="preserve">
     <value>Get Miki's invite link, so you can put her on your server!</value>
   </data>
   <data name="miki_command_description_kick" xml:space="preserve">
@@ -1725,5 +1725,14 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   </data>
   <data name="warning_mention_self" xml:space="preserve">
     <value>We saw you tried to mention yourself. You can't do this!</value>
+  </data>
+  <data name="error_role_forbidden" xml:space="preserve">
+    <value>This role is not allowed!</value>
+  </data>
+  <data name="error_role_null" xml:space="preserve">
+    <value>This role does not exist!</value>
+  </data>
+  <data name="term_available" xml:space="preserve">
+    <value>Available Roles</value>
   </data>
 </root>

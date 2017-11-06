@@ -8,6 +8,7 @@ using Miki.Accounts;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
+using Rest;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -266,32 +267,29 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "guildtop")]
-        public async Task GuildTop(EventContext e)
-        {
-            int amountToTake = 12;
-            int.TryParse(e.arguments, out int amountToSkip);
+		[Command(Name = "guildtop")]
+		public async Task GuildTop(EventContext e)
+		{
+			bool usePagedRoute = false;
+			if (int.TryParse(e.arguments, out int amountToSkip))
+			{
+				usePagedRoute = true;
+			}
 
-            using (var context = new MikiContext())
-            {
-                int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+			RestClient rest = new RestClient
+				(Global.config.MikiApiBaseUrl +
+				"/leaderboards/global/guilds" +
+				(usePagedRoute ? $"/{amountToSkip}" : "" +
+				"?key=" + Global.config.MikiApiKey));
 
-                List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
-                                                                      .Skip(amountToSkip * amountToTake)
-                                                                      .Take(amountToTake)
-                                                                      .ToListAsync();
+			IDiscordEmbed embed = Utils.Embed
+				.SetTitle(e.GetResource("guildtop_title"));
 
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle(e.GetResource("guildtop_title"));
+			List<LeaderboardsItem> items = (await rest.GetAsync<List<LeaderboardsItem>>()).Data;
 
-                foreach (GuildUser i in leaderboards)
-                {
-                    embed.AddInlineField(i.Name, i.Experience.ToString());
-                }
-
-                embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);
-                await embed.SendToChannel(e.Channel);
-            }
-        }
+			embed = Utils.RenderLeaderboards(embed, items);
+			/*embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);*/
+			await embed.SendToChannel(e.Channel);
+		}
     }
 }
