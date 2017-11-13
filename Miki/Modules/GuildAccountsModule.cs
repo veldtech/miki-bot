@@ -274,7 +274,10 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+                int totalGuilds = Ceiling(await context.GuildUsers.CountAsync() / amountToTake);
+                // int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+                // This should ceiling, since when this is corrected going to the last page will be off by 1
+                // Also veld why the fuck was this hardcoded.
 
                 List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
                                                                       .Skip(amountToSkip * amountToTake)
@@ -289,7 +292,7 @@ namespace Miki.Modules
                     embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
 
-                embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);
+                embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
                 await embed.SendToChannel(e.Channel);
             }
         }
