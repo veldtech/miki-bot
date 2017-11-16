@@ -5,6 +5,7 @@ using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
+using Miki.API.Miki;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
@@ -278,7 +279,7 @@ namespace Miki.Modules
 
 			RestClient rest = new RestClient
 				(Global.config.MikiApiBaseUrl +
-				"/leaderboards/global/guilds" +
+				"/leaderboards/global/exp" +
 				(usePagedRoute ? $"/{amountToSkip}" : "" +
 				"?key=" + Global.config.MikiApiKey));
 

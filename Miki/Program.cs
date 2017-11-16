@@ -24,7 +24,7 @@ namespace Miki
         {
 			AsyncContext.Run(() => new Program().Start());
         }
-
+	
         public static Bot bot;
         public static DateTime timeSinceStartup;
 
@@ -134,5 +134,5 @@ namespace Miki
             ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
             await defaultChannel.SendMessage("Hello, I am **Miki**! At your service!\nTry to use **>help** to check out what i can do! :notes:");
         }
-    }
+    }	
 }

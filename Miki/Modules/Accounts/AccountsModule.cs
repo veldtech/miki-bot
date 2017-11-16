@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.AccountsModule
@@ -63,6 +64,39 @@ namespace Miki.Modules.AccountsModule
 
 			new ExperienceTrackerService()
 				.Install(module);
+		}
+
+		[Command(Name = "achievements")]
+		public async Task AchievementsAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				long id = (e.message.MentionedUserIds.Count > 0) ? e.message.MentionedUserIds.First().ToDbLong() : e.Author.Id.ToDbLong();
+				User u = await context.Users.FindAsync(id);
+				IDiscordUser discordUser = await e.Guild.GetUserAsync(id.FromDbLong());
+
+				List<Achievement> achievements = await context.Achievements
+					.Where(x => x.Id == id)
+					.ToListAsync();
+
+				IDiscordEmbed embed = Utils.Embed;
+
+				embed.SetAuthor(u.Name + " | " + "Achievements", discordUser.AvatarUrl, "https://miki.ai/profiles/ID/achievements");
+
+				StringBuilder leftBuilder = new StringBuilder();
+
+				int totalScore = 0;
+
+				foreach (var a in achievements)
+				{
+					BaseAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
+					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockDate.ToShortDateString()}");
+					totalScore += metadata.Points;
+				}
+
+				await embed.AddInlineField("Total Pts: " + totalScore, leftBuilder.ToString())
+					.SendToChannel(e.Channel);
+			}
 		}
 
 		[Command(Name = "leaderboards", Aliases = new[] { "lb", "leaderboard", "top" })]

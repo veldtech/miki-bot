@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Miki.Models
@@ -14,5 +15,8 @@ namespace Miki.Models
 
         [Column("Rank")]
         public short Rank { get; set; }
+
+		[Column("UnlockDate")]
+		public DateTime UnlockDate { get; set; }
     }
 }

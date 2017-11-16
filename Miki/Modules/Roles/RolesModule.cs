@@ -41,10 +41,18 @@ namespace Miki.Modules.Roles
 			{
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				IDiscordUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
 
 				if (newRole == null || newRole.RequiredLevel > user.Level)
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
+						.SendToChannel(e.Channel);
+					return;
+				}
+
+				if(newRole.RequiredRole != 0 &&  !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
+				{
+					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
 						.SendToChannel(e.Channel);
 					return;
 				}
@@ -119,6 +127,10 @@ namespace Miki.Modules.Roles
 						{
 							stringBuilder.Append($"{role.RequiredLevel}⭐ ");
 						}
+						if(role.RequiredRole != 0)
+						{
+							stringBuilder.Append($"🔨`{e.Guild.GetRole(role.RequiredRole.FromDbLong())?.Name ?? "non-existing role"}`");
+						}
 						if(role.Automatic)
 						{
 							stringBuilder.Append($"⚙️");
@@ -138,19 +150,6 @@ namespace Miki.Modules.Roles
 					.SetTitle("Available Roles")
 					.SetDescription(stringBuilder.ToString())
 					.SendToChannel(e.Channel);
-			}
-		}
-
-		[Command(Name = "test", Accessibility = IA.SDK.EventAccessibility.DEVELOPERONLY)]
-		public async Task TestAsync(EventContext e)
-		{
-			int index = int.Parse(e.arguments.Split(' ')[0]);
-			int value = int.Parse(e.arguments.Split(' ')[1]);
-			using (var context = new MikiContext())
-			{
-				PinnedBadges p = await context.PinnedBadges.FindAsync(e.Author.Id.ToDbLong());
-				p.SetPinnedBadge(index, value);
-				await context.SaveChangesAsync();
 			}
 		}
 
@@ -181,19 +180,41 @@ namespace Miki.Modules.Roles
 					});
 				}
 
-				if (arguments.ContainsKey("-automatic"))
+				if (arguments.ContainsKey("automatic"))
 				{
 					newRole.Automatic = true;
 				}
 
-				if(arguments.ContainsKey("-optable"))
+				if(arguments.ContainsKey("optable"))
 				{
 					newRole.Optable = true;
 				}
 
-				if (arguments.ContainsKey("-level-required"))
+				if (arguments.ContainsKey("level-required"))
 				{
-					newRole.RequiredLevel = (int)arguments["-level-required"];
+					newRole.RequiredLevel = (int)arguments["level-required"];
+				}
+
+				if(arguments.ContainsKey("role-required"))
+				{
+					long id = 0;
+					if (arguments["role-required"] is long l)
+					{
+						id = l;
+					}
+					else
+					{
+						var r = e.Guild.Roles.Where(x => x.Name.ToLower() == arguments["role-required"].ToString().ToLower()).FirstOrDefault();
+						if(r != null)
+						{
+							id = r.Id.ToDbLong();
+						}
+					}
+
+					if(id != 0)
+					{
+						newRole.RequiredRole = id;
+					}
 				}
 
 				await context.SaveChangesAsync();

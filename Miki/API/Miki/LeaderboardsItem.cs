@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Miki.Accounts
+namespace Miki.API.Miki
 {
     public class LeaderboardsItem
     {

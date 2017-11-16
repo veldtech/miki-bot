@@ -1735,4 +1735,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   <data name="term_available" xml:space="preserve">
     <value>Available Roles</value>
   </data>
+  <data name="error_role_required" xml:space="preserve">
+    <value>You do not seem to have the role {0}! You can not do this without this role!</value>
+  </data>
 </root>

@@ -187,6 +187,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You do not seem to have the role {0}! You can not do this without this role!.
+        /// </summary>
+        internal static string error_role_required {
+            get {
+                return ResourceManager.GetString("error_role_required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This term couldn&apos;t been found!.
         /// </summary>
         internal static string error_term_invalid {
