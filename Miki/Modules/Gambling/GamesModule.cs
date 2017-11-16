@@ -119,11 +119,13 @@ namespace Miki.Modules
             {
                 User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
                 await user.RemoveCurrencyAsync(context, null, bet);
+				await context.SaveChangesAsync();
             }
 
             BlackjackManager bm = new BlackjackManager();
 
-            IDiscordMessage message = await bm.CreateEmbed(e).SendToChannel(e.Channel);
+            IDiscordMessage message = await bm.CreateEmbed(e)
+				.SendToChannel(e.Channel);
 
             CommandHandler c = new CommandHandlerBuilder(Bot.instance.Events)
                 .AddPrefix("")
