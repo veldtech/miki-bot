@@ -118,14 +118,14 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                await user.RemoveCurrencyAsync(context, null, bet);
+				await user.RemoveCurrencyAsync(context, null, bet);
 				await context.SaveChangesAsync();
             }
 
             BlackjackManager bm = new BlackjackManager();
 
             IDiscordMessage message = await bm.CreateEmbed(e)
-				.SendToChannel(e.Channel);
+					.SendToChannel(e.Channel);
 
             CommandHandler c = new CommandHandlerBuilder(Bot.instance.Events)
                 .AddPrefix("")
@@ -577,21 +577,8 @@ namespace Miki.Modules
                             .SetOwner(e.message)
                             .AddCommand(
                                 new RuntimeCommandEvent("yes")
-                                    .Default(async (ec) =>
-                                    {
-                                        await ec.commandHandler.RequestDisposeAsync();
-                                        await ec.message.DeleteAsync();
-                                        if (callback != null)
-										{
-											if (bet > user.Currency)
-											{
-												await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-													.SendToChannel(e.Channel);
-												return;
-											}
-											await callback(e, bet);
-                                        }
-                                    })).Build();
+                                    .Default((ec) => ValidateGlitch(ec, callback, bet)))
+									.Build();
 
                         Bot.instance.Events.AddPrivateCommandHandler(e.message, confirmCommand);
                     }
@@ -610,5 +597,25 @@ namespace Miki.Modules
                     .SendToChannel(e.Channel);
             }
         }
-    }
+
+		public async Task ValidateGlitch(EventContext e, Func<EventContext, int, Task> callback, int bet)
+		{
+			using (var context = new MikiContext())
+			{
+				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				await e.commandHandler.RequestDisposeAsync();
+				await e.message.DeleteAsync();
+				if (callback != null)
+				{
+					if (bet > u.Currency)
+					{
+						await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
+							.SendToChannel(e.Channel);
+						return;
+					}
+					await callback(e, bet);
+				}
+			}
+		}
+	}
 }

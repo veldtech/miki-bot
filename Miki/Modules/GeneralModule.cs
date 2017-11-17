@@ -111,9 +111,11 @@ namespace Miki.Modules
 
             embed.SetAuthor(e.Guild.Name, e.Guild.AvatarUrl, e.Guild.AvatarUrl);
 
+			IDiscordUser owner = await e.Guild.GetOwnerAsync();
+
             embed.AddInlineField(
                 "👑" + l.GetString("miki_module_general_guildinfo_owned_by"),
-                e.Guild.Owner.Username + "#" + e.Guild.Owner.Discriminator);
+                owner.Username + "#" + owner.Discriminator);
 
             embed.AddInlineField(
                 "👉" + l.GetString("miki_label_prefix"),
@@ -121,15 +123,15 @@ namespace Miki.Modules
 
             embed.AddInlineField(
                 "📺" + l.GetString("miki_module_general_guildinfo_channels"),
-                e.Guild.ChannelCount.ToString());
+                (await e.Guild.GetChannelCountAsync()).ToString());
 
             embed.AddInlineField(
                 "🔊" + l.GetString("miki_module_general_guildinfo_voicechannels"),
-                e.Guild.VoiceChannelCount.ToString());
+                (await e.Guild.GetVoiceChannelCountAsync()).ToString());
 
             embed.AddInlineField(
                 "🙎" + l.GetString("miki_module_general_guildinfo_users"),
-                e.Guild.UserCount.ToString());
+                (await e.Guild.GetUserCountAsync()).ToString());
 
             List<string> roleNames = new List<string>();
             foreach (IDiscordRole r in e.Guild.Roles)

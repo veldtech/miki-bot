@@ -61,7 +61,7 @@ namespace Miki
 
         public static async Task SendChannel(IDiscordMessageChannel channel, string message)
         {
-            if (channel.Guild.CurrentUser.HasPermissions(channel, DiscordGuildPermission.SendMessages))
+            if ((await channel.Guild.GetCurrentUserAsync()).HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
                 if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
                 {
@@ -72,7 +72,7 @@ namespace Miki
 
         public static async Task SendChannel(IDiscordMessageChannel channel, IDiscordEmbed message)
         {
-            if (channel.Guild.CurrentUser.HasPermissions(channel, DiscordGuildPermission.SendMessages))
+            if ((await channel.Guild.GetCurrentUserAsync()).HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
                 if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
                 {

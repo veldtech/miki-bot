@@ -22,7 +22,7 @@ namespace Miki.Modules
         {
         }
 
-        [Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task IdentifyEmojiAsync(EventContext e)
         {
             Emote emote = Emote.Parse(e.arguments);
