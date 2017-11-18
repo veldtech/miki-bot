@@ -285,40 +285,17 @@ namespace Miki.Modules
         [Command(Name = "dog")]
         public async Task DogAsync(EventContext e)
         {
-            string[] dog =
-            {
-                "http://i.imgur.com/KOjUbMQ.jpg",
-                "http://i.imgur.com/owJKr7y.jpg",
-                "http://i.imgur.com/rpQdRoY.jpg",
-                "http://i.imgur.com/xrVXDQ2.jpg",
-                "http://i.imgur.com/Bt6zrhq.jpg",
-                "http://i.imgur.com/sNm8hRR.jpg",
-                "http://i.imgur.com/TeTwhxN.jpg",
-                "http://i.imgur.com/zMs8Sx6.jpg",
-                "http://i.imgur.com/bWioilW.jpg",
-                "http://i.imgur.com/q6UTI0W.jpg",
-                "http://i.imgur.com/e9aTxh7.jpg",
-                "http://i.imgur.com/lvH26a9.jpg",
-                "http://i.imgur.com/0Q8E82b.jpg",
-                "http://i.imgur.com/oMm6Zba.jpg",
-                "http://i.imgur.com/aA4kvJE.jpg",
-                "http://i.imgur.com/FJRTLZR.jpg",
-                "http://i.imgur.com/EHYhgJk.jpg",
-                "http://i.imgur.com/QiudnCT.jpg",
-                "http://i.imgur.com/2nYIwTd.jpg",
-                "http://i.imgur.com/NnFZVPC.jpg",
-                "http://i.imgur.com/uEHtSpB.jpg",
-                "http://i.imgur.com/5DPqIi0.jpg",
-                "http://i.imgur.com/ZkxnaRE.jpg",
-                "http://i.imgur.com/kCWMUgk.jpg",
-                "http://i.imgur.com/X8FO7Ds.jpg",
-                "http://i.imgur.com/yKAXiyl.jpg",
-                "http://i.imgur.com/A4eVQQF.jpg",
-                "http://i.imgur.com/Wtjxxiv.jpg",
-                "http://i.imgur.com/uIX5RVf.jpg",
-                "http://i.imgur.com/49Da81l.jpg"
-            };
-            await e.Channel.SendMessage(dog[MikiRandom.Next(0, dog.Length)]);
+			string url = "";
+
+			do
+			{
+				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync()).Data;
+			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
+
+			await Utils.Embed
+				.SetTitle("Doggo!")
+				.SetImageUrl("https://random.dog/" + url)
+				.SendToChannel(e.Channel);
         }
 
         [Command(Name = "gif")]

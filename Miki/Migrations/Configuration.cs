@@ -13,6 +13,6 @@ namespace Miki.Migrations
         }
 
         protected override void Seed(Miki.Models.MikiContext context)
-		{ }
+		    { }
     }
 }
