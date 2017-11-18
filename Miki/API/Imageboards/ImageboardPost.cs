@@ -88,7 +88,7 @@ namespace Miki.API.Imageboards
 				{
 					if (d.Any())
 					{
-						return d[Global.random.Next(0, d.Count)];
+						return d[MikiRandom.Next(0, d.Count)];
 					}
 				}
             }

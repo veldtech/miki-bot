@@ -265,7 +265,7 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "🍀",
                         CheckMessage = async (p) =>
                         {
-                            return (Global.random.Next(0, 10000000) == 5033943);
+                            return (MikiRandom.Next(0, 10000000) == 5033943);
                         },
                     }
                 };

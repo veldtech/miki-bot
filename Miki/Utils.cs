@@ -2,9 +2,11 @@
 using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
+using Miki;
 using Miki.Languages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -249,4 +251,44 @@ namespace Miki
             return Value + " " + Identifier;
         }
     }
+}
+
+public class MMLParser
+{
+	public static Dictionary<string, object> Parse(string arguments)
+	{
+		return arguments.Split(' ')
+			.Where(x => x.StartsWith("-"))
+			.Select(x => MMLFactory.Create(x))
+			.ToDictionary(x => x.Key, y => y.Value);
+	}
+}
+public class MMLFactory
+{
+	public static KeyValuePair<string, object> Create(string query)
+	{
+		List<string> seperatedList = query.Split(':').ToList();
+		if(seperatedList.Count == 1)
+		{
+			return new KeyValuePair<string, object>(seperatedList[0], true);
+		}
+		else if(seperatedList.Count == 2)
+		{
+			return new KeyValuePair<string, object>(seperatedList[0], Parse(seperatedList[1]));
+		}
+		return new KeyValuePair<string, object>();
+	}
+	
+	private static object Parse(string val)
+	{
+		if(int.TryParse(val, out int v))
+		{
+			return v;
+		}
+		else if(Utils.ToBool(val))
+		{
+			return Utils.ToBool(val);
+		}
+		return val;
+	}
 }

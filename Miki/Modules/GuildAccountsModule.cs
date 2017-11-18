@@ -78,7 +78,7 @@ namespace Miki.Modules
                             return;
                         }
 
-                        int mekosGained = (int)Math.Round((((Global.random.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
+                        int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
                         User user = await database.Users.FindAsync(context.Author.Id.ToDbLong());
 
@@ -150,7 +150,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                int random = Global.random.Next(0, rivalGuilds.Count);
+                int random = MikiRandom.Next(0, rivalGuilds.Count);
 
                 GuildUser rivalGuild = await db.GuildUsers.FindAsync(rivalGuilds[random].Id);
 
@@ -274,7 +274,7 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+                int totalGuilds = (int) Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
 
                 List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
                                                                       .Skip(amountToSkip * amountToTake)
@@ -289,7 +289,7 @@ namespace Miki.Modules
                     embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
 
-                embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);
+                embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
                 await embed.SendToChannel(e.Channel);
             }
         }

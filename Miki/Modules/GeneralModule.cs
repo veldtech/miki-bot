@@ -313,7 +313,7 @@ try            {
             if (string.IsNullOrEmpty(e.arguments)) return;
 
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.UrbanKey);
+            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.config.UrbanKey);
             UrbanDictionaryEntry entry = api.GetEntry(e.arguments);
 
             if (entry != null)

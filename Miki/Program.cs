@@ -7,6 +7,8 @@ using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Gambling.Managers;
+using Miki.Tests;
+using Newtonsoft.Json;
 using Nito.AsyncEx;
 using StackExchange.Redis;
 using StatsdClient;
@@ -24,57 +26,38 @@ namespace Miki
         }
 
         public static Bot bot;
-
         public static DateTime timeSinceStartup;
-        private string devId;
 
 		public async Task Start()
         {
             Locale.Load();
             timeSinceStartup = DateTime.Now;
 
-            LoadApiKeyFromFile();
-
+			LoadConfig();
             LoadDiscord();
+
+			// Run this only when in debug mode.
+			if (Debugger.IsAttached)
+			{
+				TestCase.Run();
+			}
 
             await bot.ConnectAsync();
         }
 
-        private void LoadApiKeyFromFile()
+        private void LoadConfig()
         {
-            if (FileReader.FileExist("settings", "miki"))
+            if (FileReader.FileExist("settings.json", "miki"))
             {
-                FileReader reader = new FileReader("settings", "miki");
-                Global.ApiKey = reader.ReadLine();
-                devId = reader.ReadLine();
-                Global.shardCount = int.Parse(reader.ReadLine());
-                Global.CarbonitexKey = reader.ReadLine();
-                Global.UrbanKey = reader.ReadLine();
-                Global.ImgurKey = reader.ReadLine();
-                Global.ImgurClientId = reader.ReadLine();
-                Global.DiscordPwKey = reader.ReadLine();
-                Global.DiscordBotsOrgKey = reader.ReadLine();
-                Global.SharpRavenKey = reader.ReadLine();
-				Global.DatadogKey = reader.ReadLine();
-				Global.DatadogHost = reader.ReadLine();
-				reader.Finish();
+                FileReader reader = new FileReader("settings.json", "miki");
+				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());			
+                reader.Finish();
             }
             else
             {
-                FileWriter writer = new FileWriter("settings", "miki");
-                writer.Write("", "Token");
-                writer.Write("", "Developer Id");
-                writer.Write("", "Shard Count");
-                writer.Write("", "Carbon API Key");
-                writer.Write("", "Urban API Key (Mashape)");
-                writer.Write("", "Imgur API Key (Mashape)");
-                writer.Write("", "Imgur Client ID (without Client-ID)");
-                writer.Write("", "Discord.pw API Key");
-                writer.Write("", "Discordbot.org API Key");
-                writer.Write("", "RavenSharp Key");
-				writer.Write("", "Datadog Key");
-				writer.Write("", "Datadog host Ip");
-				writer.Finish();
+                FileWriter writer = new FileWriter("settings.json", "miki");
+                writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
+                writer.Finish();
             }
         }
 
@@ -86,15 +69,15 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.5-fix";
-                x.Token = Global.ApiKey;
+                x.Version = "0.4.6";
+                x.Token = Global.config.Token;
                 x.ShardCount = Global.shardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
             });
 
-            if (!string.IsNullOrWhiteSpace(Global.SharpRavenKey))
+            if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
             {
-                Global.ravenClient = new SharpRaven.RavenClient(Global.SharpRavenKey);
+                Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
             }
 
 			if(!string.IsNullOrWhiteSpace(Global.DatadogKey))
@@ -163,7 +146,6 @@ namespace Miki
                 */
 			};
             bot.OnError = async (ex) => Log.Message(ex.ToString());
-
             bot.AddDeveloper(121919449996460033);
 
             if (!string.IsNullOrEmpty(devId))
