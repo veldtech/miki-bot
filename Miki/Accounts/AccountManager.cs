@@ -25,7 +25,7 @@ namespace Miki.Accounts
 
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
-        private Bot bot;
+        private readonly Bot bot;
 
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
 

@@ -29,10 +29,11 @@ namespace Miki
         public static string SharpRavenKey = "";
 
 		public static string DatadogKey { get; internal set; } = "";
-        #endregion API Keys
-    }
+		public static string DatadogHost { get; internal set; } = "127.0.0.1";
+		#endregion API Keys
+	}
 
-    public class Constants
+	public class Constants
     {
         public const string NotDefined = "$not-defined";
     }

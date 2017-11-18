@@ -56,7 +56,8 @@ namespace Miki
                 Global.DiscordBotsOrgKey = reader.ReadLine();
                 Global.SharpRavenKey = reader.ReadLine();
 				Global.DatadogKey = reader.ReadLine();
-                reader.Finish();
+				Global.DatadogHost = reader.ReadLine();
+				reader.Finish();
             }
             else
             {
@@ -72,6 +73,7 @@ namespace Miki
                 writer.Write("", "Discordbot.org API Key");
                 writer.Write("", "RavenSharp Key");
 				writer.Write("", "Datadog Key");
+				writer.Write("", "Datadog host Ip");
 				writer.Finish();
             }
         }
@@ -99,7 +101,7 @@ namespace Miki
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
-					StatsdServerName = "127.0.0.1",
+					StatsdServerName = Global.DatadogHost,
 					StatsdPort = 8125,
 					Prefix = "miki"
 				};
