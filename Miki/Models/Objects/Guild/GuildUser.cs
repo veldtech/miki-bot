@@ -45,7 +45,7 @@ namespace Miki.Models
                         Name = g.Name,
                         Experience = 0,
                         RivalId = 0,
-                        UserCount = g.UserCount,
+                        UserCount = await g.GetUserCountAsync(),
                         MinimalExperienceToGetRewards = 100,
                         VisibleOnLeaderboards = true
                     });

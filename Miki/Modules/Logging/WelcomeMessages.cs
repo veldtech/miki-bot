@@ -15,11 +15,13 @@ namespace Miki.Modules
     public class EventMessageModule
     {
         /*
-         * -u  = user's name
-         * -um = user's mention
-         * -s  = server's name
-         * -o  = owner's nickname
-         * -sc = server count
+         * -u   = user's name
+         * -um  = user's mention
+         * -s   = server's name
+         * -o   = owner's nickname
+         * -sc  = server count
+		 * -now = current time
+		 * -uc  = user count
          */
 
         public EventMessageModule(RuntimeModule m)
@@ -158,7 +160,7 @@ namespace Miki.Modules
                     List<IDiscordUser> allUsers = await c.GetUsersAsync();
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-                    modifiedMessage = modifiedMessage.Replace("-uc", user.Guild.UserCount.ToString());
+					modifiedMessage = modifiedMessage.Replace("-uc", (await user.Guild.GetUserCountAsync()).ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
 
                     modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].Nickname);   
@@ -166,11 +168,11 @@ namespace Miki.Modules
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
 
-                    modifiedMessage = modifiedMessage.Replace("-om", user.Guild.Owner.Mention);
-                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty(user.Guild.Owner.Nickname) ? user.Guild.Owner.Username : user.Guild.Owner.Nickname);
+                    modifiedMessage = modifiedMessage.Replace("-om", (await user.Guild.GetOwnerAsync()).Mention);
+                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty((await user.Guild.GetOwnerAsync()).Nickname) ? (await user.Guild.GetOwnerAsync()).Username : (await user.Guild.GetOwnerAsync()).Nickname);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", user.Guild.ChannelCount.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", user.Guild.VoiceChannelCount.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", (await user.Guild.GetChannelCountAsync()).ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", (await user.Guild.GetVoiceChannelCountAsync()).ToString());
                     
                     output.Add(new Tuple<string, IDiscordMessageChannel>(modifiedMessage, c));
                 }

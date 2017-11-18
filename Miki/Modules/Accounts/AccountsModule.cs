@@ -654,7 +654,9 @@ namespace Miki.Modules.AccountsModule
 						embed.Title = "Added Role!";
 						embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
 
-						if (!e.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.ManageRoles))
+						IDiscordUser currentUser = await e.GetCurrentUserAsync();
+
+						if (!currentUser.HasPermissions(e.Channel, DiscordGuildPermission.ManageRoles))
 						{
 							embed.AddInlineField(e.GetResource("miki_warning"), e.GetResource("setrolelevel_error_no_permissions", $"`{e.GetResource("permission_manage_roles")}`"));
 						}

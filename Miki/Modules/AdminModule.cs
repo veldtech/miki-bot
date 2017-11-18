@@ -20,7 +20,8 @@ namespace Miki.Modules
         [Command(Name = "ban", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task BanAsync(EventContext e)
         {
-            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
+			IDiscordUser currentUser = await e.GetCurrentUserAsync();
+            if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
             {
                 List<string> arg = e.arguments.Split(' ').ToList();
                 IDiscordUser bannedUser = null;
@@ -46,7 +47,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if(bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                if(bannedUser.Hierarchy >= currentUser.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_error_low", "ban"))
                         .SendToChannel(e.Channel);
@@ -85,8 +86,9 @@ namespace Miki.Modules
 
         [Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task SoftbanAsync(EventContext e)
-        {
-            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
+		{
+			IDiscordUser currentUser = await e.GetCurrentUserAsync();
+			if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
             {
                 List<string> arg = e.arguments.Split(' ').ToList();
                 IDiscordUser bannedUser = null;
@@ -110,7 +112,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                if (bannedUser.Hierarchy >= currentUser.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_error_low", "softban"))
                         .SendToChannel(e.Channel);
@@ -230,8 +232,9 @@ namespace Miki.Modules
 
         [Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task KickAsync(EventContext e)
-        {
-            if (e.Guild.CurrentUser.HasPermissions(e.Channel, DiscordGuildPermission.KickMembers))
+		{
+			IDiscordUser currentUser = await e.GetCurrentUserAsync();
+			if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.KickMembers))
             {
                 List<string> arg = e.arguments.Split(' ').ToList();
 
@@ -266,7 +269,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if (bannedUser.Hierarchy >= e.Guild.CurrentUser.Hierarchy)
+                if (bannedUser.Hierarchy >= currentUser.Hierarchy)
                 {
                     await e.ErrorEmbed(e.GetResource("permission_error_low", "kick"))
                         .SendToChannel(e.Channel);
