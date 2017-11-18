@@ -274,7 +274,7 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                int totalGuilds = await context.GuildUsers.CountAsync() / 12;
+                int totalGuilds = (int) Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
 
                 List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
                                                                       .Skip(amountToSkip * amountToTake)
@@ -289,7 +289,7 @@ namespace Miki.Modules
                     embed.AddInlineField(i.Name, i.Experience.ToString());
                 }
 
-                embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);
+                embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
                 await embed.SendToChannel(e.Channel);
             }
         }
