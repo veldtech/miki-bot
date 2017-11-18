@@ -93,10 +93,10 @@
       <HintPath>..\packages\EFCache.RedisCache.0.0.2\lib\EFCache.RedisCache.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework6.Npgsql, Version=3.1.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework6.Npgsql.3.1.1\lib\net45\EntityFramework6.Npgsql.dll</HintPath>
@@ -167,6 +167,9 @@
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
     </Reference>
     <Reference Include="NCalc, Version=1.3.8.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03, processorArchitecture=MSIL">
       <HintPath>..\packages\ncalc.1.3.8\lib\NCalc.dll</HintPath>
@@ -353,8 +356,7 @@
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\EmojiBar.cs" />
-    <Compile Include="API\Miki\LeaderboardsItem.cs" />
-    <Compile Include="API\Miki\LeaderboardsPage.cs" />
+    <Compile Include="Accounts\LeaderboardsItem.cs" />
     <Compile Include="API\Cards\CardManager.cs" />
     <Compile Include="API\Cards\CardSet.cs" />
     <Compile Include="API\Cards\Enums\CardType.cs" />
@@ -384,7 +386,6 @@
     <Compile Include="API\Steam\SteamApi.cs" />
     <Compile Include="API\StringComparison\StringComparer.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -547,48 +548,10 @@
     <Compile Include="Migrations\201708030201584_Fix-LocalExp.Designer.cs">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201711012201158_LevelRole-Update.cs" />
-    <Compile Include="Migrations\201711012201158_LevelRole-Update.Designer.cs">
-      <DependentUpon>201711012201158_LevelRole-Update.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711040132126_FK-BadgedOwned.cs" />
-    <Compile Include="Migrations\201711040132126_FK-BadgedOwned.Designer.cs">
-      <DependentUpon>201711040132126_FK-BadgedOwned.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711040155156_FK-AddUrl.cs" />
-    <Compile Include="Migrations\201711040155156_FK-AddUrl.Designer.cs">
-      <DependentUpon>201711040155156_FK-AddUrl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711040158131_FK-AddName.cs" />
-    <Compile Include="Migrations\201711040158131_FK-AddName.Designer.cs">
-      <DependentUpon>201711040158131_FK-AddName.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711040245003_FK-AddName-Optional.cs" />
-    <Compile Include="Migrations\201711040245003_FK-AddName-Optional.Designer.cs">
-      <DependentUpon>201711040245003_FK-AddName-Optional.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711041525517_Add-Pinned-Badges.cs" />
-    <Compile Include="Migrations\201711041525517_Add-Pinned-Badges.Designer.cs">
-      <DependentUpon>201711041525517_Add-Pinned-Badges.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711041535259_Add-Pinned-Badges-FK.cs" />
-    <Compile Include="Migrations\201711041535259_Add-Pinned-Badges-FK.Designer.cs">
-      <DependentUpon>201711041535259_Add-Pinned-Badges-FK.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711142319369_add-achievement-dates.cs" />
-    <Compile Include="Migrations\201711142319369_add-achievement-dates.Designer.cs">
-      <DependentUpon>201711142319369_add-achievement-dates.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711160131165_add-levelrole-requiredrole.cs" />
-    <Compile Include="Migrations\201711160131165_add-levelrole-requiredrole.Designer.cs">
-      <DependentUpon>201711160131165_add-levelrole-requiredrole.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
-    <Compile Include="Models\Objects\Resources\BadgeResources.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
-    <Compile Include="Models\Objects\User\BadgesOwned.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
     <Compile Include="Models\Objects\User\Connections.cs" />
     <Compile Include="Models\Context\MikiContext.cs" />
@@ -603,7 +566,6 @@
     <Compile Include="Models\Objects\User\Marriage.cs" />
     <Compile Include="Models\Objects\Global\PastaVote.cs" />
     <Compile Include="Models\Objects\Global\Setting.cs" />
-    <Compile Include="Models\Objects\User\PinnedBadges.cs" />
     <Compile Include="Models\Objects\User\User.cs" />
     <Compile Include="Models\Objects\Global\VoteCount.cs" />
     <Compile Include="Modules\Accounts\Services\AchievementsService.cs" />
@@ -637,7 +599,6 @@
     <Compile Include="Modules\Overwatch\OverwatchModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
-    <Compile Include="Modules\Roles\RolesModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
     <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\SteamModule.cs" />
@@ -672,12 +633,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>en-US.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tests\TestAttribute.cs" />
-    <Compile Include="Tests\TestCase.cs" />
-    <Compile Include="Tests\MMLTests.cs" />
-    <Compile Include="Utility\MML\MMLFactory.cs" />
-    <Compile Include="Utility\MML\MMLObject.cs" />
-    <Compile Include="Utility\MML\MMLParser.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -824,33 +779,6 @@
     <EmbeddedResource Include="Migrations\201708030201584_Fix-LocalExp.resx">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711012201158_LevelRole-Update.resx">
-      <DependentUpon>201711012201158_LevelRole-Update.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711040132126_FK-BadgedOwned.resx">
-      <DependentUpon>201711040132126_FK-BadgedOwned.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711040155156_FK-AddUrl.resx">
-      <DependentUpon>201711040155156_FK-AddUrl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711040158131_FK-AddName.resx">
-      <DependentUpon>201711040158131_FK-AddName.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711040245003_FK-AddName-Optional.resx">
-      <DependentUpon>201711040245003_FK-AddName-Optional.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711041525517_Add-Pinned-Badges.resx">
-      <DependentUpon>201711041525517_Add-Pinned-Badges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711041535259_Add-Pinned-Badges-FK.resx">
-      <DependentUpon>201711041535259_Add-Pinned-Badges-FK.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711142319369_add-achievement-dates.resx">
-      <DependentUpon>201711142319369_add-achievement-dates.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711160131165_add-levelrole-requiredrole.resx">
-      <DependentUpon>201711160131165_add-levelrole-requiredrole.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Meru\Meru.SDK\Meru.SDK.csproj">
@@ -866,7 +794,6 @@
       <Name>RestClient</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
