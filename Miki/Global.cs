@@ -1,5 +1,6 @@
 ﻿using SharpRaven;
 using System;
+using StatsdClient;
 
 namespace Miki
 {
@@ -9,10 +10,10 @@ namespace Miki
     public class Global
     {
         public static RavenClient ravenClient;
-		public static Config config = new Config();
+		    public static Config config = new Config();
     }
-
-    public class Constants
+  
+	  public class Constants
     {
         public const string NotDefined = "$not-defined";
     }
