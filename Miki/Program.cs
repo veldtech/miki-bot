@@ -28,7 +28,7 @@ namespace Miki
         public static DateTime timeSinceStartup;
         private string devId;
 
-        public async Task Start()
+		public async Task Start()
         {
             Locale.Load();
             timeSinceStartup = DateTime.Now;
@@ -99,7 +99,7 @@ namespace Miki
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
-					StatsdServerName = "37.187.131.140",
+					StatsdServerName = "127.0.0.1",
 					StatsdPort = 8125,
 					Prefix = "miki"
 				};
@@ -108,12 +108,22 @@ namespace Miki
 
 			bot.Events.AddCommandDoneEvent(x =>
 			{
-				DogStatsd.Counter("commands.count", 1);
+				x.Name = "datadog-command-done";
+				x.processEvent = async (msg, cmd, success, t) =>
+				{
+					if (!success)
+					{
+						DogStatsd.Counter("commands.error.rate", 1);
+					}
+					DogStatsd.Counter("commands.count", 1);
+					DogStatsd.Histogram("commands.time", t, 0.1);
+				};
 			});
+
+			bot.MessageReceived += Bot_MessageReceived;
 
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
             {
-				DogStatsd.Counter("commands.error", 1);
 				/*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
                 //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
@@ -161,11 +171,20 @@ namespace Miki
 
             bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
+
+			bot.OnShardConnect += Bot_OnShardConnect;
+			bot.OnShardDisconnect += Bot_OnShardDisconnect;
         }
+
+		private async Task Bot_MessageReceived(IA.SDK.Interfaces.IDiscordMessage arg)
+		{
+			DogStatsd.Counter("messages.received", 1);
+		}
 
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Counter("guilds.left", 1);
+			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Client_JoinedGuild(IGuild arg)
@@ -176,6 +195,20 @@ namespace Miki
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined", 1);
-        }	
-    }
+			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
+		}
+
+		private async Task Bot_OnShardConnect(int shardId)
+		{
+			DogStatsd.Event("shard.connect", $"shard {shardId.ToString()} has connected!");
+			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.OK);
+		}
+
+		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
+		{
+			DogStatsd.Event("shard.disconnect", $"shard {shardId.ToString()} has disconnected!");
+			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL);
+		}
+
+	}
 }

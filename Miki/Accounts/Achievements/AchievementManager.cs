@@ -3,6 +3,7 @@ using IA.SDK;
 using IA.SDK.Interfaces;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
+using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -71,7 +72,7 @@ namespace Miki.Accounts.Achievements
             bot.Events.AddCommandDoneEvent(x =>
             {
                 x.Name = "--achievement-manager-command";
-                x.processEvent = async (m, e, s) =>
+                x.processEvent = async (m, e, s,  t) =>
                 {
                     CommandPacket p = new CommandPacket()
                     {
@@ -130,10 +131,11 @@ namespace Miki.Accounts.Achievements
 
         public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)
         {
+			DogStatsd.Counter("achievements.gained", 1);
+
             if (achievement as AchievementAchievement != null) return;
 
             long id = user.Id.ToDbLong();
-
 
             using (var context = new MikiContext())
             {

@@ -23,7 +23,7 @@ namespace Miki.Modules
             Bot.instance.Events.AddCommandDoneEvent(x =>
             {
                 x.Name = "--count-commands";
-                x.processEvent = async (msg, e, s) =>
+                x.processEvent = async (msg, e, s, t) =>
                 {
                     if (s)
                     {
