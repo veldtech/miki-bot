@@ -96,8 +96,8 @@ namespace Miki.Accounts
             {
                 int addedExperience = MikiRandom.Next(2, 5);
 
-                await MeruUtils.TryAsync(async () =>
-                {
+try
+				{
                     User a;
                     LocalExperience experience;
 
@@ -170,7 +170,11 @@ namespace Miki.Accounts
                     }
 
                     lastTimeExpGranted[e.Author.Id] = DateTime.Now;
-                });
+                }
+				catch
+				{
+
+				}
 
             }
         }

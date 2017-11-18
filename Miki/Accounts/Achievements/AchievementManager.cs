@@ -178,7 +178,6 @@ namespace Miki.Accounts.Achievements
             }
             catch (Exception e)
             {
-                await MeruUtils.ReportErrorAsync(e);
                 Log.WarningAt("achievement check failed", e.ToString());
             }
         }

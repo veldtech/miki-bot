@@ -1,5 +1,6 @@
 ﻿using SharpRaven;
 using System;
+using StatsdClient;
 
 namespace Miki
 {
@@ -27,7 +28,7 @@ namespace Miki
         public static string SteamAPIKey = "";
         public static string SharpRavenKey = "";
 
-        public static string DatadogKey { get; internal set; }
+		public static string DatadogKey { get; internal set; } = "";
         #endregion API Keys
     }
 

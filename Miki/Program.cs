@@ -55,6 +55,7 @@ namespace Miki
                 Global.DiscordPwKey = reader.ReadLine();
                 Global.DiscordBotsOrgKey = reader.ReadLine();
                 Global.SharpRavenKey = reader.ReadLine();
+				Global.DatadogKey = reader.ReadLine();
                 reader.Finish();
             }
             else
@@ -70,7 +71,8 @@ namespace Miki
                 writer.Write("", "Discord.pw API Key");
                 writer.Write("", "Discordbot.org API Key");
                 writer.Write("", "RavenSharp Key");
-                writer.Finish();
+				writer.Write("", "Datadog Key");
+				writer.Finish();
             }
         }
 
@@ -93,10 +95,26 @@ namespace Miki
                 Global.ravenClient = new SharpRaven.RavenClient(Global.SharpRavenKey);
             }
 
+			if(!string.IsNullOrWhiteSpace(Global.DatadogKey))
+			{
+				var dogstatsdConfig = new StatsdConfig
+				{
+					StatsdServerName = "37.187.131.140",
+					StatsdPort = 8125,
+					Prefix = "miki"
+				};
+				DogStatsd.Configure(dogstatsdConfig);
+			}
+
+			bot.Events.AddCommandDoneEvent(x =>
+			{
+				DogStatsd.Counter("commands.count", 1);
+			});
+
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
             {
-
-                /*RuntimeEmbed e = new RuntimeEmbed();
+				DogStatsd.Counter("commands.error", 1);
+				/*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
                 //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
 
@@ -131,7 +149,7 @@ namespace Miki
                 //e.Description = "... but you've disabled error messages, so we won't send you a PM :)";
                 //await e.SendToChannel(msg.Channel);
                 */
-            };
+			};
             bot.OnError = async (ex) => Log.Message(ex.ToString());
 
             bot.AddDeveloper(121919449996460033);
@@ -142,12 +160,22 @@ namespace Miki
             }
 
             bot.Client.JoinedGuild += Client_JoinedGuild;
+			bot.Client.LeftGuild += Client_LeftGuild;
         }
 
-        private async Task Client_JoinedGuild(IGuild arg)
+		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
+		{
+			DogStatsd.Counter("guilds.left", 1);
+		}
+
+		private async Task Client_JoinedGuild(IGuild arg)
         {
             ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
             await defaultChannel.SendMessage("Hello, I am **Miki**! At your service!\nTry to use **>help** to check out what i can do! :notes:");
-        }
+
+			// if miki patreon is present, leave again.
+
+			DogStatsd.Increment("guilds.joined", 1);
+        }	
     }
 }
