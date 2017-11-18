@@ -555,8 +555,8 @@ namespace Miki.Modules.AccountsModule
 
 				if (goldSent <= sender.Currency)
 				{
-					await receiver.AddCurrencyAsync(goldSent, e.Channel, sender);
 					await sender.AddCurrencyAsync(-goldSent, e.Channel, sender);
+					await receiver.AddCurrencyAsync(goldSent, e.Channel, sender);
 
 					IDiscordEmbed em = Utils.Embed;
 					em.Title = "🔸 transaction";

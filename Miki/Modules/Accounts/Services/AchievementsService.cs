@@ -7,6 +7,7 @@ using Miki.Accounts.Achievements.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
@@ -42,6 +43,7 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "✏️",
                         CheckAchievement = async (p) =>
                         {
+							await Task.Yield();
                             return p.count > 3;
                         },
                     },
@@ -51,7 +53,8 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "🖊️",
                         CheckAchievement = async (p) =>
                         {
-                            return p.count > 5;
+							await Task.Yield();
+							return p.count > 5;
                         },
                     },
                     new AchievementAchievement()
@@ -64,7 +67,7 @@ namespace Miki.Modules.Accounts.Services
                     },
                 }
             };
-             });
+             });  
 
             AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
             {
@@ -78,7 +81,8 @@ namespace Miki.Modules.Accounts.Services
 
                         CheckCommand = async (p) =>
                         {
-                            return p.command.Name.ToLower() == "info";
+							await Task.Yield();
+							return p.command.Name.ToLower() == "info";
                         }
                     }
                 };
@@ -95,7 +99,8 @@ namespace Miki.Modules.Accounts.Services
 
                         CheckCommand = async (p) =>
                         {
-                            return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+							await Task.Yield();
+							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                         }
                     },
                     new CommandAchievement()
@@ -105,7 +110,8 @@ namespace Miki.Modules.Accounts.Services
 
                         CheckCommand = async (p) =>
                         {
-                                return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+							await Task.Yield();
+							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                         }
                     }
                 };
@@ -121,7 +127,8 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "📝",
                         CheckCommand = async (p) =>
                         {
-                            if(p.command.Name.ToLower() == "createpasta")
+							await Task.Yield();
+							if(p.command.Name.ToLower() == "createpasta")
                             {
                                 return true;
                             }
@@ -141,7 +148,8 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "😱",
                         CheckCommand = async (p) =>
                         {
-                            return Bot.instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
+							await Task.Yield();
+							return Bot.instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
                     }
                 };

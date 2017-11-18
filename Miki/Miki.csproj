@@ -356,7 +356,6 @@
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\EmojiBar.cs" />
-    <Compile Include="Accounts\LeaderboardsItem.cs" />
     <Compile Include="API\Cards\CardManager.cs" />
     <Compile Include="API\Cards\CardSet.cs" />
     <Compile Include="API\Cards\Enums\CardType.cs" />
@@ -378,6 +377,8 @@
     <Compile Include="API\Imageboards\Objects\Rule34Post.cs" />
     <Compile Include="API\Imageboards\Objects\SafebooruPost.cs" />
     <Compile Include="API\Imageboards\Objects\YanderePost.cs" />
+    <Compile Include="API\Miki\LeaderboardsItem.cs" />
+    <Compile Include="API\Miki\LeaderboardsPage.cs" />
     <Compile Include="API\Patreon\PatreonApi.cs" />
     <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
     <Compile Include="API\Reminder\ReminderAPI.cs" />
@@ -386,6 +387,7 @@
     <Compile Include="API\Steam\SteamApi.cs" />
     <Compile Include="API\StringComparison\StringComparer.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -551,7 +553,9 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
+    <Compile Include="Models\Objects\Resources\BadgeResources.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
+    <Compile Include="Models\Objects\User\BadgesOwned.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
     <Compile Include="Models\Objects\User\Connections.cs" />
     <Compile Include="Models\Context\MikiContext.cs" />
@@ -566,6 +570,7 @@
     <Compile Include="Models\Objects\User\Marriage.cs" />
     <Compile Include="Models\Objects\Global\PastaVote.cs" />
     <Compile Include="Models\Objects\Global\Setting.cs" />
+    <Compile Include="Models\Objects\User\PinnedBadges.cs" />
     <Compile Include="Models\Objects\User\User.cs" />
     <Compile Include="Models\Objects\Global\VoteCount.cs" />
     <Compile Include="Modules\Accounts\Services\AchievementsService.cs" />
@@ -599,6 +604,7 @@
     <Compile Include="Modules\Overwatch\OverwatchModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
+    <Compile Include="Modules\Roles\RolesModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
     <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\SteamModule.cs" />
@@ -633,6 +639,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>en-US.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tests\MMLTests.cs" />
+    <Compile Include="Tests\TestAttribute.cs" />
+    <Compile Include="Tests\TestCase.cs" />
+    <Compile Include="Utility\MML\MMLFactory.cs" />
+    <Compile Include="Utility\MML\MMLObject.cs" />
+    <Compile Include="Utility\MML\MMLParser.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -793,6 +805,9 @@
       <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
       <Name>RestClient</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
