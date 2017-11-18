@@ -25,14 +25,14 @@ namespace Miki.Modules
 	[Module( "Steam" )]
 	public class SteamModule
 	{
-		SteamApi steam = new SteamApi( Global.SteamAPIKey );
+		SteamApi steam = new SteamApi(Global.config.SteamAPIKey);
 
 		private string steamAuthorIcon = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png";
 		private string steamAuthorName = "Steam";
 
 		public SteamModule( RuntimeModule module )
 		{
-			if( Global.SteamAPIKey == "" )
+			if(string.IsNullOrWhiteSpace(Global.config.SteamAPIKey))
 			{
 				Log.Warning( "SteamAPI key has not been set, steam module disabled." );
 				module.Enabled = false;

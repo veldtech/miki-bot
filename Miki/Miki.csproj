@@ -386,6 +386,7 @@
     <Compile Include="API\Steam\SteamApi.cs" />
     <Compile Include="API\StringComparison\StringComparer.cs" />
     <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -548,8 +549,14 @@
     <Compile Include="Migrations\201708030201584_Fix-LocalExp.Designer.cs">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710312001149_Rework-Guild-Db.cs" />
+    <Compile Include="Migrations\201710312001149_Rework-Guild-Db.Designer.cs">
+      <DependentUpon>201710312001149_Rework-Guild-Db.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
+    <Compile Include="Models\Objects\Guild\Guild.cs" />
+    <Compile Include="Models\Objects\Guild\GuildRole.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
@@ -599,6 +606,7 @@
     <Compile Include="Modules\Overwatch\OverwatchModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
+    <Compile Include="Modules\Roles\RolesModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
     <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\SteamModule.cs" />
@@ -633,6 +641,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>en-US.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tests\TestAttribute.cs" />
+    <Compile Include="Tests\TestCase.cs" />
+    <Compile Include="Tests\MMLTests.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -779,6 +790,9 @@
     <EmbeddedResource Include="Migrations\201708030201584_Fix-LocalExp.resx">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710312001149_Rework-Guild-Db.resx">
+      <DependentUpon>201710312001149_Rework-Guild-Db.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Meru\Meru.SDK\Meru.SDK.csproj">
@@ -794,6 +808,7 @@
       <Name>RestClient</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

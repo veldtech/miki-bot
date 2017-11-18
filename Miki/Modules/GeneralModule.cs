@@ -23,7 +23,7 @@ namespace Miki.Modules
             Bot.instance.Events.AddCommandDoneEvent(x =>
             {
                 x.Name = "--count-commands";
-                x.processEvent = async (msg, e, s) =>
+                x.processEvent = async (msg, e, s, t) =>
                 {
                     if (s)
                     {
@@ -76,8 +76,7 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-            await MeruUtils.TryAsync(async () =>
-            {
+try            {
                 Expression expression = new Expression(e.arguments);
 
                 expression.Parameters.Add("pi", Math.PI);
@@ -96,11 +95,11 @@ namespace Miki.Modules
                 object output = expression.Evaluate();
 
                 await e.Channel.SendMessage(output.ToString());
-            },
-            async (ex) =>
+            }
+            catch(Exception ex)
             {
                 await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
-            });
+            }
         }
 
         [Command(Name = "guildinfo")]
@@ -314,7 +313,7 @@ namespace Miki.Modules
             if (string.IsNullOrEmpty(e.arguments)) return;
 
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.UrbanKey);
+            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.config.UrbanKey);
             UrbanDictionaryEntry entry = api.GetEntry(e.arguments);
 
             if (entry != null)

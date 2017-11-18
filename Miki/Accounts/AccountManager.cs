@@ -4,6 +4,7 @@ using IA.SDK;
 using IA.SDK.Interfaces;
 using Miki.Languages;
 using Miki.Models;
+using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -24,7 +25,7 @@ namespace Miki.Accounts
 
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
-        private Bot bot;
+        private readonly Bot bot;
 
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
 
@@ -32,8 +33,14 @@ namespace Miki.Accounts
         {
             this.bot = bot;
 
+			OnGlobalLevelUp += async (a, e, l) =>
+			{
+				await Task.Yield();
+				DogStatsd.Counter("levels.global", l);
+			};
             OnLocalLevelUp += async (a, e, l) =>
             {
+				DogStatsd.Counter("levels.local", l);
                 long guildId = e.Guild.Id.ToDbLong();
                 Locale locale = Locale.GetEntity(e.Id.ToDbLong());
                 List<LevelRole> rolesObtained = new List<LevelRole>();
@@ -96,8 +103,8 @@ namespace Miki.Accounts
             {
                 int addedExperience = MikiRandom.Next(2, 5);
 
-                await MeruUtils.TryAsync(async () =>
-                {
+				try
+				{
                     User a;
                     LocalExperience experience;
 
@@ -170,7 +177,11 @@ namespace Miki.Accounts
                     }
 
                     lastTimeExpGranted[e.Author.Id] = DateTime.Now;
-                });
+                }
+				catch
+				{
+
+				}
 
             }
         }
