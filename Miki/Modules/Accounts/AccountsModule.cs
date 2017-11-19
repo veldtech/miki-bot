@@ -266,7 +266,7 @@ namespace Miki.Modules.AccountsModule
 
 					List<CommandUsage> List = context.CommandUsages.Where(c => c.UserId == id)
 						.OrderByDescending(c => c.Amount).ToList();
-					string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : "none (yet!)";
+					string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : locale.GetString("miki_placeholder_null");
 
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
@@ -291,7 +291,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_null"))
+					await Utils.ErrorEmbed(locale, locale.GetString("error_account_null"))
 						.SendToChannel(e.Channel);
 				}
 			}
@@ -359,7 +359,7 @@ namespace Miki.Modules.AccountsModule
 
 					if(mentionedUsers.Count * repAmount > giver.ReputationPointsLeft)
 					{
-						await e.ErrorEmbed("You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left.",
+						await e.ErrorEmbed(locale.GetString("error_rep_limit"),
 							mentionedUsers.Count, repAmount, giver.ReputationPointsLeft)
 							.SendToChannel(e.Channel);
 						return;
@@ -367,7 +367,7 @@ namespace Miki.Modules.AccountsModule
 				}
 
 				embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
-					.SetDescription("You've successfully given reputation");
+					.SetDescription(locale.GetString("rep_success"));
 
 				foreach (ulong user in mentionedUsers)
 				{
@@ -438,7 +438,7 @@ namespace Miki.Modules.AccountsModule
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = "👌 OKAY";
-			embed.Description = "I've synchronized your current avatar to Miki's database!";
+			embed.Description = e.GetResource("sync_success", e.GetResource("term_avatar"));
 			await embed.SendToChannel(e.Channel);
 		}
 
@@ -458,7 +458,7 @@ namespace Miki.Modules.AccountsModule
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = "👌 OKAY";
-			embed.Description = "I've synchronized your current name to Miki's database!";
+			embed.Description = e.GetResource("sync_success", "name");
 			await embed.SendToChannel(e.Channel);
 		}
 

@@ -961,7 +961,7 @@ Fuzzy</comment>
   <data name="miki_command_description_give" xml:space="preserve">
     <value>Give love and mekos to your friends... mostly mekos.</value>
   </data>
-    <data name="miki_command_description_invite" xml:space="preserve">
+  <data name="miki_command_description_invite" xml:space="preserve">
     <value>Get Miki's invite link, so you can put her on your server!</value>
   </data>
   <data name="miki_command_description_kick" xml:space="preserve">
@@ -1725,5 +1725,26 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   </data>
   <data name="warning_mention_self" xml:space="preserve">
     <value>We saw you tried to mention yourself. You can't do this!</value>
+  </data>
+  <data name="error_account_null" xml:space="preserve">
+    <value>Your account does not exist yet! If this problem keeps appearing, please notify us!</value>
+  </data>
+  <data name="error_rep_limit" xml:space="preserve">
+    <value>You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left.</value>
+  </data>
+  <data name="rep_success" xml:space="preserve">
+    <value>You've successfully given reputation</value>
+  </data>
+  <data name="sync_success" xml:space="preserve">
+    <value>I've synchronized your current {0} to Miki's database!</value>
+  </data>
+  <data name="term_avatar" xml:space="preserve">
+    <value>avatar</value>
+  </data>
+  <data name="term_commands" xml:space="preserve">
+    <value>Commands</value>
+  </data>
+  <data name="term_shard" xml:space="preserve">
+    <value>Shard</value>
   </data>
 </root>

@@ -69,7 +69,7 @@ namespace Miki
             bot = new Bot(x =>
             {
                 x.Name = "Miki";
-                x.Version = "0.4.6";
+                x.Version = "0.4.6a";
                 x.Token = Global.config.Token;
                 x.ShardCount = Global.config.ShardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
@@ -173,8 +173,9 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IGuild arg)
         {
+			Locale locale = Locale.GetEntity(arg.Id.ToDbLong());
             ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-            await defaultChannel.SendMessage("Hello, I am **Miki**! At your service!\nTry to use **>help** to check out what i can do! :notes:");
+            await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
 
 			// if miki patreon is present, leave again.
 

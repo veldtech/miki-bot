@@ -160,6 +160,24 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your account does not exist yet! If this problem keeps appearing, please notify us!.
+        /// </summary>
+        internal static string error_account_null {
+            get {
+                return ResourceManager.GetString("error_account_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left..
+        /// </summary>
+        internal static string error_rep_limit {
+            get {
+                return ResourceManager.GetString("error_rep_limit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find this role. Please try again!.
         /// </summary>
         internal static string error_role_not_found {
@@ -529,24 +547,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Give your friends reputation for being such good friends.
-        /// </summary>
-        internal static string miki_command_description_rep {
-            get {
-                return ResourceManager.GetString("miki_command_description_rep", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Get Miki's invite link, so you can put her on your server!.
-        /// </summary>
-        internal static string miki_command_description_invite {
-            get {
-                return ResourceManager.GetString("miki_command_description_invite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Push your luck by asking Miki specific questions about your life!.
         /// </summary>
         internal static string miki_command_description_8ball {
@@ -682,7 +682,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Decline marriages you or the other person proposed. This command can be used to remove your own proposal! use * to decline all marriages..
+        ///   Looks up a localized string similar to Decline marriages you or the other person proposed. This command can be used to remove your own proposal! Use * to decline all marriages..
         /// </summary>
         internal static string miki_command_description_declinemarriage {
             get {
@@ -858,6 +858,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_infopasta {
             get {
                 return ResourceManager.GetString("miki_command_description_infopasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get Miki&apos;s invite link, so you can put her on your server!.
+        /// </summary>
+        internal static string miki_command_description_invite {
+            get {
+                return ResourceManager.GetString("miki_command_description_invite", resourceCulture);
             }
         }
         
@@ -1038,6 +1047,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_remind {
             get {
                 return ResourceManager.GetString("miki_command_description_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give your friends reputation for being such good friends.
+        /// </summary>
+        internal static string miki_command_description_rep {
+            get {
+                return ResourceManager.GetString("miki_command_description_rep", resourceCulture);
             }
         }
         
@@ -1378,7 +1396,7 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to &gt;declinemarriage &lt;mention&gt;
-        ///&gt; declinemarriage *.
+        ///&gt;declinemarriage *.
         /// </summary>
         internal static string miki_command_usage_declinemarriage {
             get {
@@ -1747,7 +1765,8 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to &gt;rep
-        ///&gt;rep &lt;mention&gt; [mention...].
+        ///&gt;rep &lt;mention&gt; [mention...]
+        ///&gt;rep &lt;mention&gt; &lt;amount|all&gt;.
         /// </summary>
         internal static string miki_command_usage_rep {
             get {
@@ -4390,6 +4409,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve successfully given reputation.
+        /// </summary>
+        internal static string rep_success {
+            get {
+                return ResourceManager.GetString("rep_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please specify the terms you want to search..
         /// </summary>
         internal static string searchpasta_error_no_arg {
@@ -4422,6 +4450,42 @@ namespace Miki.Languages {
         internal static string stats_description {
             get {
                 return ResourceManager.GetString("stats_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I&apos;ve synchronized your current {0} to Miki&apos;s database!.
+        /// </summary>
+        internal static string sync_success {
+            get {
+                return ResourceManager.GetString("sync_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to avatar.
+        /// </summary>
+        internal static string term_avatar {
+            get {
+                return ResourceManager.GetString("term_avatar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commands.
+        /// </summary>
+        internal static string term_commands {
+            get {
+                return ResourceManager.GetString("term_commands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shard.
+        /// </summary>
+        internal static string term_shard {
+            get {
+                return ResourceManager.GetString("term_shard", resourceCulture);
             }
         }
         

@@ -1,4 +1,5 @@
-﻿using IA;
+﻿using Discord;
+using IA;
 using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK;
@@ -76,7 +77,8 @@ namespace Miki.Modules
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-try            {
+			try
+			{
                 Expression expression = new Expression(e.arguments);
 
                 expression.Parameters.Add("pi", Math.PI);
@@ -132,6 +134,10 @@ try            {
                 "🙎" + l.GetString("miki_module_general_guildinfo_users"),
                 (await e.Guild.GetUserCountAsync()).ToString());
 
+			embed.AddInlineField(
+				"🤖" + l.GetString("term_shard"), 
+				Bot.instance.Client.GetShardIdFor((e.Guild as IProxy<IGuild>).ToNativeObject()));
+
             List<string> roleNames = new List<string>();
             foreach (IDiscordRole r in e.Guild.Roles)
             {
@@ -142,10 +148,15 @@ try            {
                 "#⃣" + l.GetString("miki_module_general_guildinfo_roles_count"),
                 e.Guild.Roles.Count.ToString());
 
-            embed.AddInlineField(
-                "📜" + l.GetString("miki_module_general_guildinfo_roles"),
-                string.Join(", ", roleNames));
+			string roles = string.Join(", ", roleNames);
 
+			if (roles.Length <= 1000)
+			{
+				embed.AddInlineField(
+					"📜" + l.GetString("miki_module_general_guildinfo_roles"),
+					roles);
+			}
+			
             await embed.SendToChannel(e.Channel);
         }
 
@@ -163,9 +174,9 @@ try            {
                     IDiscordEmbed helpListEmbed = Utils.Embed;
                     helpListEmbed.Title = locale.GetString("miki_module_help_error_null_header");
                     helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message", await Bot.instance.Events.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
-                    helpListEmbed.Color = new Color(1.0f, 0, 0);
+					helpListEmbed.SetColor(0.6f, 0.6f, 1.0f);
 
-                    API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
+					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
                     API.StringComparison.StringComparison best = comparer.GetBest(e.arguments);
 
                     helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
@@ -205,9 +216,9 @@ try            {
 
             embed.Description = locale.GetString("miki_module_general_help_dm");
 
-            embed.Color = new Color(0, 0.5f, 1);
+            embed.SetColor(0.6f, 0.6f, 1.0f);
 
-            await embed.SendToChannel(e.Channel);
+			await embed.SendToChannel(e.Channel);
 
             await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).SendToUser(e.Author);
         }
@@ -227,9 +238,9 @@ try            {
 
             embed.Author = embed.CreateAuthor();
             embed.Author.Name = "Miki " + Bot.instance.Version;
-            embed.Color = new Color(1, 0.6f, 0.6f);
+			embed.SetColor(0.6f, 0.6f, 1.0f);
 
-            embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
+			embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
 
             embed.AddField(e.GetResource("miki_module_general_info_links"),
                 $"**{locale.GetString("miki_module_general_info_docs")}:** https://www.github.com/velddev/miki/wiki \n" +
@@ -272,7 +283,7 @@ try            {
 
                 await Utils.Embed
                     .SetTitle("Pong")
-                    .SetColor(Color.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000))
+                    .SetColor(IA.SDK.Color.Lerp(new IA.SDK.Color(0, 1, 0), new IA.SDK.Color(1, 0, 0), (float)ping / 1000))
                     .AddInlineField("Miki", ping + "ms")
                     .AddInlineField("Discord", Bot.instance.Client.Latency + "ms")
                     .ModifyMessage(returnedMessage);
@@ -301,8 +312,9 @@ try            {
             embed.Color = new IA.SDK.Color(0.3f, 0.8f, 1);
 
             embed.AddInlineField($"🖥️ {e.GetResource("discord_servers")}", Bot.instance.Client.Guilds.Count.ToString());
-            embed.AddInlineField("💬 Commands", Bot.instance.Events.CommandsUsed().ToString());
+            embed.AddInlineField("💬 " + e.GetResource("term_commands"), Bot.instance.Events.CommandsUsed().ToString());
             embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
+			embed.AddInlineField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4");
 
             await embed.SendToChannel(e.Channel);
         }
@@ -361,9 +373,9 @@ try            {
 
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname)}!?";
-            embed.Color = new Color(0.5f, 0, 1);
+            embed.SetColor(0.5f, 0f, 1.0f);
 
-            embed.ImageUrl = (await e.Guild.GetUserAsync(id)).AvatarUrl;
+			embed.ImageUrl = (await e.Guild.GetUserAsync(id)).AvatarUrl;
 
             embed.AddInlineField(
                 l.GetString("miki_module_whois_tag_personal"),
@@ -375,10 +387,14 @@ try            {
                 roles.Add("`" + user.Guild.GetRole(i).Name + "`");
             }
 
-            embed.AddInlineField(
-                l.GetString("miki_module_general_guildinfo_roles"),
-                string.Join(" ", roles));
-
+			string r = string.Join(" ", roles);
+			if (r.Length <= 1000)
+			{
+				embed.AddInlineField(
+					l.GetString("miki_module_general_guildinfo_roles"),
+					r				
+					);
+			}
             await embed.SendToChannel(e.Channel);
         }
     }
