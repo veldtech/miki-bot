@@ -293,7 +293,7 @@ namespace Miki.Modules
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			await Utils.Embed
-				.SetTitle("Doggo!")
+				.SetTitle("🐶 Doggo!")
 				.SetImageUrl("https://random.dog/" + url)
 				.SendToChannel(e.Channel);
         }

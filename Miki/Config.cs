@@ -47,5 +47,8 @@ namespace Miki
 
 		[JsonProperty("datadog_key")]
 		public string DatadogKey { get; set; } = "";
+
+		[JsonProperty("datadog_host")]
+		public string DatadogHost { get; set; } = "127.0.0.1";
 	}
 }

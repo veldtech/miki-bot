@@ -140,6 +140,42 @@ namespace Miki.Models
             return 10 + (output + (level * 20));
         }
 
+		public async Task<int> GetGlobalReputationRankAsync()
+		{
+			int x = 0;
+			using (var context = new MikiContext())
+			{
+				x = await context.Users
+					.Where(u => u.Reputation > Reputation)
+					.CountAsync();
+			}
+			return x + 1;
+		}
+
+		public async Task<int> GetGlobalCommandsRankAsync()
+		{
+			int x = 0;
+			using (var context = new MikiContext())
+			{
+				x = await context.Users
+					.Where(u => u.Total_Commands > Total_Commands)
+					.CountAsync();
+			}
+			return x + 1;
+		}
+
+		public async Task<int> GetGlobalMekosRankAsync()
+		{
+			int x = 0;
+			using (var context = new MikiContext())
+			{
+				x = await context.Users
+					.Where(u => u.Currency > Currency)
+					.CountAsync();
+			}
+			return x + 1;
+		}
+
         public async Task<int> GetGlobalRankAsync()
         {
             int x = 0;

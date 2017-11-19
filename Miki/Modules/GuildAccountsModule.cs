@@ -274,7 +274,7 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                int totalGuilds = (int) Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
+                int totalGuilds = (int)Math.Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
 
                 List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
                                                                       .Skip(amountToSkip * amountToTake)

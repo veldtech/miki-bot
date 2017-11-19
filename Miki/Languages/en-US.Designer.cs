@@ -862,15 +862,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Get the link to invite Miki to your server!.
-        /// </summary>
-        internal static string miki_command_description_invite {
-            get {
-                return ResourceManager.GetString("miki_command_description_invite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Kick baddies with the power of Miki!.
         /// </summary>
         internal static string miki_command_description_kick {

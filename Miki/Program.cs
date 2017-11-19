@@ -71,7 +71,7 @@ namespace Miki
                 x.Name = "Miki";
                 x.Version = "0.4.6";
                 x.Token = Global.config.Token;
-                x.ShardCount = Global.shardCount;
+                x.ShardCount = Global.config.ShardCount;
                 x.ConsoleLogLevel = LogLevel.ALL;
             });
 
@@ -80,11 +80,11 @@ namespace Miki
                 Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
             }
 
-			if(!string.IsNullOrWhiteSpace(Global.DatadogKey))
+			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
-					StatsdServerName = Global.DatadogHost,
+					StatsdServerName = Global.config.DatadogHost,
 					StatsdPort = 8125,
 					Prefix = "miki"
 				};
@@ -148,10 +148,10 @@ namespace Miki
             bot.OnError = async (ex) => Log.Message(ex.ToString());
             bot.AddDeveloper(121919449996460033);
 
-            if (!string.IsNullOrEmpty(devId))
-            {
-                bot.AddDeveloper(ulong.Parse(devId));
-            }
+			foreach (ulong l in Global.config.DeveloperIds)
+			{
+				bot.AddDeveloper(l);
+			}
 
             bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;

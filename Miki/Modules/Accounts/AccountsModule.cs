@@ -68,43 +68,17 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "leaderboards", Aliases = new[] { "lb", "leaderboard", "top" })]
 		public async Task LeaderboardsAsync(EventContext e)
 		{
-			LeaderboardOptions options = new LeaderboardOptions();	
-			options.pageNumber = 0;
-		
 			string[] args = e.arguments.Split(' ');
+			int parseId = 1;
 
-			if(e.message.MentionedUserIds.Count() > 0)
-			{
-				options.mentionedUserId = e.message.MentionedUserIds.First();
-			}
-			else
-			{
-				string toParse = args.Count() > 1 ? args[1] : args[0];
+			LeaderboardOptions options = new LeaderboardOptions();
 
-				if(toParse.Contains("me") || toParse.Contains("self"))
-				{
-					options.mentionedUserId = e.message.Author.Id;
-				}
-				else if(toParse.Contains( "#" ))
-				{
-					toParse = toParse.Substring(1);
-					if(int.TryParse(toParse, out int parsedNumber))
-					{
-						options.pageNumber = (int)Math.Ceiling(parsedNumber / 12.0);
-					}
-				}
-				else
-				{
-					int.TryParse(toParse, out options.pageNumber);
-				}
-			}
-
-			switch(args[0].ToLower())
+			switch (args[0].ToLower())
 			{
 				case "local":
 				case "server":
 				case "guild":
-					{
+					{					
 						options.type = LeaderboardsType.LocalExperience;
 					}
 					break;
@@ -135,8 +109,40 @@ namespace Miki.Modules.AccountsModule
 				default:
 					{
 						options.type = LeaderboardsType.Experience;
+						parseId = 0;
 					}
 					break;
+			}
+
+			if (e.message.MentionedUserIds.Count > 0)
+			{
+				options.mentionedUserId = e.message.MentionedUserIds.First();
+			}
+			else
+			{
+				string s = "";
+
+				if (args.Length > parseId)
+				{
+					s = args[parseId];
+					
+					if (s.StartsWith("me") || s.StartsWith("self"))
+					{
+						options.mentionedUserId = e.message.Author.Id;
+					}
+					else if (s.StartsWith("#"))
+					{
+						s = s?.Substring(1);
+						if (int.TryParse(s, out int parsedNumber))
+						{
+							options.pageNumber = (int)Math.Ceiling(parsedNumber / 12.0);
+						}
+					}
+					else
+					{
+						int.TryParse(s, out options.pageNumber);
+					}
+				}
 			}
 
 			await ShowLeaderboardsAsync(e.message, options);
@@ -683,134 +689,141 @@ namespace Miki.Modules.AccountsModule
 				int p = Math.Max(leaderboardOptions.pageNumber - 1, 0);
 
 				IDiscordEmbed embed = Utils.Embed
-					.SetColor(1.0f, 0.6f, 0.4f)
-					.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)), "");
+					.SetColor(1.0f, 0.6f, 0.4f);
 
 				switch(leaderboardOptions.type)
 				{
 					case LeaderboardsType.Commands:
+					{
+						embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
+						if(leaderboardOptions.mentionedUserId != 0)
 						{
-							embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
-							if(leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								p = (int)Math.Floor( context.Users.OrderByDescending(x => x.Total_Commands).ToList().FindIndex(x => x.Id == mentionedId) / 12.0 );
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Total_Commands)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for(int i = 0; i < output.Count; i++)
-							{
-								string nameToOutput = leaderboardOptions.mentionedUserId != 0 ? string.Join("", output[i].Name.Take(16)) : "~" + string.Join("", output[i].Name.Take(16)) + "~";
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {nameToOutput}", $"{output[i].Total_Commands} commands used!");
-							}
+							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+								
+							var mentionedUser = await context.Users.FindAsync(mentionedId);
+							p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalCommandsRankAsync())-1) / 12));
 						}
-						break;
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Total_Commands)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						for(int i = 0; i < output.Count; i++)
+						{
+							string nameToOutput = leaderboardOptions.mentionedUserId != 0 ? string.Join("", output[i].Name.Take(16)) : "~" + string.Join("", output[i].Name.Take(16)) + "~";
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {nameToOutput}", $"{output[i].Total_Commands} commands used!");
+						}
+					}
+					break;
 
 					case LeaderboardsType.Currency:
+					{
+						embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
+						if(leaderboardOptions.mentionedUserId != 0)
 						{
-							embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
-							if(leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								p = (int)Math.Floor(context.Users.OrderByDescending(x => x.Total_Commands).ToList().FindIndex(x => x.Id == mentionedId) / 12.0);
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Currency)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for(int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Currency} mekos!");
-							}
+							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+							var mentionedUser = await context.Users.FindAsync(mentionedId);
+							p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalMekosRankAsync())-1) / 12));
 						}
-						break;
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Currency)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						for(int i = 0; i < output.Count; i++)
+						{
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Currency} mekos!");
+						}
+					}
+					break;
 
 					case LeaderboardsType.LocalExperience:
+					{
+						embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
+						long guildId = mContext.Guild.Id.ToDbLong();
+						if(leaderboardOptions.mentionedUserId != 0)
 						{
-							embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-							long guildId = mContext.Guild.Id.ToDbLong();
-							if(leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								p = (int)Math.Floor(context.Experience.Where(x => x.ServerId == guildId).OrderByDescending(x => x.Experience).ToList().FindIndex(x => x.UserId == mentionedId) / 12.0);
-							}
-							List<LocalExperience> output = await context.Experience
-								.Where(x => x.ServerId == guildId)
-								.OrderByDescending(x => x.Experience)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
-
-							List<User> users = new List<User>();
-
-							for(int i = 0; i < output.Count; i++)
-							{
-								users.Add(await context.Users.FindAsync(output[i].UserId));
-							}
-
-							for(int i = 0; i < users.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
-									$"{output[i].Experience} experience!");
-							}
+							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+							var mentionedUser = await context.Users.FindAsync(mentionedId);
+							p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
 						}
-						break;
+						List<LocalExperience> output = await context.Experience
+							.Where(x => x.ServerId == guildId)
+							.OrderByDescending(x => x.Experience)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
+
+						List<User> users = new List<User>();
+
+						for(int i = 0; i < output.Count; i++)
+						{
+							users.Add(await context.Users.FindAsync(output[i].UserId));
+						}
+
+						for(int i = 0; i < users.Count; i++)
+						{
+							embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
+								$"{output[i].Experience} experience!");
+						}
+					}
+					break;
 
 					case LeaderboardsType.Experience:
+					{
+						embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
+						if(leaderboardOptions.mentionedUserId != 0)
 						{
-							embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
-							if(leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								p = (int)Math.Floor(context.Users.OrderByDescending(x => x.Total_Experience).ToList().FindIndex(x => x.Id == mentionedId) / 12.0);
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Total_Experience)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for(int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Total_Experience} experience!");
-							}
+							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+							var mentionedUser = await context.Users.FindAsync(mentionedId);
+							p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalRankAsync()) - 1) / 12));
 						}
-						break;
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Total_Experience)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						for(int i = 0; i < output.Count; i++)
+						{
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Total_Experience} experience!");
+						}
+					}
+					break;
 
 					case LeaderboardsType.Reputation:
+					{
+						embed.Title = locale.GetString("miki_module_accounts_leaderboards_reputation_header");
+						if(leaderboardOptions.mentionedUserId != 0)
 						{
-							embed.Title = locale.GetString("miki_module_accounts_leaderboards_reputation_header");
-							if(leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								p = (int)Math.Floor(context.Users.OrderByDescending(x => x.Reputation).ToList().FindIndex(x => x.Id == mentionedId) / 12.0);
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Reputation)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for(int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Reputation} reputation!");
-							}
+							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+							var mentionedUser = await context.Users.FindAsync(mentionedId);
+							p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalReputationRankAsync()) - 1) / 12));
 						}
-						break;
+						List<User> output = await context.Users
+							.OrderByDescending(x => x.Reputation)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						for(int i = 0; i < output.Count; i++)
+						{
+							embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
+								$"{output[i].Reputation} reputation!");
+						}
+					}
+					break;
 				}
 
-				await embed.SendToChannel(mContext.Channel);
+				await embed
+					.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)), "")
+					.SendToChannel(mContext.Channel);
 			}
 		}
 	}
@@ -829,5 +842,12 @@ namespace Miki.Modules.AccountsModule
 		public LeaderboardsType type;
 		public ulong mentionedUserId;
 		public int pageNumber;
+
+		public LeaderboardOptions(LeaderboardsType type = LeaderboardsType.Experience, int pageNumber = 0, ulong mentionedUserId = 0)
+		{
+			this.type = type;
+			this.pageNumber = pageNumber;
+			this.mentionedUserId = mentionedUserId;
+		}
 	}
 }

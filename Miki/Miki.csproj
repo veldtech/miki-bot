@@ -549,14 +549,8 @@
     <Compile Include="Migrations\201708030201584_Fix-LocalExp.Designer.cs">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710312001149_Rework-Guild-Db.cs" />
-    <Compile Include="Migrations\201710312001149_Rework-Guild-Db.Designer.cs">
-      <DependentUpon>201710312001149_Rework-Guild-Db.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
-    <Compile Include="Models\Objects\Guild\Guild.cs" />
-    <Compile Include="Models\Objects\Guild\GuildRole.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
     <Compile Include="Models\Objects\User\Achievement.cs" />
     <Compile Include="Models\Objects\User\CommandUsage.cs" />
@@ -606,7 +600,6 @@
     <Compile Include="Modules\Overwatch\OverwatchModule.cs" />
     <Compile Include="Modules\ReactionsModule.cs" />
     <Compile Include="Modules\RocketLeagueModule.cs" />
-    <Compile Include="Modules\Roles\RolesModule.cs" />
     <Compile Include="Modules\ServerCountModule.cs" />
     <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\SteamModule.cs" />
@@ -789,9 +782,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708030201584_Fix-LocalExp.resx">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710312001149_Rework-Guild-Db.resx">
-      <DependentUpon>201710312001149_Rework-Guild-Db.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
