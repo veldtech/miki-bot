@@ -54,12 +54,10 @@ namespace Miki.Modules
 
                 if (await Marriage.ProposeAsync(context, currentUser.Id, mentionedPerson.Id))
                 {
-                    await e.Channel.SendMessage(
-                        $"💍 " +
-                        locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**") +
-                        " 💍\n\n⛪ " + user.Username + " " +
-                        locale.GetString("miki_module_accounts_marry_text2") +
-                        $" ⛪\n\n✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
+					await e.Channel.SendMessage(
+						$"💍 {locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**")}💍\n\n" +
+						$"⛪ {locale.GetString("miki_module_accounts_marry_text2", user.Username)} ⛪\n\n" +
+                        $"✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
                 }
             }
         }

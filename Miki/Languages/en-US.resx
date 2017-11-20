@@ -918,7 +918,7 @@ Fuzzy</comment>
     <value>{0} has proposed to {1}!</value>
   </data>
   <data name="miki_module_accounts_marry_text2" xml:space="preserve">
-    <value>Do you accept?</value>
+    <value>{0}, Do you accept?</value>
   </data>
   <data name="miki_terms_mention" xml:space="preserve">
     <value>mention</value>
@@ -1746,5 +1746,170 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   </data>
   <data name="term_shard" xml:space="preserve">
     <value>Shard</value>
+  </data>
+  <data name="miki_command_description_avatar" xml:space="preserve">
+    <value>Don't want to lose your current avatar while you swap to a new one? Save this one!</value>
+  </data>
+  <data name="miki_command_description_cake" xml:space="preserve">
+    <value>Hey, that's a lot of cake man!! calm down!</value>
+  </data>
+  <data name="miki_command_description_cuddle" xml:space="preserve">
+    <value>Cuddle with your loved ones like they are right there &lt;3</value>
+  </data>
+  <data name="miki_command_description_donate" xml:space="preserve">
+    <value>Support this magnificent bot! We really need all the help to stay alive.</value>
+  </data>
+  <data name="miki_command_description_glare" xml:space="preserve">
+    <value>Did someone &gt;slap you but you don't like hitting back? Glare very threatening and hope they won't do it again!</value>
+  </data>
+  <data name="miki_command_description_greentext" xml:space="preserve">
+    <value>Memes and dreams are the only thing in my life. ha ha. </value>
+  </data>
+  <data name="miki_command_description_guildinfo" xml:space="preserve">
+    <value>Check cool information about your guild and their people!</value>
+  </data>
+  <data name="miki_command_description_highfive" xml:space="preserve">
+    <value>Got a penta kill with your best buddy? high five!!</value>
+  </data>
+  <data name="miki_command_description_hug" xml:space="preserve">
+    <value>Hug your friends, enemies and frienemies!</value>
+  </data>
+  <data name="miki_command_description_kiss" xml:space="preserve">
+    <value>Give that little lady (or golly gent) a peck for all of their hard work &lt;3</value>
+  </data>
+  <data name="miki_command_description_poke" xml:space="preserve">
+    <value>Hey, buddy. look to the left!</value>
+  </data>
+  <data name="miki_command_description_punch" xml:space="preserve">
+    <value>You know, I always wanted to become a boxer.</value>
+  </data>
+  <data name="miki_command_description_showmodule" xml:space="preserve">
+    <value>Show which commands are enabled and disabled in a module. Handy dandy!</value>
+  </data>
+  <data name="miki_command_description_slap" xml:space="preserve">
+    <value>Someone being a meanie? Smack them like there is no tomorrow.</value>
+  </data>
+  <data name="miki_command_description_stats" xml:space="preserve">
+    <value>Statistics about Miki's runtime! Isn't it interesting how many numbers there are?!</value>
+  </data>
+  <data name="miki_command_description_trapcard" xml:space="preserve">
+    <value>Alas, KAIBA. your reign is over as the HEART OF THE CARDS shall guide me to victory!</value>
+  </data>
+  <data name="miki_command_description_truth" xml:space="preserve">
+    <value>Do you want to show your argument is the most valid, but do not have stats to back it up? &gt;truth bomb them!</value>
+  </data>
+  <data name="miki_command_description_urban" xml:space="preserve">
+    <value>Check the definition of a word in cool people words B)</value>
+  </data>
+  <data name="miki_command_description_whois" xml:space="preserve">
+    <value>Who is this random guy that just joined? If only i had a detective... Oh wait! Miki can!</value>
+  </data>
+  <data name="miki_command_description_yandere" xml:space="preserve">
+    <value>Miki likes you, and nobody else! Check these sexy photos she sent just for you!</value>
+  </data>
+  <data name="miki_command_usage_avatar" xml:space="preserve">
+    <value>&gt;avatar [mention]</value>
+  </data>
+  <data name="miki_command_usage_cake" xml:space="preserve">
+    <value>&gt;cake</value>
+  </data>
+  <data name="miki_command_usage_cuddle" xml:space="preserve">
+    <value>&gt;cuddle [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_donate" xml:space="preserve">
+    <value>&gt;donate</value>
+  </data>
+  <data name="miki_command_usage_glare" xml:space="preserve">
+    <value>&gt;glare [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_greentext" xml:space="preserve">
+    <value>&gt;greentext</value>
+  </data>
+  <data name="miki_command_usage_guildinfo" xml:space="preserve">
+    <value>&gt;guildinfo</value>
+  </data>
+  <data name="miki_command_usage_highfive" xml:space="preserve">
+    <value>&gt;highfive [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_hug" xml:space="preserve">
+    <value>&gt;hug [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_kiss" xml:space="preserve">
+    <value>&gt;kiss [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_poke" xml:space="preserve">
+    <value>&gt;poke [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_punch" xml:space="preserve">
+    <value>&gt;punch [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_showmodule" xml:space="preserve">
+    <value>&gt;showmodule &lt;module name&gt;</value>
+  </data>
+  <data name="miki_command_usage_slap" xml:space="preserve">
+    <value>&gt;slap [text or mention]</value>
+  </data>
+  <data name="miki_command_usage_stats" xml:space="preserve">
+    <value>&gt;stats</value>
+  </data>
+  <data name="miki_command_usage_trapcard" xml:space="preserve">
+    <value>&gt;trapcard [image url]
+&gt;trapcard [attachment]
+&gt;trapcard [mention]</value>
+  </data>
+  <data name="miki_command_usage_truth" xml:space="preserve">
+    <value>&gt;truth &lt;text&gt;</value>
+  </data>
+  <data name="miki_command_usage_urban" xml:space="preserve">
+    <value>&gt;urban &lt;word&gt;</value>
+  </data>
+  <data name="miki_command_usage_whois" xml:space="preserve">
+    <value>&gt;whois &lt;userid&gt;
+&gt;whois &lt;mention&gt;</value>
+  </data>
+  <data name="miki_command_usage_yandere" xml:space="preserve">
+    <value>&gt;yandere &lt;tags&gt;</value>
+  </data>
+  <data name="localization_set" xml:space="preserve">
+    <value>Set locale to {0}!</value>
+  </data>
+  <data name="miki_command_description_hatedpasta" xml:space="preserve">
+    <value>A cool list for your hated pastas, just for when you need that one pasta back. For science ofcourse!</value>
+  </data>
+  <data name="miki_command_description_listlocale" xml:space="preserve">
+    <value>A list of all languages miki supports!</value>
+  </data>
+  <data name="miki_command_description_overwatchuser" xml:space="preserve">
+    <value>Show how good you are in overwatch with this cool command!</value>
+  </data>
+  <data name="miki_command_description_setlocale" xml:space="preserve">
+    <value>Set your bot's language to another language in this channel!</value>
+  </data>
+  <data name="miki_command_description_setprefix" xml:space="preserve">
+    <value>Change your &gt;profile to !profile with this cool command!</value>
+  </data>
+  <data name="miki_command_description_stare" xml:space="preserve">
+    <value>Stare at something with all your determination!</value>
+  </data>
+  <data name="miki_command_usage_hatedpasta" xml:space="preserve">
+    <value>&gt;hatedpasta [page]</value>
+  </data>
+  <data name="miki_command_usage_hatepasta" xml:space="preserve">
+    <value>&gt;hatepasta &lt;pasta&gt;</value>
+  </data>
+  <data name="miki_command_usage_listlocale" xml:space="preserve">
+    <value>&gt;listlocale</value>
+  </data>
+  <data name="miki_command_usage_overwatchuser" xml:space="preserve">
+    <value>&gt;overwatchuser &lt;battle.net id&gt; [-c for competitive]</value>
+  </data>
+  <data name="miki_command_usage_setlocale" xml:space="preserve">
+    <value>&gt;setlocale &lt;language in listlocale&gt;</value>
+  </data>
+  <data name="miki_command_usage_setprefix" xml:space="preserve">
+    <value>&gt;setprefix &lt;new prefix&gt;</value>
+  </data>
+  <data name="miki_command_usage_stare" xml:space="preserve">
+    <value>&gt;stare</value>
   </data>
 </root>

@@ -184,8 +184,9 @@ namespace Miki.Modules
                 language.Language = Locale.LocaleNames[e.arguments.ToLower()];
                 await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e.Channel.GetLocale(), $"Set locale to `{e.arguments}`\n\n**WARNING:** this feature is not fully implemented yet. use at your own risk.").SendToChannel(e.Channel);
-            }
+                await Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
+					.SendToChannel(e.Channel);
+			}
         }
 
         [Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
