@@ -54,11 +54,16 @@ namespace Miki.Modules
 
                 if (await Marriage.ProposeAsync(context, currentUser.Id, mentionedPerson.Id))
                 {
-					await e.Channel.SendMessage(
-						$"💍 {locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**")}💍\n\n" +
-						$"⛪ {locale.GetString("miki_module_accounts_marry_text2", user.Username)} ⛪\n\n" +
-                        $"✅ **>acceptmarriage [@{locale.GetString("miki_terms_mention")}]**\n❌ **>declinemarriage [@{locale.GetString("miki_terms_mention")}]**");
-                }
+					await Utils.Embed
+						.SetTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
+						.SetDescription(locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
+						.SetColor(0.4f, 0.4f, 0.8f)
+						.SetThumbnailUrl("https://i.imgur.com/TKZSKIp.png")
+						.AddInlineField("✅ To accept", $">acceptmarriage @user")
+						.AddInlineField("❌ To decline", $">declinemarriage @user")
+						.SetFooter("Take your time though! This proposal won't disappear", "")
+						.SendToChannel(e.Channel);
+				}
             }
         }
 
@@ -326,9 +331,10 @@ namespace Miki.Modules
                 {
                     embed.Description = $"For now, **{limit} slots** is the max. sorry :(";
 
-                    if (limit == 15)
+                    if (limit == 10 && !user.IsDonator(context))
                     {
-                        embed.AddField("Pro tip!", "Donators get 5 more slots!");
+						embed.AddField("Pro tip!", "Donators get 5 more slots!")
+							.SetFooter("Check `>donate` for more information!", "");
                     }
 
                     embed.Color = new IA.SDK.Color(1f, 0.6f, 0.4f);

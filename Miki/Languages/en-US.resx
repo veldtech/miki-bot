@@ -683,7 +683,7 @@ Fuzzy</comment>
     <value>Documentation</value>
   </data>
   <data name="miki_module_general_info_donate_string" xml:space="preserve">
-    <value>Hi everyone! I have created a Patreon to allow people to support Miki. Please check it out and support if you can!</value>
+    <value>I have created a Patreon to allow people to support Miki. Please check it out and support if you can!</value>
     <comment>and support [it/Miki/me] if you can!</comment>
   </data>
   <data name="miki_module_general_info_links" xml:space="preserve">
@@ -918,7 +918,7 @@ Fuzzy</comment>
     <value>{0} has proposed to {1}!</value>
   </data>
   <data name="miki_module_accounts_marry_text2" xml:space="preserve">
-    <value>{0}, Do you accept?</value>
+    <value>A marriage, is a voluntary and full commitment. It is made in the deepest sense to the exclusion of all others. Before you declare your vows to one another, I want to hear you confirm that it is your intention to be married today. {0}, do you come here freely to give yourself to {1} in marriage?</value>
   </data>
   <data name="miki_terms_mention" xml:space="preserve">
     <value>mention</value>

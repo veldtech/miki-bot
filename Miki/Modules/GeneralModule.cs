@@ -63,7 +63,7 @@ namespace Miki.Modules
             else
             {
                 await e.Channel.SendMessage(string.Join(".", e.Author.AvatarUrl));
-            }
+            }	
         }
 
         [Command(Name = "avatar", On = "-s")]
@@ -227,7 +227,14 @@ namespace Miki.Modules
         public async Task DonateAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            await e.Channel.SendMessage(locale.GetString("miki_module_general_info_donate_string") + " <https://www.patreon.com/mikibot>");
+			await Utils.Embed
+				.SetTitle("Hi everyone!")
+				.SetDescription(e.GetResource("miki_module_general_info_donate_string"))
+				.SetColor(0.8f, 0.4f, 0.4f)
+				.SetThumbnailUrl("https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png")
+				.AddInlineField("Patreon", "https://www.patreon.com/mikibot")
+				.AddInlineField("Don't have money?", "You can always support us in different ways too! Please participate in our [Trello](https://trello.com/b/SdjIVMtx/miki) discussion so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)")
+				.SendToChannel(e.Channel);
         }
 
         [Command(Name = "info", Aliases = new string[] { "about" })]

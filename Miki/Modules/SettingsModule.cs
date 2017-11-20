@@ -124,7 +124,7 @@ namespace Miki.Modules
             }
         }
 
-		[Command( Name = "showmodules" )]
+		[Command(Name = "showmodules")]
 		public async Task ShowModulesAsync( EventContext e )
 		{
 			List<string> modules = new List<string>();
@@ -178,7 +178,11 @@ namespace Miki.Modules
 
                 if (language == null)
                 {
-                    language = context.Languages.Add(new ChannelLanguage() { EntityId = e.Channel.Id.ToDbLong(), Language = e.arguments.ToLower() });
+                    language = context.Languages.Add(new ChannelLanguage()
+					{
+						EntityId = e.Channel.Id.ToDbLong(),
+						Language = e.arguments.ToLower()
+					});
                 }
 
                 language.Language = Locale.LocaleNames[e.arguments.ToLower()];

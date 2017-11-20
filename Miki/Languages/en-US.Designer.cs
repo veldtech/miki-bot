@@ -2808,7 +2808,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}, Do you accept?.
+        ///   Looks up a localized string similar to A marriage, is a voluntary and full commitment. It is made in the deepest sense to the exclusion of all others. Before you declare your vows to one another, I want to hear you confirm that it is your intention to be married today. {0}, do you come here freely to give yourself to {1} in marriage?.
         /// </summary>
         internal static string miki_module_accounts_marry_text2 {
             get {
@@ -4187,7 +4187,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi everyone! I have created a Patreon to allow people to support Miki. Please check it out and support if you can!.
+        ///   Looks up a localized string similar to I have created a Patreon to allow people to support Miki. Please check it out and support if you can!.
         /// </summary>
         internal static string miki_module_general_info_donate_string {
             get {
