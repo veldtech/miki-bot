@@ -324,11 +324,11 @@ namespace Miki.Modules
 
                 if (user.MarriageSlots >= limit)
                 {
-                    embed.Description = $"For now, **{limit} slots** is the max. sorry :(";
+                    embed.Description = $"**{limit} slots** is the max, sorry. :( Donators get 5 more slots!";
 
                     if (limit == 15)
                     {
-                        embed.AddField("Pro tip!", "Donators get 5 more slots!");
+                        embed.AddField("Oops!", "You have the maximum number of slots.");
                     }
 
                     embed.Color = new IA.SDK.Color(1f, 0.6f, 0.4f);
