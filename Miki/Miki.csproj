@@ -549,6 +549,10 @@
     <Compile Include="Migrations\201708030201584_Fix-LocalExp.Designer.cs">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711202216564_add-pasta-score.cs" />
+    <Compile Include="Migrations\201711202216564_add-pasta-score.Designer.cs">
+      <DependentUpon>201711202216564_add-pasta-score.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
@@ -782,6 +786,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708030201584_Fix-LocalExp.resx">
       <DependentUpon>201708030201584_Fix-LocalExp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711202216564_add-pasta-score.resx">
+      <DependentUpon>201711202216564_add-pasta-score.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

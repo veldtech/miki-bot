@@ -18,51 +18,6 @@ namespace Miki.Modules
     [Module("pasta")]
     public class PastaModule
     {
-        [Command(Name = "poppasta")]
-        public async Task DoPastaLeaderboardsPopular(EventContext context)
-        {
-            using (var d = new MikiContext())
-            {
-                List<GlobalPasta> leaderboards = d.Pastas.OrderByDescending(x => x.TimesUsed)
-                                                         .Take(12)
-                                                         .ToList();
-
-                IDiscordEmbed e = Utils.Embed
-                    .SetTitle(context.GetResource("poppasta_title"))
-                    .SetColor(new IA.SDK.Color(1, 0.6f, 0.2f));
-
-                foreach (GlobalPasta t in leaderboards)
-                {
-                    e.AddInlineField(t.Id, (t == leaderboards.First() ? "👑 " + t.TimesUsed.ToString() : "✨ " + t.TimesUsed.ToString()));
-                }
-
-                await e.SendToChannel(context.Channel.Id);
-            }
-        }
-
-        [Command(Name = "toppasta")]
-        public async Task DoPastaLeaderboardsLove(EventContext context)
-        {
-            using (var d = new MikiContext())
-            {
-                List<GlobalPasta> leaderboards = d.Pastas.OrderByDescending(x => d.Votes.Where(p => p.Id == x.Id).Count())
-                                                      .Take(12)
-                                                      .ToList();
-
-                IDiscordEmbed e = Utils.Embed
-                    .SetTitle(context.GetResource("toppasta_title"))
-                    .SetColor(new IA.SDK.Color(1, 0, 0));
-
-                foreach (GlobalPasta t in leaderboards)
-                {
-                    int amount = d.Votes.Where(p => p.Id == t.Id).Count();
-                    e.AddInlineField(t.Id, (t == leaderboards.First() ? "💖 " + amount : (amount < 0 ? "💔 " : "❤ ") + amount));
-                }
-
-                await e.SendToChannel(context.Channel.Id);
-            }
-        }
-
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
@@ -304,7 +259,7 @@ namespace Miki.Modules
 
                 b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
 
-                VoteCount v = pasta.GetVotes(context);
+                VoteCount v = await pasta.GetVotesAsync(context);
 
                 b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
 
@@ -451,40 +406,44 @@ namespace Miki.Modules
             await VotePasta(e, false);
         }
 
-        private async Task VotePasta(EventContext e, bool vote)
-        {
-            Locale locale = Locale.GetEntity(e.Channel.Id);
+		private async Task VotePasta(EventContext e, bool vote)
+		{
+			Locale locale = Locale.GetEntity(e.Channel.Id);
 
-            using (var context = new MikiContext())
-            {
-                var pasta = await context.Pastas.FindAsync(e.arguments);
+			using (var context = new MikiContext())
+			{
+				var pasta = await context.Pastas.FindAsync(e.arguments);
 
-                if (pasta == null)
-                {
-                    await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
-                    return;
-                }
+				if (pasta == null)
+				{
+					await Utils.ErrorEmbed(locale, e.GetResource("miki_module_pasta_error_null")).SendToChannel(e.Channel);
+					return;
+				}
 
-                long authorId = e.Author.Id.ToDbLong();
+				long authorId = e.Author.Id.ToDbLong();
 
-                var voteObject = context.Votes.Where(q => q.Id == e.arguments && q.__UserId == authorId)
-                                              .FirstOrDefault();
+				var voteObject = context.Votes.Where(q => q.Id == e.arguments && q.__UserId == authorId)
+											  .FirstOrDefault();
 
-                if (voteObject == null)
-                {
-                    voteObject = new PastaVote() { Id = e.arguments, __UserId = e.Author.Id.ToDbLong(), PositiveVote = vote };
-                    context.Votes.Add(voteObject);
-                }
-                else
-                {
-                    voteObject.PositiveVote = vote;
-                }
-                await context.SaveChangesAsync();
+				if (voteObject == null)
+				{
+					voteObject = new PastaVote() { Id = e.arguments, __UserId = e.Author.Id.ToDbLong(), PositiveVote = vote };
+					context.Votes.Add(voteObject);
+				}
+				else
+				{
+					voteObject.PositiveVote = vote;
+				}
 
-                var votecount = pasta.GetVotes(context);
+				await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).SendToChannel(e.Channel);
-            }
+				var votecount = await pasta.GetVotesAsync(context);
+				pasta.Score = votecount.Upvotes - votecount.Downvotes;
+
+				await context.SaveChangesAsync();
+
+				await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).SendToChannel(e.Channel);
+			}
         }
     }
 }

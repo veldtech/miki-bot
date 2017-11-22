@@ -232,7 +232,7 @@ namespace Miki.Modules
 				.SetDescription(e.GetResource("miki_module_general_info_donate_string"))
 				.SetColor(0.8f, 0.4f, 0.4f)
 				.SetThumbnailUrl("https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png")
-				.AddInlineField("Patreon", "https://www.patreon.com/mikibot")
+				.AddInlineField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!")
 				.AddInlineField("Don't have money?", "You can always support us in different ways too! Please participate in our [Trello](https://trello.com/b/SdjIVMtx/miki) discussion so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)")
 				.SendToChannel(e.Channel);
         }
@@ -247,15 +247,17 @@ namespace Miki.Modules
             embed.Author.Name = "Miki " + Bot.instance.Version;
 			embed.SetColor(0.6f, 0.6f, 1.0f);
 
-			embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), locale.GetString("miki_module_general_info_made_by_description"));
+			embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), 
+				locale.GetString("miki_module_general_info_made_by_description") + " B., Drummss, Fuzen, IA, Luke, Milk, n0t, Phanrazak, Rappy, Tal, Vallode");
 
-            embed.AddField(e.GetResource("miki_module_general_info_links"),
-                $"**{locale.GetString("miki_module_general_info_docs")}:** https://www.github.com/velddev/miki/wiki \n" +
-                $"**{locale.GetString("social_patreon")}:** https://www.patreon.com/mikibot \n" +
-                $"**{locale.GetString("miki_module_general_info_twitter")}:** https://www.twitter.com/velddev / https://www.twitter.com/miki_discord \n" +
-                $"**{locale.GetString("miki_module_general_info_reddit")}:** https://www.reddit.com/r/mikibot \n" +
-                $"**{locale.GetString("miki_module_general_info_server")}:** https://discord.gg/55sAjsW \n" +
-                $"**{locale.GetString("miki_module_general_info_website")}:** http://miki.veld.one");
+
+			embed.AddField(e.GetResource("miki_module_general_info_links"),
+                $"`{locale.GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
+                $"`{"donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
+                $"`{locale.GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
+                $"`{locale.GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
+                $"`{locale.GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/55sAjsW)\n" +
+                $"`{locale.GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai)");
 
             await embed.SendToChannel(e.Channel);
         }
@@ -400,7 +402,7 @@ namespace Miki.Modules
 				embed.AddInlineField(
 					l.GetString("miki_module_general_guildinfo_roles"),
 					r				
-					);
+				);
 			}
             await embed.SendToChannel(e.Channel);
         }

@@ -125,6 +125,24 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
+		public static async Task<IDiscordUser> ParseUserAsync(IDiscordChannel channel, string name)
+		{
+			if(!string.IsNullOrWhiteSpace(name))
+			{
+				if(ulong.TryParse(name.Trim('<','@','!','>'), out ulong l))
+				{
+					return await channel.Guild.GetUserAsync(l);
+				}
+
+				string s = name.ToLower();
+				List<IDiscordUser> users = await channel.GetUsersAsync();
+				return users
+					.Where(x => x.GetName().ToLower() == s)
+					.First();
+			}
+			return null;
+		}
+
 		public static bool IsAll(string input, Locale locale = null)
 		{
 			return ((input == locale?.GetString("common_string_all")) || (input == "*"));

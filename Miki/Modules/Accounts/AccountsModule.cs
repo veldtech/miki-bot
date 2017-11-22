@@ -106,6 +106,13 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
+				case "pasta":
+				case "pastas":
+					{
+						options.type = LeaderboardsType.Pasta;
+					}
+					break;
+
 				default:
 					{
 						options.type = LeaderboardsType.Experience;
@@ -819,6 +826,24 @@ namespace Miki.Modules.AccountsModule
 						}
 					}
 					break;
+
+					case LeaderboardsType.Pasta:
+					{
+						List<GlobalPasta> leaderboards = await context.Pastas
+							.OrderByDescending(x => x.Score)
+							.Skip(12 * p)
+							.Take(12)
+							.ToListAsync();
+
+						embed.SetTitle(locale.GetString("toppasta_title"));
+
+						foreach (GlobalPasta t in leaderboards)
+						{
+							int amount = t.Score;
+							embed.AddInlineField(t.Id, (t == leaderboards.First() ? "💖 " + amount : (amount < 0 ? "💔 " : "❤ ") + amount));
+						}
+					}
+					break;
 				}
 
 				await embed
@@ -834,7 +859,8 @@ namespace Miki.Modules.AccountsModule
 		Experience,
 		Commands,
 		Currency,
-		Reputation
+		Reputation,
+		Pasta
 	}
 
 	public struct LeaderboardOptions

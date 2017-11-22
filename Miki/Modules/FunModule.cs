@@ -223,7 +223,11 @@ namespace Miki.Modules
                 "http://i.imgur.com/2nukcqZ.jpg",
                 "http://i.imgur.com/BxwgwHh.jpg"
             };
-            await e.Channel.SendMessage(bird[MikiRandom.Next(0, bird.Length)]);
+			await Utils.Embed
+			.SetTitle("🐦 Birbs!")
+			.SetColor(0.8f, 0.4f, 0.4f)
+			.SetImageUrl(bird[MikiRandom.Next(0, bird.Length)])
+			.SendToChannel(e.Channel);
         }
 
         [Command(Name = "cat")]
@@ -233,8 +237,13 @@ namespace Miki.Modules
             byte[] b = c.DownloadData("http://random.cat/meow");
             string str = Encoding.Default.GetString(b);
             CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
-            await e.Channel.SendMessage(cat.File);
-        }
+
+			await Utils.Embed
+				.SetTitle("🐱 Kitties!")
+				.SetColor(0.8f, 0.6f, 0.4f)
+				.SetImageUrl(cat.File)
+				.SendToChannel(e.Channel);
+		}
 
         [Command(Name = "compliment")]
         public async Task ComplimentAsync(EventContext e)
@@ -294,6 +303,7 @@ namespace Miki.Modules
 
 			await Utils.Embed
 				.SetTitle("🐶 Doggo!")
+				.SetColor(0.8f, 0.8f, 0.8f)
 				.SetImageUrl("https://random.dog/" + url)
 				.SendToChannel(e.Channel);
         }

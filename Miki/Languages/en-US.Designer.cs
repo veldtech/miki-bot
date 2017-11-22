@@ -4205,7 +4205,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Special thanks to: Florestina, Mei, Rappy, Rie, Rosie.
+        ///   Looks up a localized string similar to Special thanks to:.
         /// </summary>
         internal static string miki_module_general_info_made_by_description {
             get {
