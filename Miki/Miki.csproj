@@ -553,6 +553,10 @@
     <Compile Include="Migrations\201711202216564_add-pasta-score.Designer.cs">
       <DependentUpon>201711202216564_add-pasta-score.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711241805432_add-bans.cs" />
+    <Compile Include="Migrations\201711241805432_add-bans.Designer.cs">
+      <DependentUpon>201711241805432_add-bans.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Objects\ApiKeysModel.cs" />
     <Compile Include="Models\Objects\Guild\Timer.cs" />
@@ -789,6 +793,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711202216564_add-pasta-score.resx">
       <DependentUpon>201711202216564_add-pasta-score.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711241805432_add-bans.resx">
+      <DependentUpon>201711241805432_add-bans.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

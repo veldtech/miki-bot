@@ -32,6 +32,11 @@ namespace Miki.Modules
                 User mentionedPerson = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
                 User currentUser = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
+				if(mentionedPerson.Banned)
+				{
+					return;
+				}
+
                 IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
                 if (currentUser == null || mentionedPerson == null)

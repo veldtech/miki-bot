@@ -27,6 +27,9 @@ namespace Miki.Models
 
         public DateTime LastRivalRenewed { get; set; }
 
+		[Column("banned")]
+		public bool Banned { get; set; }
+
         #region Config
 
         public int MinimalExperienceToGetRewards { get; set; }

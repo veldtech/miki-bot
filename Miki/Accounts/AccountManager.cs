@@ -122,6 +122,11 @@ namespace Miki.Accounts
                             a = await User.CreateAsync(e);
                         }
 
+						if(a.Banned)
+						{
+							return;
+						}
+
                         experience = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), userId);
 
                         if (experience == null)
@@ -182,7 +187,6 @@ namespace Miki.Accounts
 				{
 
 				}
-
             }
         }
 

@@ -13,7 +13,9 @@ using Nito.AsyncEx;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki
@@ -29,12 +31,12 @@ namespace Miki
         public static DateTime timeSinceStartup;
 
 		public async Task Start()
-        {
-            Locale.Load();
-            timeSinceStartup = DateTime.Now;
+		{
+			Locale.Load();
+			timeSinceStartup = DateTime.Now;
 
 			LoadConfig();
-            LoadDiscord();
+			LoadDiscord();
 
 			// Run this only when in debug mode.
 			if (Debugger.IsAttached)
@@ -42,8 +44,17 @@ namespace Miki
 				TestCase.Run();
 			}
 
-            await bot.ConnectAsync();
-        }
+			using (var c = new MikiContext())
+			{
+				List<User> bannedUsers = c.Users.Where(x => x.Banned).ToList();
+				foreach(var u in bannedUsers)
+				{
+					bot.Events.Ignore(u.Id.FromDbLong());
+				}
+			}
+
+			await bot.ConnectAsync();
+		}
 
         private void LoadConfig()
         {

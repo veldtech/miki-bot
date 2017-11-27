@@ -197,5 +197,22 @@ namespace Miki.Modules
                 await e.Channel.SendMessage(":ok_hand:");
             }
         }
+
+		[Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task BanUserAsync(EventContext e)
+		{
+			string[] s = e.arguments.Split(',');
+			if (s.Length == 1)
+			{
+				await User.BanAsync(long.Parse(e.arguments));
+			}
+			else
+			{
+				foreach(var n in s)
+				{
+					await User.BanAsync(long.Parse(n));
+				}
+			}
+		}
     }
 }

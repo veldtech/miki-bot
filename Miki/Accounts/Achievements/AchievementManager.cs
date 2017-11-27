@@ -114,7 +114,9 @@ namespace Miki.Accounts.Achievements
             string output = "";
             long id = userid.ToDbLong();
 
-            List<Achievement> achievements = context.Achievements.Where(p => p.Id == id).ToList();
+            List<Achievement> achievements = context.Achievements
+				.Where(p => p.Id == id)
+				.ToList();
 
             foreach (Achievement achievement in achievements)
             {
@@ -140,7 +142,6 @@ namespace Miki.Accounts.Achievements
             using (var context = new MikiContext())
             {
                 int achievementCount = await context.Achievements
-                                                            .AsNoTracking()
                                                             .Where(q => q.Id == id)
                                                             .CountAsync();
 

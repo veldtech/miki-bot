@@ -58,11 +58,16 @@ namespace Miki.Models
         [Column("Reputation")]
         public int Reputation { get; set; }
 
+		[Column("banned")]
+		public bool Banned { get; set; }
+
         public DateTime LastReputationGiven { get; set; }
         public short ReputationPointsLeft { get; set; }
 
         public async Task AddCurrencyAsync(int amount, IDiscordMessageChannel channel = null, User fromUser = null)
         {
+			if (Banned) return;
+
             Currency += amount;
 
             if (channel != null)
@@ -105,7 +110,8 @@ namespace Miki.Models
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
         {
-            Currency -= amount;
+			if (Banned) return;
+			Currency -= amount;
             await context.SaveChangesAsync();
         }
 
@@ -211,5 +217,38 @@ namespace Miki.Models
         {
             return context.Achievements.Find(Id, "donator") != null;
         }
+
+		public static async Task BanAsync(long id)
+		{
+			using (var context = new MikiContext())
+			{
+				User u = await context.Users.FindAsync(id);
+
+				context.Marriages.RemoveRange(
+					await context.Marriages.Where(x => x.Id1 == id || x.Id2 == id).ToListAsync()
+				);
+
+				context.CommandUsages.RemoveRange(
+					await context.CommandUsages.Where(x => x.UserId == id).ToListAsync()
+				);
+
+				context.Achievements.RemoveRange(
+					await context.Achievements.Where(x => x.Id == id).ToListAsync()
+				);
+
+				context.Experience.RemoveRange(
+					await context.Experience.Where(x => x.UserId == id).ToListAsync()
+				);
+
+				Bot.instance.Events.Ignore(id.FromDbLong());
+				u.Banned = true;
+				u.Total_Commands = 0;
+				u.Total_Experience = 0;
+				u.MarriageSlots = 0;
+				u.Currency = 0;
+				u.Reputation = 0;
+				await context.SaveChangesAsync();
+			}
+		}
     }
 }
