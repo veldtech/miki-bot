@@ -20,15 +20,15 @@ using System.Threading.Tasks;
 
 namespace Miki
 {
-    public class Program
-    {
-        private static void Main(string[] args)
-        {
+	public class Program
+	{
+		private static void Main(string[] args)
+		{
 			AsyncContext.Run(() => new Program().Start());
-        }
+		}
 
-        public static Bot bot;
-        public static DateTime timeSinceStartup;
+		public static Bot bot;
+		public static DateTime timeSinceStartup;
 
 		public async Task Start()
 		{
@@ -47,7 +47,7 @@ namespace Miki
 			using (var c = new MikiContext())
 			{
 				List<User> bannedUsers = c.Users.Where(x => x.Banned).ToList();
-				foreach(var u in bannedUsers)
+				foreach (var u in bannedUsers)
 				{
 					bot.Events.Ignore(u.Id.FromDbLong());
 				}
@@ -56,42 +56,42 @@ namespace Miki
 			await bot.ConnectAsync();
 		}
 
-        private void LoadConfig()
-        {
-            if (FileReader.FileExist("settings.json", "miki"))
-            {
-                FileReader reader = new FileReader("settings.json", "miki");
-				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());			
-                reader.Finish();
-            }
-            else
-            {
-                FileWriter writer = new FileWriter("settings.json", "miki");
-                writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
-                writer.Finish();
-            }
-        }
+		private void LoadConfig()
+		{
+			if (FileReader.FileExist("settings.json", "miki"))
+			{
+				FileReader reader = new FileReader("settings.json", "miki");
+				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
+				reader.Finish();
+			}
+			else
+			{
+				FileWriter writer = new FileWriter("settings.json", "miki");
+				writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
+				writer.Finish();
+			}
+		}
 
-        /// <summary>
-        /// The program runs all discord services and loads all the data here.
-        /// </summary>
-        public void LoadDiscord()
-        {
-            bot = new Bot(x =>
-            {
-                x.Name = "Miki";
-                x.Version = "0.4.7";
-                x.Token = Global.config.Token;
-                x.ShardCount = Global.config.ShardCount;
-                x.ConsoleLogLevel = LogLevel.ALL;
-            });
+		/// <summary>
+		/// The program runs all discord services and loads all the data here.
+		/// </summary>
+		public void LoadDiscord()
+		{
+			bot = new Bot(x =>
+			{
+				x.Name = "Miki";
+				x.Version = "0.5";
+				x.Token = Global.config.Token;
+				x.ShardCount = Global.config.ShardCount;
+				x.ConsoleLogLevel = LogLevel.ALL;
+			});
 
-            if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
-            {
-                Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
-            }
+			if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
+			{
+				Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
+			}
 
-			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
+			if (!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
@@ -118,8 +118,8 @@ namespace Miki
 
 			bot.MessageReceived += Bot_MessageReceived;
 
-            bot.Events.OnCommandError = async (ex, cmd, msg) =>
-            {
+			bot.Events.OnCommandError = async (ex, cmd, msg) =>
+			{
 				/*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
                 //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
@@ -156,20 +156,20 @@ namespace Miki
                 //await e.SendToChannel(msg.Channel);
                 */
 			};
-            bot.OnError = async (ex) => Log.Message(ex.ToString());
-            bot.AddDeveloper(121919449996460033);
+			bot.OnError = async (ex) => Log.Message(ex.ToString());
+			bot.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.config.DeveloperIds)
 			{
 				bot.AddDeveloper(l);
 			}
 
-            bot.Client.JoinedGuild += Client_JoinedGuild;
+			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 
 			bot.OnShardConnect += Bot_OnShardConnect;
 			bot.OnShardDisconnect += Bot_OnShardDisconnect;
-        }
+		}
 
 		private async Task Bot_MessageReceived(IA.SDK.Interfaces.IDiscordMessage arg)
 		{
@@ -183,10 +183,10 @@ namespace Miki
 		}
 
 		private async Task Client_JoinedGuild(IGuild arg)
-        {
+		{
 			Locale locale = Locale.GetEntity(arg.Id.ToDbLong());
-            ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-            await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
+			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
+			await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
 
 			// if miki patreon is present, leave again.
 

@@ -5,9 +5,11 @@ using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
+using Miki.API.Miki;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
+using Rest;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -293,5 +295,29 @@ namespace Miki.Modules
                 await embed.SendToChannel(e.Channel);
             }
         }
+		[Command(Name = "guildtop")]
+		public async Task GuildTop(EventContext e)
+		{
+			bool usePagedRoute = false;
+			if (int.TryParse(e.arguments, out int amountToSkip))
+			{
+				usePagedRoute = true;
+			}
+
+			RestClient rest = new RestClient
+				(Global.config.MikiApiBaseUrl +
+				"/leaderboards/global/exp" +
+				(usePagedRoute ? $"/{amountToSkip}" : "" +
+				"?key=" + Global.config.MikiApiKey));
+
+			IDiscordEmbed embed = Utils.Embed
+				.SetTitle(e.GetResource("guildtop_title"));
+
+			List<LeaderboardsItem> items = (await rest.GetAsync<List<LeaderboardsItem>>()).Data;
+
+			embed = Utils.RenderLeaderboards(embed, items);
+			/*embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);*/
+			await embed.SendToChannel(e.Channel);
+		}
     }
 }

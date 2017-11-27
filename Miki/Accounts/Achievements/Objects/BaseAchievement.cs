@@ -13,6 +13,7 @@ namespace Miki.Accounts.Achievements
         public string ParentName { get; set; } = Constants.NotDefined;
 
         public string Icon { get; set; } = Constants.NotDefined;
+		public int Points { get; set; } = 5;
 
         public BaseAchievement()
         {
