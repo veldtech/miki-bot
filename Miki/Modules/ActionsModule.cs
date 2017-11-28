@@ -462,7 +462,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/ilc8zXi.gif",
                 "http://i.imgur.com/4GgbYst.gif",
                 "http://i.imgur.com/1mr4NWL.gif",
-                "http://i.imgur.com/wXw7IjY.mp4"
+                "http://i.imgur.com/wXw7IjY.gif"
             };
 
             Random r = new Random();
