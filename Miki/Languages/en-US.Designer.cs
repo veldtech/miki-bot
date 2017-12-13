@@ -174,6 +174,10 @@ namespace Miki.Languages {
         internal static string error_rep_limit {
             get {
                 return ResourceManager.GetString("error_rep_limit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This role is not allowed!.
         /// </summary>
         internal static string error_role_forbidden {
@@ -4962,6 +4966,10 @@ namespace Miki.Languages {
         internal static string sync_success {
             get {
                 return ResourceManager.GetString("sync_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available Roles.
         /// </summary>
         internal static string term_available {
@@ -4989,16 +4997,20 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shard.
-        /// </summary>
-        internal static string term_shard {
-            get {
-                return ResourceManager.GetString("term_shard", resourceCulture);
         ///   Looks up a localized string similar to Roles.
         /// </summary>
         internal static string term_roles {
             get {
                 return ResourceManager.GetString("term_roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shard.
+        /// </summary>
+        internal static string term_shard {
+            get {
+                return ResourceManager.GetString("term_shard", resourceCulture);
             }
         }
         

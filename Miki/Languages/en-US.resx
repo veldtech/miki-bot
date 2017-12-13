@@ -1911,6 +1911,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   </data>
   <data name="miki_command_usage_stare" xml:space="preserve">
     <value>&gt;stare</value>
+    </data>
   <data name="error_role_forbidden" xml:space="preserve">
     <value>This role is not allowed!</value>
   </data>

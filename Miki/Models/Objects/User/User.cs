@@ -51,9 +51,6 @@ namespace Miki.Models
         [Column("LastDailyTime")]
         public DateTime LastDailyTime { get; set; }
 
-        [Column("DateCreated")]
-        [DefaultValue("getutcdate()")]
-        public DateTime DateCreated { get; set; }
 		[Column("DateCreated")]
 		[DefaultValue("getutcdate()")]
 		public DateTime DateCreated { get; set; } = DateTime.Now;

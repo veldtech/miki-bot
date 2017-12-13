@@ -356,37 +356,35 @@
     <Compile Include="Accounts\Achievements\Objects\TransactionAchievement.cs" />
     <Compile Include="Accounts\Achievements\Objects\UserUpdateAchievement.cs" />
     <Compile Include="Accounts\EmojiBar.cs" />
-    <Compile Include="API\Cards\CardManager.cs" />
-    <Compile Include="API\Cards\CardSet.cs" />
-    <Compile Include="API\Cards\Enums\CardType.cs" />
-    <Compile Include="API\Cards\Enums\CardValue.cs" />
-    <Compile Include="API\Cards\Objects\Card.cs" />
-    <Compile Include="API\Cards\Objects\CardHand.cs" />
-    <Compile Include="API\Gambling\GamblingApi.cs" />
-    <Compile Include="API\Imageboards\ImageboardConfigurations.cs" />
-    <Compile Include="API\Imageboards\ImageboardPost.cs" />
-    <Compile Include="API\Imageboards\Enums\ImageboardRating.cs" />
-    <Compile Include="API\Imageboards\ImageboardProviderPool.cs" />
-    <Compile Include="API\Imageboards\Interfaces\ILinkable.cs" />
-    <Compile Include="API\Imageboards\Objects\BooruPost.cs" />
-    <Compile Include="API\Imageboards\Objects\CatApiPost.cs" />
-    <Compile Include="API\Imageboards\Objects\E621Post.cs" />
-    <Compile Include="API\Imageboards\Objects\GelbooruPost.cs" />
-    <Compile Include="API\Imageboards\Objects\ImgurPost.cs" />
-    <Compile Include="API\Imageboards\Objects\KonachanPost.cs" />
-    <Compile Include="API\Imageboards\Objects\Rule34Post.cs" />
-    <Compile Include="API\Imageboards\Objects\SafebooruPost.cs" />
-    <Compile Include="API\Imageboards\Objects\YanderePost.cs" />
-    <Compile Include="API\Miki\LeaderboardsItem.cs" />
-    <Compile Include="API\Miki\LeaderboardsPage.cs" />
-    <Compile Include="API\Patreon\PatreonApi.cs" />
-    <Compile Include="API\Patreon\Objects\PatreonPledge.cs" />
-    <Compile Include="API\Reminder\ReminderAPI.cs" />
-    <Compile Include="API\Steam\Objects\SteamGameInfo.cs" />
-    <Compile Include="API\Steam\Objects\SteamUserInfo.cs" />
-    <Compile Include="API\Steam\SteamApi.cs" />
-    <Compile Include="API\StringComparison\StringComparer.cs" />
-    <Compile Include="API\Urban Dictionary\UrbanDictionaryApi.cs" />
+    <Compile Include="APIs\Cards\CardManager.cs" />
+    <Compile Include="APIs\Cards\CardSet.cs" />
+    <Compile Include="APIs\Cards\Enums\CardType.cs" />
+    <Compile Include="APIs\Cards\Enums\CardValue.cs" />
+    <Compile Include="APIs\Cards\Objects\Card.cs" />
+    <Compile Include="APIs\Cards\Objects\CardHand.cs" />
+    <Compile Include="APIs\Gambling\GamblingApi.cs" />
+    <Compile Include="APIs\Imageboards\ImageboardConfigurations.cs" />
+    <Compile Include="APIs\Imageboards\ImageboardPost.cs" />
+    <Compile Include="APIs\Imageboards\Enums\ImageboardRating.cs" />
+    <Compile Include="APIs\Imageboards\ImageboardProviderPool.cs" />
+    <Compile Include="APIs\Imageboards\Interfaces\ILinkable.cs" />
+    <Compile Include="APIs\Imageboards\Objects\BooruPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\CatApiPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\E621Post.cs" />
+    <Compile Include="APIs\Imageboards\Objects\GelbooruPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\ImgurPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\KonachanPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\Rule34Post.cs" />
+    <Compile Include="APIs\Imageboards\Objects\SafebooruPost.cs" />
+    <Compile Include="APIs\Imageboards\Objects\YanderePost.cs" />
+    <Compile Include="APIs\Patreon\PatreonApi.cs" />
+    <Compile Include="APIs\Patreon\Objects\PatreonPledge.cs" />
+    <Compile Include="APIs\Reminder\ReminderAPI.cs" />
+    <Compile Include="APIs\Steam\Objects\SteamGameInfo.cs" />
+    <Compile Include="APIs\Steam\Objects\SteamUserInfo.cs" />
+    <Compile Include="APIs\Steam\SteamApi.cs" />
+    <Compile Include="APIs\StringComparison\StringComparer.cs" />
+    <Compile Include="APIs\Urban Dictionary\UrbanDictionaryApi.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Languages\ar-AE.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -616,24 +614,24 @@
     <Compile Include="Modules\SettingsModule.cs" />
     <Compile Include="Modules\SteamModule.cs" />
     <Compile Include="Notification.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueOptions.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeaguePlatform.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeaguePlaylist.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueRankedStats.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueSearchResult.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueSeason.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueStats.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueTier.cs" />
-    <Compile Include="API\Rocket League\Objects\RocketLeagueUser.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueOptions.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeaguePlatform.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeaguePlaylist.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueRankedStats.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueSearchResult.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueSeason.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueStats.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueTier.cs" />
+    <Compile Include="APIs\Rocket League\Objects\RocketLeagueUser.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Modules\Accounts\AccountsModule.cs" />
     <Compile Include="Modules\AdminModule.cs" />
     <Compile Include="Modules\DeveloperModule.cs" />
     <Compile Include="Modules\FunModule.cs" />
     <Compile Include="Modules\PastaModule.cs" />
-    <Compile Include="API\Rocket League\RocketLeagueApi.cs" />
-    <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryEntryInformation.cs" />
-    <Compile Include="API\Urban Dictionary\Objects\UrbanDictionaryInformation.cs" />
+    <Compile Include="APIs\Rocket League\RocketLeagueApi.cs" />
+    <Compile Include="APIs\Urban Dictionary\Objects\UrbanDictionaryEntryInformation.cs" />
+    <Compile Include="APIs\Urban Dictionary\Objects\UrbanDictionaryInformation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -814,9 +812,13 @@
       <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
       <Name>Meru</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Meru\RestClient\RestClient.csproj">
-      <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
-      <Name>RestClient</Name>
+    <ProjectReference Include="..\Miki.API\Miki.API.csproj">
+      <Project>{d7ae9ffa-0657-40dc-9fd4-850d8000deb9}</Project>
+      <Name>Miki.API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rest\Rest.csproj">
+      <Project>{2e2d5252-ca93-4a14-837b-e4eace720aaa}</Project>
+      <Name>Rest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

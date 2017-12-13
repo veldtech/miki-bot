@@ -10,6 +10,7 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.API.Leaderboards;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Accounts.Services;
@@ -105,22 +106,22 @@ namespace Miki.Modules.AccountsModule
 			string[] args = e.arguments.Split(' ');
 			int parseId = 1;
 
-			LeaderboardOptions options = new LeaderboardOptions();
+			LeaderboardsOptions options = new LeaderboardsOptions();
 
 			switch (args[0].ToLower())
 			{
 				case "local":
 				case "server":
 				case "guild":
-					{					
-						options.type = LeaderboardsType.LocalExperience;
+					{
+						options.guildId = e.Guild.Id;
 					}
 					break;
 
 				case "commands":
 				case "cmds":
 					{
-						options.type = LeaderboardsType.Commands;
+						options.type = LeaderboardsType.COMMANDS;
 					}
 					break;
 
@@ -129,27 +130,27 @@ namespace Miki.Modules.AccountsModule
 				case "money":
 				case "bal":
 					{
-						options.type = LeaderboardsType.Currency;
+						options.type = LeaderboardsType.CURRENCY;
 					}
 					break;
 
 				case "rep":
 				case "reputation":
 					{
-						options.type = LeaderboardsType.Reputation;
+						options.type = LeaderboardsType.REPUTATION;
 					}
 					break;
 
 				case "pasta":
 				case "pastas":
 					{
-						options.type = LeaderboardsType.Pasta;
+						options.type = LeaderboardsType.PASTA;
 					}
 					break;
 
 				default:
 					{
-						options.type = LeaderboardsType.Experience;
+						options.type = LeaderboardsType.EXP;
 						parseId = 0;
 					}
 					break;
@@ -727,7 +728,7 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardOptions leaderboardOptions)
+		public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardsOptions leaderboardOptions)
 		{
 			using (var context = new MikiContext())
 			{
@@ -740,7 +741,7 @@ namespace Miki.Modules.AccountsModule
 
 				switch(leaderboardOptions.type)
 				{
-					case LeaderboardsType.Commands:
+					case LeaderboardsType.COMMANDS:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -764,7 +765,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Currency:
+					case LeaderboardsType.CURRENCY:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -787,41 +788,42 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.LocalExperience:
-					{
-						embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-						long guildId = mContext.Guild.Id.ToDbLong();
-						if(leaderboardOptions.mentionedUserId != 0)
-						{
-							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-							var mentionedUser = await context.Users.FindAsync(mentionedId);
-							p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
-						}
-						List<LocalExperience> output = await context.Experience
-							.Where(x => x.ServerId == guildId)
-							.OrderByDescending(x => x.Experience)
-							.Skip(12 * p)
-							.Take(12)
-							.ToListAsync();
+						// TODO: rework
+					//case LeaderboardsType.LocalExperience:
+					//{
+					//	embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
+					//	long guildId = mContext.Guild.Id.ToDbLong();
+					//	if(leaderboardOptions.mentionedUserId != 0)
+					//	{
+					//		long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+					//		var mentionedUser = await context.Users.FindAsync(mentionedId);
+					//		p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
+					//	}
+					//	List<LocalExperience> output = await context.Experience
+					//		.Where(x => x.ServerId == guildId)
+					//		.OrderByDescending(x => x.Experience)
+					//		.Skip(12 * p)
+					//		.Take(12)
+					//		.ToListAsync();
 
-						int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
+					//	int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
 
-						List<User> users = new List<User>();
+					//	List<User> users = new List<User>();
 
-						for(int i = 0; i < output.Count; i++)
-						{
-							users.Add(await context.Users.FindAsync(output[i].UserId));
-						}
+					//	for(int i = 0; i < output.Count; i++)
+					//	{
+					//		users.Add(await context.Users.FindAsync(output[i].UserId));
+					//	}
 
-						for(int i = 0; i < users.Count; i++)
-						{
-							embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
-								$"{output[i].Experience} experience!");
-						}
-					}
-					break;
+					//	for(int i = 0; i < users.Count; i++)
+					//	{
+					//		embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
+					//			$"{output[i].Experience} experience!");
+					//	}
+					//}
+					//break;
 
-					case LeaderboardsType.Experience:
+					case LeaderboardsType.EXP:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -844,7 +846,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Reputation:
+					case LeaderboardsType.REPUTATION:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_reputation_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -867,7 +869,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Pasta:
+					case LeaderboardsType.PASTA:
 					{
 						List<GlobalPasta> leaderboards = await context.Pastas
 							.OrderByDescending(x => x.Score)
@@ -890,30 +892,6 @@ namespace Miki.Modules.AccountsModule
 					.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)), "")
 					.SendToChannel(mContext.Channel);
 			}
-		}
-	}
-
-	public enum LeaderboardsType
-	{
-		LocalExperience,
-		Experience,
-		Commands,
-		Currency,
-		Reputation,
-		Pasta
-	}
-
-	public struct LeaderboardOptions
-	{
-		public LeaderboardsType type;
-		public ulong mentionedUserId;
-		public int pageNumber;
-
-		public LeaderboardOptions(LeaderboardsType type = LeaderboardsType.Experience, int pageNumber = 0, ulong mentionedUserId = 0)
-		{
-			this.type = type;
-			this.pageNumber = pageNumber;
-			this.mentionedUserId = mentionedUserId;
 		}
 	}
 }

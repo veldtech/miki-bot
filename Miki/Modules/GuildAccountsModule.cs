@@ -5,10 +5,10 @@ using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Accounts;
-using Miki.API.Miki;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
+using Miki.API.Leaderboards;
 using Rest;
 using System;
 using System.Collections.Generic;
@@ -268,33 +268,6 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "guildtop")]
-        public async Task GuildTop(EventContext e)
-        {
-            int amountToTake = 12;
-            int.TryParse(e.arguments, out int amountToSkip);
-
-            using (var context = new MikiContext())
-            {
-                int totalGuilds = (int)Math.Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
-
-                List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
-                                                                      .Skip(amountToSkip * amountToTake)
-                                                                      .Take(amountToTake)
-                                                                      .ToListAsync();
-
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle(e.GetResource("guildtop_title"));
-
-                foreach (GuildUser i in leaderboards)
-                {
-                    embed.AddInlineField(i.Name, i.Experience.ToString());
-                }
-
-                embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
-                await embed.SendToChannel(e.Channel);
-            }
-        }
 		[Command(Name = "guildtop")]
 		public async Task GuildTop(EventContext e)
 		{

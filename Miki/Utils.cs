@@ -4,7 +4,7 @@ using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki;
 using Miki.Accounts;
-using Miki.API.Miki;
+using Miki.API.Leaderboards;
 using Miki.Languages;
 using System;
 using System.Collections.Generic;

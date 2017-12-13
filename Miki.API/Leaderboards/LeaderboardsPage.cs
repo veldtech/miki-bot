@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Miki.API.Miki
+namespace Miki.API.Leaderboards
 {
 	class LeaderboardsPage
 	{

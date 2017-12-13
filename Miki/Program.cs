@@ -179,7 +179,7 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Counter("guilds.left", 1);
-			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Client_JoinedGuild(IGuild arg)
@@ -191,7 +191,7 @@ namespace Miki
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined", 1);
-			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)
@@ -203,8 +203,7 @@ namespace Miki
 		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
 		{
 			DogStatsd.Event("shard.disconnect", $"shard {shardId.ToString()} has disconnected!");
-			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL);
+			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL, null, null, null, e.Message);
 		}
-
 	}
 }
