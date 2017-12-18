@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.Entity;
+
 
 namespace Miki.Models
 {
@@ -72,7 +74,7 @@ namespace Miki.Models
 
         public static async Task DivorceAllMarriagesAsync(MikiContext context, long me)
         {
-            List<Marriage> marriages = InternalGetMarriages(context, me);
+            List<Marriage> marriages = await InternalGetMarriages(context, me);
             context.Marriages.RemoveRange(marriages);
             await context.SaveChangesAsync();
         }
@@ -128,9 +130,9 @@ namespace Miki.Models
             return m;
         }
 
-        public static List<Marriage> GetMarriages(MikiContext context, long userid)
+        public static async Task<List<Marriage>> GetMarriages(MikiContext context, long userid)
         {
-            return InternalGetMarriages(context, userid);
+            return await InternalGetMarriages(context, userid);
         }
 
         public static async Task<Marriage> GetEntryAsync(MikiContext context, ulong receiver, ulong asker) => await GetEntryAsync(context, receiver.ToDbLong(), asker.ToDbLong());
@@ -188,13 +190,12 @@ namespace Miki.Models
             return context.Marriages.Where(tm => tm.Id1 == receiver && tm.Id2 == asker && tm.Proposing == false).FirstOrDefault();
         }
 
-        private static List<Marriage> InternalGetMarriages(MikiContext context, long userid)
+        private async static Task<List<Marriage>> InternalGetMarriages(MikiContext context, long userid)
         {
-            return context
+            return await context
                 .Marriages
-                .Where(p => p.Id1 == userid && p.Proposing == false
-                    || p.Id2 == userid && p.Proposing == false)
-                .ToList();
+                .Where(p => (p.Id1 == userid || p.Id2 == userid) && !p.Proposing)
+				.ToListAsync();
         }
 
         #endregion Static Methods

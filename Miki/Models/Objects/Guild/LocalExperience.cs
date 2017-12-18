@@ -1,6 +1,9 @@
-﻿using System;
+﻿using IA;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Models
@@ -36,5 +39,23 @@ namespace Miki.Models
 
             return experience;
         }
-    }
+		public static async Task<LocalExperience> GetAsync(MikiContext context, long serverId, long userId)
+		{
+			return await context.Experience.FindAsync(serverId, userId)
+				?? await CreateAsync(context, serverId, userId);
+		}
+
+		public async Task<int> GetRank(MikiContext context)
+		{
+			int x = await context.Experience
+				.Where(e => e.ServerId == ServerId && e.Experience > Experience)
+				.CountAsync();
+			
+			return x + 1;
+		}
+		public static async Task<int> GetRankAsync(MikiContext context, long serverId, long userId)
+		{
+			return await (await GetAsync(context, serverId, userId)).GetRank(context);
+		}
+	}	
 }

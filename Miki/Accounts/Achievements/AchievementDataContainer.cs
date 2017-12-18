@@ -18,7 +18,6 @@ namespace Miki.Accounts.Achievements
         private AchievementDataContainer()
         {
         }
-
         public AchievementDataContainer(Action<AchievementDataContainer> instance)
         {
             instance.Invoke(this);

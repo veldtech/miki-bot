@@ -187,7 +187,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                LocalExperience u = await context.Experience.FindAsync(e.Guild.Id.ToDbLong(), e.message.MentionedUserIds.First().ToDbLong());
+                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.message.MentionedUserIds.First().ToDbLong());
                 if (u == null)
                 {
                     return;

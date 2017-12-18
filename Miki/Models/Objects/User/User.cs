@@ -76,11 +76,11 @@ namespace Miki.Models
             }
         }
 
-        public static async Task<User> CreateAsync(IDiscordMessage e)
+        public static async Task<User> CreateAsync(MikiContext m, IDiscordMessage e)
         {
-			return await CreateAsync(e.Author);
+			return await CreateAsync(m, e.Author);
         }
-		public static async Task<User> CreateAsync(IDiscordUser u)
+		public static async Task<User> CreateAsync(MikiContext m, IDiscordUser u)
 		{
 			User user = new User()
 			{
@@ -99,13 +99,15 @@ namespace Miki.Models
 				LastReputationGiven = Utils.MinDbValue
 			};
 
-			using (var context = new MikiContext())
-			{
-				context.Users.Add(user);
-				await context.SaveChangesAsync();
-			}
+			m.Users.Add(user);
 
 			return user;
+		}
+		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
+		{
+			long id = u.Id.ToDbLong();
+			return await context.Users.FindAsync(id)
+				?? await CreateAsync(context, u);
 		}
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
@@ -128,18 +130,18 @@ namespace Miki.Models
             return Level;
         }
 
-        public static int CalculateMaxExperience(int localExp)
-        {
-            int experience = localExp;
-            int Level = 0;
-            int output = 0;
-            while (experience >= output)
-            {
-                output = CalculateNextLevelIteration(output, Level);
-                Level++;
-            }
-            return output;
-        }
+		public static int CalculateLevelExperience(int level)
+		{
+			int Level = 0;
+			int output = 0;
+			do
+			{
+				output = CalculateNextLevelIteration(output, Level);
+				Level++;
+			} while (Level < level);
+
+			return output;
+		}
 
         private static int CalculateNextLevelIteration(int output, int level)
         {
@@ -192,25 +194,6 @@ namespace Miki.Models
                     .CountAsync();
             }
             return x + 1;
-        }
-
-        public async Task<int> GetLocalRank(ulong guildId)
-        {
-            using (var context = new MikiContext())
-            {
-                LocalExperience l = await context.Experience.FindAsync(guildId.ToDbLong(), Id);
-
-                if (l == null)
-                {
-                    return -1;
-                }
-
-                long gId = guildId.ToDbLong();
-                int x = await context.Experience
-                    .Where(e => e.ServerId == gId && e.Experience > l.Experience)
-                    .CountAsync();
-                return x + 1;
-            }
         }
 
         public bool IsDonator(MikiContext context)

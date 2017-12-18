@@ -169,53 +169,47 @@ namespace Miki.Modules
         }
 
         [Command(Name = "guildprofile")]
-        public async Task GuildProfile(EventContext context)
+        public async Task GuildProfile(EventContext e)
         {
-            using (MikiContext database = new MikiContext())
+            using (MikiContext context = new MikiContext())
             {
-                GuildUser g = await database.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
-
-                if (g == null)
-                {
-                    await GuildUser.Create(context.Guild);
-                    g = await database.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
-                }
+                GuildUser g = await GuildUser.GetAsync(context, e.Guild);
 
                 int rank = g.GetGlobalRank();
                 int level = g.CalculateLevel(g.Experience);
 
-                EmojiBarSet onBarSet = new EmojiBarSet("<:mbaronright:334479818924228608>", "<:mbaronmid:334479818848468992>", "<:mbaronleft:334479819003789312>");
-                EmojiBarSet offBarSet = new EmojiBarSet("<:mbaroffright:334479818714513430>", "<:mbaroffmid:334479818504536066>", "<:mbaroffleft:334479818949394442>");
+				EmojiBarSet onBarSet = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
+				EmojiBarSet offBarSet = new EmojiBarSet("<:mbarleftoff:391971424824459265>", "<:mbarmidoff:391971424824197123>", "<:mbarrightoff:391971424862208000>");
 
-                EmojiBar expBar = new EmojiBar(g.CalculateMaxExperience(g.Experience), onBarSet, offBarSet, 6);
+				EmojiBar expBar = new EmojiBar(g.CalculateMaxExperience(g.Experience), onBarSet, offBarSet, 6);
 
                 IDiscordEmbed embed = Utils.Embed
-                    .SetAuthor(g.Name, context.Guild.AvatarUrl, "https://miki.veld.one")
+                    .SetAuthor(g.Name, e.Guild.AvatarUrl, "https://miki.veld.one")
                     .SetColor(0.1f, 0.6f, 1)
                     .SetThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
-                    .AddInlineField(context.GetResource("miki_terms_level"), level.ToString());
+                    .AddInlineField(e.GetResource("miki_terms_level"), level.ToString());
 
-                string expBarString = await expBar.Print(g.Experience, context.Channel);
+                string expBarString = await expBar.Print(g.Experience, e.Channel);
 
                 if (string.IsNullOrWhiteSpace(expBarString))
                 { 
-                    embed.AddInlineField(context.GetResource("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
+                    embed.AddInlineField(e.GetResource("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
                 }
                 else
                 {
-                    embed.AddInlineField(context.GetResource("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
+                    embed.AddInlineField(e.GetResource("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
                 }
 
-                embed.AddInlineField(context.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
-                    .AddInlineField(context.GetResource("miki_module_general_guildinfo_users"), g.UserCount.ToString());
+                embed.AddInlineField(e.GetResource("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
+                    .AddInlineField(e.GetResource("miki_module_general_guildinfo_users"), g.UserCount.ToString());
 
                 if (g.RivalId != 0)
                 {
                     GuildUser rival = await g.GetRival();
-                    embed.AddInlineField(context.GetResource("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
+                    embed.AddInlineField(e.GetResource("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
                 }
 
-                await embed.SendToChannel(context.Channel);
+                await embed.SendToChannel(e.Channel);
             }
         }
 

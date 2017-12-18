@@ -104,6 +104,15 @@ namespace Miki.Modules
             }
         }
 
+		[Command(Name = "changelog")]
+		public async Task ChangelogAsync(EventContext e)
+		{
+			await Utils.Embed
+				.SetTitle("Change log")
+				.SetDescription("Check out my changelog blog [here](https://medium.com/@velddev)")
+				.SendToChannel(e.Channel);
+		}
+
         [Command(Name = "guildinfo")]
         public async Task GuildInfoAsync(EventContext e)
         {
@@ -262,7 +271,7 @@ namespace Miki.Modules
             await embed.SendToChannel(e.Channel);
         }
 
-        [Command(Name = "invite")]
+        [Command(Name = "invite")]	
         public async Task InviteAsync(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
@@ -284,7 +293,7 @@ namespace Miki.Modules
 
             IDiscordMessage returnedMessage = await message;
 
-            Task.WaitAll(message);
+            await Task.Delay(100);
 
             if (returnedMessage != null)
             {

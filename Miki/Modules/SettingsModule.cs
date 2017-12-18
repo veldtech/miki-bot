@@ -162,36 +162,19 @@ namespace Miki.Modules
 			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).AddInlineField( "Column 1", firstColumn ).AddInlineField( "Column 2", secondColumn ).SendToChannel( e.Channel );
 		}
 
-        [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetLocale(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                ChannelLanguage language = await context.Languages.FindAsync(e.Channel.Id.ToDbLong());
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-
-                if (!Locale.LocaleNames.ContainsKey(e.arguments.ToLower()))
-                {
-                    await Utils.ErrorEmbed(locale, $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.").SendToChannel(e.Channel);
-                    return;
-                }
-
-                if (language == null)
-                {
-                    language = context.Languages.Add(new ChannelLanguage()
-					{
-						EntityId = e.Channel.Id.ToDbLong(),
-						Language = e.arguments.ToLower()
-					});
-                }
-
-                language.Language = Locale.LocaleNames[e.arguments.ToLower()];
-                await context.SaveChangesAsync();
-
-                await Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
+		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task SetLocale(EventContext e)
+		{
+			if (Locale.LocaleNames.TryGetValue(e.arguments.ToLower(), out string langId))
+			{
+				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
+				await Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
 					.SendToChannel(e.Channel);
+				return;
 			}
-        }
+			await Utils.ErrorEmbed(e.Channel.GetLocale(), $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.")
+				.SendToChannel(e.Channel);
+		}
 
         [Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task PrefixAsync(EventContext e)

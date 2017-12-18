@@ -29,8 +29,8 @@ namespace Miki.Modules
 
             using (MikiContext context = new MikiContext())
             {
-                User mentionedPerson = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
-                User currentUser = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				User mentionedPerson = await User.GetAsync(context, await e.Guild.GetUserAsync(e.message.MentionedUserIds.First()));
+				User currentUser = await User.GetAsync(context, e.Author);
 
 				if(mentionedPerson.Banned)
 				{
@@ -76,7 +76,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                User user = await context.Users.FindAsync(cont.Author.Id.ToDbLong());
+                User user = await User.GetAsync(context, cont.Author);
 
                 if (user.Currency >= costForUpgrade)
                 {
@@ -141,7 +141,7 @@ namespace Miki.Modules
                     }
                     else
                     {
-                        List<Marriage> allMarriages = Marriage.GetMarriages(context, e.Author.Id.ToDbLong());
+                        List<Marriage> allMarriages = await Marriage.GetMarriages(context, e.Author.Id.ToDbLong());
                         bool done = false;
 
                         foreach (Marriage marriage in allMarriages)
@@ -212,13 +212,13 @@ namespace Miki.Modules
                     User person1 = await context.Users.FindAsync(marriage.Id1);
                     User person2 = await context.Users.FindAsync(marriage.Id2);
 
-                    if (person1.MarriageSlots < Marriage.GetMarriages(context, person1.Id).Count)
+                    if (person1.MarriageSlots < (await Marriage.GetMarriages(context, person1.Id)).Count)
                     {
                         await e.Channel.SendMessage($"{person1.Name} do not have enough marriage slots, sorry :(");
                         return;
                     }
 
-                    if (person2.MarriageSlots < Marriage.GetMarriages(context, person2.Id).Count)
+                    if (person2.MarriageSlots < (await Marriage.GetMarriages(context, person2.Id)).Count)
                     {
                         await e.Channel.SendMessage($"{person2.Name} does not have enough marriage slots, sorry :(");
                         return;

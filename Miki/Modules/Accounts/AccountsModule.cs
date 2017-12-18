@@ -178,38 +178,33 @@ namespace Miki.Modules.AccountsModule
 					id = uid.ToDbLong();
 				}
 
-				User account = await context.Users.FindAsync(id);
 				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(uid);
+				User account = await User.GetAsync(context, discordUser);
 
 				if (account != null)
 				{
 					IDiscordEmbed embed = Utils.Embed
 						.SetDescription(account.Title)
-						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name),
-							"http://veld.one/assets/profile-icon.png", "https://patreon.com/mikibot")
+						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), "", "https://patreon.com/mikibot")
 						.SetThumbnailUrl(discordUser.AvatarUrl);
 
 					long serverid = e.Guild.Id.ToDbLong();
 
-					LocalExperience localExp = await context.Experience.FindAsync(serverid, id);
-					int globalExp = account.Total_Experience;
+					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), id);
+					int rank = await localExp.GetRank(context);
 
-					int rank = await account.GetLocalRank(e.Guild.Id);
+					int localLevel = User.CalculateLevel(localExp.Experience);
+					int maxLocalExp = User.CalculateLevelExperience(localLevel);
+					int minLocalExp = User.CalculateLevelExperience(localLevel-1);
 
-					EmojiBarSet onBarSet = new EmojiBarSet("<:mbaronright:334479818924228608>",
-						"<:mbaronmid:334479818848468992>", "<:mbaronleft:334479819003789312>");
-					EmojiBarSet offBarSet = new EmojiBarSet("<:mbaroffright:334479818714513430>",
-						"<:mbaroffmid:334479818504536066>", "<:mbaroffleft:334479818949394442>");
-
-					EmojiBar expBar = new EmojiBar(User.CalculateMaxExperience(localExp.Experience), onBarSet,
-						offBarSet, 6);
+					EmojiBarSet onBarSet  = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
+					EmojiBarSet offBarSet = new EmojiBarSet("<:mbarleftoff:391971424824459265>", "<:mbarmidoff:391971424824197123>", "<:mbarrightoff:391971424862208000>");
+					EmojiBar expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
 
 					string infoValue = new MessageBuilder()
-						.AppendText(locale.GetString("miki_module_accounts_information_level",
-							User.CalculateLevel(localExp.Experience), localExp.Experience,
-							User.CalculateMaxExperience(localExp.Experience)))
-						.AppendText(await expBar.Print(localExp.Experience, e.Channel))
+						.AppendText(locale.GetString("miki_module_accounts_information_level", localLevel, localExp.Experience, maxLocalExp))
+						.AppendText(await expBar.Print(localExp.Experience - minLocalExp, e.Channel))
 						.AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
 						.AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
 						.Build();
@@ -217,25 +212,23 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
 
 					int globalLevel = User.CalculateLevel(account.Total_Experience);
-					int globalRank = User.CalculateMaxExperience(account.Total_Experience);
+					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
+					int minGlobalExp = User.CalculateLevelExperience(globalLevel -1);
 
-					EmojiBar globalExpBar = new EmojiBar(User.CalculateMaxExperience(account.Total_Experience),
-						onBarSet, offBarSet, 6);
+					int globalRank = await account.GetGlobalRankAsync();
+
+					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
 					string globalInfoValue = new MessageBuilder()
-						.AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel,
-							account.Total_Experience, globalRank))
-						.AppendText(await globalExpBar.Print(account.Total_Experience, e.Channel))
-						.AppendText(
-							locale.GetString("miki_module_accounts_information_rank",
-								await account.GetGlobalRankAsync()), MessageFormatting.Plain, false)
+						.AppendText(locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, maxGlobalExp))
+						.AppendText(await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Channel))
+						.AppendText(locale.GetString("miki_module_accounts_information_rank", globalRank), MessageFormatting.Plain, false)
 						.Build();
 
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
-
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
-					List<Marriage> marriages = Marriage.GetMarriages(context, id);
+					List<Marriage> marriages = await Marriage.GetMarriages(context, id);
 
 					marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
 
@@ -285,8 +278,8 @@ namespace Miki.Modules.AccountsModule
 						locale.GetString("miki_generic_achievements"),
 						achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
 
-					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
-						"http://miki.veld.one/profile/" + account.Id);
+					//embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
+					//	"http://miki.veld.one/profile/" + account.Id);
 
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
@@ -378,12 +371,8 @@ namespace Miki.Modules.AccountsModule
 
 				foreach (ulong user in mentionedUsers)
 				{
-					User receiver = await context.Users.FindAsync(user.ToDbLong());
-					if (receiver == null)
-					{
-						IDiscordUser u = await e.Guild.GetUserAsync(user);
-						receiver = await User.CreateAsync(u);
-					}
+					IDiscordUser u = await e.Guild.GetUserAsync(user);
+					User receiver = await User.GetAsync(context, u);
 
 					receiver.Reputation += repAmount;
 
@@ -491,7 +480,7 @@ namespace Miki.Modules.AccountsModule
 
 			using (var context = new MikiContext())
 			{
-				User user = await context.Users.FindAsync(targetId != 0 ? (long)targetId : e.Author.Id.ToDbLong());
+				User user = await User.GetAsync(context, await e.Guild.GetUserAsync(targetId != 0 ? targetId : e.Author.Id));
 
 				IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
 				embed.Title = "🔸 Mekos";
@@ -499,6 +488,7 @@ namespace Miki.Modules.AccountsModule
 				embed.Color = new IA.SDK.Color(1f, 0.5f, 0.7f);
 
 				await embed.SendToChannel(e.Channel);
+				await context.SaveChangesAsync();
 			}
 		}
 
@@ -541,22 +531,8 @@ namespace Miki.Modules.AccountsModule
 
 			using (MikiContext context = new MikiContext())
 			{
-				User sender = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-
-				if (sender == null)
-				{
-					// HOW THE FUCK?!
-					return;
-				}
-
-				User receiver = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
-
-				if (receiver == null)
-				{
-					await Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
-						.SendToChannel(e.Channel);
-					return;
-				}
+				User sender = await User.GetAsync(context, e.Author);
+				User receiver = await User.GetAsync(context, await e.Guild.GetUserAsync(e.message.MentionedUserIds.First()));
 
 				if (goldSent <= sender.Currency)
 				{
@@ -569,8 +545,8 @@ namespace Miki.Modules.AccountsModule
 
 					em.Color = new IA.SDK.Color(255, 140, 0);
 
-					await context.SaveChangesAsync();
 					await em.SendToChannel(e.Channel);
+					await context.SaveChangesAsync();
 				}
 				else
 				{
@@ -587,7 +563,7 @@ namespace Miki.Modules.AccountsModule
 			{
 				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
 
-				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				User u = await User.GetAsync(context, e.Author);
 
 				if (u == null)
 				{
@@ -755,7 +731,7 @@ namespace Miki.Modules.AccountsModule
 						{
 							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
 							var mentionedUser = await context.Users.FindAsync(mentionedId);
-							p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
+							p = (int)Math.Ceiling((double)(((await LocalExperience.GetRankAsync(context, guildId, mentionedId)) - 1) / 12));
 						}
 						List<LocalExperience> output = await context.Experience
 							.Where(x => x.ServerId == guildId)

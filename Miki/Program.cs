@@ -1,26 +1,20 @@
 ﻿using Discord;
-using EFCache;
-using EFCache.RedisCache;
 using IA;
 using IA.FileHandling;
-using IA.SDK;
 using Miki.Languages;
 using Miki.Models;
-using Miki.Modules.Gambling.Managers;
-using Miki.Tests;
 using Newtonsoft.Json;
 using Nito.AsyncEx;
-using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki
 {
-    public class Program
+	public class Program
     {
         private static void Main(string[] args)
         {
@@ -38,15 +32,9 @@ namespace Miki
 			LoadConfig();
 			LoadDiscord();
 
-			// Run this only when in debug mode.
-			if (Debugger.IsAttached)
-			{
-				TestCase.Run();
-			}
-
 			using (var c = new MikiContext())
 			{
-				List<User> bannedUsers = c.Users.Where(x => x.Banned).ToList();
+				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
 					bot.Events.Ignore(u.Id.FromDbLong());
@@ -77,14 +65,14 @@ namespace Miki
         /// </summary>
         public void LoadDiscord()
         {
-            bot = new Bot(x =>
+            bot = new Bot(new ClientInformation()
             {
-                x.Name = "Miki";
-                x.Version = "0.4.7";
-                x.Token = Global.config.Token;
-                x.ShardCount = Global.config.ShardCount;
-                x.ConsoleLogLevel = LogLevel.ALL;
-            });
+                Name = "Miki",
+                Version = "0.4.7",
+                Token = Global.config.Token,
+                ShardCount = Global.config.ShardCount,
+                ConsoleLogLevel = LogLevel.ALL
+			});
 
             if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
             {

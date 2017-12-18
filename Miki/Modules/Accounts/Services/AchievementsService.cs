@@ -97,16 +97,6 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                         }
-                    },
-                    new CommandAchievement()
-                    {
-                        Name = "Lonely",
-                        Icon = "😭",
-
-                        CheckCommand = async (p) =>
-                        {
-                                return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
-                        }
                     }
                 };
             });

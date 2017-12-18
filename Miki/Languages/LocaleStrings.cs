@@ -1,7 +1,9 @@
 ﻿using IA;
 using Miki.Models;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Resources;
+using System.Threading.Tasks;
 
 namespace Miki.Languages
 {
@@ -10,6 +12,8 @@ namespace Miki.Languages
     {
         public static Dictionary<string, ResourceManager> Locales = new Dictionary<string, ResourceManager>();
         public static Dictionary<string, string> LocaleNames = new Dictionary<string, string>();
+
+		private static ConcurrentDictionary<long, string> cache = new ConcurrentDictionary<long, string>();
 
         private string defaultResource = "en-us";
         private long id;
@@ -84,74 +88,93 @@ namespace Miki.Languages
 
         public bool HasString(string m)
         {
-            using (var context = new MikiContext())
-            {
-                ChannelLanguage l = context.Languages.Find(id);
+			string lang = GetLanguage();
+			string output = Locales[lang].GetString(m);
 
-                string lang;
+			if (string.IsNullOrWhiteSpace(output))
+			{
+				output = Locales[defaultResource].GetString(m);
+			}
 
-                if (l == null)
-                {
-                    lang = defaultResource;
-                }
-                else
-                {
-                    lang = l.Language;
-                }
-
-                string output = Locales[lang].GetString(m);
-
-                if (string.IsNullOrWhiteSpace(output))
-                {
-                    output = Locales[defaultResource].GetString(m);
-                }
-
-                return !string.IsNullOrWhiteSpace(output);
-            }
-        }
+			return !string.IsNullOrWhiteSpace(output);
+		}
 
         public string GetString(string m, params object[] p)
         {
-            using (var context = new MikiContext())
-            {
-                ChannelLanguage l = context.Languages.Find(id);
+			string language = GetLanguage();
+			ResourceManager resources = Locales[language];
+			string output = "";
 
-                string lang;
+			if (InternalStringAvailable(m, resources))
+			{
+				output = InternalGetString(m, resources, p);
 
-                if (l == null)
-                {
-                    lang = defaultResource;
-                }
-                else
-                {
-                    lang = l.Language;
-                }
+				if (string.IsNullOrWhiteSpace(output))
+				{
+					output = InternalGetString(m, Locales[defaultResource], p);
+				}
+			}
+			else
+			{
+				output = InternalGetString(m, Locales[defaultResource], p);
+			}
 
-                ResourceManager resources = Locales[lang];
-                string output = null;
+			return output;
+		}
 
-                if (InternalStringAvailable(m, resources))
-                {
-                    output = InternalGetString(m, resources, p);
+		public string GetLanguage()
+		{
+			if (cache.TryGetValue(id, out string language))
+			{
+				return language;
+			}
+			else
+			{
+				using (var context = new MikiContext())
+				{
+					ChannelLanguage l = context.Languages.Find(id);
+					if (l != null)
+					{
+						cache.TryAdd(id, l.Language);
+						return l.Language;
+					}
+				}
+			}
+			return cache.GetOrAdd(id, defaultResource);
+		}
+		public static async Task SetLanguageAsync(long id, string language)
+		{
+			using (var context = new MikiContext())
+			{
+				ChannelLanguage lang = await context.Languages.FindAsync(id);
+				Locale locale = GetEntity(id);
 
-                    if (string.IsNullOrWhiteSpace(output))
-                    {
-                        output = InternalGetString(m, Locales[defaultResource], p);
-                    }
-                }
-                else
-                {
-                    output = InternalGetString(m, Locales[defaultResource], p);
-                }
+				if(LocaleNames.TryGetValue(language, out string val))
+				{
+					language = val;
+				}
 
-                return output;
-            }
-        }
+				if (lang == null)
+				{
+					lang = context.Languages.Add(new ChannelLanguage()
+					{
+						EntityId = id,
+						Language = language
+					});
+				}
 
-        private bool InternalStringAvailable(string m, ResourceManager lang)
-        {
-            return lang.GetString(m) != null;
-        }
+				lang.Language = language;
+
+				cache.AddOrUpdate(id, lang.Language, (x, y) => lang.Language);
+
+				await context.SaveChangesAsync();
+			}
+		}
+
+		private bool InternalStringAvailable(string m, ResourceManager lang)
+		{
+			return lang.GetString(m) != null;
+		}
 
         private string InternalGetString(string m, ResourceManager lang, params object[] p)
         {
