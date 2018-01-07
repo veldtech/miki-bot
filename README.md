@@ -1,5 +1,5 @@
 # Welcome to Miki Repository
-[![CodeFactor](https://www.codefactor.io/repository/github/velddev/miki/badge)] [![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
+[![CodeFactor](https://www.codefactor.io/repository/github/velddev/miki/badge)] 
 (https://www.codefactor.io/repository/github/velddev/miki)
 <br>
 Below you will find a basic workflow of how the branches should work. Please follow this to prevent bad merge conflicts on Miki and things constantly breaking.
@@ -43,3 +43,6 @@ Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
 Support server: https://discord.gg/55sAjsW<br>
 Trello: https://trello.com/b/4Mgl8nBa/miki<br>
+
+## Feature requests
+[![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
