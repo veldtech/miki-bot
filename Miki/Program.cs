@@ -9,6 +9,7 @@ using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,6 +27,8 @@ namespace Miki
 
 		public async Task Start()
 		{
+			Console.WriteLine(Directory.GetCurrentDirectory());
+
 			Locale.Load();
 			timeSinceStartup = DateTime.Now;
 
@@ -68,7 +71,7 @@ namespace Miki
             bot = new Bot(new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.4.7",
+                Version = "0.4.8",
                 Token = Global.config.Token,
                 ShardCount = Global.config.ShardCount,
                 ConsoleLogLevel = LogLevel.ALL
