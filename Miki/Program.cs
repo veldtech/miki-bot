@@ -52,7 +52,8 @@ namespace Miki
             if (FileReader.FileExist("settings.json", "miki"))
             {
                 FileReader reader = new FileReader("settings.json", "miki");
-				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());			
+				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
+				Console.WriteLine(Global.config.Token);
                 reader.Finish();
             }
             else
