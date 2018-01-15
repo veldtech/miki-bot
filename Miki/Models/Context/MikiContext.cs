@@ -26,7 +26,6 @@ namespace Miki.Models
 
         public MikiContext() : base("PostgreSql")
         {
-			Log.Notice("MikiContext Called");
 		}
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)

@@ -63,7 +63,7 @@ namespace Miki.Modules
 									await context.SaveChangesAsync();
 								}
 							}
-							resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier - bet)}` mekos! Your new balance is `{user.Currency}`.";
+							resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier)}` mekos! Your new balance is `{user.Currency}`.";
 						} break;
 
 						case RPSManager.VictoryStatus.LOSE:
