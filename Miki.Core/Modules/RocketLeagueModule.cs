@@ -49,7 +49,7 @@ namespace Miki.Modules
                 embed.Title = "Uh oh!";
                 embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace Miki.Modules
 
             embed.ThumbnailUrl = user.AvatarUrl;
             embed.ImageUrl = user.SignatureUrl;
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         public async Task GetUserSeason(EventContext e)
@@ -102,7 +102,7 @@ namespace Miki.Modules
                 embed.Title = "Uh oh!";
                 embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
                 return;
             }
 
@@ -134,7 +134,7 @@ namespace Miki.Modules
                 }
             }
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         public async Task GetNowPlaying(EventContext e)
@@ -191,7 +191,7 @@ namespace Miki.Modules
                 embed.AddField(api.playlists.Data.Find(z => { return z.Id == p.Id; }).Name, p.Population.Players.ToString());
             }
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         public async Task SearchUser(EventContext e)
@@ -210,7 +210,7 @@ namespace Miki.Modules
 
             embed.Description = string.Join(", ", names);
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         public async Task<RocketLeagueUser> TryGetUser(string name, int platform)

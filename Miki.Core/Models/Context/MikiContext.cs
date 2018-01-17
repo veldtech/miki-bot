@@ -22,11 +22,10 @@ namespace Miki.Models
         public DbSet<PastaVote> Votes { get; set; }
 
         public MikiContext() : base()
-        {
-		}
+        { }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
+		{	
 			optionsBuilder.UseNpgsql(Global.config.ConnString);
 			base.OnConfiguring(optionsBuilder);
 		}

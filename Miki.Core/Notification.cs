@@ -65,7 +65,7 @@ namespace Miki
             {
                 if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
                 {
-                    await channel.SendMessage(message);
+                    await channel.SendMessageAsync(message);
                 }
             }
         }

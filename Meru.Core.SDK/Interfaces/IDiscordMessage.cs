@@ -32,7 +32,6 @@ namespace IA.SDK.Interfaces
         Task DeleteAsync();
 
         Task ModifyAsync(string message);
-
         Task ModifyAsync(IDiscordEmbed embed);
 
         Task PinAsync();

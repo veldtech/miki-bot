@@ -405,5 +405,25 @@ namespace IA.SDK
         {
             return embed;
         }
-    }
+
+		public async Task QueueToChannel(ulong channelId)
+		{
+			Task.Run(async () => await SendToChannel(channelId));
+		}
+
+		public async Task QueueToChannel(IDiscordMessageChannel channel)
+		{
+			Task.Run(async () => await SendToChannel(channel));
+		}
+
+		public async Task QueueToUser(ulong userId)
+		{
+			Task.Run(async () => await SendToUser(userId));
+		}
+
+		public async Task QueueToUser(IDiscordUser user)
+		{
+			Task.Run(async () => await SendToUser(user));
+		}
+	}
 }

@@ -43,7 +43,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new IA.SDK.Color(1, 0, 0) : new IA.SDK.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -126,7 +126,7 @@ namespace Miki.Modules
 
                 if( !string.IsNullOrEmpty( content ) ) embed.AddInlineField("Services", content);
 
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -165,7 +165,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).AddInlineField( "Column 1", firstColumn ).AddInlineField( "Column 2", secondColumn ).SendToChannel( e.Channel );
+			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).AddInlineField( "Column 1", firstColumn ).AddInlineField( "Column 2", secondColumn ).QueueToChannel( e.Channel );
 		}
 
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
@@ -175,11 +175,11 @@ namespace Miki.Modules
 			{
 				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
 				await Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
-					.SendToChannel(e.Channel);
+					.QueueToChannel(e.Channel);
 				return;
 			}
 			await Utils.ErrorEmbed(e.Channel.GetLocale(), $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.")
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
         [Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
@@ -189,7 +189,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")).SendToChannel(e.Channel);
+                await Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")).QueueToChannel(e.Channel);
                 return;
             }
 
@@ -201,7 +201,7 @@ namespace Miki.Modules
 
             embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.arguments}profile");
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
@@ -210,7 +210,7 @@ namespace Miki.Modules
             await Utils.Embed
                 .SetTitle("Available locales")
                 .SetDescription("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
-                .SendToChannel(e.Channel.Id);
+                .QueueToChannel(e.Channel.Id);
         }
     }
 }

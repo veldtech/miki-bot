@@ -58,18 +58,18 @@ namespace Miki.Modules
         {
             if (e.message.MentionedUserIds.Count > 0)
             {
-                await e.Channel.SendMessage(string.Join(".", (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).AvatarUrl));
+                await e.Channel.QueueMessageAsync(string.Join(".", (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).AvatarUrl));
             }
             else
             {
-                await e.Channel.SendMessage(string.Join(".", e.Author.AvatarUrl));
+                await e.Channel.QueueMessageAsync(string.Join(".", e.Author.AvatarUrl));
             }	
         }
 
         [Command(Name = "avatar", On = "-s")]
         public async Task ServerAvatarAsync(EventContext e)
         {
-            await e.Channel.SendMessage(string.Join(".", e.Guild.AvatarUrl));
+            await e.Channel.QueueMessageAsync(string.Join(".", e.Guild.AvatarUrl));
         }
 
         [Command(Name = "calc", Aliases = new string[] { "calculate" })]
@@ -96,11 +96,11 @@ namespace Miki.Modules
 
                 object output = expression.Evaluate();
 
-                await e.Channel.SendMessage(output.ToString());
+                await e.Channel.QueueMessageAsync(output.ToString());
             }
             catch(Exception ex)
             {
-                await e.Channel.SendMessage(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
+                await e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
             }
         }
 
@@ -110,7 +110,7 @@ namespace Miki.Modules
 			await Utils.Embed
 				.SetTitle("Change log")
 				.SetDescription("Check out my changelog blog [here](https://medium.com/@velddev)")
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
         [Command(Name = "guildinfo")]
@@ -166,7 +166,7 @@ namespace Miki.Modules
 					roles);
 			}
 			
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "help")]
@@ -190,7 +190,7 @@ namespace Miki.Modules
 
                     helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
-                    await helpListEmbed.SendToChannel(e.Channel);
+                    await helpListEmbed.QueueToChannel(e.Channel);
                 }
                 else
                 {
@@ -217,7 +217,7 @@ namespace Miki.Modules
                         locale.GetString("miki_module_general_help_usage"),
                         (locale.HasString("miki_command_usage_" + ev.Name.ToLower())) ? locale.GetString("miki_command_usage_" + ev.Name.ToLower()) : locale.GetString("miki_placeholder_null"));
 
-                    await explainedHelpEmbed.SendToChannel(e.Channel);
+                    await explainedHelpEmbed.QueueToChannel(e.Channel);
                 }
                 return;
             }
@@ -227,7 +227,7 @@ namespace Miki.Modules
 
             embed.SetColor(0.6f, 0.6f, 1.0f);
 
-			await embed.SendToChannel(e.Channel);
+			await embed.QueueToChannel(e.Channel);
 
             await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).SendToUser(e.Author);
         }
@@ -243,7 +243,7 @@ namespace Miki.Modules
 				.SetThumbnailUrl("https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png")
 				.AddInlineField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!")
 				.AddInlineField("Don't have money?", "You can always support us in different ways too! Please participate in our [Trello](https://trello.com/b/SdjIVMtx/miki) discussion so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)")
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "info", Aliases = new string[] { "about" })]
@@ -268,7 +268,7 @@ namespace Miki.Modules
                 $"`{locale.GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/55sAjsW)\n" +
                 $"`{locale.GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai)");
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "invite")]	
@@ -277,7 +277,7 @@ namespace Miki.Modules
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
             Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
 
-            await e.Channel.SendMessage(locale.GetString("miki_module_general_invite_message"));
+            await e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_invite_message"));
 
             await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
@@ -316,7 +316,7 @@ namespace Miki.Modules
             await Utils.Embed
                 .SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
                 .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
-                .SendToChannel(e.Channel.Id);
+                .QueueToChannel(e.Channel.Id);
         }
 
         [Command(Name = "stats")]
@@ -334,7 +334,7 @@ namespace Miki.Modules
             embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 			embed.AddInlineField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4");
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "urban")]
@@ -358,12 +358,12 @@ namespace Miki.Modules
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_example"), entry.Example);
                 embed.AddInlineField(locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown);
 
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
             else
             {
                 await Utils.ErrorEmbed(locale, e.GetResource("error_term_invalid"))
-                    .SendToChannel(e.Channel.Id);
+                    .QueueToChannel(e.Channel.Id);
             }
         }
 
@@ -413,7 +413,7 @@ namespace Miki.Modules
 					r				
 				);
 			}
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
     }
 }

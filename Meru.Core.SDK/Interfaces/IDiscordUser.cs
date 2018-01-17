@@ -47,7 +47,10 @@ namespace IA.SDK.Interfaces
 
         Task<IDiscordMessage> SendMessage(string text);
 
+		[Obsolete("Use IDiscordEmbed.SendToUser instead")]
         Task<IDiscordMessage> SendMessage(IDiscordEmbed embed);
+
+		Task QueueMessageAsync(string text);
 
         Task SetNickname(string text);
 

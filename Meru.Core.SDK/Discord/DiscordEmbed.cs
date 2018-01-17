@@ -155,7 +155,27 @@ namespace IA.SDK
             throw new NotImplementedException();
         }
 
-        public Task<IDiscordMessage> SendToChannel(ulong channelId)
+		public Task QueueToChannel(ulong channelId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task QueueToChannel(IDiscordMessageChannel channel)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task QueueToUser(ulong userId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task QueueToUser(IDiscordUser user)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IDiscordMessage> SendToChannel(ulong channelId)
         {
             throw new NotImplementedException();
         }

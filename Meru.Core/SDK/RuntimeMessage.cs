@@ -181,18 +181,20 @@ namespace IA.SDK
 
         public async Task ModifyAsync(string message)
         {
-            await (messageData as IUserMessage)?.ModifyAsync(x =>
-            {
-                x.Content = message;
-            });
+			Task.Run(async () => await (messageData as IUserMessage)?.ModifyAsync(x =>
+			{
+				x.Content = message;
+			}));
         }
 
         public async Task ModifyAsync(IDiscordEmbed embed)
         {
-            await (messageData as IUserMessage)?.ModifyAsync(x =>
-            {
-                x.Embed = ((embed as RuntimeEmbed) as IProxy<EmbedBuilder>).ToNativeObject().Build();
-            });
+			Task.Run(async () => await (messageData as IUserMessage)?.ModifyAsync(x =>
+			{
+				x.Embed = ((embed as RuntimeEmbed) as IProxy<EmbedBuilder>)
+					.ToNativeObject()
+					.Build();
+			}));
         }
 
         public async Task PinAsync()

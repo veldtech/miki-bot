@@ -23,7 +23,7 @@ namespace Miki.Modules
 
             if (e.message.MentionedUserIds.Count == 0)
             {
-                await e.Channel.SendMessage(locale.GetString("miki_module_accounts_marry_error_no_mention"));
+                await e.Channel.SendMessageAsync(locale.GetString("miki_module_accounts_marry_error_no_mention"));
                 return;
             }
 
@@ -199,7 +199,7 @@ namespace Miki.Modules
         {
             if (e.message.MentionedUserIds.Count == 0)
             {
-                await e.Channel.SendMessage("Please mention the person you want to marry.");
+                await e.Channel.SendMessageAsync("Please mention the person you want to marry.");
                 return;
             }
 
@@ -214,13 +214,13 @@ namespace Miki.Modules
 
                     if (person1.MarriageSlots < (await Marriage.GetMarriages(context, person1.Id)).Count)
                     {
-                        await e.Channel.SendMessage($"{person1.Name} do not have enough marriage slots, sorry :(");
+                        await e.Channel.SendMessageAsync($"{person1.Name} do not have enough marriage slots, sorry :(");
                         return;
                     }
 
                     if (person2.MarriageSlots < (await Marriage.GetMarriages(context, person2.Id)).Count)
                     {
-                        await e.Channel.SendMessage($"{person2.Name} does not have enough marriage slots, sorry :(");
+                        await e.Channel.SendMessageAsync($"{person2.Name} does not have enough marriage slots, sorry :(");
                         return;
                     }
 
@@ -230,11 +230,11 @@ namespace Miki.Modules
 
                     await context.SaveChangesAsync();
 
-                    await e.Channel.SendMessage($"❤️ Congratulations { person1.Name } and { person2.Name } ❤️");
+                    await e.Channel.SendMessageAsync($"❤️ Congratulations { person1.Name } and { person2.Name } ❤️");
                 }
                 else
                 {
-                    await e.Channel.SendMessage("This user hasn't proposed to you!");
+                    await e.Channel.SendMessageAsync("This user hasn't proposed to you!");
                     return;
                 }
             }
@@ -250,13 +250,13 @@ namespace Miki.Modules
                 if (e.arguments == "*")
                 {
                     await Marriage.DeclineAllProposalsAsync(context, e.Author.Id.ToDbLong());
-                    await e.Channel.SendMessage(locale.GetString("miki_marriage_all_declined"));
+                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_all_declined"));
                     return;
                 }
 
                 if (e.message.MentionedUserIds.Count == 0)
                 {
-                    await e.Channel.SendMessage(locale.GetString("miki_marriage_no_mention"));
+                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_no_mention"));
                     return;
                 }
 
@@ -265,11 +265,11 @@ namespace Miki.Modules
                 if (marriage != null)
                 {
                     await marriage.DeclineProposalAsync(context);
-                    await e.Channel.SendMessage(locale.GetString("miki_marriage_declined"));
+                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_declined"));
                 }
                 else
                 {
-                    await e.Channel.SendMessage(locale.GetString("miki_marriage_null"));
+                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_null"));
                     return;
                 }
             }

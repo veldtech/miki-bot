@@ -14,10 +14,10 @@ namespace IA.SDK.Interfaces
         Task<List<IDiscordMessage>> GetMessagesAsync(int amount = 100);
 
         Task<IDiscordMessage> SendFileAsync(string path);
-
         Task<IDiscordMessage> SendFileAsync(MemoryStream stream, string extension);
 
-        Task<IDiscordMessage> SendMessage(string message);
+        Task<IDiscordMessage> SendMessageAsync(string message);
+		Task QueueMessageAsync(string message);
 
         [Obsolete("Use 'IDiscordEmbed.SendToChannel' instead")]
         Task<IDiscordMessage> SendMessage(IDiscordEmbed embed);

@@ -84,7 +84,7 @@ namespace IA.Events
                 {
                     if (!e.Author.HasPermissions(e.Channel, g))
                     {
-                        await e.Channel.SendMessage($"Please give me the guild permission `{g}` to use this command.");
+                        await e.Channel.SendMessageAsync($"Please give me the guild permission `{g}` to use this command.");
                         return;
                     }
                 }

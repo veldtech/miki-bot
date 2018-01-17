@@ -323,7 +323,7 @@ namespace Miki.Modules
 			IDiscordUser invoker = await e.Guild.GetUserAsync( Bot.instance.Client.GetShard( 0 ).CurrentUser.Id );
 			if( !invoker.HasPermissions( e.Channel, DiscordGuildPermission.ManageMessages ) )
 			{
-				await e.Channel.SendMessage( locale.GetString( "miki_module_admin_prune_error_no_access" ) );
+				await e.Channel.SendMessageAsync( locale.GetString( "miki_module_admin_prune_error_no_access" ) );
 				return;
 			}
 

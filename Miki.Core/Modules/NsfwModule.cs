@@ -21,12 +21,12 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
-					.SendToChannel(e.Channel);
+					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			await CreateEmbed(s)
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "rule34", Aliases = new[] { "r34" })]
@@ -37,12 +37,12 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
-					.SendToChannel(e.Channel);
+					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			await CreateEmbed(s)
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "e621")]
@@ -53,12 +53,12 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
-					.SendToChannel(e.Channel);
+					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			await CreateEmbed(s)
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "yandere")]
@@ -69,12 +69,12 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
-					.SendToChannel(e.Channel);
+					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			await CreateEmbed(s)
-				.SendToChannel(e.Channel);
+				.QueueToChannel(e.Channel);
 		}
 
 		private IDiscordEmbed CreateEmbed(ILinkable s)

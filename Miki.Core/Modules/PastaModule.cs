@@ -183,11 +183,11 @@ namespace Miki.Modules
                 {
                     p.Text = e.arguments;
                     await context.SaveChangesAsync();
-                    await e.Channel.SendMessage($"Edited `{tag}`!");
+                    await e.Channel.SendMessageAsync($"Edited `{tag}`!");
                 }
                 else
                 {
-                    await e.Channel.SendMessage($@"You cannot edit pastas you did not create. Baka!");
+                    await e.Channel.SendMessageAsync($@"You cannot edit pastas you did not create. Baka!");
                 }
             }
         }
@@ -215,7 +215,7 @@ namespace Miki.Modules
                     return;
                 }
                 pasta.TimesUsed++;
-                await e.Channel.SendMessage(pasta.Text);
+                await e.Channel.SendMessageAsync(pasta.Text);
                 await context.SaveChangesAsync();
             }
         }

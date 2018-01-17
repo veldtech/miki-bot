@@ -140,7 +140,12 @@ namespace IA.SDK
             throw new NotImplementedException();
         }
 
-        public virtual Task RemoveRoleAsync(IDiscordRole role)
+		public Task QueueMessageAsync(string text)
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual Task RemoveRoleAsync(IDiscordRole role)
         {
             throw new NotImplementedException();
         }

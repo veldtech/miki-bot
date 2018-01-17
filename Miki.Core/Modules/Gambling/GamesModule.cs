@@ -35,7 +35,7 @@ namespace Miki.Modules
 
 			if (args.Length < 2)
 			{
-				await e.ErrorEmbed("You need to choose a weapon!").SendToChannel(e.Channel);
+				await e.ErrorEmbed("You need to choose a weapon!").QueueToChannel(e.Channel);
 			}
 			else
 			{
@@ -90,10 +90,10 @@ namespace Miki.Modules
 				}
 				else
 				{
-					await resultMessage.SetDescription("Invalid weapon!").SendToChannel(e.Channel);
+					await resultMessage.SetDescription("Invalid weapon!").QueueToChannel(e.Channel);
 					return;
 				}
-				await resultMessage.SendToChannel(e.Channel);
+				await resultMessage.QueueToChannel(e.Channel);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace Miki.Modules
             if (Bot.instance.Events.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
             {
                 await e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
-                    .SendToChannel(e.Channel);
+                    .QueueToChannel(e.Channel);
 
                 return;
             }
@@ -359,7 +359,7 @@ namespace Miki.Modules
                 .SetDescription(output)
                 .SetThumbnailUrl(imageUrl);
 
-            await embed.SendToChannel(e.Channel);
+            await embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "slots", Aliases = new[] {"s"})]
@@ -509,7 +509,7 @@ namespace Miki.Modules
                 await u.AddCurrencyAsync(moneyReturned, e.Channel);
                 await context.SaveChangesAsync();
 
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -543,24 +543,24 @@ namespace Miki.Modules
                     else
                     {
                         await e.ErrorEmbed(e.GetResource("miki_error_gambling_parse_error"))
-                            .SendToChannel(e.Channel);
+                            .QueueToChannel(e.Channel);
                         return;
                     }
 
                     if (bet < 1)
                     {
                         await e.ErrorEmbed(e.GetResource("miki_error_gambling_zero_or_less"))
-                            .SendToChannel(e.Channel);
+                            .QueueToChannel(e.Channel);
                     }
                     else if (bet > user.Currency)
                     {
                         await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-                            .SendToChannel(e.Channel);
+                            .QueueToChannel(e.Channel);
                     }
                     else if (bet > maxBet)
                     {
                         await e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
-                            .SendToChannel(e.Channel);
+                            .QueueToChannel(e.Channel);
                         return;
                     }
                     else if (bet > noAskLimit)
@@ -569,7 +569,7 @@ namespace Miki.Modules
                         embed.Description =
                             $"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `yes` to confirm.";
                         embed.Color = new IA.SDK.Color(0.4f, 0.6f, 1f);
-                        await embed.SendToChannel(e.Channel);
+                        await embed.QueueToChannel(e.Channel);
 
                         CommandHandler confirmCommand = new CommandHandlerBuilder(Bot.instance.Events)
                             .AddPrefix("")
@@ -594,7 +594,7 @@ namespace Miki.Modules
             else
             {
                 await Utils.ErrorEmbed(e.Channel.GetLocale(), e.GetResource("miki_error_gambling_no_arg"))
-                    .SendToChannel(e.Channel);
+                    .QueueToChannel(e.Channel);
             }
         }
 
@@ -610,7 +610,7 @@ namespace Miki.Modules
 					if (bet > u.Currency)
 					{
 						await e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-							.SendToChannel(e.Channel);
+							.QueueToChannel(e.Channel);
 						return;
 					}
 					await callback(e, bet);

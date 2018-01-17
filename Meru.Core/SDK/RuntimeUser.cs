@@ -249,5 +249,10 @@ namespace IA.SDK
         {
             return user;
         }
-    }
+
+		public async Task QueueMessageAsync(string text)
+		{
+			await Task.Run(async () => await SendMessage(text));
+		}
+	}
 }

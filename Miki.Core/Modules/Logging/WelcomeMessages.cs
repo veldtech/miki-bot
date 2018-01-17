@@ -35,7 +35,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
+                data.ForEach(async x => await x.Item2.SendMessageAsync(x.Item1));
             };
 
             m.UserLeaveGuild = async (guild, user) =>
@@ -47,7 +47,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                data.ForEach(async x => await x.Item2.SendMessage(x.Item1));
+                data.ForEach(async x => await x.Item2.SendMessageAsync(x.Item1));
             };
         }
 
@@ -62,19 +62,19 @@ namespace Miki.Modules
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessage($"✅ deleted your welcome message");
+                        await e.Channel.SendMessageAsync($"✅ deleted your welcome message");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessage($"⚠ no welcome message found!");
+                        await e.Channel.SendMessageAsync($"⚠ no welcome message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessage($"✅ new welcome message is set to: `{ e.arguments }`");
+                    await e.Channel.SendMessageAsync($"✅ new welcome message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }
@@ -91,19 +91,19 @@ namespace Miki.Modules
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessage($"✅ deleted your leave message");
+                        await e.Channel.SendMessageAsync($"✅ deleted your leave message");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessage($"⚠ no leave message found!");
+                        await e.Channel.SendMessageAsync($"⚠ no leave message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessage($"✅ new leave message is set to: `{ e.arguments }`");
+                    await e.Channel.SendMessageAsync($"✅ new leave message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }

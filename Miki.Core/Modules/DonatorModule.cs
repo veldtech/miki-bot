@@ -96,7 +96,7 @@ namespace Miki.Modules
                 .SetDescription("... but you haven't donated yet, please support us with a small donation to unlock these commands!")
                 .AddInlineField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
                 .AddInlineField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
-                .SendToChannel(channel);
+                .QueueToChannel(channel);
         }
     }
 }

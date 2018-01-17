@@ -91,7 +91,7 @@ namespace IA.SDK
             return new RuntimeMessage(await (channel as IMessageChannel)?.SendFileAsync(stream, extension));
         }
 
-        public async Task<IDiscordMessage> SendMessage(string message)
+        public async Task<IDiscordMessage> SendMessageAsync(string message)
         {
             RuntimeMessage m = null;
             try
@@ -133,5 +133,10 @@ namespace IA.SDK
         {
             await (channel as IMessageChannel).TriggerTypingAsync();
         }
-    }
+
+		public async Task QueueMessageAsync(string message)
+		{
+			Task.Run(async () => await SendMessageAsync(message));
+		}
+	}
 }

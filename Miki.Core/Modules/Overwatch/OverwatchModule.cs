@@ -56,7 +56,7 @@ namespace Miki.Modules.Overwatch
                 if (!c.isValid)
                 {
                     await e.ErrorEmbed("The user specified does not exist, or hasn't played on this specific region.")
-                        .SendToChannel(e.Channel);
+                        .QueueToChannel(e.Channel);
                     return;
                 }
 
@@ -79,12 +79,12 @@ namespace Miki.Modules.Overwatch
                      .AddInlineField("Time Played", c.Stats.GameStats.time_played + " hours")
                      .AddInlineField("Objective Time", c.Stats.GameStats.objective_time.FromHoursToSeconds().ToTimeString(e.Channel.GetLocale(), true));
 
-                await embed.SendToChannel(e.Channel);
+                await embed.QueueToChannel(e.Channel);
             }
             else
             {
                 await e.ErrorEmbed("The user specified does not exist!")
-                    .SendToChannel(e.Channel);
+                    .QueueToChannel(e.Channel);
                 return;
             }
         }

@@ -54,7 +54,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-            await em.SendToChannel(e.Channel);
+            await em.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "lewd")]
@@ -87,7 +87,7 @@ namespace Miki.Modules
 
             await Utils.Embed
                 .SetImageUrl(lewd[MikiRandom.Next(0, lewd.Length)])
-                .SendToChannel(e.Channel.Id);
+                .QueueToChannel(e.Channel.Id);
         }
 
         [Command(Name = "pout")]
@@ -113,7 +113,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-            await em.SendToChannel(e.Channel);
+            await em.QueueToChannel(e.Channel);
         }
 
 		[Command( Name = "smug" )]
@@ -158,7 +158,7 @@ namespace Miki.Modules
 			{
 				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
-			await em.SendToChannel( e.Channel );
+			await em.QueueToChannel( e.Channel );
 		}
 
 		[Command( Name = "cry" )]
@@ -255,7 +255,7 @@ namespace Miki.Modules
 			{
 				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
-			await em.SendToChannel( e.Channel );
+			await em.QueueToChannel( e.Channel );
 		}
 	        
 		[Command(Name = "stare")]
@@ -272,7 +272,7 @@ namespace Miki.Modules
 
        		em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-			await em.SendToChannel(e.Channel);
+			await em.QueueToChannel(e.Channel);
         }
 	}
 }

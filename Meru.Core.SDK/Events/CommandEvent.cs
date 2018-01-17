@@ -20,7 +20,7 @@ namespace IA.SDK
 
         public ProcessCommandDelegate ProcessCommand { get; set; } = async (context) =>
         {
-            await context.message.Channel.SendMessage("This command hasn't been set up correctly!");
+            await context.message.Channel.SendMessageAsync("This command hasn't been set up correctly!");
         };
 
         public Dictionary<string, ProcessCommandDelegate> CommandPool { get; set; } = new Dictionary<string, ProcessCommandDelegate>();
