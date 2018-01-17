@@ -733,14 +733,14 @@ namespace Miki.Modules.AccountsModule
 							var mentionedUser = await context.Users.FindAsync(mentionedId);
 							p = (int)Math.Ceiling((double)(((await LocalExperience.GetRankAsync(context, guildId, mentionedId)) - 1) / 12));
 						}
-						List<LocalExperience> output = await context.Experience
+						List<LocalExperience> output = await context.LocalExperience
 							.Where(x => x.ServerId == guildId)
 							.OrderByDescending(x => x.Experience)
 							.Skip(12 * p)
 							.Take(12)
 							.ToListAsync();
 
-						int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
+						int amountOfUsers = await context.LocalExperience.Where(x => x.ServerId == guildId).CountAsync();
 
 						List<User> users = new List<User>();
 

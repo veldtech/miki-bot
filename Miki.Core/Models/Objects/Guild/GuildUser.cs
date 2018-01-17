@@ -98,7 +98,7 @@ namespace Miki.Models
 		{
 			long id = guild.Id.ToDbLong();
 			int userCount = Bot.instance.Client.GetGuild(id.FromDbLong()).Users.Count;
-			int value = await context.Experience
+			int value = await context.LocalExperience
 								.Where(x => x.ServerId == id)
 								.SumAsync(x => x.Experience);
 

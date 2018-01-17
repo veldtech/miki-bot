@@ -10,7 +10,7 @@ namespace Miki.Models
         public DbSet<Achievement> Achievements { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
         public DbSet<EventMessage> EventMessages { get; set; }
-        public DbSet<LocalExperience> Experience { get; set; }
+        public DbSet<LocalExperience> LocalExperience { get; set; }
         public DbSet<GuildUser> GuildUsers { get; set; }
         public DbSet<ChannelLanguage> Languages { get; set; }
         public DbSet<LevelRole> LevelRoles { get; set; }
@@ -34,16 +34,20 @@ namespace Miki.Models
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Achievement>()
-				.HasKey(c => new { c.Id, c.Name });
+				.HasKey(c => new { c.Id, c.Name })
+				.HasName("Achievements");
 
 			modelBuilder.Entity<CommandUsage>()
-				.HasKey(c => new { c.UserId, c.Name });
+				.HasKey(c => new { c.UserId, c.Name })
+				.HasName("CommandUsages");
 
 			modelBuilder.Entity<EventMessage>()
-				.HasKey(c => new { c.ChannelId, c.EventType });
+				.HasKey(c => new { c.ChannelId, c.EventType })
+				.HasName("EventMessages");
 
 			modelBuilder.Entity<LocalExperience>()
-				.HasKey(c => new { c.ServerId, c.UserId });
+				.HasKey(c => new { c.ServerId, c.UserId })
+				.HasName("LocalExperience");
 
 			modelBuilder.Entity<GuildUser>()
 				.HasKey(c => c.Id)
@@ -51,7 +55,7 @@ namespace Miki.Models
 
 			modelBuilder.Entity<ChannelLanguage>()
 				.HasKey(c => c.EntityId)
-				.HasName("ChannelLanguages");
+				.HasName("ChannelLanguage");
 
 			modelBuilder.Entity<LevelRole>()
 				.HasKey(c => new { c.GuildId, c.RoleId });

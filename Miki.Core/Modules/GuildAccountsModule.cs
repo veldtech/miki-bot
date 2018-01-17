@@ -25,7 +25,7 @@ namespace Miki.Modules
             using (MikiContext database = new MikiContext())
             {
                 Locale locale = Locale.GetEntity(context.Channel.Id);
-                LocalExperience thisUser = await database.Experience.FindAsync(context.Guild.Id.ToDbLong(), context.Author.Id.ToDbLong());
+                LocalExperience thisUser = await database.LocalExperience.FindAsync(context.Guild.Id.ToDbLong(), context.Author.Id.ToDbLong());
                 GuildUser thisGuild = await database.GuildUsers.FindAsync(context.Guild.Id.ToDbLong());
                 Timer timer = await database.Timers.FindAsync(context.Guild.Id.ToDbLong(), context.Author.Id.ToDbLong());
 

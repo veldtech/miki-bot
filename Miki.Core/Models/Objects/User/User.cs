@@ -219,8 +219,8 @@ namespace Miki.Models
 					await context.Achievements.Where(x => x.Id == id).ToListAsync()
 				);
 
-				context.Experience.RemoveRange(
-					await context.Experience.Where(x => x.UserId == id).ToListAsync()
+				context.LocalExperience.RemoveRange(
+					await context.LocalExperience.Where(x => x.UserId == id).ToListAsync()
 				);
 
 				Bot.instance.Events.Ignore(id.FromDbLong());

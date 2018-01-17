@@ -34,20 +34,20 @@ namespace Miki.Models
             experience.Experience = 0;
             experience.LastExperienceTime = Utils.MinDbValue;
 
-            experience = context.Experience.Add(experience).Entity;
+            experience = context.LocalExperience.Add(experience).Entity;
             await context.SaveChangesAsync();
 
             return experience;
         }
 		public static async Task<LocalExperience> GetAsync(MikiContext context, long serverId, long userId)
 		{
-			return await context.Experience.FindAsync(serverId, userId)
+			return await context.LocalExperience.FindAsync(serverId, userId)
 				?? await CreateAsync(context, serverId, userId);
 		}
 
 		public async Task<int> GetRank(MikiContext context)
 		{
-			int x = await context.Experience
+			int x = await context.LocalExperience
 				.Where(e => e.ServerId == ServerId && e.Experience > Experience)
 				.CountAsync();
 			
