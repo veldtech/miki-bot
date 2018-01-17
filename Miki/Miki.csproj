@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Miki</RootNamespace>
     <AssemblyName>Miki</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
@@ -805,20 +805,19 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Meru\Meru.SDK\Meru.SDK.csproj">
-      <Project>{b8ffa60f-2c45-449f-ad4d-cf1c5a3075d4}</Project>
+    <ProjectReference Include="..\..\Meru_v1\Meru.SDK\Meru.SDK.csproj">
+      <Project>{B8FFA60F-2C45-449F-AD4D-CF1C5A3075D4}</Project>
       <Name>Meru.SDK</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Meru\Meru\Meru.csproj">
-      <Project>{e4b74dd1-8ccb-4fcc-9bde-0f79c43211e7}</Project>
+    <ProjectReference Include="..\..\Meru_v1\Meru\Meru.csproj">
+      <Project>{E4B74DD1-8CCB-4FCC-9BDE-0F79C43211E7}</Project>
       <Name>Meru</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Meru\RestClient\RestClient.csproj">
-      <Project>{48155a63-8e59-4042-8130-7ad40315b8a9}</Project>
+    <ProjectReference Include="..\..\Meru_v1\RestClient\RestClient.csproj">
+      <Project>{48155A63-8E59-4042-8130-7AD40315B8A9}</Project>
       <Name>RestClient</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
