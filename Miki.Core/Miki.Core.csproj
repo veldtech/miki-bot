@@ -196,9 +196,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Meru_v1\RestClient\RestClient.csproj" />
     <ProjectReference Include="..\Meru.Core.SDK\Meru.Core.SDK.csproj" />
     <ProjectReference Include="..\Meru.Core\Meru.Core.csproj" />
+    <ProjectReference Include="..\Rest.Core\Rest.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
