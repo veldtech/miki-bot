@@ -7,6 +7,7 @@ Miki.VC.db
 Miki.VC.VC.opendb
 Miki.Actions/bin/
 Miki.Actions/obj/
+Miki.Core/miki/settings.json
 RestClient/bin/
 RestClient/obj/
 tags
