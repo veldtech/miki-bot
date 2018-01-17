@@ -43,7 +43,7 @@ namespace Miki.Models
 				.HasKey(c => new { c.ChannelId, c.EventType });
 
 			modelBuilder.Entity<LocalExperience>()
-				.HasKey(c => c.ServerId);
+				.HasKey(c => new { c.ServerId, c.UserId });
 
 			modelBuilder.Entity<GuildUser>()
 				.HasKey(c => c.Id)
