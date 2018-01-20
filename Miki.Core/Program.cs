@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Miki
 {
 	public class Program
+<<<<<<< .merge_file_a01932
     {
         private static void Main(string[] args)
         {
@@ -22,9 +23,16 @@ namespace Miki
 				.GetAwaiter()
 				.GetResult();
         }
+=======
+	{
+		private static void Main(string[] args)
+		{
+			AsyncContext.Run(() => new Program().Start());
+		}
+>>>>>>> .merge_file_a17616
 
-        public static Bot bot;
-        public static DateTime timeSinceStartup;
+		public static Bot bot;
+		public static DateTime timeSinceStartup;
 
 		public async Task Start()
 		{
@@ -38,9 +46,14 @@ namespace Miki
 
 			using (var c = new MikiContext())
 			{
+<<<<<<< .merge_file_a01932
 				
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
+=======
+				List<User> bannedUsers = c.Users.Where(x => x.Banned).ToList();
+				foreach (var u in bannedUsers)
+>>>>>>> .merge_file_a17616
 				{
 					bot.Events.Ignore(u.Id.FromDbLong());
 				}
@@ -49,6 +62,7 @@ namespace Miki
 			await bot.ConnectAsync();
 		}
 
+<<<<<<< .merge_file_a01932
         private void LoadConfig()
         {
             if (FileReader.FileExist("settings.json", "miki"))
@@ -87,6 +101,44 @@ namespace Miki
             }
 
 			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
+=======
+		private void LoadConfig()
+		{
+			if (FileReader.FileExist("settings.json", "miki"))
+			{
+				FileReader reader = new FileReader("settings.json", "miki");
+				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
+				reader.Finish();
+			}
+			else
+			{
+				FileWriter writer = new FileWriter("settings.json", "miki");
+				writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
+				writer.Finish();
+			}
+		}
+
+		/// <summary>
+		/// The program runs all discord services and loads all the data here.
+		/// </summary>
+		public void LoadDiscord()
+		{
+			bot = new Bot(x =>
+			{
+				x.Name = "Miki";
+				x.Version = "0.5";
+				x.Token = Global.config.Token;
+				x.ShardCount = Global.config.ShardCount;
+				x.ConsoleLogLevel = LogLevel.ALL;
+			});
+
+			if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
+			{
+				Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
+			}
+
+			if (!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
+>>>>>>> .merge_file_a17616
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
@@ -113,8 +165,8 @@ namespace Miki
 
 			bot.MessageReceived += Bot_MessageReceived;
 
-            bot.Events.OnCommandError = async (ex, cmd, msg) =>
-            {
+			bot.Events.OnCommandError = async (ex, cmd, msg) =>
+			{
 				/*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
                 //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
@@ -151,20 +203,20 @@ namespace Miki
                 //await e.QueueToChannel(msg.Channel);
                 */
 			};
-            bot.OnError = async (ex) => Log.Message(ex.ToString());
-            bot.AddDeveloper(121919449996460033);
+			bot.OnError = async (ex) => Log.Message(ex.ToString());
+			bot.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.config.DeveloperIds)
 			{
 				bot.AddDeveloper(l);
 			}
 
-            bot.Client.JoinedGuild += Client_JoinedGuild;
+			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 
 			bot.OnShardConnect += Bot_OnShardConnect;
 			bot.OnShardDisconnect += Bot_OnShardDisconnect;
-        }
+		}
 
 		private async Task Bot_MessageReceived(IA.SDK.Interfaces.IDiscordMessage arg)
 		{
@@ -174,19 +226,19 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Counter("guilds.left", 1);
-			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Client_JoinedGuild(IGuild arg)
-        {
+		{
 			Locale locale = Locale.GetEntity(arg.Id.ToDbLong());
-            ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-            await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
+			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
+			await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
 
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined", 1);
-			DogStatsd.Set("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)
@@ -198,8 +250,7 @@ namespace Miki
 		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
 		{
 			DogStatsd.Event("shard.disconnect", $"shard {shardId.ToString()} has disconnected!");
-			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL);
+			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL, null, null, null, e.Message);
 		}
-
 	}
 }

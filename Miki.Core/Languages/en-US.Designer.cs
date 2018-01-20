@@ -178,11 +178,38 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This role is not allowed!.
+        /// </summary>
+        internal static string error_role_forbidden {
+            get {
+                return ResourceManager.GetString("error_role_forbidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find this role. Please try again!.
         /// </summary>
         internal static string error_role_not_found {
             get {
                 return ResourceManager.GetString("error_role_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This role does not exist!.
+        /// </summary>
+        internal static string error_role_null {
+            get {
+                return ResourceManager.GetString("error_role_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You do not seem to have the role {0}! You can not do this without this role!.
+        /// </summary>
+        internal static string error_role_required {
+            get {
+                return ResourceManager.GetString("error_role_required", resourceCulture);
             }
         }
         
@@ -4106,15 +4133,6 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Roles.
-        /// </summary>
-        internal static string miki_module_general_guildinfo_roles {
-            get {
-                return ResourceManager.GetString("miki_module_general_guildinfo_roles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Role count.
         /// </summary>
         internal static string miki_module_general_guildinfo_roles_count {
@@ -4952,6 +4970,15 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Available Roles.
+        /// </summary>
+        internal static string term_available {
+            get {
+                return ResourceManager.GetString("term_available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to avatar.
         /// </summary>
         internal static string term_avatar {
@@ -4966,6 +4993,15 @@ namespace Miki.Core.Languages {
         internal static string term_commands {
             get {
                 return ResourceManager.GetString("term_commands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        internal static string term_roles {
+            get {
+                return ResourceManager.GetString("term_roles", resourceCulture);
             }
         }
         

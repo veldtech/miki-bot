@@ -42,12 +42,12 @@ namespace Miki.Modules
                 "http://i.imgur.com/GmIXuso.png",
                 "http://i.imgur.com/UM8XpgR.gif",
                 "http://i.imgur.com/GhoKM0u.gif",
-				"http://i.imgur.com/ehskzgF.gif",
-				"http://i.imgur.com/2biawgF.gif",
-				"http://i.imgur.com/D2WXDbd.gif",
-				"http://i.imgur.com/1ogeK3A.gif",
-				"http://i.imgur.com/djNBrtj.jpg",
-				"http://i.imgur.com/VyabzAv.jpg"
+		"http://i.imgur.com/ehskzgF.gif",
+		"http://i.imgur.com/2biawgF.gif",
+		"http://i.imgur.com/D2WXDbd.gif",
+		"http://i.imgur.com/1ogeK3A.gif",
+		"http://i.imgur.com/djNBrtj.jpg",
+		"http://i.imgur.com/VyabzAv.jpg"
             };
 
             RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
@@ -82,7 +82,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/kRaopT0.gif",
                 "http://i.imgur.com/On8Axls.gif",
                 "http://i.imgur.com/yCqJlFc.gif",
-				"http://i.imgur.com/jlTqATG.gif"
+		"http://i.imgur.com/jlTqATG.gif"
             };
 
             await Utils.Embed
@@ -182,7 +182,7 @@ namespace Miki.Modules
 				"http://i.imgur.com/GKO0EQD.gif",
 				"http://i.imgur.com/cu825ub.gif",
 				"http://i.imgur.com/TP6dYGh.gif",
-				"http://i.imgur.com/uZ2WXyL.mp4",
+				"http://i.imgur.com/uZ2WXyL.gif",
 				"http://i.imgur.com/DhkvnpB.gif",
 				"http://i.imgur.com/LbpaJMG.gif",
 				"http://i.imgur.com/V7iS3ZR.gif",
@@ -194,12 +194,12 @@ namespace Miki.Modules
 				"http://i.imgur.com/0xIG1kG.gif",
 				"http://i.imgur.com/nE0Tdp0.gif",
 				"http://i.imgur.com/mvyAx5q.gif",
-				"http://i.imgur.com/diq8LxU.mp4",
+				"http://i.imgur.com/diq8LxU.gif",
 				"http://i.imgur.com/Zv7au0h.gif",
 				"http://i.imgur.com/sOyqImI.gif",
 				"http://i.imgur.com/ZRbHJcb.gif",
 				"http://i.imgur.com/kysvK28.gif",
-				"http://i.imgur.com/6tGAJ75.mp4",
+				"http://i.imgur.com/6tGAJ75.gif",
 				"http://i.imgur.com/5k6aD7Z.gif",
 				"http://i.imgur.com/B29MytB.gif",
 				"http://i.imgur.com/FQx8zRj.gif",
@@ -210,7 +210,7 @@ namespace Miki.Modules
 				"http://i.imgur.com/FVt8Jqr.gif",
 				"http://i.imgur.com/mjziZGI.gif",
 				"http://i.imgur.com/DEgkwBe.gif",
-				"http://i.imgur.com/hfRw1my.mp4",
+				"http://i.imgur.com/hfRw1my.gif",
 				"http://i.imgur.com/Sus5vcM.gif",
 				"http://i.imgur.com/HLmnS6S.gif",
 				"http://i.imgur.com/w9UjKVR.gif",
@@ -218,12 +218,12 @@ namespace Miki.Modules
 				"http://i.imgur.com/Mw49bFm.gif",
 				"http://i.imgur.com/UVxws3C.gif",
 				"http://i.imgur.com/ekhYSVB.gif",
-				"http://i.imgur.com/VOMpsf6.mp4",
+				"http://i.imgur.com/VOMpsf6.gif",
 				"http://i.imgur.com/ZFnoy0i.gif",
 				"http://i.imgur.com/180yuVH.gif",
 				"http://i.imgur.com/3zVAY49.gif",
 				"http://i.imgur.com/AFDevRo.gif",
-				"http://i.imgur.com/T23nHVO.mp4",
+				"http://i.imgur.com/T23nHVO.gif",
 				"http://i.imgur.com/qZWhIOw.gif",
 				"http://i.imgur.com/Iy2VjHw.gif",
 				"http://i.imgur.com/DbUYdpj.gif",

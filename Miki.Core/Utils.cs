@@ -3,6 +3,8 @@ using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki;
+using Miki.Accounts;
+using Miki.API.Leaderboards;
 using Miki.Languages;
 using System;
 using System.Collections.Generic;
@@ -191,6 +193,20 @@ namespace Miki
                 Color = new IA.SDK.Color(0, 1, 0)
             };
         }
+
+		public static string DefaultIfEmpty(this string a, string b)
+		{
+			return string.IsNullOrEmpty(a) ? b : a;
+		}
+
+		public static IDiscordEmbed RenderLeaderboards(IDiscordEmbed embed, List<LeaderboardsItem> items)
+		{
+			for(int i = 0; i < (items.Count > 12 ? 12 : items.Count); i++)
+			{
+				embed.AddInlineField($"#{i+1}: " + items[i].Name, items[i].Value);
+			}
+			return embed;
+		}
     }
 
     public class MikiRandom : RandomNumberGenerator
@@ -269,44 +285,4 @@ namespace Miki
             return Value + " " + Identifier;
         }
     }
-}
-
-public class MMLParser
-{
-	public static Dictionary<string, object> Parse(string arguments)
-	{
-		return arguments.Split(' ')
-			.Where(x => x.StartsWith("-"))
-			.Select(x => MMLFactory.Create(x))
-			.ToDictionary(x => x.Key, y => y.Value);
-	}
-}
-public class MMLFactory
-{
-	public static KeyValuePair<string, object> Create(string query)
-	{
-		List<string> seperatedList = query.Split(':').ToList();
-		if(seperatedList.Count == 1)
-		{
-			return new KeyValuePair<string, object>(seperatedList[0], true);
-		}
-		else if(seperatedList.Count == 2)
-		{
-			return new KeyValuePair<string, object>(seperatedList[0], Parse(seperatedList[1]));
-		}
-		return new KeyValuePair<string, object>();
-	}
-	
-	private static object Parse(string val)
-	{
-		if(int.TryParse(val, out int v))
-		{
-			return v;
-		}
-		else if(Utils.ToBool(val))
-		{
-			return Utils.ToBool(val);
-		}
-		return val;
-	}
 }

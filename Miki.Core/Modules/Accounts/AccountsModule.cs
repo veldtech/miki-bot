@@ -11,6 +11,7 @@ using IA.SDK.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.API.Leaderboards;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Accounts.Services;
@@ -20,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.AccountsModule
@@ -65,28 +67,61 @@ namespace Miki.Modules.AccountsModule
 				.Install(module);
 		}
 
+		[Command(Name = "achievements")]
+		public async Task AchievementsAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				long id = (e.message.MentionedUserIds.Count > 0) ? e.message.MentionedUserIds.First().ToDbLong() : e.Author.Id.ToDbLong();
+				User u = await context.Users.FindAsync(id);
+				IDiscordUser discordUser = await e.Guild.GetUserAsync(id.FromDbLong());
+
+				List<Achievement> achievements = await context.Achievements
+					.Where(x => x.Id == id)
+					.ToListAsync();
+
+				IDiscordEmbed embed = Utils.Embed;
+
+				embed.SetAuthor(u.Name + " | " + "Achievements", discordUser.AvatarUrl, "https://miki.ai/profiles/ID/achievements");
+
+				StringBuilder leftBuilder = new StringBuilder();
+
+				int totalScore = 0;
+
+				foreach (var a in achievements)
+				{
+					BaseAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
+					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockDate.ToShortDateString()}");
+					totalScore += metadata.Points;
+				}
+
+				await embed.AddInlineField("Total Pts: " + totalScore, leftBuilder.ToString())
+					.SendToChannel(e.Channel);
+			}
+		}
+
 		[Command(Name = "leaderboards", Aliases = new[] { "lb", "leaderboard", "top" })]
 		public async Task LeaderboardsAsync(EventContext e)
 		{
 			string[] args = e.arguments.Split(' ');
 			int parseId = 1;
 
-			LeaderboardOptions options = new LeaderboardOptions();
+			LeaderboardsOptions options = new LeaderboardsOptions();
 
 			switch (args[0].ToLower())
 			{
 				case "local":
 				case "server":
 				case "guild":
-					{					
-						options.type = LeaderboardsType.LocalExperience;
+					{
+						options.guildId = e.Guild.Id;
 					}
 					break;
 
 				case "commands":
 				case "cmds":
 					{
-						options.type = LeaderboardsType.Commands;
+						options.type = LeaderboardsType.COMMANDS;
 					}
 					break;
 
@@ -95,27 +130,27 @@ namespace Miki.Modules.AccountsModule
 				case "money":
 				case "bal":
 					{
-						options.type = LeaderboardsType.Currency;
+						options.type = LeaderboardsType.CURRENCY;
 					}
 					break;
 
 				case "rep":
 				case "reputation":
 					{
-						options.type = LeaderboardsType.Reputation;
+						options.type = LeaderboardsType.REPUTATION;
 					}
 					break;
 
 				case "pasta":
 				case "pastas":
 					{
-						options.type = LeaderboardsType.Pasta;
+						options.type = LeaderboardsType.PASTA;
 					}
 					break;
 
 				default:
 					{
-						options.type = LeaderboardsType.Experience;
+						options.type = LeaderboardsType.EXP;
 						parseId = 0;
 					}
 					break;
@@ -186,7 +221,12 @@ namespace Miki.Modules.AccountsModule
 				{
 					IDiscordEmbed embed = Utils.Embed
 						.SetDescription(account.Title)
+<<<<<<< .merge_file_a16464
 						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), "", "https://patreon.com/mikibot")
+=======
+						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name),
+							"http://veld.one/assets/profile-icon.png", "https://miki.ai/profile/" + account.Id)
+>>>>>>> .merge_file_a08064
 						.SetThumbnailUrl(discordUser.AvatarUrl);
 
 					long serverid = e.Guild.Id.ToDbLong();
@@ -271,6 +311,7 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
 
+<<<<<<< .merge_file_a16464
 					string achievements =
 						AchievementManager.Instance.PrintAchievements(context, account.Id.FromDbLong());
 
@@ -281,13 +322,21 @@ namespace Miki.Modules.AccountsModule
 					//embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
 					//	"http://miki.veld.one/profile/" + account.Id);
 
+=======
+>>>>>>> .merge_file_a08064
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
 							sw.ElapsedMilliseconds), "");
 
 					sw.Stop();
 
+<<<<<<< .merge_file_a16464
 					await embed.QueueToChannel(e.Channel);
+=======
+					embed.SetImageUrl("https://cdn.discordapp.com/attachments/259343729586864139/376404060707880972/121919449996460033.png");
+
+					await embed.SendToChannel(e.Channel);
+>>>>>>> .merge_file_a08064
 				}
 				else
 				{
@@ -389,6 +438,7 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
+		// TODO: rework into miki api
 		[Command(Name = "syncavatar")]
 		public async Task SyncAvatarAsync(EventContext e)
 		{
@@ -536,7 +586,6 @@ namespace Miki.Modules.AccountsModule
 
 				if (goldSent <= sender.Currency)
 				{
-					await receiver.AddCurrencyAsync(goldSent, e.Channel, sender);
 					await sender.AddCurrencyAsync(-goldSent, e.Channel, sender);
 
 					IDiscordEmbed em = Utils.Embed;
@@ -663,7 +712,21 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardOptions leaderboardOptions)
+		[Command(Name = "mybadges")]
+		public async Task MyBadgesAsync(EventContext e)
+		{
+			int page = 0;
+			using (var context = new MikiContext())
+			{
+				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+				string output = string.Join<long>(" ", u.BadgesOwned.Select(x => x.Id).ToList());
+
+				await e.Channel.SendMessage(output.DefaultIfEmpty("none, yet!"));
+			}
+		}
+
+		public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardsOptions leaderboardOptions)
 		{
 			using (var context = new MikiContext())
 			{
@@ -676,7 +739,7 @@ namespace Miki.Modules.AccountsModule
 
 				switch(leaderboardOptions.type)
 				{
-					case LeaderboardsType.Commands:
+					case LeaderboardsType.COMMANDS:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_commands_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -700,7 +763,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Currency:
+					case LeaderboardsType.CURRENCY:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_mekos_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -723,6 +786,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
+<<<<<<< .merge_file_a16464
 					case LeaderboardsType.LocalExperience:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
@@ -758,6 +822,44 @@ namespace Miki.Modules.AccountsModule
 					break;
 
 					case LeaderboardsType.Experience:
+=======
+						// TODO: rework
+					//case LeaderboardsType.LocalExperience:
+					//{
+					//	embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
+					//	long guildId = mContext.Guild.Id.ToDbLong();
+					//	if(leaderboardOptions.mentionedUserId != 0)
+					//	{
+					//		long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
+					//		var mentionedUser = await context.Users.FindAsync(mentionedId);
+					//		p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
+					//	}
+					//	List<LocalExperience> output = await context.Experience
+					//		.Where(x => x.ServerId == guildId)
+					//		.OrderByDescending(x => x.Experience)
+					//		.Skip(12 * p)
+					//		.Take(12)
+					//		.ToListAsync();
+
+					//	int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
+
+					//	List<User> users = new List<User>();
+
+					//	for(int i = 0; i < output.Count; i++)
+					//	{
+					//		users.Add(await context.Users.FindAsync(output[i].UserId));
+					//	}
+
+					//	for(int i = 0; i < users.Count; i++)
+					//	{
+					//		embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
+					//			$"{output[i].Experience} experience!");
+					//	}
+					//}
+					//break;
+
+					case LeaderboardsType.EXP:
+>>>>>>> .merge_file_a08064
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -780,7 +882,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Reputation:
+					case LeaderboardsType.REPUTATION:
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_reputation_header");
 						if(leaderboardOptions.mentionedUserId != 0)
@@ -803,7 +905,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-					case LeaderboardsType.Pasta:
+					case LeaderboardsType.PASTA:
 					{
 						List<GlobalPasta> leaderboards = await context.Pastas
 							.OrderByDescending(x => x.Score)
@@ -826,30 +928,6 @@ namespace Miki.Modules.AccountsModule
 					.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)), "")
 					.QueueToChannel(mContext.Channel);
 			}
-		}
-	}
-
-	public enum LeaderboardsType
-	{
-		LocalExperience,
-		Experience,
-		Commands,
-		Currency,
-		Reputation,
-		Pasta
-	}
-
-	public struct LeaderboardOptions
-	{
-		public LeaderboardsType type;
-		public ulong mentionedUserId;
-		public int pageNumber;
-
-		public LeaderboardOptions(LeaderboardsType type = LeaderboardsType.Experience, int pageNumber = 0, ulong mentionedUserId = 0)
-		{
-			this.type = type;
-			this.pageNumber = pageNumber;
-			this.mentionedUserId = mentionedUserId;
 		}
 	}
 }

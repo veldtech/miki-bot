@@ -51,18 +51,25 @@ namespace Miki.Models
         [Column("LastDailyTime")]
         public DateTime LastDailyTime { get; set; }
 
-        [Column("DateCreated")]
-        [DefaultValue("getutcdate()")]
-        public DateTime DateCreated { get; set; }
+		[Column("DateCreated")]
+		[DefaultValue("getutcdate()")]
+		public DateTime DateCreated { get; set; } = DateTime.Now;
 
         [Column("Reputation")]
         public int Reputation { get; set; }
 
 		[Column("banned")]
 		public bool Banned { get; set; }
+		[Column("badges_owned")]
+		public virtual ICollection<BadgesOwned> BadgesOwned { get; set; }
+
+		[Column("pinned_badges")]
+		public PinnedBadges PinnedBadges { get; set; }
 
         public DateTime LastReputationGiven { get; set; }
         public short ReputationPointsLeft { get; set; }
+
+		public int Level => CalculateLevel(Total_Experience);
 
         public async Task AddCurrencyAsync(int amount, IDiscordMessageChannel channel = null, User fromUser = null)
         {
@@ -88,7 +95,6 @@ namespace Miki.Models
 				Currency = 0,
 				AvatarUrl = "default",
 				HeaderUrl = "default",
-				DateCreated = DateTime.Now,
 				LastDailyTime = Utils.MinDbValue,
 				MarriageSlots = 5,
 				Name = u.Username,

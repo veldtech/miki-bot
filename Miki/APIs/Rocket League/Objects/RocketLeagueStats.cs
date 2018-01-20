@@ -1,0 +1,12 @@
+﻿namespace Miki.API.RocketLeague
+{
+    internal class RocketLeagueStats
+    {
+        public int Wins { get; internal set; }
+        public int Goals { get; internal set; }
+        public int Mvps { get; internal set; }
+        public int Saves { get; internal set; }
+        public int Shots { get; internal set; }
+        public int Assists { get; internal set; }
+    }
+}
