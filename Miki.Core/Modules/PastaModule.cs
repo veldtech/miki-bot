@@ -47,13 +47,13 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                var pastasFound = context.Pastas.Where(x => x.creator_id == userId)
+                var pastasFound = context.Pastas.Where(x => x.CreatorId == userId)
                                                 .OrderByDescending(x => x.Id)
                                                 .Skip(page * 25)
                                                 .Take(25)
                                                 .ToList();
 
-                var totalCount = context.Pastas.Where(x => x.creator_id == userId)
+                var totalCount = context.Pastas.Where(x => x.CreatorId == userId)
                                                .Count();
 
                 if (page * 25 > totalCount)
@@ -108,7 +108,13 @@ namespace Miki.Modules
                     return;
                 }
 
-                context.Pastas.Add(new GlobalPasta() { Id = id, Text = e.message.RemoveMentions(string.Join(" ", arguments)), creator_id = e.Author.Id.ToDbLong(), date_created = DateTime.Now });
+                context.Pastas.Add(new GlobalPasta()
+				{
+					Id = id,
+					Text = e.message.RemoveMentions(string.Join(" ", arguments)),
+					CreatorId = e.Author.Id.ToDbLong(),
+					CreatedAt = DateTime.Now
+				});
                 await context.SaveChangesAsync();
                 await Utils.SuccessEmbed(locale, e.GetResource("miki_module_pasta_create_success", id)).SendToChannel(e.Channel);
             }
@@ -179,7 +185,7 @@ namespace Miki.Modules
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.creator_id == e.Author.Id.ToDbLong() || Bot.instance.Events.Developers.Contains(e.Author.Id))
+                if (p.CreatorId == e.Author.Id.ToDbLong() || Bot.instance.Events.Developers.Contains(e.Author.Id))
                 {
                     p.Text = e.arguments;
                     await context.SaveChangesAsync();
@@ -242,19 +248,19 @@ namespace Miki.Modules
                     return;
                 }
 
-                User creator = await context.Users.FindAsync(pasta.creator_id);
+                User creator = await context.Users.FindAsync(pasta.CreatorId);
 
                 IDiscordEmbed b = Utils.Embed;
 
                 b.SetAuthor(pasta.Id.ToUpper(), "", "");
-                b.Color = new IA.SDK.Color(47, 208, 192);
+                b.Color = new Color(47, 208, 192);
 
                 if (creator != null)
                 {
                     b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
                 }
 
-                b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.date_created.ToShortDateString());
+                b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.CreatedAt.ToShortDateString());
 
                 b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
 

@@ -117,20 +117,20 @@ namespace Miki.Modules
                     }
                     else if (users.Count == 1)
                     {
-                        Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, users.First().Id.FromDbLong());
+                        Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, users.First().Id.FromDbLong());
                         if (currentMarriage == null)
                         {
                             await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                             return;
                         }
 
-                        if (currentMarriage.Proposing)
+                        if (currentMarriage.IsProposing)
                         {
                             await Utils.ErrorEmbed(locale, locale.GetString("miki_module_accounts_error_no_marriage")).SendToChannel(e.Channel);
                             return;
                         }
 
-                        await currentMarriage.DivorceAsync(context);
+                        await currentMarriage.RemoveAsync(context);
 
                         IDiscordEmbed embed = Utils.Embed;
                         embed.Title = locale.GetString("miki_module_accounts_divorce_header");
@@ -141,7 +141,7 @@ namespace Miki.Modules
                     }
                     else
                     {
-                        List<Marriage> allMarriages = await Marriage.GetMarriages(context, e.Author.Id.ToDbLong());
+                        List<Marriage> allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
                         bool done = false;
 
                         foreach (Marriage marriage in allMarriages)
@@ -150,7 +150,7 @@ namespace Miki.Modules
                             {
                                 if (marriage.GetOther(e.Author.Id) == user.Id.FromDbLong())
                                 {
-                                    await marriage.DivorceAsync(context);
+                                    await marriage.RemoveAsync(context);
                                     done = true;
 
                                     IDiscordEmbed embed = Utils.Embed;
@@ -178,9 +178,9 @@ namespace Miki.Modules
 
                 using (MikiContext context = new MikiContext())
                 {
-                    Marriage currentMarriage = Marriage.GetMarriage(context, e.Author.Id, e.message.MentionedUserIds.First());
+                    Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, e.message.MentionedUserIds.First());
 
-                    await currentMarriage.DivorceAsync(context);
+                    await currentMarriage.RemoveAsync(context);
 
                     string user1 = (await e.Guild.GetUserAsync(currentMarriage.GetMe(e.Author.Id))).Username;
                     string user2 = (await e.Guild.GetUserAsync(currentMarriage.GetOther(e.Author.Id))).Username;
@@ -212,21 +212,19 @@ namespace Miki.Modules
                     User person1 = await context.Users.FindAsync(marriage.Id1);
                     User person2 = await context.Users.FindAsync(marriage.Id2);
 
-                    if (person1.MarriageSlots < (await Marriage.GetMarriages(context, person1.Id)).Count)
+                    if (person1.MarriageSlots < (await Marriage.GetMarriagesAsync(context, person1.Id)).Count)
                     {
                         await e.Channel.SendMessageAsync($"{person1.Name} do not have enough marriage slots, sorry :(");
                         return;
                     }
 
-                    if (person2.MarriageSlots < (await Marriage.GetMarriages(context, person2.Id)).Count)
+                    if (person2.MarriageSlots < (await Marriage.GetMarriagesAsync(context, person2.Id)).Count)
                     {
                         await e.Channel.SendMessageAsync($"{person2.Name} does not have enough marriage slots, sorry :(");
                         return;
                     }
 
                     marriage.AcceptProposal(context);
-
-                    Log.Message(marriage.Proposing.ToString());
 
                     await context.SaveChangesAsync();
 
@@ -262,17 +260,19 @@ namespace Miki.Modules
 
                 Marriage marriage = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
 
-                if (marriage != null)
-                {
-                    await marriage.DeclineProposalAsync(context);
-                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_declined"));
-                }
-                else
-                {
-                    await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_null"));
-                    return;
-                }
-            }
+				if (marriage == null)
+				{
+					marriage = await Marriage.GetEntryAsync(context, e.Author.Id, e.message.MentionedUserIds.First());
+
+					if(marriage == null)
+					{
+						await e.Channel.SendMessageAsync(locale.GetString("miki_marriage_null"));
+						return;
+					}
+				}
+
+				await marriage.RemoveAsync(context);
+			}
         }
 
         [Command(Name = "showproposals")]
@@ -280,7 +280,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                List<Marriage> proposals = Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
+                List<Marriage> proposals = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
                 List<string> proposalNames = new List<string>();
 
                 foreach (Marriage p in proposals)
@@ -297,7 +297,7 @@ namespace Miki.Modules
 
                 embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                proposals = Marriage.GetProposalsSent(context, e.Author.Id.ToDbLong());
+                proposals = await Marriage.GetProposalsSent(context, e.Author.Id.ToDbLong());
                 proposalNames = new List<string>();
 
                 foreach (Marriage p in proposals)

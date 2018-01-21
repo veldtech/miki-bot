@@ -228,7 +228,7 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
-					List<Marriage> marriages = await Marriage.GetMarriages(context, id);
+					List<Marriage> marriages = await Marriage.GetMarriagesAsync(context, id);
 
 					marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
 

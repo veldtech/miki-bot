@@ -97,7 +97,7 @@ namespace Miki.Models
 		public static async Task<GuildUser> CreateAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
-			int userCount = Bot.instance.Client.GetGuild(id.FromDbLong()).Users.Count;
+			int userCount = await guild.GetUserCountAsync();
 			int value = await context.LocalExperience
 								.Where(x => x.ServerId == id)
 								.SumAsync(x => x.Experience);
@@ -106,7 +106,7 @@ namespace Miki.Models
 			guildUser.Name = guild.Name;
 			guildUser.Id = id;
 			guildUser.Experience = value;
-			guildUser.UserCount = 0;
+			guildUser.UserCount = userCount;
 			guildUser.LastRivalRenewed = Utils.MinDbValue;
 			guildUser.MinimalExperienceToGetRewards = 100;
 			GuildUser outputGuildUser = context.GuildUsers.Add(guildUser).Entity;

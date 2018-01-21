@@ -28,8 +28,6 @@ namespace Miki
 
 		public async Task Start()
 		{
-			Console.WriteLine(Directory.GetCurrentDirectory());
-
 			Locale.Load();
 			timeSinceStartup = DateTime.Now;
 
@@ -37,8 +35,7 @@ namespace Miki
 			LoadDiscord();
 
 			using (var c = new MikiContext())
-			{
-				
+			{			
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
@@ -80,7 +77,7 @@ namespace Miki
                 ConsoleLogLevel = LogLevel.ALL,
 				DatabaseConnectionString = Global.config.ConnString
 			});
-
+		
             if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
@@ -112,7 +109,7 @@ namespace Miki
 			});
 
 			bot.MessageReceived += Bot_MessageReceived;
-
+			
             bot.Events.OnCommandError = async (ex, cmd, msg) =>
             {
 				/*RuntimeEmbed e = new RuntimeEmbed();

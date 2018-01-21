@@ -52,6 +52,6 @@ namespace Miki
 		public string DatadogHost { get; set; } = "127.0.0.1";
 
 		[JsonProperty("connection_string")]
-		public string ConnString { get; set; } = "";
+		public string ConnString { get; set; } = "Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=mikiPass.1;";
 	}
 }
