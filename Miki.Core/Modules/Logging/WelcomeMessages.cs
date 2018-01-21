@@ -115,7 +115,7 @@ namespace Miki.Modules
 		{
 			if (Enum.TryParse(e.arguments.ToLower(), true, out EventMessageType type))
 			{
-				EventMessageObject msg = (await GetMessage(e.Guild, type, e.Author)).FirstOrDefault();
+				EventMessageObject msg = (await GetMessage(e.Guild, type, e.Author)).FirstOrDefault(x => x.destinationChannel == e.Channel);
 				await e.Channel.SendMessageAsync(msg.message ?? "No message set in this channel");
 				return;
 			}
