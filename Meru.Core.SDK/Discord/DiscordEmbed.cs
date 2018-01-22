@@ -210,7 +210,12 @@ namespace IA.SDK
             throw new NotImplementedException();
         }
 
-        public IDiscordEmbed SetDescription(string description)
+		public IDiscordEmbed SetColor(int r, int g, int b)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IDiscordEmbed SetDescription(string description)
         {
             throw new NotImplementedException();
         }

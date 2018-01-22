@@ -73,6 +73,9 @@ namespace IA.Events
         public ulong Owner { get; set; } = 0;
         public ulong ChannelId = 0;
 
+		public async Task<string> GetPrefixAsync(ulong guildId)
+			=> await Prefixes.FirstOrDefault(x => x.Value.IsDefault).Value.GetForGuildAsync(guildId);
+
         public DateTime TimeCreated = DateTime.Now;
         internal DateTime timeDisposed;
 

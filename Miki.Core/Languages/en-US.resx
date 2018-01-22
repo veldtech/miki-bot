@@ -1912,4 +1912,49 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; [\"all\"|amount]`</value
   <data name="miki_command_usage_stare" xml:space="preserve">
     <value>&gt;stare</value>
   </data>
+  <data name="error_argument_null" xml:space="preserve">
+    <value>The argument was not completed for `{0}`!</value>
+  </data>
+  <data name="error_no_reminders" xml:space="preserve">
+    <value>You have no reminders active!</value>
+  </data>
+  <data name="error_reminder_null" xml:space="preserve">
+    <value>This reminder was not found!</value>
+  </data>
+  <data name="term_ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="reminders" xml:space="preserve">
+    <value>Reminders</value>
+  </data>
+  <data name="reminder_cancel" xml:space="preserve">
+    <value>Successfully cancelled {0}</value>
+  </data>
+  <data name="reminder_cancelled_all" xml:space="preserve">
+    <value>Sucessfully cleared all reminders!</value>
+  </data>
+  <data name="reminder_desc_add" xml:space="preserve">
+    <value>Reminds you any text in a set time!</value>
+  </data>
+  <data name="reminder_desc_clear" xml:space="preserve">
+    <value>cancel certain reminders based on the id given to you, these also appear in list!</value>
+  </data>
+  <data name="reminder_desc_list" xml:space="preserve">
+    <value>Shows all your current reminders!</value>
+  </data>
+  <data name="reminder_help_add" xml:space="preserve">
+    <value>reminder &lt;reminder&gt; in &lt;time&gt;</value>
+  </data>
+  <data name="reminder_help_clear" xml:space="preserve">
+    <value>reminder -clear &lt;id&gt;</value>
+  </data>
+  <data name="reminder_help_description" xml:space="preserve">
+    <value>Use Miki's reminder system to your advantage when busy with other things, but really don't want to pay attention!</value>
+  </data>
+  <data name="reminder_help_list" xml:space="preserve">
+    <value>reminder -list</value>
+  </data>
+  <data name="reminder_cancelled" xml:space="preserve">
+    <value>Cancelled {0} successfully!</value>
+  </data>
 </root>

@@ -24,6 +24,8 @@ namespace IA.SDK.Events
 
         IModule GetModule(string id);
 
+		Task<string> GetPrefixAsync(ulong id);
+
         Task RequestDisposeAsync();
 
         string[] GetAllEventNames();

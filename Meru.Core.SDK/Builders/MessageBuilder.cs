@@ -37,7 +37,7 @@ namespace IA.SDK.Builders
             return _builder.ToString();
         }
 
-        public string BuildWithBlockCode(string language = "markdown")
+        public string BuildWithBlockCode(string language = "")
         {
             return "```" + language + "\n" + _builder + "\n```";
         }

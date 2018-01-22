@@ -1,39 +1,62 @@
 ﻿using IA.SDK.Builders;
+using IA.SDK.Interfaces;
+using Miki.Core.API.Reminder;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Miki.API
+namespace Miki.API.Reminder
 {
     public class ReminderAPI
     {
-        private ulong userId = 0;
+		Dictionary<ulong, ReminderContainer> reminders = new Dictionary<ulong, ReminderContainer>(); 
 
-        private string value = Constants.NotDefined;
-
-        private TimeSpan timeTaken = new TimeSpan();
-
-        public ReminderAPI(ulong receiver)
+        public int AddReminder(IDiscordUser targetUser, string reminder, TimeSpan atTime, bool repeated = false)
         {
-            userId = receiver;
+			if(reminders.TryGetValue(targetUser.Id, out ReminderContainer container))
+			{
+				return container.CreateNewReminder(targetUser, reminder, atTime, repeated);
+			}
+			else
+			{
+				ReminderContainer rc = new ReminderContainer();
+				rc.Id = targetUser.Id;
+				reminders.Add(targetUser.Id, rc);
+				return rc.CreateNewReminder(targetUser, reminder, atTime, repeated);			
+			}
         }
 
-        public ReminderAPI Remind(string reminder, TimeSpan delay)
-        {
-            timeTaken = delay;
-            value = reminder;
-            return this;
-        }
+		public ReminderInstance CancelReminder(IDiscordUser user, int id)
+		{
+			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			{
+				var instance = container.GetReminder(id);
+				if(instance != null)
+				{
+					instance.Cancel();
+					return instance;
+				}
+				return null;
+			}
+			return null;
+		}
 
-        public async Task Listen()
-        {
-            await Task.Delay(timeTaken);
+		public ReminderInstance GetInstance(IDiscordUser user, int id)
+		{
+			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			{
+				return container.GetReminder(id);
+			}
+			return null;
+		}
 
-            await Utils.Embed
-                .SetTitle("⏰ Reminder")
-                .SetDescription(new MessageBuilder()
-                    .AppendText(value)
-                    .BuildWithBlockCode(""))
-                .SendToUser(userId);
-        }
+		public List<ReminderInstance> GetAllInstances(IDiscordUser user)
+		{
+			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			{
+				return container.GetAllReminders();
+			}
+			return null;
+		}
     }
 }
