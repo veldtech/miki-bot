@@ -14,24 +14,21 @@ namespace IA.SDK.Interfaces
         string Url { get; set; }
 
         IDiscordEmbed AddField(string title, string value);
-
         IDiscordEmbed AddField(IEmbedField field);
 
         IDiscordEmbed AddInlineField(object title, object value);
 
         IEmbedAuthor CreateAuthor();
-
         IDiscordEmbed CreateAuthor(string text, string iconUrl, string url);
 
         IEmbedFooter CreateFooter();
-
         IDiscordEmbed CreateFooter(string text, string iconUrl);
 
         IDiscordEmbed SetAuthor(string name, string imageurl, string url);
 
         IDiscordEmbed SetColor(Color color);
-
         IDiscordEmbed SetColor(float r, float g, float b);
+		IDiscordEmbed SetColor(int r, int g, int b);
 
         IDiscordEmbed SetDescription(string description);
 

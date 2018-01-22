@@ -169,6 +169,33 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The argument was not completed for `{0}`!.
+        /// </summary>
+        internal static string error_argument_null {
+            get {
+                return ResourceManager.GetString("error_argument_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have no reminders active!.
+        /// </summary>
+        internal static string error_no_reminders {
+            get {
+                return ResourceManager.GetString("error_no_reminders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This reminder was not found!.
+        /// </summary>
+        internal static string error_reminder_null {
+            get {
+                return ResourceManager.GetString("error_reminder_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left..
         /// </summary>
         internal static string error_rep_limit {
@@ -4916,6 +4943,105 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully cancelled {0}.
+        /// </summary>
+        internal static string reminder_cancel {
+            get {
+                return ResourceManager.GetString("reminder_cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled {0} successfully!.
+        /// </summary>
+        internal static string reminder_cancelled {
+            get {
+                return ResourceManager.GetString("reminder_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sucessfully cleared all reminders!.
+        /// </summary>
+        internal static string reminder_cancelled_all {
+            get {
+                return ResourceManager.GetString("reminder_cancelled_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reminds you any text in a set time!.
+        /// </summary>
+        internal static string reminder_desc_add {
+            get {
+                return ResourceManager.GetString("reminder_desc_add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to cancel certain reminders based on the id given to you, these also appear in list!.
+        /// </summary>
+        internal static string reminder_desc_clear {
+            get {
+                return ResourceManager.GetString("reminder_desc_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows all your current reminders!.
+        /// </summary>
+        internal static string reminder_desc_list {
+            get {
+                return ResourceManager.GetString("reminder_desc_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to reminder &lt;reminder&gt; in &lt;time&gt;.
+        /// </summary>
+        internal static string reminder_help_add {
+            get {
+                return ResourceManager.GetString("reminder_help_add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to reminder -clear &lt;id&gt;.
+        /// </summary>
+        internal static string reminder_help_clear {
+            get {
+                return ResourceManager.GetString("reminder_help_clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Miki&apos;s reminder system to your advantage when busy with other things, but really don&apos;t want to pay attention!.
+        /// </summary>
+        internal static string reminder_help_description {
+            get {
+                return ResourceManager.GetString("reminder_help_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to reminder -list.
+        /// </summary>
+        internal static string reminder_help_list {
+            get {
+                return ResourceManager.GetString("reminder_help_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reminders.
+        /// </summary>
+        internal static string reminders {
+            get {
+                return ResourceManager.GetString("reminders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You&apos;ve successfully given reputation.
         /// </summary>
         internal static string rep_success {
@@ -4999,9 +5125,17 @@ namespace Miki.Core.Languages {
         /// <summary>
         ///   Looks up a localized string similar to Roles.
         /// </summary>
-        internal static string term_roles {
-            get {
+        internal static string term_roles
+        {
+            get
+            {
                 return ResourceManager.GetString("term_roles", resourceCulture);
+            }
+        }///   Looks up a localized string similar to OK.
+         /// </summary>
+        internal static string term_ok {
+            get {
+                return ResourceManager.GetString("term_ok", resourceCulture);
             }
         }
         

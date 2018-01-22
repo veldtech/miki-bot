@@ -425,5 +425,10 @@ namespace IA.SDK
 		{
 			Task.Run(async () => await SendToUser(user));
 		}
+
+		public IDiscordEmbed SetColor(int r, int g, int b)
+		{
+			return SetColor(new Color((r / 255.0f), (g / 255.0f), (b / 255.0f)));
+		}
 	}
 }

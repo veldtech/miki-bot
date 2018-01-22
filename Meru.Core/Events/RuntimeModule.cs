@@ -212,7 +212,10 @@ namespace IA.Events
 				{
 					await UserJoinGuild(arg.Guild, arg);
 				}
-				catch { }
+				catch(Exception e)
+				{
+					Log.ErrorAt("userjoin", e.Message + "\n" + e.StackTrace);
+				}
             }
         }
 

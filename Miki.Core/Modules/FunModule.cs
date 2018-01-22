@@ -26,6 +26,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IA.Events;
 using Miki.API.Imageboards.Objects;
+using Miki.API.Reminder;
+using Miki.Core.API.Reminder;
 
 namespace Miki.Modules
 {
@@ -167,6 +169,8 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofing-in-the-90s-1",
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
 };
+
+		private ReminderAPI reminders = new ReminderAPI();
 
         public FunModule(RuntimeModule m)
         {
@@ -476,47 +480,168 @@ namespace Miki.Modules
 			await e.Channel.QueueMessageAsync( send );
 		}
 
-        [Command(Name = "remind")]
-        public async Task DoRemind(EventContext e)
+        [Command(Name = "reminder")]
+        public async Task RemindAsync(EventContext e)
         {
-            List<string> arguments = e.arguments.Split(' ').ToList();
-            int splitIndex = 0;
+			string lowercaseArguments = e.arguments.ToLower().Split(' ')[0];
 
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                if (arguments[i].ToLower() == "in")
-                {
-                    splitIndex = i;
-                }
-            }
+			switch (lowercaseArguments)
+			{
+				case "-clear":
+				{
+					await CancelReminderAsync(e);
+				} break;
+				case "-list":
+				{
+					await ListRemindersAsync(e);
+				} break;
+				default:
+				{
+					if (string.IsNullOrWhiteSpace(e.arguments) || e.arguments.StartsWith("-"))
+					{
+						await HelpReminderAsync(e);
+					}
+					else
+					{
+						await PlaceReminderAsync(e);
+					}
+				} break;
+			}
+	    }
 
-            if (splitIndex == 0)
-            {
-                // throw error
-                return;
-            }
+		private async Task PlaceReminderAsync(EventContext e)
+		{
+			Locale locale = e.Channel.GetLocale();
 
-            int count = arguments.Count;
-            arguments.RemoveRange(splitIndex, count - (splitIndex));
-            string reminderText = string.Join(" ", arguments);
+			int inIndex = e.arguments.ToLower().LastIndexOf(" in ");
+			int everyIndex = e.arguments.ToLower().LastIndexOf(" every ");
+			bool isIn = (inIndex > everyIndex);
+			bool repeated = false;
 
-            if (reminderText.StartsWith("me to "))
-            {
-                reminderText = reminderText.Substring(6);
-            }
+			int splitIndex = isIn ? inIndex : everyIndex;
 
-            TimeSpan timeUntilReminder = e.arguments.GetTimeFromString();
+			if (splitIndex == -1)
+			{
+				await e.ErrorEmbed(locale.GetString("error_argument_null", "time"))
+					.QueueToChannel(e.Channel);
+				return;
+			}
 
-            await Utils.Embed
-                .SetTitle("👌 OK")
-                .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**")
-                .SetColor(IA.SDK.Color.GetColor(IAColor.GREEN))
-                .QueueToChannel(e.Channel.Id);
+			if(!isIn)
+			{
+				repeated = true;
+			}
 
-            await new ReminderAPI(e.Author.Id)
-                .Remind(reminderText, timeUntilReminder)
-                .Listen();
-        }
+			string reminderText = new string(e.arguments
+				.Take(splitIndex)
+				.ToArray());
+
+			TimeSpan timeUntilReminder = e.arguments
+				.GetTimeFromString();
+
+			int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
+
+			await Utils.Embed
+				.SetTitle($"👌 {locale.GetString("term_ok")}")
+				.SetDescription($"I'll remind you to **{reminderText}** {(repeated?"every":"in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
+				.SetColor(255, 220, 93)
+				.QueueToChannel(e.Channel.Id);
+		}
+		private async Task CancelReminderAsync(EventContext e)
+		{
+			Locale locale = e.Channel.GetLocale();
+			string[] args = e.arguments.Split(' ');
+
+			if (args.Length > 1)
+			{
+				string x = args[1];
+				if (Utils.IsAll(x, locale))
+				{
+					if (reminders.GetAllInstances(e.Author) is List<ReminderInstance> instances)
+					{
+						instances.ForEach(i => i.Cancel());
+					}
+
+					await Utils.Embed
+						.SetTitle($"⏰ {locale.GetString("reminders")}")
+						.SetColor(0.86f, 0.18f, 0.26f)
+						.SetDescription(locale.GetString("reminder_cancelled_all"))
+						.QueueToChannel(e.Channel);
+					return;
+				}
+				else if (int.TryParse(x, out int id))
+				{
+					if (reminders.CancelReminder(e.Author, id) is ReminderInstance i)
+					{
+						await Utils.Embed
+							.SetTitle($"⏰ {locale.GetString("reminders")}")
+							.SetColor(0.86f, 0.18f, 0.26f)
+							.SetDescription(locale.GetString("reminder_cancelled", $"`{i.Text}`"))
+							.QueueToChannel(e.Channel);
+						return;
+					}
+				}
+				await e.ErrorEmbed(locale.GetString("error_reminder_null"))
+					.QueueToChannel(e.Channel);
+			}
+			else
+			{
+				await e.ErrorEmbed(locale.GetString("error_argument_null", "id"))
+					.QueueToChannel(e.Channel);
+			}
+		}
+		private async Task ListRemindersAsync(EventContext e)
+		{
+			Locale locale = e.Channel.GetLocale();
+
+			var instances = reminders.GetAllInstances(e.Author);
+			if(instances?.Count > 0)
+			{
+				instances = instances.OrderBy(x => x.ReminderId).ToList();
+
+				IDiscordEmbed embed = Utils.Embed
+					.SetTitle($"⏰ {locale.GetString("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f);
+
+				foreach (var x in instances)
+				{
+					string tx = x.Text;
+					string status = "▶";
+
+					if (x.Text.Length > 30)
+					{
+						tx = new string(x.Text.Take(27).ToArray()) + "...";
+					}
+
+					if(x.RepeatReminder)
+					{
+						status = "🔁";
+					}
+
+					embed.Description += $"{status} `{x.ReminderId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(Locale.GetEntity(e.Channel.Id), true)}`\n";
+				}
+				await embed.QueueToChannel(e.Channel);
+				return;
+			}
+
+			await e.ErrorEmbed(locale.GetString("error_no_reminders"))
+				.QueueToChannel(e.Channel);
+		}
+		private async Task HelpReminderAsync(EventContext e)
+		{
+			Locale locale = e.Channel.GetLocale();
+			string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
+
+			await Utils.Embed
+				.SetTitle($"⏰ {locale.GetString("reminders")}")
+				.SetColor(0.86f, 0.18f, 0.26f)
+				.SetDescription(locale.GetString("reminder_help_description"))
+				.AddInlineField(locale.GetString("term_commands"), 
+				$"`{prefix}{locale.GetString("reminder_help_add")}` - {locale.GetString("reminder_desc_add")}\n" +
+				$"`{prefix}{locale.GetString("reminder_help_clear")}` - {locale.GetString("reminder_desc_clear")}\n" +
+				$"`{prefix}{locale.GetString("reminder_help_list")}` - {locale.GetString("reminder_desc_list")}\n")
+				.QueueToChannel(e.Channel);
+		}
 
         [Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
@@ -528,38 +653,33 @@ namespace Miki.Modules
             {
                 string[] a = e.arguments.Split(' ');
                 e.arguments = e.arguments.Substring(a[0].Length);
-                switch (a[0].Split(':')[1].ToLower())
-                {
-                    case "safebooru":
-                        {
-                            s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-                        }
-                        break;
+				switch (a[0].Split(':')[1].ToLower())
+				{
+					case "safebooru":
+					{
+						s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
+					} break;
 
-                    case "gelbooru":
-                        {
-                            s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-                        }
-                        break;
+					case "gelbooru":
+					{
+						s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
+					} break;
 
-                    case "konachan":
-                        {
-                            s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-                        }
-                        break;
+					case "konachan":
+					{
+						s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(e.arguments, ImageboardRating.SAFE);
+					} break;
 
-                    case "e621":
-                        {
-                            s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.arguments, ImageboardRating.SAFE);
-                        }
-                        break;
+					case "e621":
+					{
+						s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.arguments, ImageboardRating.SAFE);
+					} break;
 
-                    default:
-                        {
-                            await e.Channel.QueueMessageAsync("I do not support this image host :(");
-                        }
-                        break;
-                }
+					default:
+					{
+						await e.Channel.QueueMessageAsync("I do not support this image host :(");
+					} break;
+				}
             }
             else
             {
@@ -580,7 +700,7 @@ namespace Miki.Modules
         {
             string[] images = new string[]
             {
-		"http://i.imgur.com/J2DLbV4.png",
+				"http://i.imgur.com/J2DLbV4.png",
                 "http://i.imgur.com/H0kDub9.jpg",
                 "http://i.imgur.com/pBOG489.jpg",
                 "http://i.imgur.com/dIxeGOe.jpg",
@@ -590,41 +710,41 @@ namespace Miki.Modules
                 "http://i.imgur.com/EQGpV8A.jpg",
                 "http://i.imgur.com/qGv3Xj1.jpg",
                 "http://i.imgur.com/KFArF4B.png",
-		"http://i.imgur.com/6Dv3W8V.png",
-		"http://i.imgur.com/TJPnX57.png",
-		"http://i.imgur.com/jle1rXs.png",
-		"http://i.imgur.com/6V2wcjt.png",
-		"http://i.imgur.com/KW5dBMg.jpg",
-		"http://i.imgur.com/vdrAAuI.png",
-		"http://i.imgur.com/QnRkQ7q.png",
-		"http://i.imgur.com/sjNWj0r.jpg",
-		"http://i.imgur.com/SXj7kg7.jpg",
-		"http://i.imgur.com/eVwqceu.jpg",
-		"http://i.imgur.com/JDOySvx.png",
-		"http://i.imgur.com/fetJh3C.jpg",
-		"http://i.imgur.com/iRKMtHT.png",
-		"http://i.imgur.com/uxLqZXl.jpg",
-		"http://i.imgur.com/6RDjjzP.jpg",
-		"http://i.imgur.com/hNqXdxF.png",
-		"http://i.imgur.com/xADVyFD.jpg",
-		"http://i.imgur.com/JH8WqAg.jpg",
-		"http://i.imgur.com/LvodsHR.jpg",
-		"http://i.imgur.com/4y4wI21.jpg",
-		"http://i.imgur.com/y6REP8l.png",
-		"http://i.imgur.com/8gQdkwx.jpg",
-		"http://i.imgur.com/JVBkdyo.jpg",
-		"http://i.imgur.com/3VCDWyy.jpg",
-		"http://i.imgur.com/5lGh8Vo.jpg",
-		"http://i.imgur.com/ZwZvQYP.jpg",
-		"http://i.imgur.com/USQa4GH.jpg",
-		"http://i.imgur.com/FXHFLCH.jpg",
-		"http://i.imgur.com/vRRK4qd.png",
-		"http://i.imgur.com/0OycISQ.jpg",
-		"http://i.imgur.com/0OycISQ.jpg",
-		"http://i.imgur.com/g2vdQ6i.jpg",
-		"http://i.imgur.com/3vDUWgr.png",
-		"http://i.imgur.com/TN58jEQ.jpg",
-		"http://i.imgur.com/94wckTB.png"
+				"http://i.imgur.com/6Dv3W8V.png",
+				"http://i.imgur.com/TJPnX57.png",
+				"http://i.imgur.com/jle1rXs.png",
+				"http://i.imgur.com/6V2wcjt.png",
+				"http://i.imgur.com/KW5dBMg.jpg",
+				"http://i.imgur.com/vdrAAuI.png",
+				"http://i.imgur.com/QnRkQ7q.png",
+				"http://i.imgur.com/sjNWj0r.jpg",
+				"http://i.imgur.com/SXj7kg7.jpg",
+				"http://i.imgur.com/eVwqceu.jpg",
+				"http://i.imgur.com/JDOySvx.png",
+				"http://i.imgur.com/fetJh3C.jpg",
+				"http://i.imgur.com/iRKMtHT.png",
+				"http://i.imgur.com/uxLqZXl.jpg",
+				"http://i.imgur.com/6RDjjzP.jpg",
+				"http://i.imgur.com/hNqXdxF.png",
+				"http://i.imgur.com/xADVyFD.jpg",
+				"http://i.imgur.com/JH8WqAg.jpg",
+				"http://i.imgur.com/LvodsHR.jpg",
+				"http://i.imgur.com/4y4wI21.jpg",
+				"http://i.imgur.com/y6REP8l.png",
+				"http://i.imgur.com/8gQdkwx.jpg",
+				"http://i.imgur.com/JVBkdyo.jpg",
+				"http://i.imgur.com/3VCDWyy.jpg",
+				"http://i.imgur.com/5lGh8Vo.jpg",
+				"http://i.imgur.com/ZwZvQYP.jpg",
+				"http://i.imgur.com/USQa4GH.jpg",
+				"http://i.imgur.com/FXHFLCH.jpg",
+				"http://i.imgur.com/vRRK4qd.png",
+				"http://i.imgur.com/0OycISQ.jpg",
+				"http://i.imgur.com/0OycISQ.jpg",
+				"http://i.imgur.com/g2vdQ6i.jpg",
+				"http://i.imgur.com/3vDUWgr.png",
+				"http://i.imgur.com/TN58jEQ.jpg",
+				"http://i.imgur.com/94wckTB.png"
             };
 
             RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
@@ -633,6 +753,5 @@ namespace Miki.Modules
             };
             await em.QueueToChannel( e.Channel );
         }
-
     }
 }

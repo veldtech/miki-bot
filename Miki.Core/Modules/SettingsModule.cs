@@ -121,10 +121,11 @@ namespace Miki.Modules
 
                 foreach (IService ev in module.Services.OrderBy((x) => x.Name))
                 {
-                    content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
                 }
 
-                if( !string.IsNullOrEmpty( content ) ) embed.AddInlineField("Services", content);
+				if (!string.IsNullOrEmpty(content))
+					embed.AddInlineField("Services", content);
 
                 await embed.QueueToChannel(e.Channel);
             }

@@ -65,7 +65,7 @@ namespace Miki
             {
                 if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
                 {
-                    await channel.SendMessageAsync(message);
+                    await channel.QueueMessageAsync(message);
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Miki
             {
                 if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
                 {
-                    await message.SendToChannel(channel);
+                    await message.QueueToChannel(channel);
                 }
             }
         }

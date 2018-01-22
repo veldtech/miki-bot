@@ -32,7 +32,7 @@ namespace IA.Extension
                     case "seconds":
                     case "second":
                     case "sec":
-                    case "S":
+                    case "s":
                         int seconds = int.Parse(timeList[i - 1]);
                         timeUntilReminder = timeUntilReminder.Add(new TimeSpan(0, 0, seconds));
                         break;
@@ -73,7 +73,7 @@ namespace IA.Extension
                     case "yr":
                     case "y":
                         int years = int.Parse(timeList[i - 1]);
-                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(years * 356, 0, 0, 0));
+                        timeUntilReminder = timeUntilReminder.Add(new TimeSpan(years * 365, 0, 0, 0));
                         break;
                 }
             }

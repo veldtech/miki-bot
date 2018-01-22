@@ -229,7 +229,7 @@ namespace Miki.Modules
 
 			await embed.QueueToChannel(e.Channel);
 
-            await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).SendToUser(e.Author);
+            await (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).QueueToUser(e.Author);
         }
 
         [Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -278,8 +278,7 @@ namespace Miki.Modules
             Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
 
             await e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_invite_message"));
-
-            await e.Author.SendMessage(authorLocale.GetString("miki_module_general_invite_dm")
+            await e.Author.QueueMessageAsync(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 

@@ -7,6 +7,7 @@ using IA.SDK.Interfaces;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -28,27 +29,27 @@ namespace Miki.Modules
         {
             m.UserJoinGuild = async (guild, user) =>
             {
-                List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
+                List<EventMessageObject> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
 
                 if (data == null)
                 {
                     return;
                 }
 
-                data.ForEach(async x => await x.Item2.SendMessageAsync(x.Item1));
+                data.ForEach(async x => await x.destinationChannel.QueueMessageAsync(x.message));
             };
 
             m.UserLeaveGuild = async (guild, user) =>
             {
-                List<Tuple<string, IDiscordMessageChannel>> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
+				List<EventMessageObject> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
 
                 if (data == null)
                 {
                     return;
                 }
 
-                data.ForEach(async x => await x.Item2.SendMessageAsync(x.Item1));
-            };
+				data.ForEach(async x => await x.destinationChannel.QueueMessageAsync(x.message));
+			};
         }
 
         [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
@@ -58,23 +59,23 @@ namespace Miki.Modules
             {
                 if (string.IsNullOrEmpty(e.arguments))
                 {
-                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.JOINSERVER);
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessageAsync($"✅ deleted your welcome message");
+                        await e.Channel.QueueMessageAsync($"✅ deleted your welcome message");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessageAsync($"⚠ no welcome message found!");
+                        await e.Channel.QueueMessageAsync($"⚠ no welcome message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessageAsync($"✅ new welcome message is set to: `{ e.arguments }`");
+                    await e.Channel.QueueMessageAsync($"✅ new welcome message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }
@@ -87,29 +88,42 @@ namespace Miki.Modules
             {
                 if (string.IsNullOrEmpty(e.arguments))
                 {
-                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (int)EventMessageType.LEAVESERVER);
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
                     if (leaveMessage != null)
                     {
                         context.EventMessages.Remove(leaveMessage);
-                        await e.Channel.SendMessageAsync($"✅ deleted your leave message");
+                        await e.Channel.QueueMessageAsync($"✅ deleted your leave message");
                         await context.SaveChangesAsync();
                         return;
                     }
                     else
                     {
-                        await e.Channel.SendMessageAsync($"⚠ no leave message found!");
+                        await e.Channel.QueueMessageAsync($"⚠ no leave message found!");
                     }
                 }
 
                 if (await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
                 {
-                    await e.Channel.SendMessageAsync($"✅ new leave message is set to: `{ e.arguments }`");
+                    await e.Channel.QueueMessageAsync($"✅ new leave message is set to: `{ e.arguments }`");
                 }
                 await context.SaveChangesAsync();
             }
         }
 
-        private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
+		[Command(Name = "testmessage", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task TestMessage(EventContext e)
+		{
+			if (Enum.TryParse(e.arguments.ToLower(), true, out EventMessageType type))
+			{
+				var allmessages = await GetMessage(e.Guild, type, e.Author);
+				EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);
+				await e.Channel.QueueMessageAsync(msg.message ?? "No message set in this channel");
+				return;
+			}
+			await e.Channel.QueueMessageAsync($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+		}
+
+		private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
         {
             using (var context = new MikiContext())
             {
@@ -134,17 +148,17 @@ namespace Miki.Modules
             return true;
         }
 
-        public async Task<List<Tuple<string, IDiscordMessageChannel>>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
+        public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
             long guildId = guild.Id.ToDbLong();
             List<IDiscordMessageChannel> channels = await guild.GetChannels();
-            List<Tuple<string, IDiscordMessageChannel>> output = new List<Tuple<string, IDiscordMessageChannel>>();
+            List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())
             {
                 foreach (IDiscordMessageChannel c in channels)
                 {
-                    EventMessage messageObject = await context.EventMessages.FindAsync(c.Id.ToDbLong(), (int)type);
+                    EventMessage messageObject = await context.EventMessages.FindAsync(c.Id.ToDbLong(), (short)type);
 
                     if (messageObject == null)
                     {
@@ -163,7 +177,7 @@ namespace Miki.Modules
 					modifiedMessage = modifiedMessage.Replace("-uc", (await user.Guild.GetUserCountAsync()).ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
 
-                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].Nickname);   
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].GetName());   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
@@ -173,11 +187,23 @@ namespace Miki.Modules
 
                     modifiedMessage = modifiedMessage.Replace("-cc", (await user.Guild.GetChannelCountAsync()).ToString());
                     modifiedMessage = modifiedMessage.Replace("-vc", (await user.Guild.GetVoiceChannelCountAsync()).ToString());
-                    
-                    output.Add(new Tuple<string, IDiscordMessageChannel>(modifiedMessage, c));
+
+					EventMessageObject o = new EventMessageObject()
+					{
+						message = modifiedMessage,
+						destinationChannel = c
+					};
+					
+                    output.Add(o);
                 }
                 return output;
             }
         }
     }
+
+	public struct EventMessageObject
+	{
+		public IDiscordMessageChannel destinationChannel;
+		public string message;
+	}
 }

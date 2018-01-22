@@ -92,11 +92,9 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("datadog_host")]
 		public string DatadogHost { get; set; } = "127.0.0.1";
-<<<<<<< .merge_file_a12672
 
 		[JsonProperty("connection_string")]
 		public string ConnString { get; set; } = "";
-=======
 		
 		/// <summary>
 		/// Miki API route
@@ -109,6 +107,5 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("miki_api_key")]
 		public string MikiApiKey { get; set; } = "";
->>>>>>> .merge_file_a02136
 	}
 }

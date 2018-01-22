@@ -89,10 +89,10 @@ namespace Miki.Modules
 					embed.SetDescription( "Currently playing " + user.CurrentGameName );
 				else
 					embed.SetDescription( "Currently in-game" );
-				embed.Color = Color.GetColor( IAColor.GREEN );
+				embed.Color = new Color(0.5f, 1, 0.5f);
 			} else if( user.PersonaState != 0 )
 			{
-				embed.Color = Color.GetColor( IAColor.BLUE );
+				embed.Color = new Color(0.5f, 0.5f, 1);
 			}
 
 			/* Name & ID */

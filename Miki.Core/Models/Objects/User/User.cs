@@ -12,59 +12,22 @@ using System.Threading.Tasks;
 
 namespace Miki.Models
 {
-    [Table("Users")]
-    public class User : IDatabaseEntity
+    public class User
     {
-        [Key]
-        [Column("Id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
-
-        [Column("Name")]
         public string Name { get; set; }
-
-        [Column("Title")]
         public string Title { get; set; }
-
-        [Column("Total_Commands")]
-        [DefaultValue("0")]
         public int Total_Commands { get; set; }
-
-        [Column("Total_Experience")]
-        [DefaultValue("0")]
         public int Total_Experience { get; set; }
-
-        [Column("Currency")]
-        [DefaultValue("0")]
         public int Currency { get; set; }
-
-        [Column("MarriageSlots")]
-        [DefaultValue("5")]
         public int MarriageSlots { get; set; }
-
-        [Column("AvatarUrl")]
         public string AvatarUrl { get; set; }
-
-        [Column("HeaderUrl")]
-        public string HeaderUrl { get; set; }
-
-        [Column("LastDailyTime")]
+		public string HeaderUrl { get; set; }
         public DateTime LastDailyTime { get; set; }
 
-		[Column("DateCreated")]
-		[DefaultValue("getutcdate()")]
-		public DateTime DateCreated { get; set; } = DateTime.Now;
-
-        [Column("Reputation")]
-        public int Reputation { get; set; }
-
-		[Column("banned")]
+        public DateTime DateCreated { get; set; }
+		public int Reputation { get; set; } 
 		public bool Banned { get; set; }
-		[Column("badges_owned")]
-		public virtual ICollection<BadgesOwned> BadgesOwned { get; set; }
-
-		[Column("pinned_badges")]
-		public PinnedBadges PinnedBadges { get; set; }
 
         public DateTime LastReputationGiven { get; set; }
         public short ReputationPointsLeft { get; set; }
@@ -83,11 +46,11 @@ namespace Miki.Models
             }
         }
 
-        public static async Task<User> CreateAsync(MikiContext m, IDiscordMessage e)
+        public static User CreateAsync(MikiContext m, IDiscordMessage e)
         {
-			return await CreateAsync(m, e.Author);
+			return Create(m, e.Author);
         }
-		public static async Task<User> CreateAsync(MikiContext m, IDiscordUser u)
+		public static User Create(MikiContext m, IDiscordUser u)
 		{
 			User user = new User()
 			{
@@ -106,14 +69,14 @@ namespace Miki.Models
 			};
 
 			m.Users.Add(user);
-
 			return user;
 		}
+
 		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
 			return await context.Users.FindAsync(id)
-				?? await CreateAsync(context, u);
+				?? Create(context, u);
 		}
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)

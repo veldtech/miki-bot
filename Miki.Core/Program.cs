@@ -15,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Miki
 {
 	public class Program
-<<<<<<< .merge_file_a01932
     {
         private static void Main(string[] args)
         {
@@ -23,21 +22,12 @@ namespace Miki
 				.GetAwaiter()
 				.GetResult();
         }
-=======
-	{
-		private static void Main(string[] args)
-		{
-			AsyncContext.Run(() => new Program().Start());
-		}
->>>>>>> .merge_file_a17616
 
 		public static Bot bot;
 		public static DateTime timeSinceStartup;
 
 		public async Task Start()
 		{
-			Console.WriteLine(Directory.GetCurrentDirectory());
-
 			Locale.Load();
 			timeSinceStartup = DateTime.Now;
 
@@ -45,15 +35,9 @@ namespace Miki
 			LoadDiscord();
 
 			using (var c = new MikiContext())
-			{
-<<<<<<< .merge_file_a01932
-				
+			{			
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
-=======
-				List<User> bannedUsers = c.Users.Where(x => x.Banned).ToList();
-				foreach (var u in bannedUsers)
->>>>>>> .merge_file_a17616
 				{
 					bot.Events.Ignore(u.Id.FromDbLong());
 				}
@@ -62,7 +46,6 @@ namespace Miki
 			await bot.ConnectAsync();
 		}
 
-<<<<<<< .merge_file_a01932
         private void LoadConfig()
         {
             if (FileReader.FileExist("settings.json", "miki"))
@@ -94,51 +77,13 @@ namespace Miki
                 ConsoleLogLevel = LogLevel.ALL,
 				DatabaseConnectionString = Global.config.ConnString
 			});
-
+		
             if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
             }
 
 			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
-=======
-		private void LoadConfig()
-		{
-			if (FileReader.FileExist("settings.json", "miki"))
-			{
-				FileReader reader = new FileReader("settings.json", "miki");
-				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
-				reader.Finish();
-			}
-			else
-			{
-				FileWriter writer = new FileWriter("settings.json", "miki");
-				writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
-				writer.Finish();
-			}
-		}
-
-		/// <summary>
-		/// The program runs all discord services and loads all the data here.
-		/// </summary>
-		public void LoadDiscord()
-		{
-			bot = new Bot(x =>
-			{
-				x.Name = "Miki";
-				x.Version = "0.5";
-				x.Token = Global.config.Token;
-				x.ShardCount = Global.config.ShardCount;
-				x.ConsoleLogLevel = LogLevel.ALL;
-			});
-
-			if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
-			{
-				Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
-			}
-
-			if (!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
->>>>>>> .merge_file_a17616
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
@@ -164,9 +109,9 @@ namespace Miki
 			});
 
 			bot.MessageReceived += Bot_MessageReceived;
-
-			bot.Events.OnCommandError = async (ex, cmd, msg) =>
-			{
+			
+            bot.Events.OnCommandError = async (ex, cmd, msg) =>
+            {
 				/*RuntimeEmbed e = new RuntimeEmbed();
                 //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
                 //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);

@@ -33,19 +33,19 @@ namespace Miki.Modules
                 .AddInlineField("Created At", emote.CreatedAt.ToString())
                 .AddInlineField("Code", "`" + emote.ToString() + "`")
                 .SetThumbnailUrl(emote.Url)
-                .SendToChannel(e.Channel);
+                .QueueToChannel(e.Channel);
         }
 
         [Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayAsync(EventContext e)
         {
-            await e.Channel.SendMessageAsync(e.arguments);
+            await e.Channel.QueueMessageAsync(e.arguments);
         }
 
         [Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayEmbedAsync(EventContext e)
         {
-            await Utils.Embed.AddInlineField("SAY", e.arguments).SendToChannel(e.Channel);
+            await Utils.Embed.AddInlineField("SAY", e.arguments).QueueToChannel(e.Channel);
         }
 
         [Command(Name = "setgame", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -66,20 +66,20 @@ namespace Miki.Modules
             if (ulong.TryParse(e.arguments, out ulong id))
             {
                 Bot.instance.Events.Ignore(id);
-                await e.Channel.SendMessageAsync(":ok_hand:");
+                await e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
         [Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ShowCacheAsync(EventContext e)
         {
-            await e.Channel.SendMessageAsync("Yes, this is Veld, my developer.");
+            await e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
         }
 
         [Command(Name = "qembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task QueryEmbedAsync(EventContext e)
         {
-            await new RuntimeEmbed().Query(e.arguments).SendToChannel(e.Channel);
+            await new RuntimeEmbed().Query(e.arguments).QueueToChannel(e.Channel);
         }
 
         [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -104,7 +104,7 @@ namespace Miki.Modules
                 embed.AddInlineField("Shard " + c.ShardId, $"State:  {c.ConnectionState}\nPing:   {c.Latency}\nGuilds: {c.Guilds.Count}");
             }
 
-            await embed.SendToChannel(context.Channel);
+            await embed.QueueToChannel(context.Channel);
         }
 
         [Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -127,7 +127,7 @@ namespace Miki.Modules
                 if (x > 16) break;
             }
 
-            await embed.SendToChannel(context.Channel);
+            await embed.QueueToChannel(context.Channel);
         }
 
         [Command(Name = "setdonator", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -153,7 +153,7 @@ namespace Miki.Modules
                         await database.SaveChangesAsync();
                     }
                 }
-                await context.Channel.SendMessageAsync(":ok_hand:");
+                await context.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
@@ -169,7 +169,7 @@ namespace Miki.Modules
                 }
                 u.Currency = int.Parse(e.arguments.Split(' ')[1]);
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessageAsync(":ok_hand:");
+                await e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
@@ -178,7 +178,7 @@ namespace Miki.Modules
         {
             IDiscordUser u = new RuntimeUser(Bot.instance.Client.GetUser(ulong.Parse(e.arguments)));
 
-            await e.Channel.SendMessageAsync(u.Username + "#" + u.Discriminator);
+            await e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }
 
         [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -193,7 +193,7 @@ namespace Miki.Modules
                 }
                 u.Experience = int.Parse(e.arguments.Split(' ')[1]);
                 await context.SaveChangesAsync();
-                await e.Channel.SendMessageAsync(":ok_hand:");
+                await e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
