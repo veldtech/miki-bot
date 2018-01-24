@@ -15,6 +15,7 @@ using Miki.API.Leaderboards;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Modules.Accounts.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace Miki.Modules.AccountsModule
 						.Where(p => p.GuildId == guildId && p.RequiredLevel == l)
 						.ToList();
 
-					IDiscordUser u = await g.Guild.GetUserAsync(a.Id.FromDbLong());
+					IDiscordUser u = await g.Guild.GetUserAsync(a.Id);
 					List<IDiscordRole> rolesGiven = new List<IDiscordRole>();
 
 					if (rolesObtained == null)
@@ -91,7 +92,7 @@ namespace Miki.Modules.AccountsModule
 				foreach (var a in achievements)
 				{
 					BaseAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
-					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockDate.ToShortDateString()}");
+					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
 					totalScore += metadata.Points;
 				}
 
@@ -217,29 +218,35 @@ namespace Miki.Modules.AccountsModule
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(uid);
 				User account = await User.GetAsync(context, discordUser);
 
+				EmojiBarSet onBarSet = new EmojiBarSet(
+					"<:mbarlefton:391971424442646534>", 
+					"<:mbarmidon:391971424920797185>", 
+					"<:mbarrighton:391971424488783875>");
+
+				EmojiBarSet offBarSet = new EmojiBarSet(
+					"<:mbarleftoff:391971424824459265>", 
+					"<:mbarmidoff:391971424824197123>", 
+					"<:mbarrightoff:391971424862208000>");
+
 				if (account != null)
 				{
 					IDiscordEmbed embed = Utils.Embed
 						.SetDescription(account.Title)
-<<<<<<< .merge_file_a16464
 						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), "", "https://patreon.com/mikibot")
-=======
-						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name),
-							"http://veld.one/assets/profile-icon.png", "https://miki.ai/profile/" + account.Id)
->>>>>>> .merge_file_a08064
 						.SetThumbnailUrl(discordUser.AvatarUrl);
 
 					long serverid = e.Guild.Id.ToDbLong();
 
-					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), id);
-					int rank = await localExp.GetRank(context);
+					LocalExperience localExp = account.LocalExperience.FirstOrDefault(x => x.ServerId == e.Guild.Id.ToDbLong());
+					if(localExp == null)
+					{
+						localExp = await LocalExperience.CreateAsync(context, serverid, id);
+					}
 
+					int rank = await localExp.GetRank(context);
 					int localLevel = User.CalculateLevel(localExp.Experience);
 					int maxLocalExp = User.CalculateLevelExperience(localLevel);
-					int minLocalExp = User.CalculateLevelExperience(localLevel-1);
-
-					EmojiBarSet onBarSet  = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
-					EmojiBarSet offBarSet = new EmojiBarSet("<:mbarleftoff:391971424824459265>", "<:mbarmidoff:391971424824197123>", "<:mbarrightoff:391971424862208000>");
+					int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
 					EmojiBar expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
 
 					string infoValue = new MessageBuilder()
@@ -248,7 +255,6 @@ namespace Miki.Modules.AccountsModule
 						.AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
 						.AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
 						.Build();
-
 					embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
 
 					int globalLevel = User.CalculateLevel(account.Total_Experience);
@@ -268,9 +274,11 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
-					List<Marriage> marriages = await Marriage.GetMarriagesAsync(context, id);
-
-					marriages = marriages.OrderBy(mar => mar.TimeOfMarriage).ToList();
+					List<Marriage> marriages = account.Marriages
+						.Select(x => x.Marriage)
+						.Where(x => !x.IsProposing)
+						.OrderBy(mar => mar.TimeOfMarriage)
+						.ToList();
 
 					List<User> users = new List<User>();
 
@@ -289,8 +297,7 @@ namespace Miki.Modules.AccountsModule
 						{
 							if (marriages[i].GetOther(id) != 0)
 							{
-								marriageStrings.Add("💕 " + users[i].Name + " (_" +
-													marriages[i].TimeOfMarriage.ToShortDateString() + "_)");
+								marriageStrings.Add($"💕 {users[i].Name} (_{marriages[i].TimeOfMarriage.ToShortDateString()}_)");
 							}
 						}
 
@@ -304,16 +311,14 @@ namespace Miki.Modules.AccountsModule
 					embed.Color = new IA.SDK.Color((float)r.NextDouble(), (float)r.NextDouble(),
 						(float)r.NextDouble());
 
-					List<CommandUsage> List = context.CommandUsages.Where(c => c.UserId == id)
-						.OrderByDescending(c => c.Amount).ToList();
-					string favCommand = (List.Count > 0) ? List[0].Name + " (" + List[0].Amount + ")" : locale.GetString("miki_placeholder_null");
+					CommandUsage favouriteCommand = account.CommandsUsed
+						.OrderByDescending(c => c.Amount).FirstOrDefault();
+					string favCommand = $"{favouriteCommand?.Name ?? locale.GetString("miki_placeholder_null")} ({ favouriteCommand?.Amount ?? 0 })";
 
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
 
-<<<<<<< .merge_file_a16464
-					string achievements =
-						AchievementManager.Instance.PrintAchievements(context, account.Id.FromDbLong());
+					string achievements = AchievementManager.Instance.PrintAchievements(account.Achievements);
 
 					embed.AddInlineField(
 						locale.GetString("miki_generic_achievements"),
@@ -322,21 +327,13 @@ namespace Miki.Modules.AccountsModule
 					//embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
 					//	"http://miki.veld.one/profile/" + account.Id);
 
-=======
->>>>>>> .merge_file_a08064
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
 							sw.ElapsedMilliseconds), "");
 
 					sw.Stop();
 
-<<<<<<< .merge_file_a16464
 					await embed.QueueToChannel(e.Channel);
-=======
-					embed.SetImageUrl("https://cdn.discordapp.com/attachments/259343729586864139/376404060707880972/121919449996460033.png");
-
-					await embed.SendToChannel(e.Channel);
->>>>>>> .merge_file_a08064
 				}
 				else
 				{
@@ -359,10 +356,15 @@ namespace Miki.Modules.AccountsModule
 
 				bool mentionedSelf = mentionedUsers.RemoveAll(x => x == e.Author.Id) > 0;
 
-				if (giver.LastReputationGiven.Day != DateTime.Now.Day)
+				var repObject = Global.redisClient.Get<ReputationObject>($"user:{giver.Id}:rep");
+
+				if (repObject == null)
 				{
-					giver.ReputationPointsLeft = 3;
-					giver.LastReputationGiven = DateTime.Now;
+					repObject = new ReputationObject()
+					{
+						LastReputationGiven = DateTime.Now,
+						ReputationPointsLeft = 3
+					};
 				}
 
 				IDiscordEmbed embed = Utils.Embed;
@@ -381,7 +383,7 @@ namespace Miki.Modules.AccountsModule
 						.SetDescription(locale.GetString("miki_module_accounts_rep_description"))
 						.AddInlineField(locale.GetString("miki_module_accounts_rep_total_received"), giver.Reputation.ToString())
 						.AddInlineField(locale.GetString("miki_module_accounts_rep_reset"), pointReset.ToTimeString(e.Channel.GetLocale()))
-						.AddInlineField(locale.GetString("miki_module_accounts_rep_remaining"), giver.ReputationPointsLeft)
+						.AddInlineField(locale.GetString("miki_module_accounts_rep_remaining"), repObject.ReputationPointsLeft)
 						.QueueToChannel(e.Channel);
 					return;
 				}
@@ -391,7 +393,7 @@ namespace Miki.Modules.AccountsModule
 					{
 						if (Utils.IsAll(args[args.Length - 1], e.Channel.GetLocale()))
 						{
-							repAmount = giver.ReputationPointsLeft;
+							repAmount = repObject.ReputationPointsLeft;
 						}
 						else if (short.TryParse(args[1], out short x))
 						{
@@ -406,10 +408,10 @@ namespace Miki.Modules.AccountsModule
 						return;
 					}
 
-					if(mentionedUsers.Count * repAmount > giver.ReputationPointsLeft)
+					if(mentionedUsers.Count * repAmount > repObject.ReputationPointsLeft)
 					{
 						await e.ErrorEmbed(locale.GetString("error_rep_limit"),
-							mentionedUsers.Count, repAmount, giver.ReputationPointsLeft)
+							mentionedUsers.Count, repAmount, repObject.ReputationPointsLeft)
 							.QueueToChannel(e.Channel);
 						return;
 					}
@@ -428,10 +430,12 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - repAmount, receiver.Reputation, repAmount));
 				}
 
-				giver.ReputationPointsLeft -= (short)(repAmount * mentionedUsers.Count);
+				repObject.ReputationPointsLeft -= (short)(repAmount * mentionedUsers.Count);
+
+				await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
 
 				await embed
-					.AddInlineField(locale.GetString("miki_module_accounts_rep_points_left"), giver.ReputationPointsLeft)
+					.AddInlineField(locale.GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
 					.QueueToChannel(e.Channel);
 
 				await context.SaveChangesAsync();
@@ -712,19 +716,19 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		[Command(Name = "mybadges")]
-		public async Task MyBadgesAsync(EventContext e)
-		{
-			int page = 0;
-			using (var context = new MikiContext())
-			{
-				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+		//[Command(Name = "mybadges")]
+		//public async Task MyBadgesAsync(EventContext e)
+		//{
+		//	int page = 0;
+		//	using (var context = new MikiContext())
+		//	{
+		//		User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				string output = string.Join<long>(" ", u.BadgesOwned.Select(x => x.Id).ToList());
+		//		string output = string.Join<long>(" ", u.BadgesOwned.Select(x => x.Id).ToList());
 
-				await e.Channel.SendMessage(output.DefaultIfEmpty("none, yet!"));
-			}
-		}
+		//		await e.Channel.SendMessage(output.DefaultIfEmpty("none, yet!"));
+		//	}
+		//}
 
 		public async Task ShowLeaderboardsAsync(IDiscordMessage mContext, LeaderboardsOptions leaderboardOptions)
 		{
@@ -786,80 +790,7 @@ namespace Miki.Modules.AccountsModule
 					}
 					break;
 
-<<<<<<< .merge_file_a16464
-					case LeaderboardsType.LocalExperience:
-					{
-						embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-						long guildId = mContext.Guild.Id.ToDbLong();
-						if(leaderboardOptions.mentionedUserId != 0)
-						{
-							long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-							var mentionedUser = await context.Users.FindAsync(mentionedId);
-							p = (int)Math.Ceiling((double)(((await LocalExperience.GetRankAsync(context, guildId, mentionedId)) - 1) / 12));
-						}
-						List<LocalExperience> output = await context.LocalExperience
-							.Where(x => x.ServerId == guildId)
-							.OrderByDescending(x => x.Experience)
-							.Skip(12 * p)
-							.Take(12)
-							.ToListAsync();
-
-						int amountOfUsers = await context.LocalExperience.Where(x => x.ServerId == guildId).CountAsync();
-
-						List<User> users = new List<User>();
-
-						for(int i = 0; i < output.Count; i++)
-						{
-							users.Add(await context.Users.FindAsync(output[i].UserId));
-						}
-
-						for(int i = 0; i < users.Count; i++)
-						{
-							embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
-								$"{output[i].Experience} experience!");
-						}
-					}
-					break;
-
-					case LeaderboardsType.Experience:
-=======
-						// TODO: rework
-					//case LeaderboardsType.LocalExperience:
-					//{
-					//	embed.Title = locale.GetString("miki_module_accounts_leaderboards_local_header");
-					//	long guildId = mContext.Guild.Id.ToDbLong();
-					//	if(leaderboardOptions.mentionedUserId != 0)
-					//	{
-					//		long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-					//		var mentionedUser = await context.Users.FindAsync(mentionedId);
-					//		p = (int)Math.Ceiling((double)(((await mentionedUser.GetLocalRank(mContext.Guild.Id)) - 1) / 12));
-					//	}
-					//	List<LocalExperience> output = await context.Experience
-					//		.Where(x => x.ServerId == guildId)
-					//		.OrderByDescending(x => x.Experience)
-					//		.Skip(12 * p)
-					//		.Take(12)
-					//		.ToListAsync();
-
-					//	int amountOfUsers = await context.Experience.Where(x => x.ServerId == guildId).CountAsync();
-
-					//	List<User> users = new List<User>();
-
-					//	for(int i = 0; i < output.Count; i++)
-					//	{
-					//		users.Add(await context.Users.FindAsync(output[i].UserId));
-					//	}
-
-					//	for(int i = 0; i < users.Count; i++)
-					//	{
-					//		embed.AddInlineField($"#{i + (12 * p) + 1} : {string.Join("", users[i].Name.Take(16))}",
-					//			$"{output[i].Experience} experience!");
-					//	}
-					//}
-					//break;
-
 					case LeaderboardsType.EXP:
->>>>>>> .merge_file_a08064
 					{
 						embed.Title = locale.GetString("miki_module_accounts_leaderboards_header");
 						if(leaderboardOptions.mentionedUserId != 0)

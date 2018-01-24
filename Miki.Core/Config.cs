@@ -93,9 +93,18 @@ namespace Miki
 		[JsonProperty("datadog_host")]
 		public string DatadogHost { get; set; } = "127.0.0.1";
 
+		/// <summary>
+		/// Database connection string
+		/// </summary>
 		[JsonProperty("connection_string")]
 		public string ConnString { get; set; } = "";
-		
+
+		/// <summary>
+		/// Cache connection string
+		/// </summary>
+		[JsonProperty("redis_connection_string")]
+		public string RedisConnectionString { get; set; } = "localhost";
+
 		/// <summary>
 		/// Miki API route
 		/// </summary>

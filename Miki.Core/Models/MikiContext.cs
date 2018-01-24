@@ -1,6 +1,8 @@
 using IA;
+using IA.FileHandling;
 using Microsoft.EntityFrameworkCore;
 using Miki.Models.Objects.Guild;
+using Newtonsoft.Json;
 using System;
 
 namespace Miki.Models
@@ -9,6 +11,7 @@ namespace Miki.Models
     {
         public DbSet<Achievement> Achievements { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
+		public DbSet<Connection> Connections { get; set; }
         public DbSet<EventMessage> EventMessages { get; set; }
         public DbSet<LocalExperience> LocalExperience { get; set; }
         public DbSet<GuildUser> GuildUsers { get; set; }
@@ -19,6 +22,7 @@ namespace Miki.Models
         public DbSet<Setting> Settings { get; set; }
         public DbSet<Timer> Timers { get; set; }
         public DbSet<User> Users { get; set; }
+		public DbSet<UserMarriedTo> UsersMarriedTo { get; set; }
         public DbSet<PastaVote> Votes { get; set; }
 
         public MikiContext() : base()
@@ -26,15 +30,22 @@ namespace Miki.Models
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{	
-			optionsBuilder.UseNpgsql(Global.config.ConnString);
+		{
+			optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=mikiPass.1;");
 			base.OnConfiguring(optionsBuilder);
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Achievement>()
-				.HasKey(c => new { c.Id, c.Name });
+			var achievement = modelBuilder.Entity<Achievement>();
+
+			achievement.HasKey(c => new { c.Id, c.Name });
+
+			achievement
+				.HasOne(x => x.User)
+				.WithMany(x => x.Achievements)
+				.HasForeignKey(x => x.Id)
+				.HasPrincipalKey(x => x.Id);
 
 			#region Command Usage
 			var commandUsage = modelBuilder.Entity<CommandUsage>();
@@ -45,6 +56,19 @@ namespace Miki.Models
 			commandUsage
 				.Property(x => x.Amount)
 				.HasDefaultValue(1);
+
+			commandUsage
+				.HasOne(x => x.User)
+				.WithMany(x => x.CommandsUsed)
+				.HasForeignKey(x => x.UserId)
+				.HasPrincipalKey(x => x.Id);
+			#endregion
+
+			#region Connections
+			var conn = modelBuilder.Entity<Connection>();
+
+			conn.HasKey(x => x.DiscordUserId);
+			
 			#endregion
 
 			#region Event Message
@@ -61,8 +85,11 @@ namespace Miki.Models
 				.HasKey(c => new { c.ServerId, c.UserId });
 
 			localExperience
-				.Property(x => x.LastExperienceTime)
-				.HasDefaultValueSql("now()");
+				.HasOne(x => x.User)
+				.WithMany(x => x.LocalExperience)
+				.HasForeignKey(x => x.UserId)
+				.HasPrincipalKey(x => x.Id);
+
 			#endregion
 
 			#region Guild User
@@ -94,18 +121,33 @@ namespace Miki.Models
 			#endregion
 
 			#region Level Role
-			modelBuilder.Entity<LevelRole>()
-				.HasKey(c => new { c.GuildId, c.RoleId });
+			var role = modelBuilder.Entity<LevelRole>();
+
+			role.HasKey(c => new { c.GuildId, c.RoleId });
+
+			role.Property(x => x.Automatic)
+				.HasDefaultValue(false);
+
+			role.Property(x => x.Optable)
+				.HasDefaultValue(false);
+
+			role.Property(x => x.RequiredRole)
+				.HasDefaultValue(0);
+
+			role.Property(x => x.RequiredLevel)
+				.HasDefaultValue(0);
+
 			#endregion
 
 			#region Marriage
 			var marriage = modelBuilder.Entity<Marriage>();
 
-			marriage
-				.HasKey(c => new { c.Id1, c.Id2 });
+			marriage.Property(x => x.MarriageId)
+				.ValueGeneratedOnAdd();
 
-			marriage
-				.Property(x => x.TimeOfProposal)
+			marriage.HasKey(x => x.MarriageId);
+
+			marriage.Property(x => x.TimeOfProposal)
 				.HasDefaultValueSql("now()");
 			#endregion
 
@@ -118,6 +160,11 @@ namespace Miki.Models
 			globalPasta
 				.Property(x => x.CreatedAt)
 				.HasDefaultValueSql("now()");
+
+			globalPasta.HasOne(x => x.User)
+				.WithMany(x => x.Pastas)
+				.HasForeignKey(x => x.CreatorId)
+				.HasPrincipalKey(x => x.Id);
 			#endregion
 
 			#region Setting
@@ -155,17 +202,11 @@ namespace Miki.Models
 			user.Property(x => x.LastDailyTime)
 				.HasDefaultValueSql("now() - interval '1 day'");
 
-			user.Property(x => x.LastReputationGiven)
-				.HasDefaultValueSql("now()");
-
 			user.Property(x => x.MarriageSlots)
 				.HasDefaultValue(0);
 
 			user.Property(x => x.Reputation)
 				.HasDefaultValue(0);
-
-			user.Property(x => x.ReputationPointsLeft)
-				.HasDefaultValue(3);
 
 			user.Property(x => x.Title)
 				.HasDefaultValue("");
@@ -175,6 +216,23 @@ namespace Miki.Models
 
 			user.Property(x => x.Total_Experience)
 				.HasDefaultValue(0);
+
+			#endregion
+
+			#region UserMarriedTo
+			var usermarried = modelBuilder.Entity<UserMarriedTo>();
+
+			usermarried.HasKey(x => x.UserId);
+
+			usermarried.HasOne(x => x.User)
+				.WithMany(x => x.Marriages)
+				.HasForeignKey(x => x.UserId)
+				.HasPrincipalKey(x => x.Id);
+
+			usermarried.HasOne(x => x.Marriage)
+				.WithMany(x => x.Participants)
+				.HasForeignKey(x => x.MarriageId)
+				.HasPrincipalKey(x => x.MarriageId);
 			#endregion
 
 			#region Pasta Vote

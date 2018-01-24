@@ -1,19 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ProtoBuf;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IA.Models
 {
+	[ProtoContract]
     public class Identifier
     {
-        [Key]
-        [Column("GuildId", Order = 0)]
+		[ProtoMember(1)]
         public long GuildId { get; set; }
 
-        [Key]
-        [Column("IdentifierId", Order = 1)]
-        public string DefaultValue { get; set; }
+		[ProtoMember(2)]
+		public string DefaultValue { get; set; }
 
-        [Column("identifier")]
-        public string Value { get; set; }
+		[ProtoMember(3)]
+		public string Value { get; set; }
     }
 }

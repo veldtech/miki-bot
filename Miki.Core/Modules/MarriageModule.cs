@@ -29,15 +29,15 @@ namespace Miki.Modules
 
             using (MikiContext context = new MikiContext())
             {
-				User mentionedPerson = await User.GetAsync(context, await e.Guild.GetUserAsync(e.message.MentionedUserIds.First()));
+				IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+
+				User mentionedPerson = await User.GetAsync(context, user);
 				User currentUser = await User.GetAsync(context, e.Author);
 
 				if(mentionedPerson.Banned)
 				{
 					return;
 				}
-
-                IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
                 if (currentUser == null || mentionedPerson == null)
                 {
@@ -209,8 +209,8 @@ namespace Miki.Modules
 
                 if (marriage != null)
                 {
-                    User person1 = await context.Users.FindAsync(marriage.Id1);
-                    User person2 = await context.Users.FindAsync(marriage.Id2);
+                    User person1 = await context.Users.FindAsync(marriage.Participants.FirstOrDefault(x => x.Asker).UserId);
+                    User person2 = await context.Users.FindAsync(marriage.Participants.FirstOrDefault(x => !x.Asker).UserId);
 
                     if (person1.MarriageSlots < (await Marriage.GetMarriagesAsync(context, person1.Id)).Count)
                     {

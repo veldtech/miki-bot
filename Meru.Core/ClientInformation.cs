@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using StackExchange.Redis.Extensions.Core;
+using System.Threading.Tasks;
 
 namespace IA
 {
@@ -18,6 +19,7 @@ namespace IA
         public LoadEvents EventLoaderMethod { get; set; }
 
         public LogLevel ConsoleLogLevel = LogLevel.NOTICE;
+		public ICacheClient cacheClient;
 
         public string DatabaseProvider = "";
         public string DatabaseConnectionString = "";

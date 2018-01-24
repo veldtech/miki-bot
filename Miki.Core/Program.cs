@@ -11,6 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Protobuf;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis;
 
 namespace Miki
 {
@@ -83,6 +87,8 @@ namespace Miki
                 Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
             }
 
+			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.config.RedisConnectionString);
+
 			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
 			{
 				var dogstatsdConfig = new StatsdConfig
@@ -103,51 +109,14 @@ namespace Miki
 					{
 						DogStatsd.Counter("commands.error.rate", 1);
 					}
+					
 					DogStatsd.Counter("commands.count", 1);
 					DogStatsd.Histogram("commands.time", t, 0.1);
 				};
 			});
 
 			bot.MessageReceived += Bot_MessageReceived;
-			
-            bot.Events.OnCommandError = async (ex, cmd, msg) =>
-            {
-				/*RuntimeEmbed e = new RuntimeEmbed();
-                //e.Title = Locale.GetEntity(0).GetString(Locale.ErrorMessageGeneric);
-                //e.Color = new IA.SDK.Color(1, 0.4f, 0.6f);
-
-                //if (Notification.CanSendNotification(msg.Author.Id, DatabaseEntityType.USER, DatabaseSettingId.ERRORMESSAGE))
-                //{
-                //    e.Description = "Miki has encountered a problem in her code with your request. We will send you a log and instructions through PM.";
-
-                //    await e.QueueToChannel(msg.Channel);
-
-                //    e.Title = $"You used the '{cmd.Name}' and it crashed!";
-                //    e.Description = "Please screenshot this message and send it to the miki issue page (https://github.com/velddev/miki/issues)";
-                //    e.AddField(f =>
-                //    {
-                //        f.Name = "Error Message";
-                //        f.Value = ex.Message;
-                //        f.IsInline = true;
-                //    });
-
-                //    e.AddField(f =>
-                //    {
-                //        f.Name = "Error Log"; 
-                //        f.Value = "```" + ex.StackTrace + "```";
-                //        f.IsInline = true;
-                //    });
-
-                //    e.CreateFooter();
-                //    e.Footer.Text = "Did you not want this message? use `>toggleerrors` to disable it!";
-
-                //    await msg.Author.SendMessage(e);
-                //    return;
-                //}
-                //e.Description = "... but you've disabled error messages, so we won't send you a PM :)";
-                //await e.QueueToChannel(msg.Channel);
-                */
-			};
+	
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
 			bot.AddDeveloper(121919449996460033);
 
@@ -170,8 +139,8 @@ namespace Miki
 
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
-			DogStatsd.Counter("guilds.left", 1);
-			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Increment("guilds.left");
+			DogStatsd.Counter("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Client_JoinedGuild(IGuild arg)
@@ -182,20 +151,20 @@ namespace Miki
 
 			// if miki patreon is present, leave again.
 
-			DogStatsd.Increment("guilds.joined", 1);
-			DogStatsd.Gauge("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Increment("guilds.joined");
+			DogStatsd.Counter("guilds", Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)
 		{
-			DogStatsd.Event("shard.connect", $"shard {shardId.ToString()} has connected!");
-			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.OK);
+			DogStatsd.Event("shard.connect", $"shard {shardId} has connected!");
+			DogStatsd.ServiceCheck($"shard.{shardId}", Status.OK);
 		}
 
 		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
 		{
-			DogStatsd.Event("shard.disconnect", $"shard {shardId.ToString()} has disconnected!");
-			DogStatsd.ServiceCheck($"shard.{shardId.ToString()}", Status.CRITICAL, null, null, null, e.Message);
+			DogStatsd.Event("shard.disconnect", $"shard {shardId} has disconnected!");
+			DogStatsd.ServiceCheck($"shard.{shardId}", Status.CRITICAL, null, null, null, e.Message);
 		}
 	}
 }

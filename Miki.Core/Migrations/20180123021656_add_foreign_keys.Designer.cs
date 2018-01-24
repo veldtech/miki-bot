@@ -11,9 +11,10 @@ using System;
 namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
-    partial class MikiContextModelSnapshot : ModelSnapshot
+    [Migration("20180123021656_add_foreign_keys")]
+    partial class add_foreign_keys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -189,6 +190,10 @@ namespace Miki.Core.Migrations
 
                     b.Property<int>("Experience");
 
+                    b.Property<DateTime>("LastExperienceTime")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("now()");
+
                     b.HasKey("ServerId", "UserId");
 
                     b.HasIndex("UserId");
@@ -253,10 +258,15 @@ namespace Miki.Core.Migrations
                     b.Property<int>("SettingId")
                         .HasColumnName("SettingId");
 
+                    b.Property<int>("EntityType")
+                        .HasColumnName("EntityType");
+
                     b.Property<bool>("IsEnabled")
                         .HasColumnName("IsEnabled");
 
                     b.HasKey("EntityId", "SettingId");
+
+                    b.HasAlternateKey("EntityId", "EntityType", "SettingId");
 
                     b.ToTable("Settings");
                 });
@@ -292,6 +302,10 @@ namespace Miki.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now() - interval '1 day'");
 
+                    b.Property<DateTime>("LastReputationGiven")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("now()");
+
                     b.Property<int>("MarriageSlots")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(0);
@@ -301,6 +315,10 @@ namespace Miki.Core.Migrations
                     b.Property<int>("Reputation")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(0);
+
+                    b.Property<short>("ReputationPointsLeft")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue((short)3);
 
                     b.Property<string>("Title")
                         .ValueGeneratedOnAdd()

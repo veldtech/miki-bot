@@ -7,6 +7,7 @@ using IA.SDK;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Miki.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -193,7 +194,12 @@ namespace Miki.Modules
                 }
                 u.Experience = int.Parse(e.arguments.Split(' ')[1]);
                 await context.SaveChangesAsync();
-                await e.Channel.QueueMessageAsync(":ok_hand:");
+				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", new RealtimeExperienceObject()
+				{
+					LastExperienceTime = DateTime.MinValue,
+					Experience = u.Experience
+				});
+				await e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 

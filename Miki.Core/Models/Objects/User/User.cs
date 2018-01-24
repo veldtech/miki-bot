@@ -2,6 +2,7 @@
 using IA.SDK.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Miki.Accounts.Achievements;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,8 +30,12 @@ namespace Miki.Models
 		public int Reputation { get; set; } 
 		public bool Banned { get; set; }
 
-        public DateTime LastReputationGiven { get; set; }
-        public short ReputationPointsLeft { get; set; }
+		public List<Achievement> Achievements { get; set; }
+		public List<UserMarriedTo> Marriages { get; set; }
+		public List<CommandUsage> CommandsUsed { get; set; }
+		public List<GlobalPasta> Pastas { get; set; }
+		public List<LocalExperience> LocalExperience { get; set; }
+		public Connection Connections { get; set; }
 
 		public int Level => CalculateLevel(Total_Experience);
 
@@ -64,8 +69,7 @@ namespace Miki.Models
 				Title = "",
 				Total_Commands = 0,
 				Total_Experience = 0,
-				Reputation = 0,
-				LastReputationGiven = Utils.MinDbValue
+				Reputation = 0
 			};
 
 			m.Users.Add(user);
@@ -75,7 +79,15 @@ namespace Miki.Models
 		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
-			return await context.Users.FindAsync(id)
+			return await context.Users.Where(x => x.Id == u.Id.ToDbLong())
+				.Include(x => x.Achievements)
+				.Include(x => x.CommandsUsed)
+				.Include(x => x.Marriages)
+					.ThenInclude(x => x.Marriage)
+				.Include(x => x.LocalExperience)
+				.Include(x => x.Pastas)
+				.Include(x => x.Connections)
+				.FirstOrDefaultAsync()
 				?? Create(context, u);
 		}
 
@@ -98,7 +110,6 @@ namespace Miki.Models
             }
             return Level;
         }
-
 		public static int CalculateLevelExperience(int level)
 		{
 			int Level = 0;
@@ -111,11 +122,6 @@ namespace Miki.Models
 
 			return output;
 		}
-
-        private static int CalculateNextLevelIteration(int output, int level)
-        {
-            return 10 + (output + (level * 20));
-        }
 
 		public async Task<int> GetGlobalReputationRankAsync()
 		{
@@ -177,7 +183,7 @@ namespace Miki.Models
 				User u = await context.Users.FindAsync(id);
 
 				context.Marriages.RemoveRange(
-					await context.Marriages.Where(x => x.Id1 == id || x.Id2 == id).ToListAsync()
+					await context.UsersMarriedTo.Where(x => x.UserId == id).Select(x => x.Marriage).ToListAsync()
 				);
 
 				context.CommandUsages.RemoveRange(
@@ -202,5 +208,30 @@ namespace Miki.Models
 				await context.SaveChangesAsync();
 			}
 		}
-    }
+
+		private static int CalculateNextLevelIteration(int output, int level)
+		{
+			return 10 + (output + (level * 20));
+		}
+	}
+
+	[ProtoContract]
+	public class ReputationObject
+	{
+		[ProtoMember(1)]
+		public DateTime LastReputationGiven { get; set; }
+
+		[ProtoMember(2)]
+		public short ReputationPointsLeft { get; set; }
+	}
+
+	[ProtoContract]
+	public class RealtimeExperienceObject
+	{
+		[ProtoMember(1)]
+		public int Experience { get; set; }
+
+		[ProtoMember(2)]
+		public DateTime LastExperienceTime { get; set; }
+	}
 }

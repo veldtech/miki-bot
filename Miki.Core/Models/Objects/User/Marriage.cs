@@ -12,27 +12,27 @@ namespace Miki.Models
 {
     public class Marriage
     {
-        public long Id1 { get; set; }
-		public long Id2 { get; set; }
+		public long MarriageId { get; set; }
+		public List<UserMarriedTo> Participants { get; set; }
         public bool IsProposing { get; set; }
         public DateTime TimeOfMarriage { get; set; }
         public DateTime TimeOfProposal { get; set; }
 
-        public ulong GetMe(ulong id) 
+		public ulong GetMe(ulong id) 
 			=> GetMe(id.ToDbLong()).FromDbLong();
         public long GetMe(long id)
         {
-            return (Id1 == id) ? Id1 : Id2;
+			return Participants.FirstOrDefault(x => x.UserId == id).UserId;
         }
 
         public ulong GetOther(ulong id) 
 			=> GetOther(id.ToDbLong()).FromDbLong();
         public long GetOther(long id)
         {
-            return (Id1 == id) ? Id2 : Id1;
-        }
+			return Participants.FirstOrDefault(x => x.UserId != id).UserId;
+		}
 
-        public void AcceptProposal(MikiContext context)
+		public void AcceptProposal(MikiContext context)
         {
             TimeOfMarriage = DateTime.Now;
             IsProposing = false;
@@ -121,11 +121,13 @@ namespace Miki.Models
         public static async Task<Marriage> GetEntryAsync(MikiContext context, long receiver, long asker)
         {
             Marriage m = null;
-            m = await context.Marriages.FindAsync(receiver, asker);
-            if (m == null)
-            {
-                m = await context.Marriages.FindAsync(asker, receiver);
-            }
+            m = await context.Marriages
+				.Where(x => 
+					x.Participants
+						.Any(c => c.UserId == receiver) && 
+					x.Participants
+						.Any(c => c.UserId == asker))
+				.FirstOrDefaultAsync();
             return m;
         }
 
@@ -136,16 +138,26 @@ namespace Miki.Models
 
         public static async Task<bool> ProposeAsync(MikiContext context, long receiver, long asker)
         {
-            context.Marriages.Add(new Marriage()
+            Marriage m = context.Marriages.Add(new Marriage()
             {
-                Id1 = receiver,
-                Id2 = asker,
                 IsProposing = true,
                 TimeOfProposal = DateTime.Now,
                 TimeOfMarriage = DateTime.Now,
-            });
+            }).Entity;
+			m.Participants = new List<UserMarriedTo>();
+			m.Participants.Add(new UserMarriedTo()
+			{
+				MarriageId = m.MarriageId,
+				UserId = receiver
+			});
+			m.Participants.Add(new UserMarriedTo()
+			{
+				MarriageId = m.MarriageId,
+				UserId = asker,
+				Asker = true
+			});
 
-            await context.SaveChangesAsync();
+			await context.SaveChangesAsync();
             return true;
         }
 
@@ -159,21 +171,21 @@ namespace Miki.Models
         private static async Task<List<Marriage>> InternalGetProposalsSentAsync(MikiContext context, long asker)
         {
             return await context.Marriages
-				.Where(p => p.Id1 == asker && p.IsProposing == true)
+				.Where(p => p.Participants.FirstOrDefault(x => x.UserId == asker) != null && p.IsProposing == true)
 				.ToListAsync();
         }
 
         private static async Task<List<Marriage>> InternalGetProposalsReceivedAsync(MikiContext context, long receiver)
         {
             return await context.Marriages
-				.Where(p => p.Id2 == receiver && p.IsProposing == true)
+				.Where(p => p.Participants.FirstOrDefault(x => x.UserId == receiver) != null && p.IsProposing == true)
 				.ToListAsync();
         }
 
         private static async Task<Marriage> InternalGetMarriageAsync(MikiContext context, long receiver, long asker)
         {
             return await context.Marriages
-				.Where(tm => tm.Id1 == receiver && tm.Id2 == asker && tm.IsProposing == false)
+				.Where(tm => tm.Participants.FirstOrDefault(x => x.UserId == receiver) != null && tm.Participants.FirstOrDefault(x => x.UserId == receiver) != null && tm.IsProposing == false)
 				.FirstOrDefaultAsync();
         }
 
@@ -181,7 +193,7 @@ namespace Miki.Models
         {
             return await context
                 .Marriages
-                .Where(p => (p.Id1 == userid || p.Id2 == userid) && !p.IsProposing)
+                .Where(p => p.Participants.FirstOrDefault(x => x.UserId == userid) != null && !p.IsProposing)
 				.ToListAsync();
         }
     }

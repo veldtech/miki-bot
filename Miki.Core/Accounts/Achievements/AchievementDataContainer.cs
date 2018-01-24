@@ -51,7 +51,7 @@ namespace Miki.Accounts.Achievements
                 if (await Achievements[0].CheckAsync(packet))
                 {
                     await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
-                    //await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
+                    await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
                 }
                 return;
             }
@@ -64,7 +64,7 @@ namespace Miki.Accounts.Achievements
             if (await Achievements[a.Rank + 1].CheckAsync(packet))
             {
                 await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
-                //await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
+                await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
             }
         }
 

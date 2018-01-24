@@ -8,7 +8,6 @@ using Miki.Accounts;
 using Miki.Languages;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
-using Miki.API.Leaderboards;
 using Rest;
 using System;
 using System.Collections.Generic;
@@ -262,7 +261,6 @@ namespace Miki.Modules
             }
         }
 
-<<<<<<< .merge_file_a07948
         [Command(Name = "guildtop")]
         public async Task GuildTop(EventContext e)
         {
@@ -290,31 +288,5 @@ namespace Miki.Modules
                 await embed.QueueToChannel(e.Channel);
             }
         }
-=======
-		[Command(Name = "guildtop")]
-		public async Task GuildTop(EventContext e)
-		{
-			bool usePagedRoute = false;
-			if (int.TryParse(e.arguments, out int amountToSkip))
-			{
-				usePagedRoute = true;
-			}
-
-			RestClient rest = new RestClient
-				(Global.config.MikiApiBaseUrl +
-				"/leaderboards/global/exp" +
-				(usePagedRoute ? $"/{amountToSkip}" : "" +
-				"?key=" + Global.config.MikiApiKey));
-
-			IDiscordEmbed embed = Utils.Embed
-				.SetTitle(e.GetResource("guildtop_title"));
-
-			List<LeaderboardsItem> items = (await rest.GetAsync<List<LeaderboardsItem>>()).Data;
-
-			embed = Utils.RenderLeaderboards(embed, items);
-			/*embed.SetFooter(e.GetResource("page_index", amountToSkip, totalGuilds), null);*/
-			await embed.SendToChannel(e.Channel);
-		}
->>>>>>> .merge_file_a12444
     }
 }

@@ -15,6 +15,8 @@ namespace Miki.Models
 		public int Score { get; set; }
 		public int TimesUsed { get; set; }
 
+		public User User { get; set; }
+
 		public async Task<int> GetScoreAsync()
 		{
 			using (var c = new MikiContext())

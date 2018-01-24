@@ -4,15 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Miki.Models
 {
-    public enum DatabaseEntityType
-    {
-        USER = 0,
-        ROLE = 1,
-        CHANNEL = 2,
-        GUILD = 3
-    }
-
-    public enum DatabaseSettingId
+	public enum DatabaseSettingId
     {
         PERSONALMESSAGE = 0,
         CHANNELMESSAGE = 1,
@@ -28,11 +20,7 @@ namespace Miki.Models
         public long EntityId { get; set; }
 
         [Key]
-        [Column("EntityType", Order = 1)]
-        public DatabaseEntityType EntityType { get; set; }
-
-        [Key]
-        [Column("SettingId", Order = 2)]
+        [Column("SettingId", Order = 1)]
         public DatabaseSettingId SettingId { get; set; }
 
         [Column("IsEnabled")]

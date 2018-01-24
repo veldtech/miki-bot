@@ -10,9 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>

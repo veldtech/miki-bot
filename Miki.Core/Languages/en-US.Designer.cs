@@ -5123,19 +5123,20 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Roles.
+        ///   Looks up a localized string similar to OK.
         /// </summary>
-        internal static string term_roles
-        {
-            get
-            {
-                return ResourceManager.GetString("term_roles", resourceCulture);
-            }
-        }///   Looks up a localized string similar to OK.
-         /// </summary>
         internal static string term_ok {
             get {
                 return ResourceManager.GetString("term_ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        internal static string term_roles {
+            get {
+                return ResourceManager.GetString("term_roles", resourceCulture);
             }
         }
         

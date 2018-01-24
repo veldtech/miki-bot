@@ -10,21 +10,13 @@ namespace Miki.Models
 {
     public class LocalExperience
     {
-        [Key, Column("ServerId", Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ServerId { get; set; }
-
-        [Key, Column("UserId", Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserId { get; set; }
-
-        [Column("Experience")]
         public int Experience { get; set; }
 
-        [Column("LastExperienceTime")]
-        public DateTime LastExperienceTime { get; set; }
+		public User User { get; set; }
 
-        public static async Task<LocalExperience> CreateAsync(MikiContext context, long ServerId, long userId)
+		public static async Task<LocalExperience> CreateAsync(MikiContext context, long ServerId, long userId)
         {
             LocalExperience experience = null;
 
@@ -32,7 +24,6 @@ namespace Miki.Models
             experience.ServerId = ServerId;
             experience.UserId = userId;
             experience.Experience = 0;
-            experience.LastExperienceTime = Utils.MinDbValue;
 
             experience = context.LocalExperience.Add(experience).Entity;
             await context.SaveChangesAsync();

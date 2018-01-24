@@ -45,9 +45,8 @@ namespace Miki.Accounts.Achievements
                 {
                     LevelPacket p = new LevelPacket()
                     {
-                        discordUser = await c.Guild.GetUserAsync(u.Id.FromDbLong()),
+                        discordUser = await c.Guild.GetUserAsync(u.Id),
                         discordChannel = c,
-                        account = u,
                         level = l,
                     };
                     await OnLevelGained?.Invoke(p);
@@ -130,8 +129,14 @@ namespace Miki.Accounts.Achievements
             }
             return output;
         }
+		public string PrintAchievements(List<Achievement> achievementNames)
+		{
+			return string.Join(" ", achievementNames
+				.Select(x => containers
+					.FirstOrDefault(z => z.Key == x.Name).Value.Achievements[x.Rank].Icon));
+		}
 
-        public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)
+		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)
         {
 			DogStatsd.Counter("achievements.gained", 1);
 
@@ -142,8 +147,8 @@ namespace Miki.Accounts.Achievements
             using (var context = new MikiContext())
             {
                 int achievementCount = await context.Achievements
-                                                            .Where(q => q.Id == id)
-                                                            .CountAsync();
+					.Where(q => q.Id == id)
+					.CountAsync();
 
                 AchievementPacket p = new AchievementPacket()
                 {

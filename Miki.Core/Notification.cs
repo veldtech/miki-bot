@@ -12,50 +12,50 @@ namespace Miki
     {
         private const int SendNotificationId = 0;
 
-        public static async Task SendPM(ulong userId, string message, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
+        public static async Task SendPM(ulong userId, string message, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
             IUser m = Bot.instance.Client.GetUser(userId);
             IDiscordUser user = new RuntimeUser(m);
 
-            if (CanSendNotification(userId, entityType, settingId))
+            if (CanSendNotification(userId, settingId))
             {
                 RuntimeEmbed e = new RuntimeEmbed(new Discord.EmbedBuilder());
                 e.Title = "NOTIFICATION";
                 e.Description = message;
 
-                await user?.SendMessage(e);
+				await e.QueueToUser(userId);
                 Log.Message("Sent notification to " + user.Username);
             }
         }
 
-        public static async Task SendPM(ulong userId, IDiscordEmbed embed, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
+        public static async Task SendPM(ulong userId, IDiscordEmbed embed, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
             IUser m = Bot.instance.Client.GetUser(userId);
             IDiscordUser user = new RuntimeUser(m);
 
-            if (CanSendNotification(userId, entityType, settingId))
+            if (CanSendNotification(userId, settingId))
             {
-                await user?.SendMessage(embed);
+				await embed.QueueToUser(user);
             }
         }
 
-        public static async Task SendPM(IDiscordUser user, string message, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
+        public static async Task SendPM(IDiscordUser user, string message, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
-            if (CanSendNotification(user.Id, entityType, settingId))
+            if (CanSendNotification(user.Id, settingId))
             {
                 RuntimeEmbed e = new RuntimeEmbed(new Discord.EmbedBuilder());
                 e.Title = "NOTIFICATION";
                 e.Description = message;
 
-                await user.SendMessage(e);
-            }
+				await e.QueueToUser(user);
+			}
         }
 
         public static async Task SendPM(IDiscordUser user, IDiscordEmbed embed, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
-            if (CanSendNotification(user.Id, DatabaseEntityType.USER, settingId))
+            if (CanSendNotification(user.Id, settingId))
             {
-                await user.SendMessage(embed);
+				await embed.QueueToUser(user);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Miki
         {
             if ((await channel.Guild.GetCurrentUserAsync()).HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
-                if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+                if (CanSendNotification(channel.Guild.Id, DatabaseSettingId.CHANNELMESSAGE))
                 {
                     await channel.QueueMessageAsync(message);
                 }
@@ -74,7 +74,7 @@ namespace Miki
         {
             if ((await channel.Guild.GetCurrentUserAsync()).HasPermissions(channel, DiscordGuildPermission.SendMessages))
             {
-                if (CanSendNotification(channel.Guild.Id, DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE))
+                if (CanSendNotification(channel.Guild.Id, DatabaseSettingId.CHANNELMESSAGE))
                 {
                     await message.QueueToChannel(channel);
                 }
@@ -95,14 +95,14 @@ namespace Miki
             await SendChannel(channel, new RuntimeEmbed(embed));
         }
 
-        public static bool CanSendNotification(ulong id, DatabaseEntityType entityType = DatabaseEntityType.USER, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
+        public static bool CanSendNotification(ulong id, DatabaseSettingId settingId = DatabaseSettingId.PERSONALMESSAGE)
         {
             bool output = true;
             Setting setting = null;
 
             using (var context = new MikiContext())
             {
-                setting = context.Settings.Find(id.ToDbLong(), entityType, settingId);
+                setting = context.Settings.Find(id.ToDbLong(), settingId);
                 if (setting != null) output = setting.IsEnabled;
             }
             return output;

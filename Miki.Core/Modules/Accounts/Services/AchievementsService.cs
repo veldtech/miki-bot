@@ -102,20 +102,6 @@ namespace Miki.Modules.Accounts.Services
 							await Task.Yield();
 							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
                         }
-<<<<<<< .merge_file_a06964
-=======
-                    },
-                    new CommandAchievement()
-                    {
-                        Name = "Lonely",
-                        Icon = "😭",
-
-                        CheckCommand = async (p) =>
-                        {
-							await Task.Yield();
-							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
-                        }
->>>>>>> .merge_file_a18460
                     }
                 };
             });

@@ -8,7 +8,8 @@ namespace Miki.Models
         public string Name { get; set; }
         public short Rank { get; set; }
 
-		public DateTime UnlockDate { get; set; }
 		public DateTime UnlockedAt { get; set; }
+
+		public User User { get; set; }
     }
 }

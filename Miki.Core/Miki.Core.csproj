@@ -190,7 +190,8 @@
     <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="SharpRaven" Version="2.2.0" />
-    <PackageReference Include="StatsdClient" Version="3.0.86" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
     <PackageReference Include="SteamKit2" Version="2.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
   </ItemGroup>
@@ -198,6 +199,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Meru.Core.SDK\Meru.Core.SDK.csproj" />
     <ProjectReference Include="..\Meru.Core\Meru.Core.csproj" />
+    <ProjectReference Include="..\Miki.API.Core\Miki.API.Core.csproj" />
     <ProjectReference Include="..\Rest.Core\Rest.Core.csproj" />
   </ItemGroup>
 

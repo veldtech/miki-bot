@@ -11,9 +11,10 @@ using System;
 namespace Meru.Core.Migrations
 {
     [DbContext(typeof(IAContext))]
-    partial class IAContextModelSnapshot : ModelSnapshot
+    [Migration("20180123013733_changes_structure")]
+    partial class changes_structure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

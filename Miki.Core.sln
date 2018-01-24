@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Core", "Miki.Core\Miki.Core.csproj", "{1146D088-22DF-4C75-AFBC-849E2A2A8A33}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meru.Core", "Meru.Core\Meru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meru.Core.SDK", "Meru.Core.SDK\Meru.Core.SDK.csproj", "{3BCB8455-F460-4F52-B6F7-C49A8520FFCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rest.Core", "Rest.Core\Rest.Core.csproj", "{8911F8BC-16C6-498A-B835-148A8D4DFF95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rest.Core", "Rest.Core\Rest.Core.csproj", "{8911F8BC-16C6-498A-B835-148A8D4DFF95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.API.Core", "Miki.API.Core\Miki.API.Core.csproj", "{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{8911F8BC-16C6-498A-B835-148A8D4DFF95}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8911F8BC-16C6-498A-B835-148A8D4DFF95}.Release|x64.ActiveCfg = Release|Any CPU
 		{8911F8BC-16C6-498A-B835-148A8D4DFF95}.Release|x64.Build.0 = Release|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Debug|x64.Build.0 = Debug|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.ActiveCfg = Release|Any CPU
+		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

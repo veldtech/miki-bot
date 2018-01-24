@@ -1,6 +1,7 @@
 ﻿using SharpRaven;
 using System;
 using StatsdClient;
+using StackExchange.Redis.Extensions.Core;
 
 namespace Miki
 {
@@ -10,8 +11,10 @@ namespace Miki
     public class Global
     {
         public static RavenClient ravenClient;
-		    public static Config config = new Config();
-    }
+		public static ICacheClient redisClient;
+		public static Config config = new Config();
+
+	}
   
 	  public class Constants
     {

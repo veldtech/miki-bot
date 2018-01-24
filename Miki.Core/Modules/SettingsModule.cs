@@ -20,14 +20,13 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseEntityType.USER, DatabaseSettingId.PERSONALMESSAGE);
+                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseSettingId.PERSONALMESSAGE);
 
                 if (setting == null)
                 {
                     setting = context.Settings.Add(new Setting()
 					{
 						EntityId = e.Author.Id.ToDbLong(),
-						EntityType = DatabaseEntityType.USER,
 						IsEnabled = true,
 						SettingId = DatabaseSettingId.PERSONALMESSAGE
 					}).Entity;
@@ -52,11 +51,11 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseEntityType.USER, DatabaseSettingId.ERRORMESSAGE);
+                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseSettingId.ERRORMESSAGE);
 
                 if (setting == null)
                 {
-                    setting = context.Settings.Add(new Setting() { EntityId = e.Author.Id.ToDbLong(), EntityType = DatabaseEntityType.USER, IsEnabled = true, SettingId = DatabaseSettingId.ERRORMESSAGE }).Entity;
+                    setting = context.Settings.Add(new Setting() { EntityId = e.Author.Id.ToDbLong(), IsEnabled = true, SettingId = DatabaseSettingId.ERRORMESSAGE }).Entity;
                 }
 
                 IDiscordEmbed embed = Utils.Embed;
@@ -78,11 +77,16 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                Setting setting = await context.Settings.FindAsync(e.Guild.Id.ToDbLong(), DatabaseEntityType.GUILD, DatabaseSettingId.CHANNELMESSAGE);
+                Setting setting = await context.Settings.FindAsync(e.Guild.Id.ToDbLong(), DatabaseSettingId.CHANNELMESSAGE);
 
                 if (setting == null)
                 {
-                    setting = context.Settings.Add(new Setting() { EntityId = e.Guild.Id.ToDbLong(), EntityType = DatabaseEntityType.GUILD, IsEnabled = true, SettingId = DatabaseSettingId.CHANNELMESSAGE }).Entity;
+                    setting = context.Settings.Add(new Setting()
+					{
+						EntityId = e.Guild.Id.ToDbLong(),
+						IsEnabled = true,
+						SettingId = DatabaseSettingId.CHANNELMESSAGE
+					}).Entity;
                 }
 
                 IDiscordEmbed embed = Utils.Embed;

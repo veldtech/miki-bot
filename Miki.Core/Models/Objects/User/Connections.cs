@@ -7,5 +7,7 @@ namespace Miki.Models
     {
         public long DiscordUserId { get; set; }
         public string PatreonUserId { get; set; }
-    }
+
+		public User User { get; set; }
+	}
 }
