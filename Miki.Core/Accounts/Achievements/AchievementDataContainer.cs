@@ -15,14 +15,19 @@ namespace Miki.Accounts.Achievements
 
         public List<BaseAchievement> Achievements = new List<BaseAchievement>();
 
-        private AchievementDataContainer()
+        public AchievementDataContainer()
         {
-        }
+			AchievementManager.Instance.AddContainer(this);
+
+			foreach (BaseAchievement d in Achievements)
+			{
+				d.ParentName = Name;
+			}
+		}
         public AchievementDataContainer(Action<AchievementDataContainer> instance)
         {
             instance.Invoke(this);
 
-            AchievementDataContainer castedContainer = ToBase();
             AchievementManager.Instance.AddContainer(this);
 
             foreach (BaseAchievement d in Achievements)

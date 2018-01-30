@@ -21,7 +21,7 @@ namespace Miki.API.UrbanDictionary
             client.AddHeader("X-Mashape-Key", key);
             client.AddHeader("Accept", "application/json");
 
-			RestResponse<UrbanDictionaryResponse> post = await client.GetAsync<UrbanDictionaryResponse>();
+			RestResponse<UrbanDictionaryResponse> post = await client.GetAsync<UrbanDictionaryResponse>("");
 
             if (post.Data.Entries.Count == 0)
             {

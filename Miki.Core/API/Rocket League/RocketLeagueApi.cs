@@ -41,7 +41,7 @@ namespace Miki.API.RocketLeague
             RestClient r = new RestClient($"https://api.rocketleaguestats.com/v1/player?unique_id={ name }&platform_id={ platform.ToString() }")
                 .SetAuthorisation("Bearer", key);
 
-            RestResponse<RocketLeagueUser> response = await r.GetAsync<RocketLeagueUser>();
+            RestResponse<RocketLeagueUser> response = await r.GetAsync<RocketLeagueUser>("");
 
             return response.Data;
         }
@@ -53,7 +53,7 @@ namespace Miki.API.RocketLeague
             RestClient r = new RestClient($"https://api.rocketleaguestats.com/v1/search/players?display_name={ name }&page={ page }&exact={exact.ToString()}")
                 .SetAuthorisation("Bearer", key);
 
-            RestResponse<RocketLeagueSearchResult> response = await r.GetAsync<RocketLeagueSearchResult>();
+            RestResponse<RocketLeagueSearchResult> response = await r.GetAsync<RocketLeagueSearchResult>("");
 
             return response.Data;
         }

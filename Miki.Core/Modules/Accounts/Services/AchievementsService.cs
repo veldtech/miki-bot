@@ -83,7 +83,8 @@ namespace Miki.Modules.Accounts.Services
                         {
 							await Task.Yield();
 							return p.command.Name.ToLower() == "info";
-                        }
+                        },
+						Points = 5
                     }
                 };
             });
@@ -101,7 +102,8 @@ namespace Miki.Modules.Accounts.Services
                         {
 							await Task.Yield();
 							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
-                        }
+                        },
+						Points = 5,
                     }
                 };
             });
@@ -117,12 +119,9 @@ namespace Miki.Modules.Accounts.Services
                         CheckCommand = async (p) =>
                         {
 							await Task.Yield();
-							if(p.command.Name.ToLower() == "createpasta")
-                            {
-                                return true;
-                            }
-                            return false;
-                        }
+							return p.command.Name.ToLower() == "createpasta";
+                        },
+						Points = 5,
                     }
                 };
             });
@@ -140,6 +139,7 @@ namespace Miki.Modules.Accounts.Services
 							await Task.Yield();
 							return Bot.instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
+						Points = 0
                     }
                 };
              });
@@ -153,50 +153,58 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "Novice",
                         Icon = "🎟",
-                        CheckLevel = async (p) => p.level >= 3
+                        CheckLevel = async (p) => p.level >= 3,
+						Points = 5,
                     },
                     new LevelAchievement()
                     {
                         Name = "Intermediate",
                         Icon = "🎫",
-                        CheckLevel = async (p) => p.level >= 5
-                    },
+                        CheckLevel = async (p) => p.level >= 5,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Experienced",
                         Icon = "🏵",
-                        CheckLevel = async (p) => p.level >= 10
-                    },
+                        CheckLevel = async (p) => p.level >= 10,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Expert",
                         Icon = "🎗",
-                        CheckLevel = async (p) => p.level >= 20
-                    },
+                        CheckLevel = async (p) => p.level >= 20,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Sage",
                         Icon = "🎖",
-                        CheckLevel = async (p) => p.level >= 30
-                    },
+                        CheckLevel = async (p) => p.level >= 30,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Master",
                         Icon = "🏅",
-                        CheckLevel = async (p) => p.level >= 50
-                    },
+                        CheckLevel = async (p) => p.level >= 50,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Legend",    
                         Icon = "💮",
-                        CheckLevel = async (p) => p.level >= 100
-                    },
+                        CheckLevel = async (p) => p.level >= 100,
+						Points = 5,
+					},
                     new LevelAchievement()
                     {
                         Name = "Epic",
                         Icon = "🌸",
                         CheckLevel = async (p) => p.level >= 150,
-                    }
+						Points = 5,
+					}
                  };
              });
 
@@ -209,13 +217,8 @@ namespace Miki.Modules.Accounts.Services
                     {
                         Name = "Oh shit! Waddup",
                         Icon = "🐸",
-                        CheckMessage = async (p) => p.message.Content.Contains("dat boi")
-                    },
-                    new MessageAchievement()
-                    {
-                        Name = "It's wednesday my dudes!",
-                        Icon = "🇼",
-                        CheckMessage = async (p) => (p.message.Content.Contains("it") && p.message.Content.Contains("wednesday") && p.message.Content.Contains("dude") && DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
+                        CheckMessage = async (p) => p.message.Content.Contains("dat boi"),
+						Points = 5
                     }
                 };
             });
@@ -231,7 +234,8 @@ namespace Miki.Modules.Accounts.Services
                         CheckMessage = async (p) =>
                         {
                             return p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
-                        }
+                        },
+						Points = 5
                     }
                 };
             });
@@ -248,6 +252,7 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return p.message.Content.Split(' ').Contains("poi");
                         },
+						Points = 5,
                     }
                 };
             });
@@ -264,6 +269,7 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return (MikiRandom.Next(0, 10000000) == 5033943);
                         },
+						Points = 25
                     }
                 };
             });
@@ -280,7 +286,8 @@ namespace Miki.Modules.Accounts.Services
                         CheckTransaction = async (p) =>
                         {
                             return p.receiver.Currency > 10000;
-                        }
+                        },
+						Points = 5
                     },
                     new TransactionAchievement()
                     {
@@ -289,16 +296,18 @@ namespace Miki.Modules.Accounts.Services
                         CheckTransaction = async (p) =>
                         {
                             return p.receiver.Currency > 50000;
-                        }
+                        },
+						Points = 5
                     },
                     new TransactionAchievement()
                     {
                         Name = "Minted",
                         Icon = "💲",
                         CheckTransaction = async (p) =>
-                        {
-                            return p.receiver.Currency > 125000;
-                        }
+						{
+							return p.receiver.Currency > 125000;
+						},
+						Points = 10
                     },
                     new TransactionAchievement()
                     {
@@ -307,10 +316,25 @@ namespace Miki.Modules.Accounts.Services
                         CheckTransaction = async (p) =>
                         {
                             return p.receiver.Currency > 1000000;
-                        }
+                        },
+						Points = 25
                     }
                 };
             });
+
+			AchievementDataContainer DiscordBotsOrgAchievement = new AchievementDataContainer()
+			{
+				Name = "supporter",
+				Achievements = new List<BaseAchievement>()
+				{
+					new BaseAchievement()
+					{
+						Name = "Supporter",
+						Icon = "",
+						Points = 10,
+					}
+				}
+			};
 
             #region Achievement Achievements
 
@@ -347,9 +371,11 @@ namespace Miki.Modules.Accounts.Services
                     new BaseAchievement()
                     {
                         Name = "Unlucky",
-                        Icon = "🎲"
+                        Icon = "🎲",
+						Points = 5
                     }
                 };
+				
             });
 
             #endregion Misc Achievements
@@ -418,15 +444,6 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "👾",
                         CheckUserUpdate = async (p) =>
                         {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Succesfully broke Miki"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
                             return false;
                         }
                     }
@@ -453,7 +470,8 @@ namespace Miki.Modules.Accounts.Services
                                 }
                             }
                             return false;
-                        }
+                        },
+						Points = 0,
                     }
                 };
             });
