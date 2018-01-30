@@ -274,7 +274,7 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
 
-					List<Marriage> marriages = account.Marriages
+					List<Marriage> marriages = account.Marriages?
 						.Select(x => x.Marriage)
 						.Where(x => !x.IsProposing)
 						.OrderBy(mar => mar.TimeOfMarriage)
@@ -282,14 +282,14 @@ namespace Miki.Modules.AccountsModule
 
 					List<User> users = new List<User>();
 
-					int maxCount = marriages.Count;
+					int maxCount = marriages?.Count ?? 0;
 
 					for (int i = 0; i < maxCount; i++)
 					{
 						users.Add(await context.Users.FindAsync(marriages[i].GetOther(id)));
 					}
 
-					if (marriages.Count > 0)
+					if (marriages?.Count > 0)
 					{
 						List<string> marriageStrings = new List<string>();
 
@@ -311,18 +311,23 @@ namespace Miki.Modules.AccountsModule
 					embed.Color = new IA.SDK.Color((float)r.NextDouble(), (float)r.NextDouble(),
 						(float)r.NextDouble());
 
-					CommandUsage favouriteCommand = account.CommandsUsed
-						.OrderByDescending(c => c.Amount).FirstOrDefault();
+					CommandUsage favouriteCommand = account.CommandsUsed?
+						.OrderByDescending(c => c.Amount)
+						.FirstOrDefault();
+
 					string favCommand = $"{favouriteCommand?.Name ?? locale.GetString("miki_placeholder_null")} ({ favouriteCommand?.Amount ?? 0 })";
 
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
 
-					string achievements = AchievementManager.Instance.PrintAchievements(account.Achievements);
+					if (account.Achievements != null)
+					{
+						string achievements = AchievementManager.Instance.PrintAchievements(account.Achievements);
 
 					embed.AddInlineField(
 						locale.GetString("miki_generic_achievements"),
 						achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
+					}
 
 					//embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
 					//	"http://miki.veld.one/profile/" + account.Id);

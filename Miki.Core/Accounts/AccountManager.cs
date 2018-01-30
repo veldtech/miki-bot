@@ -48,7 +48,7 @@ namespace Miki.Accounts
 				DogStatsd.Counter("levels.local", l);
                 long guildId = e.Guild.Id.ToDbLong();
                 Locale locale = Locale.GetEntity(e.Id.ToDbLong());
-                List<LevelRole> rolesObtained = new List<LevelRole>();
+                List<IDiscordRole> rolesObtained = new List<IDiscordRole>();
 
                 int randomNumber = MikiRandom.Next(0, 10);
 
@@ -57,18 +57,12 @@ namespace Miki.Accounts
                     User user = await context.Users.FindAsync(a.Id.ToDbLong());
 
                      rolesObtained = await context.LevelRoles
-                        .Where(p => p.GuildId == guildId && p.RequiredLevel == l)
+                        .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
+						.Select(x => x.Role)
                         .ToListAsync();
                 }
 
-                List<string> allRolesAdded = new List<string>();
-
-                foreach(IDiscordRole role in rolesObtained)
-                {
-                    allRolesAdded.Add("Role: " + role.Name);
-                }
-
-				await a.AddRolesAsync(rolesObtained.Select(x => x.Role).ToList());
+				await a.AddRolesAsync(rolesObtained);
 
                 IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder())
                 {
@@ -77,9 +71,9 @@ namespace Miki.Accounts
                     Color = new IA.SDK.Color(1, 0.7f, 0.2f)
                 };
 
-				if(allRolesAdded.Count > 0)
+				if(rolesObtained.Count > 0)
 				{
-					embed.AddInlineField("Rewards", string.Join("\n", allRolesAdded));
+					embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => "New Role: " + x.Name)));
 				}
 
                 await Notification.SendChannel(e, embed);
@@ -116,7 +110,7 @@ namespace Miki.Accounts
 				var ranNum = MikiRandom.Next(4, 10);
 				o.Experience += ranNum;
 
-				if (experienceQueue.ContainsKey(e.Author.Id))
+				if (!experienceQueue.ContainsKey(e.Author.Id))
 				{
 					experienceQueue.Add(e.Author.Id, new ExperienceAdded()
 					{
@@ -187,14 +181,12 @@ namespace Miki.Accounts
 		}
 		public async Task UpdateLocalDatabase()
 		{
-			Dictionary<Tuple<long, long>, ExperienceAdded> usersToUpdate = new Dictionary<Tuple<long, long>, ExperienceAdded>();
-
 			List<string> userQuery = new List<string>();
 			string x = "WITH new_values (id, serverid, experience) as (values ";
 
-			for (int i = 0; i < usersToUpdate.Values.Count; i++)
+			for (int i = 0; i < experienceQueue.Values.Count; i++)
 			{
-				userQuery.Add($"({usersToUpdate.Values.ElementAt(i).UserId}, {usersToUpdate.Values.ElementAt(i).GuildId}, {usersToUpdate.Values.ElementAt(i).Experience})");
+				userQuery.Add($"({experienceQueue.Values.ElementAt(i).UserId}, {experienceQueue.Values.ElementAt(i).GuildId}, {experienceQueue.Values.ElementAt(i).Experience})");
 			}
 
 			string y = $"),upsert as(update \"dbo\".\"LocalExperience\" m set \"Experience\" = \"Experience\" + nv.experience FROM new_values nv WHERE m.\"UserId\" = nv.id AND m.\"ServerId\" = nv.serverid RETURNING m.*) INSERT INTO \"dbo\".\"LocalExperience\"(\"UserId\", \"ServerId\", \"Experience\") SELECT id, serverid, experience FROM new_values WHERE NOT EXISTS(SELECT 1 FROM upsert up WHERE up.\"UserId\" = new_values.id AND up.\"ServerId\" = new_values.serverid);";

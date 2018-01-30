@@ -222,7 +222,7 @@ namespace Miki.Models
 			#region UserMarriedTo
 			var usermarried = modelBuilder.Entity<UserMarriedTo>();
 
-			usermarried.HasKey(x => x.UserId);
+			usermarried.HasKey(x => new { x.UserId, x.MarriageId });
 
 			usermarried.HasOne(x => x.User)
 				.WithMany(x => x.Marriages)

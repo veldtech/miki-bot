@@ -38,34 +38,33 @@ namespace Miki.Accounts.Achievements
 
         private async Task InternalCheckAsync(BasePacket packet)
         {
-            Achievement a = null;
             long userId = packet.discordUser.Id.ToDbLong();
 
-            using (var context = new MikiContext())
-            {
-                a = await context.Achievements.FindAsync(userId, Name);
-            }
+			using (var context = new MikiContext())
+			{
+				Achievement a = await context.Achievements.FindAsync(userId, Name);
 
-            if (a == null)
-            {
-                if (await Achievements[0].CheckAsync(packet))
-                {
-                    await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
-                    await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
-                }
-                return;
-            }
+				if (a == null)
+				{
+					if (await Achievements[0].CheckAsync(packet))
+					{
+						await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
+						await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
+					}
+					return;
+				}
 
-            if (a.Rank >= Achievements.Count - 1)
-            {
-                return;
-            }
+				if (a.Rank >= Achievements.Count - 1)
+				{
+					return;
+				}
 
-            if (await Achievements[a.Rank + 1].CheckAsync(packet))
-            {
-                await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
-                await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
-            }
+				if (await Achievements[a.Rank + 1].CheckAsync(packet))
+				{
+					await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
+					await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
+				}
+			}
         }
 
         public AchievementDataContainer ToBase()

@@ -51,44 +51,67 @@ namespace Miki.Models
             }
         }
 
-        public static User CreateAsync(MikiContext m, IDiscordMessage e)
+        public static User Create(MikiContext m, IDiscordMessage e)
         {
-			return Create(m, e.Author);
+			return Create(e.Author, m);
         }
-		public static User Create(MikiContext m, IDiscordUser u)
+		public static User Create(IDiscordUser u, MikiContext m = null)
 		{
-			User user = new User()
+			using (var context = new MikiContext())
 			{
-				Id = u.Id.ToDbLong(),
-				Currency = 0,
-				AvatarUrl = "default",
-				HeaderUrl = "default",
-				LastDailyTime = Utils.MinDbValue,
-				MarriageSlots = 5,
-				Name = u.Username,
-				Title = "",
-				Total_Commands = 0,
-				Total_Experience = 0,
-				Reputation = 0
-			};
+				User user = new User()
+				{
+					Id = u.Id.ToDbLong(),
+					Currency = 0,
+					AvatarUrl = "default",
+					HeaderUrl = "default",
+					LastDailyTime = Utils.MinDbValue,
+					MarriageSlots = 5,
+					Name = u.Username,
+					Title = "",
+					Total_Commands = 0,
+					Total_Experience = 0,
+					Reputation = 0
+				};
 
-			m.Users.Add(user);
-			return user;
+				LocalExperience exp = new LocalExperience()
+				{
+					Experience = 0,
+					ServerId = u.Guild.Id.ToDbLong(),
+					UserId = u.Id.ToDbLong(),
+				};
+
+				user.LocalExperience = new List<LocalExperience>();
+				user.LocalExperience.Add(exp);
+
+				context.Users.Add(user);
+				context.LocalExperience.Add(exp);
+
+				context.SaveChanges();
+
+				return user;
+			}
 		}
 
 		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
-			return await context.Users.Where(x => x.Id == u.Id.ToDbLong())
+			User user = await context.Users.Where(x => x.Id == u.Id.ToDbLong())?
 				.Include(x => x.Achievements)
 				.Include(x => x.CommandsUsed)
 				.Include(x => x.Marriages)
 					.ThenInclude(x => x.Marriage)
+						.ThenInclude(x => x.Participants)
 				.Include(x => x.LocalExperience)
 				.Include(x => x.Pastas)
 				.Include(x => x.Connections)
-				.FirstOrDefaultAsync()
-				?? Create(context, u);
+				.FirstOrDefaultAsync();
+
+			if(user == null)
+			{
+				return Create(u, context);
+			}
+			return user;
 		}
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)

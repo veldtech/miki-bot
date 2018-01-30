@@ -163,8 +163,8 @@ namespace IA
             {
                 TotalShards = clientInformation.ShardCount,
                 LogLevel = LogSeverity.Info,
-				ConnectionTimeout = 50000,
-				LargeThreshold = 250,
+				ConnectionTimeout = 150000,
+				LargeThreshold = 250,		
 			});
 
             LoadEvents();
@@ -195,14 +195,14 @@ namespace IA
                 c.Connected += async () =>
                 {
                     Log.Message($"{c.ShardId}| Connected!");
-                    await Task.Delay(0);
+					await Task.Yield();
                 };
 
                 c.Disconnected += async (e) =>
                 {
                     Log.ErrorAt(c.ShardId + "| Disconnected", e.Message);
-                    await Task.Delay(0);
-                };
+					await Task.Yield();
+				};
             }
 
             Client.Log += Client_Log;
