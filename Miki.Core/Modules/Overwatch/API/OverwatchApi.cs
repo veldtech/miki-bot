@@ -10,7 +10,7 @@ namespace Miki.Modules.Overwatch.API
         {
             RestResponse<OverwatchUserResponse> userdata = await new RestClient($"http://owapi.net/api/v3/u/{ Name }-{ Identifier }/blob")
                 .AddHeader("user-agent", "velddev/miki")
-                .GetAsync<OverwatchUserResponse>();
+                .GetAsync<OverwatchUserResponse>("");
 
             if (userdata.Data == null)
             {

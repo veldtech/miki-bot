@@ -184,6 +184,7 @@
     <PackageReference Include="Discord.Net" Version="1.0.2" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
+    <PackageReference Include="MalApi" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
@@ -200,7 +201,7 @@
     <ProjectReference Include="..\Meru.Core.SDK\Meru.Core.SDK.csproj" />
     <ProjectReference Include="..\Meru.Core\Meru.Core.csproj" />
     <ProjectReference Include="..\Miki.API.Core\Miki.API.Core.csproj" />
-    <ProjectReference Include="..\Rest.Core\Rest.Core.csproj" />
+    <ProjectReference Include="..\Miki.Rest\Miki.Rest.csproj" />
   </ItemGroup>
 
   <ItemGroup>

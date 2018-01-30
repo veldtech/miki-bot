@@ -65,7 +65,7 @@ namespace Miki.API.RocketLeague
             RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/seasons")
                  .SetAuthorisation("Bearer", key);
 
-            RestResponse<List<RocketLeagueSeason>> cachedValues = await rc.GetAsync<List<RocketLeagueSeason>>();
+            RestResponse<List<RocketLeagueSeason>> cachedValues = await rc.GetAsync<List<RocketLeagueSeason>>("");
             LastUpdatedAt = DateTime.Now;
 
             foreach (RocketLeagueSeason p in cachedValues.Data)

@@ -62,7 +62,7 @@ namespace Miki.API.RocketLeague
             RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/tiers")
                  .SetAuthorisation("Bearer", key);
 
-            RestResponse<List<RocketLeagueTier>> cachedValues = await rc.GetAsync<List<RocketLeagueTier>>();
+            RestResponse<List<RocketLeagueTier>> cachedValues = await rc.GetAsync<List<RocketLeagueTier>>("");
             LastUpdatedAt = DateTime.Now;
 
             foreach (RocketLeagueTier p in cachedValues.Data)

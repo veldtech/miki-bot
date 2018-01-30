@@ -76,7 +76,7 @@ namespace Miki.API.RocketLeague
             RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/playlists")
                  .SetAuthorisation("Bearer", key);
 
-            RestResponse<List<RocketLeaguePlaylist>> cachedValues = await rc.GetAsync<List<RocketLeaguePlaylist>>();
+            RestResponse<List<RocketLeaguePlaylist>> cachedValues = await rc.GetAsync<List<RocketLeaguePlaylist>>("");
             LastUpdatedAt = DateTime.Now;
 
             internalData = cachedValues.Data;

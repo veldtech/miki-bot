@@ -329,9 +329,6 @@ namespace Miki.Modules.AccountsModule
 						achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
 					}
 
-					//embed.AddInlineField(locale.GetString("miki_module_accounts_profile_url"),
-					//	"http://miki.veld.one/profile/" + account.Id);
-
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
 							sw.ElapsedMilliseconds), "");
@@ -448,54 +445,54 @@ namespace Miki.Modules.AccountsModule
 		}
 
 		// TODO: rework into miki api
-		[Command(Name = "syncavatar")]
-		public async Task SyncAvatarAsync(EventContext e)
-		{
-			string localFilename = @"c:\inetpub\miki.veld.one\assets\img\user\" + e.Author.Id + ".png";
+		//[Command(Name = "syncavatar")]
+		//public async Task SyncAvatarAsync(EventContext e)
+		//{
+		//	string localFilename = @"c:\inetpub\miki.veld.one\assets\img\user\" + e.Author.Id + ".png";
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Author.GetAvatarUrl());
-			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+		//	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Author.GetAvatarUrl());
+		//	HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-			// Check that the remote file was found. The ContentType
-			// check is performed since a request for a non-existent
-			// image file might be redirected to a 404-page, which would
-			// yield the StatusCode "OK", even though the image was not
-			// found.
-			if ((response.StatusCode == HttpStatusCode.OK ||
-				 response.StatusCode == HttpStatusCode.Moved ||
-				 response.StatusCode == HttpStatusCode.Redirect) &&
-				response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
-			{
-				// if the remote file was found, download oit
-				using (Stream inputStream = response.GetResponseStream())
-				using (Stream outputStream = File.OpenWrite(localFilename))
-				{
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					do
-					{
-						bytesRead = inputStream.Read(buffer, 0, buffer.Length);
-						outputStream.Write(buffer, 0, bytesRead);
-					} while (bytesRead != 0);
-				}
-			}
+		//	// Check that the remote file was found. The ContentType
+		//	// check is performed since a request for a non-existent
+		//	// image file might be redirected to a 404-page, which would
+		//	// yield the StatusCode "OK", even though the image was not
+		//	// found.
+		//	if ((response.StatusCode == HttpStatusCode.OK ||
+		//		 response.StatusCode == HttpStatusCode.Moved ||
+		//		 response.StatusCode == HttpStatusCode.Redirect) &&
+		//		response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
+		//	{
+		//		// if the remote file was found, download oit
+		//		using (Stream inputStream = response.GetResponseStream())
+		//		using (Stream outputStream = File.OpenWrite(localFilename))
+		//		{
+		//			byte[] buffer = new byte[4096];
+		//			int bytesRead;
+		//			do
+		//			{
+		//				bytesRead = inputStream.Read(buffer, 0, buffer.Length);
+		//				outputStream.Write(buffer, 0, bytesRead);
+		//			} while (bytesRead != 0);
+		//		}
+		//	}
 
-			using (var context = new MikiContext())
-			{
-				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				if (user == null)
-				{
-					return;
-				}
-				user.AvatarUrl = e.Author.Id.ToString();
-				await context.SaveChangesAsync();
-			}
+		//	using (var context = new MikiContext())
+		//	{
+		//		User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+		//		if (user == null)
+		//		{
+		//			return;
+		//		}
+		//		user.AvatarUrl = e.Author.Id.ToString();
+		//		await context.SaveChangesAsync();
+		//	}
 
-			IDiscordEmbed embed = Utils.Embed;
-			embed.Title = "👌 OKAY";
-			embed.Description = e.GetResource("sync_success", e.GetResource("term_avatar"));
-			await embed.QueueToChannel(e.Channel);
-		}
+		//	IDiscordEmbed embed = Utils.Embed;
+		//	embed.Title = "👌 OKAY";
+		//	embed.Description = e.GetResource("sync_success", e.GetResource("term_avatar"));
+		//	await embed.QueueToChannel(e.Channel);
+		//}
 
 		[Command(Name = "syncname")]
 		public async Task SyncNameAsync(EventContext e)
@@ -513,7 +510,7 @@ namespace Miki.Modules.AccountsModule
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.Title = "👌 OKAY";
-			embed.Description = e.GetResource("sync_success", "name");
+			embed.Description = e.GetResource("sync_success", "name");	
 			await embed.QueueToChannel(e.Channel);
 		}
 

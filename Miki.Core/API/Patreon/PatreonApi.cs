@@ -22,7 +22,7 @@ namespace Miki.API.Patreon
         {
             RestClient rc = new RestClient("https://api.patreon.com/oauth2/api/campaigns/240974/pledges");
             rc.SetAuthorisation("Bearer", accessToken);
-            RestResponse<RootObject> pledges = await rc.GetAsync<RootObject>();
+            RestResponse<RootObject> pledges = await rc.GetAsync<RootObject>("");
 
             if (pledges.Success)
             {

@@ -1,10 +1,10 @@
 ﻿using Miki.API.Leaderboards;
+using Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Rest;
 
 namespace Miki.API
 {
@@ -47,7 +47,7 @@ namespace Miki.API
 			  .Append(options.pageNumber);
 
 			RestClient client = new RestClient(baseUrl + sb.ToString() + Utils.AddToken(token));
-			var response = await client.GetAsync<LeaderboardsObject>();
+			var response = await client.GetAsync<LeaderboardsObject>("");
 			return response.Data;
 		}
 	}
