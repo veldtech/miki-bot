@@ -54,6 +54,7 @@ namespace IA.Addons
                 }
                 catch(Exception ex)
                 {
+					Log.ErrorAt("addon-manager", ex.Message);
                 }
             }
         }

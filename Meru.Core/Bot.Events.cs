@@ -28,19 +28,19 @@ namespace IA
 		{
 			Client.UserJoined += async (u) =>
 			{
-				Task.Run(() => UserJoin?.Invoke(new RuntimeUser(u)));
+				Task.Run(() => UserJoin(new RuntimeUser(u)));
 			};
 
 			Client.UserLeft += async (u) =>
 			{
-				Task.Run(() => UserLeft?.Invoke(new RuntimeUser(u)));
+				Task.Run(() => UserLeft(new RuntimeUser(u)));
 			};
 
 			Client.UserUpdated += async (u, unew) =>
 			{
 				RuntimeUser userOld = new RuntimeUser(u);
 				RuntimeUser userNew = new RuntimeUser(unew);
-				Task.Run(() => UserUpdated?.Invoke(userOld, userNew));
+				Task.Run(() => UserUpdated(userOld, userNew));
 			};
 
 			Client.MessageReceived += async (m) =>
@@ -48,7 +48,7 @@ namespace IA
 				RuntimeMessage newMessage = new RuntimeMessage(m);
 				if (MessageReceived != null)
 				{
-					await MessageReceived.Invoke(newMessage);
+					await MessageReceived(newMessage);
 				}
 			};
 
@@ -57,7 +57,7 @@ namespace IA
 				Task.Run(async () =>
 				{
 					RuntimeGuild guild = new RuntimeGuild(g);
-					await GuildJoin?.Invoke(guild);
+					await GuildJoin(guild);
 				});
 			};
 
@@ -71,13 +71,13 @@ namespace IA
 			{
 				shard.Disconnected += async (ex) =>
 				{
-					await OnShardDisconnect?.Invoke(ex, shard.ShardId);
+					await OnShardDisconnect(ex, shard.ShardId);
 				};
 				shard.Connected += async () =>
 				{
 					if (OnShardConnect != null)
 					{
-						await OnShardConnect.Invoke(shard.ShardId);
+						await OnShardConnect(shard.ShardId);
 					}
 				};
 			}

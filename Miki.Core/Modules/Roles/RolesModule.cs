@@ -1,10 +1,11 @@
 ﻿using IA;
+using IA.Events;
 using IA.Events.Attributes;
 using IA.SDK.Events;
 using IA.SDK.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Miki.Dsl;
 using Miki.Models;
-using Miki.Utility.MML;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -158,22 +159,173 @@ namespace Miki.Modules.Roles
 		[Command(Name = "configrole", Accessibility = IA.SDK.EventAccessibility.ADMINONLY)]
 		public async Task ConfigRoleAsync(EventContext e)
 		{
+			if(string.IsNullOrWhiteSpace(e.arguments))
+			{
+				Task.Run(async () => ConfigRoleInteractiveAsync(e));
+			}
+			else
+			{
+				await ConfigRoleQuickAsync(e);
+			}
+		}
+		#endregion
+
+		public async Task ConfigRoleInteractiveAsync(EventContext e)
+		{
 			using (var context = new MikiContext())
 			{
-				Dictionary<string, object> arguments = new MMLParser(e.arguments).Parse()
-					.ToDictionary(x => x.Key, x => x.Value);
+				await e.Channel.SendMessageAsync("--- Interactive mode ---\nWhich role do you want to configure?");
+				IDiscordMessage msg = null;
+
+				while (true)
+				{
+					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					if (msg == null)
+					{
+						// oof
+						return;
+					}
+
+					if (msg.Content.Length < 20)
+					{
+						break;
+					}
+
+					await e.Channel.SendMessageAsync("This role name is too long, sorry! Try again!");
+				}
+
+				IDiscordRole role = GetRoleByName(e.Guild, msg.Content.ToLower());
+				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
+				if(newRole == null)
+				{
+					newRole = (await context.LevelRoles.AddAsync(new LevelRole()
+					{
+						RoleId = role.Id.ToDbLong(),
+						GuildId = e.Guild.Id.ToDbLong()
+					})).Entity;
+				}
+
+				await e.Channel.SendMessageAsync($"Is there a role requirement? type a role name in, if there is no requirement type -");
+
+				while (true)
+				{
+					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					if (msg == null)
+					{
+						return;
+					}
+
+					IDiscordRole parentRole = GetRoleByName(e.Guild, msg.Content.ToLower());
+
+					if (parentRole != null || msg.Content == "-")
+					{
+						newRole.RequiredRole = (long?)parentRole?.Id ?? 0;
+						break;
+					}
+					await e.Channel.SendMessageAsync($"Couldn't find that role, sorry. Try again.");
+				}
+
+				await e.Channel.SendMessageAsync($"Is there a level requirement? type a number, if there is no requirement type 0");
+
+				while (true)
+				{
+					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					if (msg == null)
+					{
+						return;
+					}
+
+					if (int.TryParse(msg.Content, out int r))
+					{
+						if (r >= 0)
+						{
+							newRole.RequiredLevel = r;
+							break;
+						}
+						else
+						{
+							await e.Channel.SendMessageAsync($"Please pick a number above 0. Try again");
+						}
+					}
+					else
+					{
+						await e.Channel.SendMessageAsync($"Are you sure `{msg.Content}` is a number? Try again");
+					}
+				}
+
+				if(newRole.RequiredRole > 0)
+				{
+					await e.Channel.SendMessageAsync($"Should I give them when the user level ups? type yes, otherwise it will be considered as no");
+					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					if (msg == null)
+					{
+						return;
+					}
+
+					newRole.Automatic = msg.Content.ToLower()[0] == 'y';
+				}
+
+				await e.Channel.SendMessageAsync($"Should users be able to opt in? type yes, otherwise it will be considered as no");
+				msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+				if (msg == null)
+				{
+					return;
+				}
+
+				newRole.Optable = msg.Content.ToLower()[0] == 'y';
+
+				if (newRole.Optable)
+				{
+					while (true)
+					{
+						await e.Channel.SendMessageAsync($"Do you want the user to pay mekos for the role? Enter any amount. Enter 0 to keep the role free.");
+						msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+						if (msg == null)
+						{
+							return;
+						}
+
+						if (int.TryParse(msg.Content, out int r))
+						{
+							if (r >= 0)
+							{
+								newRole.Price = r;
+								break;
+							}
+							else
+							{
+								await e.Channel.SendMessageAsync($"Please pick a number above 0. Try again");
+							}
+						}
+						else
+						{
+							await e.Channel.SendMessageAsync($"Are you sure `{msg.Content}` is a number? Try again");
+						}
+					}
+				}
+
+				await context.SaveChangesAsync();
+			}
+		}
+
+		public async Task ConfigRoleQuickAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				MSLResponse arguments = new MMLParser(e.arguments)
+					.Parse();
 
 				IDiscordRole role = GetRoleByName(e.Guild, e.arguments.Split('"')[1]);
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 
-				if(role.Name.Length > 20)
+				if (role.Name.Length > 20)
 				{
 					await e.ErrorEmbed("Please keep role names below 20 letters.")
 						.SendToChannel(e.Channel);
 					return;
 				}
 
-				if(newRole == null)
+				if (newRole == null)
 				{
 					newRole = context.LevelRoles.Add(new LevelRole()
 					{
@@ -182,38 +334,38 @@ namespace Miki.Modules.Roles
 					}).Entity;
 				}
 
-				if (arguments.ContainsKey("automatic"))
+				if (arguments.HasKey("automatic"))
 				{
-					newRole.Automatic = (bool)arguments["automatic"];
+					newRole.Automatic = arguments.GetBool("automatic");
 				}
 
-				if(arguments.ContainsKey("optable"))
+				if (arguments.HasKey("optable"))
 				{
-					newRole.Optable = (bool)arguments["optable"];
+					newRole.Optable = arguments.GetBool("optable");
 				}
 
-				if (arguments.ContainsKey("level-required"))
+				if (arguments.HasKey("level-required"))
 				{
-					newRole.RequiredLevel = (int)arguments["level-required"];
+					newRole.RequiredLevel = arguments.GetInt("level-required");
 				}
 
-				if(arguments.ContainsKey("role-required"))
+				if (arguments.HasKey("role-required"))
 				{
 					long id = 0;
-					if (arguments["role-required"] is long l)
+					if (arguments.TryGet("role-required", out long l))
 					{
 						id = l;
 					}
 					else
 					{
-						var r = e.Guild.Roles.Where(x => x.Name.ToLower() == arguments["role-required"].ToString().ToLower()).FirstOrDefault();
-						if(r != null)
+						var r = e.Guild.Roles.Where(x => x.Name.ToLower() == arguments.GetString("role-required").ToLower()).FirstOrDefault();
+						if (r != null)
 						{
 							id = r.Id.ToDbLong();
 						}
 					}
 
-					if(id != 0)
+					if (id != 0)
 					{
 						newRole.RequiredRole = id;
 					}
@@ -227,9 +379,7 @@ namespace Miki.Modules.Roles
 					.QueueToChannel(e.Channel);
 			}
 
-
 		}
-		#endregion
 
 		public IDiscordRole GetRoleByName(IDiscordGuild guild, string roleName)
 		{

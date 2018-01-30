@@ -25,8 +25,10 @@ namespace IA.Events
 
         public CommandHandler CommandHandler;
         private List<CommandHandler> commandHandlers = new List<CommandHandler>();
-
+		
         private ConcurrentDictionary<Tuple<ulong, ulong>, CommandHandler> privateCommandHandlers = new ConcurrentDictionary<Tuple<ulong, ulong>, CommandHandler>();
+		private ConcurrentDictionary<Tuple<ulong, ulong>, Action<IDiscordMessage>> nextMessageRequests = new ConcurrentDictionary<Tuple<ulong, ulong>, Action<IDiscordMessage>>();
+
         private object privateCommandHandlerLock = new object();
 
         public Dictionary<string, IModule> Modules => CommandHandler.Modules;
@@ -154,6 +156,24 @@ namespace IA.Events
                 await DisposePrivateCommandHandlerAsync(key);
             }
         }
+
+		public async Task<IDiscordMessage> ListenForNextMessageAsync(ulong channelId, ulong userId)
+		{
+			IDiscordMessage outputMessage = null;
+
+			if (nextMessageRequests.TryAdd(new Tuple<ulong, ulong>(userId, channelId), (msg) =>
+			 {
+				 outputMessage = msg;
+				 nextMessageRequests.TryRemove(new Tuple<ulong, ulong>(userId, channelId), out Action<IDiscordMessage> v);
+			 }))
+			{
+				while (outputMessage == null)
+				{
+					await Task.Delay(100);
+				}
+			}
+			return outputMessage;
+		}
 
         internal async Task DisposePrivateCommandHandlerAsync(IDiscordMessage msg)
         {
@@ -415,14 +435,14 @@ namespace IA.Events
             }
         }
 
-        private async Task OnMessageRecieved(IDiscordMessage _message)
+        private async Task OnMessageRecieved(IDiscordMessage msg)
         {
-            if (_message.Author.IsBot || ignore.Contains(_message.Author.Id))
+            if (msg.Author.IsBot || ignore.Contains(msg.Author.Id))
             {
                 return;
             }
 
-            await CommandHandler.CheckAsync(_message);
+            await CommandHandler.CheckAsync(msg);
 
             foreach (CommandHandler c in commandHandlers)
             {
@@ -434,22 +454,27 @@ namespace IA.Events
                     }
                 }
 
-                await c.CheckAsync(_message);
+                await c.CheckAsync(msg);
             }
 
-            Tuple<ulong, ulong> privateKey = new Tuple<ulong, ulong>(_message.Author.Id, _message.Channel.Id);
+            Tuple<ulong, ulong> privateKey = new Tuple<ulong, ulong>(msg.Author.Id, msg.Channel.Id);
 
             if (privateCommandHandlers.ContainsKey(privateKey))
             {
                 if (privateCommandHandlers[privateKey].ShouldBeDisposed && privateCommandHandlers[privateKey].ShouldDispose())
                 {
-                    await DisposePrivateCommandHandlerAsync(_message);
+                    await DisposePrivateCommandHandlerAsync(msg);
                 }
                 else
                 {
-                    await privateCommandHandlers[privateKey].CheckAsync(_message);
+                    await privateCommandHandlers[privateKey].CheckAsync(msg);
                 }
             }
+
+			if (nextMessageRequests.TryGetValue(privateKey, out Action<IDiscordMessage> action))
+			{
+				action(msg);
+			}
         }
 
         private void AddPrivateCommandHandler(Tuple<ulong, ulong> key, CommandHandler value)

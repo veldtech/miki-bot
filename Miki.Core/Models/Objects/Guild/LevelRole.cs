@@ -16,6 +16,7 @@ namespace Miki.Models
 		public bool Automatic { get; set; }
 		public bool Optable { get; set; }
 		public long RequiredRole { get; set; }
+		public int Price { get; set; }
 
         [NotMapped]
         public IDiscordRole Role => new RuntimeRole(Bot.instance.Client.GetGuild(GuildId.FromDbLong()).GetRole(RoleId.FromDbLong()));

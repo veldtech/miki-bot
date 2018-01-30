@@ -31,7 +31,7 @@ namespace Miki.Models
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=mikiPass.1;");
+			optionsBuilder.UseNpgsql(Global.config.ConnString);
 			base.OnConfiguring(optionsBuilder);
 		}
 

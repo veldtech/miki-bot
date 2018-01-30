@@ -11,9 +11,10 @@ using System;
 namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
-    partial class MikiContextModelSnapshot : ModelSnapshot
+    [Migration("20180130190823_add_price_role")]
+    partial class add_price_role
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

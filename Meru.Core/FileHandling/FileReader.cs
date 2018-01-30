@@ -63,8 +63,6 @@ namespace IA.FileHandling
 
 		public string ReadAll()
 		{
-			Console.WriteLine(filePath);
-
 			string o = "";
 			string temp = "";
 
