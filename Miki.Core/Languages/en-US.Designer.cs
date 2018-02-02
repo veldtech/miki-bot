@@ -214,6 +214,15 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t get this role yet, you need {0} more levels!.
+        /// </summary>
+        internal static string error_role_level_low {
+            get {
+                return ResourceManager.GetString("error_role_level_low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find this role. Please try again!.
         /// </summary>
         internal static string error_role_not_found {
@@ -2281,15 +2290,16 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;setleavemessage
+        ///   Looks up a localized string similar to &gt;setleavemessage - to remove the set message
         ///&gt;setleavemessage &lt;message&gt;
         ///
         ///-u = username
         ///-um = user mention
         ///-o = guild owner
         ///-om = guild owner mention
-        ///-g = guild name
-        ///-c = guild count.
+        ///-ru = random user
+        ///-s = guild name
+        ///-sc = guild count.
         /// </summary>
         internal static string miki_command_usage_setleavemessage {
             get {
@@ -2335,15 +2345,16 @@ namespace Miki.Core.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;setwelcomemessage
+        ///   Looks up a localized string similar to &gt;setwelcomemessage - to remove the set message
         ///&gt;setwelcomemessage &lt;message&gt;
         ///
         ///-u = username
         ///-um = user mention
         ///-o = guild owner
         ///-om = guild owner mention
-        ///-g = guild name
-        ///-c = guild count.
+        ///-ru = random user
+        ///-s = guild name
+        ///-sc = guild count.
         /// </summary>
         internal static string miki_command_usage_setwelcomemessage {
             get {

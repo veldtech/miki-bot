@@ -15,6 +15,8 @@ namespace IA.SDK
 
 		public ulong Id => throw new NotImplementedException();
 
+		public ulong OwnerId => throw new NotImplementedException();
+
 		public Task<int> GetChannelCountAsync()
 		{
 			throw new NotImplementedException();

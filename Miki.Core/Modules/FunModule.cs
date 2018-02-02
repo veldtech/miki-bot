@@ -302,7 +302,7 @@ namespace Miki.Modules
 
 			do
 			{
-				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Data;
+				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync()).Data;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			await Utils.Embed
@@ -539,13 +539,21 @@ namespace Miki.Modules
 			TimeSpan timeUntilReminder = e.arguments
 				.GetTimeFromString();
 
-			int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
+			if (timeUntilReminder < new TimeSpan(0, 0, 10))
+			{
+				int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
 
-			await Utils.Embed
-				.SetTitle($"👌 {locale.GetString("term_ok")}")
-				.SetDescription($"I'll remind you to **{reminderText}** {(repeated?"every":"in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
-				.SetColor(255, 220, 93)
-				.QueueToChannel(e.Channel.Id);
+				await Utils.Embed
+					.SetTitle($"👌 {locale.GetString("term_ok")}")
+					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
+					.SetColor(255, 220, 93)
+					.QueueToChannel(e.Channel.Id);
+			}
+			else
+			{
+				await e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
+					.QueueToChannel(e.Channel);
+			}
 		}
 		private async Task CancelReminderAsync(EventContext e)
 		{

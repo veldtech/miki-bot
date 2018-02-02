@@ -8,6 +8,8 @@ namespace IA.SDK.Interfaces
         string AvatarUrl { get; }
         string Name { get; }
 
+		ulong OwnerId { get; }
+
 		Task<int> GetChannelCountAsync();
 		Task<int> GetVoiceChannelCountAsync();
 		Task<int> GetUserCountAsync();

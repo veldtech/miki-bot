@@ -11,10 +11,9 @@ namespace IA.SDK
         public IGuild guild = null;
 
         public string AvatarUrl => guild.IconUrl;
-
         public ulong Id => guild.Id;
-
         public string Name => guild.Name;
+		public ulong OwnerId => guild.OwnerId;
 
         public async Task<int> GetChannelCountAsync() => (await guild.GetChannelsAsync()).Count;
         public async Task<int> GetVoiceChannelCountAsync() => (await guild.GetVoiceChannelsAsync()).Count;

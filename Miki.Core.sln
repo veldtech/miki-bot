@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meru.Core.SDK", "Meru.Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.API.Core", "Miki.API.Core\Miki.API.Core.csproj", "{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Rest", "Miki.Rest\Miki.Rest.csproj", "{707EB754-095D-4991-97C6-B2A4F2714D96}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,14 +51,6 @@ Global
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.ActiveCfg = Release|Any CPU
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.Build.0 = Release|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Debug|x64.Build.0 = Debug|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Release|x64.ActiveCfg = Release|Any CPU
-		{707EB754-095D-4991-97C6-B2A4F2714D96}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

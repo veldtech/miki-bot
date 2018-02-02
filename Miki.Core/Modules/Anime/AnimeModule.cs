@@ -36,7 +36,7 @@ namespace Miki.Core.Modules.Anime
 		public async Task GetCharacterAsync(EventContext e)
 		{
 			RestClient client = new RestClient("https://graphql.anilist.co");
-			RestResponse<AnimeCharacter> response = await client.PostAsync<AnimeCharacter>("",
+			RestResponse<AnimeCharacter> response = await client.PostAsync<AnimeCharacter>(
 				"{ Character(search: \"" + e.arguments + "\") { name { first last native } description image { large medium } } }");
 
 			Console.WriteLine("");

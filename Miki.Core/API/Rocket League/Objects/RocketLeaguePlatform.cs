@@ -62,7 +62,7 @@ namespace Miki.API.RocketLeague
             RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/platforms")
                  .SetAuthorisation("Bearer", key);
 
-            RestResponse<List<RocketLeaguePlatform>> cachedValues = await rc.GetAsync<List<RocketLeaguePlatform>>("");
+            RestResponse<List<RocketLeaguePlatform>> cachedValues = await rc.GetAsync<List<RocketLeaguePlatform>>();
             LastUpdatedAt = DateTime.Now;
             foreach (RocketLeaguePlatform p in cachedValues.Data)
             {

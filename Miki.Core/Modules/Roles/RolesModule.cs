@@ -44,18 +44,49 @@ namespace Miki.Modules.Roles
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
 
-				if (newRole == null || newRole.RequiredLevel > user.Level)
+				if (newRole == null || !newRole.Optable)
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
 						.SendToChannel(e.Channel);
 					return;
 				}
 
-				if(newRole.RequiredRole != 0 &&  !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
+				if(newRole.RequiredLevel > user.Level)
+				{
+					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - user.Level))
+						.SendToChannel(e.Channel);
+					return;
+				}
+
+				if(newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
 						.SendToChannel(e.Channel);
 					return;
+				}
+
+				if (newRole.Price > 0)
+				{
+					if (user.Currency >= newRole.Price)
+					{
+						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
+						IDiscordMessage m = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+						if (m.Content.ToLower()[0] == 'y')
+						{
+
+							User serverOwner = await context.Users.FindAsync(e.Guild.OwnerId.ToDbLong());
+							await user.AddCurrencyAsync(-newRole.Price);
+							await serverOwner.AddCurrencyAsync(newRole.Price);
+							await context.SaveChangesAsync();
+
+						}
+					}
+					else
+					{
+						await e.ErrorEmbed(e.Channel.GetLocale().GetString("user_error_insufficient_mekos"))
+							.SendToChannel(e.Channel);
+						return;
+					}
 				}
 
 				await e.Author.AddRoleAsync(newRole.Role);
@@ -125,18 +156,22 @@ namespace Miki.Modules.Roles
 						{
 							context.LevelRoles.Remove(role);
 						}
-						stringBuilder.Append(role.Role.Name.PadRight(20));
+						stringBuilder.Append($"`{role.Role.Name.PadRight(20)}|`");
 						if(role.RequiredLevel > 0)
 						{
-							stringBuilder.Append($"{role.RequiredLevel}⭐ ");
-						}
-						if(role.RequiredRole != 0)
-						{
-							stringBuilder.Append($"🔨`{e.Guild.GetRole(role.RequiredRole.FromDbLong())?.Name ?? "non-existing role"}`");
+							stringBuilder.Append($"⭐{role.RequiredLevel} ");
 						}
 						if(role.Automatic)
 						{
 							stringBuilder.Append($"⚙️");
+						}
+						if (role.RequiredRole != 0)
+						{
+							stringBuilder.Append($"🔨`{e.Guild.GetRole(role.RequiredRole.FromDbLong())?.Name ?? "non-existing role"}`");
+						}
+						if (role.Price != 0)
+						{
+							stringBuilder.Append($"🔸{role.Price} ");
 						}
 						stringBuilder.AppendLine();
 					}
@@ -174,7 +209,11 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				await e.Channel.SendMessageAsync("--- Interactive mode ---\nWhich role do you want to configure?");
+				IDiscordEmbed sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription("Type out the role name you want to config")
+					.SetColor(138, 182, 239);
+				IDiscordMessage sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+
 				IDiscordMessage msg = null;
 
 				while (true)
@@ -191,7 +230,7 @@ namespace Miki.Modules.Roles
 						break;
 					}
 
-					await e.Channel.SendMessageAsync("This role name is too long, sorry! Try again!");
+					await sourceMessage.ModifyAsync(e.ErrorEmbed("That role name is way too long! Try again."));
 				}
 
 				IDiscordRole role = GetRoleByName(e.Guild, msg.Content.ToLower());
@@ -305,6 +344,11 @@ namespace Miki.Modules.Roles
 				}
 
 				await context.SaveChangesAsync();
+				await Utils.Embed
+					.SetTitle("⚙ Role Config")
+					.SetColor(102, 117, 127)
+					.SetDescription($"Updated {role.Name}!")
+					.QueueToChannel(e.Channel);
 			}
 		}
 
