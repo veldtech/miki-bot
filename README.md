@@ -1,5 +1,5 @@
 # Welcome to Miki Repository
-![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg)]
+![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg)
 <br>
 Below you will find a basic workflow of how the branches should work. Please follow this to prevent bad merge conflicts on Miki and things constantly breaking.
 
