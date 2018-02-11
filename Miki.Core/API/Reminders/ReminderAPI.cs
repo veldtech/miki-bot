@@ -11,26 +11,26 @@ namespace Miki.API.Reminder
     {
 		Dictionary<ulong, ReminderContainer> reminders = new Dictionary<ulong, ReminderContainer>(); 
 
-        public int AddReminder(IDiscordUser targetUser, string reminder, TimeSpan atTime, bool repeated = false)
+        public int AddReminder(IDiscordUser user, string reminder, TimeSpan atTime, bool repeated = false)
         {
-			if(reminders.TryGetValue(targetUser.Id, out ReminderContainer container))
+			if(reminders.TryGetValue(user.Id, out ReminderContainer container))
 			{
-				return container.CreateNewReminder(targetUser, reminder, atTime, repeated);
+				return container.CreateNewReminder(user, reminder, atTime, repeated);
 			}
 			else
 			{
 				ReminderContainer rc = new ReminderContainer();
-				rc.Id = targetUser.Id;
-				reminders.Add(targetUser.Id, rc);
-				return rc.CreateNewReminder(targetUser, reminder, atTime, repeated);			
+				rc.Id = user.Id;
+				reminders.Add(user.Id, rc);
+				return rc.CreateNewReminder(user, reminder, atTime, repeated);			
 			}
         }
 
-		public ReminderInstance CancelReminder(IDiscordUser user, int id)
+		public ReminderInstance CancelReminder(IDiscordUser user, int reminderId)
 		{
 			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
 			{
-				var instance = container.GetReminder(id);
+				var instance = container.GetReminder(reminderId);
 				if(instance != null)
 				{
 					instance.Cancel();

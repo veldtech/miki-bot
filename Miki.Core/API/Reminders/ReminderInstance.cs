@@ -33,21 +33,13 @@ namespace Miki.Core.API.Reminder
 			cancellationToken = new CancellationTokenSource();
 		}
 
-		public void Start(IDiscordUser user, TimeSpan span)
+		public void Start(IDiscordUser user)
 		{
 			Task.Run(() => RunTask(user), cancellationToken.Token);
 		}
-		public void Start(IDiscordMessageChannel channel, TimeSpan span)
+		public void Start(IDiscordMessageChannel channel)
 		{
-			Task.Run(async () =>
-			{
-				await Task.Delay((int)span.TotalMilliseconds);
-
-				await CreateReminderEmbed(Text)
-					.QueueToChannel(channel);
-
-				parent.RemoveReminder(ReminderId);
-			}, cancellationToken.Token);
+			Task.Run(() => RunTask(channel), cancellationToken.Token);
 		}
 
 		public async Task RunTask(IDiscordUser user)
@@ -76,7 +68,7 @@ namespace Miki.Core.API.Reminder
 
 			if (RepeatReminder)
 			{
-				parent.CreateNewReminder(channel, Text, Length);
+				parent.CreateNewReminder(channel, Text, Length, RepeatReminder);
 			}
 			parent.RemoveReminder(ReminderId);
 		}
@@ -89,7 +81,6 @@ namespace Miki.Core.API.Reminder
 			   .AppendText(Text)
 			   .BuildWithBlockCode());
 		}
-
 
 		public void Cancel()
 		{

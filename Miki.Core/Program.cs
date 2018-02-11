@@ -71,10 +71,13 @@ namespace Miki
         /// </summary>
         public void LoadDiscord()
         {
-            bot = new Bot(new ClientInformation()
+			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.config.RedisConnectionString);
+
+			bot = new Bot(new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.5",
+                Version = "0.5.4",
+				cacheClient = Global.redisClient,
                 Token = Global.config.Token,
                 ShardCount = Global.config.ShardCount,
                 ConsoleLogLevel = LogLevel.ALL,
@@ -85,8 +88,6 @@ namespace Miki
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
             }
-
-			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.config.RedisConnectionString);
 
 			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
 			{
@@ -113,6 +114,11 @@ namespace Miki
 					DogStatsd.Histogram("commands.time", t, 0.1);
 				};
 			});
+
+			bot.Events.RegisterPrefixInstance(">")
+				.RegisterAsDefault();
+
+			bot.Events.RegisterPrefixInstance("miki.", false);
 
 			bot.MessageReceived += Bot_MessageReceived;
 	

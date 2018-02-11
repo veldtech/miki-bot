@@ -1,46 +1,85 @@
 ﻿using IA.Events.Attributes;
 using IA.SDK.Events;
-using MalApi;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Rest;
+using Newtonsoft.Json;
+using System.Linq;
+using Miki.Anilist;
 
 namespace Miki.Core.Modules.Anime
 {
-	class AnimeCharacter
-	{
-		AnimeName Name;
-		string Description;
-		AnimeImage Image;
-	}
-
-	class AnimeName
-	{
-		string FirstName;
-		string LastName;
-		string Native;
-	}
-
-	class AnimeImage
-	{
-		string Large;
-		string Medium;
-	}
-
 	[Module("Anime")]
-    public class AnimeModule
-    {
-		[Command(Name = "findcharacter")]
+	public class AnimeModule
+	{
+		AnilistClient anilistClient = new AnilistClient();
+
+		[Command(Name = "getcharacter")]
 		public async Task GetCharacterAsync(EventContext e)
 		{
-			RestClient client = new RestClient("https://graphql.anilist.co");
-			RestResponse<AnimeCharacter> response = await client.PostAsync<AnimeCharacter>(
-				"{ Character(search: \"" + e.arguments + "\") { name { first last native } description image { large medium } } }");
+			ICharacter character = null;
 
-			Console.WriteLine("");
+			if (int.TryParse(e.arguments, out int result))
+			{
+				character = await anilistClient.GetCharacterAsync(result);
+			}
+			else
+			{
+				character = await anilistClient.GetCharacterAsync(e.arguments);
+			}
 
+			if (character != null)
+			{
+				string description = character.Description;
+				if (description.Length > 1024)
+				{
+					description = new string(description.Take(1020).ToArray());
+					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
+				}
+
+				await Utils.Embed.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
+					.SetDescription(character.NativeName)
+					.AddInlineField("Description", description)
+					.SetColor(0, 170, 255)
+					.SetThumbnailUrl(character.LargeImageUrl)
+					.SetFooter("Powered by anilist.co", "")
+					.QueueToChannel(e.Channel);
+			}
+			else
+			{
+				await e.ErrorEmbed("Character not found!")
+					.QueueToChannel(e.Channel);
+			}
 		}
-    }
+
+		[Command(Name = "findcharacter")]
+		public async Task FindCharacterAsync(EventContext e)
+		{
+			List<string> args = e.arguments.Split(' ').ToList();
+			int page = 0;
+
+			if(int.TryParse(args.Last(), out int r))
+			{
+				args.RemoveAt(args.Count - 1);
+				page = r;
+			}
+
+			string searchQuery = string.Join(' ', args);
+
+			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(searchQuery, page));
+
+			StringBuilder sb = new StringBuilder();
+
+			for (int i = 0; i < result.Items.Count; i++)
+				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
+
+			await Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+				.SetDescription(sb.ToString())
+				.SetColor(0, 170, 255)
+				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.QueueToChannel(e.Channel);
+		}
+	}
 }

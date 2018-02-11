@@ -302,7 +302,7 @@ namespace Miki.Modules
 
 			do
 			{
-				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync()).Data;
+				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Data;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			await Utils.Embed
@@ -480,7 +480,7 @@ namespace Miki.Modules
 			await e.Channel.QueueMessageAsync( send );
 		}
 
-        [Command(Name = "reminder")]
+        [Command(Name = "reminder", Aliases = new[] { "remind" })]
         public async Task RemindAsync(EventContext e)
         {
 			string lowercaseArguments = e.arguments.ToLower().Split(' ')[0];
@@ -534,12 +534,12 @@ namespace Miki.Modules
 
 			string reminderText = new string(e.arguments
 				.Take(splitIndex)
-				.ToArray());
+				.ToArray()
+			);
 
-			TimeSpan timeUntilReminder = e.arguments
-				.GetTimeFromString();
+			TimeSpan timeUntilReminder = e.arguments.GetTimeFromString();
 
-			if (timeUntilReminder < new TimeSpan(0, 0, 10))
+			if (timeUntilReminder > new TimeSpan(0, 0, 10))
 			{
 				int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
 
@@ -555,6 +555,7 @@ namespace Miki.Modules
 					.QueueToChannel(e.Channel);
 			}
 		}
+
 		private async Task CancelReminderAsync(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();
@@ -635,6 +636,7 @@ namespace Miki.Modules
 			await e.ErrorEmbed(locale.GetString("error_no_reminders"))
 				.QueueToChannel(e.Channel);
 		}
+
 		private async Task HelpReminderAsync(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();

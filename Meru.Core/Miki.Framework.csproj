@@ -15,15 +15,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
-    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Meru.Core.SDK\Meru.Core.SDK.csproj" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.0.1" />
   </ItemGroup>
   
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Meru.Core.SDK\Miki.Common.csproj" />
   </ItemGroup>
   
 </Project>

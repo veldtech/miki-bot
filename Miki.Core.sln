@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Core", "Miki.Core\Miki.Core.csproj", "{1146D088-22DF-4C75-AFBC-849E2A2A8A33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki", "Miki.Core\Miki.csproj", "{1146D088-22DF-4C75-AFBC-849E2A2A8A33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meru.Core", "Meru.Core\Meru.Core.csproj", "{3631F137-11C0-4EBE-978D-6BE6EBF1EE3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "Meru.Core\Miki.Framework.csproj", "{3631F137-11C0-4EBE-978D-6BE6EBF1EE3F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meru.Core.SDK", "Meru.Core.SDK\Meru.Core.SDK.csproj", "{3BCB8455-F460-4F52-B6F7-C49A8520FFCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Common", "Meru.Core.SDK\Miki.Common.csproj", "{3BCB8455-F460-4F52-B6F7-C49A8520FFCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.API.Core", "Miki.API.Core\Miki.API.Core.csproj", "{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Anilist", "D:\Projects\Miki.Anilist\Miki.Anilist\Miki.Anilist.csproj", "{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Rest", "D:\Projects\Miki.Rest\Miki.Rest\Miki.Rest.csproj", "{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.GraphQL", "D:\Projects\Miki.GraphQL\Miki.GraphQL\Miki.GraphQL.csproj", "{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +57,30 @@ Global
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.ActiveCfg = Release|Any CPU
 		{1978E038-7FB4-47A1-8DBB-2A7CDE3ADAC9}.Release|x64.Build.0 = Release|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Debug|x64.Build.0 = Debug|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Release|x64.ActiveCfg = Release|Any CPU
+		{C0F7B1CA-BF24-4C12-9D8B-5F930F3222A9}.Release|x64.Build.0 = Release|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Debug|x64.Build.0 = Debug|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Release|x64.ActiveCfg = Release|Any CPU
+		{8CE46F9E-9AEC-419A-A47E-B5BFE5626303}.Release|x64.Build.0 = Release|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Debug|x64.Build.0 = Debug|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Release|x64.ActiveCfg = Release|Any CPU
+		{02DD7CCF-D012-40F4-9829-F2FBE36EC9B6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

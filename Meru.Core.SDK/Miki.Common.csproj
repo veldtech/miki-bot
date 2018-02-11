@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Miki.Common</AssemblyName>
+    <RootNamespace>Miki.Common</RootNamespace>
   </PropertyGroup>
 
 </Project>

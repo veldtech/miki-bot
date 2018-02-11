@@ -13,6 +13,8 @@ namespace Miki.Core.API.Reminder
 		public ulong Id { get; set; }
 		Dictionary<int, ReminderInstance> instances = new Dictionary<int, ReminderInstance>();
 
+		Random random = new Random();
+
 		public int CreateNewReminder(IDiscordUser user, string text, TimeSpan at, bool repeated)
 		{
 			int? id = GetRandomKey();
@@ -31,13 +33,13 @@ namespace Miki.Core.API.Reminder
 			reminder.StartTime = DateTime.Now;
 			reminder.Length = at;
 
-			reminder.Start(user, at);
+			reminder.Start(user);
 
 			instances.Add(id ?? 0, reminder);
 
 			return id.GetValueOrDefault();
 		}
-		public int CreateNewReminder(IDiscordMessageChannel channel, string text, TimeSpan at)
+		public int CreateNewReminder(IDiscordMessageChannel channel, string text, TimeSpan at, bool repeated)
 		{
 			int? id = GetRandomKey();
 			if (id == null)
@@ -46,7 +48,16 @@ namespace Miki.Core.API.Reminder
 			}
 
 			ReminderInstance reminder = new ReminderInstance(id.GetValueOrDefault(), this, text);
-			reminder.Start(channel, at);
+
+			if (repeated)
+			{
+				reminder.RepeatReminder = true;
+			}
+
+			reminder.StartTime = DateTime.Now;
+			reminder.Length = at;
+
+			reminder.Start(channel);
 
 			instances.Add(id ?? 0, reminder);
 
@@ -80,7 +91,7 @@ namespace Miki.Core.API.Reminder
 			freeIds.RemoveAll(x => instances.ContainsKey(x));
 			if (freeIds.Count > 0)
 			{
-				return freeIds[MikiRandom.Next(0, freeIds.Count)];
+				return freeIds[random.Next(0, freeIds.Count)];
 			}
 			return null;
 		}

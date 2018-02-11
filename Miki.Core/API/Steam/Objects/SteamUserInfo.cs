@@ -131,22 +131,16 @@ namespace Miki.API.Steam
 			{
 				case 1:
 					return "Online";
-					break;
 				case 2:
 					return "Busy";
-					break;
 				case 3:
 					return "Away";
-					break;
 				case 4:
 					return "Snooze";
-					break;
 				case 5:
 					return "Looking to Play";
-					break;
 				case 6:
 					return "Looking to Trade";
-					break;
 				default:
 					return "Offline";
 			}

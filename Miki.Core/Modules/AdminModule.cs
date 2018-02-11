@@ -74,7 +74,8 @@ namespace Miki.Modules
 
                 embed.AddInlineField($"💁 {e.GetResource("miki_module_admin_kick_by")}", e.Author.Username + "#" + e.Author.Discriminator);
 
-                await bannedUser.SendMessage(embed);
+				await embed.SendToUser(bannedUser);
+
                 await bannedUser.Ban(e.Guild, 1, reason);
             }
             else
@@ -141,7 +142,7 @@ namespace Miki.Modules
 
                 embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
-                await bannedUser.SendMessage(embed);
+                await embed.SendToUser(bannedUser);
                 await bannedUser.Ban(e.Guild, 1, reason);
                 await bannedUser.Unban(e.Guild);
             }
@@ -300,7 +301,7 @@ namespace Miki.Modules
 
                 embed.Color = new IA.SDK.Color(1, 1, 0);
 
-                await bannedUser.SendMessage(embed);
+                await embed.SendToUser(bannedUser);
                 await bannedUser.Kick(reason);
             }
             else

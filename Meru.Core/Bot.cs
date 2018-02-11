@@ -22,27 +22,11 @@ namespace IA
         public string Name => clientInformation.Name;
 		public string Version => clientInformation.Version;
 
-		public const string VersionNumber = "1.7";
-        public const string VersionText = "IA v" + VersionNumber;
-
         public static Bot instance;
 
         internal ClientInformation clientInformation;
 
         private string currentPath = Directory.GetCurrentDirectory();
-
-        public Bot()
-        {
-            if (!File.Exists(currentPath + "/preferences.config"))
-            {
-                clientInformation = InitializePreferencesFile();
-            }
-            else
-            {
-                clientInformation = LoadPreferenceFile();
-            }
-            InitializeBot().GetAwaiter().GetResult();
-        }
 
         public Bot(ClientInformation info)
         {
@@ -105,42 +89,6 @@ namespace IA
             return clientInformation.ShardCount;
         }
 
-        private ClientInformation InitializePreferencesFile()
-        {
-            ClientInformation outputBotInfo = new ClientInformation();
-            FileWriter file = new FileWriter("preferences", "config");
-            file.WriteComment(VersionText + " preferences file");
-            file.WriteComment("Please do not change this file except to change\n# except to change your settings");
-            file.WriteComment("Bot Name");
-            Console.WriteLine("Enter bot name: ");
-            string inputString = Console.ReadLine();
-            file.Write(inputString);
-            outputBotInfo.Name = inputString;
-
-            file.WriteComment("Bot Token");
-            Console.WriteLine("Enter bot token: ");
-            inputString = Console.ReadLine();
-            file.Write(inputString);
-            outputBotInfo.Token = inputString;
-
-            file.WriteComment("Shard count");
-            Console.WriteLine("Shards [1-25565]:");
-            inputString = Console.ReadLine();
-            outputBotInfo.ShardCount = int.Parse(inputString);
-            if (outputBotInfo.ShardCount < 1)
-            {
-                outputBotInfo.ShardCount = 1;
-            }
-            else if (outputBotInfo.ShardCount > 25565)
-            {
-                outputBotInfo.ShardCount = 25565;
-            }
-
-            file.Finish();
-
-            return outputBotInfo;
-        }
-
         private ClientInformation LoadPreferenceFile()
         {
             ClientInformation outputBotInfo = new ClientInformation();
@@ -157,8 +105,6 @@ namespace IA
 
 			Log.InitializeLogging(clientInformation);
 
-            Log.Message(VersionText);
-
             Client = new DiscordShardedClient(new DiscordSocketConfig()
             {
                 TotalShards = clientInformation.ShardCount,
@@ -170,11 +116,6 @@ namespace IA
             LoadEvents();
 
             EventSystem.RegisterBot(this);
-
-            Events.RegisterPrefixInstance(">").RegisterAsDefault();
-
-            // fallback prefix
-            Events.RegisterPrefixInstance("miki.", false);
 
             Addons = new AddonManager();
             await Addons.Load(this);
@@ -189,7 +130,7 @@ namespace IA
                 c.Ready += async () =>
                 {
                     Log.Message($"shard {c.ShardId} ready!");
-                    await c.SetGameAsync($"{c.ShardId}/{GetTotalShards()} | >help");
+                    await c.SetGameAsync($"{c.ShardId + 1}/{GetTotalShards()} | >help");
                 };
 
                 c.Connected += async () =>
