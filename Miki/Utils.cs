@@ -159,8 +159,10 @@ namespace Miki
             }
         }
 
-        public static IDiscordEmbed ErrorEmbed(this EventContext e, string message) => ErrorEmbed(e.Channel.GetLocale(), message);
-		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message, params object[] args) => ErrorEmbed(e.Channel.GetLocale(), string.Format(message, args));
+		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message, params object[] args)
+			=> Embed.SetTitle($"🚫 {e.Channel.GetLocale().GetString(Locale.ErrorMessageGeneric)}")
+			.SetDescription(message)
+			.SetColor(1.0f, 0.0f, 0.0f);
 
         public static string GetResource(this EventContext c, string m, params object[] o) => Locale.GetEntity(c.Channel.Id).GetString(m, o);
 
@@ -168,18 +170,7 @@ namespace Miki
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static IDiscordEmbed Embed => RunEmbed;
-        public static RuntimeEmbed RunEmbed => new RuntimeEmbed(new EmbedBuilder());
-
-        public static IDiscordEmbed ErrorEmbed(Locale locale, string message)
-        {
-            return new RuntimeEmbed(new EmbedBuilder())
-            {
-                Title = "🚫 " + locale.GetString(Locale.ErrorMessageGeneric),
-                Description = message,
-                Color = new Miki.Common.Color(1, 0, 0)
-            };
-        }
+        public static IDiscordEmbed Embed => new RuntimeEmbed(new EmbedBuilder());
 
         public static IDiscordEmbed SuccessEmbed(Locale locale, string message)
         {

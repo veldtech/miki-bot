@@ -91,7 +91,7 @@ namespace Miki.Modules
 
         public async Task SendNotADonatorError(IDiscordMessageChannel channel)
         {
-            await Utils.Embed
+            Utils.Embed
                 .SetTitle("Sorry!")
                 .SetDescription("... but you haven't donated yet, please support us with a small donation to unlock these commands!")
                 .AddInlineField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")

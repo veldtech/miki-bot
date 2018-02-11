@@ -31,7 +31,7 @@ namespace Miki.Modules
             }
 
             embed.ImageUrl = image;
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "cake")]
@@ -97,7 +97,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "cuddle")]
@@ -130,7 +130,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "glare")]
@@ -195,7 +195,7 @@ namespace Miki.Modules
                 embed.Title = $"{e.message.Bot.Username} glares at {e.Author.Username}";
             }
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "highfive")]
@@ -240,7 +240,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "hug")]
@@ -288,7 +288,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "poke")]
@@ -322,7 +322,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "punch")]
@@ -357,7 +357,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "kiss")]
@@ -399,7 +399,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "pat", Aliases = new string[] { "pet" })]
@@ -479,7 +479,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "slap")]
@@ -514,7 +514,7 @@ namespace Miki.Modules
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
     }
 }

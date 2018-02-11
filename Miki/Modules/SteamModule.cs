@@ -45,7 +45,7 @@ namespace Miki.Modules
 			IDiscordEmbed embed = Utils.Embed;
 			embed.SetAuthor( steamAuthorName, steamAuthorIcon, "" );
 			embed.Description = "Steam API at your fingertips.\nYou can find a list of commands by typing `" + ">" + "help steam`!";
-			await embed.QueueToChannel( context.Channel );
+			embed.QueueToChannel( context.Channel );
 		}
 
 		[Command( Name = "steamhelp" )] // TODO: Kill this command. >help steam should be used instead.
@@ -55,7 +55,7 @@ namespace Miki.Modules
 			embed.SetAuthor( steamAuthorName, steamAuthorIcon, "" );
 			embed.Description = "Steam API at your fingertips.";
 			embed.AddInlineField( "Commands", "`>steam` \n`>steam user <vanity/steam64>`" );
-			await embed.QueueToChannel( context.Channel );
+			embed.QueueToChannel( context.Channel );
 		}
 
 		// TODO: Comply to privacy rules.
@@ -74,7 +74,7 @@ namespace Miki.Modules
 			if( user == null )
 			{
 				embed = Utils.ErrorEmbed( context, "No user was found!" );
-				await embed.QueueToChannel( context.Channel );
+				embed.QueueToChannel( context.Channel );
 				return;
 			}
 
@@ -120,7 +120,7 @@ namespace Miki.Modules
 			embed.AddInlineField( "Level", userLevel );
 
 			embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
-			await embed.QueueToChannel( context.Channel );
+			embed.QueueToChannel( context.Channel );
 		}
 
 		public async Task SteamGameAsync( EventContext context )
@@ -137,7 +137,7 @@ namespace Miki.Modules
 			embed.SetThumbnailUrl( gameInfo.HeaderImage );
 
 			embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
-			await embed.QueueToChannel( context.Channel );
+			embed.QueueToChannel( context.Channel );
 		}
 
 		private string ToTimeString( TimeSpan time )

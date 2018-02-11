@@ -221,7 +221,7 @@ namespace Miki.Modules.Roles
 						break;
 					}
 
-					await sourceMessage.ModifyAsync(e.ErrorEmbed("That role name is way too long! Try again."));
+					sourceMessage.Modify("", e.ErrorEmbed("That role name is way too long! Try again."));
 				}
 
 				IDiscordRole role = GetRoleByName(e.Guild, msg.Content.ToLower());

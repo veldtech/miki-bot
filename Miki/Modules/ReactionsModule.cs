@@ -54,7 +54,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-            await em.QueueToChannel(e.Channel);
+            em.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "lewd")]
@@ -85,8 +85,7 @@ namespace Miki.Modules
 		"http://i.imgur.com/jlTqATG.gif"
             };
 
-            await Utils.Embed
-                .SetImageUrl(lewd[MikiRandom.Next(0, lewd.Length)])
+            Utils.Embed.SetImageUrl(lewd[MikiRandom.Next(0, lewd.Length)])
                 .QueueToChannel(e.Channel.Id);
         }
 
@@ -113,7 +112,7 @@ namespace Miki.Modules
 
             em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-            await em.QueueToChannel(e.Channel);
+            em.QueueToChannel(e.Channel);
         }
 
 		[Command( Name = "smug" )]
@@ -158,7 +157,7 @@ namespace Miki.Modules
 			{
 				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
-			await em.QueueToChannel( e.Channel );
+			em.QueueToChannel( e.Channel );
 		}
 
 		[Command( Name = "cry" )]
@@ -255,7 +254,7 @@ namespace Miki.Modules
 			{
 				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
 			};
-			await em.QueueToChannel( e.Channel );
+			em.QueueToChannel( e.Channel );
 		}
 	        
 		[Command(Name = "stare")]
@@ -272,7 +271,7 @@ namespace Miki.Modules
 
        		em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
 
-			await em.QueueToChannel(e.Channel);
+			em.QueueToChannel(e.Channel);
         }
 	}
 }

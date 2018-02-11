@@ -20,12 +20,12 @@ namespace Miki.Modules
 
 			if (!IsValid(s))
 			{
-				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
+				e.ErrorEmbed("Couldn't find anything with these tags!")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			await CreateEmbed(s)
+			CreateEmbed(s)
 				.QueueToChannel(e.Channel);
 		}
 
@@ -36,12 +36,12 @@ namespace Miki.Modules
 
 			if (!IsValid(s))
 			{
-				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
+				e.ErrorEmbed("Couldn't find anything with these tags!")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			await CreateEmbed(s)
+			CreateEmbed(s)
 				.QueueToChannel(e.Channel);
 		}
 
@@ -52,12 +52,12 @@ namespace Miki.Modules
 
 			if (!IsValid(s))
 			{
-				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
+				e.ErrorEmbed("Couldn't find anything with these tags!")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			await CreateEmbed(s)
+			CreateEmbed(s)
 				.QueueToChannel(e.Channel);
 		}
 
@@ -68,13 +68,12 @@ namespace Miki.Modules
 
 			if (!IsValid(s))
 			{
-				await Utils.ErrorEmbed(Locale.GetEntity(e.Channel.Id), "Couldn't find anything with these tags!")
+				e.ErrorEmbed("Couldn't find anything with these tags!")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			await CreateEmbed(s)
-				.QueueToChannel(e.Channel);
+			CreateEmbed(s).QueueToChannel(e.Channel);
 		}
 
 		private IDiscordEmbed CreateEmbed(ILinkable s)

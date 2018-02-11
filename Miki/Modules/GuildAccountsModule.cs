@@ -63,7 +63,7 @@ namespace Miki.Modules
 
                         if (rival == null)
                         {
-                            await Utils.Embed
+                            Utils.Embed
                                 .SetTitle(locale.GetString("miki_terms_weekly"))
                                 .SetDescription(context.GetResource("guildweekly_error_no_rival"))
                                 .QueueToChannel(context.Channel);
@@ -72,7 +72,7 @@ namespace Miki.Modules
 
                         if (rival.Experience > thisGuild.Experience)
                         {
-                            await Utils.Embed
+                            Utils.Embed
                                 .SetTitle(locale.GetString("miki_terms_weekly"))
                                 .SetDescription(context.GetResource("guildweekly_error_low_level"))
                                 .QueueToChannel(context.Channel);
@@ -91,7 +91,7 @@ namespace Miki.Modules
 
                         await user.AddCurrencyAsync(mekosGained, context.Channel);
 
-                        await Utils.Embed
+                        Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
                             .AddInlineField("Mekos", mekosGained.ToString())
                             .QueueToChannel(context.Channel);
@@ -101,7 +101,7 @@ namespace Miki.Modules
                     }
                     else
                     {
-                        await Utils.Embed
+                        Utils.Embed
                             .SetTitle(locale.GetString("miki_terms_weekly"))
                             .SetDescription(context.GetResource("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(locale)))
                             .QueueToChannel(context.Channel);
@@ -109,7 +109,7 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    await Utils.Embed
+                    Utils.Embed
                         .SetTitle(locale.GetString("miki_terms_weekly"))
                         .SetDescription(locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
                         .QueueToChannel(context.Channel);
@@ -126,14 +126,14 @@ namespace Miki.Modules
 
                 if (thisGuild == null)
                 {
-                    await context.ErrorEmbed(context.GetResource("guild_error_null"))
+                    context.ErrorEmbed(context.GetResource("guild_error_null"))
                         .QueueToChannel(context.Channel);
                     return;
                 }
 
                 if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
-                    await Utils.Embed
+                    Utils.Embed
                        .SetTitle(context.GetResource("miki_terms_rival"))
                        .SetDescription(context.GetResource("guildnewrival_error_timer_running"))
                        .QueueToChannel(context.Channel);
@@ -146,7 +146,7 @@ namespace Miki.Modules
 
                 if (rivalGuilds.Count == 0)
                 {
-                    await context.ErrorEmbed(context.GetResource("guildnewrival_error_matchmaking_failed"))
+                    context.ErrorEmbed(context.GetResource("guildnewrival_error_matchmaking_failed"))
                         .QueueToChannel(context.Channel);
                     return;
                 }
@@ -162,7 +162,7 @@ namespace Miki.Modules
 
                 await db.SaveChangesAsync();
 
-                await Utils.Embed
+                Utils.Embed
                     .SetTitle(context.GetResource("miki_terms_rival"))
                     .SetDescription(context.GetResource("guildnewrival_success", rivalGuild.Name))
                     .QueueToChannel(context.Channel);
@@ -210,7 +210,7 @@ namespace Miki.Modules
                     embed.AddInlineField(e.GetResource("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
                 }
 
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Miki.Modules
                                 {
                                     g.MinimalExperienceToGetRewards = value;
 
-                                    await Utils.Embed
+                                    Utils.Embed
                                         .SetTitle(e.GetResource("miki_terms_config"))
                                         .SetDescription(e.GetResource("guildconfig_expneeded", value))
                                         .QueueToChannel(e.Channel);
@@ -249,7 +249,7 @@ namespace Miki.Modules
 
                                 string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
 
-                                await Utils.Embed
+                                Utils.Embed
                                     .SetTitle(e.GetResource("miki_terms_config"))
                                     .SetDescription(resourceString)
                                     .QueueToChannel(e.Channel);
@@ -285,7 +285,7 @@ namespace Miki.Modules
                 }
 
                 embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
     }

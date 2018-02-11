@@ -41,7 +41,7 @@ namespace Miki.Modules
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayAsync(EventContext e)
         {
-            await e.Channel.QueueMessageAsync(e.arguments);
+            e.Channel.QueueMessageAsync(e.arguments);
         }
 
         [Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -71,14 +71,14 @@ namespace Miki.Modules
             if (ulong.TryParse(e.arguments, out ulong id))
             {
                 Bot.instance.Events.Ignore(id);
-                await e.Channel.QueueMessageAsync(":ok_hand:");
+                e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
         [Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ShowCacheAsync(EventContext e)
         {
-            await e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
+            e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
         }
 
         [Command(Name = "qembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -165,7 +165,7 @@ namespace Miki.Modules
                         await database.SaveChangesAsync();
                     }
                 }
-                await context.Channel.QueueMessageAsync(":ok_hand:");
+                context.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
@@ -181,7 +181,7 @@ namespace Miki.Modules
                 }
                 u.Currency = int.Parse(e.arguments.Split(' ')[1]);
                 await context.SaveChangesAsync();
-                await e.Channel.QueueMessageAsync(":ok_hand:");
+                e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 
@@ -190,7 +190,7 @@ namespace Miki.Modules
         {
             IDiscordUser u = new RuntimeUser(Bot.instance.Client.GetUser(ulong.Parse(e.arguments)));
 
-            await e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
+            e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }
 
         [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -210,7 +210,7 @@ namespace Miki.Modules
 					LastExperienceTime = DateTime.MinValue,
 					Experience = u.Experience
 				});
-				await e.Channel.QueueMessageAsync(":ok_hand:");
+				e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
 

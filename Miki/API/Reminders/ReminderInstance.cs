@@ -48,7 +48,7 @@ namespace Miki.Core.API.Reminder
 
 			cancellationToken.Token.ThrowIfCancellationRequested();
 
-			await CreateReminderEmbed(Text)
+			CreateReminderEmbed(Text)
 				.QueueToUser(user);
 
 			if (RepeatReminder)
@@ -63,7 +63,7 @@ namespace Miki.Core.API.Reminder
 
 			cancellationToken.Token.ThrowIfCancellationRequested();
 
-			await CreateReminderEmbed(Text)
+			CreateReminderEmbed(Text)
 				.QueueToChannel(channel);
 
 			if (RepeatReminder)

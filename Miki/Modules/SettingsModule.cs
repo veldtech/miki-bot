@@ -42,7 +42,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -68,7 +68,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -99,7 +99,7 @@ namespace Miki.Modules
                 embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
 
                 await context.SaveChangesAsync();
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -131,7 +131,7 @@ namespace Miki.Modules
 				if (!string.IsNullOrEmpty(content))
 					embed.AddInlineField("Services", content);
 
-                await embed.QueueToChannel(e.Channel);
+                embed.QueueToChannel(e.Channel);
             }
         }
 
@@ -170,7 +170,10 @@ namespace Miki.Modules
 				}
 			}
 
-			await Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" ).AddInlineField( "Column 1", firstColumn ).AddInlineField( "Column 2", secondColumn ).QueueToChannel( e.Channel );
+			Utils.Embed.SetTitle( $"Module Status for '{e.Channel.Name}'" )
+				.AddInlineField( "Column 1", firstColumn )
+				.AddInlineField( "Column 2", secondColumn )
+				.QueueToChannel( e.Channel );
 		}
 
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
@@ -179,11 +182,11 @@ namespace Miki.Modules
 			if (Locale.LocaleNames.TryGetValue(e.arguments.ToLower(), out string langId))
 			{
 				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
-				await Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
+				Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
-			await Utils.ErrorEmbed(e.Channel.GetLocale(), $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.")
+			e.ErrorEmbed( $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.")
 				.QueueToChannel(e.Channel);
 		}
 
@@ -194,7 +197,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(e.arguments))
             {
-                await Utils.ErrorEmbed(locale, locale.GetString("miki_module_general_prefix_error_no_arg")).QueueToChannel(e.Channel);
+                e.ErrorEmbed(locale.GetString("miki_module_general_prefix_error_no_arg")).QueueToChannel(e.Channel);
                 return;
             }
 
@@ -206,14 +209,13 @@ namespace Miki.Modules
 
             embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.arguments}profile");
 
-            await embed.QueueToChannel(e.Channel);
+            embed.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task DoListLocale(EventContext e)
         {
-            await Utils.Embed
-                .SetTitle("Available locales")
+            Utils.Embed.SetTitle("Available locales")
                 .SetDescription("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
                 .QueueToChannel(e.Channel.Id);
         }

@@ -281,7 +281,7 @@ namespace Miki.Modules
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
             Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
 
-            await e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_invite_message"));
+            e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_invite_message"));
             await e.Author.QueueMessageAsync(authorLocale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
@@ -368,7 +368,7 @@ namespace Miki.Modules
             }
             else
             {
-                Utils.ErrorEmbed(locale, e.GetResource("error_term_invalid"))
+                e.ErrorEmbed(e.GetResource("error_term_invalid"))
                     .QueueToChannel(e.Channel.Id);
             }
         }

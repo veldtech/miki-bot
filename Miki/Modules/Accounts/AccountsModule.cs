@@ -339,7 +339,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					Utils.ErrorEmbed(locale, locale.GetString("error_account_null"))
+					e.ErrorEmbed(locale.GetString("error_account_null"))
 						.QueueToChannel(e.Channel);
 				}
 			}
@@ -489,7 +489,7 @@ namespace Miki.Modules.AccountsModule
 		//	IDiscordEmbed embed = Utils.Embed;
 		//	embed.Title = "👌 OKAY";
 		//	embed.Description = e.GetResource("sync_success", e.GetResource("term_avatar"));
-		//	await embed.QueueToChannel(e.Channel);
+		//	embed.QueueToChannel(e.Channel);
 		//}
 
 		[Command(Name = "syncname")]
@@ -557,35 +557,35 @@ namespace Miki.Modules.AccountsModule
 
 			if (arguments.Length < 2)
 			{
-				Utils.ErrorEmbed(locale, e.GetResource("give_error_no_arg"))
+				e.ErrorEmbed(e.GetResource("give_error_no_arg"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (e.message.MentionedUserIds.Count <= 0)
 			{
-				Utils.ErrorEmbed(locale, e.GetResource("give_error_no_mention"))
+				e.ErrorEmbed(e.GetResource("give_error_no_mention"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (!int.TryParse(arguments[1], out int goldSent))
 			{
-				Utils.ErrorEmbed(locale, e.GetResource("give_error_amount_unparsable"))
+				e.ErrorEmbed(e.GetResource("give_error_amount_unparsable"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (goldSent > 999999)
 			{
-				Utils.ErrorEmbed(locale, e.GetResource("give_error_max_mekos"))
+				e.ErrorEmbed(e.GetResource("give_error_max_mekos"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (goldSent <= 0)
 			{
-				Utils.ErrorEmbed(locale, e.GetResource("give_error_min_mekos"))
+				e.ErrorEmbed(e.GetResource("give_error_min_mekos"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
@@ -610,7 +610,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					Utils.ErrorEmbed(locale, e.GetResource("user_error_insufficient_mekos"))
+					e.ErrorEmbed(e.GetResource("user_error_insufficient_mekos"))
 						.QueueToChannel(e.Channel);
 				}
 			}
@@ -627,7 +627,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (u == null)
 				{
-					Utils.ErrorEmbed(locale, e.GetResource("user_error_no_account"))
+					e.ErrorEmbed(e.GetResource("user_error_no_account"))
 						.QueueToChannel(e.Channel);
 					return;
 				}
@@ -641,7 +641,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
 				{
-					await e.Channel.QueueMessageAsync(
+					e.Channel.QueueMessageAsync(
 						$"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.");
 					return;
 				}
@@ -716,7 +716,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					Utils.ErrorEmbed(locale, "Make sure to fill out both the role and the level when creating this!")
+					e.ErrorEmbed("Make sure to fill out both the role and the level when creating this!")
 						.QueueToChannel(e.Channel);
 				}
 			}

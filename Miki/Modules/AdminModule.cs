@@ -169,7 +169,7 @@ namespace Miki.Modules
             IEvent command = Bot.instance.Events.CommandHandler.GetEvent(arguments[0]);
             if (command == null)
             {
-                Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid command")
+                e.ErrorEmbed($"{arguments[0]} is not a valid command")
 					.QueueToChannel(e.Channel);
                 return;
             }
@@ -178,7 +178,7 @@ namespace Miki.Modules
 
             if (!command.CanBeDisabled)
             {
-                Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
+                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
 					.QueueToChannel(e.Channel);
                 return;
             }
@@ -203,7 +203,7 @@ namespace Miki.Modules
             IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
             if (m == null)
             {
-                Utils.ErrorEmbed(locale, $"{arguments[0]} is not a valid module.")
+                e.ErrorEmbed($"{arguments[0]} is not a valid module.")
 					.QueueToChannel(e.Channel);
                 return;
             }
@@ -221,7 +221,7 @@ namespace Miki.Modules
 
             if (!m.CanBeDisabled && !setValue)
             {
-                Utils.ErrorEmbed(locale, locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
+                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
 					.QueueToChannel(e.Channel);
                 return;
             }
@@ -333,7 +333,7 @@ namespace Miki.Modules
 			IDiscordUser invoker = await e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id);
 			if (!invoker.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
 			{
-				await e.Channel.QueueMessageAsync(locale.GetString("miki_module_admin_prune_error_no_access"));
+				e.Channel.QueueMessageAsync(locale.GetString("miki_module_admin_prune_error_no_access"));
 				return;
 			}
 

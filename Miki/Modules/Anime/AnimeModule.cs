@@ -39,7 +39,7 @@ namespace Miki.Core.Modules.Anime
 					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
 				}
 
-				await Utils.Embed.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
+				Utils.Embed.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
 					.SetDescription(character.NativeName)
 					.AddInlineField("Description", description)
 					.SetColor(0, 170, 255)
@@ -49,7 +49,7 @@ namespace Miki.Core.Modules.Anime
 			}
 			else
 			{
-				await e.ErrorEmbed("Character not found!")
+				e.ErrorEmbed("Character not found!")
 					.QueueToChannel(e.Channel);
 			}
 		}
@@ -75,7 +75,7 @@ namespace Miki.Core.Modules.Anime
 			for (int i = 0; i < result.Items.Count; i++)
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
 
-			await Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
