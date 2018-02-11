@@ -12,6 +12,5 @@ namespace Miki.API
 				.Append(MikiApi.API_VERSION);
 
 		public static string AddToken(string token) => "?key=" + token;
-
 	}
 }

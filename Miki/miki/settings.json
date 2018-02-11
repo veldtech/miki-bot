@@ -1,0 +1,18 @@
+{
+    "token": "MTg4Nzg0MDczMjYxNDQ5MjE3.DURmUg.TvA7V-89GTt7oTRDLAnKiyM6Mvs",
+    "developers": [ 121919449996460033 ],
+    "shard_count": 1,
+    "carbon_api_key": "veld882b398cd81632bb25",
+    "discord_pw_api_key": "",
+    "discord_bots_api_key": "",
+    "urban_api_key": "jMPaVE7m7lmsheYUk3xFKCngVODmp1LfeFXjsnNrsFMq9rylL6",
+    "imgur_api_key": "jMPaVE7m7lmsheYUk3xFKCngVODmp1LfeFXjsnNrsFMq9rylL6",
+    "imgur_client_id": "a8e0e2f14a7364c",
+    "rocket_league_key": "",
+    "steam_api_key": "",
+    "sentry_io_key": "",
+    "datadog_key": "32a50838ef6631852766214ad64ca5cd",
+    "miki_api_base_url": "https://api.miki.ai/",
+    "miki_api_key": "7539cd68-b851-11e7-96e7-c72b0ebe02e8",
+    "connection_string": "Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=mikiPass.1;"
+}

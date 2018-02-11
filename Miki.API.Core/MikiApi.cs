@@ -47,7 +47,7 @@ namespace Miki.API
 			  .Append(options.pageNumber);
 
 			RestClient client = new RestClient(baseUrl + sb.ToString() + Utils.AddToken(token));
-			var response = await client.GetAsync<LeaderboardsObject>();
+			var response = await client.GetAsync<LeaderboardsObject>("");
 			return response.Data;
 		}
 	}

@@ -1,0 +1,1471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    assocMiki.Frameworkted with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serMiki.Frameworklized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serMiki.Frameworklized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serMiki.Frameworklized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serMiki.Frameworklized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serMiki.Frameworklized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serMiki.Frameworklized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alMiki.Frameworks" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="miki_errors_enabled_message" xml:space="preserve">
+    <value>Miki обнаружила проблему с запросом. Мы отправили вам лог и инструкции в личные сообщения.</value>
+    <comment>This message is sent when miki catches a uncaught error</comment>
+  </data>
+  <data name="miki_error_message_generic" xml:space="preserve">
+    <value>Что-то пошло не так!</value>
+    <comment>When no other error message is applMiki.Frameworkble to this version</comment>
+  </data>
+  <data name="miki_join_message" xml:space="preserve">
+    <value>Приветствую! Я **Miki**! Используйте `&gt;help`, чтобы увидеть что я могу делать! :notes:</value>
+    <comment>This message is called when miki joins a new guild</comment>
+  </data>
+  <data name="miki_global_profile_user_header" xml:space="preserve">
+    <value>Общий профиль {0}</value>
+  </data>
+  <data name="miki_local_profile_user_header" xml:space="preserve">
+    <value>Локальный профиль {0}</value>
+  </data>
+  <data name="miki_mekos_insufficient" xml:space="preserve">
+    <value>У Вас недостаточно мекосов.</value>
+  </data>
+  <data name="miki_module_eventmessages_delete_guildjoin" xml:space="preserve">
+    <value>✅ Удалено Ваше приветственное сообщение.</value>
+  </data>
+  <data name="miki_module_eventmessages_set_guildjoin" xml:space="preserve">
+    <value>✅ Новое приветственное сообщение: `{0}`</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
+    <value>Не рассчитывайте на это.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
+    <value>Мой ответ - нет.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_3" xml:space="preserve">
+    <value>Мои источники говорят нет.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
+    <value>Перспектива не так хороша.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
+    <value>Очень сомнительно.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_1" xml:space="preserve">
+    <value>Ответ вышел неясным, попробуйте снова.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_2" xml:space="preserve">
+    <value>Спросите меня чуть позже снова.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_3" xml:space="preserve">
+    <value>Лучше не говорить тебе сейчас.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_4" xml:space="preserve">
+    <value>Не могу сказать сейчас.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_5" xml:space="preserve">
+    <value>Сконцентрируйтесь и спросите ещё раз.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_1" xml:space="preserve">
+    <value>Это определенно верно.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_2" xml:space="preserve">
+    <value>Бесспорно.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_3" xml:space="preserve">
+    <value>Без сомнения, да.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_4" xml:space="preserve">
+    <value>Да, определенно да.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_5" xml:space="preserve">
+    <value>Ты можешь надеяться на это.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_6" xml:space="preserve">
+    <value>Скорее всего.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_7" xml:space="preserve">
+    <value>Хорошая перспектива.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_8" xml:space="preserve">
+    <value>Да.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_9" xml:space="preserve">
+    <value>Всё указывает на то, что это верно.</value>
+  </data>
+  <data name="miki_module_fun_compliment_body_1" xml:space="preserve">
+    <value>Ваша нижняя губа</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_10" xml:space="preserve">
+    <value>необычный угол Ваших локтей</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_11" xml:space="preserve">
+    <value>видеть ямочки на Ваших щеках</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_12" xml:space="preserve">
+    <value>шелковистость Ваших волос</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_2" xml:space="preserve">
+    <value>мизинец на Вашей левой ноге
+</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_3" xml:space="preserve">
+    <value>мизинец на Вашей правой ноге</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_4" xml:space="preserve">
+    <value>Ваш левый глаз</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_5" xml:space="preserve">
+    <value>Ваш подбородок</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_6" xml:space="preserve">
+    <value>тот ужасный палец на Вашей левой руке</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_7" xml:space="preserve">
+    <value>Ваша милая улыбка</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_8" xml:space="preserve">
+    <value>этот ослепительный взгляд</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_9" xml:space="preserve">
+    <value>этот жуткий палец на Вашей правой руке</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_1" xml:space="preserve">
+    <value>Мне нравится</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_2" xml:space="preserve">
+    <value>Я люблю</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_3" xml:space="preserve">
+    <value>Мне по нраву</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_4" xml:space="preserve">
+    <value>Я полюбила</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_5" xml:space="preserve">
+    <value>Почему-то мне нравится</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_1" xml:space="preserve">
+    <value>много.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_2" xml:space="preserve">
+    <value>мало.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_3" xml:space="preserve">
+    <value>довольно мало.</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_4" xml:space="preserve">
+    <value>очень много, это странно?</value>
+  </data>
+  <data name="miki_module_fun_pick" xml:space="preserve">
+    <value>{0}, Я выбрала `{1}`</value>
+  </data>
+  <data name="miki_module_fun_pick_no_arg" xml:space="preserve">
+    <value>Мне не из чего выбирать! :( Используйте запятые (,) для разделения вариантов выбора.</value>
+  </data>
+  <data name="miki_module_fun_pun_1" xml:space="preserve">
+    <value>После возвращения домой я долгое время не находил себе места...</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_10" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_11" xml:space="preserve">
+    <value>Воры пробрались в мой дом и украли всё, кроме моего мыла, шампуня, полотенца и дезодоранта. Грязные ублюдки.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_12" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_13" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_14" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_15" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_16" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_17" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_18" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_19" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_2" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_20" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_21" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_22" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_23" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_24" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_25" xml:space="preserve">
+    <value>Атеизм - бездушно.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_26" xml:space="preserve">
+    <value>Как зовут людей, которые боятся Санту Клауса? Клаустрофобы.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_27" xml:space="preserve">
+    <value>pee door</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_28" xml:space="preserve">
+    <value>Хороший день monday не назовут…</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_29" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_3" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_30" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_31" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_32" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_33" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_34" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_35" xml:space="preserve">
+    <value>Не верь атомам, это они сделали всё.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_36" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_37" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_38" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_39" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_4" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_40" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_41" xml:space="preserve">
+    <value>Я не верю лестницам, потому что они всегда ведут к чему-то.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_42" xml:space="preserve">
+    <value>И что, что я не знаю значение слова &quot;апокалипсис&quot;? Это же не конец света!</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_43" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_44" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_45" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_46" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_47" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_48" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_49" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_5" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_50" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_51" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_52" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_6" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_7" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_8" xml:space="preserve">
+    <value>Я читаю книгу про антигравитацию. Её просто невозможно бросить.</value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_9" xml:space="preserve">
+    <value></value>
+    <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_roll_result" xml:space="preserve">
+    <value>🎲 {0} зароллил **{1}**.</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner" xml:space="preserve">
+    <value>И победитель `{0}` - {1}.</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner_no_arg" xml:space="preserve">
+    <value>И победитель - {0}</value>
+  </data>
+  <data name="miki_module_fun_slots_header" xml:space="preserve">
+    <value>slots</value>
+  </data>
+  <data name="miki_module_fun_slots_win_amount" xml:space="preserve">
+    <value>{0}🔸 были добавлены Вам.</value>
+  </data>
+  <data name="miki_module_fun_slots_win_header" xml:space="preserve">
+    <value>Вы выиграли!</value>
+  </data>
+  <data name="miki_command_description_8ball" xml:space="preserve">
+    <value>Испытайте свою удачу, задав Miki вопросы о своей жизни!</value>
+  </data>
+  <data name="miki_command_description_pasta" xml:space="preserve">
+    <value>Сохраните пару строчек текста здесь.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_8ball" xml:space="preserve">
+    <value>&gt;8ball &lt;вопрос&gt;</value>
+  </data>
+  <data name="miki_command_usage_pasta" xml:space="preserve">
+    <value>&gt;pasta &lt;название&gt;
+&gt;mypasta
+&gt;newpasta &lt;название&gt; &lt;содержание&gt;
+&gt;searchpasta &lt;название&gt;
+&gt;editpasta &lt;название&gt; &lt;содержание&gt;
+&gt;infopasta &lt;название&gt;
+&gt;lovepasta &lt;название&gt;
+&gt;hatepasta &lt;название&gt;
+&gt;poppasta
+&gt;toppasta</value>
+    <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff
+Fuzzy</comment>
+  </data>
+  <data name="miki_module_fun_8ball_result" xml:space="preserve">
+    <value>🎱 {0}, на Ваш вопрос был получен ответ: `{1}`</value>
+  </data>
+  <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
+    <value>По вашему запросу не было найдено ни одного изображения :(</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
+    <value>Эта паста уже существует! Попробуйте другое название.</value>
+  </data>
+  <data name="miki_module_pasta_create_success" xml:space="preserve">
+    <value>Создана паста `{0}`!</value>
+  </data>
+  <data name="miki_module_pasta_delete_success" xml:space="preserve">
+    <value>Удалена паста `{0}`!</value>
+  </data>
+  <data name="miki_module_pasta_edit_success" xml:space="preserve">
+    <value>`{0}` изменено!</value>
+  </data>
+  <data name="miki_module_pasta_error_no_permissions" xml:space="preserve">
+    <value>Вы не можете {0} пасту, которую вы не создали!</value>
+  </data>
+  <data name="miki_module_pasta_error_null" xml:space="preserve">
+    <value>Такая паста не существует!</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
+    <value>Пожалуйста, введите тег или команду.</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_results" xml:space="preserve">
+    <value>По Вашему запросу ничего не найдено. Пожалуйста, уточните, что Вы имеете в виду.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify" xml:space="preserve">
+    <value>Пожалуйста, уточните пасту, которую Вы хотите {0}.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_check" xml:space="preserve">
+    <value>проверить</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_delete" xml:space="preserve">
+    <value>удалить</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_edit" xml:space="preserve">
+    <value>изменить</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_upvote" xml:space="preserve">
+    <value>upvote</value>
+  </data>
+  <data name="miki_module_pasta_identify_created_by" xml:space="preserve">
+    <value>Создатель:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_identify_date_created" xml:space="preserve">
+    <value>Дата создания:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_identify_rating" xml:space="preserve">
+    <value>Рейтинг:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_identify_times_used" xml:space="preserve">
+    <value>Раз использовано:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_mine_error_null" xml:space="preserve">
+    <value>Извините, но Вы не создали ещё ни одной пасты.</value>
+  </data>
+  <data name="miki_module_pasta_mine_header" xml:space="preserve">
+    <value>Пасты {0}</value>
+  </data>
+  <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
+    <value>Извините, но Я не могу найти пасты с `{0}`</value>
+  </data>
+  <data name="miki_module_pasta_search_footer" xml:space="preserve">
+    <value>Страница {0} из {1}</value>
+  </data>
+  <data name="miki_module_pasta_search_header" xml:space="preserve">
+    <value>🔎 Я нашла такие пасты:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_pasta_vote_success" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_success_message_generic" xml:space="preserve">
+    <value>Успех!</value>
+  </data>
+  <data name="miki_command_description_info" xml:space="preserve">
+    <value>Показывает информацию о боте и его создателе.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_prefix" xml:space="preserve">
+    <value>Изменяет префикс на вашем сервере (по умолчанию: &gt;) на какой-либо другой.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_info" xml:space="preserve">
+    <value>&gt;info</value>
+  </data>
+  <data name="miki_command_usage_prefix" xml:space="preserve">
+    <value>&gt;prefix ~</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_admin_disable_command" xml:space="preserve">
+    <value>Команда `{0}` выключена!</value>
+  </data>
+  <data name="miki_module_admin_disable_module" xml:space="preserve">
+    <value>Модуль `{0}` выключен!</value>
+  </data>
+  <data name="miki_module_admin_enable_command" xml:space="preserve">
+    <value>Команда `{0}` включена!</value>
+  </data>
+  <data name="miki_module_admin_enable_module" xml:space="preserve">
+    <value>Модуль`{0}` включен!</value>
+  </data>
+  <data name="miki_module_admin_error_module_disabled" xml:space="preserve">
+    <value>Модуль {0} выключен.</value>
+  </data>
+  <data name="miki_module_admin_kick_by" xml:space="preserve">
+    <value>💁 Кикнут</value>
+  </data>
+  <data name="miki_module_admin_kick_description" xml:space="preserve">
+    <value>Вы были кикнуты из **{0}**!</value>
+  </data>
+  <data name="miki_module_admin_kick_header" xml:space="preserve">
+    <value>⚠ KICK</value>
+  </data>
+  <data name="miki_module_admin_kick_reason" xml:space="preserve">
+    <value>💬 Причина</value>
+  </data>
+  <data name="miki_module_admin_prune_error_max" xml:space="preserve">
+    <value>Вы не можете удалить более 100 сообщений за одну команду.</value>
+  </data>
+  <data name="miki_module_admin_prune_error_no_access" xml:space="preserve">
+    <value>Я не могу удалить сообщения в этом канале. ):</value>
+  </data>
+  <data name="miki_module_admin_prune_success" xml:space="preserve">
+    <value>Удалено {0} сообщений!</value>
+  </data>
+  <data name="miki_module_general_calc_error" xml:space="preserve">
+    <value>Я не могу подсчитать подобное!</value>
+  </data>
+  <data name="miki_module_general_guildinfo_channels" xml:space="preserve">
+    <value>📺 Каналы</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_guildinfo_owned_by" xml:space="preserve">
+    <value>👑 Владелец</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_guildinfo_roles" xml:space="preserve">
+    <value>📜 Роли</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_guildinfo_users" xml:space="preserve">
+    <value>🙎 Пользователи</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_help_description" xml:space="preserve">
+    <value>Описание</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_help_dm" xml:space="preserve">
+    <value>Личное сообщение со списком моих команд было отправлено! Используйте `&gt;help [команда]` для получения более конкретной информации о команде!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_help_usage" xml:space="preserve">
+    <value>Использование</value>
+  </data>
+  <data name="miki_module_general_info_docs" xml:space="preserve">
+    <value>Документация</value>
+  </data>
+  <data name="miki_module_general_info_donate_string" xml:space="preserve">
+    <value>Приветствую Вас! Я создал Patreon, чтобы позволить людям поддержать Miki. Не останьтесь в стороне и помогите Miki в дальнейшем развитии!</value>
+  </data>
+  <data name="miki_module_general_info_links" xml:space="preserve">
+    <value>Ссылки:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_made_by_description" xml:space="preserve">
+    <value>Специальные благодарности: Florestina, Mei, Rappy, Rie, Rosie</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_made_by_header" xml:space="preserve">
+    <value>**Создатель:** Veld</value>
+  </data>
+  <data name="miki_module_general_info_patreon" xml:space="preserve">
+    <value>Patreon</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_reddit" xml:space="preserve">
+    <value>Сабреддит</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_server" xml:space="preserve">
+    <value>Сервер поддержки</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_twitter" xml:space="preserve">
+    <value>Твиттер</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_website" xml:space="preserve">
+    <value>Вебсайт</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_invite_dm" xml:space="preserve">
+    <value>Держи! :3</value>
+  </data>
+  <data name="miki_module_general_invite_message" xml:space="preserve">
+    <value>Я отправлю вам сообщение с приглашением.</value>
+  </data>
+  <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
+    <value>Невозможно установить префикс. Пожалуйста, используйте `&gt;help prefix`, чтобы увидеть как это работает.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_prefix_example_command_header" xml:space="preserve">
+    <value>Пример команды</value>
+  </data>
+  <data name="miki_module_general_prefix_success_header" xml:space="preserve">
+    <value>⚙️ Префикс изменён!</value>
+  </data>
+  <data name="miki_module_general_prefix_success_message" xml:space="preserve">
+    <value>Префикс изменён на **{0}**!</value>
+  </data>
+  <data name="miki_module_general_urban_definition" xml:space="preserve">
+    <value>Определение</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_urban_example" xml:space="preserve">
+    <value>Пример</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_urban_rating" xml:space="preserve">
+    <value>Рейтинг</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_help_didyoumean" xml:space="preserve">
+    <value>Возможно, Вы имели в виду:</value>
+  </data>
+  <data name="miki_module_help_error_null_header" xml:space="preserve">
+    <value>Команда не найдена.</value>
+  </data>
+  <data name="miki_module_help_error_null_message" xml:space="preserve">
+    <value>Это не команда. Для использования `{0}help [command]`, пожалуйста, используйте уже существующие команды!</value>
+  </data>
+  <data name="miki_module_whois_header" xml:space="preserve">
+    <value>Кто такой {0}!?</value>
+  </data>
+  <data name="miki_module_whois_tag_personal" xml:space="preserve">
+    <value>🙎 Профиль</value>
+  </data>
+  <data name="miki_accounts_level_up_content" xml:space="preserve">
+    <value>Уровень **{0}** повышен до **{1}**!</value>
+  </data>
+  <data name="miki_accounts_level_up_header" xml:space="preserve">
+    <value>☀️️ Уровень повышен!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_leaderboards" xml:space="preserve">
+    <value>Взгляните на элиту Miki!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_profile" xml:space="preserve">
+    <value>Посмотрите на свой прогресс в получении звания Miki Master!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_toggledm" xml:space="preserve">
+    <value>Позвольте Miki отправлять Вам личные сообщения!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_toggleerrors" xml:space="preserve">
+    <value>Позвольте Miki отправлять Вам личные сообщения с ошибками!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
+    <value>Позвольте Miki отправлять сообщения, не являющиеся командами!</value>
+  </data>
+  <data name="miki_command_usage_leaderboards" xml:space="preserve">
+    <value>&gt;leaderboards
+&gt;leaderboards local
+&gt;leaderboards mekos
+&gt;leaderboards commands</value>
+  </data>
+  <data name="miki_command_usage_profile" xml:space="preserve">
+    <value>&gt;profile
+&gt;profile &lt;@пользователь&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_toggledm" xml:space="preserve">
+    <value>&gt;toggledm</value>
+  </data>
+  <data name="miki_command_usage_toggleerrors" xml:space="preserve">
+    <value>&gt;toggleerrors</value>
+  </data>
+  <data name="miki_generic_achievements" xml:space="preserve">
+    <value>Достижения</value>
+  </data>
+  <data name="miki_generic_disabled" xml:space="preserve">
+    <value>выключено</value>
+  </data>
+  <data name="miki_generic_enabled" xml:space="preserve">
+    <value>включено</value>
+  </data>
+  <data name="miki_generic_global_information" xml:space="preserve">
+    <value>Общая информация</value>
+  </data>
+  <data name="miki_generic_information" xml:space="preserve">
+    <value>Информация</value>
+  </data>
+  <data name="miki_generic_mekos" xml:space="preserve">
+    <value>Mekos</value>
+  </data>
+  <data name="miki_generic_reward" xml:space="preserve">
+    <value>Награда</value>
+  </data>
+  <data name="miki_module_accounts_information_level" xml:space="preserve">
+    <value>Уровень: {0} ({1}/{2})</value>
+  </data>
+  <data name="miki_module_accounts_information_rank" xml:space="preserve">
+    <value>Ранк: #{0}</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_commands_header" xml:space="preserve">
+    <value>Leaderboards: Использование команд</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_leaderboards_header" xml:space="preserve">
+    <value>Leaderboards: Общий опыт</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_local_header" xml:space="preserve">
+    <value>Leaderboards: Локальный опыт</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_mekos_header" xml:space="preserve">
+    <value>Leaderboards: Mekos</value>
+  </data>
+  <data name="miki_module_accounts_profile_error_null" xml:space="preserve">
+    <value>Профиль {0} не существует!</value>
+  </data>
+  <data name="miki_module_accounts_profile_favourite_command" xml:space="preserve">
+    <value>Любимая команда</value>
+  </data>
+  <data name="miki_module_accounts_profile_footer" xml:space="preserve">
+    <value>Участник с {0} | Запрос занял: {1}ms</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_profile_header" xml:space="preserve">
+    <value>Профиль {0]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_profile_marriedto" xml:space="preserve">
+    <value>В браке с:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_profile_url" xml:space="preserve">
+    <value>Ссылка на профиль:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_settings_dm" xml:space="preserve">
+    <value>{0} личных сообщений</value>
+  </data>
+  <data name="miki_module_settings_error_dm" xml:space="preserve">
+    <value>{0} уведомлений с ошибками</value>
+  </data>
+  <data name="miki_module_settings_guild_notifications" xml:space="preserve">
+    <value>{0} уведомлений гильдии</value>
+  </data>
+  <data name="miki_placeholder_null" xml:space="preserve">
+    <value>Нет (пока что!)</value>
+  </data>
+  <data name="miki_module_general_urban_author" xml:space="preserve">
+    <value>от {0}</value>
+  </data>
+  <data name="miki_module_accounts_divorce_content" xml:space="preserve">
+    <value>{0} и {1} теперь не состоят в браке!</value>
+  </data>
+  <data name="miki_module_accounts_divorce_header" xml:space="preserve">
+    <value>🔔 Развод</value>
+  </data>
+  <data name="miki_module_accounts_error_no_Marriage" xml:space="preserve">
+    <value>Вы не в браке с этим человеком!</value>
+  </data>
+  <data name="miki_module_general_prefix_help" xml:space="preserve">
+    <value>Ныне использующийся префикс **{0}**!</value>
+  </data>
+  <data name="miki_module_general_prefix_help_header" xml:space="preserve">
+    <value>Префикс</value>
+  </data>
+  <data name="miki_command_description_divorce" xml:space="preserve">
+    <value>Вы устали быть с этим человеком? Разведитесь сегодня!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_divorce" xml:space="preserve">
+    <value>&gt;divorce &lt;@пользователь&gt;
+&gt;divorce &lt;@пользователь&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_help_aliases" xml:space="preserve">
+    <value>Aliases</value>
+  </data>
+  <data name="miki_label_prefix" xml:space="preserve">
+    <value>Префикс</value>
+  </data>
+  <data name="miki_module_general_guildinfo_roles_count" xml:space="preserve">
+    <value>Количество ролей</value>
+  </data>
+  <data name="miki_module_general_guildinfo_voicechannels" xml:space="preserve">
+    <value>Голосовых каналов</value>
+  </data>
+  <data name="miki_command_description_marry" xml:space="preserve">
+    <value>Обручитесь со своей второй половинкой &lt;3</value>
+  </data>
+  <data name="miki_command_usage_marry" xml:space="preserve">
+    <value>&gt;marry &lt;@пользователь&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
+    <value>Вы уже сделали предложение/в браке с этим человеком.</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
+    <value>Пожалуйста, упомяните человека, которому хотите сделать предложение!</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
+    <value>Вы или кто-то другой до сих пор не имеет Miki аккаунта. Заставьте их говорить больше!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_marry_text" xml:space="preserve">
+    <value>{0} сделал предложение {1}!</value>
+  </data>
+  <data name="miki_module_accounts_marry_text2" xml:space="preserve">
+    <value>Вы принимаете?</value>
+  </data>
+  <data name="miki_terms_mention" xml:space="preserve">
+    <value>упоминание</value>
+  </data>
+  <data name="miki_command_declineMarriage_description" xml:space="preserve">
+    <value>Только если вы действительно не хотите состоять в браке.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_declineMarriage_usage" xml:space="preserve">
+    <value>&gt;declineMarriage @пользователь
+&gt;declineMarriage *</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_Marriage_all_declined" xml:space="preserve">
+    <value>Все предложения отклонены!</value>
+  </data>
+  <data name="miki_Marriage_declined" xml:space="preserve">
+    <value>Предложение было отклонено.</value>
+  </data>
+  <data name="miki_Marriage_no_mention" xml:space="preserve">
+    <value>Пожалуйста, упомяните человека, с которым хотите развестись!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_Marriage_null" xml:space="preserve">
+    <value>Этот пользователь не делал предложение Вам!</value>
+  </data>
+  <data name="miki_admin_cannot_disable" xml:space="preserve">
+    <value>{0} не может быть выключено</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_acceptMarriage" xml:space="preserve">
+    <value>Найдите свою настоящую любовь, примите предложение!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_ban" xml:space="preserve">
+    <value>Избавьтесь от недругов и никогда не увидите их снова!</value>
+  </data>
+  <data name="miki_command_description_buyMarriageslot" xml:space="preserve">
+    <value>Купите больше слотов для своих мужей и жён. После каждой такой покупки стоимость увеличивается на 2,500 мекосов. Максимально можно иметь 10 слотов.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_clean" xml:space="preserve">
+    <value>Удаляет последние сообщения от Miki!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_daily" xml:space="preserve">
+    <value>Получите свои ежедневные мекосы!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_declineMarriage" xml:space="preserve">
+    <value>Отклоните предложение другого человека. Эта команда может быть использована для отмены собственного предложения! Используйте *, чтобы отменить все предложения сразу.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_give" xml:space="preserve">
+    <value>Подарите любовь и мекосы своим друзьям...В основном мекосы, конечно же.</value>
+  </data>
+  <data name="miki_command_description_kick" xml:space="preserve">
+    <value>Кикайте кого угодно с силой Miki!</value>
+  </data>
+  <data name="miki_command_description_mekos" xml:space="preserve">
+    <value>Покажите свои мекосы миру!</value>
+  </data>
+  <data name="miki_command_description_prune" xml:space="preserve">
+    <value>Почистите свой чат.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setcommand" xml:space="preserve">
+    <value>Выключите или включите определенные команды с помощью этой команды! (Просим Вас не отключать эту команду)</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setmodule" xml:space="preserve">
+    <value>Выключите или включите модули и все фоновые процессы с помощью этой команды!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setrolelevel" xml:space="preserve">
+    <value>Позволяет пользователям получить роль по достижению определенного уровня!</value>
+  </data>
+  <data name="miki_command_description_showproposals" xml:space="preserve">
+    <value>Посмотрите на все предложения, которые Вы отправили или получили, с помощью этой команды!</value>
+  </data>
+  <data name="miki_command_description_softban" xml:space="preserve">
+    <value>Накажите человека, который был груб с Вами.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_syncavatar" xml:space="preserve">
+    <value>Синхронизируйте свой аватар с базой Miki!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_syncname" xml:space="preserve">
+    <value>Синхронизируйте свой ник с базой Miki!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_acceptMarriage" xml:space="preserve">
+    <value>&gt;acceptMarriage &lt;@пользователь&gt;</value>
+  </data>
+  <data name="miki_command_usage_ban" xml:space="preserve">
+    <value>&gt;ban &lt;@пользователь&gt; [причина]
+&gt;ban &lt;id пользователя&gt; [причина]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_buyMarriageslot" xml:space="preserve">
+    <value>&gt;buyMarriageslot</value>
+  </data>
+  <data name="miki_command_usage_clean" xml:space="preserve">
+    <value>&gt;clean</value>
+  </data>
+  <data name="miki_command_usage_daily" xml:space="preserve">
+    <value>&gt;daily</value>
+  </data>
+  <data name="miki_command_usage_declineMarriage" xml:space="preserve">
+    <value>&gt;declineMarriage &lt;@пользователь&gt;
+&gt;declineMarriage *</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_give" xml:space="preserve">
+    <value>&gt;give &lt;@пользователь&gt; &lt;кол-во&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_kick" xml:space="preserve">
+    <value>&gt;kick &lt;@пользователь&gt; [причина]
+&gt;kick &lt;id пользователя&gt; [причина]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_mekos" xml:space="preserve">
+    <value>&gt;mekos</value>
+  </data>
+  <data name="miki_command_usage_prune" xml:space="preserve">
+    <value>&gt;prune [кол-во сообщений]</value>
+  </data>
+  <data name="miki_command_usage_setcommand" xml:space="preserve">
+    <value>&gt;setcommand &lt;команда&gt; 1 для включения
+&gt;setcommand &lt;команда&gt; 0 для выключения</value>
+  </data>
+  <data name="miki_command_usage_setmodule" xml:space="preserve">
+    <value>&gt;setmodule &lt;команда&gt; 1 для включения
+&gt;setmodule &lt;команда&gt; 0 для выключения</value>
+  </data>
+  <data name="miki_command_usage_setrolelevel" xml:space="preserve">
+    <value>&gt;setrolelevel &lt;название роли&gt; &lt;уровень&gt;</value>
+  </data>
+  <data name="miki_command_usage_showproposals" xml:space="preserve">
+    <value>&gt;showproposals</value>
+  </data>
+  <data name="miki_command_usage_softban" xml:space="preserve">
+    <value>&gt;softban &lt;@пользователь&gt; [причина]
+&gt;softban &lt;id пользователя&gt; [причина]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_syncavatar" xml:space="preserve">
+    <value>&gt;syncavatar</value>
+  </data>
+  <data name="miki_command_usage_syncname" xml:space="preserve">
+    <value>&gt;syncname</value>
+  </data>
+  <data name="miki_command_usage_toggleguildnotifications" xml:space="preserve">
+    <value>&gt;toggleguildnotifications</value>
+  </data>
+  <data name="miki_command_description_ask" xml:space="preserve">
+    <value>Задайте своим друзьям пару глупых вопросов.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_bird" xml:space="preserve">
+    <value>Птицы слишком милые, чтобы не сделать для них отдельную команду!</value>
+  </data>
+  <data name="miki_command_description_cage" xml:space="preserve">
+    <value>NICK CAGE PICTURES</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_cat" xml:space="preserve">
+    <value>Мяу, я генератор картинок с котиками :3</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_compliment" xml:space="preserve">
+    <value>Я скажу Вам персональный комплимент. ;)</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_confused" xml:space="preserve">
+    <value>Покажите своему другу в какой вы растерянности с помощью силы милых аниме девочек!</value>
+  </data>
+  <data name="miki_command_description_ctb" xml:space="preserve">
+    <value>Ловите фрукты и удивляйте друзей с помощью моей команды!</value>
+  </data>
+  <data name="miki_command_description_dog" xml:space="preserve">
+    <value>Милые собачки, которые были отобраны командой разработчиков Miki!</value>
+  </data>
+  <data name="miki_command_description_e621" xml:space="preserve">
+    <value>По статистике, непристойными вещами занимаются те, у кого больше волос.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_gelbooru" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_gif" xml:space="preserve">
+    <value>Гив ми олл зе гифс!</value>
+  </data>
+  <data name="miki_command_description_img" xml:space="preserve">
+    <value>Найдите изображение с любыми тегами!</value>
+  </data>
+  <data name="miki_command_description_lewd" xml:space="preserve">
+    <value>Кто-то из вашего окружения помешан на хентае? Покажите своё недовольство с помощью .</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_lunch" xml:space="preserve">
+    <value>Гав-гав! Что сегодня на ланч?</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_mania" xml:space="preserve">
+    <value>Вы считаете себя королём печати? Покажите всем ваш ранк в osu!manMiki.Framework с помощью данной команды!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_osu" xml:space="preserve">
+    <value>Покажите как вы гордитесь тем, что можете нажимать на кружки!</value>
+  </data>
+  <data name="miki_command_description_pick" xml:space="preserve">
+    <value>Испуганы каким-то выбором? Давайте я выберу за вас!</value>
+  </data>
+  <data name="miki_command_description_pout" xml:space="preserve">
+    <value>Если вы в растерянности, грустите или рассержены на кого-то, то покажите всем пару картинок с цундере &gt;:T</value>
+  </data>
+  <data name="miki_command_description_pun" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_roll" xml:space="preserve">
+    <value>Зарольте от 1 до 100. Если вам выпадает число, которое большее 84, то вы победите этого глупого тролля!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_roulette" xml:space="preserve">
+    <value>Делайте весёлые раздачи чего-либо, выберите случайного человека со своего сервера и подарите им немного известности и славы!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_rule34" xml:space="preserve">
+    <value>Не существует того, что бы не имело бы порно версии.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_safe" xml:space="preserve">
+    <value>Получите safe for work картинки с милыми аниме девочками! Все доступные теги могут быть найдены здесь: &lt;https://safebooru.org/index.php?page=tags&amp;s=list&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_slots" xml:space="preserve">
+    <value>Проверьте свою удачу с нашим на 100% честным игровым автоматом!</value>
+  </data>
+  <data name="miki_command_description_smug" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_taiko" xml:space="preserve">
+    <value>дон дон дон кат дон кат дон дон кат</value>
+  </data>
+  <data name="miki_command_usage_ask" xml:space="preserve">
+    <value>&gt;ask &lt;вопрос&gt;</value>
+  </data>
+  <data name="miki_command_usage_bird" xml:space="preserve">
+    <value>&gt;bird</value>
+  </data>
+  <data name="miki_command_usage_cage" xml:space="preserve">
+    <value>&gt;cage</value>
+  </data>
+  <data name="miki_command_usage_cat" xml:space="preserve">
+    <value>&gt;cat</value>
+  </data>
+  <data name="miki_command_usage_compliment" xml:space="preserve">
+    <value>&gt;compliment</value>
+  </data>
+  <data name="miki_command_usage_confused" xml:space="preserve">
+    <value>&gt;confused</value>
+  </data>
+  <data name="miki_command_usage_ctb" xml:space="preserve">
+    <value>&gt;ctb &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_dog" xml:space="preserve">
+    <value>&gt;dog</value>
+  </data>
+  <data name="miki_command_usage_e621" xml:space="preserve">
+    <value>&gt;e621 &lt;e621 теги&gt;</value>
+  </data>
+  <data name="miki_command_usage_gelbooru" xml:space="preserve">
+    <value>&gt;gelbooru &lt;gelbooru теги&gt;</value>
+  </data>
+  <data name="miki_command_usage_gif" xml:space="preserve">
+    <value>&gt;gif [теги]</value>
+  </data>
+  <data name="miki_command_usage_img" xml:space="preserve">
+    <value>&gt;img [теги]</value>
+  </data>
+  <data name="miki_command_usage_lewd" xml:space="preserve">
+    <value>&gt;lewd</value>
+  </data>
+  <data name="miki_command_usage_lunch" xml:space="preserve">
+    <value>&gt;lunch</value>
+  </data>
+  <data name="miki_command_usage_mania" xml:space="preserve">
+    <value>&gt;manMiki.Framework &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_osu" xml:space="preserve">
+    <value>&gt;osu &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_usage_pick" xml:space="preserve">
+    <value>&gt;pick &lt;вариант1&gt;,[вариант2],[...]</value>
+  </data>
+  <data name="miki_command_usage_pout" xml:space="preserve">
+    <value>&gt;pout</value>
+  </data>
+  <data name="miki_command_usage_pun" xml:space="preserve">
+    <value>&gt;pun</value>
+  </data>
+  <data name="miki_command_usage_roll" xml:space="preserve">
+    <value>&gt;roll [количество]
+&gt;roll [кол-во игральных костей]d[кол-во сторон кости]</value>
+  </data>
+  <data name="miki_command_usage_roulette" xml:space="preserve">
+    <value>&gt;roulette [текст]</value>
+  </data>
+  <data name="miki_command_usage_rule34" xml:space="preserve">
+    <value>&gt;rule34 &lt;rule34 теги&gt;</value>
+  </data>
+  <data name="miki_command_usage_safe" xml:space="preserve">
+    <value>&gt;safe &lt;tags&gt;</value>
+  </data>
+  <data name="miki_command_usage_slots" xml:space="preserve">
+    <value>&gt;slots &lt;ваша ставка&gt;</value>
+  </data>
+  <data name="miki_command_usage_smug" xml:space="preserve">
+    <value>&gt;smug</value>
+  </data>
+  <data name="miki_command_usage_taiko" xml:space="preserve">
+    <value>&gt;taiko &lt;osu username&gt;</value>
+  </data>
+  <data name="miki_command_description_remind" xml:space="preserve">
+    <value>Когда вам нужно засечь время, которое будет готовиться пицца, или не забыть позвонить маме, Miki тут как тут!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_remind" xml:space="preserve">
+    <value>&gt;remind me to &lt;действие&gt; in &lt;время&gt; (Например: 2 minutes and 11 seconds)</value>
+  </data>
+  <data name="pasta_page_index" xml:space="preserve">
+    <value>Страница {0} из {1}</value>
+  </data>
+  <data name="miki_command_description_createpasta" xml:space="preserve">
+    <value>Создайте свою собственную пасту и поделитесь ей со всеми!</value>
+  </data>
+  <data name="miki_command_description_deletepasta" xml:space="preserve">
+    <value>Жалеете о созданной пасте? Удалите её с помощью этой команды!</value>
+  </data>
+  <data name="miki_command_description_editpasta" xml:space="preserve">
+    <value>Не удовлетворены пастами, которые у вас есть? Измените их, чтобы они смотрелись круче!</value>
+  </data>
+  <data name="miki_command_description_guildconfig" xml:space="preserve">
+    <value>Настройте свой аккаунт гильдии так, как хотите!</value>
+  </data>
+  <data name="miki_command_description_guildnewrival" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_guildprofile" xml:space="preserve">
+    <value>Эта команда покажет всю статистику Вашей гильдии!</value>
+  </data>
+  <data name="miki_command_description_guildtop" xml:space="preserve">
+    <value>Посмотрите на топовые (на основе опыта) гильдии!</value>
+  </data>
+  <data name="miki_command_description_guildweekly" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_hatepasta" xml:space="preserve">
+    <value>Вам совсем не нравится паста? Покажите свою ненависть с помощью этой команды!</value>
+  </data>
+  <data name="miki_command_description_infopasta" xml:space="preserve">
+    <value>Хотите узнать кто сделал пасту? Используйте эту команду!</value>
+  </data>
+  <data name="miki_command_description_lovepasta" xml:space="preserve">
+    <value>У вас есть любимая паста? Покажите свою любовь благодаря этой команде!</value>
+  </data>
+  <data name="miki_command_description_mypasta" xml:space="preserve">
+    <value>Список всех Ваших паст!</value>
+  </data>
+  <data name="miki_command_description_poppasta" xml:space="preserve">
+    <value>Эта команда показывает самые используемые пасты.</value>
+  </data>
+  <data name="miki_command_description_searchpasta" xml:space="preserve">
+    <value>Поищите новые пасты и откройте для себя новые мемасы!</value>
+  </data>
+  <data name="miki_command_description_toppasta" xml:space="preserve">
+    <value>Эта команда показывает самые популярные пасты! </value>
+  </data>
+  <data name="miki_command_usage_createpasta" xml:space="preserve">
+    <value>&gt;createpasta &lt;тег&gt; &lt;содержание&gt;</value>
+  </data>
+  <data name="miki_command_usage_deletepasta" xml:space="preserve">
+    <value>&gt;deletepasta &lt;тег&gt;</value>
+  </data>
+  <data name="miki_command_usage_editpasta" xml:space="preserve">
+    <value>&gt;editpasta &lt;тег&gt; &lt;новое содержаник&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildconfig" xml:space="preserve">
+    <value> &gt;guildconfig expneeded &lt;кол-во&gt;
+&gt;guildconfig visible &lt;да/нет&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildnewrival" xml:space="preserve">
+    <value>
+ &gt;guildnewrival</value>
+  </data>
+  <data name="miki_command_usage_guildprofile" xml:space="preserve">
+    <value>
+ &gt;guildprofile</value>
+  </data>
+  <data name="miki_command_usage_guildtop" xml:space="preserve">
+    <value>&gt;guildtop</value>
+  </data>
+  <data name="miki_command_usage_guildweekly" xml:space="preserve">
+    <value>&gt;guildweekly</value>
+  </data>
+  <data name="miki_command_usage_infopasta" xml:space="preserve">
+    <value> &gt;infopasta &lt;тег&gt;</value>
+  </data>
+  <data name="miki_command_usage_lovepasta" xml:space="preserve">
+    <value>&gt;lovepasta &lt;тег&gt;</value>
+  </data>
+  <data name="miki_command_usage_mypasta" xml:space="preserve">
+    <value>&gt;mypasta</value>
+  </data>
+  <data name="miki_command_usage_poppasta" xml:space="preserve">
+    <value>&gt;poppasta</value>
+  </data>
+  <data name="miki_command_usage_searchpasta" xml:space="preserve">
+    <value>&gt;searchpasta &lt;тег&gt; [страница=1]</value>
+  </data>
+  <data name="miki_command_usage_toppasta" xml:space="preserve">
+    <value>&gt;toppasta</value>
+  </data>
+  <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
+    <value>У Вас недостаточно опыта, необходимого для получения наград. Рекомендуем подождать немного, пока Вы не накопите нужное количество опыта!
+
+Вам нужно хотя бы **{0}** опыта до того, как Вы сможете использовать эту команду в гильдии.</value>
+  </data>
+  <data name="miki_terms_weekly" xml:space="preserve">
+    <value>Еженедельные</value>
+  </data>
+  <data name="createpasta_error_no_content" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="infopasta_error_no_arg" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="infopasta_rating" xml:space="preserve">
+    <value>Рейтинг</value>
+  </data>
+  <data name="lunch_line" xml:space="preserve">
+    <value>
+ Woof woof! What&apos;s for lunch?</value>
+  </data>
+  <data name="miki_blackjack" xml:space="preserve">
+    <value>Блекджек</value>
+  </data>
+  <data name="miki_blackjack_cards_miki" xml:space="preserve">
+    <value>Miki ({0})</value>
+  </data>
+  <data name="miki_blackjack_cards_you" xml:space="preserve">
+    <value>Вы ({0})</value>
+  </data>
+  <data name="miki_blackjack_explanation" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_blackjack_hit" xml:space="preserve">
+    <value>Используйте `hit`, чтобы взять новую карту.</value>
+  </data>
+  <data name="miki_blackjack_lose_description" xml:space="preserve">
+    <value>Вы проиграли свою ставку Miki.</value>
+  </data>
+  <data name="miki_blackjack_lose_title" xml:space="preserve">
+    <value>Miki выигрывает!</value>
+  </data>
+  <data name="miki_blackjack_no_arg" xml:space="preserve">
+    <value>Вы не указали ставку! Пример: &gt;blackjack &lt;кол-во&gt;</value>
+  </data>
+  <data name="miki_blackjack_stay" xml:space="preserve">
+    <value>Используйте `stay`, чтобы завершить игру.</value>
+  </data>
+  <data name="miki_blackjack_win_description" xml:space="preserve">
+    <value>Miki не смогла перебить Ваши очки и это значит, что вы получаете джекпот! Вы заработали {0} мекосов!</value>
+  </data>
+  <data name="miki_blackjack_win_title" xml:space="preserve">
+    <value>Вы выиграли!</value>
+  </data>
+  <data name="miki_command_description_blackjack" xml:space="preserve">
+    <value>Проиграйте все свои мекосы в самой честной игре в блекджек против Miki!</value>
+  </data>
+  <data name="miki_command_usage_blackjack" xml:space="preserve">
+    <value>&gt;blackjack &lt;кол-во&gt;</value>
+  </data>
+  <data name="mypasta_error_no_pastas" xml:space="preserve">
+    <value>Увы, но у Вас ещё нет никаких паст.</value>
+  </data>
+  <data name="mypasta_title" xml:space="preserve">
+    <value>Пасты {0}</value>
+  </data>
+  <data name="pasta_error_no_arg" xml:space="preserve">
+    <value>Пожалуйста, введите один из тегов или команд.</value>
+  </data>
+  <data name="poppasta_title" xml:space="preserve">
+    <value>Самые популярные пасты</value>
+  </data>
+  <data name="searchpasta_error_no_arg" xml:space="preserve">
+    <value>Пожалуйста, укажите запрос для поиска.</value>
+  </data>
+  <data name="toppasta_title" xml:space="preserve">
+    <value>Топ пасты</value>
+  </data>
+
+</root>
