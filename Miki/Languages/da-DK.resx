@@ -8,7 +8,7 @@
     The primary goals of this format is to allow a simple XML format 
     that is mostly human readable. The generation and parsing of the 
     various data types are done through the TypeConverter classes 
-    assocMiki.Frameworkted with the data types.
+    associated with the data types.
     
     Example:
     
@@ -20,7 +20,7 @@
     <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
     <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
     <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serMiki.Frameworklized .NET Framework object]</value>
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
     <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
@@ -33,10 +33,10 @@
     Each data row contains a name, and value. The row also contains a 
     type or mimetype. Type corresponds to a .NET class that support 
     text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serMiki.Frameworklized and stored with the 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
     
-    The mimetype is used for serMiki.Frameworklized objects, and tells the 
+    The mimetype is used for serialized objects, and tells the 
     ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
     
@@ -45,17 +45,17 @@
     read any of the formats listed below.
     
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serMiki.Frameworklized with 
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serMiki.Frameworklized with 
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serMiki.Frameworklized into a byte array 
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -77,7 +77,7 @@
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alMiki.Frameworks" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string" />
               <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="miki_errors_enabled_message" xml:space="preserve">
-    <value>Miki stødte på et problem i kørslen af anmodning. Vi vil sende dig en log og instruktioner vMiki.Framework. DM</value>
+    <value>Miki stødte på et problem i kørslen af anmodning. Vi vil sende dig en log og instruktioner via. DM</value>
     <comment>This message is sent when miki catches a uncaught error</comment>
   </data>
   <data name="miki_error_message_generic" xml:space="preserve">
     <value>Noget gik galt!</value>
-    <comment>When no other error message is applMiki.Frameworkble to this version</comment>
+    <comment>When no other error message is appliable to this version</comment>
   </data>
   <data name="miki_join_message" xml:space="preserve">
     <value>Hej, **Miki**! til tjeneste!
@@ -561,7 +561,7 @@ Den blev presset til det.</value>
     <comment>If this pun can&apos;t be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
   </data>
   <data name="miki_module_fun_roll_result" xml:space="preserve">
-    <value>{0} rullede en **{1}**</value>
+    <value>🎲 {0} rullede en **{1}**</value>
   </data>
   <data name="miki_module_fun_roulette_winner" xml:space="preserve">
     <value>Og vinderen af {0} er {1} !</value>
@@ -575,6 +575,7 @@ Den blev presset til det.</value>
   </data>
   <data name="miki_module_fun_slots_win_amount" xml:space="preserve">
     <value>{0}🔸 er blevet tilføjet din Miki konto.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_fun_slots_win_header" xml:space="preserve">
     <value>Du vinder!</value>
@@ -590,21 +591,7 @@ Den blev presset til det.</value>
     <value>&gt;8ball &lt;spørgsmål&gt;</value>
   </data>
   <data name="miki_command_usage_pasta" xml:space="preserve">
-    <value>pasta new &lt;nøgleord&gt; &lt;indholdet af pastaen&gt;
-pasta + &lt;nøgleord&gt; &lt;indholdet af pastaen&gt;
-pasta find &lt;nøgleord&gt;
-pasta search &lt;nøgleord&gt;
-pasta edit &lt;nøgleord&gt; &lt;nyt indholdet af pastaen&gt;
-pasta change &lt;nøgleord&gt; &lt;nyt indholdet af pastaen&gt;
-pasta who &lt;nøgleord&gt;
-pasta whom &lt;nøgleord&gt;
-pasta ? &lt;nøgleord&gt;
-pasta upvote &lt;nøgleord&gt;
-pasta &lt;3 &lt;nøgleord&gt;
-pasta love &lt;nøgleord&gt;
-pasta downvote &lt;nøgleord&gt;
-pasta &lt;/3 &lt;nøgleord&gt;
-pasta hate &lt;nøgleord&gt;</value>
+    <value>pasta &lt;nøgleord&gt;</value>
     <comment>Please do not change &quot;pasta new&quot;, do change &lt;keyword&gt; stuff
 Fuzzy</comment>
   </data>
@@ -724,15 +711,18 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_admin_kick_by" xml:space="preserve">
     <value>Kick&apos;et af</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
     <value>Du er blevet kick&apos;et fra **{0}**!</value>
   </data>
   <data name="miki_module_admin_kick_header" xml:space="preserve">
     <value>⚠ KICK</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_admin_kick_reason" xml:space="preserve">
     <value>💬 Årsag</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_admin_prune_error_max" xml:space="preserve">
     <value>Man kan ikke slette mere end 100 beskeder af gangen.</value>
@@ -778,6 +768,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_donate_string" xml:space="preserve">
     <value>Hi allesammen! Jeg har lavet en Patreon, der giver folk  muligheden for at støtte Miki. Tjek den gerne ud, og donere hvis du kan!</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_links" xml:space="preserve">
     <value>Hyperlinks:</value>
@@ -852,9 +843,11 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_whois_header" xml:space="preserve">
     <value>Hvem er {0}!?</value>
+    <comment>example: Who is Veld!?</comment>
   </data>
   <data name="miki_module_whois_tag_personal" xml:space="preserve">
     <value>Personligt</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_accounts_level_up_content" xml:space="preserve">
     <value>**{0}** steg til level **{1}**!</value>
@@ -881,12 +874,14 @@ Fuzzy</comment>
   </data>
   <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
     <value>Skifter bottens evne til at sende ikke-kommando medelelser i den nuværende kanal.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_leaderboards" xml:space="preserve">
     <value>&gt;leaderboards
 &gt;leaderboards local
 &gt;leaderboards mekos
 &gt;leaderboards commands</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_profile" xml:space="preserve">
     <value>&gt;profile
@@ -963,12 +958,15 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_settings_dm" xml:space="preserve">
     <value>{0} personlige meddelelser</value>
+    <comment>example [enabled:disabled] direct messages</comment>
   </data>
   <data name="miki_module_settings_error_dm" xml:space="preserve">
     <value>{0} fejl meddelelser</value>
+    <comment>example [enabled:disabled] error notifications</comment>
   </data>
   <data name="miki_module_settings_guild_notifications" xml:space="preserve">
     <value>{0} guild notifikationer</value>
+    <comment>example [enabled:disabled] guild notifications</comment>
   </data>
   <data name="miki_placeholder_null" xml:space="preserve">
     <value>ingen (endnu!)</value>
@@ -981,8 +979,9 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_accounts_divorce_header" xml:space="preserve">
     <value>🔔 Skilsmisse</value>
+    <comment>Fuzzy</comment>
   </data>
-  <data name="miki_module_accounts_error_no_Marriage" xml:space="preserve">
+  <data name="miki_module_accounts_error_no_marriage" xml:space="preserve">
     <value>Du er ikke gift med denne person.</value>
   </data>
   <data name="miki_module_general_prefix_help" xml:space="preserve">
@@ -1001,7 +1000,7 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_aliases" xml:space="preserve">
-    <value>AlMiki.Frameworksser</value>
+    <value>Aliasser</value>
   </data>
   <data name="miki_label_prefix" xml:space="preserve">
     <value>Prefix</value>
@@ -1034,44 +1033,45 @@ Fuzzy</comment>
   </data>
   <data name="miki_module_accounts_marry_text2" xml:space="preserve">
     <value>Accepterer du?</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_terms_mention" xml:space="preserve">
     <value>benævn</value>
   </data>
-  <data name="miki_command_declineMarriage_description" xml:space="preserve">
+  <data name="miki_command_declinemarriage_description" xml:space="preserve">
     <value>kun hvis du virkelig ikke ønsker at indgå i et ægteskab.</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_command_declineMarriage_usage" xml:space="preserve">
-    <value>&gt;declineMarriage &lt;@bruger&gt;
-&gt;declineMarriage *</value>
+  <data name="miki_command_declinemarriage_usage" xml:space="preserve">
+    <value>&gt;declinemarriage &lt;@bruger&gt;
+&gt;declinemarriage *</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_Marriage_all_declined" xml:space="preserve">
+  <data name="miki_marriage_all_declined" xml:space="preserve">
     <value>Alle tilbud om ægteskab er blevet afslået.</value>
   </data>
-  <data name="miki_Marriage_declined" xml:space="preserve">
+  <data name="miki_marriage_declined" xml:space="preserve">
     <value>Tilbuddet om ægteskab er blevet afslået.</value>
   </data>
-  <data name="miki_Marriage_no_mention" xml:space="preserve">
+  <data name="miki_marriage_no_mention" xml:space="preserve">
     <value>Vær venlig at benævne personen du ønsker at afvise.</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_Marriage_null" xml:space="preserve">
+  <data name="miki_marriage_null" xml:space="preserve">
     <value>Denne bruger har ikke friet til dig.</value>
   </data>
   <data name="miki_admin_cannot_disable" xml:space="preserve">
     <value>{0} kan ikke deaktiveres.</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_command_description_acceptMarriage" xml:space="preserve">
+  <data name="miki_command_description_acceptmarriage" xml:space="preserve">
     <value>Find din eneste ene.</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_ban" xml:space="preserve">
     <value>Ban&apos;er ballademager fra serveren.</value>
   </data>
-  <data name="miki_command_description_buyMarriageslot" xml:space="preserve">
+  <data name="miki_command_description_buymarriageslot" xml:space="preserve">
     <value>Køb adgang til flere ægteskaber. Prisen stiger med 2500 per køb, og det maksimale antal ægteskaber er ti.</value>
     <comment>Fuzzy</comment>
   </data>
@@ -1083,7 +1083,7 @@ Fuzzy</comment>
     <value>Skaf dine daglige mekos.</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_command_description_declineMarriage" xml:space="preserve">
+  <data name="miki_command_description_declinemarriage" xml:space="preserve">
     <value>Afvis dine eller andres frierier til dig. Denne kommando kan tilbagetrækker dine frierier. Brug * til at afvise alle ægteskabs frierier.</value>
     <comment>Fuzzy</comment>
   </data>
@@ -1126,16 +1126,16 @@ Fuzzy</comment>
     <value>Synkroniser dit brugernavn med Mikis database.</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_command_usage_acceptMarriage" xml:space="preserve">
-    <value>&gt;acceptMarriage &lt;@bruger&gt;</value>
+  <data name="miki_command_usage_acceptmarriage" xml:space="preserve">
+    <value>&gt;acceptmarriage &lt;@bruger&gt;</value>
   </data>
   <data name="miki_command_usage_ban" xml:space="preserve">
     <value>&gt;ban &lt;@bruger&gt; [årsag]
 &gt;ban &lt;bruger id&gt; [årsag]</value>
     <comment>Fuzzy</comment>
   </data>
-  <data name="miki_command_usage_buyMarriageslot" xml:space="preserve">
-    <value>&gt;buyMarriageslot</value>
+  <data name="miki_command_usage_buymarriageslot" xml:space="preserve">
+    <value>&gt;buymarriageslot</value>
   </data>
   <data name="miki_command_usage_clean" xml:space="preserve">
     <value>&gt;clean</value>
@@ -1143,9 +1143,9 @@ Fuzzy</comment>
   <data name="miki_command_usage_daily" xml:space="preserve">
     <value>&gt;daily</value>
   </data>
-  <data name="miki_command_usage_declineMarriage" xml:space="preserve">
-    <value>&gt;declineMarriage &lt;@bruger&gt;
-&gt;declineMarriage *</value>
+  <data name="miki_command_usage_declinemarriage" xml:space="preserve">
+    <value>&gt;declinemarriage &lt;@bruger&gt;
+&gt;declinemarriage *</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_give" xml:space="preserve">
@@ -1203,7 +1203,7 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_cat" xml:space="preserve">
-    <value>MMiki.Frameworkv, jeg er en kattebilledegenerator.</value>
+    <value>Miav, jeg er en kattebilledegenerator.</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_compliment" xml:space="preserve">
@@ -1242,7 +1242,7 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_mania" xml:space="preserve">
-    <value>Er du kongen af tastaturet? Denne kommando viser din osu!manMiki.Framework-rang.</value>
+    <value>Er du kongen af tastaturet? Denne kommando viser din osu!mania-rang.</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_osu" xml:space="preserve">
@@ -1250,6 +1250,7 @@ Fuzzy</comment>
   </data>
   <data name="miki_command_description_pick" xml:space="preserve">
     <value>Bange for at tage beslutninger? Jeg tager dem for dig.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_pout" xml:space="preserve">
     <value>Når du er sure på nogen, så send dem noget tsundere kærlighed.</value>
@@ -1327,13 +1328,14 @@ Alle tags kan findes her: https://safebooru.org/index.php?page=tags&amp;s=list</
     <value>&gt;lunch</value>
   </data>
   <data name="miki_command_usage_mania" xml:space="preserve">
-    <value>&gt;manMiki.Framework &lt;osu! brugernavn&gt;</value>
+    <value>&gt;mania &lt;osu! brugernavn&gt;</value>
   </data>
   <data name="miki_command_usage_osu" xml:space="preserve">
     <value>&gt;osu &lt;osu! brugernavn&gt;</value>
   </data>
   <data name="miki_command_usage_pick" xml:space="preserve">
     <value>&gt;pick &lt;første valgmulighed&gt;, [anden valgmulighed], [...]</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_pout" xml:space="preserve">
     <value>&gt;pout</value>
@@ -1371,169 +1373,829 @@ Alle tags kan findes her: https://safebooru.org/index.php?page=tags&amp;s=list</
     <value>&gt;remind &lt;handling&gt; in &lt;tidsrum&gt; (f.eks. 2 minutter og 11 sekunder)</value>
   </data>
   <data name="pasta_page_index" xml:space="preserve">
-    <value></value>
+    <value>Side {0} af {1}</value>
   </data>
   <data name="miki_command_description_createpasta" xml:space="preserve">
-    <value></value>
+    <value>Lave din egen pasta or del den med omverdenen!</value>
   </data>
   <data name="miki_command_description_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>Har du fortrudt en af de pastaer, du har lavet? Slet den med denne kommando!</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_editpasta" xml:space="preserve">
-    <value></value>
+    <value>Redigerer pastaer, så alle typos er væk.</value>
   </data>
   <data name="miki_command_description_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>Set din serverkonto op, lige som du vil have den.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>Vælg en (ny) rival for denne guild.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>Denne kommando viser information om serveren.</value>
   </data>
   <data name="miki_command_description_guildtop" xml:space="preserve">
-    <value></value>
+    <value>Tjek hvilke servere, der er i toppen.</value>
   </data>
   <data name="miki_command_description_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>Hvis din guild vinder over rivalen, kan belønningen hentes her.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_hatepasta" xml:space="preserve">
-    <value></value>
+    <value>Kan du absolut ikke udstå en pasta? Vis dit had med denne kommando!</value>
   </data>
   <data name="miki_command_description_infopasta" xml:space="preserve">
-    <value></value>
+    <value>Vil du vide hvem, som har lavet en pasta? Brug denne kommando!</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>Kan du godt lide en pasta? Vis din tilknytning med denne kommando!</value>
   </data>
   <data name="miki_command_description_mypasta" xml:space="preserve">
-    <value></value>
+    <value>Skaffer en liste af alle dine pastaer.</value>
   </data>
   <data name="miki_command_description_poppasta" xml:space="preserve">
-    <value></value>
+    <value>Denne kommando viser de mest brugte pastaer. </value>
   </data>
   <data name="miki_command_description_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>Søger gennem alle pastaer og finder de allerfugtigste migmig&apos;er!</value>
   </data>
   <data name="miki_command_description_toppasta" xml:space="preserve">
-    <value></value>
+    <value>Denne kommando viser de mest elskede pastaer.</value>
   </data>
   <data name="miki_command_usage_createpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;createpasta &lt;pasta&gt; &lt;indhold&gt;</value>
   </data>
   <data name="miki_command_usage_deletepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;deletepasta &lt;pasta&gt;</value>
   </data>
   <data name="miki_command_usage_editpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;editpasta &lt;pasta&gt; &lt;ny indhold&gt;</value>
   </data>
   <data name="miki_command_usage_guildconfig" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildconfig expneeded &lt;minimum exp&gt;
+&gt;guildconfig visible &lt;yes&gt;
+&gt;guildconfig visible &lt;no&gt;</value>
   </data>
   <data name="miki_command_usage_guildnewrival" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildnewrival</value>
   </data>
   <data name="miki_command_usage_guildprofile" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildprofile</value>
   </data>
   <data name="miki_command_usage_guildtop" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildtop</value>
   </data>
   <data name="miki_command_usage_guildweekly" xml:space="preserve">
-    <value></value>
+    <value>&gt;guildweekly</value>
   </data>
   <data name="miki_command_usage_infopasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;infopasta &lt;pasta&gt;</value>
   </data>
   <data name="miki_command_usage_lovepasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;lovepasta &lt;pasta&gt;</value>
   </data>
   <data name="miki_command_usage_mypasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;mypasta</value>
   </data>
   <data name="miki_command_usage_poppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;poppasta</value>
   </data>
   <data name="miki_command_usage_searchpasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;searchpasta &lt;tag&gt; [side=1]</value>
   </data>
   <data name="miki_command_usage_toppasta" xml:space="preserve">
-    <value></value>
+    <value>&gt;toppasta</value>
   </data>
   <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
-    <value></value>
+    <value>Du har ikke den erfaring, der er nødvendig for at gøre krav på belønninger i denne guild.
+
+Du skal have mindst **{0}** i erfaring, før du kan bruge denne kommando, i denne guild.</value>
   </data>
   <data name="miki_terms_weekly" xml:space="preserve">
-    <value></value>
+    <value>Ugentligt</value>
   </data>
   <data name="createpasta_error_no_content" xml:space="preserve">
-    <value></value>
+    <value>Der blev ikke fundet nogen brødtekst for denne pasta. Vær venlig at angive en brødtekst.</value>
   </data>
   <data name="infopasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Vær venlig at angive hvilken pasta du vil identificere.</value>
   </data>
   <data name="infopasta_rating" xml:space="preserve">
-    <value></value>
+    <value>Bedømmelse</value>
   </data>
   <data name="lunch_line" xml:space="preserve">
-    <value></value>
+    <value>Vov vov! Hvad er der til frokost?</value>
   </data>
   <data name="miki_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Blackjack</value>
   </data>
   <data name="miki_blackjack_cards_miki" xml:space="preserve">
-    <value></value>
+    <value>Miki ({0})</value>
   </data>
   <data name="miki_blackjack_cards_you" xml:space="preserve">
-    <value></value>
+    <value>Dig ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
-    <value></value>
+    <value>Den der kommer tættest på 21 vinder. Alle kort tæller deres egen værdi op til ti.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value></value>
+    <value>Brug `hit` for at trække et nyt kort.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
-    <value></value>
+    <value>Du har mistet din indsats til Miki.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_blackjack_lose_title" xml:space="preserve">
-    <value></value>
+    <value>Miki vinder!</value>
   </data>
   <data name="miki_blackjack_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Du har ikke angivet hvor mange mekos du vil satse. Korrekt brug: 
+`&gt;blackjack &lt;mængde af mekos&gt;`</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value></value>
+    <value>Brug `stay` hvis du er tilfreds med din hånd.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
-    <value></value>
+    <value>Miki kunne slå din score. Dette betyder at du vinder. Du har vundet {0} mekos!</value>
   </data>
   <data name="miki_blackjack_win_title" xml:space="preserve">
-    <value></value>
+    <value>Du vinder!</value>
   </data>
   <data name="miki_command_description_blackjack" xml:space="preserve">
-    <value></value>
+    <value>Gamble dine penge i et totalt fair spil blackjack mod Miki!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value></value>
+    <value>&gt;blackjack &lt;mængde af mekos&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
-    <value></value>
+    <value>Du har endnu ikke oprettet nogen pastaer.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="mypasta_title" xml:space="preserve">
-    <value></value>
+    <value>{0}s pastaer</value>
+    <comment>example: Veld&apos;s pastas</comment>
   </data>
   <data name="pasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Angiv venligst et tag eller en handling.</value>
+    <comment>Fuzzy</comment>
   </data>
   <data name="poppasta_title" xml:space="preserve">
-    <value></value>
+    <value>Mest populære pastaer</value>
   </data>
   <data name="searchpasta_error_no_arg" xml:space="preserve">
-    <value></value>
+    <value>Angiv venligst de nøgleord, som du vil søge efter.</value>
   </data>
   <data name="toppasta_title" xml:space="preserve">
+    <value>Top pastaer</value>
+  </data>
+  <data name="social_patreon" xml:space="preserve">
+    <value>Patreon</value>
+  </data>
+  <data name="miki_command_description_setevent" xml:space="preserve">
+    <value>Slå kommandoer til eller fra med denne kommando (slå ikke denne kommando fra).</value>
+  </data>
+  <data name="miki_command_usage_setevent" xml:space="preserve">
+    <value>&gt;setcommand &lt;kommandonavn&gt; 1 for at slå til
+&gt;setcommand &lt;kommandonavn&gt; 0 for at slå fra</value>
+  </data>
+  <data name="page_index" xml:space="preserve">
+    <value>Side {0} af {1}</value>
+    <comment>example: page 1 of 32</comment>
+  </data>
+  <data name="guildconfig_expneeded" xml:space="preserve">
+    <value>Du skal have {0} i erfaring for at kunne bruge &gt;guildweekly.</value>
+  </data>
+  <data name="guildconfig_visibility_false" xml:space="preserve">
+    <value>Din guild vil ikke længe kunne ses på førertavlen.</value>
+  </data>
+  <data name="guildconfig_visibility_true" xml:space="preserve">
+    <value>Din guild vil (igen) kunne ses på førertavlen.</value>
+  </data>
+  <data name="guildnewrival_error_matchmaking_failed" xml:space="preserve">
+    <value>Der skete en fejl under matchmaking. Prøv igen senere.</value>
+  </data>
+  <data name="guildnewrival_error_timer_running" xml:space="preserve">
+    <value>Vent en dag til, før du kan bruge denne kommando.</value>
+  </data>
+  <data name="guildnewrival_success" xml:space="preserve">
+    <value>Din nye rival er **{0}**!</value>
+  </data>
+  <data name="guildtop_title" xml:space="preserve">
+    <value>Top Guilds</value>
+  </data>
+  <data name="guildweekly_error_low_level" xml:space="preserve">
+    <value>Du skal have et højere level end din rival.</value>
+  </data>
+  <data name="guildweekly_error_no_rival" xml:space="preserve">
+    <value>Du har endnu ingen rivaler. Serveradministratorer kan bruge `&gt;guildnewrival` til at starte matchmaking.</value>
+  </data>
+  <data name="guildweekly_error_timer_running" xml:space="preserve">
+    <value>Du har allerede brugt din ugentlige belønning. En ny belønning er tilgængelig om {0}.</value>
+  </data>
+  <data name="miki_terms_config" xml:space="preserve">
+    <value>Config</value>
+  </data>
+  <data name="miki_terms_experience" xml:space="preserve">
+    <value>Erfaring</value>
+  </data>
+  <data name="miki_terms_level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="miki_terms_rank" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="miki_terms_rival" xml:space="preserve">
+    <value>Rival</value>
+  </data>
+  <data name="blackjack_draw_description" xml:space="preserve">
+    <value>Du får din indstats tilbage. Woop Woop!</value>
+  </data>
+  <data name="blackjack_draw_title" xml:space="preserve">
+    <value>Det er uafgjort!</value>
+  </data>
+  <data name="blackjack_error_instance_exists" xml:space="preserve">
+    <value>Du spiller allerede blackjack i denne kanal.</value>
+  </data>
+  <data name="pasta_error_out_of_index" xml:space="preserve">
+    <value>Du har ingen pastaer på denne side.</value>
+  </data>
+  <data name="give_error_max_mekos" xml:space="preserve">
+    <value>Der kan maksimalt overføres 999.999 mekos pr. transaktion.</value>
+  </data>
+  <data name="give_error_min_mekos" xml:space="preserve">
+    <value>Minimumsbeløb for en transaktion er 1 meko.</value>
+  </data>
+  <data name="give_error_no_arg" xml:space="preserve">
+    <value>Du har ikke det påkrævet beløb du ville sende til denne bruger. Brug `&gt;help give` for at kunne se hvordan man benytter denne kommando.</value>
+  </data>
+  <data name="give_description" xml:space="preserve">
+    <value>{0} gav {1} {2} meko(s).</value>
+    <comment>example: Veld just gave Godweeb 120 mekos!</comment>
+  </data>
+  <data name="give_error_amount_unparsable" xml:space="preserve">
+    <value>Dit andet argument kunne ikke parses til en numerisk værdi. Brug `&gt;help give` for at kunne se hvordan man benytter denne kommando.</value>
+  </data>
+  <data name="give_error_no_mention" xml:space="preserve">
+    <value>Mention den bruger du vil overføre mekos til. Brug `&gt;help give` for at kunne se hvordan man benytter denne kommando.</value>
+  </data>
+  <data name="user_error_no_account" xml:space="preserve">
+    <value>Denne bruger har ikke en registret konto.</value>
+  </data>
+  <data name="user_error_insufficient_mekos" xml:space="preserve">
+    <value>Du har ikke det påkrævet beløb.</value>
+  </data>
+  <data name="buymarriageslot_insufficient_mekos" xml:space="preserve">
+    <value>Du har ikke det påkrævet beløb. Du skal bruge {0} flere mekos.</value>
+  </data>
+  <data name="buymarriageslot_success" xml:space="preserve">
+    <value>Du har succesfuldt købt en gifteplads.</value>
+    <comment>example: You successfully purchased a new marriage slot, you now have 12 slots!</comment>
+  </data>
+  <data name="time_day" xml:space="preserve">
+    <value>dag</value>
+  </data>
+  <data name="time_days" xml:space="preserve">
+    <value>dage</value>
+  </data>
+  <data name="time_hour" xml:space="preserve">
+    <value>time</value>
+  </data>
+  <data name="time_hours" xml:space="preserve">
+    <value>timer</value>
+  </data>
+  <data name="time_minute" xml:space="preserve">
+    <value>minut</value>
+  </data>
+  <data name="time_minutes" xml:space="preserve">
+    <value>minutter</value>
+  </data>
+  <data name="time_second" xml:space="preserve">
+    <value>sekund</value>
+  </data>
+  <data name="time_seconds" xml:space="preserve">
+    <value>sekunder</value>
+  </data>
+  <data name="miki_module_admin_prune_error_no_messages" xml:space="preserve">
+    <value>Ingen besked blev fundet, med den valgte query. Prøv at bruge `{0}help prune` for at se hvordan denne kommando benyttes.</value>
+  </data>
+  <data name="miki_blackjack_current_balance" xml:space="preserve">
+    <value>Du har nuværende {0} meko(s).</value>
+  </data>
+  <data name="miki_blackjack_new_balance" xml:space="preserve">
+    <value>Du har nu {0} meko(s).</value>
+  </data>
+  <data name="miki_module_fun_slots_lose_amount" xml:space="preserve">
+    <value>{0}🔸 blev tabt. Du har nu {0} meko(s).</value>
+  </data>
+  <data name="miki_module_fun_slots_lose_header" xml:space="preserve">
+    <value>Du taber.</value>
+  </data>
+  <data name="ban_error_user_null" xml:space="preserve">
+    <value>Kunne ikke finde den valgte bruger, som du ville banne. Benyt brugerid eller mention.</value>
+  </data>
+  <data name="ban_header" xml:space="preserve">
+    <value>Du er blevet bannet fra **{0}**.</value>
+  </data>
+  <data name="ban_term" xml:space="preserve">
+    <value>banne</value>
+  </data>
+  <data name="permission_ban_members" xml:space="preserve">
+    <value>Ban brugere</value>
+  </data>
+  <data name="permission_error_low" xml:space="preserve">
+    <value>Person du prøver på at {0} har en højere rolle end mig.</value>
+  </data>
+  <data name="permission_kick_members" xml:space="preserve">
+    <value>Kick brugere</value>
+  </data>
+  <data name="permission_needed_error" xml:space="preserve">
+    <value>Giv mig venlist tilladelse til at {0} brugere.</value>
+  </data>
+  <data name="miki_error_gambling_no_arg" xml:space="preserve">
+    <value>Kommandoen kan ikke benyttes uden argumenter. Angiv en indstats.</value>
+  </data>
+  <data name="miki_error_gambling_parse_error" xml:space="preserve">
+    <value>Kun numeriske heltal er tilladte samt `all` eller `*`</value>
+  </data>
+  <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
+    <value>Du skal satse én eller flere mekos.</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
+    <value>Førertavle: Omdømme</value>
+  </data>
+  <data name="miki_module_accounts_mekos_bot" xml:space="preserve">
+    <value>Du kan tjekke en bots mekos.</value>
+  </data>
+  <data name="miki_module_accounts_mekos_no_user" xml:space="preserve">
+    <value>Den nævnte bruger blev ikke fundet.</value>
+  </data>
+  <data name="miki_module_admin_prune_error_negative" xml:space="preserve">
+    <value>Kun numeriske heltal er tilladte.</value>
+  </data>
+  <data name="miki_module_admin_prune_error_parse" xml:space="preserve">
+    <value>Kun numeriske heltal er tilladte.</value>
+  </data>
+  <data name="miki_user_mekos" xml:space="preserve">
+    <value>{0} har **{1}** meko(s).</value>
+  </data>
+  <data name="guild_error_null" xml:space="preserve">
+    <value>Denne guild har endnu ikke en profil.</value>
+  </data>
+  <data name="time_and" xml:space="preserve">
+    <value>og</value>
+  </data>
+  <data name="discord_servers" xml:space="preserve">
+    <value>Servere</value>
+  </data>
+  <data name="error_role_not_found" xml:space="preserve">
+    <value>Rollen kunne ikke findes. Prøv igen.</value>
+  </data>
+  <data name="error_term_invalid" xml:space="preserve">
+    <value>Dette term kunne ikke blive fundet.</value>
+  </data>
+  <data name="flip_description_lose" xml:space="preserve">
+    <value>Du tabte! Ingen mekos til dig.</value>
+  </data>
+  <data name="flip_description_win" xml:space="preserve">
+    <value>Du vinder! Du har tjent {0} meko(s) som gevinst.</value>
+  </data>
+  <data name="miki_command_description_flip" xml:space="preserve">
+    <value>Slå plat eller krone og se hvem, der er den heldige.</value>
+  </data>
+  <data name="miki_command_description_ping" xml:space="preserve">
+    <value>Tjek hvor hurtig Miki er lige nu. (Højere ms betyder større forsinkelse.)</value>
+  </data>
+  <data name="miki_command_usage_flip" xml:space="preserve">
+    <value>&gt;flip &lt;mængde&gt; &lt;tails:heads&gt; [-bonus]</value>
+  </data>
+  <data name="miki_command_usage_ping" xml:space="preserve">
+    <value>&gt;ping</value>
+  </data>
+  <data name="miki_warning" xml:space="preserve">
+    <value>Vent venlist.</value>
+  </data>
+  <data name="permission_manage_roles" xml:space="preserve">
+    <value>Administrer roller</value>
+  </data>
+  <data name="ping_placeholder" xml:space="preserve">
+    <value>Vent venlist, pinger servicer.</value>
+  </data>
+  <data name="setrolelevel_error_no_permissions" xml:space="preserve">
+    <value>Det forkommer at Miki ikke kan tilføre roller. Fiks dette ved at tilføre rollen {0}.</value>
+  </data>
+  <data name="stats_description" xml:space="preserve">
+    <value>Generel direkte statistik om Miki.</value>
+  </data>
+  <data name="miki_command_description_help" xml:space="preserve">
+    <value>Du ved tydevis allerede hvordan denne kommando benyttes.</value>
+  </data>
+  <data name="miki_command_description_setleavemessage" xml:space="preserve">
+    <value>Få en besked når brugere forfald ens guild.</value>
+  </data>
+  <data name="miki_command_description_setwelcomemessage" xml:space="preserve">
+    <value>Siger hej til alle nye medlemmer af din guild.</value>
+  </data>
+  <data name="miki_command_usage_help" xml:space="preserve">
+    <value>&gt;help
+&gt;help &lt;kommando&gt;</value>
+  </data>
+  <data name="miki_command_usage_setleavemessage" xml:space="preserve">
+    <value>&gt;setleavemessage
+&gt;setleavemessage &lt;besked&gt;</value>
+  </data>
+  <data name="miki_command_usage_setwelcomemessage" xml:space="preserve">
+    <value>&gt;setwelcomemessage
+&gt;setwelcomemessage &lt;beskred&gt;
+
+-u = brugernavn
+-um = bruger mention
+-o = guild ejer
+-om = guild ejer mention
+-g = guild navn
+-c = guild antal medlemmer</value>
+  </data>
+  <data name="flip_header" xml:space="preserve">
+    <value>Flip</value>
+  </data>
+  <data name="miki_command_description_invite" xml:space="preserve">
+    <value>Få Mikis invitations-link, så du kan tilføre hende til din guild.</value>
+  </data>
+  <data name="miki_command_usage_invite" xml:space="preserve">
+    <value>&gt;invite</value>
+  </data>
+  <data name="common_string_all" xml:space="preserve">
+    <value>alle</value>
+  </data>
+  <data name="miki_module_accounts_rep_description" xml:space="preserve">
+    <value>Her er dine statistikker om dit omdømme.
+
+For at give nogen et bedre omdømme, brug `&gt;rep &lt;mention&gt; [&quot;all&quot;|amount]`</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_insufficient" xml:space="preserve">
+    <value>Du har ikke {0} point at kunne give.</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_none" xml:space="preserve">
+    <value>Du er løbet tør for point for i dag.</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_self" xml:space="preserve">
+    <value>Du kan ikke give dig selv et godt omdømme.</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_zero" xml:space="preserve">
+    <value>Du kan ikke give nul point.</value>
+  </data>
+  <data name="miki_module_accounts_rep_header" xml:space="preserve">
+    <value>Omdømme</value>
+  </data>
+  <data name="miki_module_accounts_rep_points_left" xml:space="preserve">
+    <value>Point tilbage for resten af dagen</value>
+  </data>
+  <data name="miki_module_accounts_rep_remaining" xml:space="preserve">
+    <value>Omdømme point tilbage</value>
+  </data>
+  <data name="miki_module_accounts_rep_reset" xml:space="preserve">
+    <value>Omdømme point nulstilling</value>
+  </data>
+  <data name="miki_module_accounts_rep_success" xml:space="preserve">
+    <value>{0} har givet {1} **{2}** i omdømme point! {1} har nu **{3}** point!</value>
+  </data>
+  <data name="miki_module_accounts_rep_total_received" xml:space="preserve">
+    <value>Totalt omdømme modtaget</value>
+  </data>
+  <data name="miki_module_pasta_favlist_mention_none" xml:space="preserve">
+    <value>Ser ud til at de ikke har {0} nogle pastaer endnu.</value>
+  </data>
+  <data name="miki_module_pasta_favlist_self_none" xml:space="preserve">
+    <value>Ser ud til at du ikke har {0} nogle pastaer endnu.</value>
+  </data>
+  <data name="miki_module_pasta_hated" xml:space="preserve">
+    <value>hadet</value>
+  </data>
+  <data name="miki_module_pasta_hated_header" xml:space="preserve">
+    <value>Hadet pastaer</value>
+  </data>
+  <data name="miki_module_pasta_loved" xml:space="preserve">
+    <value>elsket</value>
+  </data>
+  <data name="miki_module_pasta_loved_header" xml:space="preserve">
+    <value>Elskede pastaer</value>
+  </data>
+  <data name="miki_command_description_rep" xml:space="preserve">
+    <value>Giv din ven et godt omdømme for at være sådanne en god ven.</value>
+  </data>
+  <data name="miki_command_description_rps" xml:space="preserve">
+    <value>Spil sten, saks og papir for at kunne vinder en gevinst.</value>
+  </data>
+  <data name="miki_command_usage_rep" xml:space="preserve">
+    <value>&gt;rep
+&gt;rep &lt;mention&gt; [mention...]
+&gt;rep &lt;mention&gt; &lt;mængde|all&gt;</value>
+  </data>
+  <data name="miki_command_usage_rps" xml:space="preserve">
+    <value>&gt;rps &lt;indsats&gt; &lt;r/p/s&gt;</value>
+  </data>
+  <data name="warning_mention_self" xml:space="preserve">
+    <value>Du kan ikke mention dig selv.</value>
+  </data>
+  <data name="error_account_null" xml:space="preserve">
+    <value>Din profil eksisterer endnu ikke. Kontakt Miki support serveren hvis der forekommer yderligere problemer.</value>
+  </data>
+  <data name="error_rep_limit" xml:space="preserve">
+    <value>Du kan ikke give {0} bruger(e) {1} omdømme point mens du kun har {2} point tilbage.</value>
+  </data>
+  <data name="rep_success" xml:space="preserve">
+    <value>Du har succesfuldt givet et godt omdømme videre.</value>
+  </data>
+  <data name="sync_success" xml:space="preserve">
+    <value>Synkroniseringen med Mikis database var succesfuld.</value>
+  </data>
+  <data name="term_avatar" xml:space="preserve">
+    <value>profilbillede</value>
+  </data>
+  <data name="term_commands" xml:space="preserve">
+    <value>Kommandoer</value>
+  </data>
+  <data name="term_shard" xml:space="preserve">
+    <value>Shard</value>
+  </data>
+  <data name="miki_command_description_avatar" xml:space="preserve">
+    <value>Viser dit (eller en andens) nuværende profilbillede.</value>
+  </data>
+  <data name="miki_command_description_cake" xml:space="preserve">
+    <value>Viser dig billeder af kager.</value>
+  </data>
+  <data name="miki_command_description_cuddle" xml:space="preserve">
+    <value>Du kan nu nusse med enhver, med denne kommando!</value>
+  </data>
+  <data name="miki_command_description_donate" xml:space="preserve">
+    <value>Supporter den videre udvikling af Miki. Alle former for hjælp er værdsat.</value>
+  </data>
+  <data name="miki_command_description_glare" xml:space="preserve">
+    <value>Du kan nu stirre nogen dybt ind i øjnene.</value>
+  </data>
+  <data name="miki_command_description_greentext" xml:space="preserve">
+    <value>Fugtige migmig&apos;er er det eneste, der har afholdt mig fra depression. Haha.</value>
+  </data>
+  <data name="miki_command_description_guildinfo" xml:space="preserve">
+    <value>Tjek information om den nuværende guild.</value>
+  </data>
+  <data name="miki_command_description_highfive" xml:space="preserve">
+    <value>High-five nogen når det går særligt godt. </value>
+  </data>
+  <data name="miki_command_description_hug" xml:space="preserve">
+    <value>Kram dine venner, fjender og venner igen?</value>
+  </data>
+  <data name="miki_command_description_kiss" xml:space="preserve">
+    <value>Vis jeres kærlighed og kys nogen gennem skærmen.</value>
+  </data>
+  <data name="miki_command_description_poke" xml:space="preserve">
+    <value>Hey! Kig herover!</value>
+  </data>
+  <data name="miki_command_description_punch" xml:space="preserve">
+    <value>Ser du, jeg har altid gerne ville være en bokser.</value>
+  </data>
+  <data name="miki_command_description_showmodule" xml:space="preserve">
+    <value>Viser hvilke kommandoer, der er slået til eller fra.</value>
+  </data>
+  <data name="miki_command_description_slap" xml:space="preserve">
+    <value>Smæk nogen en lussing med denne praktiske kommando.</value>
+  </data>
+  <data name="miki_command_description_stats" xml:space="preserve">
+    <value>Generel direkte statistik om Miki.</value>
+  </data>
+  <data name="miki_command_description_trapcard" xml:space="preserve">
     <value></value>
   </data>
-
+  <data name="miki_command_description_truth" xml:space="preserve">
+    <value>Vis nogen at dit argument er klart det bedste.</value>
+  </data>
+  <data name="miki_command_description_urban" xml:space="preserve">
+    <value>Tjek Urban Dictionary for de ord, du ikke selv kender.</value>
+  </data>
+  <data name="miki_command_description_whois" xml:space="preserve">
+    <value>Viser information om den nævnte bruger.</value>
+  </data>
+  <data name="miki_command_description_yandere" xml:space="preserve">
+    <value>Miki kan lide dig, og kun dig! Tjek disse sexede billeder som hun har sent til dig.</value>
+  </data>
+  <data name="miki_command_usage_avatar" xml:space="preserve">
+    <value>&gt;avatar [mention]</value>
+  </data>
+  <data name="miki_command_usage_cake" xml:space="preserve">
+    <value>&gt;cake</value>
+  </data>
+  <data name="miki_command_usage_cuddle" xml:space="preserve">
+    <value>&gt;cuddle  [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_donate" xml:space="preserve">
+    <value>&gt;donate</value>
+  </data>
+  <data name="miki_command_usage_glare" xml:space="preserve">
+    <value>&gt;glare [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_greentext" xml:space="preserve">
+    <value>&gt;greentext</value>
+  </data>
+  <data name="miki_command_usage_guildinfo" xml:space="preserve">
+    <value>&gt;guildinfo</value>
+  </data>
+  <data name="miki_command_usage_highfive" xml:space="preserve">
+    <value>&gt;highfive [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_hug" xml:space="preserve">
+    <value>&gt;hug [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_kiss" xml:space="preserve">
+    <value>&gt;kiss [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_poke" xml:space="preserve">
+    <value>&gt;poke [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_punch" xml:space="preserve">
+    <value>&gt;punch [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_showmodule" xml:space="preserve">
+    <value>&gt;showmodule &lt;modul navn&gt;</value>
+  </data>
+  <data name="miki_command_usage_slap" xml:space="preserve">
+    <value>&gt;slap [tekst eller mention]</value>
+  </data>
+  <data name="miki_command_usage_stats" xml:space="preserve">
+    <value>&gt;stats</value>
+  </data>
+  <data name="miki_command_usage_trapcard" xml:space="preserve">
+    <value>&gt;trapcard [billede url]
+&gt;trapcard [vedhæftning]
+&gt;trapcard [mention]</value>
+  </data>
+  <data name="miki_command_usage_truth" xml:space="preserve">
+    <value>&gt;truth &lt;tekst&gt;</value>
+  </data>
+  <data name="miki_command_usage_urban" xml:space="preserve">
+    <value>&gt;urban &lt;ord&gt;</value>
+  </data>
+  <data name="miki_command_usage_whois" xml:space="preserve">
+    <value>&gt;whois &lt;brugerid&gt;
+&gt;whois &lt;mention&gt;</value>
+  </data>
+  <data name="miki_command_usage_yandere" xml:space="preserve">
+    <value>&gt;yandere &lt;tags&gt;</value>
+  </data>
+  <data name="localization_set" xml:space="preserve">
+    <value>Indstillede sproget til {0}.</value>
+  </data>
+  <data name="miki_command_description_hatedpasta" xml:space="preserve">
+    <value>Viser en liste over alle dine mest hadet pastaer... bare for at kunne få dem tilbage... for videnskabens skyld, selvfølgelig!</value>
+  </data>
+  <data name="miki_command_description_listlocale" xml:space="preserve">
+    <value>Viser en liste over understøttede sprog.</value>
+  </data>
+  <data name="miki_command_description_overwatchuser" xml:space="preserve">
+    <value>Vis hvor god du er i Overwatch med denne kommando.</value>
+  </data>
+  <data name="miki_command_description_setlocale" xml:space="preserve">
+    <value>Sætte bottens sprog for i den nuværende kanal.</value>
+  </data>
+  <data name="miki_command_description_setprefix" xml:space="preserve">
+    <value>Ændre (eksempelvis) præfikset fra &gt;profile til !profile</value>
+  </data>
+  <data name="miki_command_description_stare" xml:space="preserve">
+    <value>Stirre intenst på noget.</value>
+  </data>
+  <data name="miki_command_usage_hatedpasta" xml:space="preserve">
+    <value>&gt;hatedpasta &lt;side&gt;</value>
+  </data>
+  <data name="miki_command_usage_hatepasta" xml:space="preserve">
+    <value>&gt;hatepasta &lt;pasta&gt;</value>
+  </data>
+  <data name="miki_command_usage_listlocale" xml:space="preserve">
+    <value>&gt;listlocale</value>
+  </data>
+  <data name="miki_command_usage_overwatchuser" xml:space="preserve">
+    <value>&gt;overwatchuser &lt;battle.net id&gt; [-c for competitive]</value>
+  </data>
+  <data name="miki_command_usage_setlocale" xml:space="preserve">
+    <value>&gt;setlocale &lt;sprog i listlocale&gt;</value>
+  </data>
+  <data name="miki_command_usage_setprefix" xml:space="preserve">
+    <value>&gt;setprefix &lt;nyt præfiks&gt;</value>
+  </data>
+  <data name="miki_command_usage_stare" xml:space="preserve">
+    <value>&gt;stare</value>
+  </data>
+  <data name="term_roles" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="socMiki.Frameworkl_patreon" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_module_accounts_error_no_Marriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_Marriage_all_declined" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_Marriage_declined" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_Marriage_no_mention" xml:space="preserve">
+    <value></value>
+    <comment>I changed it from saying decline to reject as reject seems more fitting.</comment>
+  </data>
+  <data name="miki_Marriage_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_acceptMarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_buyMarriageslot" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_declineMarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_acceptMarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_buyMarriageslot" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_declineMarriage" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="buyMarriageslot_insufficient_mekos" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="buyMarriageslot_success" xml:space="preserve">
+    <value></value>
+    <comment>example: You successfully purchased a new Marriage slot, you now have 12 slots!</comment>
+  </data>
+  <data name="error_role_forbidden" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="term_available" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_required" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_argument_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_no_reminders" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_reminder_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="term_ok" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminders" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancel" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancelled_all" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_add" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_clear" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_list" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_add" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_clear" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_list" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancelled" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_level_low" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_already_given" xml:space="preserve">
+    <value></value>
+  </data>
 </root>
