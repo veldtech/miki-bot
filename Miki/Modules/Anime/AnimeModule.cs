@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Rest;
+using Miki.Rest;
 using Newtonsoft.Json;
 using System.Linq;
 using Miki.Anilist;

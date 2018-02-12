@@ -36,6 +36,9 @@ namespace Miki.Languages
             Locales.Add("ar-ae", ar_AE.ResourceManager);
             LocaleNames.Add("arabic", "ar-ae");
 
+			Locales.Add("bg-bg", bg_BG.ResourceManager);
+			LocaleNames.Add("bulgarian", "bg-bg");
+
             Locales.Add("cz-cz", cz_CZ.ResourceManager);
             LocaleNames.Add("czech", "cz-cz");
 
@@ -57,11 +60,23 @@ namespace Miki.Languages
             Locales.Add("fr-fr", fr_FR.ResourceManager);
             LocaleNames.Add("french", "fr-fr");
 
+			Locales.Add("hi-hi", hi_HI.ResourceManager);
+			LocaleNames.Add("hindu", "hi-hi");
+
             Locales.Add("he-he", he_HE.ResourceManager);
             LocaleNames.Add("hebrew", "he-he");
 
+			Locales.Add("it-it", it_IT.ResourceManager);
+			LocaleNames.Add("italian", "it-it");
+
             Locales.Add("ja-ja", ja_JA.ResourceManager);
             LocaleNames.Add("japanese", "ja-ja");
+
+			Locales.Add("lt-lt", lt_LT.ResourceManager);
+			LocaleNames.Add("lithuanian", "lt-lt");
+
+			Locales.Add("ms-ms", ms_MS.ResourceManager);
+			LocaleNames.Add("malaysian", "ms-ms");
 
             Locales.Add("nl-nl", nl_NL.ResourceManager);
             LocaleNames.Add("dutch", "nl-nl");
@@ -69,7 +84,13 @@ namespace Miki.Languages
             Locales.Add("no-no", no_NO.ResourceManager);
             LocaleNames.Add("norwegian", "no-no");
 
-            Locales.Add("pt-pt", pt_PT.ResourceManager);
+			Locales.Add("pl-pl", pl_PL.ResourceManager);
+			LocaleNames.Add("polish", "pl-pl");
+
+			Locales.Add("pt-br", pt_BR.ResourceManager);
+			LocaleNames.Add("brazilian", "pt-br");
+
+			Locales.Add("pt-pt", pt_PT.ResourceManager);
             LocaleNames.Add("portuguese", "pt-pt");
 
             Locales.Add("ru-ru", ru_RU.ResourceManager);
@@ -77,6 +98,12 @@ namespace Miki.Languages
 
             Locales.Add("sv-se", sv_SE.ResourceManager);
             LocaleNames.Add("swedish", "sv-se");
+
+			Locales.Add("tl-ph", tl_PH.ResourceManager);
+			LocaleNames.Add("tagalog", "tl-ph");
+
+			Locales.Add("uk-ua", uk_UA.ResourceManager);
+			LocaleNames.Add("ukrainian", "uk-ua");
 
             Locales.Add("zh-chs", zh_CHS.ResourceManager);
             LocaleNames.Add("simplified chinese", "zh-chs");

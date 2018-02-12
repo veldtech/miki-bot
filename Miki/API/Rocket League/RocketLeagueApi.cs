@@ -1,5 +1,5 @@
 ﻿using Miki.Common;
-using Rest;
+using Miki.Rest;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -39,7 +39,7 @@ namespace Miki.API.RocketLeague
         public async Task<RocketLeagueUser> GetUserAsync(string name, int platform = 1)
         {
             RestClient r = new RestClient($"https://api.rocketleaguestats.com/v1/player?unique_id={ name }&platform_id={ platform.ToString() }")
-                .SetAuthorisation("Bearer", key);
+                .SetAuthorization("Bearer", key);
 
             RestResponse<RocketLeagueUser> response = await r.GetAsync<RocketLeagueUser>("");
 
@@ -51,7 +51,7 @@ namespace Miki.API.RocketLeague
             List<RocketLeagueUser> users = new List<RocketLeagueUser>();
 
             RestClient r = new RestClient($"https://api.rocketleaguestats.com/v1/search/players?display_name={ name }&page={ page }&exact={exact.ToString()}")
-                .SetAuthorisation("Bearer", key);
+                .SetAuthorization("Bearer", key);
 
             RestResponse<RocketLeagueSearchResult> response = await r.GetAsync<RocketLeagueSearchResult>("");
 

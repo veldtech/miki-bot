@@ -16,20 +16,6 @@ namespace Miki.Modules
 			ApiKey = Global.config.RocketLeagueKey
         });
 
-        public async Task LoadEvent(Bot bot)
-        {
-            await new RuntimeModule("Rocket League")
-                .AddCommand(new RuntimeCommandEvent("rluser")
-                    .Default(GetUser))
-                .AddCommand(new RuntimeCommandEvent("rlsearchuser")
-                    .Default(SearchUser))
-                .AddCommand(new RuntimeCommandEvent("rluserseason")
-                    .Default(GetUserSeason))
-                .AddCommand(new RuntimeCommandEvent("rlnowplaying")
-                    .Default(GetNowPlaying))
-                .InstallAsync(bot);
-        }
-
         public async Task GetUser(EventContext e)
         {
             string[] arg = e.arguments.Split(' ');

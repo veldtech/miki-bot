@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Rest;
+using Miki.Rest;
 using System.Linq;
 using System.Threading.Tasks;
 

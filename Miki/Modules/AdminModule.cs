@@ -163,9 +163,9 @@ namespace Miki.Modules
         [Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
         public async Task SetCommandAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            string[] arguments = e.arguments.Split(' ');
+			string[] arguments = e.arguments.Split(' ');
             IEvent command = Bot.instance.Events.CommandHandler.GetEvent(arguments[0]);
             if (command == null)
             {
@@ -197,9 +197,9 @@ namespace Miki.Modules
         [Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
         public async Task SetModuleAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            string[] arguments = e.arguments.Split(' ');
+			string[] arguments = e.arguments.Split(' ');
             IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
             if (m == null)
             {
@@ -258,9 +258,9 @@ namespace Miki.Modules
                 }
 
                 IDiscordUser bannedUser = null;
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id);
 
-                if (e.message.MentionedUserIds.Count > 0)
+				if (e.message.MentionedUserIds.Count > 0)
                 {
                     bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
                 }
@@ -328,7 +328,7 @@ namespace Miki.Modules
 
 		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
 		{
-			Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
 			IDiscordUser invoker = await e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id);
 			if (!invoker.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))

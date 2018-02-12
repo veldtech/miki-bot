@@ -1,5 +1,5 @@
 ﻿using Miki.Modules.Overwatch.Objects;
-using Rest;
+using Miki.Rest;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch.API

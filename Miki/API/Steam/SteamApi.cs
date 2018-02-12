@@ -8,7 +8,7 @@ using System.Net.Http;
 using SteamKit2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Rest;
+using Miki.Rest;
 
 namespace Miki.API.Steam
 {

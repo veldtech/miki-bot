@@ -394,7 +394,7 @@ namespace Miki.Modules
                 };
 
                 IDiscordEmbed embed = Utils.Embed
-                    .SetAuthor(locale.GetString(Locale.SlotsHeader) + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot");
+                    .SetAuthor(locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot");
 
                 string[] objectsChosen =
                 {

@@ -1,4 +1,4 @@
-﻿using Rest;
+﻿using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace Miki.API.Patreon
         public async Task<RootObject> GetAllPledgesAsync()
         {
             RestClient rc = new RestClient("https://api.patreon.com/oauth2/api/campaigns/240974/pledges");
-            rc.SetAuthorisation("Bearer", accessToken);
+            rc.SetAuthorization("Bearer", accessToken);
             RestResponse<RootObject> pledges = await rc.GetAsync<RootObject>("");
 
             if (pledges.Success)

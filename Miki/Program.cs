@@ -15,6 +15,8 @@ using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis;
+using Miki.DblApi;
+using Miki.DblApi.Internal;
 
 namespace Miki
 {
@@ -27,11 +29,18 @@ namespace Miki
 				.GetResult();
         }
 
-		public static Bot bot;
+		public static Framework.Bot bot;
 		public static DateTime timeSinceStartup;
 
 		public async Task Start()
 		{
+			AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(160105994217586689, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MDEwNTk5NDIxNzU4NjY4OSIsImJvdCI6dHJ1ZSwiaWF0IjoxNTExMDYyMDgzfQ.77542F_o02msUDqShFK_J6XawiJ5hZEOcEiR6ans9U0");
+
+			// Get Self
+			ISelfBot me = await dblApi.GetMeAsync();
+
+
+
 			Locale.Load();
 			timeSinceStartup = DateTime.Now;
 
@@ -73,7 +82,7 @@ namespace Miki
         {
 			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.config.RedisConnectionString);
 
-			bot = new Bot(new ClientInformation()
+			bot = new Framework.Bot(new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.5.4",
@@ -146,7 +155,7 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Counter("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Counter("guilds", Framework.Bot.instance.Client.Guilds.Count);
 			await Task.Yield();
 		}
 
@@ -159,7 +168,7 @@ namespace Miki
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Counter("guilds", Bot.instance.Client.Guilds.Count);
+			DogStatsd.Counter("guilds", Framework.Bot.instance.Client.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)

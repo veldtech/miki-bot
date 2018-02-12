@@ -59,8 +59,8 @@ namespace Miki.Modules
                 }
 
                 IDiscordEmbed embed = Utils.Embed;
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-                setting.IsEnabled = !setting.IsEnabled;
+				Locale locale = new Locale(e.Channel.Id);
+				setting.IsEnabled = !setting.IsEnabled;
 
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
 

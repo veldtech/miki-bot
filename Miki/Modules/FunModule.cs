@@ -193,9 +193,9 @@ namespace Miki.Modules
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
-            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale l = new Locale(e.Channel.Id);
 
-            string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[MikiRandom.Next(0, reactions.Length)]) });
+			string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[MikiRandom.Next(0, reactions.Length)]) });
             e.Channel.QueueMessageAsync(output);
         }
 

@@ -19,7 +19,7 @@ namespace Miki.Modules
 		[Command(Name = "marry")]
 		public async Task MarryAsync(EventContext e)
 		{
-			Locale locale = Locale.GetEntity(e.Channel.Id);
+			Locale locale = new Locale(e.Channel.Id);
 
 			if (e.message.MentionedUserIds.Count == 0)
 			{
@@ -109,9 +109,9 @@ namespace Miki.Modules
         [Command(Name = "divorce")]
         public async Task DivorceAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (e.message.MentionedUserIds.Count == 0)
+			if (e.message.MentionedUserIds.Count == 0)
             {
                 using (MikiContext context = new MikiContext())
                 {
@@ -280,7 +280,7 @@ namespace Miki.Modules
         [Command(Name = "declineMarriage")]
         public async Task DeclineMarriageAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id);
+            Locale locale = new Locale(e.Channel.Id);
 
             using (MikiContext context = new MikiContext())
             {

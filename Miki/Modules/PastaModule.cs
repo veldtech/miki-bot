@@ -87,9 +87,9 @@ namespace Miki.Modules
         {
             List<string> arguments = e.arguments.Split(' ').ToList();
 
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (arguments.Count < 2)
+			if (arguments.Count < 2)
             {
                 e.ErrorEmbed(e.GetResource("createpasta_error_no_content")).QueueToChannel(e.Channel.Id);
                 return;
@@ -162,9 +162,9 @@ namespace Miki.Modules
         [Command(Name = "editpasta")]
         public async Task EditPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (string.IsNullOrWhiteSpace(e.arguments))
+			if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 e.ErrorEmbed(e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify_edit")))
                     .QueueToChannel(e.Channel.Id);
@@ -201,9 +201,9 @@ namespace Miki.Modules
         [Command(Name = "pasta")]
         public async Task GetPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (string.IsNullOrWhiteSpace(e.arguments))
+			if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 e.ErrorEmbed(e.GetResource("pasta_error_no_arg")).QueueToChannel(e.Channel);
                 return;
@@ -229,9 +229,9 @@ namespace Miki.Modules
         [Command(Name = "infopasta")]
         public async Task IdentifyPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (string.IsNullOrWhiteSpace(e.arguments))
+			if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 e.ErrorEmbed(e.GetResource("infopasta_error_no_arg"))
                     .QueueToChannel(e.Channel.Id);
@@ -275,9 +275,9 @@ namespace Miki.Modules
         [Command(Name = "searchpasta")]
         public async Task SearchPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (string.IsNullOrWhiteSpace(e.arguments))
+			if (string.IsNullOrWhiteSpace(e.arguments))
             {
                 e.ErrorEmbed(e.GetResource("searchpasta_error_no_arg"))
                     .QueueToChannel(e.Channel.Id);
@@ -344,7 +344,7 @@ namespace Miki.Modules
 
 		public async Task FavouritePastaList( EventContext e, bool lovedPastas = true )
 		{
-			Locale locale = Locale.GetEntity( e.Channel.Id.ToDbLong() );
+			Locale locale = new Locale(e.Channel.Id);
 			IDiscordUser targetUser = e.Author;
 			float totalPerPage = 25f;
 			int page = 0;

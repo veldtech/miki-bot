@@ -1,6 +1,6 @@
 ﻿using Miki.Common;
 using Newtonsoft.Json;
-using Rest;
+using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -60,7 +60,7 @@ namespace Miki.API.RocketLeague
         {
             internalData = new List<RocketLeagueTier>();
             RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/tiers")
-                 .SetAuthorisation("Bearer", key);
+                 .SetAuthorization("Bearer", key);
 
             RestResponse<List<RocketLeagueTier>> cachedValues = await rc.GetAsync<List<RocketLeagueTier>>("");
             LastUpdatedAt = DateTime.Now;

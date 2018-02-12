@@ -76,7 +76,7 @@ namespace Miki.Modules
         [Command(Name = "calc", Aliases = new string[] { "calculate" })]
         public async Task CalculateAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            Locale locale = new Locale(e.Channel.Id);
 
 			try
 			{
@@ -120,7 +120,7 @@ namespace Miki.Modules
         public async Task GuildInfoAsync(EventContext e)
         {
             IDiscordEmbed embed = Utils.Embed;
-			Locale locale = new Locale(e.Channel.Id);
+			Locale l = new Locale(e.Channel.Id);
 
 			embed.SetAuthor(e.Guild.Name, e.Guild.AvatarUrl, e.Guild.AvatarUrl);
 
@@ -252,9 +252,9 @@ namespace Miki.Modules
         public async Task InfoAsync(EventContext e)
         {
             IDiscordEmbed embed = Utils.Embed;
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            embed.Author = embed.CreateAuthor();
+			embed.Author = embed.CreateAuthor();
             embed.Author.Name = "Miki " + Bot.instance.Version;
 			embed.SetColor(0.6f, 0.6f, 1.0f);
 
@@ -347,8 +347,8 @@ namespace Miki.Modules
         {
             if (string.IsNullOrEmpty(e.arguments)) return;
 
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            UrbanDictionaryApi api = new UrbanDictionaryApi(Global.config.UrbanKey);
+			Locale locale = new Locale(e.Channel.Id);
+			UrbanDictionaryApi api = new UrbanDictionaryApi(Global.config.UrbanKey);
             UrbanDictionaryEntry entry = await api.GetEntryAsync(e.arguments);
 
             if (entry != null)
@@ -392,7 +392,7 @@ namespace Miki.Modules
 
             IDiscordUser user = await e.Guild.GetUserAsync(id);
 
-			Locale locale = new Locale(e.Channel.Id);
+			Locale l = new Locale(e.Channel.Id);
 
 			IDiscordEmbed embed = Utils.Embed;
             embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname)}!?";

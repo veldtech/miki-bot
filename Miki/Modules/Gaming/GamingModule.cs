@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
+using System.IO;
 
 namespace Miki.Modules.Overwatch
 {
-    [Module("Overwatch")]
-    internal class OverwatchModule
+    [Module("Gaming")]
+    internal class GamingModule
     {
         [Command(Name = "overwatchuser", Aliases = new string[] { "owuser" })]
         public async Task OverwatchStatsAsync(EventContext e)
@@ -89,8 +91,68 @@ namespace Miki.Modules.Overwatch
             }
         }
 
-        // still a bad function, but i digress
-        public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
+		[Command(Name = "osu")]
+		public async Task SendOsuSignatureAsync(EventContext e)
+		{
+			using (WebClient webClient = new WebClient())
+			{
+				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
+													 e.arguments + "&countryrank");
+
+				using (MemoryStream mem = new MemoryStream(data))
+				{
+					await e.Channel.SendFileAsync(mem, $"sig.png");
+				}
+			}
+		}
+
+		[Command(Name = "ctb")]
+		public async Task SendCatchTheBeatSignatureAsync(EventContext e)
+		{
+			using (WebClient webClient = new WebClient())
+			{
+				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
+													 e.arguments + "&mode=2&countryrank");
+
+				using (MemoryStream mem = new MemoryStream(data))
+				{
+					await e.Channel.SendFileAsync(mem, $"{e.arguments}.png");
+				}
+			}
+		}
+
+		[Command(Name = "mania")]
+		public async Task SendManiaSignatureAsync(EventContext e)
+		{
+			using (WebClient webClient = new WebClient())
+			{
+				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
+													 e.arguments + "&mode=3&countryrank");
+
+				using (MemoryStream mem = new MemoryStream(data))
+				{
+					await e.Channel.SendFileAsync(mem, $"sig.png");
+				}
+			}
+		}
+
+		[Command(Name = "taiko")]
+		public async Task SendTaikoSignatureAsync(EventContext e)
+		{
+			using (WebClient webClient = new WebClient())
+			{
+				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
+													 e.arguments + "&mode=1&countryrank");
+
+				using (MemoryStream mem = new MemoryStream(data))
+				{
+					await e.Channel.SendFileAsync(mem, $"sig.png");
+				}
+			}
+		}
+
+		// still a bad function, but i digress
+		public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
         {
             List<OverwatchRegion> regions = new List<OverwatchRegion>
             {
