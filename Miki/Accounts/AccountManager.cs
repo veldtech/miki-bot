@@ -47,7 +47,7 @@ namespace Miki.Accounts
             {
 				DogStatsd.Counter("levels.local", l);
                 long guildId = e.Guild.Id.ToDbLong();
-                Locale locale = Locale.GetEntity(e.Id.ToDbLong());
+                Locale locale = new Locale(e.Id);
                 List<IDiscordRole> rolesObtained = new List<IDiscordRole>();
 
                 int randomNumber = MikiRandom.Next(0, 10);

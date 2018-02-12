@@ -214,7 +214,7 @@ namespace Miki.Modules.AccountsModule
 					id = uid.ToDbLong();
 				}
 
-				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id.ToDbLong());
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(uid);
 				User account = await User.GetAsync(context, discordUser);
 
@@ -350,7 +350,8 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id.ToDbLong());
+
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 				List<ulong> mentionedUsers = e.message.MentionedUserIds.ToList();
 				string[] args = e.arguments.Split(' ');
@@ -404,15 +405,14 @@ namespace Miki.Modules.AccountsModule
 
 					if (repAmount <= 0)
 					{
-						e.ErrorEmbed(locale.GetString("miki_module_accounts_rep_error_zero"))
+						e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
 							.QueueToChannel(e.Channel);
 						return;
 					}
 
 					if(mentionedUsers.Count * repAmount > repObject.ReputationPointsLeft)
 					{
-						e.ErrorEmbed(locale.GetString("error_rep_limit"),
-							mentionedUsers.Count, repAmount, repObject.ReputationPointsLeft)
+						e.ErrorEmbedResource("error_rep_limit", mentionedUsers.Count, repAmount, repObject.ReputationPointsLeft)
 							.QueueToChannel(e.Channel);
 						return;
 					}
@@ -498,10 +498,12 @@ namespace Miki.Modules.AccountsModule
 			using (var context = new MikiContext())
 			{
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
 				if (user == null)
 				{
 					return;
 				}
+
 				user.Name = e.Author.Username;
 				await context.SaveChangesAsync();
 			}
@@ -521,14 +523,14 @@ namespace Miki.Modules.AccountsModule
 			{
 				if (targetId == 0)
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_accounts_mekos_no_user"))
+					e.ErrorEmbedResource("miki_module_accounts_mekos_no_user")
 						.QueueToChannel(e.Channel);
 					return;
 				}
 				IDiscordUser userCheck = await e.Guild.GetUserAsync(targetId);
 				if (userCheck.IsBot)
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_accounts_mekos_bot"))
+					e.ErrorEmbedResource("miki_module_accounts_mekos_bot")
 						.QueueToChannel(e.Channel);
 					return;
 				}
@@ -551,41 +553,41 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "give")]
 		public async Task GiveMekosAsync(EventContext e)
 		{
-			Locale locale = Locale.GetEntity(e.Guild.Id);
+			Locale locale = new Locale(e.Guild.Id);
 
 			string[] arguments = e.arguments.Split(' ');
 
 			if (arguments.Length < 2)
 			{
-				e.ErrorEmbed(e.GetResource("give_error_no_arg"))
+				e.ErrorEmbedResource("give_error_no_arg")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (e.message.MentionedUserIds.Count <= 0)
 			{
-				e.ErrorEmbed(e.GetResource("give_error_no_mention"))
+				e.ErrorEmbedResource("give_error_no_mention")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (!int.TryParse(arguments[1], out int goldSent))
 			{
-				e.ErrorEmbed(e.GetResource("give_error_amount_unparsable"))
+				e.ErrorEmbedResource("give_error_amount_unparsable")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (goldSent > 999999)
 			{
-				e.ErrorEmbed(e.GetResource("give_error_max_mekos"))
+				e.ErrorEmbedResource("give_error_max_mekos")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
 			if (goldSent <= 0)
 			{
-				e.ErrorEmbed(e.GetResource("give_error_min_mekos"))
+				e.ErrorEmbedResource("give_error_min_mekos")
 					.QueueToChannel(e.Channel);
 				return;
 			}
@@ -610,7 +612,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					e.ErrorEmbed(e.GetResource("user_error_insufficient_mekos"))
+					e.ErrorEmbedResource("user_error_insufficient_mekos")
 						.QueueToChannel(e.Channel);
 				}
 			}
@@ -621,7 +623,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id);
 
 				User u = await User.GetAsync(context, e.Author);
 
@@ -662,7 +664,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id.ToDbLong());
 
 				List<string> allArgs = new List<string>();
 				allArgs.AddRange(e.arguments.Split(' '));
@@ -740,7 +742,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				Locale locale = Locale.GetEntity(mContext.Channel.Id.ToDbLong());
+				Locale locale = new Locale(mContext.Channel.Id);
 
 				int p = Math.Max(leaderboardOptions.pageNumber - 1, 0);
 

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Miki.Languages
 {
-    // Class
-    public partial class Locale
+    public class Locale
     {
         public static Dictionary<string, ResourceManager> Locales = new Dictionary<string, ResourceManager>();
         public static Dictionary<string, string> LocaleNames = new Dictionary<string, string>();
 
+		// TODO: move to redis
 		private static ConcurrentDictionary<long, string> cache = new ConcurrentDictionary<long, string>();
 
         private string defaultResource = "en-us";
@@ -22,10 +22,14 @@ namespace Miki.Languages
         private Locale()
         {
         }
-        private Locale(long id)
+        public Locale(long id)
         {
             this.id = id;
         }
+		public Locale(ulong id)
+		{
+			this.id = id.ToDbLong();
+		}
 
         public static void Load()
         {
@@ -63,13 +67,13 @@ namespace Miki.Languages
             LocaleNames.Add("dutch", "nl-nl");
 
             Locales.Add("no-no", no_NO.ResourceManager);
-            LocaleNames.Add("norwegMiki.Frameworkn", "no-no");
+            LocaleNames.Add("norwegian", "no-no");
 
             Locales.Add("pt-pt", pt_PT.ResourceManager);
             LocaleNames.Add("portuguese", "pt-pt");
 
             Locales.Add("ru-ru", ru_RU.ResourceManager);
-            LocaleNames.Add("russMiki.Frameworkn", "ru-ru");
+            LocaleNames.Add("russian", "ru-ru");
 
             Locales.Add("sv-se", sv_SE.ResourceManager);
             LocaleNames.Add("swedish", "sv-se");
@@ -81,13 +85,7 @@ namespace Miki.Languages
             LocaleNames.Add("traditional chinese", "zh-cht");
         }
 
-        public static Locale GetEntity(ulong id) => GetEntity(id.ToDbLong());
-        public static Locale GetEntity(long id)
-        {
-            return new Locale(id);
-        }
-
-        public bool HasString(string m)
+		public bool HasString(string m)
         {
 			string lang = GetLanguage();
 			string output = Locales[lang].GetString(m);
@@ -148,7 +146,7 @@ namespace Miki.Languages
 			using (var context = new MikiContext())
 			{
 				ChannelLanguage lang = await context.Languages.FindAsync(id);
-				Locale locale = GetEntity(id);
+				Locale locale = new Locale(id);
 
 				if(LocaleNames.TryGetValue(language, out string val))
 				{
@@ -183,25 +181,18 @@ namespace Miki.Languages
         }
     }
 
-    // Constants
-    public partial class Locale
+    public class LocaleTags
     {
-        public const string CommandGlobalProfileUserHeader = "miki_global_profile_user_header";
-
         public const string DisabledCommand = "miki_module_admin_disable_command";
         public const string DisabledModule = "miki_module_admin_disable_module";
-
         public const string EnabledCommand = "miki_module_admin_enable_command";
         public const string EnabledModule = "miki_module_admin_enable_module";
-
         public const string ErrorMessageGeneric = "miki_error_message_generic";
         public const string ErrorPickNoArgs = "miki_module_fun_pick_no_arg";
-
         public const string ImageNotFound = "miki_module_fun_image_error_no_image_found";
-
         public const string InsufficientMekos = "miki_mekos_insufficient";
 
-        public const string JoinMessage = "miki_join_message";
+		public const string JoinMessage = "miki_join_message";
 
         public const string PickMessage = "miki_module_fun_pick";
 

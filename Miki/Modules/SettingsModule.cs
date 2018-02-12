@@ -33,9 +33,9 @@ namespace Miki.Modules
                 }
 
                 IDiscordEmbed embed = Utils.Embed;
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+				Locale locale = new Locale(e.Channel.Id);
 
-                setting.IsEnabled = !setting.IsEnabled;
+				setting.IsEnabled = !setting.IsEnabled;
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
 
                 embed.Description = locale.GetString("miki_module_settings_dm", aa);
@@ -90,7 +90,7 @@ namespace Miki.Modules
                 }
 
                 IDiscordEmbed embed = Utils.Embed;
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+                Locale locale = new Locale(e.Channel.Id);
                 setting.IsEnabled = !setting.IsEnabled;
 
                 string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
@@ -193,9 +193,9 @@ namespace Miki.Modules
         [Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task PrefixAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (string.IsNullOrEmpty(e.arguments))
+			if (string.IsNullOrEmpty(e.arguments))
             {
                 e.ErrorEmbed(locale.GetString("miki_module_general_prefix_error_no_arg")).QueueToChannel(e.Channel);
                 return;

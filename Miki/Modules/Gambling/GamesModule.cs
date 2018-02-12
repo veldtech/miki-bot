@@ -373,7 +373,7 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+                Locale locale = new Locale(e.Channel.Id);
 
                 int moneyReturned = 0;
 
@@ -501,8 +501,8 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    embed.AddField(locale.GetString(Locale.SlotsWinHeader),
-                        locale.GetString(Locale.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
+                    embed.AddField(locale.GetString(LocaleTags.SlotsWinHeader),
+                        locale.GetString(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
                 }
 
                 embed.Description = string.Join(" ", objectsChosen);    

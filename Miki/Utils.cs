@@ -159,14 +159,18 @@ namespace Miki
             }
         }
 
-		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message, params object[] args)
-			=> Embed.SetTitle($"🚫 {e.Channel.GetLocale().GetString(Locale.ErrorMessageGeneric)}")
+		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message)
+			=> Embed.SetTitle($"🚫 {e.Channel.GetLocale().GetString(LocaleTags.ErrorMessageGeneric)}")
 			.SetDescription(message)
 			.SetColor(1.0f, 0.0f, 0.0f);
+		public static IDiscordEmbed ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
+			=> ErrorEmbed(e, e.GetResource(resourceId, args));
 
-        public static string GetResource(this EventContext c, string m, params object[] o) => Locale.GetEntity(c.Channel.Id).GetString(m, o);
 
-        public static Locale GetLocale(this IDiscordMessageChannel c) => Locale.GetEntity(c.Id);
+		// TODO: Cache locale
+        public static string GetResource(this EventContext c, string m, params object[] o) => new Locale(c.Channel.Id).GetString(m, o);
+
+        public static Locale GetLocale(this IDiscordMessageChannel c) => new Locale(c.Id);
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
@@ -176,7 +180,7 @@ namespace Miki
         {
             return new RuntimeEmbed(new EmbedBuilder())
             {
-                Title = locale.GetString(Locale.SuccessMessageGeneric),
+                Title = locale.GetString(LocaleTags.SuccessMessageGeneric),
                 Description = message,
                 Color = new Miki.Common.Color(0, 1, 0)
             };

@@ -21,7 +21,7 @@ namespace Miki.Modules
         [Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            Locale locale = new Locale(e.Channel.Id);
 
             int page = 0;
             if (!string.IsNullOrWhiteSpace(e.arguments))
@@ -123,7 +123,7 @@ namespace Miki.Modules
         [Command(Name = "deletepasta")]
         public async Task DeletePasta(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            Locale locale = new Locale(e.Channel.Id);
 
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
@@ -413,7 +413,7 @@ namespace Miki.Modules
 
 		private async Task VotePasta(EventContext e, bool vote)
 		{
-			Locale locale = Locale.GetEntity(e.Channel.Id);
+			Locale locale = e.Channel.GetLocale();
 
 			using (var context = new MikiContext())
 			{

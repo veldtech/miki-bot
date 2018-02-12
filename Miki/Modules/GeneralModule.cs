@@ -120,9 +120,9 @@ namespace Miki.Modules
         public async Task GuildInfoAsync(EventContext e)
         {
             IDiscordEmbed embed = Utils.Embed;
-            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            embed.SetAuthor(e.Guild.Name, e.Guild.AvatarUrl, e.Guild.AvatarUrl);
+			embed.SetAuthor(e.Guild.Name, e.Guild.AvatarUrl, e.Guild.AvatarUrl);
 
 			IDiscordUser owner = await e.Guild.GetOwnerAsync();
 
@@ -175,9 +175,9 @@ namespace Miki.Modules
         [Command(Name = "help")]
         public async Task HelpAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            if (!string.IsNullOrEmpty(e.arguments))
+			if (!string.IsNullOrEmpty(e.arguments))
             {
                 ICommandEvent ev = Bot.instance.Events.CommandHandler.GetCommandEvent(e.arguments);
 
@@ -238,7 +238,7 @@ namespace Miki.Modules
         [Command(Name = "donate", Aliases = new string[] { "patreon" })]
         public async Task DonateAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 			Utils.Embed.SetTitle("Hi everyone!")
 				.SetDescription(e.GetResource("miki_module_general_info_donate_string"))
 				.SetColor(0.8f, 0.4f, 0.4f)
@@ -278,11 +278,10 @@ namespace Miki.Modules
         [Command(Name = "invite")]	
         public async Task InviteAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
-            Locale authorLocale = Locale.GetEntity(e.Author.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
             e.Channel.QueueMessageAsync(locale.GetString("miki_module_general_invite_message"));
-            await e.Author.QueueMessageAsync(authorLocale.GetString("miki_module_general_invite_dm")
+            await e.Author.QueueMessageAsync(locale.GetString("miki_module_general_invite_dm")
                 + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
         }
 
@@ -314,9 +313,9 @@ namespace Miki.Modules
         [Command(Name = "prefix")]
         public async Task PrefixHelpAsync(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            Utils.Embed.SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
+			Utils.Embed.SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
                 .SetDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
                 .QueueToChannel(e.Channel.Id);
 
@@ -393,9 +392,9 @@ namespace Miki.Modules
 
             IDiscordUser user = await e.Guild.GetUserAsync(id);
 
-            Locale l = Locale.GetEntity(e.Channel.Id.ToDbLong());
+			Locale locale = new Locale(e.Channel.Id);
 
-            IDiscordEmbed embed = Utils.Embed;
+			IDiscordEmbed embed = Utils.Embed;
             embed.Title = $"Who is {(string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname)}!?";
             embed.SetColor(0.5f, 0f, 1.0f);
 

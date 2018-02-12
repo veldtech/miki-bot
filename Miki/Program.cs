@@ -152,7 +152,7 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IGuild arg)
 		{
-			Locale locale = Locale.GetEntity(arg.Id.ToDbLong());
+			Locale locale = new Locale(arg.Id);
 			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
 			await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
 

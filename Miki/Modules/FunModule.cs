@@ -317,7 +317,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.arguments))
 			{
-				e.Channel.QueueMessageAsync(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -341,7 +341,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+                e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
             }
         }
 
@@ -350,7 +350,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.arguments))
 			{
-				e.Channel.QueueMessageAsync(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -374,7 +374,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(Locale.GetEntity(e.Channel.Id.ToDbLong()).GetString(Locale.ImageNotFound));
+                e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
             }
         }
 
@@ -389,19 +389,19 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.arguments))
             {
-                e.Channel.QueueMessageAsync(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(Locale.ErrorPickNoArgs));
+                e.Channel.QueueMessageAsync(new Locale(e.Guild.Id).GetString(LocaleTags.ErrorPickNoArgs));
                 return;
             }
             string[] choices = e.arguments.Split(',');
 
             Locale locale = e.Channel.GetLocale();
-            e.Channel.QueueMessageAsync(locale.GetString(Locale.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+            e.Channel.QueueMessageAsync(locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
         {
-            e.Channel.QueueMessageAsync(Locale.GetEntity(e.Guild.Id.ToDbLong()).GetString(puns[MikiRandom.Next(0, puns.Length)]));
+            e.Channel.QueueMessageAsync(new Locale(e.Guild.Id.ToDbLong()).GetString(puns[MikiRandom.Next(0, puns.Length)]));
         }
 
 		[Command(Name = "roll")]
@@ -463,7 +463,7 @@ namespace Miki.Modules
 			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
 			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
-			e.Channel.QueueMessageAsync(e.GetResource(Locale.RollResult, e.Author.Username, rollResult));
+			e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.RollResult, e.Author.Username, rollResult));
 		}
 		
 		[Command( Name = "roulette" )]
@@ -474,8 +474,8 @@ namespace Miki.Modules
 
 			string mention = "<@" + realUsers[MikiRandom.Next( 0, realUsers.Count )].Id + ">";
 			string send = string.IsNullOrEmpty( e.arguments ) ?
-				e.GetResource( Locale.RouletteMessageNoArg, mention) :      
-				e.GetResource( Locale.RouletteMessage, e.arguments, mention );
+				e.GetResource(LocaleTags.RouletteMessageNoArg, mention) :      
+				e.GetResource( LocaleTags.RouletteMessage, e.arguments, mention );
 
 			e.Channel.QueueMessageAsync( send );
 		}
@@ -626,7 +626,8 @@ namespace Miki.Modules
 						status = "🔁";
 					}
 
-					embed.Description += $"{status} `{x.ReminderId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(Locale.GetEntity(e.Channel.Id), true)}`\n";
+					embed.Description += 
+						$"{status} `{x.ReminderId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
 				}
 				embed.QueueToChannel(e.Channel);
 				return;
@@ -655,7 +656,7 @@ namespace Miki.Modules
         [Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
         {
-            Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
+            Locale locale = new Locale(e.Channel.Id);
 
             ILinkable s = null;
             if (e.arguments.ToLower().StartsWith("use"))
