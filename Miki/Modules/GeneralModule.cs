@@ -21,7 +21,7 @@ namespace Miki.Modules
     {
         public GeneralModule(RuntimeModule m)
         {
-            Bot.instance.Events.AddCommandDoneEvent(x =>
+            Bot.Instance.Events.AddCommandDoneEvent(x =>
             {
                 x.Name = "--count-commands";
                 x.processEvent = async (msg, e, s, t) =>
@@ -148,7 +148,7 @@ namespace Miki.Modules
 
 			embed.AddInlineField(
 				"🤖" + l.GetString("term_shard"), 
-				Bot.instance.Client.GetShardIdFor((e.Guild as IProxy<IGuild>).ToNativeObject()));
+				Bot.Instance.Client.GetShardIdFor((e.Guild as IProxy<IGuild>).ToNativeObject()));
 
             List<string> roleNames = new List<string>();
             foreach (IDiscordRole r in e.Guild.Roles)
@@ -179,13 +179,13 @@ namespace Miki.Modules
 
 			if (!string.IsNullOrEmpty(e.arguments))
             {
-                ICommandEvent ev = Bot.instance.Events.CommandHandler.GetCommandEvent(e.arguments);
+                ICommandEvent ev = Bot.Instance.Events.CommandHandler.GetCommandEvent(e.arguments);
 
                 if (ev == null)
                 {
                     IDiscordEmbed helpListEmbed = Utils.Embed;
                     helpListEmbed.Title = locale.GetString("miki_module_help_error_null_header");
-                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message", await Bot.instance.Events.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
+                    helpListEmbed.Description = locale.GetString("miki_module_help_error_null_message", await Bot.Instance.Events.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
 					helpListEmbed.SetColor(0.6f, 0.6f, 1.0f);
 
 					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
@@ -197,7 +197,7 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    if (Bot.instance.Events.CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
+                    if (Bot.Instance.Events.CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
                     {
                         return;
                     }
@@ -232,7 +232,7 @@ namespace Miki.Modules
 
 			embed.QueueToChannel(e.Channel);
 
-            (await Bot.instance.Events.ListCommandsInEmbedAsync(e.message)).QueueToUser(e.Author);
+            (await Bot.Instance.Events.ListCommandsInEmbedAsync(e.message)).QueueToUser(e.Author);
         }
 
         [Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -255,7 +255,7 @@ namespace Miki.Modules
 			Locale locale = new Locale(e.Channel.Id);
 
 			embed.Author = embed.CreateAuthor();
-            embed.Author.Name = "Miki " + Bot.instance.Version;
+            embed.Author.Name = "Miki " + Bot.Instance.Version;
 			embed.SetColor(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), 
@@ -305,7 +305,7 @@ namespace Miki.Modules
                     .SetTitle("Pong")
                     .SetColor(Miki.Common.Color.Lerp(new Miki.Common.Color(0, 1, 0), new Miki.Common.Color(1, 0, 0), (float)ping / 1000))
                     .AddInlineField("Miki", ping + "ms")
-                    .AddInlineField("Discord", Bot.instance.Client.Latency + "ms")
+                    .AddInlineField("Discord", Bot.Instance.Client.Latency + "ms")
                     .ModifyMessage(returnedMessage);
             }
         }
@@ -332,8 +332,8 @@ namespace Miki.Modules
             embed.Description = e.GetResource("stats_description");
             embed.Color = new Miki.Common.Color(0.3f, 0.8f, 1);
 
-            embed.AddInlineField($"🖥️ {e.GetResource("discord_servers")}", Bot.instance.Client.Guilds.Count.ToString());
-            embed.AddInlineField("💬 " + e.GetResource("term_commands"), Bot.instance.Events.CommandsUsed().ToString());
+            embed.AddInlineField($"🖥️ {e.GetResource("discord_servers")}", Bot.Instance.Client.Guilds.Count.ToString());
+            embed.AddInlineField("💬 " + e.GetResource("term_commands"), Bot.Instance.Events.CommandsUsed().ToString());
             embed.AddInlineField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.GetLocale()));
 			embed.AddInlineField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4");
 
@@ -348,7 +348,7 @@ namespace Miki.Modules
             if (string.IsNullOrEmpty(e.arguments)) return;
 
 			Locale locale = new Locale(e.Channel.Id);
-			UrbanDictionaryApi api = new UrbanDictionaryApi(Global.config.UrbanKey);
+			UrbanDictionaryApi api = new UrbanDictionaryApi(Global.Config.UrbanKey);
             UrbanDictionaryEntry entry = await api.GetEntryAsync(e.arguments);
 
             if (entry != null)

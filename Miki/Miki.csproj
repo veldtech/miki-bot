@@ -9,11 +9,8 @@
 
   <ItemGroup>
     <Compile Remove="Languages\**" />
-    <Compile Remove="miki\**" />
     <EmbeddedResource Remove="Languages\**" />
-    <EmbeddedResource Remove="miki\**" />
     <None Remove="Languages\**" />
-    <None Remove="miki\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -268,12 +265,12 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="DiscordBotsList.Api" Version="1.0.0" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
-    <PackageReference Include="Miki.Rest" Version="1.2.0" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
@@ -288,9 +285,7 @@
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="D:\Projects\Miki.Anilist\Miki.Anilist\Miki.Anilist.csproj" />
     <ProjectReference Include="D:\Projects\Miki.Common\Miki.Common\Miki.Common.csproj" />
-    <ProjectReference Include="D:\Projects\Miki.DblApi\Miki.DblApi\Miki.DblApi.csproj" />
     <ProjectReference Include="D:\Projects\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
-    <ProjectReference Include="D:\Projects\Miki.Rest\Miki.Rest\Miki.Rest.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -305,6 +300,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="miki\" />
   </ItemGroup>
 
 </Project>

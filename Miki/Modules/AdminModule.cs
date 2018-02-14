@@ -157,7 +157,7 @@ namespace Miki.Modules
         public async Task CleanAsync(EventContext e)
         {
 			// TODO: refactor
-            await PruneAsync(e, _target: Bot.instance.Client.GetShardFor((e.Guild as IProxy<IGuild>).ToNativeObject()).CurrentUser.Id);
+            await PruneAsync(e, _target: Bot.Instance.Client.GetShardFor((e.Guild as IProxy<IGuild>).ToNativeObject()).CurrentUser.Id);
 		}
 
         [Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
@@ -166,7 +166,7 @@ namespace Miki.Modules
 			Locale locale = new Locale(e.Channel.Id);
 
 			string[] arguments = e.arguments.Split(' ');
-            IEvent command = Bot.instance.Events.CommandHandler.GetEvent(arguments[0]);
+            IEvent command = Bot.Instance.Events.CommandHandler.GetEvent(arguments[0]);
             if (command == null)
             {
                 e.ErrorEmbed($"{arguments[0]} is not a valid command")
@@ -200,7 +200,7 @@ namespace Miki.Modules
 			Locale locale = new Locale(e.Channel.Id);
 
 			string[] arguments = e.arguments.Split(' ');
-            IModule m = Bot.instance.Events.GetModuleByName(arguments[0]);
+            IModule m = Bot.Instance.Events.GetModuleByName(arguments[0]);
             if (m == null)
             {
                 e.ErrorEmbed($"{arguments[0]} is not a valid module.")
@@ -330,7 +330,7 @@ namespace Miki.Modules
 		{
 			Locale locale = new Locale(e.Channel.Id);
 
-			IDiscordUser invoker = await e.Guild.GetUserAsync(Bot.instance.Client.GetShard(0).CurrentUser.Id);
+			IDiscordUser invoker = await e.Guild.GetUserAsync(Bot.Instance.Client.GetShard(0).CurrentUser.Id);
 			if (!invoker.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
 			{
 				e.Channel.QueueMessageAsync(locale.GetString("miki_module_admin_prune_error_no_access"));

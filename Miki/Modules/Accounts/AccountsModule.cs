@@ -56,7 +56,7 @@ namespace Miki.Modules.AccountsModule
 
 					if (rolesGiven.Count > 0)
 					{
-						await u.AddRolesAsync(rolesGiven);
+						await u.AddRolesAsync(rolesGiven.ToArray());
 					}
 				}
 			};

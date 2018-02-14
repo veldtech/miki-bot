@@ -13,7 +13,7 @@ namespace Miki.Modules
     {
 		private RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
 		{
-			ApiKey = Global.config.RocketLeagueKey
+			ApiKey = Global.Config.RocketLeagueKey
         });
 
         public async Task GetUser(EventContext e)

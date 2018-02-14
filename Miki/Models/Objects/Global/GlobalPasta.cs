@@ -29,7 +29,7 @@ namespace Miki.Models
 		public bool CanDeletePasta(ulong userId)
         {
             return userId == CreatorId.FromDbLong() || 
-				Bot.instance.Events.Developers.Contains(userId);
+				Bot.Instance.Events.Developers.Contains(userId);
         }
 
         public async Task<VoteCount> GetVotesAsync(MikiContext context)

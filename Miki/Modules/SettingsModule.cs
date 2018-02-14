@@ -9,101 +9,91 @@ using Miki.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Miki.Dsl;
+using System;
 
 namespace Miki.Modules
 {
-    [Module(Name = "settings")]
+	public enum LevelNotificationsSetting
+	{
+		ALL = 0,
+		REWARDS_ONLY = 1,
+		NONE = 2
+	}
+
+	[Module(Name = "settings")]
     internal class SettingsModule
     {
-        [Command(Name = "toggledm")]
-        public async Task ToggleDmAsync(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseSettingId.PERSONALMESSAGE);
+		// TODO: turn into fancy generic function
+		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task SetupNotifications(EventContext e)
+		{
+			if (string.IsNullOrWhiteSpace(e.arguments))
+				Task.Run(async () => await SetupNotificationsInteractive<LevelNotificationsSetting>(e, DatabaseSettingId.LEVEL_NOTIFICATIONS));
+			else
+			{
+				MMLParser mml = new MMLParser(e.arguments);
+				MSLResponse response = mml.Parse();
 
-                if (setting == null)
-                {
-                    setting = context.Settings.Add(new Setting()
-					{
-						EntityId = e.Author.Id.ToDbLong(),
-						IsEnabled = true,
-						SettingId = DatabaseSettingId.PERSONALMESSAGE
-					}).Entity;
-                }
+				bool global = response.GetBool("g");
+				LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"));
 
-                IDiscordEmbed embed = Utils.Embed;
-				Locale locale = new Locale(e.Channel.Id);
+				await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);		
+			}
+		}
 
-				setting.IsEnabled = !setting.IsEnabled;
-                string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
+		public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
+		{
+			List<string> options = Enum.GetNames(typeof(T))
+				.Select(x => x.ToLower()
+					.Replace('_', ' '))
+				.ToList();
 
-                embed.Description = locale.GetString("miki_module_settings_dm", aa);
-                embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
+			string settingName = settingId.ToString().ToLower().Replace('_', ' ');
 
-                await context.SaveChangesAsync();
-                embed.QueueToChannel(e.Channel);
-            }
-        }
+			var sMsg = await SettingsBaseEmbed
+				.SetDescription($"What kind of {settingName} do you want")
+				.AddInlineField("Options", string.Join("\n", options))
+				.SendToChannel(e.Channel);
 
-        [Command(Name = "toggleerrors")]
-        public async Task ToggleErrors(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                Setting setting = await context.Settings.FindAsync(e.Author.Id.ToDbLong(), DatabaseSettingId.ERRORMESSAGE);
+			int newSetting;
 
-                if (setting == null)
-                {
-                    setting = context.Settings.Add(new Setting() { EntityId = e.Author.Id.ToDbLong(), IsEnabled = true, SettingId = DatabaseSettingId.ERRORMESSAGE }).Entity;
-                }
+			while (true)
+			{
+				var msg = await Bot.Instance.Events.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+				
+				if(Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
+				{
+					newSetting = (int)setting;
+					break;
+				}
 
-                IDiscordEmbed embed = Utils.Embed;
-				Locale locale = new Locale(e.Channel.Id);
-				setting.IsEnabled = !setting.IsEnabled;
+				sMsg.Modify(null, e.ErrorEmbed("Oh, that didn't seem right! Try again")
+					.AddInlineField("Options", string.Join("\n", options)));
+			}
 
-                string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
+			sMsg = await SettingsBaseEmbed
+				.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
+				.SendToChannel(e.Channel);
 
-                embed.Description = locale.GetString("miki_module_settings_error_dm", aa);
-                embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
+			var cMsg = await Bot.Instance.Events.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+			bool global = (cMsg.Content.ToLower()[0] == 'y');
 
-                await context.SaveChangesAsync();
-                embed.QueueToChannel(e.Channel);
-            }
-        }
+			await SettingsBaseEmbed
+				.SetDescription($"Setting `{settingName}` Updated!")
+				.SendToChannel(e.Channel);
 
-        [Command(Name = "toggleguildnotifications", Aliases = new string[] { "tgn" }, Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task ToggleGuildNotifications(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                Setting setting = await context.Settings.FindAsync(e.Guild.Id.ToDbLong(), DatabaseSettingId.CHANNELMESSAGE);
+			if (!global)
+			{
+				await Setting.UpdateAsync(e.Channel.Id, settingId, newSetting);
+			}
+			else
+			{
+				await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
+			}
+		}
 
-                if (setting == null)
-                {
-                    setting = context.Settings.Add(new Setting()
-					{
-						EntityId = e.Guild.Id.ToDbLong(),
-						IsEnabled = true,
-						SettingId = DatabaseSettingId.CHANNELMESSAGE
-					}).Entity;
-                }
-
-                IDiscordEmbed embed = Utils.Embed;
-                Locale locale = new Locale(e.Channel.Id);
-                setting.IsEnabled = !setting.IsEnabled;
-
-                string aa = (!setting.IsEnabled) ? locale.GetString("miki_generic_disabled") : locale.GetString("miki_generic_enabled");
-
-                embed.Description = locale.GetString("miki_module_settings_guild_notifications", aa);
-                embed.Color = (setting.IsEnabled) ? new Miki.Common.Color(1, 0, 0) : new Miki.Common.Color(0, 1, 0);
-
-                await context.SaveChangesAsync();
-                embed.QueueToChannel(e.Channel);
-            }
-        }
-
-        [Command(Name = "showmodule")]
+		[Command(Name = "showmodule")]
         public async Task ConfigAsync(EventContext e)
         {
             IModule module = e.commandHandler.GetModule(e.arguments);
@@ -139,7 +129,7 @@ namespace Miki.Modules
 		public async Task ShowModulesAsync( EventContext e )
 		{
 			List<string> modules = new List<string>();
-			CommandHandler commandHandler = Bot.instance.Events.CommandHandler;
+			CommandHandler commandHandler = Bot.Instance.Events.CommandHandler;
 			EventAccessibility userEventAccessibility = commandHandler.GetUserAccessibility( e.message );
 
 			foreach( ICommandEvent ev in commandHandler.Commands.Values )
@@ -219,5 +209,9 @@ namespace Miki.Modules
                 .SetDescription("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
                 .QueueToChannel(e.Channel.Id);
         }
-    }
+
+		private IDiscordEmbed SettingsBaseEmbed => 
+			Utils.Embed.SetTitle("⚙ Settings")
+				.SetColor(138, 182, 239);
+	}
 }

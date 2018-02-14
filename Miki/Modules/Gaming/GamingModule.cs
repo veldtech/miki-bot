@@ -151,7 +151,6 @@ namespace Miki.Modules.Overwatch
 			}
 		}
 
-		// still a bad function, but i digress
 		public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
         {
             List<OverwatchRegion> regions = new List<OverwatchRegion>

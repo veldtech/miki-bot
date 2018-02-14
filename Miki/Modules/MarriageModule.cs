@@ -414,7 +414,7 @@ namespace Miki.Modules
                             }))
                             .Build();
 
-                Bot.instance.Events.AddPrivateCommandHandler(e.message, c);
+                Bot.Instance.Events.AddPrivateCommandHandler(e.message, c);
             }
         }
     }

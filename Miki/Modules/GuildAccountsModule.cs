@@ -57,7 +57,7 @@ namespace Miki.Modules
 
                     if (timer.Value.AddDays(7) <= DateTime.Now)
                     {
-                        SocketGuild guild = Bot.instance.Client.GetGuild(thisGuild.Id.FromDbLong());
+                        SocketGuild guild = Bot.Instance.Client.GetGuild(thisGuild.Id.FromDbLong());
 
                         GuildUser rival = await thisGuild.GetRival();
 

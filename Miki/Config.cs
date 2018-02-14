@@ -28,6 +28,12 @@ namespace Miki
 		public int ShardCount { get; set; } = 1;
 
 		/// <summary>
+		/// Start shard count
+		/// </summary>
+		[JsonProperty("shard_id")]
+		public int ShardId { get; set; } = 0;
+
+		/// <summary>
 		/// Carbon Server Statistics
 		/// </summary>
 		[JsonProperty("carbon_api_key")]

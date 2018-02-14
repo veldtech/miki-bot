@@ -11,12 +11,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Miki.Rest;
 using Newtonsoft.Json;
+using DiscordBotsList.Api;
 
 namespace Miki.Modules
 {
     [Module("internal:servercount")]
     internal class ServerCountModule
     {
+		AuthDiscordBotListApi api;
+
 		private class GuildCountObject
 		{
 			[JsonProperty("shard_id")]
@@ -37,7 +40,7 @@ namespace Miki.Modules
 
         private async Task OnUpdateGuilds(IDiscordGuild g)
         {
-            Bot bot = Bot.instance;
+            Bot bot = Bot.Instance;
 
             await SendCarbon(bot);
             await SendDiscordBotsOrg(bot, g);
@@ -50,7 +53,7 @@ namespace Miki.Modules
             {
                 var values = new Dictionary<string, string>
                 {
-                   { "key", Global.config.CarbonKey },
+                   { "key", Global.Config.CarbonKey },
                    { "servercount", bot.Client.Guilds.Count.ToString() }
                 };
 
@@ -63,20 +66,11 @@ namespace Miki.Modules
         private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
         {
 			var shard = bot.GetShardFor(g);
-			var client = new RestClient("https://discordbots.org/api/bots/160105994217586689/stats");
 
-			var guildCount = new GuildCountObject()
-			{
-				ShardId = shard.ShardId,
-				ShardCount = bot.GetTotalShards(),
-				GuildCount = shard.Guilds.Count
-			};
+			if (api == null)
+				api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
 
-			string json = JsonConvert.SerializeObject(guildCount);
-
-			await client
-				.SetAuthorization(Global.config.DiscordBotsOrgKey)
-				.PostAsync<string>("", json);
+			await api.UpdateStats(shard.ShardId, bot.GetTotalShards(), new[] { shard.Guilds.Count });
         }
 
         private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
@@ -94,7 +88,7 @@ namespace Miki.Modules
 			string json = JsonConvert.SerializeObject(guildCount);
 
 			await client
-				.SetAuthorization(Global.config.DiscordPwKey)
+				.SetAuthorization(Global.Config.DiscordPwKey)
 				.PostAsync<string>("", json);
         }
     }

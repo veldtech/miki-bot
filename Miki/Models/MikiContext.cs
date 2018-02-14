@@ -31,7 +31,7 @@ namespace Miki.Models
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseNpgsql(Global.config.ConnString);
+			optionsBuilder.UseNpgsql(Global.Config.ConnString);
 			base.OnConfiguring(optionsBuilder);
 		}
 

@@ -102,7 +102,7 @@ namespace Miki.Modules
         {
             Locale locale = e.Channel.GetLocale();
 
-            if (Bot.instance.Events.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
+            if (Bot.Instance.Events.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
             {
                 e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
                     .QueueToChannel(e.Channel);
@@ -127,7 +127,7 @@ namespace Miki.Modules
             IDiscordMessage message = await bm.CreateEmbed(e)
 					.SendToChannel(e.Channel);
 
-            CommandHandler c = new CommandHandlerBuilder(Bot.instance.Events)
+            CommandHandler c = new CommandHandlerBuilder(Bot.Instance.Events)
                 .AddPrefix("")
                 .SetOwner(e.message)
                 .AddCommand(
@@ -139,7 +139,7 @@ namespace Miki.Modules
                         .Default(async (ec) => await OnBlackjackHold(ec, bm, message, bet))
                 ).Build();
 
-            Bot.instance.Events.AddPrivateCommandHandler(e.message, c);
+            Bot.Instance.Events.AddPrivateCommandHandler(e.message, c);
 
         }     
 
@@ -570,7 +570,7 @@ namespace Miki.Modules
                         embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
                         embed.QueueToChannel(e.Channel);
 
-                        CommandHandler confirmCommand = new CommandHandlerBuilder(Bot.instance.Events)
+                        CommandHandler confirmCommand = new CommandHandlerBuilder(Bot.Instance.Events)
                             .AddPrefix("")
                             .DisposeInSeconds(20)
                             .SetOwner(e.message)
@@ -579,7 +579,7 @@ namespace Miki.Modules
                                     .Default((ec) => ValidateGlitch(ec, callback, bet)))
 									.Build();
 
-                        Bot.instance.Events.AddPrivateCommandHandler(e.message, confirmCommand);
+                        Bot.Instance.Events.AddPrivateCommandHandler(e.message, confirmCommand);
                     }
                     else
                     {

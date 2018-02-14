@@ -70,7 +70,7 @@ namespace Miki.Modules
         {
             if (ulong.TryParse(e.arguments, out ulong id))
             {
-                Bot.instance.Events.Ignore(id);
+                Bot.Instance.Events.Ignore(id);
                 e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
@@ -95,7 +95,7 @@ namespace Miki.Modules
         {
             Image s = new Image(new FileStream("./" + e.arguments, FileMode.Open));
 
-            await Bot.instance.Client.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
+            await Bot.Instance.Client.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
             {
                 z.Avatar = new Optional<Image?>(s);
             });
@@ -107,7 +107,7 @@ namespace Miki.Modules
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "Shards";
 
-			foreach (DiscordSocketClient c in Bot.instance.Client.Shards)
+			foreach (DiscordSocketClient c in Bot.Instance.Client.Shards)
 			{
 				embed.Description += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`";
             }
@@ -188,7 +188,7 @@ namespace Miki.Modules
         [Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task FindUserById(EventContext e)
         {
-            IDiscordUser u = new RuntimeUser(Bot.instance.Client.GetUser(ulong.Parse(e.arguments)));
+            IDiscordUser u = new RuntimeUser(Bot.Instance.Client.GetUser(ulong.Parse(e.arguments)));
 
             e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }

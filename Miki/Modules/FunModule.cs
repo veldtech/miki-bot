@@ -321,7 +321,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			var client = new MashapeClient(Global.config.ImgurClientId, Global.config.ImgurKey);
+			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.arguments} ext:gif");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -354,7 +354,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			var client = new MashapeClient(Global.config.ImgurClientId, Global.config.ImgurKey);
+			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.arguments}");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -493,7 +493,7 @@ namespace Miki.Modules
 				} break;
 				case "-list":
 				{
-					await ListRemindersAsync(e);
+					ListReminders(e);
 				} break;
 				default:
 				{
@@ -503,13 +503,13 @@ namespace Miki.Modules
 					}
 					else
 					{
-						await PlaceReminderAsync(e);
+						PlaceReminder(e);
 					}
 				} break;
 			}
 	    }
 
-		private async Task PlaceReminderAsync(EventContext e)
+		private void PlaceReminder(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();
 
@@ -598,7 +598,7 @@ namespace Miki.Modules
 					.QueueToChannel(e.Channel);
 			}
 		}
-		private async Task ListRemindersAsync(EventContext e)
+		private void ListReminders(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();
 

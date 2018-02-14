@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Common", "D:\Projects\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Api", "Miki.Api\Miki.Api.csproj", "{543F228B-5391-4D5F-B51C-B5F142A35E53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.DblApi", "D:\Projects\Miki.DblApi\Miki.DblApi\Miki.DblApi.csproj", "{C2B98932-7445-460E-8867-024219564F7E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,14 +81,6 @@ Global
 		{543F228B-5391-4D5F-B51C-B5F142A35E53}.Release|Any CPU.Build.0 = Release|Any CPU
 		{543F228B-5391-4D5F-B51C-B5F142A35E53}.Release|x64.ActiveCfg = Release|Any CPU
 		{543F228B-5391-4D5F-B51C-B5F142A35E53}.Release|x64.Build.0 = Release|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Debug|x64.Build.0 = Debug|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Release|x64.ActiveCfg = Release|Any CPU
-		{C2B98932-7445-460E-8867-024219564F7E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

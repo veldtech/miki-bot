@@ -15,8 +15,7 @@ using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis;
-using Miki.DblApi;
-using Miki.DblApi.Internal;
+using Miki.Modules;
 
 namespace Miki
 {
@@ -34,18 +33,12 @@ namespace Miki
 
 		public async Task Start()
 		{
-			AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(160105994217586689, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MDEwNTk5NDIxNzU4NjY4OSIsImJvdCI6dHJ1ZSwiaWF0IjoxNTExMDYyMDgzfQ.77542F_o02msUDqShFK_J6XawiJ5hZEOcEiR6ans9U0");
-
-			// Get Self
-			ISelfBot me = await dblApi.GetMeAsync();
-
-
-
 			Locale.Load();
 			timeSinceStartup = DateTime.Now;
 
-			LoadConfig();
 			LoadDiscord();
+
+			LevelNotificationsSetting s = await Setting.GetAsync<LevelNotificationsSetting>(0, DatabaseSettingId.LEVEL_NOTIFICATIONS);
 
 			using (var c = new MikiContext())
 			{			
@@ -59,50 +52,34 @@ namespace Miki
 			await bot.ConnectAsync();
 		}
 
-        private void LoadConfig()
-        {
-            if (FileReader.FileExist("settings.json", "miki"))
-            {
-                FileReader reader = new FileReader("settings.json", "miki");
-				Global.config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
-                reader.Finish();
-            }
-            else
-            {
-                FileWriter writer = new FileWriter("settings.json", "miki");
-                writer.Write(JsonConvert.SerializeObject(Global.config, Formatting.Indented));
-                writer.Finish();
-            }
-        }
-
         /// <summary>
         /// The program runs all discord services and loads all the data here.
         /// </summary>
         public void LoadDiscord()
         {
-			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.config.RedisConnectionString);
+			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.Config.RedisConnectionString);
 
-			bot = new Framework.Bot(new ClientInformation()
+			bot = new Bot(new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.5.4",
 				cacheClient = Global.redisClient,
-                Token = Global.config.Token,
-                ShardCount = Global.config.ShardCount,
+                Token = Global.Config.Token,
+                ShardCount = Global.Config.ShardCount,
                 ConsoleLogLevel = LogLevel.ALL,
-				DatabaseConnectionString = Global.config.ConnString
+				DatabaseConnectionString = Global.Config.ConnString
 			});
 		
-            if (!string.IsNullOrWhiteSpace(Global.config.SharpRavenKey))
+            if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
-                Global.ravenClient = new SharpRaven.RavenClient(Global.config.SharpRavenKey);
+                Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }
 
-			if(!string.IsNullOrWhiteSpace(Global.config.DatadogKey))
+			if(!string.IsNullOrWhiteSpace(Global.Config.DatadogKey))
 			{
 				var dogstatsdConfig = new StatsdConfig
 				{
-					StatsdServerName = Global.config.DatadogHost,
+					StatsdServerName = Global.Config.DatadogHost,
 					StatsdPort = 8125,
 					Prefix = "miki"
 				};
@@ -134,7 +111,7 @@ namespace Miki
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
 			bot.AddDeveloper(121919449996460033);
 
-			foreach (ulong l in Global.config.DeveloperIds)
+			foreach (ulong l in Global.Config.DeveloperIds)
 			{
 				bot.AddDeveloper(l);
 			}
@@ -155,7 +132,7 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Counter("guilds", Framework.Bot.instance.Client.Guilds.Count);
+			DogStatsd.Counter("guilds", Bot.Instance.Client.Guilds.Count);
 			await Task.Yield();
 		}
 
@@ -168,7 +145,7 @@ namespace Miki
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Counter("guilds", Framework.Bot.instance.Client.Guilds.Count);
+			DogStatsd.Counter("guilds", Bot.Instance.Client.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)

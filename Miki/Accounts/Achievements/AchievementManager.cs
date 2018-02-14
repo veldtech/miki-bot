@@ -19,7 +19,7 @@ namespace Miki.Accounts.Achievements
 
     public class AchievementManager
     {
-        private static AchievementManager _instance = new AchievementManager(Bot.instance);
+        private static AchievementManager _instance = new AchievementManager(Bot.Instance);
         public static AchievementManager Instance => _instance;
         internal IService provider = null;
 
@@ -168,7 +168,7 @@ namespace Miki.Accounts.Achievements
             {
                 TransactionPacket p = new TransactionPacket();
                 p.discordChannel = m;
-                p.discordUser = new RuntimeUser(Bot.instance.Client.GetUser(receiver.Id.FromDbLong()));
+                p.discordUser = new RuntimeUser(Bot.Instance.Client.GetUser(receiver.Id.FromDbLong()));
 
                 if (giver != null)
                 {

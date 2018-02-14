@@ -51,11 +51,11 @@ namespace Miki.Models
             }
         }
 
-        public static User Create(MikiContext m, IDiscordMessage e)
+        public static async Task<User> CreateAsync(IDiscordMessage e)
         {
-			return Create(e.Author, m);
+			return await CreateAsync(e.Author);
         }
-		public static User Create(IDiscordUser u, MikiContext m = null)
+		public static async Task<User> CreateAsync(IDiscordUser u)
 		{
 			using (var context = new MikiContext())
 			{
@@ -81,13 +81,12 @@ namespace Miki.Models
 					UserId = u.Id.ToDbLong(),
 				};
 
-				user.LocalExperience = new List<LocalExperience>();
-				user.LocalExperience.Add(exp);
+				user.LocalExperience = new List<LocalExperience> { exp };
 
-				context.Users.Add(user);
-				context.LocalExperience.Add(exp);
+				await context.Users.AddAsync(user);
+				await context.LocalExperience.AddAsync(exp);
 
-				context.SaveChanges();
+				await context.SaveChangesAsync();
 
 				return user;
 			}
@@ -109,7 +108,7 @@ namespace Miki.Models
 
 			if(user == null)
 			{
-				return Create(u, context);
+				return await CreateAsync(u);
 			}
 			return user;
 		}
@@ -221,7 +220,7 @@ namespace Miki.Models
 					await context.LocalExperience.Where(x => x.UserId == id).ToListAsync()
 				);
 
-				Bot.instance.Events.Ignore(id.FromDbLong());
+				Bot.Instance.Events.Ignore(id.FromDbLong());
 				u.Banned = true;
 				u.Total_Commands = 0;
 				u.Total_Experience = 0;

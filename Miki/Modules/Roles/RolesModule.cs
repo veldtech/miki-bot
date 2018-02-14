@@ -182,8 +182,9 @@ namespace Miki.Modules.Roles
 
 				await context.SaveChangesAsync();
 					
-				Utils.Embed.SetTitle("Available Roles")
+				Utils.Embed.SetTitle("📄 Available Roles")
 					.SetDescription(stringBuilder.ToString())
+					.SetColor(204, 214, 221)
 					.QueueToChannel(e.Channel);
 			}
 		}
@@ -235,15 +236,16 @@ namespace Miki.Modules.Roles
 					})).Entity;
 				}
 
-				await e.Channel.SendMessageAsync($"Is there a role requirement? type a role name in, if there is no requirement type -");
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription("Is there a role that is needed to get this role? Type out the role name, or `-` to skip")
+					.SetColor(138, 182, 239);
+
+				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+
 
 				while (true)
 				{
 					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
-					if (msg == null)
-					{
-						return;
-					}
 
 					IDiscordRole parentRole = GetRoleByName(e.Guild, msg.Content.ToLower());
 
@@ -252,18 +254,19 @@ namespace Miki.Modules.Roles
 						newRole.RequiredRole = (long?)parentRole?.Id ?? 0;
 						break;
 					}
-					await e.Channel.SendMessageAsync($"Couldn't find that role, sorry. Try again.");
+
+					sourceMessage.Modify(null, e.ErrorEmbed("I couldn't find that role. Try again!"));
 				}
 
-				await e.Channel.SendMessageAsync($"Is there a level requirement? type a number, if there is no requirement type 0");
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Is there a level requirement? type a number, if there is no requirement type 0")
+					.SetColor(138, 182, 239);
+
+				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
 
 				while (true)
 				{
 					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
-					if (msg == null)
-					{
-						return;
-					}
 
 					if (int.TryParse(msg.Content, out int r))
 					{
@@ -274,41 +277,49 @@ namespace Miki.Modules.Roles
 						}
 						else
 						{
-							await e.Channel.SendMessageAsync($"Please pick a number above 0. Try again");
+							sourceMessage.Modify(null, sourceEmbed.SetDescription($"Please pick a number above 0. Try again"));
 						}
 					}
 					else
 					{
-						await e.Channel.SendMessageAsync($"Are you sure `{msg.Content}` is a number? Try again");
+						sourceMessage.Modify(null, sourceEmbed.SetDescription($"Are you sure `{msg.Content}` is a number? Try again"));
 					}
 				}
 
-				if(newRole.RequiredRole > 0)
-				{
-					await e.Channel.SendMessageAsync($"Should I give them when the user level ups? type yes, otherwise it will be considered as no");
-					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
-					if (msg == null)
-					{
-						return;
-					}
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Should I give them when the user level ups? type `yes`, otherwise it will be considered as no")
+					.SetColor(138, 182, 239);
 
-					newRole.Automatic = msg.Content.ToLower()[0] == 'y';
-				}
-
-				await e.Channel.SendMessageAsync($"Should users be able to opt in? type yes, otherwise it will be considered as no");
+				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+					
 				msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
 				if (msg == null)
 				{
 					return;
 				}
 
+				newRole.Automatic = msg.Content.ToLower()[0] == 'y';
+
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Should users be able to opt in? type `yes`, otherwise it will be considered as no")
+					.SetColor(138, 182, 239);
+
+				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+
+				msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+
 				newRole.Optable = msg.Content.ToLower()[0] == 'y';
 
 				if (newRole.Optable)
 				{
+					sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+						.SetDescription($"Do you want the user to pay mekos for the role? Enter any amount. Enter 0 to keep the role free.")
+						.SetColor(138, 182, 239);
+
+					sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+
 					while (true)
 					{
-						await e.Channel.SendMessageAsync($"Do you want the user to pay mekos for the role? Enter any amount. Enter 0 to keep the role free.");
 						msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
 						if (msg == null)
 						{
@@ -324,12 +335,12 @@ namespace Miki.Modules.Roles
 							}
 							else
 							{
-								await e.Channel.SendMessageAsync($"Please pick a number above 0. Try again");
+								sourceMessage.Modify(null, e.ErrorEmbed($"Please pick a number above 0. Try again"));
 							}
 						}
 						else
 						{
-							await e.Channel.SendMessageAsync($"Are you sure `{msg.Content}` is a number? Try again");
+							sourceMessage.Modify(null, e.ErrorEmbed($"Not quite sure if this is a number 🤔"));
 						}
 					}
 				}

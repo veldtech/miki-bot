@@ -29,7 +29,7 @@ namespace Miki.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ConnectionString {
             get {
-				return Global.config.ConnString;
+				return Global.Config.ConnString;
 			}
         }
     }
