@@ -10,12 +10,10 @@ namespace Miki
 {
     internal class Notification
     {
-        public static async Task SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
-        {
-            await SendAchievement(d.Achievements[rank], channel, user);
-        }
+        public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
+			=> SendAchievement(d.Achievements[rank], channel, user);
 
-        public static async Task SendAchievement(BaseAchievement d, IDiscordMessageChannel channel, IDiscordUser user)
+		public static void SendAchievement(BaseAchievement d, IDiscordMessageChannel channel, IDiscordUser user)
         {
 			IDiscordEmbed embed = Utils.Embed.SetTitle("Achievement Unlocked")
 				.SetDescription($"{d.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{d.Name}**! {d.Icon}");

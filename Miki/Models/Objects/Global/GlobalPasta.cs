@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Framework.Events;
 
 namespace Miki.Models
 {
@@ -29,7 +30,7 @@ namespace Miki.Models
 		public bool CanDeletePasta(ulong userId)
         {
             return userId == CreatorId.FromDbLong() || 
-				Bot.Instance.Events.Developers.Contains(userId);
+				EventSystem.Instance.DeveloperIds.Contains(userId);
         }
 
         public async Task<VoteCount> GetVotesAsync(MikiContext context)

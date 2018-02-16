@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Framework.Events;
 
 namespace Miki.Modules
 {
@@ -185,7 +186,7 @@ namespace Miki.Modules
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.CreatorId == e.Author.Id.ToDbLong() || Bot.Instance.Events.Developers.Contains(e.Author.Id))
+                if (p.CreatorId == e.Author.Id.ToDbLong() || EventSystem.Instance.DeveloperIds.Contains(e.Author.Id))
                 {
                     p.Text = e.arguments;
                     await context.SaveChangesAsync();

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Miki.Common.Events;
+using Miki.Framework.Events;
 
 namespace Miki.Accounts.Achievements
 {
@@ -19,11 +20,11 @@ namespace Miki.Accounts.Achievements
 
     public class AchievementManager
     {
-        private static AchievementManager _instance = new AchievementManager(Bot.Instance);
+		private static AchievementManager _instance = new AchievementManager(Bot.Instance);
         public static AchievementManager Instance => _instance;
         internal IService provider = null;
 
-        private Bot bot;
+        private IBot bot;
         private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
         public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -34,8 +35,7 @@ namespace Miki.Accounts.Achievements
 
         public event Func<TransactionPacket, Task> OnTransaction;
 
-
-        private AchievementManager(Bot bot)
+        public AchievementManager(IBot bot)
         {
             this.bot = bot;
 
@@ -52,7 +52,8 @@ namespace Miki.Accounts.Achievements
                     await OnLevelGained?.Invoke(p);
                 }
             };
-            AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
+
+			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
             {
                 if (await provider.IsEnabled(msg.Channel.Id))
                 {
@@ -68,7 +69,8 @@ namespace Miki.Accounts.Achievements
                     await OnTransaction?.Invoke(p);
                 }
             };
-            bot.Events.AddCommandDoneEvent(x =>
+
+            EventSystem.Instance.AddCommandDoneEvent(x =>
             {
                 x.Name = "--achievement-manager-command";
                 x.processEvent = async (m, e, s,  t) =>
@@ -168,7 +170,7 @@ namespace Miki.Accounts.Achievements
             {
                 TransactionPacket p = new TransactionPacket();
                 p.discordChannel = m;
-                p.discordUser = new RuntimeUser(Bot.Instance.Client.GetUser(receiver.Id.FromDbLong()));
+                p.discordUser = Bot.Instance.GetUser(receiver.Id.FromDbLong());
 
                 if (giver != null)
                 {

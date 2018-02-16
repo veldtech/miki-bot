@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Miki.Core.Migrations
 {
-    public partial class setting_rework : Migration
+    public partial class Setting_rework : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

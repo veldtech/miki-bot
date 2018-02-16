@@ -139,7 +139,7 @@ namespace Miki.Modules.Accounts.Services
                         CheckCommand = async (p) =>
                         {
 							await Task.Yield();
-							return Bot.Instance.Events.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
+							return EventSystem.Instance.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
 						Points = 0
                     }

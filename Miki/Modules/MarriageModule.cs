@@ -402,7 +402,7 @@ namespace Miki.Modules
                 embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
                 embed.QueueToChannel(e.Channel);
 
-                CommandHandler c = new CommandHandlerBuilder()
+                CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
                     .AddPrefix("")
                     .DisposeInSeconds(20)
                     .SetOwner(e.message)
@@ -414,7 +414,7 @@ namespace Miki.Modules
                             }))
                             .Build();
 
-                Bot.Instance.Events.AddPrivateCommandHandler(e.message, c);
+                EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
             }
         }
     }

@@ -70,7 +70,7 @@ namespace Miki.Modules
         {
             if (ulong.TryParse(e.arguments, out ulong id))
             {
-                Bot.Instance.Events.Ignore(id);
+                EventSystem.Instance.Ignore(id);
                 e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
@@ -93,11 +93,11 @@ namespace Miki.Modules
         [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ChangeAvatarAsync(EventContext e)
         {
-            Image s = new Image(new FileStream("./" + e.arguments, FileMode.Open));
+            Stream s = new FileStream("./" + e.arguments, FileMode.Open);
 
-            await Bot.Instance.Client.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
+            await Bot.Instance.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
             {
-                z.Avatar = new Optional<Image?>(s);
+                z.Image = new DiscordImage(s);
             });
         }
 
@@ -107,9 +107,9 @@ namespace Miki.Modules
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = "Shards";
 
-			foreach (DiscordSocketClient c in Bot.Instance.Client.Shards)
+			foreach (IShard c in Bot.Instance.Shards)
 			{
-				embed.Description += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`";
+				embed.Description += $"`Shard {c.Id.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`";
             }
 
             embed.QueueToChannel(e.Channel);
@@ -188,7 +188,7 @@ namespace Miki.Modules
         [Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task FindUserById(EventContext e)
         {
-            IDiscordUser u = new RuntimeUser(Bot.Instance.Client.GetUser(ulong.Parse(e.arguments)));
+            IDiscordUser u = Bot.Instance.GetUser(ulong.Parse(e.arguments));
 
             e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }

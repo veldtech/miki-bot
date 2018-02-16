@@ -10,6 +10,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Framework.Events;
+using Miki.Common;
 
 namespace Miki.Models
 {
@@ -220,7 +222,7 @@ namespace Miki.Models
 					await context.LocalExperience.Where(x => x.UserId == id).ToListAsync()
 				);
 
-				Bot.Instance.Events.Ignore(id.FromDbLong());
+				EventSystem.Instance.Ignore(id.FromDbLong());
 				u.Banned = true;
 				u.Total_Commands = 0;
 				u.Total_Experience = 0;

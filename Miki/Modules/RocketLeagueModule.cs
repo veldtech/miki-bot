@@ -123,7 +123,7 @@ namespace Miki.Modules
             embed.QueueToChannel(e.Channel);
         }
 
-        public async Task GetNowPlaying(EventContext e)
+        public void GetNowPlaying(EventContext e)
         {
             int platform = -1;
 

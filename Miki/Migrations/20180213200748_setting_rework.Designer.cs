@@ -12,7 +12,7 @@ namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
     [Migration("20180213200748_setting_rework")]
-    partial class setting_rework
+    partial class Setting_rework
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

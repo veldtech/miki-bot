@@ -4,6 +4,7 @@ using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using System;
 using System.Threading.Tasks;
+using Miki.Common;
 
 namespace Miki.Accounts.Achievements
 {
@@ -61,7 +62,7 @@ namespace Miki.Accounts.Achievements
                 await context.SaveChangesAsync();
             }
 
-            await Notification.SendAchievement(this, channel, user);
+            Notification.SendAchievement(this, channel, user);
         }
     }
 }

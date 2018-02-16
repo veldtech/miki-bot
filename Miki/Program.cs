@@ -16,6 +16,10 @@ using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis;
 using Miki.Modules;
+using Miki.Common;
+using Miki.Accounts;
+using Miki.Accounts.Achievements;
+using Miki.Framework.Events;
 
 namespace Miki
 {
@@ -45,7 +49,7 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					bot.Events.Ignore(u.Id.FromDbLong());
+					EventSystem.Instance.Ignore(u.Id.FromDbLong());
 				}
 			}
 
@@ -63,13 +67,13 @@ namespace Miki
             {
                 Name = "Miki",
                 Version = "0.5.4",
-				cacheClient = Global.redisClient,
                 Token = Global.Config.Token,
                 ShardCount = Global.Config.ShardCount,
-                ConsoleLogLevel = LogLevel.ALL,
 				DatabaseConnectionString = Global.Config.ConnString
 			});
-		
+
+			var eventSystem = EventSystem.Start(bot);
+
             if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
@@ -86,7 +90,7 @@ namespace Miki
 				DogStatsd.Configure(dogstatsdConfig);
 			}
 
-			bot.Events.AddCommandDoneEvent(x =>
+			eventSystem.AddCommandDoneEvent(x =>
 			{
 				x.Name = "datadog-command-done";
 				x.processEvent = async (msg, cmd, success, t) =>
@@ -96,31 +100,33 @@ namespace Miki
 						DogStatsd.Counter("commands.error.rate", 1);
 					}
 					
-					DogStatsd.Counter("commands.count", 1);
-					DogStatsd.Histogram("commands.time", t, 0.1);
+					DogStatsd.Counter("commands.count", 1, 1, new[] 
+					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
+					DogStatsd.Histogram("commands.time", t, 0.1, new[]
+					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
 				};
 			});
 
-			bot.Events.RegisterPrefixInstance(">")
+			EventSystem.Instance.RegisterPrefixInstance(">")
 				.RegisterAsDefault();
 
-			bot.Events.RegisterPrefixInstance("miki.", false);
+			eventSystem.RegisterPrefixInstance("miki.", false);
 
 			bot.MessageReceived += Bot_MessageReceived;
 	
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
-			bot.AddDeveloper(121919449996460033);
+			eventSystem.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.Config.DeveloperIds)
 			{
-				bot.AddDeveloper(l);
+				eventSystem.AddDeveloper(l);
 			}
 
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 
-			bot.OnShardConnect += Bot_OnShardConnect;
-			bot.OnShardDisconnect += Bot_OnShardDisconnect;
+			bot.ShardConnect += Bot_OnShardConnect;
+			bot.ShardDisconnect += Bot_OnShardDisconnect;
 		}
 
 		private async Task Bot_MessageReceived(Miki.Common.Interfaces.IDiscordMessage arg)
@@ -132,7 +138,7 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Counter("guilds", Bot.Instance.Client.Guilds.Count);
+			DogStatsd.Set("guilds", Bot.Instance.Guilds.Count, Bot.Instance.Guilds.Count);
 			await Task.Yield();
 		}
 
@@ -140,25 +146,25 @@ namespace Miki
 		{
 			Locale locale = new Locale(arg.Id);
 			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			await defaultChannel.SendMessage(locale.GetString("miki_join_message"));
+			await defaultChannel.SendMessageAsync(locale.GetString("miki_join_message"));
 
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Counter("guilds", Bot.Instance.Client.Guilds.Count);
+			DogStatsd.Set("guilds", Bot.Instance.Guilds.Count, Bot.Instance.Guilds.Count);
 		}
 
 		private async Task Bot_OnShardConnect(int shardId)
 		{
 			DogStatsd.Event("shard.connect", $"shard {shardId} has connected!");
-			DogStatsd.ServiceCheck($"shard.{shardId}", Status.OK);
+			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{shardId}");
 			await Task.Yield();
 		}
 
 		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
 		{
 			DogStatsd.Event("shard.disconnect", $"shard {shardId} has disconnected!");
-			DogStatsd.ServiceCheck($"shard.{shardId}", Status.CRITICAL, null, null, null, e.Message);
+			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{shardId}", null, e.Message);
 			await Task.Yield();
 		}
 	}

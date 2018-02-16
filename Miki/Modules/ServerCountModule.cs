@@ -40,7 +40,7 @@ namespace Miki.Modules
 
         private async Task OnUpdateGuilds(IDiscordGuild g)
         {
-            Bot bot = Bot.Instance;
+            Bot bot = Bot.Instance as Bot;
 
             await SendCarbon(bot);
             await SendDiscordBotsOrg(bot, g);
@@ -70,7 +70,7 @@ namespace Miki.Modules
 			if (api == null)
 				api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
 
-			await api.UpdateStats(shard.ShardId, bot.GetTotalShards(), new[] { shard.Guilds.Count });
+			await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
         }
 
         private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
@@ -81,7 +81,7 @@ namespace Miki.Modules
 			var guildCount = new GuildCountObject()
 			{
 				ShardId = shard.ShardId,
-				ShardCount = bot.GetTotalShards(),
+				ShardCount = bot.Information.ShardCount,
 				GuildCount = shard.Guilds.Count
 			};
 

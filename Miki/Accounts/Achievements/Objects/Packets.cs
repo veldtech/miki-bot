@@ -1,4 +1,5 @@
-﻿using Miki.Common.Events;
+﻿using Miki.Common;
+using Miki.Common.Events;
 using Miki.Common.Interfaces;
 using Miki.Models;
 

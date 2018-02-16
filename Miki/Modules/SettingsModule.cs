@@ -60,7 +60,7 @@ namespace Miki.Modules
 
 			while (true)
 			{
-				var msg = await Bot.Instance.Events.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+				var msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 				
 				if(Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
 				{
@@ -76,7 +76,7 @@ namespace Miki.Modules
 				.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
 				.SendToChannel(e.Channel);
 
-			var cMsg = await Bot.Instance.Events.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+			var cMsg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 			bool global = (cMsg.Content.ToLower()[0] == 'y');
 
 			await SettingsBaseEmbed
@@ -129,10 +129,10 @@ namespace Miki.Modules
 		public async Task ShowModulesAsync( EventContext e )
 		{
 			List<string> modules = new List<string>();
-			CommandHandler commandHandler = Bot.Instance.Events.CommandHandler;
+			ICommandHandler commandHandler = e.EventSystem.CommandHandler;
 			EventAccessibility userEventAccessibility = commandHandler.GetUserAccessibility( e.message );
 
-			foreach( ICommandEvent ev in commandHandler.Commands.Values )
+			foreach( ICommandEvent ev in commandHandler.Commands)
 			{
 				if( userEventAccessibility >= ev.Accessibility )
 				{
@@ -203,7 +203,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task DoListLocale(EventContext e)
+        public void DoListLocale(EventContext e)
         {
             Utils.Embed.SetTitle("Available locales")
                 .SetDescription("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")

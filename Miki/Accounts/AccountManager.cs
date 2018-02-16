@@ -31,33 +31,29 @@ namespace Miki.Accounts
 		private Dictionary<ulong, ExperienceAdded> experienceQueue = new Dictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
-        private readonly Bot bot;
-
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
 
-        private AccountManager(Bot bot)
+        public AccountManager(IBot bot)
         {
-            this.bot = bot;
-
 			OnGlobalLevelUp += async (a, e, l) =>
 			{
 				await Task.Yield();
 				DogStatsd.Counter("levels.global", l);
 			};
-            OnLocalLevelUp += async (a, e, l) =>
-            {
+			OnLocalLevelUp  += async (a, e, l) =>
+			{
 				DogStatsd.Counter("levels.local", l);
 
 				long guildId = (long)e.Guild.Id;
-                Locale locale = new Locale(e.Id);
-                List<LevelRole> rolesObtained = new List<LevelRole>();
+				Locale locale = new Locale(e.Id);
+				List<LevelRole> rolesObtained = new List<LevelRole>();
 
-                using (var context = new MikiContext())
-                {
-                     rolesObtained = await context.LevelRoles
-                        .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
-                        .ToListAsync();
-                }
+				using (var context = new MikiContext())
+				{
+					rolesObtained = await context.LevelRoles
+					   .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
+					   .ToListAsync();
+				}
 
 				await a.AddRolesAsync(rolesObtained.Select(x => x.Role).ToArray());
 
@@ -73,19 +69,19 @@ namespace Miki.Accounts
 					.SetTitle(locale.GetString("miki_accounts_level_up_header"))
 					.SetDescription(locale.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l))
 					.SetColor(1, 0.7f, 0.2f);
-		
-				if(rolesObtained.Count > 0)
+
+				if (rolesObtained.Count > 0)
 				{
 					embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.Role.Name}**")));
 				}
 
 				embed.QueueToChannel(e);
-            };
+			};
 
-            Bot.Instance.Client.GuildUpdated += Client_GuildUpdated;
-            Bot.Instance.GuildJoin += Client_UserJoined;
-            Bot.Instance.GuildLeave += Client_UserLeft;
-        }
+			bot.GuildUpdate += Client_GuildUpdated;
+			bot.GuildJoin   += Client_UserJoined;
+			bot.GuildLeave  += Client_UserLeft;
+		}
 
         public async Task CheckAsync(IDiscordMessage e)
         {
@@ -249,7 +245,7 @@ namespace Miki.Accounts
             await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
         }
 
-        private async Task Client_GuildUpdated(Discord.WebSocket.SocketGuild arg1, Discord.WebSocket.SocketGuild arg2)
+        private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
         {
             if (arg1.Name != arg2.Name)
             {

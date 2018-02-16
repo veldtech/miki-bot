@@ -1,6 +1,7 @@
 ﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
+using Miki.Common;
 using Miki.Common.Events;
 using Miki.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +71,7 @@ namespace Miki.Modules.Roles
 					if (user.Currency >= newRole.Price)
 					{
 						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
-						IDiscordMessage m = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+						IDiscordMessage m = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 						if (m.Content.ToLower()[0] == 'y')
 						{
 
@@ -215,7 +216,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 	
 					if (msg.Content.Length < 20)
 					{
@@ -245,7 +246,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
 					IDiscordRole parentRole = GetRoleByName(e.Guild, msg.Content.ToLower());
 
@@ -266,7 +267,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
 					if (int.TryParse(msg.Content, out int r))
 					{
@@ -292,7 +293,7 @@ namespace Miki.Modules.Roles
 
 				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
 					
-				msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+				msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 				if (msg == null)
 				{
 					return;
@@ -306,7 +307,7 @@ namespace Miki.Modules.Roles
 
 				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
 
-				msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+				msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
 				newRole.Optable = msg.Content.ToLower()[0] == 'y';
 
@@ -320,7 +321,7 @@ namespace Miki.Modules.Roles
 
 					while (true)
 					{
-						msg = await EventSystem.Instance.ListenForNextMessageAsync(e.Channel.Id, e.Author.Id);
+						msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 						if (msg == null)
 						{
 							return;
