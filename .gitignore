@@ -309,3 +309,4 @@ __pycache__/
 *.xsd.cs
 .vs/Miki/v15/.suo
 Miki/App.config
+settings.json

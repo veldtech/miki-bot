@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="miki_errors_enabled_message" xml:space="preserve">
+    <value>Miki के कोड में गड़बड़ी के कारण आपके सवाल का जवाब देने में असमर्थ। हम आपको प्राइवेट संदेश के ज़रिए निर्देश देंगे।</value>
+    <comment>This message is sent when miki catches a uncaught error</comment>
+  </data>
+  <data name="miki_error_message_generic" xml:space="preserve">
+    <value>अज्ञात एरर!</value>
+    <comment>When no other error message is appliable to this version</comment>
+  </data>
+  <data name="miki_join_message" xml:space="preserve">
+    <value>नमस्ते! मेरा नाम **Miki** है! `help` का इस्तेमाल करें और जानें मेरे फीचर्स! :notes:</value>
+    <comment>This message is called when miki joins a new guild</comment>
+  </data>
+  <data name="miki_global_profile_user_header" xml:space="preserve">
+    <value>{0} की ग्लोबल प्रोफ़ाइल</value>
+  </data>
+  <data name="miki_local_profile_user_header" xml:space="preserve">
+    <value>{0} की लोकल प्रोफ़ाइल</value>
+  </data>
+  <data name="miki_mekos_insufficient" xml:space="preserve">
+    <value>आपके पास पर्याप्त mekos नहीं है।</value>
+  </data>
+  <data name="miki_module_eventmessages_delete_guildjoin" xml:space="preserve">
+    <value>✅ आपका वेलकम संदेश डिलीट कर दिया गया है।</value>
+  </data>
+  <data name="miki_module_eventmessages_set_guildjoin" xml:space="preserve">
+    <value>✅ आपका नया वेलकम संदेश यह है: `{0}` </value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
+    <value>शायद नहीं।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
+    <value>मेरा जवाब ना है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_3" xml:space="preserve">
+    <value>मेरे सूत्र ना कह रहे हैं।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
+    <value>दृष्टिकोण सही नहीं है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
+    <value>बहुत संदेहजनक।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_1" xml:space="preserve">
+    <value>अस्पष्ट रिप्लाई, कृपया पुनः कोशिश करें।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_2" xml:space="preserve">
+    <value>थोड़ी देर बाद पुनः पूछें।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_3" xml:space="preserve">
+    <value>अभी बताने के मूड में नहीं हूं।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_4" xml:space="preserve">
+    <value>कुछ कह नहीं सकता।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_5" xml:space="preserve">
+    <value>ध्यान से पुनः कोशिश करें।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_1" xml:space="preserve">
+    <value>स्वाभाविक है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_2" xml:space="preserve">
+    <value>निश्चित रूप से।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_3" xml:space="preserve">
+    <value>बेशक।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_4" xml:space="preserve">
+    <value>हां बिलकुल</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_5" xml:space="preserve">
+    <value>कहा जा सकता है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_6" xml:space="preserve">
+    <value>संभव है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_7" xml:space="preserve">
+    <value>दृषटिकोण सही है।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_8" xml:space="preserve">
+    <value>हां।</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_9" xml:space="preserve">
+    <value>इशारा हां की तरफ है।</value>
+  </data>
+  <data name="miki_module_fun_compliment_body_1" xml:space="preserve">
+    <value>आपके होंठ</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_10" xml:space="preserve">
+    <value>आपके हाथों का अजीब आकार</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_11" xml:space="preserve">
+    <value>आपके डिम्पल वाले गाल</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_12" xml:space="preserve">
+    <value>आपके रेशमी बाल</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_2" xml:space="preserve">
+    <value>आपके बाएं पैर की सबसे छोटी वली उंगली</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_3" xml:space="preserve">
+    <value>आपके दाएं पैर की सबसे छोटी वली उंगली</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_4" xml:space="preserve">
+    <value>आपकी बाएं आंख की पलकें</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_5" xml:space="preserve">
+    <value></value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_6" xml:space="preserve">
+    <value>आपके बाएं आंख की अजीब सी उंगली</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_7" xml:space="preserve">
+    <value>आपकी प्यारी मुस्कान</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_8" xml:space="preserve">
+    <value>आपकी वो चमकीली आंखें</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_9" xml:space="preserve">
+    <value>आपके दाएं आंख की अजीब सी उंगली</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_1" xml:space="preserve">
+    <value>मुझे पसंद है</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_2" xml:space="preserve">
+    <value>मुझे प्यार है</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_3" xml:space="preserve">
+    <value>मुझे पसंद है</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_4" xml:space="preserve">
+    <value>मुझे सच में पसंद है</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_5" xml:space="preserve">
+    <value>पता नही क्यों, मुझे पसंद है</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_1" xml:space="preserve">
+    <value>बहुत ज़्यादा।</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_2" xml:space="preserve">
+    <value>कुछ कुछ।</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_3" xml:space="preserve">
+    <value>थोड़ा सा।</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_4" xml:space="preserve">
+    <value>बोहोत ज़्यादा, क्या यह अजीब तो नहीं?</value>
+  </data>
+  <data name="miki_module_fun_pick" xml:space="preserve">
+    <value>{0}, में `{1}` चुनता हूं</value>
+  </data>
+  <data name="miki_module_fun_pick_no_arg" xml:space="preserve">
+    <value>मेरे पास चुनने के लिए कुछ नहीं है! :( विकल्पों को कॉमा (,) के ज़रिए अलग करें।</value>
+  </data>
+</root>
