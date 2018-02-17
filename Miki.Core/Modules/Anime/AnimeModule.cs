@@ -9,6 +9,7 @@ using Rest;
 
 namespace Miki.Core.Modules.Anime
 {
+	// TODO: move all of these classes to an anilist api
 	class AnimeCharacter
 	{
 		AnimeName Name;
@@ -40,7 +41,6 @@ namespace Miki.Core.Modules.Anime
 				"{ Character(search: \"" + e.arguments + "\") { name { first last native } description image { large medium } } }");
 
 			Console.WriteLine("");
-
 		}
     }
 }
