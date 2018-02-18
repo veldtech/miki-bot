@@ -1,5 +1,5 @@
 ﻿using Miki.Framework;
-using Miki.Core.Languages;
+using Miki.Languages;
 using Miki.Models;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

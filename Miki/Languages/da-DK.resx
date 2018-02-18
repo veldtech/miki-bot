@@ -2091,50 +2091,8 @@ For at give nogen et bedre omdømme, brug `&gt;rep &lt;mention&gt; [&quot;all&qu
   <data name="term_roles" xml:space="preserve">
     <value>Roller</value>
   </data>
-  <data name="socMiki.Frameworkl_patreon" xml:space="preserve">
+  <data name="social_patreon" xml:space="preserve">
     <value>Patreon</value>
-  </data>
-  <data name="miki_module_accounts_error_no_Marriage" xml:space="preserve">
-    <value>Du er ikke gift men denne person!</value>
-  </data>
-  <data name="miki_Marriage_all_declined" xml:space="preserve">
-    <value>All frierier er afviste!</value>
-  </data>
-  <data name="miki_Marriage_declined" xml:space="preserve">
-    <value>Frieriet er blevet afvist.</value>
-  </data>
-  <data name="miki_Marriage_no_mention" xml:space="preserve">
-    <value>Nævn den person som du vil afvise.</value>
-    <comment>I changed it from saying decline to reject as reject seems more fitting.</comment>
-  </data>
-  <data name="miki_Marriage_null" xml:space="preserve">
-    <value>Denne bruger har ikke friet til dig.</value>
-  </data>
-  <data name="miki_command_description_acceptMarriage" xml:space="preserve">
-    <value>Find den eneste ene, og accepter Deres frieri.</value>
-  </data>
-  <data name="miki_command_description_buyMarriageslot" xml:space="preserve">
-    <value>Køb flere gifte-pladser her. Prisen stiger med 2500 mekos for hver plads, og er begrænset til ti pladser.</value>
-  </data>
-  <data name="miki_command_description_declineMarriage" xml:space="preserve">
-    <value>Afviser eller annuller frierier. Brug * til at afvise alle frierier.</value>
-  </data>
-  <data name="miki_command_usage_acceptMarriage" xml:space="preserve">
-    <value>&gt;acceptMarriage &lt;mention&gt;</value>
-  </data>
-  <data name="miki_command_usage_buyMarriageslot" xml:space="preserve">
-    <value>&gt;buyMarriageslot</value>
-  </data>
-  <data name="miki_command_usage_declineMarriage" xml:space="preserve">
-    <value>&gt;declineMarriage &lt;mention&gt;
-&gt;declineMarriage *</value>
-  </data>
-  <data name="buyMarriageslot_insufficient_mekos" xml:space="preserve">
-    <value>Du har ikke nok mekos! Du skal bruge {0} mere meko(s)!</value>
-  </data>
-  <data name="buyMarriageslot_success" xml:space="preserve">
-    <value>Du har nu endnu en plads til at kunne gifte dig! Du har {0} pladser.</value>
-    <comment>example: You successfully purchased a new Marriage slot, you now have 12 slots!</comment>
   </data>
   <data name="error_role_forbidden" xml:space="preserve">
     <value>Denne rolle er ikke tilladt.</value>
