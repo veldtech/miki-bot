@@ -70,6 +70,21 @@ namespace Miki.Core.Modules.Anime
 
 			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(searchQuery, page));
 
+			if(result.Items.Count == 0)
+			{
+				if (page > result.PageInfo.TotalPages && page != 0)
+				{
+					e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
+						.QueueToChannel(e.Channel);
+				}
+				else
+				{
+					e.ErrorEmbed($"No characters listed containing `{e.arguments}`, try something else!")
+						.QueueToChannel(e.Channel);
+				}
+				return;
+			}
+
 			StringBuilder sb = new StringBuilder();
 
 			for (int i = 0; i < result.Items.Count; i++)
