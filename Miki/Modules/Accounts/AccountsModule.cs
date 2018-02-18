@@ -96,8 +96,16 @@ namespace Miki.Modules.AccountsModule
 					totalScore += metadata.Points;
 				}
 
-				await embed.AddInlineField("Total Pts: " + totalScore, leftBuilder.ToString())
-					.SendToChannel(e.Channel);
+				if (string.IsNullOrEmpty(leftBuilder.ToString()))
+				{
+					embed.AddInlineField("Total Pts: " + totalScore, "");
+				}
+				else
+				{
+					embed.AddInlineField("Total Pts: " + totalScore, leftBuilder.ToString());
+				}
+
+				embed.QueueToChannel(e.Channel);
 			}
 		}
 

@@ -11,14 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Miki.Rest;
 using Newtonsoft.Json;
-using DiscordBotsList.Api;
+//using DiscordBotsList.Api;
 
 namespace Miki.Modules
 {
     [Module("internal:servercount")]
     internal class ServerCountModule
     {
-		AuthDiscordBotListApi api;
+		//AuthDiscordBotListApi api;
 
 		private class GuildCountObject
 		{
@@ -65,12 +65,12 @@ namespace Miki.Modules
 
         private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
         {
-			var shard = bot.GetShardFor(g);
+			//var shard = bot.GetShardFor(g);
 
-			if (api == null)
-				api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
+			//if (api == null)
+			//	api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
 
-			await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
+			//await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
         }
 
         private async Task SendDiscordPW(Bot bot, IDiscordGuild g)

@@ -40,7 +40,8 @@ namespace Miki.Modules
                                 u.Amount++;
                             }
 
-                            User user = await context.Users.FindAsync(msg.Author.Id.ToDbLong());
+                            User user = await User.GetAsync(context, msg.Author);
+
                             if(user != null)
                             {
                                 user.Total_Commands++;

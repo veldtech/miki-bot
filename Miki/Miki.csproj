@@ -12,197 +12,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Languages\ar-AE.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ar-AE.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\cz-CZ.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>cz-CZ.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\da-DK.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>da-DK.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\de-DE.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>de-DE.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\en-US.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>en-US.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\es-ES.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>es-ES.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\fi-FI.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>fi-FI.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\fr-FR.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>fr-FR.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\he-HE.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>he-HE.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\hu-HU.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>hu-HU.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\ja-JA.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ja-JA.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\LocaleStrings.cs" />
-    <Compile Include="Languages\nl-NL.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>nl-NL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\no-NO.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>no-NO.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\pt-PT.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>pt-PT.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\ru-RU.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ru-RU.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\sv-SE.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>sv-SE.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\zh-CHS.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>zh-CHS.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Languages\zh-CHT.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>zh-CHT.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Languages\ar-AE.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ar-AE.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\cz-CZ.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>cz-CZ.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\da-DK.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>da-DK.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\de-DE.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>de-DE.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\en-US.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>en-US.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\es-ES.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>es-ES.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\fi-FI.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>fi-FI.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\fr-FR.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>fr-FR.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\he-HE.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>he-HE.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\hu-HU.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>hu-HU.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\ja-JA.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ja-JA.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\nl-NL.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>nl-NL.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\no-NO.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>no-NO.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\pt-PT.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>pt-PT.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\ru-RU.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ru-RU.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\sv-SE.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>sv-SE.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\zh-CHS.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>zh-CHS.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Languages\zh-CHT.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>zh-CHT.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Compile Include="Languages\Locale.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
-    <PackageReference Include="MalApi" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
-    <PackageReference Include="Miki.Rest" Version="1.1.0" />
+    <PackageReference Include="Miki.Rest" Version="1.2.2" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="SharpRaven" Version="2.2.0" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
-    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="2.3.0" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.1.0" />
     <PackageReference Include="SteamKit2" Version="2.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Meru.Core.SDK\Meru.Core.SDK.csproj" />
-    <ProjectReference Include="..\Meru.Core\Meru.Core.csproj" />
-    <ProjectReference Include="..\Miki.API.Core\Miki.API.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -217,6 +45,13 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Anilist\Miki.Anilist\Miki.Anilist.csproj" />
+    <ProjectReference Include="..\..\Miki.Common\Miki.Common\Miki.Common.csproj" />
+    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
+    <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
   </ItemGroup>
 
 </Project>

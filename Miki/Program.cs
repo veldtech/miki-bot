@@ -32,7 +32,7 @@ namespace Miki
 				.GetResult();
         }
 
-		public static Framework.Bot bot;
+		public static Bot bot;
 		public static DateTime timeSinceStartup;
 
 		public async Task Start()

@@ -1,5 +1,5 @@
 ﻿using Miki.API.Leaderboards;
-using Rest;
+using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
