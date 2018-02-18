@@ -1839,4 +1839,118 @@ Fuzzy</comment>
   <data name="miki_command_usage_whois" xml:space="preserve">
     <value></value>
   </data>
+  <data name="miki_command_usage_yandere" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="localization_set" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_hatedpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_listlocale" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_overwatchuser" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_setlocale" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_setprefix" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_description_stare" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_hatedpasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_hatepasta" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_listlocale" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_overwatchuser" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_setlocale" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_setprefix" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="miki_command_usage_stare" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="term_roles" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="socMiki.Frameworkl_patreon" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_forbidden" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="term_available" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_required" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_argument_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_no_reminders" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_reminder_null" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="term_ok" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminders" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancel" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancelled_all" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_add" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_clear" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_desc_list" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_add" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_clear" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_help_list" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="reminder_cancelled" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_level_low" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="error_role_already_given" xml:space="preserve">
+    <value></value>
+  </data>
 </root>
