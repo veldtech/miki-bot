@@ -149,7 +149,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/uehetOS.gif",
                 "http://i.imgur.com/MAZIl3c.gif",
                 "http://i.imgur.com/C1u3GwL.gif",
-                "http://i.imgur.com/E7NnMiki.Frameworkn.gif",
+                "http://i.imgur.com/E7Nnian.gif",
                 "http://i.imgur.com/2RKfil2.gif",
                 "http://i.imgur.com/jcSpVTS.gif",
                 "http://i.imgur.com/r2X5YfC.gif",
