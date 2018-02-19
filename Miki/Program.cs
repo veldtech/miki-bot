@@ -13,12 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Protobuf;
-using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis;
-using Miki.Modules;
 using Miki.Common;
-using Miki.Accounts;
-using Miki.Accounts.Achievements;
 using Miki.Framework.Events;
 
 namespace Miki
@@ -41,8 +36,6 @@ namespace Miki
 			timeSinceStartup = DateTime.Now;
 
 			LoadDiscord();
-
-			LevelNotificationsSetting s = await Setting.GetAsync<LevelNotificationsSetting>(0, DatabaseSettingId.LEVEL_NOTIFICATIONS);
 
 			using (var c = new MikiContext())
 			{			

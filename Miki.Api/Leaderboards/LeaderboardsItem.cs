@@ -13,7 +13,7 @@ namespace Miki.API.Leaderboards
 		[JsonProperty("score")]
         public int Value { get; set; }
 
-		[JsonProperty("avatar")]
+		[JsonProperty("avatar_url")]
 		public string Avatar { get; set; }
     }
 }

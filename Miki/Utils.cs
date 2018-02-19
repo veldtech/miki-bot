@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Miki
 {
@@ -191,15 +192,105 @@ namespace Miki
 			return string.IsNullOrEmpty(a) ? b : a;
 		}
 
-		public static IDiscordEmbed RenderLeaderboards(IDiscordEmbed embed, List<LeaderboardsItem> items)
+		public static IDiscordEmbed RenderLeaderboards(IDiscordEmbed embed, List<LeaderboardsItem> items, int offset)
 		{
-			for(int i = 0; i < (items.Count > 12 ? 12 : items.Count); i++)
+			for(int i = 0; i < Math.Min(items.Count, 12); i++)
 			{
-				embed.AddInlineField($"#{i+1}: " + items[i].Name, items[i].Value);
+				embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
 			}
 			return embed;
 		}
     }
+
+	public class Args
+	{
+		List<string> args;
+
+		public int Count => args.Count;
+
+		public Args(string a)
+		{
+			args = new List<string>();
+			args.AddRange(a.Split(' '));
+			args.RemoveAll(x => string.IsNullOrEmpty(x));
+		}
+
+		public bool Exists(string arg)
+		{
+			return args.Contains(arg);
+		}
+
+		public ArgObject Get(int index)
+		{
+			index = Math.Clamp(index, 0, args.Count);
+
+			if (index >= args.Count)
+				return null;
+
+			return new ArgObject(args[index], index, this);
+		}
+
+		public void Remove(string value)
+		{
+			args.Remove(value);
+		}
+	}
+
+	public class ArgObject
+	{
+		public string Argument { get; private set; }
+
+		Args args;
+
+		int index;
+
+		public bool IsLast
+			=> (args.Count - 1 == index);
+
+		public bool IsMention
+			=> Regex.IsMatch(Argument, "<@(!?)\\d+>");
+
+		public ArgObject(string argument, int index, Args a)
+		{
+			Argument = argument;
+			this.index = index;
+			args = a;
+		}
+
+		public int AsInt(int defaultValue = 0)
+		{
+			if (int.TryParse(Argument, out int s))
+			{
+				return s;
+			}
+			return defaultValue;
+		}
+
+		public async Task<IDiscordUser> GetUserAsync(IDiscordGuild guild)
+		{
+			if(IsMention)
+			{
+				return await guild.GetUserAsync(ulong.Parse(Argument
+					.TrimStart('<')
+					.TrimStart('@')
+					.TrimStart('!')
+					.TrimEnd('>')));
+			}
+			else if(ulong.TryParse(Argument, out ulong id))
+			{
+				return await guild.GetUserAsync(id);
+			}
+			return await guild.GetUserAsync(Argument);
+		}
+
+		public ArgObject Next()
+		{
+			if (IsLast)
+				return null;
+
+			return args.Get(index + 1);
+		}
+	}
 
     public class MikiRandom : RandomNumberGenerator
     {

@@ -302,7 +302,7 @@ namespace Miki.Modules
 
 			do
 			{
-				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Data;
+				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Body;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			Utils.Embed

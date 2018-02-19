@@ -153,7 +153,7 @@ namespace Miki.Modules
         public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
             long guildId = guild.Id.ToDbLong();
-            List<IDiscordMessageChannel> channels = await guild.GetChannels();
+            List<IDiscordMessageChannel> channels = await guild.GetChannelsAsync();
             List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())

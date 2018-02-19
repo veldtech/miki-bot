@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Miki.API
 {
-	class MikiApi
+	public class MikiApi
 	{
 		public static MikiApi Instance => _instance;
 		static MikiApi _instance = null;
+
+		RestClient client;
 
 		string token = "";
 		string baseUrl = "";
@@ -27,27 +29,26 @@ namespace Miki.API
 
 			this.token = token;
 			baseUrl = base_url;
+
+			client = new RestClient(baseUrl);
+			client.SetAuthorization(token);
 		}
 
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
 		{
-			StringBuilder sb = Utils.CreateBaseRoute()
+			StringBuilder sb = new StringBuilder()
 				.Append("/leaderboards")
-				.Append((options.guildId != 0) ? "/local" : "/global")
-				.Append("/")
-				.Append(options.type.ToString().ToLower());
+				.Append((options.guildId == 0) ? "" : $"/{options.guildId}")
+				.Append($"/{options.type.ToString().ToLower()}");
 
 			if(options.type == LeaderboardsType.COMMANDS && !string.IsNullOrEmpty(options.commandSpecified))
 			{
-				sb.Append("/")
-				  .Append(options.commandSpecified.ToLower());
+				sb.Append($"/{options.commandSpecified.ToLower()}");
 			}
 
-			sb.Append("/")
-			  .Append(options.pageNumber);
+			sb.Append($"/{options.pageNumber}");
 
-			RestClient client = new RestClient(baseUrl + sb.ToString() + Utils.AddToken(token));
-			var response = await client.GetAsync<LeaderboardsObject>("");
+			var response = await client.GetAsync<LeaderboardsObject>(sb.ToString());
 			return response.Data;
 		}
 	}

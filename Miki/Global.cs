@@ -4,6 +4,7 @@ using StatsdClient;
 using StackExchange.Redis.Extensions.Core;
 using Newtonsoft.Json;
 using Miki.Framework.FileHandling;
+using Miki.API;
 
 namespace Miki
 {
@@ -37,8 +38,10 @@ namespace Miki
 				return config;
 			}
 		}
+		public static MikiApi MikiApi => mikiApi;
 
 		private static Config config = null;
+		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
 	}
   
 	  public class Constants

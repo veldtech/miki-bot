@@ -2,7 +2,7 @@
 {
 	public enum LeaderboardsType
 	{
-		EXP,
+		EXPERIENCE,
 		COMMANDS,
 		CURRENCY,
 		REPUTATION,

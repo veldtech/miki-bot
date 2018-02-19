@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Miki.API.Leaderboards
 {
+	// TODO: restructure
 	public struct LeaderboardsOptions
 	{
 		public LeaderboardsType type;
@@ -15,7 +16,7 @@ namespace Miki.API.Leaderboards
 
 		public string commandSpecified;
 
-		public LeaderboardsOptions(LeaderboardsType type = LeaderboardsType.EXP, int pageNumber = 0, ulong mentionedUserId = 0, ulong guildId = 0, string commandSpecified = "")
+		public LeaderboardsOptions(LeaderboardsType type = LeaderboardsType.EXPERIENCE, int pageNumber = 0, ulong mentionedUserId = 0, ulong guildId = 0, string commandSpecified = "")
 		{
 			this.type = type;
 			this.pageNumber = pageNumber;

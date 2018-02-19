@@ -122,5 +122,11 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("miki_api_key")]
 		public string MikiApiKey { get; set; } = "";
+
+		/// <summary>
+		/// Image API route
+		/// </summary>
+		[JsonProperty("image_api_url")]
+		public string ImageApiUrl { get; internal set; }
 	}
 }
