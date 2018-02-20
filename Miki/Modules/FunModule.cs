@@ -115,7 +115,7 @@ namespace Miki.Modules
 {
             "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
             "https://soundcloud.com/ghostcoffee-342990942/lunchpost-1969?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/meMiki.Frameworkn-alien?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
+            "https://soundcloud.com/ghostcoffee-342990942/meian-alien?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
             "https://soundcloud.com/ghostcoffee-342990942/falcon-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
             "https://soundcloud.com/ghostcoffee-342990942/antique-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
             "https://soundcloud.com/ghostcoffee-342990942/eternal-bark-engine-shall-we-feast?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
@@ -156,7 +156,7 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/lord-of-lunch-1",
             "https://soundcloud.com/ghostcoffee-342990942/lunchvril-14th-1",
             "https://soundcloud.com/ghostcoffee-342990942/making-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/megalunchovanMiki.Framework",
+            "https://soundcloud.com/ghostcoffee-342990942/megalunchovania",
             "https://soundcloud.com/ghostcoffee-342990942/midnight-lunch-1",
             "https://soundcloud.com/ghostcoffee-342990942/say-whats-for-lunch-1",
             "https://soundcloud.com/ghostcoffee-342990942/silent-woof-1",
@@ -176,7 +176,7 @@ namespace Miki.Modules
         {
             ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
             {
-               QueryKey = "http://e621.net/post/index.json?limit=1&tags=",
+               QueryKey = "http://e621.net/post/index.json?tags=",
                ExplicitTag = "rating:e",
                QuestionableTag = "rating:q",
                SafeTag = "rating:s",
@@ -269,11 +269,11 @@ namespace Miki.Modules
                 "the smallest toe on your right foot",
                 "the second eyelash from your left eye",
                 "the lower part of your chin",
-                "your creepy finger in your left hand",
+                "your creepy finger on your left hand",
                 "your cute smile",
                 "those dazzling eyes of yours",
-                "your creepy finger in your right hand",
-                "the specMiki.Frameworkl angles your elbows makes",
+                "your creepy finger on your right hand",
+                "the special angles your elbows make",
                 "the dimples on your cheeks",
                 "your smooth hair"
             };

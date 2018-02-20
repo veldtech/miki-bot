@@ -27,7 +27,7 @@ namespace Miki.Modules
 	{
 		SteamApi steam = new SteamApi(Global.Config.SteamAPIKey);
 
-		private string steamAuthorIcon = "https://upload.wikimedMiki.Framework.org/wikipedMiki.Framework/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png";
+		private string steamAuthorIcon = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png";
 		private string steamAuthorName = "Steam";
 
 		public SteamModule( RuntimeModule module )

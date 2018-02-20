@@ -2119,7 +2119,7 @@ Necesitas por lo menos **{0}** puntos de experiencia antes de usar este comando 
   <data name="term_roles" xml:space="preserve">
     <value></value>
   </data>
-  <data name="socMiki.Frameworkl_patreon" xml:space="preserve">
+  <data name="social_patreon" xml:space="preserve">
     <value></value>
   </data>
   <data name="error_role_forbidden" xml:space="preserve">
