@@ -45,9 +45,22 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				long id = (e.message.MentionedUserIds.Count > 0) ? e.message.MentionedUserIds.First().ToDbLong() : e.Author.Id.ToDbLong();
-				User u = await context.Users.FindAsync(id);
+				Args args = new Args(e.arguments);
+				ArgObject argument = args.First();
+
+				long id = (long)e.Author.Id;
+
+				if (argument != null)
+				{
+					IDiscordUser user = await args.Join().GetUserAsync(e.Guild);
+					if (user != null)
+					{
+						id = (long)user.Id;
+					}
+				}
+
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(id.FromDbLong());
+				User u = await User.GetAsync(context, discordUser);
 
 				List<Achievement> achievements = await context.Achievements
 					.Where(x => x.Id == id)
@@ -55,7 +68,7 @@ namespace Miki.Modules.AccountsModule
 
 				IDiscordEmbed embed = Utils.Embed
 					.SetColor(255, 255, 255)
-					.SetAuthor(u.Name + " | " + "Achievements", discordUser.AvatarUrl, "https://miki.ai/profiles/ID/achievements");
+					.SetAuthor($"{u.Name} | " + "Achievements", discordUser.AvatarUrl, "https://miki.ai/profiles/ID/achievements");
 
 				StringBuilder leftBuilder = new StringBuilder();
 
@@ -70,7 +83,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (string.IsNullOrEmpty(leftBuilder.ToString()))
 				{
-					embed.AddInlineField("Total Pts: " + totalScore, "");
+					embed.AddInlineField("Total Pts: " + totalScore, "None, yet.");
 				}
 				else
 				{

@@ -220,6 +220,9 @@ namespace Miki
 			return args.Contains(arg);
 		}
 
+		public ArgObject First()
+			=> Get(0);
+
 		public ArgObject Get(int index)
 		{
 			index = Math.Clamp(index, 0, args.Count);
@@ -229,6 +232,9 @@ namespace Miki
 
 			return new ArgObject(args[index], index, this);
 		}
+
+		public ArgObject Join()
+			=> new ArgObject(string.Join(" ", args), 0, this); 
 
 		public void Remove(string value)
 		{
