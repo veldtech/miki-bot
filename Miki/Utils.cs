@@ -39,6 +39,8 @@ namespace Miki
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
             return time.ToTimeString(localized, minified);
         }
+
+		// Make this prettier
         public static string ToTimeString(this TimeSpan time, Locale localized, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
@@ -125,24 +127,6 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
-		public static async Task<IDiscordUser> ParseUserAsync(IDiscordChannel channel, string name)
-		{
-			if(!string.IsNullOrWhiteSpace(name))
-			{
-				if(ulong.TryParse(name.Trim('<','@','!','>'), out ulong l))
-				{
-					return await channel.Guild.GetUserAsync(l);
-				}
-
-				string s = name.ToLower();
-				List<IDiscordUser> users = await channel.GetUsersAsync();
-				return users
-					.Where(x => x.GetName().ToLower() == s)
-					.First();
-			}
-			return null;
-		}
-
 		public static bool IsAll(string input, Locale locale = null)
 		{
 			return ((input == locale?.GetString("common_string_all")) || (input == "*"));
@@ -183,7 +167,7 @@ namespace Miki
             {
                 Title = locale.GetString(LocaleTags.SuccessMessageGeneric),
                 Description = message,
-                Color = new Miki.Common.Color(0, 1, 0)
+                Color = new Common.Color(0, 1, 0)
             };
         }
 
