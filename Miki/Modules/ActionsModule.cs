@@ -547,15 +547,15 @@ namespace Miki.Modules
 
             if (e.arguments.Length > 0)
             {
-                embed.Title = $"{e.Author.Username} bitten {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} bites {e.message.RemoveMentions(e.arguments)}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} bitten {e.Author.Username}";
+                embed.Title = $"{e.message.Bot.Username} bites {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            await embed.SendToChannel(e.Channel);
         }
     }
 }
