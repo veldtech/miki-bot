@@ -173,7 +173,7 @@ namespace IA.SDK
 
         public IDiscordEmbed AddInlineField(object title, object value)
         {
-            embed.AddInlineField(title.ToString(), value);
+            embed.AddField(title.ToString(), value, true);
             return this;
         }
 
@@ -288,7 +288,7 @@ namespace IA.SDK
                     }
                 }
             }
-            return new RuntimeMessage(await m.SendMessageAsync("", false, embed));
+            return new RuntimeMessage(await m.SendMessageAsync("", false, embed.Build()));
         }
 
         public async Task<IDiscordMessage> SendToChannel(IDiscordMessageChannel channel)
@@ -299,7 +299,7 @@ namespace IA.SDK
         public async Task<IDiscordMessage> SendToUser(ulong userId)
         {
             IDMChannel channel = await (Bot.instance.Client.GetUser(userId)).GetOrCreateDMChannelAsync();
-            return new RuntimeMessage(await channel.SendMessageAsync("", false, embed));
+            return new RuntimeMessage(await channel.SendMessageAsync("", false, embed.Build()));
         }
 
         public async Task<IDiscordMessage> SendToUser(IDiscordUser user)

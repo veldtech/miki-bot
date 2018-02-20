@@ -226,7 +226,7 @@ namespace IA.SDK
         public async Task<IDiscordMessage> SendMessage(IDiscordEmbed embed)
         {
             IDMChannel c = await user.GetOrCreateDMChannelAsync();
-            IMessage m = await c.SendMessageAsync("", false, (embed as IProxy<EmbedBuilder>).ToNativeObject());
+            IMessage m = await c.SendMessageAsync("", false, (embed as IProxy<EmbedBuilder>).ToNativeObject().Build());
             Log.Message("Sent message to " + user.Username);
             return new RuntimeMessage(m);
         }

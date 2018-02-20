@@ -163,8 +163,8 @@ namespace IA
             {
                 TotalShards = clientInformation.ShardCount,
                 LogLevel = LogSeverity.Info,
-				ConnectionTimeout = 50000,
-				LargeThreshold = 250,
+				ConnectionTimeout = 150000,
+				LargeThreshold = 250
 			});
 
             LoadEvents();

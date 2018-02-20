@@ -10,7 +10,7 @@ namespace Miki
     public class Global
     {
         public static RavenClient ravenClient;
-		    public static Config config = new Config();
+		public static Config config = new Config();
     }
   
 	  public class Constants

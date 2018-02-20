@@ -41,7 +41,7 @@ namespace IA.SDK
             }
         }
 
-        public bool Nsfw => channel.IsNsfw;
+        public bool Nsfw => (channel as ITextChannel).IsNsfw;
 
         public async Task DeleteMessagesAsync(List<IDiscordMessage> messages)
         {
@@ -49,15 +49,15 @@ namespace IA.SDK
 
             foreach (IDiscordMessage msg in messages)
             {
-                m.Add((msg as IProxy<IMessage>).ToNativeObject());
+				m.Add((msg as IProxy<IMessage>).ToNativeObject());	
             }
 
-            await (channel as IMessageChannel).DeleteMessagesAsync(m);
-        }
+			await (channel as ITextChannel).DeleteMessagesAsync(m);     
+		}
 
         public async Task<List<IDiscordMessage>> GetMessagesAsync(int amount = 100)
         {
-            IEnumerable<IMessage> users = await (channel as IMessageChannel).GetMessagesAsync(amount).Flatten();
+            IEnumerable<IMessage> users = await (channel as IMessageChannel).GetMessagesAsync(amount).FlattenAsync();
             List<IDiscordMessage> outputUsers = new List<IDiscordMessage>();
 
             foreach (IMessage u in users)
@@ -70,7 +70,7 @@ namespace IA.SDK
 
         public async Task<List<IDiscordUser>> GetUsersAsync()
         {
-            IEnumerable<IUser> users = await channel.GetUsersAsync().Flatten();
+            IEnumerable<IUser> users = await channel.GetUsersAsync().FlattenAsync();
             List<IDiscordUser> outputUsers = new List<IDiscordUser>();
 
             foreach (IUser u in users)
@@ -115,7 +115,7 @@ namespace IA.SDK
                 m = new RuntimeMessage(
                     await (channel as IMessageChannel)
                     .SendMessageAsync("", false, (embed as IProxy<EmbedBuilder>)
-                    .ToNativeObject()));
+                    .ToNativeObject().Build()));
             }
             catch (Exception ex)
             {
