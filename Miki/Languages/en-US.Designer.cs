@@ -5174,7 +5174,7 @@ namespace Miki.Languages {
         /// </summary>
         internal static string socMiki_Frameworkl_patreon {
             get {
-                return ResourceManager.GetString("socMiki.Frameworkl_patreon", resourceCulture);
+                return ResourceManager.GetString("social_patreon", resourceCulture);
             }
         }
         

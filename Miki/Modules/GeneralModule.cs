@@ -266,7 +266,7 @@ namespace Miki.Modules
 			embed.SetColor(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(locale.GetString("miki_module_general_info_made_by_header"), 
-				locale.GetString("miki_module_general_info_made_by_description") + " Drummss, Fuzen, Miki.Framework, Luke, Milk, n0t, Phanrazak, Rappy, Tal, Vallode");
+				locale.GetString("miki_module_general_info_made_by_description") + " Drummss, Fuzen, IA, Luke, Milk, n0t, Phanrazak, Rappy, Tal, Vallode, GrammarJew");
 
 
 			embed.AddField(e.GetResource("miki_module_general_info_links"),

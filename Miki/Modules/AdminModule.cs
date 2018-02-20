@@ -373,7 +373,7 @@ namespace Miki.Modules
 
 			if (messages.Count < amount)
 			{
-				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availMiki.Frameworkble.
+				amount = messages.Count; // Checks if the amount of messages to delete is more than the amount of messages availiable.
 			}
 
 			if (amount <= 1)

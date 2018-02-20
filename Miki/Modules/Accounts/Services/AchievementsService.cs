@@ -160,7 +160,7 @@ namespace Miki.Modules.Accounts.Services
                     },
                     new LevelAchievement()
                     {
-                        Name = "IntermedMiki.Frameworkte",
+                        Name = "Intermediate",
                         Icon = "🎫",
                         CheckLevel = async (p) => p.level >= 5,
 						Points = 5,

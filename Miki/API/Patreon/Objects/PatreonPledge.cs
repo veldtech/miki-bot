@@ -86,8 +86,8 @@ namespace Miki.API.Patreon
          [JsonProperty("image_url")]
          public string ImageUrl { get; set; }
 
-         [JsonProperty("is_charged_immedMiki.Frameworktely")]
-         public bool ChargedImmedMiki.Frameworktely { get; set; }
+         [JsonProperty("is_charged_immediately")]
+         public bool ChargedImmediately { get; set; }
 
          [JsonProperty("is_monthly")]
          public bool ChargedMonthly { get; set; }
@@ -198,8 +198,8 @@ namespace Miki.API.Patreon
          [JsonProperty("last_name")]
          public string LastName { get; set; }
 
-         [JsonProperty("socMiki.Frameworkl_connections")]
-         public Dictionary<string, Dictionary<string, string>> SocMiki.FrameworklConnections { get; set; } = new Dictionary<string, Dictionary<string, string>>();
+         [JsonProperty("social_connections")]
+         public Dictionary<string, Dictionary<string, string>> SocialConnections { get; set; } = new Dictionary<string, Dictionary<string, string>>();
 
          [JsonProperty("thumb_url")]
          public string ThumbnailUrl { get; set; }
