@@ -480,170 +480,49 @@ namespace Miki.Modules
 			await e.Channel.QueueMessageAsync( send );
 		}
 
-        [Command(Name = "reminder")]
-        public async Task RemindAsync(EventContext e)
-        {
-			string lowercaseArguments = e.arguments.ToLower().Split(' ')[0];
-
-			switch (lowercaseArguments)
-			{
-				case "-clear":
-				{
-					await CancelReminderAsync(e);
-				} break;
-				case "-list":
-				{
-					await ListRemindersAsync(e);
-				} break;
-				default:
-				{
-					if (string.IsNullOrWhiteSpace(e.arguments) || e.arguments.StartsWith("-"))
-					{
-						await HelpReminderAsync(e);
-					}
-					else
-					{
-						await PlaceReminderAsync(e);
-					}
-				} break;
-			}
-	    }
-
-		private async Task PlaceReminderAsync(EventContext e)
+		[Command(Name = "remind")]
+		public async Task DoRemind(EventContext e)
 		{
-			Locale locale = e.Channel.GetLocale();
+			List<string> arguments = e.arguments.Split(' ').ToList();
+			int splitIndex = 0;
 
-			int inIndex = e.arguments.ToLower().LastIndexOf(" in ");
-			int everyIndex = e.arguments.ToLower().LastIndexOf(" every ");
-			bool isIn = (inIndex > everyIndex);
-			bool repeated = false;
-
-			int splitIndex = isIn ? inIndex : everyIndex;
-
-			if (splitIndex == -1)
+			for (int i = 0; i < arguments.Count; i++)
 			{
-				await e.ErrorEmbed(locale.GetString("error_argument_null", "time"))
-					.QueueToChannel(e.Channel);
+				if (arguments[i].ToLower() == "in")
+				{
+					splitIndex = i;
+				}
+			}
+
+			if (splitIndex == 0)
+			{
+				// throw error
 				return;
 			}
 
-			if(!isIn)
+			int count = arguments.Count;
+			arguments.RemoveRange(splitIndex, count - (splitIndex));
+			string reminderText = string.Join(" ", arguments);
+
+			if (reminderText.StartsWith("me to "))
 			{
-				repeated = true;
+				reminderText = reminderText.Substring(6);
 			}
 
-			string reminderText = new string(e.arguments
-				.Take(splitIndex)
-				.ToArray());
-
-			TimeSpan timeUntilReminder = e.arguments
-				.GetTimeFromString();
-
-			int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
+			TimeSpan timeUntilReminder = e.arguments.GetTimeFromString();
 
 			await Utils.Embed
-				.SetTitle($"👌 {locale.GetString("term_ok")}")
-				.SetDescription($"I'll remind you to **{reminderText}** {(repeated?"every":"in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
-				.SetColor(255, 220, 93)
-				.QueueToChannel(e.Channel.Id);
-		}
-		private async Task CancelReminderAsync(EventContext e)
-		{
-			Locale locale = e.Channel.GetLocale();
-			string[] args = e.arguments.Split(' ');
+				.SetTitle("👌 OK")
+				.SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**")
+				.SetColor(0, 255, 0)
+				.SendToChannel(e.Channel.Id);
 
-			if (args.Length > 1)
-			{
-				string x = args[1];
-				if (Utils.IsAll(x, locale))
-				{
-					if (reminders.GetAllInstances(e.Author) is List<ReminderInstance> instances)
-					{
-						instances.ForEach(i => i.Cancel());
-					}
-
-					await Utils.Embed
-						.SetTitle($"⏰ {locale.GetString("reminders")}")
-						.SetColor(0.86f, 0.18f, 0.26f)
-						.SetDescription(locale.GetString("reminder_cancelled_all"))
-						.QueueToChannel(e.Channel);
-					return;
-				}
-				else if (int.TryParse(x, out int id))
-				{
-					if (reminders.CancelReminder(e.Author, id) is ReminderInstance i)
-					{
-						await Utils.Embed
-							.SetTitle($"⏰ {locale.GetString("reminders")}")
-							.SetColor(0.86f, 0.18f, 0.26f)
-							.SetDescription(locale.GetString("reminder_cancelled", $"`{i.Text}`"))
-							.QueueToChannel(e.Channel);
-						return;
-					}
-				}
-				await e.ErrorEmbed(locale.GetString("error_reminder_null"))
-					.QueueToChannel(e.Channel);
-			}
-			else
-			{
-				await e.ErrorEmbed(locale.GetString("error_argument_null", "id"))
-					.QueueToChannel(e.Channel);
-			}
-		}
-		private async Task ListRemindersAsync(EventContext e)
-		{
-			Locale locale = e.Channel.GetLocale();
-
-			var instances = reminders.GetAllInstances(e.Author);
-			if(instances?.Count > 0)
-			{
-				instances = instances.OrderBy(x => x.ReminderId).ToList();
-
-				IDiscordEmbed embed = Utils.Embed
-					.SetTitle($"⏰ {locale.GetString("reminders")}")
-					.SetColor(0.86f, 0.18f, 0.26f);
-
-				foreach (var x in instances)
-				{
-					string tx = x.Text;
-					string status = "▶";
-
-					if (x.Text.Length > 30)
-					{
-						tx = new string(x.Text.Take(27).ToArray()) + "...";
-					}
-
-					if(x.RepeatReminder)
-					{
-						status = "🔁";
-					}
-
-					embed.Description += $"{status} `{x.ReminderId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(Locale.GetEntity(e.Channel.Id), true)}`\n";
-				}
-				await embed.QueueToChannel(e.Channel);
-				return;
-			}
-
-			await e.ErrorEmbed(locale.GetString("error_no_reminders"))
-				.QueueToChannel(e.Channel);
-		}
-		private async Task HelpReminderAsync(EventContext e)
-		{
-			Locale locale = e.Channel.GetLocale();
-			string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
-
-			await Utils.Embed
-				.SetTitle($"⏰ {locale.GetString("reminders")}")
-				.SetColor(0.86f, 0.18f, 0.26f)
-				.SetDescription(locale.GetString("reminder_help_description"))
-				.AddInlineField(locale.GetString("term_commands"), 
-				$"`{prefix}{locale.GetString("reminder_help_add")}` - {locale.GetString("reminder_desc_add")}\n" +
-				$"`{prefix}{locale.GetString("reminder_help_clear")}` - {locale.GetString("reminder_desc_clear")}\n" +
-				$"`{prefix}{locale.GetString("reminder_help_list")}` - {locale.GetString("reminder_desc_list")}\n")
-				.QueueToChannel(e.Channel);
+			Task.Run(async () => await new Core.API.Reminder.Old.ReminderAPI(e.Author.Id)
+				.Remind(reminderText, timeUntilReminder)
+				.Listen());
 		}
 
-        [Command(Name = "safe")]
+		[Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
         {
             Locale locale = Locale.GetEntity(e.Channel.Id.ToDbLong());
