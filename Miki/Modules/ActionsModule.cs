@@ -516,46 +516,5 @@ namespace Miki.Modules
 
             await embed.SendToChannel(e.Channel);
         }
-        
-        [Command(Name = "bite")]
-        public async Task BiteAsync(EventContext e)
-        {
-            string[] images = new string[]
-            {
-                "https://i.imgur.com/FlwJbPh.gif",
-                "https://i.imgur.com/opsXoPC.gif",
-                "https://i.imgur.com/OJBdmxz.gif",
-                "https://i.imgur.com/ffkBusx.gif",
-                "https://i.imgur.com/0d1y9zF.gif",
-                "https://i.imgur.com/1EtOphf.gif",
-                "https://i.imgur.com/kUEaRIu.gif",
-                "https://i.imgur.com/Kt1h4UE.gif",
-                "https://i.imgur.com/f4MAKp8.gif",
-                "https://i.imgur.com/7a5q1b9.gif",
-                "https://i.imgur.com/q7fMHaI.gif",
-                "https://i.imgur.com/LgUknRu.gif",
-                "https://i.imgur.com/rSYvWUg.gif",
-                "https://i.imgur.com/dqsYXOL.gif",
-                "https://i.imgur.com/2K66vgG.gif",
-                "https://i.imgur.com/VKgFBJY.gif",
-                "https://i.imgur.com/r9QOkEA.gif"
-            };
-
-            Random r = new Random();
-
-            IDiscordEmbed embed = Utils.Embed;
-
-            if (e.arguments.Length > 0)
-            {
-                embed.Title = $"{e.Author.Username} bites {e.message.RemoveMentions(e.arguments)}";
-            }
-            else
-            {
-                embed.Title = $"{e.message.Bot.Username} bites {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            await embed.SendToChannel(e.Channel);
-        }
     }
 }
