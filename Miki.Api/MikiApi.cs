@@ -30,7 +30,7 @@ namespace Miki.API
 			this.token = token;
 			baseUrl = base_url;
 
-			client = new RestClient(baseUrl);
+			client = new RestClient(baseUrl + $"/{API_VERSION}/");
 			client.SetAuthorization(token);
 		}
 

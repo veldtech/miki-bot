@@ -368,54 +368,55 @@ namespace Miki.Modules
         [Command(Name = "buyMarriageslot")]
         public async Task BuyMarriageSlotAsync(EventContext e)
         {
-            using (var context = new MikiContext())
-            {
-                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+			using (var context = new MikiContext())
+			{
+				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-                int limit = 10;
+				int limit = 10;
+				bool isDonator = await user.IsDonatorAsync(context);
 
-                if (user.IsDonator(context))
-                {
-                    limit += 5;
-                }
+				if (isDonator)
+				{
+					limit += 5;
+				}
 
-                IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
+				IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
 
-                if (user.MarriageSlots >= limit)
-                {
-                    embed.Description = $"For now, **{limit} slots** is the max. sorry :(";
+				if (user.MarriageSlots >= limit)
+				{
+					embed.Description = $"For now, **{limit} slots** is the max. sorry :(";
 
-                    if (limit == 10 && !user.IsDonator(context))
-                    {
+					if (limit == 10 && !isDonator)
+					{
 						embed.AddField("Pro tip!", "Donators get 5 more slots!")
 							.SetFooter("Check `>donate` for more information!", "");
-                    }
+					}
 
-                    embed.Color = new Common.Color(1f, 0.6f, 0.4f);
-                    embed.QueueToChannel(e.Channel);
-                    return;
-                }
+					embed.Color = new Common.Color(1f, 0.6f, 0.4f);
+					embed.QueueToChannel(e.Channel);
+					return;
+				}
 
-                int costForUpgrade = (user.MarriageSlots - 4) * 2500;
+				int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
-                embed.Description = $"Do you want to buy a Marriage slot for **{costForUpgrade}**?\n\nType `yes` to confirm.";
-                embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
-                embed.QueueToChannel(e.Channel);
+				embed.Description = $"Do you want to buy a Marriage slot for **{costForUpgrade}**?\n\nType `yes` to confirm.";
+				embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
+				embed.QueueToChannel(e.Channel);
 
-                CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
-                    .AddPrefix("")
-                    .DisposeInSeconds(20)
-                    .SetOwner(e.message)
-                    .AddCommand(
-                        new RuntimeCommandEvent("yes")
-                            .Default(async (cont) =>
-                            {
-                                await ConfirmBuyMarriageSlot(cont, costForUpgrade);
-                            }))
-                            .Build();
+				CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
+					.AddPrefix("")
+					.DisposeInSeconds(20)
+					.SetOwner(e.message)
+					.AddCommand(
+						new RuntimeCommandEvent("yes")
+							.Default(async (cont) =>
+							{
+								await ConfirmBuyMarriageSlot(cont, costForUpgrade);
+							}))
+							.Build();
 
-                EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
-            }
+				EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
+			}
         }
     }
 }

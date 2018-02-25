@@ -193,7 +193,22 @@ namespace Miki.Modules
             e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }
 
-        [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		[Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task CreateKeyAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				DonatorKey key = (await context.DonatorKey.AddAsync(new DonatorKey()
+				{
+					StatusTime = new TimeSpan(int.Parse(e.arguments), 0, 0, 0, 0)
+				})).Entity;
+
+				await context.SaveChangesAsync();
+				e.Channel.QueueMessageAsync($"key generated for {e.arguments} days `{key.Key}`");
+			}
+		}
+
+		[Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetExp(EventContext e)
         {
             using (var context = new MikiContext())

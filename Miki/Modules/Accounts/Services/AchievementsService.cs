@@ -35,41 +35,50 @@ namespace Miki.Modules.Accounts.Services
         public void LoadAchievements()
         {
             AchievementDataContainer AchievementAchievements = new AchievementDataContainer(x =>
-             {
+            {
                  x.Name = "achievements";
                  x.Achievements = new List<BaseAchievement>()
                 {
                     new AchievementAchievement()
                     {
                         Name = "Underachiever",
-                        Icon = "✏️",
+                        Icon = "🖍",
                         CheckAchievement = async (p) =>
                         {
 							await Task.Yield();
-                            return p.count > 3;
+                            return p.count >= 3;
                         },
                     },
                     new AchievementAchievement()
                     {
                         Name = "Achiever",
-                        Icon = "🖊️",
+                        Icon = "✏️",
                         CheckAchievement = async (p) =>
                         {
 							await Task.Yield();
-							return p.count > 5;
+							return p.count >= 5;
                         },
                     },
                     new AchievementAchievement()
                     {
-                    Name = "Overachiever",
-                    Icon = "🖋️",
-                    CheckAchievement = async (p) =>
-                    {
-                        return p.count > 12;
-                    },
-                }
-            };
-             });  
+						Name = "Overachiever",
+						Icon = "🖋️",
+						CheckAchievement = async (p) =>
+						{
+							return p.count >= 12;
+						},
+					},
+					new AchievementAchievement()
+					{
+						Name = "Completionist",
+						Icon = "🖊️",
+						CheckAchievement = async (p) =>
+						{
+							return p.count >= 12;
+						},
+					}
+				};
+            });  
 
             AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
             {
@@ -326,14 +335,26 @@ namespace Miki.Modules.Accounts.Services
 
 			AchievementDataContainer DiscordBotsOrgAchievement = new AchievementDataContainer()
 			{
-				Name = "supporter",
+				Name = "Voter",
 				Achievements = new List<BaseAchievement>()
 				{
 					new BaseAchievement()
 					{
-						Name = "Supporter",
-						Icon = "",
-						Points = 10,
+						Name = "Helper",
+						Icon = "✉",
+						Points = 5,
+					},
+					new BaseAchievement()
+					{
+						Name = "Voter",
+						Icon = "🗳",
+						Points = 25,
+					},
+					new BaseAchievement()
+					{
+						Name = "Elector",
+						Icon = "🗃",
+						Points = 50,
 					}
 				}
 			};
@@ -341,12 +362,9 @@ namespace Miki.Modules.Accounts.Services
             #region Achievement Achievements
 
             AchievementManager.Instance.OnAchievementUnlocked += async (pa) =>
-            {
-                if (await IsEnabled(pa.discordChannel.Id))
-                {
-                    await AchievementAchievements.CheckAsync(pa);
-                }
-            };
+			{
+				await AchievementAchievements.CheckAsync(pa);
+			};
 
             #endregion Achievement Achievements
 
@@ -462,20 +480,31 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "💖",
                         CheckUserUpdate = async (p) =>
                         {
-                            if (p.discordUser.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Donators"; });
-
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
                             return false;
                         },
 						Points = 0,
-                    }
-                };
+                    },
+					new UserUpdateAchievement()
+					{
+						Name = "Supporter",
+						Icon = "💘",
+						CheckUserUpdate = async (p) =>
+						{
+							return false;
+						},
+						Points = 0,
+					},
+					new UserUpdateAchievement()
+					{
+						Name = "Sponsor",
+						Icon = "💟",
+						CheckUserUpdate = async (p) =>
+						{
+							return false;
+						},
+						Points = 0,
+					},
+				};
             });
 
             #endregion User Update Achievements (don't disable these)

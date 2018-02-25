@@ -155,7 +155,10 @@ namespace Miki.Modules.AccountsModule
 
 			if (argument?.Argument.ToLower() == "local")
 			{
-				options.guildId = e.Guild.Id;
+				if (options.type != LeaderboardsType.PASTA)
+				{
+					options.guildId = e.Guild.Id;
+				}
 				argument = argument.Next();
 			}
 
@@ -170,7 +173,6 @@ namespace Miki.Modules.AccountsModule
 				}
 			}
 
-			// TODO: make this less complicated
 			if ((argument?.AsInt(0) ?? 0) != 0)
 			{
 				options.pageNumber = argument.AsInt();
@@ -624,26 +626,43 @@ namespace Miki.Modules.AccountsModule
 				}
 
 				int dailyAmount = 100;
+				int dailyStreakAmount = 20;
 
-				if (u.IsDonator(context))
+				if (await u.IsDonatorAsync(context))
 				{
 					dailyAmount *= 2;
+					dailyStreakAmount *= 2;
 				}
 
 				if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
 				{
-					e.Channel.QueueMessageAsync(
-						$"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.");
+					e.ErrorEmbed(
+						$"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.").QueueToChannel(e.Channel);
 					return;
 				}
 
-				await u.AddCurrencyAsync(dailyAmount, e.Channel);
+				int streak = 1;
+				string redisKey = $"user:{e.Author.Id}:daily";
+
+				if (await Global.redisClient.ExistsAsync(redisKey))
+				{
+					streak = await Global.redisClient.GetAsync<int>(redisKey);
+					streak++;
+				}
+
+				int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
+
+				await u.AddCurrencyAsync(amount, e.Channel);
 				u.LastDailyTime = DateTime.Now;
 
-				Utils.Embed.SetTitle(locale.GetString("Daily"))
-					.SetDescription($"Received **{dailyAmount}** Mekos! You now have `{u.Currency}` Mekos")
+
+				Utils.Embed.SetTitle("💰 Daily")
+					.SetDescription($"Received **{amount}** Mekos! You now have `{u.Currency}` Mekos")
+					.SetColor(253, 216, 136)
+					.AddInlineField("Streak!", $"You're on a {streak} day daily streak!")
 					.QueueToChannel(e.Channel);
 
+				await Global.redisClient.AddAsync(redisKey, streak, new TimeSpan(48, 0, 0));
 				await context.SaveChangesAsync();
 			}
 		}
@@ -863,7 +882,7 @@ namespace Miki.Modules.AccountsModule
 					LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(leaderboardOptions);
 
 					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-						.SetFooter(locale.GetString("page_index", p + 1, obj.totalItems / 10), "")
+						.SetFooter(locale.GetString("page_index", p + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
 						.SetTitle($"Leaderboards: {leaderboardOptions.type.ToString()}")
 						.QueueToChannel(mContext.Channel);
 				}

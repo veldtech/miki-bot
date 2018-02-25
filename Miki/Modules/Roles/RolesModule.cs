@@ -23,43 +23,63 @@ namespace Miki.Modules.Roles
 		[Command(Name = "iam")]
 		public async Task IAmAsync(EventContext e)
 		{
-			IDiscordRole role = GetRoleByName(e.Guild, e.arguments);
-
-			if(role == null)
-			{
-				await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
-					.SendToChannel(e.Channel);
-				return;
-			}
-
-			if (e.Author.RoleIds.Contains(role.Id))
-			{
-				await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_already_given"))
-					.SendToChannel(e.Channel);
-				return;
-			}
-
 			using (var context = new MikiContext())
 			{
+				List<IDiscordRole> roles = GetRolesByName(e.Guild, e.arguments);
+				IDiscordRole role = null;
+
+				if (roles.Count > 1)
+				{
+					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
+					if(levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).Count() > 1)
+					{
+						e.ErrorEmbed("two roles configured have the same name.")
+							.QueueToChannel(e.Channel);
+						return;
+					}
+					else
+					{
+						role = levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).FirstOrDefault().Role;
+					}
+				}
+				else
+				{
+					role = roles.FirstOrDefault();
+				}
+
+				if (role == null)
+				{
+					e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
+				if (e.Author.RoleIds.Contains(role.Id))
+				{
+					e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_already_given"))
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 				IDiscordUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
 
-				if (newRole == null || !newRole.Optable)
+				if (!newRole?.Optable ?? false)
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
 						.SendToChannel(e.Channel);
 					return;
 				}
 
-				if(newRole.RequiredLevel > user.Level)
+				if (newRole.RequiredLevel > user.Level)
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - user.Level))
 						.SendToChannel(e.Channel);
 					return;
 				}
 
-				if(newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
+				if (newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
 					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
 						.SendToChannel(e.Channel);
@@ -102,24 +122,44 @@ namespace Miki.Modules.Roles
 		[Command(Name = "iamnot")]
 		public async Task IAmNotAsync(EventContext e)
 		{
-			IDiscordRole role = GetRoleByName(e.Guild, e.arguments);
-
-			if (role == null)
-			{
-				await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
-					.SendToChannel(e.Channel);
-				return;
-			}
-
-			if (!e.Author.RoleIds.Contains(role.Id))
-			{
-				await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
-					.SendToChannel(e.Channel);
-				return;
-			}
-
 			using (var context = new MikiContext())
 			{
+				List<IDiscordRole> roles = GetRolesByName(e.Guild, e.arguments);
+				IDiscordRole role = null;
+
+				if (roles.Count > 1)
+				{
+					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
+					if (levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).Count() > 1)
+					{
+						e.ErrorEmbed("two roles configured have the same name.")
+							.QueueToChannel(e.Channel);
+						return;
+					}
+					else
+					{
+						role = levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).FirstOrDefault().Role;
+					}
+				}
+				else
+				{
+					role = roles.FirstOrDefault();
+				}
+
+				if (role == null)
+				{
+					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
+						.SendToChannel(e.Channel);
+					return;
+				}
+
+				if (!e.Author.RoleIds.Contains(role.Id))
+				{
+					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
+						.SendToChannel(e.Channel);
+					return;
+				}
+
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
@@ -140,12 +180,13 @@ namespace Miki.Modules.Roles
 				long guildId = e.Guild.Id.ToDbLong();
 				List<LevelRole> roles = await context.LevelRoles
 					.Where(x => x.GuildId == guildId)
-					.OrderBy(x => x.RoleId)
 					.Skip(0)
 					.Take(25)
 					.ToListAsync();
 
 				StringBuilder stringBuilder = new StringBuilder();
+
+				roles = roles.OrderBy(x => x.Role.Name).ToList();
 
 				foreach(var role in roles)
 				{
@@ -226,7 +267,54 @@ namespace Miki.Modules.Roles
 					sourceMessage.Modify("", e.ErrorEmbed("That role name is way too long! Try again."));
 				}
 
-				IDiscordRole role = GetRoleByName(e.Guild, msg.Content.ToLower());
+				List<IDiscordRole> rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
+				IDiscordRole role = null;
+
+				if(rolesFound.Count > 1)
+				{
+					string roleIds = string.Join("\n", rolesFound.Select(x => $"`{x.Name}`: {x.Id}"));
+
+					if (roleIds.Length > 1024)
+					{
+						roleIds = roleIds.Substring(0, 1024);
+					}
+
+					sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+							.SetDescription("I found multiple roles with that name, which one would you like? please enter the ID")
+							.AddInlineField("Roles - Ids", roleIds)
+							.SetColor(138, 182, 239);
+
+					sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+					while(true)
+					{
+						msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+						if(ulong.TryParse(msg.Content, out ulong id))
+						{
+							role = rolesFound.Where(x => x.Id == id)
+								.FirstOrDefault();
+
+							if(role != null)
+							{
+								break;
+							}
+							else
+							{
+								sourceMessage.Modify(null, e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
+									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)));
+							}
+						}
+						else
+						{
+							sourceMessage.Modify(null, e.ErrorEmbed("I couldn't find that role. Try again!")
+								.AddInlineField("Roles - Ids", string.Join("\n", roleIds)));
+						}
+					}
+				}
+				else
+				{
+					role = rolesFound.FirstOrDefault();
+				}
+
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				if(newRole == null)
 				{
@@ -243,12 +331,57 @@ namespace Miki.Modules.Roles
 
 				sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
 
-
 				while (true)
 				{
 					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
-					IDiscordRole parentRole = GetRoleByName(e.Guild, msg.Content.ToLower());
+					rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
+					IDiscordRole parentRole = null;
+
+					if (rolesFound.Count > 1)
+					{
+						string roleIds = string.Join("\n", rolesFound.Select(x => $"`{x.Name}`: {x.Id}"));
+
+						if (roleIds.Length > 1024)
+						{
+							roleIds = roleIds.Substring(0, 1024);
+						}
+
+						sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+								.SetDescription("I found multiple roles with that name, which one would you like? please enter the ID")
+								.AddInlineField("Roles - Ids", roleIds)
+								.SetColor(138, 182, 239);
+
+						sourceMessage = await sourceEmbed.SendToChannel(e.Channel);
+						while (true)
+						{
+							msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+							if (ulong.TryParse(msg.Content, out ulong id))
+							{
+								parentRole = rolesFound.Where(x => x.Id == id)
+									.FirstOrDefault();
+
+								if (parentRole != null)
+								{
+									break;
+								}
+								else
+								{
+									sourceMessage.Modify(null, e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
+										.AddInlineField("Roles - Ids", string.Join("\n", roleIds)));
+								}
+							}
+							else
+							{
+								sourceMessage.Modify(null, e.ErrorEmbed("I couldn't find that role. Try again!")
+									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)));
+							}
+						}
+					}
+					else
+					{
+						parentRole = rolesFound.FirstOrDefault();
+					}
 
 					if (parentRole != null || msg.Content == "-")
 					{
@@ -358,11 +491,22 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				MSLResponse arguments = new MMLParser(e.arguments)
-					.Parse();
+				string roleName = e.arguments.Split('"')[1];
 
-				IDiscordRole role = GetRoleByName(e.Guild, e.arguments.Split('"')[1]);
+				IDiscordRole role = null;
+				if (ulong.TryParse(roleName, out ulong s))
+				{
+					role = e.Guild.GetRole(s);
+				}
+				else
+				{
+					role = GetRolesByName(e.Guild, roleName).FirstOrDefault();
+				}
+
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
+
+				MSLResponse arguments = new MMLParser(e.arguments.Substring(roleName.Length + 3))
+					.Parse();
 
 				if (role.Name.Length > 20)
 				{
@@ -426,10 +570,8 @@ namespace Miki.Modules.Roles
 
 		}
 
-		public IDiscordRole GetRoleByName(IDiscordGuild guild, string roleName)
-		{
-			IDiscordRole role = guild.Roles.Where(x => x.Name.ToLower() == roleName.ToLower()).FirstOrDefault();
-			return role;
-		}
+		public List<IDiscordRole> GetRolesByName(IDiscordGuild guild, string roleName)
+		=> guild.Roles.Where(x => x.Name.ToLower() == roleName.ToLower()).ToList();
+		
 	}
 }

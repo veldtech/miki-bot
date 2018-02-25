@@ -11,9 +11,10 @@ using System;
 namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
-    partial class MikiContextModelSnapshot : ModelSnapshot
+    [Migration("20180224203510_fix_serial_donator")]
+    partial class fix_serial_donator
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,13 +174,13 @@ namespace Miki.Core.Migrations
                 {
                     b.Property<long>("UserId");
 
-                    b.Property<int>("TotalPaidCents")
+                    b.Property<int>("DaysDonated")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(0);
 
                     b.Property<DateTime>("ValidUntil")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 2, 24, 19, 27, 48, 987, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 2, 23, 21, 35, 10, 170, DateTimeKind.Local));
 
                     b.HasKey("UserId");
 

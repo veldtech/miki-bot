@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
+	// TODO: build and move to cdn
     [Module("Actions")]
     public class ActionsModule
     {

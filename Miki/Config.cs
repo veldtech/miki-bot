@@ -128,5 +128,11 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("image_api_url")]
 		public string ImageApiUrl { get; internal set; }
+
+		/// <summary>
+		/// Check if this is the patreon
+		/// </summary>
+		[JsonProperty("is_patreon_bot")]
+		public bool IsPatreonBot { get; internal set; }
 	}
 }

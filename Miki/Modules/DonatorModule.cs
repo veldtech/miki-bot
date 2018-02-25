@@ -9,6 +9,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Miki.Rest;
 using System;
+using Newtonsoft.Json;
+using Miki.Common;
+using Miki.Patreon.Types;
 
 namespace Miki.Modules
 {
@@ -17,6 +20,76 @@ namespace Miki.Modules
     {
 		RestClient client = new RestClient(Global.Config.ImageApiUrl)
 			.AddHeader("Authorization", Global.Config.MikiApiKey);
+
+		public DonatorModule()
+		{
+			/// patreon
+			WebhookManager.OnEvent += async (value) =>
+			{
+				if(value.auth_code == "PATREON_UPDATE")
+				{
+					PatreonPledge patreonObject = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
+
+					ulong userId = ulong.Parse(patreonObject.Included.FirstOrDefault(x => x.Type == PatreonType.USER).attributes.ToObject<UserAttribute>().DiscordUserId ?? "0");
+					string name = "";
+
+					if(userId != 0)
+					{
+						IDiscordUser user = Bot.Instance.GetUser(userId);
+						name = user.Username + "#" + user.Discriminator;
+					}
+
+
+					Utils.Embed.SetTitle("yo. some donation happened")
+						.SetDescription(name + " donated " + ((double)patreonObject.Data.attributes.ToObject<PledgeAttribute>().AmountCents / 100) + "$")
+						.QueueToChannel(266365180848504832);
+				}
+			};
+		}
+
+		[Command(Name = "redeemkey")]
+		public async Task RedeemKeyAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				long id = (long)e.Author.Id;
+				DonatorKey key = await context.DonatorKey.FindAsync(Guid.Parse(e.arguments));
+				IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
+
+				if (key != null)
+				{
+					if (donatorStatus == null)
+					{
+						donatorStatus = (await context.IsDonator.AddAsync(new IsDonator()
+						{
+							UserId = id
+						})).Entity;
+					}
+
+					if (donatorStatus.ValidUntil > DateTime.Now)
+					{
+						donatorStatus.ValidUntil += key.StatusTime;
+					}
+					else
+					{
+						donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
+					}
+					Utils.Embed.SetTitle($"🎉 Congratulations, {e.Author.Username}")
+						.SetColor(226, 46, 68)
+						.SetDescription($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.")
+						.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
+						.SetThumbnailUrl("https://i.imgur.com/OwwA5fV.png")
+						.QueueToChannel(e.Channel);
+
+					context.DonatorKey.Remove(key);
+					await context.SaveChangesAsync();
+				}
+				else
+				{
+					await e.Channel.SendMessageAsync("invalid key");
+				}
+			}
+		}
 
 		[Command(Name = "box")]
 		public async Task BoxAsync(EventContext e)
@@ -67,7 +140,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				if (u.IsDonator(context))
+				if (await u.IsDonatorAsync(context))
 				{
 					Stream s = await client.GetStreamAsync(url);
 					await e.Channel.SendFileAsync(s, "meme.png");

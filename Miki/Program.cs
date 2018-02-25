@@ -15,6 +15,7 @@ using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Protobuf;
 using Miki.Common;
 using Miki.Framework.Events;
+using StackExchange.Redis;
 
 namespace Miki
 {
@@ -56,10 +57,20 @@ namespace Miki
         {
 			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.Config.RedisConnectionString);
 
+			if (!Global.Config.IsPatreonBot)
+			{
+				WebhookManager.Listen("webhook");
+
+				WebhookManager.OnEvent += async (eventArgs) =>
+				{
+					Console.WriteLine("[webhook] " + eventArgs.auth_code);
+				};
+			}
+
 			bot = new Bot(new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.5.4",
+                Version = "0.6",
                 Token = Global.Config.Token,
                 ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString
@@ -93,7 +104,7 @@ namespace Miki
 						DogStatsd.Counter("commands.error.rate", 1);
 					}
 					
-					DogStatsd.Counter("commands.count", 1, 1, new[] 
+					DogStatsd.Counter ("commands.count", 1, 1, new[] 
 					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
 					DogStatsd.Histogram("commands.time", t, 0.1, new[]
 					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });

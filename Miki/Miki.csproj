@@ -152,6 +152,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.0.0-beta" />
+    <PackageReference Include="DiscordBotsList.Api" Version="1.1.0" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
@@ -162,7 +163,7 @@
     <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="SharpRaven" Version="2.2.0" />
-    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="3.1.0" />
     <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.1.0" />
     <PackageReference Include="SteamKit2" Version="2.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
@@ -298,6 +299,7 @@
     <ProjectReference Include="D:\Projects\Miki.Anilist\Miki.Anilist\Miki.Anilist.csproj" />
     <ProjectReference Include="D:\Projects\Miki.Common\Miki.Common\Miki.Common.csproj" />
     <ProjectReference Include="D:\Projects\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
+    <ProjectReference Include="D:\Projects\Miki.Patreon\Miki.Patreon\Miki.Patreon.csproj" />
   </ItemGroup>
 
 </Project>

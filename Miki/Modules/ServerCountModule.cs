@@ -11,14 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Miki.Rest;
 using Newtonsoft.Json;
-//using DiscordBotsList.Api;
+using DiscordBotsList.Api;
 
 namespace Miki.Modules
 {
     [Module("internal:servercount")]
     internal class ServerCountModule
     {
-		//AuthDiscordBotListApi api;
+		AuthDiscordBotListApi api;
 
 		private class GuildCountObject
 		{

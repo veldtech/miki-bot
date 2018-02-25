@@ -195,10 +195,12 @@ namespace Miki.Models
             return x + 1;
         }
 
-        public bool IsDonator(MikiContext context)
-        {
-            return context.Achievements.Find(Id, "donator") != null;
-        }
+		public async Task<bool> IsDonatorAsync(MikiContext context)
+		{
+			IsDonator d = await context.IsDonator.FindAsync(Id);
+			bool b = (d?.ValidUntil ?? new DateTime(0)) > DateTime.Now;
+			return b;
+		}
 
 		public static async Task BanAsync(long id)
 		{
@@ -229,6 +231,7 @@ namespace Miki.Models
 				u.MarriageSlots = 0;
 				u.Currency = 0;
 				u.Reputation = 0;
+
 				await context.SaveChangesAsync();
 			}
 		}
@@ -239,6 +242,7 @@ namespace Miki.Models
 		}
 	}
 
+	// TODO: move to own file
 	[ProtoContract]
 	public class ReputationObject
 	{
@@ -249,6 +253,7 @@ namespace Miki.Models
 		public short ReputationPointsLeft { get; set; }
 	}
 
+	// TODO: move to own file
 	[ProtoContract]
 	public class RealtimeExperienceObject
 	{

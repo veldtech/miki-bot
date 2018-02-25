@@ -12,6 +12,8 @@ namespace Miki.Models
         public DbSet<Achievement> Achievements { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
 		public DbSet<Connection> Connections { get; set; }
+		public DbSet<IsDonator> IsDonator { get; set; }
+		public DbSet<DonatorKey> DonatorKey { get; set; }
         public DbSet<EventMessage> EventMessages { get; set; }
         public DbSet<LocalExperience> LocalExperience { get; set; }
         public DbSet<GuildUser> GuildUsers { get; set; }
@@ -68,7 +70,16 @@ namespace Miki.Models
 			var conn = modelBuilder.Entity<Connection>();
 
 			conn.HasKey(x => x.DiscordUserId);
-			
+
+			#endregion
+
+			#region DonatorKey
+
+			var donatorKey = modelBuilder.Entity<DonatorKey>();
+			donatorKey.HasKey(x => x.Key);
+			donatorKey.Property("Key").HasDefaultValueSql("uuid_generate_v4()");
+			donatorKey.Property("StatusTime").HasDefaultValueSql("interval '31 days'");
+
 			#endregion
 
 			#region Event Message
@@ -216,6 +227,17 @@ namespace Miki.Models
 
 			user.Property(x => x.Total_Experience)
 				.HasDefaultValue(0);
+
+			#endregion
+
+			#region IsDonator
+
+			var isDonator = modelBuilder.Entity<IsDonator>();
+			isDonator.HasKey(x => x.UserId);
+			isDonator.Property(x => x.UserId).ValueGeneratedNever();
+
+			isDonator.Property(x => x.TotalPaidCents).HasDefaultValue(0);
+			isDonator.Property(x => x.ValidUntil).HasDefaultValue(DateTime.Now - new TimeSpan(1, 0, 0, 0, 0));
 
 			#endregion
 
