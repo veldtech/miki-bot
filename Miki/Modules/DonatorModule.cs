@@ -12,9 +12,35 @@ using System;
 using Newtonsoft.Json;
 using Miki.Common;
 using Miki.Patreon.Types;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Miki.Modules
 {
+	public class KofiObject
+	{
+		[JsonProperty("message_id")]
+		public Guid MessageId;
+
+		[JsonProperty("timestamp")]
+		public DateTimeOffset Timestamp;
+
+		[JsonProperty("type")]
+		public string Type;
+
+		[JsonProperty("from_name")]
+		public string FromName;
+
+		[JsonProperty("message")]
+		public string Message;
+
+		[JsonProperty("amount")]
+		public double Amount;
+
+		[JsonProperty("url")]
+		public string Url;
+	}
+
     [Module(Name = "Donator")]
     internal class DonatorModule
     {
@@ -26,6 +52,29 @@ namespace Miki.Modules
 			/// patreon
 			WebhookManager.OnEvent += async (value) =>
 			{
+				if(value.auth_code == "KOFI_DONATE")
+				{
+					JObject data = JsonConvert.DeserializeObject<JObject>(value.data);
+					KofiObject kofi = JsonConvert.DeserializeObject<KofiObject>(data.GetValue("data").ToObject<string>());
+
+					if (ulong.TryParse(kofi.Message.Split(' ').Last(), out ulong uid))
+					{
+						IDiscordUser user = Bot.Instance.GetUser(uid);
+
+						List<string> allKeys = new List<string>();
+
+						for (int i = 0; i < kofi.Amount / 3; i++)
+						{
+							allKeys.Add(DonatorKey.GenerateNew());
+						}
+
+						Utils.Embed.SetTitle("You donated through ko-fi!")
+							.SetDescription("I work hard for miki's quality, thank you for helping me keep the bot running!")
+							.AddField("- Veld#0001", "Here are your key(s)!\n\n`" + string.Join("\n", allKeys) + "`")
+							.QueueToUser(user);
+					}
+				}
+
 				if(value.auth_code == "PATREON_UPDATE")
 				{
 					PatreonPledge patreonObject = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
