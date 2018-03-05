@@ -199,7 +199,8 @@ namespace Miki.Modules
             e.Channel.QueueMessageAsync(output);
         }
 
-        [Command(Name = "bird")]
+	[Command(Name = "bird", Aliases = new string[] { "birb" })]
+
         public async Task BirdAsync(EventContext e)
         {
             string[] bird =
