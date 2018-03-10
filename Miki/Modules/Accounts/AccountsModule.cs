@@ -639,7 +639,7 @@ namespace Miki.Modules.AccountsModule
 			using (MikiContext context = new MikiContext())
 			{
 				User sender = await User.GetAsync(context, e.Author);
-				User receiver = await User.GetAsync(context, await e.Guild.GetUserAsync(e.message.MentionedUserIds.First()));
+				User receiver = await User.GetAsync(context, user);
 
 				if (amount.Value <= sender.Currency)
 				{

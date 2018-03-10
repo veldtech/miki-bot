@@ -5,30 +5,31 @@ using System.Threading.Tasks;
 
 namespace Miki.API.UrbanDictionary
 {
-    internal class UrbanDictionaryApi
-    {
-        private string key = "";
+	internal class UrbanDictionaryApi
+	{
+		RestClient client;
 
-        public UrbanDictionaryApi(string key)
-        {
-            this.key = key;
-        }
+		private string key = "";
 
-        public async Task<UrbanDictionaryEntry> GetEntryAsync(string term, int index = 0)
-        {
-            RestClient client = new RestClient("https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + term);
+		public UrbanDictionaryApi(string key)
+		{
+			this.key = key;
 
-            client.AddHeader("X-Mashape-Key", key);
-            client.AddHeader("Accept", "application/json");
+			client = new RestClient("https://mashape-community-urban-dictionary.p.mashape.com/")
+				.AddHeader("X-Mashape-Key", key)
+				.AddHeader("Accept", "application/json");
+		}
 
-			RestResponse<UrbanDictionaryResponse> post = await client.GetAsync<UrbanDictionaryResponse>("");
+		public async Task<UrbanDictionaryEntry> GetEntryAsync(string term, int index = 0)
+		{
+			RestResponse<UrbanDictionaryResponse> post = await client.GetAsync<UrbanDictionaryResponse>("define?term=" + term);
 
-            if (post.Data.Entries.Count == 0)
-            {
-                return null;
-            }
+			if (post.Data.Entries.Count == 0)
+			{
+				return null;
+			}
 
-			return post.Data.Entries.FirstOrDefault();
-        }
-    }
+			return post.Data.Entries.OrderByDescending(x => x.ThumbsUp - x.ThumbsDown).FirstOrDefault();
+		}
+	}
 }
