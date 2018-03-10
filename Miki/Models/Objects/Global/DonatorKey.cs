@@ -10,14 +10,14 @@ namespace Miki.Models
 
 		public TimeSpan StatusTime { get; set; }
 
-		public static string GenerateNew(TimeSpan? time = null)
+		public static DonatorKey GenerateNew(TimeSpan? time = null)
 		{
 			using (var context = new MikiContext())
 			{
-				string key = context.DonatorKey.Add(new DonatorKey()
+				var key = context.DonatorKey.Add(new DonatorKey()
 				{
 					StatusTime = time ?? new TimeSpan(31, 0, 0, 0),
-				}).Entity.Key.ToString();
+				}).Entity;
 				context.SaveChanges();
 				return key;
 			}

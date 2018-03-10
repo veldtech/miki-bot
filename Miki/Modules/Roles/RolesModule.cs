@@ -25,13 +25,15 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				List<IDiscordRole> roles = GetRolesByName(e.Guild, e.arguments);
+				string roleName = e.Arguments.ToString();
+
+				List<IDiscordRole> roles = GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
 
 				if (roles.Count > 1)
 				{
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
-					if(levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).Count() > 1)
+					if(levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
 							.QueueToChannel(e.Channel);
@@ -39,7 +41,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						role = levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).FirstOrDefault().Role;
+						role = levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).FirstOrDefault().Role;
 					}
 				}
 				else
@@ -122,15 +124,17 @@ namespace Miki.Modules.Roles
 		[Command(Name = "iamnot")]
 		public async Task IAmNotAsync(EventContext e)
 		{
+			string roleName = e.Arguments.ToString();
+
 			using (var context = new MikiContext())
 			{
-				List<IDiscordRole> roles = GetRolesByName(e.Guild, e.arguments);
+				List<IDiscordRole> roles = GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
 
 				if (roles.Count > 1)
 				{
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
-					if (levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).Count() > 1)
+					if (levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
 							.QueueToChannel(e.Channel);
@@ -138,7 +142,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						role = levelRoles.Where(x => x.Role.Name.ToLower() == e.arguments.ToLower()).FirstOrDefault().Role;
+						role = levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).FirstOrDefault().Role;
 					}
 				}
 				else
@@ -234,7 +238,7 @@ namespace Miki.Modules.Roles
 		[Command(Name = "configrole", Accessibility = Miki.Common.EventAccessibility.ADMINONLY)]
 		public async Task ConfigRoleAsync(EventContext e)
 		{
-			if(string.IsNullOrWhiteSpace(e.arguments))
+			if(string.IsNullOrWhiteSpace(e.Arguments.ToString()))
 			{
 				Task.Run(async () => await ConfigRoleInteractiveAsync(e));
 			}
@@ -491,7 +495,7 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				string roleName = e.arguments.Split('"')[1];
+				string roleName = e.Arguments.ToString().Split('"')[1];
 
 				IDiscordRole role = null;
 				if (ulong.TryParse(roleName, out ulong s))
@@ -505,7 +509,7 @@ namespace Miki.Modules.Roles
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 
-				MSLResponse arguments = new MMLParser(e.arguments.Substring(roleName.Length + 3))
+				MSLResponse arguments = new MMLParser(e.Arguments.ToString().Substring(roleName.Length + 3))
 					.Parse();
 
 				if (role.Name.Length > 20)

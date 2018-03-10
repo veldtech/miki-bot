@@ -5,33 +5,33 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Miki.API.Reminder
+namespace Miki.API
 {
-    public class ReminderAPI
-    {
-		Dictionary<ulong, ReminderContainer> reminders = new Dictionary<ulong, ReminderContainer>(); 
+	public class TaskScheduler<T>
+	{
+		Dictionary<ulong, TaskContainer<T>> scheduledTasks = new Dictionary<ulong, TaskContainer<T>>();
 
-        public int AddReminder(IDiscordUser user, string reminder, TimeSpan atTime, bool repeated = false)
-        {
-			if(reminders.TryGetValue(user.Id, out ReminderContainer container))
+		public int AddTask(ulong sessionId, Action<T> fn, T context, TimeSpan atTime, bool repeated = false)
+		{
+			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
-				return container.CreateNewReminder(user, reminder, atTime, repeated);
+				return container.CreateNewReminder(fn, context, atTime, repeated);
 			}
 			else
 			{
-				ReminderContainer rc = new ReminderContainer();
-				rc.Id = user.Id;
-				reminders.Add(user.Id, rc);
-				return rc.CreateNewReminder(user, reminder, atTime, repeated);			
+				TaskContainer<T> rc = new TaskContainer<T>();
+				rc.Id = sessionId;
+				scheduledTasks.Add(sessionId, rc);
+				return rc.CreateNewReminder(fn, context, atTime, repeated);
 			}
-        }
+		}
 
-		public ReminderInstance CancelReminder(IDiscordUser user, int reminderId)
+		public TaskInstance<T> CancelReminder(ulong sessionId, int reminderId)
 		{
-			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				var instance = container.GetReminder(reminderId);
-				if(instance != null)
+				if (instance != null)
 				{
 					instance.Cancel();
 					return instance;
@@ -41,22 +41,22 @@ namespace Miki.API.Reminder
 			return null;
 		}
 
-		public ReminderInstance GetInstance(IDiscordUser user, int id)
+		public TaskInstance<T> GetInstance(ulong sessionId, int id)
 		{
-			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				return container.GetReminder(id);
 			}
 			return null;
 		}
 
-		public List<ReminderInstance> GetAllInstances(IDiscordUser user)
+		public List<TaskInstance<T>> GetAllInstances(ulong sessionId)
 		{
-			if (reminders.TryGetValue(user.Id, out ReminderContainer container))
+			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				return container.GetAllReminders();
 			}
 			return null;
 		}
-    }
+	}
 }

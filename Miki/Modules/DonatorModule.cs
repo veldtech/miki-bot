@@ -14,6 +14,7 @@ using Miki.Common;
 using Miki.Patreon.Types;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Miki.Accounts.Achievements;
 
 namespace Miki.Modules
 {
@@ -41,6 +42,27 @@ namespace Miki.Modules
 		public string Url;
 	}
 
+	public class DblVoteObject
+	{
+		[JsonProperty("bot")]
+		public ulong BotId;
+
+		[JsonProperty("user")]
+		public ulong UserId;
+
+		[JsonProperty("type")]
+		public string Type;
+	}
+
+	public class PatreonPledgeObject
+	{
+		[JsonProperty("user_id")]
+		public ulong UserId;
+
+		[JsonProperty("keys_rewarded")]
+		public int KeysRewarded;
+	}
+
     [Module(Name = "Donator")]
     internal class DonatorModule
     {
@@ -49,9 +71,61 @@ namespace Miki.Modules
 
 		public DonatorModule()
 		{
-			/// patreon
 			WebhookManager.OnEvent += async (value) =>
 			{
+				if(value.auth_code == "DBL_VOTE")
+				{
+					using (var context = new MikiContext())
+					{
+						DblVoteObject voteObject = JsonConvert.DeserializeObject<DblVoteObject>(value.data);
+
+						if (voteObject.Type == "upvote")
+						{
+							IDiscordUser user = Bot.Instance.GetUser(voteObject.UserId);
+
+							if (user == null)
+								return;
+
+							User u = await User.GetAsync(context, user);
+
+							if (!await Global.redisClient.ExistsAsync($"dbl:vote:{voteObject.UserId}"))
+							{
+								u.DblVotes++;
+								await Global.redisClient.AddAsync($"dbl:vote:{voteObject.UserId}", 1, new TimeSpan(1, 0, 0, 0));
+
+								int addedCurrency = 100 * ((await u.IsDonatorAsync(context)) ? 2 : 1);
+
+								u.Currency += addedCurrency;
+
+								await context.SaveChangesAsync();
+
+								Utils.Embed.SetTitle("Thanks for voting!")
+									.SetDescription($"We've given you {addedCurrency} mekos to your profile")
+									.SetColor(64, 255, 64)
+									.QueueToUser(user);
+							}
+
+							var achievements = AchievementManager.Instance.GetContainerById("voter");
+
+							switch (u.DblVotes)
+							{
+								case 1:
+								{
+									await achievements.Achievements[0].UnlockAsync(user);
+								} break;
+								case 25:
+								{
+									await achievements.Achievements[1].UnlockAsync(user, 1);
+								} break;
+								case 200:
+								{
+									await achievements.Achievements[2].UnlockAsync(user, 2);
+								} break;
+							}
+						}
+					}
+				}
+
 				if(value.auth_code == "KOFI_DONATE")
 				{
 					JObject data = JsonConvert.DeserializeObject<JObject>(value.data);
@@ -65,33 +139,68 @@ namespace Miki.Modules
 
 						for (int i = 0; i < kofi.Amount / 3; i++)
 						{
-							allKeys.Add(DonatorKey.GenerateNew());
+							allKeys.Add(DonatorKey.GenerateNew().Key.ToString());
 						}
 
 						Utils.Embed.SetTitle("You donated through ko-fi!")
 							.SetDescription("I work hard for miki's quality, thank you for helping me keep the bot running!")
 							.AddField("- Veld#0001", "Here are your key(s)!\n\n`" + string.Join("\n", allKeys) + "`")
+							.AddField("How to redeem this key?", $"use this command `>redeemkey`")
 							.QueueToUser(user);
 					}
 				}
 
-				if(value.auth_code == "PATREON_UPDATE")
+				if(value.auth_code == "PATREON_PLEDGES")
 				{
-					PatreonPledge patreonObject = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
-
-					ulong userId = ulong.Parse(patreonObject.Included.FirstOrDefault(x => x.Type == PatreonType.USER).attributes.ToObject<UserAttribute>().DiscordUserId ?? "0");
-					string name = "";
-
-					if(userId != 0)
+					List<PatreonPledgeObject> pledgeObjects = JsonConvert.DeserializeObject<List<PatreonPledgeObject>>(value.data);
+					
+					foreach (PatreonPledgeObject pledge in pledgeObjects)
 					{
-						IDiscordUser user = Bot.Instance.GetUser(userId);
-						name = user.Username + "#" + user.Discriminator;
+						IDiscordUser user = Bot.Instance.GetUser(pledge.UserId);
+
+						IDiscordEmbed embed = Utils.Embed.SetTitle("You donation came through patreon!")
+							.SetDescription("I work hard for miki's quality, thank you for helping me keep the bot running! - Veld#0001");
+
+						int max_per_embed = 20;
+
+						for (int i = 0; i < Math.Ceiling((double)pledge.KeysRewarded / max_per_embed); i++)
+						{
+							List<string> allKeys = new List<string>();
+
+							for (int j = i * max_per_embed; j < Math.Min(i * max_per_embed + max_per_embed, pledge.KeysRewarded); j++)
+							{
+								allKeys.Add(DonatorKey.GenerateNew().Key.ToString());
+							}
+
+							embed.AddInlineField("Here are your key(s)!", $"`{string.Join("\n", allKeys)}`");
+						}
+
+						embed.AddField("How to redeem this key?", $"use this command `>redeemkey`")
+							.QueueToUser(user);
+
 					}
+				}
 
+				if(value.auth_code == "PATREON_DELETE")
+				{
+					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
+					if(ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
+					{
+						Utils.Embed.SetTitle("Sad to see you leave!")
+							.SetDescription("However, I won't hold it against you, thank you for your timely support and I hope you'll happily continue using Miki")
+							.QueueToUser(s);
+					}
+				}
 
-					Utils.Embed.SetTitle("yo. some donation happened")
-						.SetDescription(name + " donated " + ((double)patreonObject.Data.attributes.ToObject<PledgeAttribute>().AmountCents / 100) + "$")
-						.QueueToChannel(266365180848504832);
+				if (value.auth_code == "PATREON_CREATE")
+				{
+					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
+					if(ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
+					{
+						Utils.Embed.SetTitle("Welcome to the family")
+						.SetDescription("In maximal 24 hours you will receive another DM with key(s) depending on your patron amount. (5$/key). Thank you for your support!")
+						.QueueToUser(s);
+					}
 				}
 			};
 		}
@@ -102,7 +211,8 @@ namespace Miki.Modules
 			using (var context = new MikiContext())
 			{
 				long id = (long)e.Author.Id;
-				DonatorKey key = await context.DonatorKey.FindAsync(Guid.Parse(e.arguments));
+				Guid guid = Guid.Parse(e.Arguments.Join().Argument);
+				DonatorKey key = await context.DonatorKey.FindAsync(guid);
 				IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
 
 				if (key != null)
@@ -115,6 +225,8 @@ namespace Miki.Modules
 						})).Entity;
 					}
 
+					donatorStatus.KeysRedeemed++;
+
 					if (donatorStatus.ValidUntil > DateTime.Now)
 					{
 						donatorStatus.ValidUntil += key.StatusTime;
@@ -123,6 +235,7 @@ namespace Miki.Modules
 					{
 						donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
 					}
+					
 					Utils.Embed.SetTitle($"🎉 Congratulations, {e.Author.Username}")
 						.SetColor(226, 46, 68)
 						.SetDescription($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.")
@@ -132,17 +245,34 @@ namespace Miki.Modules
 
 					context.DonatorKey.Remove(key);
 					await context.SaveChangesAsync();
+
+					// cheap hack.
+
+					var achievements = AchievementManager.Instance.GetContainerById("donator");
+
+					if(donatorStatus.KeysRedeemed == 1)
+					{
+						await achievements.Achievements[0].UnlockAsync(e.Channel, e.Author, 0);
+					}
+					else if (donatorStatus.KeysRedeemed == 5)
+					{
+						await achievements.Achievements[1].UnlockAsync(e.Channel, e.Author, 1);
+					}
+					else if (donatorStatus.KeysRedeemed == 25)
+					{
+						await achievements.Achievements[2].UnlockAsync(e.Channel, e.Author, 2);
+					}
 				}
 				else
 				{
-					await e.Channel.SendMessageAsync("invalid key");
+					e.ErrorEmbed("Your donation key is invalid!");
 				}
 			}
 		}
 
 		[Command(Name = "box")]
 		public async Task BoxAsync(EventContext e)
-			=> await PerformCall(e, $"/api/box?text={e.arguments}&url={(await GetUrlFromMessageAsync(e))}");
+			=> await PerformCall(e, $"/api/box?text={e.Arguments.Join().Argument}&url={(await GetUrlFromMessageAsync(e))}");
 
 		[Command(Name = "disability")]
 		public async Task DisabilityAsync(EventContext e)
@@ -150,11 +280,11 @@ namespace Miki.Modules
 
 		[Command(Name = "tohru")]
 		public async Task TohruAsync(EventContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.arguments);
+			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Join().Argument);
 
         [Command(Name = "truth")]
         public async Task TruthAsync(EventContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.arguments);
+			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Join().Argument);
 
 		[Command(Name = "trapcard")]
 		public async Task YugiAsync(EventContext e)

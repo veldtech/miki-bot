@@ -64,12 +64,11 @@ namespace Miki.Modules
 		public async Task SteamUserAsync( EventContext context )
 		{
 			DateTime requestStart = DateTime.Now;
-			string[] args = context.arguments.Split( ' ' );
 
 			IDiscordEmbed embed = Utils.Embed;
 			embed.SetAuthor( "Steam Profile", steamAuthorIcon, "" );
 
-			SteamUserInfo user = await steam.GetSteamUser( args[0] );
+			SteamUserInfo user = await steam.GetSteamUser(context.Arguments.ToString());
 
 			if( user == null )
 			{
@@ -123,33 +122,33 @@ namespace Miki.Modules
 			embed.QueueToChannel( context.Channel );
 		}
 
-		public async Task SteamGameAsync( EventContext context )
+		public async Task SteamGameAsync(EventContext context)
 		{
 			DateTime requestStart = DateTime.Now;
-			string[] args = context.arguments.Split( ' ' );
 
 			IDiscordEmbed embed = Utils.Embed;
-			embed.SetAuthor( "Steam Game", steamAuthorIcon, "" );
+			embed.SetAuthor("Steam Game", steamAuthorIcon, "");
 
-			SteamGameInfo gameInfo = await steam.GetGameInfo( args[0] );
+			SteamGameInfo gameInfo = await steam.GetGameInfo(context.Arguments.ToString());
 
-			embed.SetDescription( gameInfo.Name );
-			embed.SetThumbnailUrl( gameInfo.HeaderImage );
+			embed.SetDescription(gameInfo.Name);
+			embed.SetThumbnailUrl(gameInfo.HeaderImage);
 
-			embed.SetFooter( "Request took in " + Math.Round( ( DateTime.Now - requestStart ).TotalMilliseconds ) + "ms", "" );
-			embed.QueueToChannel( context.Channel );
+			embed.SetFooter("Request took in " + Math.Round((DateTime.Now - requestStart).TotalMilliseconds) + "ms", "");
+			embed.QueueToChannel(context.Channel);
 		}
 
-		private string ToTimeString( TimeSpan time )
+		// Duplicate code?
+		private string ToTimeString(TimeSpan time)
 		{
-			if( Math.Floor( time.TotalDays ) > 0 )
+			if (Math.Floor(time.TotalDays) > 0)
 			{
-				return Math.Floor( time.TotalDays ) + " day" + ( ( time.TotalDays > 1 ) ? "s" : "" );
+				return Math.Floor(time.TotalDays) + " day" + ((time.TotalDays > 1) ? "s" : "");
 			}
 
-			return ( ( Math.Floor( time.TotalDays ) > 0 ) ? ( Math.Floor( time.TotalDays ) + " day" + ( ( time.TotalDays > 1 ) ? "s" : "" ) + ", " ) : "" ) +
-			  ( ( time.Hours > 0 ) ? ( time.Hours + " hour" + ( ( time.Hours > 1 ) ? "s" : "" ) + ", " ) : "" ) +
-			  ( ( time.Minutes > 0 ) ? ( time.Minutes + " minute" + ( ( time.Minutes != 1 ) ? "s" : "" ) ) : "" ) + ".\n";
+			return ((Math.Floor(time.TotalDays) > 0) ? (Math.Floor(time.TotalDays) + " day" + ((time.TotalDays > 1) ? "s" : "") + ", ") : "") +
+			  ((time.Hours > 0) ? (time.Hours + " hour" + ((time.Hours > 1) ? "s" : "") + ", ") : "") +
+			  ((time.Minutes > 0) ? (time.Minutes + " minute" + ((time.Minutes != 1) ? "s" : "")) : "") + ".\n";
 		}
 	}
 }

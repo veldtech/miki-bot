@@ -26,8 +26,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
 using Miki.API.Imageboards.Objects;
-using Miki.API.Reminder;
 using Miki.Core.API.Reminder;
+using Miki.Common.Builders;
 
 namespace Miki.Modules
 {
@@ -170,7 +170,7 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
 };
 
-		private ReminderAPI reminders = new ReminderAPI();
+		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
 
         public FunModule(RuntimeModule m)
         {
@@ -315,7 +315,7 @@ namespace Miki.Modules
         [Command(Name = "gif")]
         public async Task ImgurGifAsync(EventContext e)
         {
-			if (string.IsNullOrEmpty(e.arguments))
+			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
 				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
 				return;
@@ -323,7 +323,7 @@ namespace Miki.Modules
 
 			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
-            var images = await endpoint.SearchGalleryAsync($"title:{e.arguments} ext:gif");
+            var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()} ext:gif");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
             foreach (IGalleryItem item in images)
             {
@@ -348,7 +348,7 @@ namespace Miki.Modules
         [Command(Name = "img")]
         public async Task ImgurImageAsync(EventContext e)
         {
-			if (string.IsNullOrEmpty(e.arguments))
+			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
 				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
 				return;
@@ -356,7 +356,7 @@ namespace Miki.Modules
 
 			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
             var endpoint = new GalleryEndpoint(client);
-            var images = await endpoint.SearchGalleryAsync($"title:{e.arguments}");
+            var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()}");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
             foreach (IGalleryItem item in images)
             {
@@ -387,12 +387,12 @@ namespace Miki.Modules
         [Command(Name = "pick")]
         public async Task PickAsync(EventContext e)
         {
-            if (string.IsNullOrWhiteSpace(e.arguments))
+            if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
                 e.Channel.QueueMessageAsync(new Locale(e.Guild.Id).GetString(LocaleTags.ErrorPickNoArgs));
                 return;
             }
-            string[] choices = e.arguments.Split(',');
+            string[] choices = e.Arguments.ToString().Split(',');
 
             Locale locale = e.Channel.GetLocale();
             e.Channel.QueueMessageAsync(locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
@@ -409,23 +409,23 @@ namespace Miki.Modules
 		{
 			string rollResult;
 
-			if (string.IsNullOrWhiteSpace(e.arguments)) // No Arguments.
+			if (string.IsNullOrWhiteSpace(e.Arguments.ToString())) // No Arguments.
 			{
 				rollResult = MikiRandom.Roll(100).ToString();
 			}
 			else
 			{
-				if (int.TryParse(e.arguments, out int max)) // Simple number argument.
+				if (int.TryParse(e.Arguments.ToString(), out int max)) // Simple number argument.
 				{
 					rollResult = MikiRandom.Roll(max).ToString();
 				}
 				else // Assume the user has entered an advanced expression.
 				{
 					Regex regex = new Regex(@"(?<dieCount>\d+)d(?<dieSides>\d+)");
-					string fullExpression = e.arguments;
+					string fullExpression = e.Arguments.ToString();
 					int expressionCount = 0;
 
-					foreach (Match match in regex.Matches(e.arguments))
+					foreach (Match match in regex.Matches(e.Arguments.ToString()))
 					{
 						GroupCollection groupCollection = match.Groups;
 						int dieCount = int.Parse(groupCollection["dieCount"].Value);
@@ -473,9 +473,9 @@ namespace Miki.Modules
 			List<IDiscordUser> realUsers = users.Where( user => !user.IsBot ).ToList();
 
 			string mention = "<@" + realUsers[MikiRandom.Next( 0, realUsers.Count )].Id + ">";
-			string send = string.IsNullOrEmpty( e.arguments ) ?
+			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
 				e.GetResource(LocaleTags.RouletteMessageNoArg, mention) :      
-				e.GetResource( LocaleTags.RouletteMessage, e.arguments, mention );
+				e.GetResource( LocaleTags.RouletteMessage, e.Arguments.ToString(), mention );
 
 			e.Channel.QueueMessageAsync( send );
 		}
@@ -483,7 +483,7 @@ namespace Miki.Modules
         [Command(Name = "reminder", Aliases = new[] { "remind" })]
         public async Task RemindAsync(EventContext e)
         {
-			string lowercaseArguments = e.arguments.ToLower().Split(' ')[0];
+			string lowercaseArguments = e.Arguments.ToString().ToLower().Split(' ')[0];
 
 			switch (lowercaseArguments)
 			{
@@ -497,7 +497,7 @@ namespace Miki.Modules
 				} break;
 				default:
 				{
-					if (string.IsNullOrWhiteSpace(e.arguments) || e.arguments.StartsWith("-"))
+					if (string.IsNullOrWhiteSpace(e.Arguments.ToString()) || e.Arguments.ToString().StartsWith("-"))
 					{
 						await HelpReminderAsync(e);
 					}
@@ -513,8 +513,12 @@ namespace Miki.Modules
 		{
 			Locale locale = e.Channel.GetLocale();
 
-			int inIndex = e.arguments.ToLower().LastIndexOf(" in ");
-			int everyIndex = e.arguments.ToLower().LastIndexOf(" every ");
+			string args = e.Arguments.Join().Argument;
+
+			int inIndex = args.ToLower().LastIndexOf(" in ");
+			int everyIndex = args.ToLower().LastIndexOf(" every ");
+
+			// TODO: still a bit hacky
 			bool isIn = (inIndex > everyIndex);
 			bool repeated = false;
 
@@ -532,16 +536,23 @@ namespace Miki.Modules
 				repeated = true;
 			}
 
-			string reminderText = new string(e.arguments
+			string reminderText = new string(args
 				.Take(splitIndex)
 				.ToArray()
 			);
 
-			TimeSpan timeUntilReminder = e.arguments.GetTimeFromString();
+			TimeSpan timeUntilReminder = args.GetTimeFromString();
 
 			if (timeUntilReminder > new TimeSpan(0, 0, 10))
 			{
-				int id = reminders.AddReminder(e.Author, reminderText, timeUntilReminder, repeated);
+				int id = reminders.AddTask(e.Author.Id, (context) =>
+				{
+					Utils.Embed.SetTitle("⏰ Reminder")
+						.SetDescription(new MessageBuilder()
+							.AppendText(context)
+							.BuildWithBlockCode())
+						.QueueToUser(e.Author.Id);
+				}, reminderText, timeUntilReminder, repeated);
 
 				Utils.Embed.SetTitle($"👌 {locale.GetString("term_ok")}")
 					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
@@ -558,54 +569,54 @@ namespace Miki.Modules
 		private async Task CancelReminderAsync(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();
-			string[] args = e.arguments.Split(' ');
+			ArgObject arg = e.Arguments.FirstOrDefault();
+			arg = arg?.Next();
 
-			if (args.Length > 1)
-			{
-				string x = args[1];
-				if (Utils.IsAll(x, locale))
-				{
-					if (reminders.GetAllInstances(e.Author) is List<ReminderInstance> instances)
-					{
-						instances.ForEach(i => i.Cancel());
-					}
-
-					Utils.Embed
-						.SetTitle($"⏰ {locale.GetString("reminders")}")
-						.SetColor(0.86f, 0.18f, 0.26f)
-						.SetDescription(locale.GetString("reminder_cancelled_all"))
-						.QueueToChannel(e.Channel);
-					return;
-				}
-				else if (int.TryParse(x, out int id))
-				{
-					if (reminders.CancelReminder(e.Author, id) is ReminderInstance i)
-					{
-						Utils.Embed
-							.SetTitle($"⏰ {locale.GetString("reminders")}")
-							.SetColor(0.86f, 0.18f, 0.26f)
-							.SetDescription(locale.GetString("reminder_cancelled", $"`{i.Text}`"))
-							.QueueToChannel(e.Channel);
-						return;
-					}
-				}
-				e.ErrorEmbed(locale.GetString("error_reminder_null"))
-					.QueueToChannel(e.Channel);
-			}
-			else
+			if (arg == null)
 			{
 				e.ErrorEmbed(locale.GetString("error_argument_null", "id"))
 					.QueueToChannel(e.Channel);
+				return;
 			}
+
+			if (Utils.IsAll(arg, locale))
+			{
+				if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
+				{
+					instances.ForEach(i => i.Cancel());
+				}
+
+				Utils.Embed
+					.SetTitle($"⏰ {locale.GetString("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f)
+					.SetDescription(locale.GetString("reminder_cancelled_all"))
+					.QueueToChannel(e.Channel);
+				return;
+			}
+			else if (int.TryParse(arg.Argument, out int id))
+			{
+				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
+				{
+					Utils.Embed
+						.SetTitle($"⏰ {locale.GetString("reminders")}")
+						.SetColor(0.86f, 0.18f, 0.26f)
+						.SetDescription(locale.GetString("reminder_cancelled", $"`{i.Context}`"))
+						.QueueToChannel(e.Channel);
+					return;
+				}
+			}
+			e.ErrorEmbed(locale.GetString("error_reminder_null"))
+				.QueueToChannel(e.Channel);
 		}
+
 		private void ListReminders(EventContext e)
 		{
 			Locale locale = e.Channel.GetLocale();
 
-			var instances = reminders.GetAllInstances(e.Author);
+			var instances = reminders.GetAllInstances(e.Author.Id);
 			if(instances?.Count > 0)
 			{
-				instances = instances.OrderBy(x => x.ReminderId).ToList();
+				instances = instances.OrderBy(x => x.Id).ToList();
 
 				IDiscordEmbed embed = Utils.Embed
 					.SetTitle($"⏰ {locale.GetString("reminders")}")
@@ -613,12 +624,12 @@ namespace Miki.Modules
 
 				foreach (var x in instances)
 				{
-					string tx = x.Text;
+					string tx = x.Context;
 					string status = "▶";
 
-					if (x.Text.Length > 30)
+					if (x.Context.Length > 30)
 					{
-						tx = new string(x.Text.Take(27).ToArray()) + "...";
+						tx = new string(x.Context.Take(27).ToArray()) + "...";
 					}
 
 					if(x.RepeatReminder)
@@ -627,7 +638,7 @@ namespace Miki.Modules
 					}
 
 					embed.Description += 
-						$"{status} `{x.ReminderId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
 				}
 				embed.QueueToChannel(e.Channel);
 				return;
@@ -659,42 +670,59 @@ namespace Miki.Modules
             Locale locale = new Locale(e.Channel.Id);
 
             ILinkable s = null;
-            if (e.arguments.ToLower().StartsWith("use"))
-            {
-                string[] a = e.arguments.Split(' ');
-                e.arguments = e.arguments.Substring(a[0].Length);
-				switch (a[0].Split(':')[1].ToLower())
+
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg != null)
+			{
+				string useArg = arg.Argument;
+
+				if (useArg.ToLower().StartsWith("use"))
 				{
-					case "safebooru":
-					{
-						s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-					} break;
+					arg = arg.Next();
 
-					case "gelbooru":
+					switch (useArg.Split(':')[1].ToLower())
 					{
-						s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-					} break;
+						case "safebooru":
+						{
+							s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+						}
+						break;
 
-					case "konachan":
-					{
-						s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-					} break;
+						case "gelbooru":
+						{
+							s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+						}
+						break;
 
-					case "e621":
-					{
-						s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.arguments, ImageboardRating.SAFE);
-					} break;
+						case "konachan":
+						{
+							s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+						}
+						break;
 
-					default:
-					{
-						e.Channel.QueueMessageAsync("I do not support this image host :(");
-					} break;
+						case "e621":
+						{
+							s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+						}
+						break;
+
+						default:
+						{
+							e.Channel.QueueMessageAsync("I do not support this image host :(");
+						}
+						break;
+					}
 				}
-            }
-            else
-            {
-                s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.arguments, ImageboardRating.SAFE);
-            }
+				else
+				{
+					s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+				}
+			}
+			else
+			{
+				s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+			}
 
             if (s == null)
             {

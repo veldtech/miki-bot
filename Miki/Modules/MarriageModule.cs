@@ -111,11 +111,13 @@ namespace Miki.Modules
         {
 			Locale locale = new Locale(e.Channel.Id);
 
-			if (e.message.MentionedUserIds.Count == 0)
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg != null)
             {
                 using (MikiContext context = new MikiContext())
                 {
-                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.arguments.ToLower()).ToList();
+                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.Arguments.ToString().ToLower()).ToList();
 
                     if (users.Count == 0)
                     {
@@ -284,7 +286,7 @@ namespace Miki.Modules
 
             using (MikiContext context = new MikiContext())
             {
-                if (e.arguments == "*")
+				if (e.Arguments.ToString() == "*")
                 {
                     await Marriage.DeclineAllProposalsAsync(context, e.Author.Id.ToDbLong());
                     e.Channel.QueueMessageAsync(locale.GetString("miki_Marriage_all_declined"));

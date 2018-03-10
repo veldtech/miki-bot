@@ -21,47 +21,48 @@ namespace Miki.Modules
         public async Task BanAsync(EventContext e)
         {
 			IDiscordUser currentUser = await e.GetCurrentUserAsync();
-            if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
-            {
-                List<string> arg = e.arguments.Split(' ').ToList();
-                IDiscordUser bannedUser = null;
+			if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
+			{
+				var argObject = e.Arguments.FirstOrDefault();
 
-                if (e.message.MentionedUserIds.Count > 0)
-                {
-                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
-                    arg.RemoveAll(x => x.Contains(e.message.MentionedUserIds.First().ToString()));
-                }
-                else
-                {
-                    if (arg.Count > 0)
-                    {
-                        bannedUser = await e.Guild.GetUserAsync(ulong.Parse(arg[0]));
-                        arg.RemoveAt(0);
-                    }
-                }
+				if(argObject == null)
+				{
+					return;
+				}
 
-                if (bannedUser == null)
-                {
-                    e.ErrorEmbed(e.GetResource("ban_error_user_null"))
-                        .QueueToChannel(e.Channel);
-                    return;
-                }
+				IDiscordUser user = await argObject.GetUserAsync(e.Guild);
+				argObject?.Next();
 
-                if(bannedUser.Hierarchy >= currentUser.Hierarchy)
+				if (user == null)
+				{
+					e.ErrorEmbed(e.GetResource("ban_error_user_null"))
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
+                if(user.Hierarchy >= currentUser.Hierarchy)
                 {
                     e.ErrorEmbed(e.GetResource("permission_error_low", "ban"))
                         .QueueToChannel(e.Channel);
                     return;
                 }
 
-                if(bannedUser.Hierarchy >= e.Author.Hierarchy)
+                if(user.Hierarchy >= e.Author.Hierarchy)
                 {
                     e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .QueueToChannel(e.Channel);
                     return;
                 }
 
-                string reason = string.Join(" ", arg);
+				int pruneDays = 1;
+
+				if(argObject.AsInt(-1) != -1)
+				{
+					pruneDays = argObject.AsInt();
+					argObject?.Next();
+				}
+
+				string reason = argObject.TakeUntilEnd().Argument;
 
                 IDiscordEmbed embed = Utils.Embed;
                 embed.Title = "🛑 BAN";
@@ -74,9 +75,9 @@ namespace Miki.Modules
 
                 embed.AddInlineField($"💁 {e.GetResource("miki_module_admin_kick_by")}", e.Author.Username + "#" + e.Author.Discriminator);
 
-				await embed.SendToUser(bannedUser);
+				await embed.SendToUser(user);
 
-                await bannedUser.Ban(e.Guild, 1, reason);
+                await user.Ban(e.Guild, pruneDays, reason);
             }
             else
             {
@@ -91,45 +92,38 @@ namespace Miki.Modules
 			IDiscordUser currentUser = await e.GetCurrentUserAsync();
 			if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.BanMembers))
             {
-                List<string> arg = e.arguments.Split(' ').ToList();
-                IDiscordUser bannedUser = null;
+				var argObject = e.Arguments.FirstOrDefault();
 
-                if (e.message.MentionedUserIds.Count > 0)
-                {
-                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
-                }
-                else
-                {
-                    if (arg.Count > 0)
-                    {
-                        bannedUser = await e.Guild.GetUserAsync(ulong.Parse(arg[0]));
-                    }
-                }
+				if (argObject == null)
+				{
+					return;
+				}
 
-                if (bannedUser == null)
+				IDiscordUser user = await argObject.GetUserAsync(e.Guild);
+				argObject?.Next();
+
+				if (user == null)
                 {
                     e.ErrorEmbed(e.GetResource("ban_error_user_null"))
                         .QueueToChannel(e.Channel);
                     return;
                 }
 
-                if (bannedUser.Hierarchy >= currentUser.Hierarchy)
+                if (user.Hierarchy >= currentUser.Hierarchy)
                 {
                     e.ErrorEmbed(e.GetResource("permission_error_low", "softban"))
                         .QueueToChannel(e.Channel);
                     return;
                 }
 
-                if(bannedUser.Hierarchy >= e.Author.Hierarchy)
+                if(user.Hierarchy >= e.Author.Hierarchy)
                 {
                     e.ErrorEmbed(e.GetResource("permission_user_error_low", "ban"))
                         .QueueToChannel(e.Channel);
                     return;
                 }
 
-                arg.RemoveAt(0);
-
-                string reason = string.Join(" ", arg);
+				string reason = argObject.TakeUntilEnd().Argument;
 
                 IDiscordEmbed embed = Utils.Embed;
                 embed.Title = "⚠ SOFTBAN";
@@ -142,9 +136,9 @@ namespace Miki.Modules
 
                 embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
-                await embed.SendToUser(bannedUser);
-                await bannedUser.Ban(e.Guild, 1, reason);
-                await bannedUser.Unban(e.Guild);
+                await embed.SendToUser(user);
+                await user.Ban(e.Guild, 1, reason);
+                await user.Unban(e.Guild);
             }
             else
             {
@@ -165,31 +159,46 @@ namespace Miki.Modules
         {
 			Locale locale = new Locale(e.Channel.Id);
 
-			string[] arguments = e.arguments.Split(' ');
-            IEvent command = e.EventSystem.CommandHandler.GetCommandEvent(arguments[0]);
-            if (command == null)
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if(arg == null)
+			{
+				return;
+			}
+
+			string commandId = arg.Argument;
+
+			IEvent command = e.EventSystem.CommandHandler.GetCommandEvent(commandId);
+
+			if (command == null)
             {
-                e.ErrorEmbed($"{arguments[0]} is not a valid command")
+                e.ErrorEmbed($"{commandId} is not a valid command")
 					.QueueToChannel(e.Channel);
                 return;
             }
 
-            bool setValue = arguments[1].ToBool();
+			arg = arg.Next();
 
-            if (!command.CanBeDisabled)
+			bool setValue = arg.AsBoolean() ?? false;
+
+			if (!command.CanBeDisabled)
             {
-                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
+                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{commandId}`"))
 					.QueueToChannel(e.Channel);
                 return;
             }
 
-            if (arguments.Length > 2)
-            {
-                if (arguments.Contains("-s"))
-                {
-                }
-            }
-            await command.SetEnabled(e.Channel.Id, setValue);
+			arg = arg?.Next();
+
+			if (arg != null)
+			{
+				if (arg.Argument == "-s")
+				{
+					// TODO: serverwide disable/enable
+				}
+			}
+
+			await command.SetEnabled(e.Channel.Id, setValue);
             Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {command.Name}")
 				.QueueToChannel(e.Channel);
         }
@@ -199,40 +208,43 @@ namespace Miki.Modules
         {
 			Locale locale = new Locale(e.Channel.Id);
 
-			string[] arguments = e.arguments.Split(' ');
-            IModule m = EventSystem.Instance.GetModuleByName(arguments[0]);
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if(arg == null)
+			{
+				return;
+			}
+
+			string moduleName = arg.Argument;
+
+			IModule m = EventSystem.Instance.GetModuleByName(moduleName);
             if (m == null)
             {
-                e.ErrorEmbed($"{arguments[0]} is not a valid module.")
+                e.ErrorEmbed($"{arg.Argument} is not a valid module.")
 					.QueueToChannel(e.Channel);
                 return;
             }
 
-            bool setValue = false;
-            switch (arguments[1])
-            {
-                case "yes":
-                case "y":
-                case "1":
-                case "true":
-                    setValue = true;
-                    break;
-            }
+			arg = arg.Next();
+
+			bool setValue = arg.AsBoolean() ?? false;
 
             if (!m.CanBeDisabled && !setValue)
             {
-                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{arguments[0]}`"))
+                e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{moduleName}`"))
 					.QueueToChannel(e.Channel);
                 return;
             }
 
-            if (arguments.Length > 2)
-            {
-                if (arguments.Contains("-s"))
-                {
-                    // todo: create override for all channels
-                }
-            }
+			arg = arg?.Next();
+
+			if(arg != null)
+			{
+				if(arg.Argument == "-s")
+				{
+					// TODO: serverwide disable/enable
+				}
+			}
 
 			await m.SetEnabled(e.Channel.Id, setValue);
 
@@ -244,33 +256,14 @@ namespace Miki.Modules
         public async Task KickAsync(EventContext e)
 		{
 			IDiscordUser currentUser = await e.GetCurrentUserAsync();
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
 			if (currentUser.HasPermissions(e.Channel, DiscordGuildPermission.KickMembers))
             {
-                List<string> arg = e.arguments.Split(' ').ToList();
-
-                for(int i = 0; i < arg.Count; i++)
-                {
-                    if (string.IsNullOrWhiteSpace(arg[i]))
-                    {
-                        arg.RemoveAt(i);
-                        i--;
-                    }
-                }
-
                 IDiscordUser bannedUser = null;
 				Locale locale = new Locale(e.Channel.Id);
 
-				if (e.message.MentionedUserIds.Count > 0)
-                {
-                    bannedUser = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
-                }
-                else
-                {
-                    if (arg.Count > 0)
-                    {
-                        bannedUser = await e.Guild.GetUserAsync(ulong.Parse(arg[0]));
-                    }
-                }
+	            bannedUser = await arg?.GetUserAsync(e.Guild) ?? null;
 
                 if (bannedUser == null)
                 {
@@ -293,9 +286,9 @@ namespace Miki.Modules
                     return;
                 }
 
-                arg.RemoveAt(0);
+				arg = arg.Next();
 
-                string reason = string.Join(" ", arg);
+                string reason = arg.TakeUntilEnd().Argument;
 
                 IDiscordEmbed embed = Utils.Embed;
                 embed.Title = locale.GetString("miki_module_admin_kick_header");
@@ -338,7 +331,7 @@ namespace Miki.Modules
 			}
 
 			int amount = _amount;
-			string[] argsSplit = e.arguments.Split(' ');
+			string[] argsSplit = e.Arguments.ToString().Split(' ');
 			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id : _target;
 
 			if (!string.IsNullOrEmpty(argsSplit[0]))

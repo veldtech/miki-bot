@@ -10,5 +10,6 @@ namespace Miki.Models
 
 		public int TotalPaidCents { get; set; }
 		public DateTime ValidUntil { get; set; }
+		public int KeysRedeemed { get; set; }
     }
 }

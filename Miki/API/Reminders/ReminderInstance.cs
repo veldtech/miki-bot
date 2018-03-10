@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 
 namespace Miki.Core.API.Reminder
 {
-    public class ReminderInstance
+    public class TaskInstance<T>
     {
-		ReminderContainer parent;
+		TaskContainer<T> parent;
 		CancellationTokenSource cancellationToken;
 
-		public ulong UserId => parent.Id;
-		public int ReminderId;
-		public string Text;
+		public readonly T Context;
+
+		public ulong SessionId => parent.Id;
+		public int Id;
+		public Action<T> Function;
 
 		public DateTime StartTime = DateTime.Now;
 		public TimeSpan Length;
@@ -26,67 +28,39 @@ namespace Miki.Core.API.Reminder
 
 		public bool RepeatReminder { get; set; }
 
-		public ReminderInstance(int id, ReminderContainer parent, string text)
+		public TaskInstance(int id, TaskContainer<T> parent, Action<T> fn, T context)
 		{
-			ReminderId = id;
+			Id = id;
 			this.parent = parent;
-			Text = text;
+			Function = fn;
 			cancellationToken = new CancellationTokenSource();
+			Context = context;
 		}
 
-		public void Start(IDiscordUser user)
+		public void Start()
 		{
-			Task.Run(() => RunTask(user), cancellationToken.Token);
-		}
-		public void Start(IDiscordMessageChannel channel)
-		{
-			Task.Run(() => RunTask(channel), cancellationToken.Token);
+			Task.Run(() => RunTask(), cancellationToken.Token);
 		}
 
-		public async Task RunTask(IDiscordUser user)
+		public async Task RunTask()
 		{
 			await Task.Delay((int)Length.TotalMilliseconds);
 
 			cancellationToken.Token.ThrowIfCancellationRequested();
 
-			CreateReminderEmbed(Text)
-				.QueueToUser(user);
+			Function(Context);
 
 			if (RepeatReminder)
 			{
-				parent.CreateNewReminder(user, Text, Length, RepeatReminder);
+				parent.CreateNewReminder(Function, Context, Length, RepeatReminder);
 			}
-			parent.RemoveReminder(ReminderId);
-		}
-		public async Task RunTask(IDiscordMessageChannel channel)
-		{
-			await Task.Delay((int)Length.TotalMilliseconds);
-
-			cancellationToken.Token.ThrowIfCancellationRequested();
-
-			CreateReminderEmbed(Text)
-				.QueueToChannel(channel);
-
-			if (RepeatReminder)
-			{
-				parent.CreateNewReminder(channel, Text, Length, RepeatReminder);
-			}
-			parent.RemoveReminder(ReminderId);
-		}
-
-		public IDiscordEmbed CreateReminderEmbed(string text)
-		{
-			return Utils.Embed
-			.SetTitle("⏰ Reminder")
-			.SetDescription(new MessageBuilder()
-			   .AppendText(Text)
-			   .BuildWithBlockCode());
+			parent.RemoveReminder(Id);
 		}
 
 		public void Cancel()
 		{
 			cancellationToken.Cancel();
-			parent.RemoveReminder(ReminderId);
+			parent.RemoveReminder(Id);
 		}
 	}
 }

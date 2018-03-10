@@ -39,6 +39,8 @@ namespace Miki.Models
 		public List<LocalExperience> LocalExperience { get; set; }
 		public Connection Connections { get; set; }
 
+		public uint DblVotes { get; set; }
+
 		public int Level => CalculateLevel(Total_Experience);
 
         public async Task AddCurrencyAsync(int amount, IDiscordMessageChannel channel = null, User fromUser = null)

@@ -59,7 +59,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                if (string.IsNullOrEmpty(e.arguments))
+                if (string.IsNullOrEmpty(e.Arguments.ToString()))
                 {
                     EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
                     if (leaveMessage != null)
@@ -75,9 +75,9 @@ namespace Miki.Modules
                     }
                 }
 
-                if (await SetMessage(e.arguments, EventMessageType.JOINSERVER, e.Channel.Id))
+                if (await SetMessage(e.Arguments.ToString(), EventMessageType.JOINSERVER, e.Channel.Id))
                 {
-                    e.Channel.QueueMessageAsync($"✅ new welcome message is set to: `{ e.arguments }`");
+                    e.Channel.QueueMessageAsync($"✅ new welcome message is set to: `{ e.Arguments.ToString() }`");
                 }
                 await context.SaveChangesAsync();
             }
@@ -88,7 +88,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                if (string.IsNullOrEmpty(e.arguments))
+                if (string.IsNullOrEmpty(e.Arguments.ToString()))
                 {
                     EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
                     if (leaveMessage != null)
@@ -104,9 +104,9 @@ namespace Miki.Modules
                     }
                 }
 
-                if (await SetMessage(e.arguments, EventMessageType.LEAVESERVER, e.Channel.Id))
+                if (await SetMessage(e.Arguments.ToString(), EventMessageType.LEAVESERVER, e.Channel.Id))
                 {
-                    e.Channel.QueueMessageAsync($"✅ new leave message is set to: `{ e.arguments }`");
+                    e.Channel.QueueMessageAsync($"✅ new leave message is set to: `{ e.Arguments.ToString() }`");
                 }
                 await context.SaveChangesAsync();
             }
@@ -115,7 +115,7 @@ namespace Miki.Modules
 		[Command(Name = "testmessage", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task TestMessage(EventContext e)
 		{
-			if (Enum.TryParse(e.arguments.ToLower(), true, out EventMessageType type))
+			if (Enum.TryParse(e.Arguments.ToString().ToLower(), true, out EventMessageType type))
 			{
 				var allmessages = await GetMessage(e.Guild, type, e.Author);
 				EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);

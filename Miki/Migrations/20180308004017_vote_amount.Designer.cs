@@ -11,9 +11,10 @@ using System;
 namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
-    partial class MikiContextModelSnapshot : ModelSnapshot
+    [Migration("20180308004017_vote_amount")]
+    partial class vote_amount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +30,7 @@ namespace Miki.Core.Migrations
 
                     b.Property<short>("Rank");
 
-                    b.Property<DateTime>("UnlockedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("now()");
+                    b.Property<DateTime>("UnlockedAt");
 
                     b.HasKey("Id", "Name");
 
@@ -183,7 +182,7 @@ namespace Miki.Core.Migrations
 
                     b.Property<DateTime>("ValidUntil")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 9, 12, 59, 29, 773, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 7, 1, 40, 17, 540, DateTimeKind.Local));
 
                     b.HasKey("UserId");
 

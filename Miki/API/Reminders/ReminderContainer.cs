@@ -9,14 +9,23 @@ using System.Threading.Tasks;
 
 namespace Miki.Core.API.Reminder
 {
-    public class ReminderContainer
+    public class TaskContainer<T>
     {
 		public ulong Id { get; set; }
-		Dictionary<int, ReminderInstance> instances = new Dictionary<int, ReminderInstance>();
+
+		Dictionary<int, TaskInstance<T>> instances = new Dictionary<int, TaskInstance<T>>();
 
 		Random random = new Random();
 
-		public int CreateNewReminder(IDiscordUser user, string text, TimeSpan at, bool repeated)
+		/// <summary>
+		/// Creates a new reminder
+		/// </summary>
+		/// <param name="fn">function to run at end time</param>
+		/// <param name="context">context to pass</param>
+		/// <param name="at">time before the function runs</param>
+		/// <param name="repeated">repeat after function is done?</param>
+		/// <returns></returns>
+		public int CreateNewReminder(Action<T> fn, T context, TimeSpan at, bool repeated)
 		{
 			int? id = GetRandomKey();
 			if(id == null)
@@ -24,7 +33,7 @@ namespace Miki.Core.API.Reminder
 				return -1;
 			}
 
-			ReminderInstance reminder = new ReminderInstance(id.GetValueOrDefault(), this, text);
+			TaskInstance<T> reminder = new TaskInstance<T>(id.GetValueOrDefault(), this, fn, context);
 
 			if(repeated)
 			{
@@ -34,43 +43,19 @@ namespace Miki.Core.API.Reminder
 			reminder.StartTime = DateTime.Now;
 			reminder.Length = at;
 
-			reminder.Start(user);
-
-			instances.Add(id ?? 0, reminder);
-
-			return id.GetValueOrDefault();
-		}
-		public int CreateNewReminder(IDiscordMessageChannel channel, string text, TimeSpan at, bool repeated)
-		{
-			int? id = GetRandomKey();
-			if (id == null)
-			{
-				return -1;
-			}
-
-			ReminderInstance reminder = new ReminderInstance(id.GetValueOrDefault(), this, text);
-
-			if (repeated)
-			{
-				reminder.RepeatReminder = true;
-			}
-
-			reminder.StartTime = DateTime.Now;
-			reminder.Length = at;
-
-			reminder.Start(channel);
+			reminder.Start();
 
 			instances.Add(id ?? 0, reminder);
 
 			return id.GetValueOrDefault();
 		}
 
-		public List<ReminderInstance> GetAllReminders()
+		public List<TaskInstance<T>> GetAllReminders()
 			=> instances.Values.ToList();
 
-		public ReminderInstance GetReminder(int id)
+		public TaskInstance<T> GetReminder(int id)
 		{
-			if(instances.TryGetValue(id, out ReminderInstance value))
+			if(instances.TryGetValue(id, out TaskInstance<T> value))
 			{
 				return value;
 			}

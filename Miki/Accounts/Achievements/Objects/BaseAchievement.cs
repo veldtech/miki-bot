@@ -19,7 +19,6 @@ namespace Miki.Accounts.Achievements
         public BaseAchievement()
         {
         }
-
         public BaseAchievement(Action<BaseAchievement> act)
         {
             act.Invoke(this);
@@ -27,7 +26,6 @@ namespace Miki.Accounts.Achievements
 
         public virtual async Task<bool> CheckAsync(BasePacket packet)
         {
-            await Task.Delay(0);
             return true;
         }
 
@@ -41,28 +39,46 @@ namespace Miki.Accounts.Achievements
         internal async Task UnlockAsync(IDiscordMessageChannel channel, IDiscordUser user, int r = 0)
         {
             long userid = user.Id.ToDbLong();
+       
+			if (await UnlockIsValid(userid, r))
+			{
+				Notification.SendAchievement(this, channel, user);
+			}
+		}
+		internal async Task UnlockAsync(IDiscordUser user, int r = 0)
+		{
+			long userid = user.Id.ToDbLong();
 
-            Achievement a = null;
+			if (await UnlockIsValid(userid, r))
+			{
+				Notification.SendAchievement(this, user);
+			}
+		}
 
-            using (var context = new MikiContext())
-            {
-                a = await context.Achievements.FindAsync(userid, ParentName);
+		internal async Task<bool> UnlockIsValid(long userId, int newRank)
+		{
+			using (var context = new MikiContext())
+			{
+				var achievement = await context.Achievements.FindAsync(userId, ParentName);
 
-                if (a != null || r != 0)
-                {
-                    if (a.Rank == r - 1)
-                    {
-                        a.Rank += 1;
-                    }
-                }
-                else
-                {
-                    context.Achievements.Add(new Achievement() { Id = userid, Name = ParentName, Rank = 0 });
-                }
-                await context.SaveChangesAsync();
-            }
+				// If no achievement has been found and want to unlock first
+				if (newRank == 0 && achievement == null)
+				{
+					context.Achievements.Add(new Achievement() { Id = userId, Name = ParentName, Rank = 0 });
+				}
+				// If achievement we want to unlock is the next achievement
+				else if (achievement.Rank == newRank - 1)
+				{
+					achievement.Rank++;
+				}
+				else
+				{
+					return false;
+				}
 
-            Notification.SendAchievement(this, channel, user);
-        }
-    }
+				await context.SaveChangesAsync();
+			}
+			return true;
+		}
+	}
 }

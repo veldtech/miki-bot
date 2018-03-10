@@ -134,5 +134,11 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("is_patreon_bot")]
 		public bool IsPatreonBot { get; internal set; }
+
+		/// <summary>
+		/// Channel id for pasta reports
+		/// </summary>
+		[JsonProperty("pasta_report_channel_id")]
+		public ulong PastaReportChannel { get; internal set; }
 	}
 }

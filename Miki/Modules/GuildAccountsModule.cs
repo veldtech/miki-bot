@@ -219,73 +219,61 @@ namespace Miki.Modules
         {
             using (MikiContext context = new MikiContext())
             {
-                string[] arguments = e.arguments.Split(' ');
                 GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-                switch (arguments[0])
-                {
-                    case "expneeded":
-                        {
-                            if (arguments.Length > 1)
-                            {
-                                if (int.TryParse(arguments[1], out int value))
-                                {
-                                    g.MinimalExperienceToGetRewards = value;
+				ArgObject arg = e.Arguments.FirstOrDefault();
 
-                                    Utils.Embed
-                                        .SetTitle(e.GetResource("miki_terms_config"))
-                                        .SetDescription(e.GetResource("guildconfig_expneeded", value))
-                                        .QueueToChannel(e.Channel);
-                                }
-                            }
-                        }
-                        break;
+				if(arg == null)
+				{
+					// TODO: error message
+					return;
+				}
 
-                    case "visible":
-                        {
-                            if (arguments.Length > 1)
-                            {
-                                g.VisibleOnLeaderboards = arguments[1].ToBool();
+				switch (arg.Argument)
+				{
+					case "expneeded":
+					{
+						arg = arg.Next();
 
-                                string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
+						if (arg != null)
+						{
+							if (int.TryParse(arg.Argument, out int value))
+							{
+								g.MinimalExperienceToGetRewards = value;
 
-                                Utils.Embed
-                                    .SetTitle(e.GetResource("miki_terms_config"))
-                                    .SetDescription(resourceString)
-                                    .QueueToChannel(e.Channel);
-                            }
-                        }
-                        break;
-                }
+								Utils.Embed
+									.SetTitle(e.GetResource("miki_terms_config"))
+									.SetDescription(e.GetResource("guildconfig_expneeded", value))
+									.QueueToChannel(e.Channel);
+							}
+						}
+					}
+					break;
+
+					case "visible":
+					{
+						arg = arg.Next();
+
+						if (arg != null)
+						{
+							bool? result = arg.AsBoolean();
+
+							if (!result.HasValue)
+								return;
+
+							g.VisibleOnLeaderboards = result.Value;
+
+							string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
+
+							Utils.Embed
+								.SetTitle(e.GetResource("miki_terms_config"))
+								.SetDescription(resourceString)
+								.QueueToChannel(e.Channel);
+						}
+					}
+					break;
+				}
                 await context.SaveChangesAsync();
-            }
-        }
-
-        [Command(Name = "guildtop")]
-        public async Task GuildTop(EventContext e)
-        {
-            int amountToTake = 12;
-            int.TryParse(e.arguments, out int amountToSkip);
-
-            using (var context = new MikiContext())
-            {
-                int totalGuilds = (int)Math.Ceiling((double) await context.GuildUsers.CountAsync() / amountToTake);
-
-                List<GuildUser> leaderboards = await context.GuildUsers.OrderByDescending(x => x.Experience)
-                                                                      .Skip(amountToSkip * amountToTake)
-                                                                      .Take(amountToTake)
-                                                                      .ToListAsync();
-
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle(e.GetResource("guildtop_title"));
-
-                foreach (GuildUser i in leaderboards)
-                {
-                    embed.AddInlineField(i.Name, i.Experience.ToString());
-                }
-
-                embed.SetFooter(e.GetResource("page_index", amountToSkip + 1, totalGuilds), null);
-                embed.QueueToChannel(e.Channel);
             }
         }
     }

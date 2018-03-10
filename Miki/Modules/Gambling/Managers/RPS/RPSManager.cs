@@ -49,7 +49,7 @@ namespace Miki.Modules.Gambling.Managers
 			// Thanks to fuzen
 			return weapons
 				.Where(w => w.Name[0] == name[0])
-				.First();
+				.FirstOrDefault();
 		}
 
 		public void RunTests()

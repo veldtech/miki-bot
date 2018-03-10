@@ -31,11 +31,11 @@ namespace Miki.Modules
 		public async Task StartRPS(EventContext e, int bet)
 		{
 			float rewardMultiplier = 1f;
-			string[] args = e.arguments.Split(' ');
 
-			if (args.Length < 2)
+			if (e.Arguments.Count < 2)
 			{
-				e.ErrorEmbed("You need to choose a weapon!").QueueToChannel(e.Channel);
+				e.ErrorEmbed("You need to choose a weapon!")
+					.QueueToChannel(e.Channel);
 			}
 			else
 			{
@@ -44,7 +44,7 @@ namespace Miki.Modules
 				IDiscordEmbed resultMessage = Utils.Embed
 					.SetTitle("Rock, Paper, Scissors!");
 
-				if (rps.TryParse(args[1], out RPSWeapon playerWeapon))
+				if (rps.TryParse(e.Arguments.Get(1).Argument, out RPSWeapon playerWeapon))
 				{
 					RPSWeapon botWeapon = rps.GetRandomWeapon();
 
@@ -294,32 +294,41 @@ namespace Miki.Modules
 
         private async Task StartFlip(EventContext e, int bet)
         {
-            string[] arguments = e.arguments.Split(' ');
+			string sideParam = e.Arguments.Get(0).Argument.ToLower();
 
             if (bet <= 0)
             {
+				// TODO: add a error message
                 return;
             }
 
-            if (arguments.Length < 2)
+            if (e.Arguments.Count < 2)
             {
+				// TODO: add a error message
                 return;
             }
 
             int pickedSide = -1;
 
-            if (arguments[1].ToLower() == "heads" || arguments[1].ToLower() == "h") pickedSide = 1;
-            else if (arguments[1].ToLower() == "tails" || arguments[1].ToLower() == "t") pickedSide = 0;
+			if (sideParam[0] == 'h')
+			{
+				pickedSide = 1;
+			}
+			else if (sideParam[0] == 't')
+			{
+				pickedSide = 0;
+			}
 
             if (pickedSide == -1)
             {
+				// TODO: add a error message
                 return;
             }
 
             string headsUrl = "https://miki.ai/assets/img/miki-default-heads.png";
             string tailsUrl = "https://miki.ai/assets/img/miki-default-tails.png";
 
-            if (e.arguments.Contains("-bonus"))
+            if (e.Arguments.Contains("-bonus"))
             {
                 headsUrl = "https://miki.ai/assets/img/miki-secret-heads.png";
                 tailsUrl = "https://miki.ai/assets/img/miki-secret-tails.png";
@@ -513,9 +522,12 @@ namespace Miki.Modules
             }
         }
 
+		// TODO: probable rewrite at some point
         public async Task ValidateBet(EventContext e, Func<EventContext, int, Task> callback = null, int maxBet = 1000000)
         {
-            if (!string.IsNullOrEmpty(e.arguments))
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+            if (arg != null)
             {
 				const int noAskLimit = 10000;
 
@@ -529,13 +541,13 @@ namespace Miki.Modules
                         return;
                     }
 
-                    string checkArg = e.arguments.Split(' ')[0];
+					string checkArg = arg.Argument;
 
                     if (int.TryParse(checkArg, out int bet))
                     {
 
                     }
-                    else if (checkArg.ToLower() == "all" || e.arguments == "*")
+                    else if (checkArg.ToLower() == "all" || checkArg == "*")
                     {
                         bet = user.Currency > maxBet ? maxBet : user.Currency;
                     }

@@ -11,9 +11,10 @@ using System;
 namespace Miki.Core.Migrations
 {
     [DbContext(typeof(MikiContext))]
-    partial class MikiContextModelSnapshot : ModelSnapshot
+    [Migration("20180310115929_default_time_achievement")]
+    partial class default_time_achievement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

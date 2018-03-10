@@ -37,17 +37,18 @@ namespace Miki.Modules.Accounts.Services
             AchievementDataContainer AchievementAchievements = new AchievementDataContainer(x =>
             {
                  x.Name = "achievements";
-                 x.Achievements = new List<BaseAchievement>()
-                {
-                    new AchievementAchievement()
-                    {
-                        Name = "Underachiever",
-                        Icon = "🖍",
-                        CheckAchievement = async (p) =>
-                        {
+				x.Achievements = new List<BaseAchievement>()
+				{
+					new AchievementAchievement()
+					{
+						Name = "Underachiever",
+						Icon = "🖍",
+						CheckAchievement = async (p) =>
+						{
 							await Task.Yield();
-                            return p.count >= 3;
-                        },
+							return p.count >= 3;
+						},
+						Points = 5,
                     },
                     new AchievementAchievement()
                     {
@@ -58,6 +59,7 @@ namespace Miki.Modules.Accounts.Services
 							await Task.Yield();
 							return p.count >= 5;
                         },
+						Points = 10,
                     },
                     new AchievementAchievement()
                     {
@@ -67,6 +69,7 @@ namespace Miki.Modules.Accounts.Services
 						{
 							return p.count >= 12;
 						},
+						Points = 15,
 					},
 					new AchievementAchievement()
 					{
@@ -74,8 +77,10 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "🖊️",
 						CheckAchievement = async (p) =>
 						{
-							return p.count >= 12;
+							return p.count >= 25;
 						},
+						Points = 30,
+
 					}
 				};
             });  
@@ -150,7 +155,7 @@ namespace Miki.Modules.Accounts.Services
 							await Task.Yield();
 							return EventSystem.Instance.CommandHandler.GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
-						Points = 0
+						Points = 5
                     }
                 };
              });
@@ -172,49 +177,49 @@ namespace Miki.Modules.Accounts.Services
                         Name = "Intermediate",
                         Icon = "🎫",
                         CheckLevel = async (p) => p.level >= 5,
-						Points = 5,
+						Points = 10,
 					},
                     new LevelAchievement()
                     {
                         Name = "Experienced",
                         Icon = "🏵",
                         CheckLevel = async (p) => p.level >= 10,
-						Points = 5,
+						Points = 15,
 					},
                     new LevelAchievement()
                     {
                         Name = "Expert",
                         Icon = "🎗",
                         CheckLevel = async (p) => p.level >= 20,
-						Points = 5,
+						Points = 20,
 					},
                     new LevelAchievement()
                     {
                         Name = "Sage",
                         Icon = "🎖",
                         CheckLevel = async (p) => p.level >= 30,
-						Points = 5,
+						Points = 25,
 					},
                     new LevelAchievement()
                     {
                         Name = "Master",
                         Icon = "🏅",
                         CheckLevel = async (p) => p.level >= 50,
-						Points = 5,
+						Points = 30,
 					},
                     new LevelAchievement()
                     {
                         Name = "Legend",    
                         Icon = "💮",
                         CheckLevel = async (p) => p.level >= 100,
-						Points = 5,
+						Points = 35,
 					},
                     new LevelAchievement()
                     {
                         Name = "Epic",
                         Icon = "🌸",
                         CheckLevel = async (p) => p.level >= 150,
-						Points = 5,
+						Points = 40,
 					}
                  };
              });
@@ -308,7 +313,7 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return p.receiver.Currency > 50000;
                         },
-						Points = 5
+						Points = 10
                     },
                     new TransactionAchievement()
                     {
@@ -318,7 +323,7 @@ namespace Miki.Modules.Accounts.Services
 						{
 							return p.receiver.Currency > 125000;
 						},
-						Points = 10
+						Points = 15
                     },
                     new TransactionAchievement()
                     {
@@ -328,37 +333,50 @@ namespace Miki.Modules.Accounts.Services
                         {
                             return p.receiver.Currency > 1000000;
                         },
+						Points = 20
+                    },
+					new TransactionAchievement()
+					{
+						Name = "Billionaire",
+						Icon = "🏦",
+						CheckTransaction = async (p) =>
+						{
+							return p.receiver.Currency > 1000000000;
+						},
 						Points = 25
-                    }
+					}
                 };
             });
 
-			AchievementDataContainer DiscordBotsOrgAchievement = new AchievementDataContainer()
+			AchievementDataContainer DiscordBotsOrgAchievement = new AchievementDataContainer(x =>
 			{
-				Name = "Voter",
-				Achievements = new List<BaseAchievement>()
+				x.Name = "voter";
+				x.Achievements = new List<BaseAchievement>()
 				{
+					// first vote
 					new BaseAchievement()
 					{
 						Name = "Helper",
 						Icon = "✉",
 						Points = 5,
 					},
+					// 10 votes
 					new BaseAchievement()
 					{
 						Name = "Voter",
 						Icon = "🗳",
-						Points = 25,
+						Points = 10,
 					},
+					// 50 votes
 					new BaseAchievement()
 					{
 						Name = "Elector",
 						Icon = "🗃",
-						Points = 50,
+						Points = 15,
 					}
-				}
-			};
-
+				};
+			});
+		
             #region Achievement Achievements
 
             AchievementManager.Instance.OnAchievementUnlocked += async (pa) =>
@@ -374,16 +392,21 @@ namespace Miki.Modules.Accounts.Services
             AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
             AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
             AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
-            #endregion Command Achievements
+			#endregion Command Achievements
+			
+			#region Level Achievements
+			AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
 
-            #region Level Achievements
-            AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
+			#endregion Level Achievements
 
-            #endregion Level Achievements
+			AchievementManager.Instance.OnMessage += LennyAchievement.CheckAsync;
+			AchievementManager.Instance.OnMessage += PoiAchievement.CheckAsync;
+			AchievementManager.Instance.OnMessage += LuckyAchievement.CheckAsync;
+			AchievementManager.Instance.OnMessage += FrogAchievement.CheckAsync;
 
-            #region Misc Achievements
+			#region Misc Achievements
 
-            new AchievementDataContainer(x =>
+			new AchievementDataContainer(x =>
             {
                 x.Name = "badluck";
                 x.Achievements = new List<BaseAchievement>()
@@ -474,34 +497,22 @@ namespace Miki.Modules.Accounts.Services
                 x.Name = "donator";
                 x.Achievements = new List<BaseAchievement>()
                 {
-                    new UserUpdateAchievement()
+                    new BaseAchievement()
                     {
                         Name = "Donator",
                         Icon = "💖",
-                        CheckUserUpdate = async (p) =>
-                        {
-                            return false;
-                        },
 						Points = 0,
                     },
-					new UserUpdateAchievement()
+					new BaseAchievement()
 					{
 						Name = "Supporter",
 						Icon = "💘",
-						CheckUserUpdate = async (p) =>
-						{
-							return false;
-						},
 						Points = 0,
 					},
-					new UserUpdateAchievement()
+					new BaseAchievement()
 					{
 						Name = "Sponsor",
 						Icon = "💟",
-						CheckUserUpdate = async (p) =>
-						{
-							return false;
-						},
 						Points = 0,
 					},
 				};

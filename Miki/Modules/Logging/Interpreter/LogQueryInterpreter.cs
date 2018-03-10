@@ -82,7 +82,7 @@ namespace Miki.Modules.Logging.Interpreter
 
         public static void Run(EventContext x)
         {
-            List<Token> allTokens = instance.Tokenize(x.arguments);
+            List<Token> allTokens = instance.Tokenize(x.Arguments.Join().Argument);
             
 
             

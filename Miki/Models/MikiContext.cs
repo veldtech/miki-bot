@@ -43,6 +43,8 @@ namespace Miki.Models
 
 			achievement.HasKey(c => new { c.Id, c.Name });
 
+			achievement.Property(x => x.UnlockedAt).HasDefaultValueSql("now()");
+
 			achievement
 				.HasOne(x => x.User)
 				.WithMany(x => x.Achievements)

@@ -6,6 +6,7 @@ using Miki.API.RocketLeague;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Miki.Common;
 
 namespace Miki.Modules
 {
@@ -18,22 +19,26 @@ namespace Miki.Modules
 
         public async Task GetUser(EventContext e)
         {
-            string[] arg = e.arguments.Split(' ');
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg == null)
+				return;
+
             int platform = 1;
 
-            if (arg.Length > 1)
+            if (e.Arguments.Count > 1)
             {
-                platform = GetPlatform(arg[1]);
+                platform = GetPlatform(e.Arguments.Get(1).Argument);
             }
 
             IDiscordEmbed embed = Utils.Embed;
 
-            RocketLeagueUser user = await TryGetUser(arg[0], platform);
+            RocketLeagueUser user = await TryGetUser(arg.Argument, platform);
 
             if (user == null)
             {
                 embed.Title = "Uh oh!";
-                embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
+                embed.Description = $"We couldn't find a user with the name `{arg.Argument}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
                 embed.QueueToChannel(e.Channel);
                 return;
@@ -72,27 +77,36 @@ namespace Miki.Modules
         public async Task GetUserSeason(EventContext e)
         {
             int platform = 1;
-            string[] arg = e.arguments.Split(' ');
-            int seasonId = int.Parse(arg[1]);
 
-            if (arg.Length > 2)
-            {
-                platform = GetPlatform(arg[2]);
-            }
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg == null)
+				return;
+
+			string u = arg.Argument;
+			arg = arg.Next();
+
+			int seasonId = arg.AsInt(1);
+			arg = arg.Next();
+
+			if (arg != null)
+			{
+				platform = GetPlatform(arg.Argument);
+			}
 
             IDiscordEmbed embed = Utils.Embed;
-            RocketLeagueUser user = await TryGetUser(arg[0], platform);
+            RocketLeagueUser user = await TryGetUser(u, platform);
 
             if (user == null)
             {
                 embed.Title = "Uh oh!";
-                embed.Description = $"We couldn't find a user with the name `{arg[0]}`. Please look up yourself on https://rlstats.com/ to create your profile!";
+                embed.Description = $"We couldn't find a user with the name `{u}`. Please look up yourself on https://rlstats.com/ to create your profile!";
                 embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
                 embed.QueueToChannel(e.Channel);
                 return;
             }
 
-            embed.Title = $"{user.DisplayName}'s Season {arg[1]}";
+            embed.Title = $"{user.DisplayName}'s Season {seasonId}";
 
             if (user.RankedSeasons.ContainsKey(seasonId))
             {
@@ -127,9 +141,9 @@ namespace Miki.Modules
         {
             int platform = -1;
 
-            if (!string.IsNullOrWhiteSpace(e.arguments))
+            if (!string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                platform = GetPlatform(e.arguments);
+                platform = GetPlatform(e.Arguments.ToString());
             }
 
             Dictionary<int, RocketLeaguePlaylist> d = new Dictionary<int, RocketLeaguePlaylist>();
@@ -182,11 +196,25 @@ namespace Miki.Modules
 
         public async Task SearchUser(EventContext e)
         {
-            string[] arg = e.arguments.Split(' ');
-            IDiscordEmbed embed = Utils.Embed;
-            RocketLeagueSearchResult user = await api.SearchUsersAsync(arg[0], (arg.Length >= 2) ? int.Parse(arg[1]) : 0);
+			ArgObject arg = e.Arguments.FirstOrDefault();
 
-            embed.Title = $"Found {user.TotalResults} users with the name `{arg[0]}`";
+			if (arg == null)
+				return;
+
+			string username = arg.Argument;
+			int page = 0;
+
+			arg = arg.Next();
+
+			if(arg.AsInt(0) != 0)
+			{
+				page = arg.AsInt();
+			}
+
+            IDiscordEmbed embed = Utils.Embed;
+            RocketLeagueSearchResult user = await api.SearchUsersAsync(username, page);
+
+            embed.Title = $"Found {user.TotalResults} users with the name `{username}`";
             embed.CreateFooter();
             embed.Footer.Text = $"Page {user.Page} of ${(int)Math.Ceiling((double)user.TotalResults / user.MaxResultsPerPage)}";
 

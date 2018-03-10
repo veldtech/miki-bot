@@ -44,8 +44,8 @@ namespace Miki
 		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
 	}
   
-	  public class Constants
-    {
-        public const string NotDefined = "$not-defined";
-    }
+	public class Constants
+	{
+		public const string NotDefined = "$not-defined";
+	}
 }

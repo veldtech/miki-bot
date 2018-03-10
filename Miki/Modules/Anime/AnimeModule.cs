@@ -10,6 +10,7 @@ using System.Linq;
 using Miki.Anilist;
 using Miki.GraphQL;
 using Miki.Common.Interfaces;
+using Miki.Common;
 
 namespace Miki.Core.Modules.Anime
 {
@@ -27,13 +28,15 @@ namespace Miki.Core.Modules.Anime
 		{
 			ICharacter character = null;
 
-			if (int.TryParse(e.arguments, out int result))
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if ((arg?.AsInt(-1) ?? -1) != -1)
 			{
-				character = await anilistClient.GetCharacterAsync(result);
+				character = await anilistClient.GetCharacterAsync(arg.AsInt());
 			}
 			else
 			{
-				character = await anilistClient.GetCharacterAsync(e.arguments);
+				character = await anilistClient.GetCharacterAsync(arg.Argument);
 			}
 
 			if (character != null)
@@ -67,16 +70,23 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findcharacter")]
 		public async Task FindCharacterAsync(EventContext e)
 		{
-			List<string> args = e.arguments.Split(' ').ToList();
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg == null)
+				return;
+
 			int page = 0;
 
-			if(int.TryParse(args.Last(), out int r))
+			if (e.Arguments.LastOrDefault()?.AsInt(0) != 0)
 			{
-				args.RemoveAt(args.Count - 1);
-				page = r;
+				page = e.Arguments.LastOrDefault()
+					.AsInt();
 			}
 
-			string searchQuery = string.Join(' ', args);
+			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
+			string searchQuery = arg.Argument;
+
+			arg = arg.Next();
 
 			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(searchQuery, page));
 
@@ -89,7 +99,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-					e.ErrorEmbed($"No characters listed containing `{e.arguments}`, try something else!")
+					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
 						.QueueToChannel(e.Channel);
 				}
 				return;
@@ -110,16 +120,23 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findmanga")]
 		public async Task FindMangaAsync(EventContext e)
 		{
-			List<string> args = e.arguments.Split(' ').ToList();
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg == null)
+				return;
+
 			int page = 0;
 
-			if (int.TryParse(args.Last(), out int r))
+			if (e.Arguments.LastOrDefault()?.AsInt(0) != 0)
 			{
-				args.RemoveAt(args.Count - 1);
-				page = r;
+				page = e.Arguments.LastOrDefault()
+					.AsInt();
 			}
 
-			string searchQuery = string.Join(' ', args);
+			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
+			string searchQuery = arg.Argument;
+
+			arg = arg.Next();
 
 			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.Nsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
@@ -132,7 +149,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-					e.ErrorEmbed($"No characters listed containing `{e.arguments}`, try something else!")
+					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
 						.QueueToChannel(e.Channel);
 				}
 				return;
@@ -153,16 +170,24 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findanime")]
 		public async Task FindAnimeAsync(EventContext e)
 		{
-			List<string> args = e.arguments.Split(' ').ToList();
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if (arg == null)
+				return;
+
 			int page = 0;
 
-			if (int.TryParse(args.Last(), out int r))
+			if(e.Arguments.LastOrDefault()?.AsInt(0) != 0)
 			{
-				args.RemoveAt(args.Count - 1);
-				page = r;
+				page = e.Arguments.LastOrDefault()
+					.AsInt();
 			}
 
-			string searchQuery = string.Join(' ', args);
+			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
+			string searchQuery = arg.Argument;
+
+			arg = arg.Next();
+
 
 			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.Nsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
 
@@ -175,7 +200,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-					e.ErrorEmbed($"No characters listed containing `{e.arguments}`, try something else!")
+					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
 						.QueueToChannel(e.Channel);
 				}
 				return;
@@ -197,16 +222,18 @@ namespace Miki.Core.Modules.Anime
 		{
 			IMedia media = null;
 
-			if (int.TryParse(e.arguments, out int result))
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if ((arg?.AsInt(-1) ?? -1) != -1)
 			{
-				media = await anilistClient.GetMediaAsync(result);
+				media = await anilistClient.GetMediaAsync(arg.AsInt());
 			}
 			else
 			{
 				string filter = "search: $p0, format_not_in: $p1";
 				List<GraphQLParameter> parameters = new List<GraphQLParameter>
 				{
-					new GraphQLParameter(e.arguments),
+					new GraphQLParameter(arg.Argument),
 					new GraphQLParameter(format, "[MediaFormat]")
 				};
 

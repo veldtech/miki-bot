@@ -16,7 +16,7 @@ namespace Miki.Modules
 		[Command(Name = "gelbooru", Aliases = new[] { "gel" })]
 		public async Task RunGelbooru(EventContext e)
 		{
-			ILinkable s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.arguments, ImageboardRating.EXPLICIT);
+			ILinkable s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 			if (!IsValid(s))
 			{
@@ -32,7 +32,7 @@ namespace Miki.Modules
 		[Command(Name = "rule34", Aliases = new[] { "r34" })]
 		public async Task RunRule34(EventContext e)
 		{
-			ILinkable s = ImageboardProviderPool.GetProvider<Rule34Post>().GetPost(e.arguments, ImageboardRating.EXPLICIT);
+			ILinkable s = ImageboardProviderPool.GetProvider<Rule34Post>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 			if (!IsValid(s))
 			{
@@ -48,7 +48,7 @@ namespace Miki.Modules
 		[Command(Name = "e621")]
 		public async Task RunE621(EventContext e)
 		{
-			ILinkable s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.arguments, ImageboardRating.EXPLICIT);
+			ILinkable s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 			if (!IsValid(s))
 			{
@@ -64,7 +64,7 @@ namespace Miki.Modules
 		[Command(Name = "yandere")]
 		public async Task RunYandere(EventContext e)
 		{
-			ILinkable s = ImageboardProviderPool.GetProvider<YanderePost>().GetPost(e.arguments, ImageboardRating.EXPLICIT);
+			ILinkable s = ImageboardProviderPool.GetProvider<YanderePost>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 			if (!IsValid(s))
 			{

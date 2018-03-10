@@ -25,7 +25,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task IdentifyEmojiAsync(EventContext e)
         {
-            Emote emote = Emote.Parse(e.arguments);
+            Emote emote = Emote.Parse(e.Arguments.ToString());
 
             Utils.Embed.SetTitle("Emoji Identified!")
                 .AddInlineField("Name", emote.Name)
@@ -41,13 +41,13 @@ namespace Miki.Modules
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayAsync(EventContext e)
         {
-            e.Channel.QueueMessageAsync(e.arguments);
+            e.Channel.QueueMessageAsync(e.Arguments.ToString());
         }
 
         [Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SayEmbedAsync(EventContext e)
         {
-            Utils.Embed.AddInlineField("SAY", e.arguments)
+            Utils.Embed.AddInlineField("SAY", e.Arguments.ToString())
 				.QueueToChannel(e.Channel);
 
 			await Task.Yield();
@@ -56,19 +56,19 @@ namespace Miki.Modules
         [Command(Name = "setgame", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetGameAsync(EventContext e)
         {
-            await e.message.Discord.SetGameAsync(e.arguments);
+            await e.message.Discord.SetGameAsync(e.Arguments.ToString());
         }
 
         [Command(Name = "setstream", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetStreamAsync(EventContext e)
         {
-            await e.message.Discord.SetGameAsync(e.arguments, "https://www.twitch.tv/velddev");
+            await e.message.Discord.SetGameAsync(e.Arguments.ToString(), "https://www.twitch.tv/velddev");
         }
 
         [Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task IgnoreIdAsync(EventContext e)
         {
-            if (ulong.TryParse(e.arguments, out ulong id))
+            if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
             {
                 EventSystem.Instance.Ignore(id);
                 e.Channel.QueueMessageAsync(":ok_hand:");
@@ -84,7 +84,7 @@ namespace Miki.Modules
         [Command(Name = "qembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task QueryEmbedAsync(EventContext e)
         {
-            new RuntimeEmbed().Query(e.arguments)
+            new RuntimeEmbed().Query(e.Arguments.Join().Argument)
 				.QueueToChannel(e.Channel);
 
 			await Task.Yield();
@@ -93,12 +93,13 @@ namespace Miki.Modules
         [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task ChangeAvatarAsync(EventContext e)
         {
-            Stream s = new FileStream("./" + e.arguments, FileMode.Open);
-
-            await Bot.Instance.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
-            {
-                z.Image = new DiscordImage(s);
-            });
+			using (Stream s = new FileStream("./" + e.Arguments.Join(), FileMode.Open))
+			{
+				await Bot.Instance.GetShard(e.message.Discord.ShardId).CurrentUser.ModifyAsync(z =>
+				{
+					z.Image = new DiscordImage(s);
+				});
+			}
         }
 
         [Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
@@ -125,7 +126,7 @@ namespace Miki.Modules
             embed.SetTitle("Spellcheck - top results");
 
             API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
-            List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.arguments)
+            List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
                                                                  .OrderBy(z => z.score)
                                                                  .ToList();
             int x = 1;
@@ -172,14 +173,22 @@ namespace Miki.Modules
         [Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetMekos(EventContext e)
         {
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			IDiscordUser user = await arg.GetUserAsync(e.Guild);
+
+			arg = arg.Next();
+
+			int amount = arg?.AsInt(0) ?? 0;
+
             using (var context = new MikiContext())
             {
-                User u = await context.Users.FindAsync(e.message.MentionedUserIds.First().ToDbLong());
+                User u = await context.Users.FindAsync((long)user.Id);
                 if (u == null)
                 {
                     return;
                 }
-                u.Currency = int.Parse(e.arguments.Split(' ')[1]);
+				u.Currency = amount;
                 await context.SaveChangesAsync();
                 e.Channel.QueueMessageAsync(":ok_hand:");
             }
@@ -188,7 +197,7 @@ namespace Miki.Modules
         [Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task FindUserById(EventContext e)
         {
-            IDiscordUser u = Bot.Instance.GetUser(ulong.Parse(e.arguments));
+            IDiscordUser u = Bot.Instance.GetUser(ulong.Parse(e.Arguments.ToString()));
 
             e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
         }
@@ -200,25 +209,33 @@ namespace Miki.Modules
 			{
 				DonatorKey key = (await context.DonatorKey.AddAsync(new DonatorKey()
 				{
-					StatusTime = new TimeSpan(int.Parse(e.arguments), 0, 0, 0, 0)
+					StatusTime = new TimeSpan(int.Parse(e.Arguments.ToString()), 0, 0, 0, 0)
 				})).Entity;
 
 				await context.SaveChangesAsync();
-				e.Channel.QueueMessageAsync($"key generated for {e.arguments} days `{key.Key}`");
+				e.Channel.QueueMessageAsync($"key generated for {e.Arguments.ToString()} days `{key.Key}`");
 			}
 		}
 
 		[Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetExp(EventContext e)
         {
-            using (var context = new MikiContext())
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			IDiscordUser user = await arg.GetUserAsync(e.Guild);
+
+			arg = arg.Next();
+
+			int amount = arg?.AsInt(0) ?? 0;
+
+			using (var context = new MikiContext())
             {
-                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.message.MentionedUserIds.First().ToDbLong());
+                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong());
                 if (u == null)
                 {
                     return;
                 }
-                u.Experience = int.Parse(e.arguments.Split(' ')[1]);
+                u.Experience = amount;
                 await context.SaveChangesAsync();
 				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", new RealtimeExperienceObject()
 				{
@@ -232,18 +249,7 @@ namespace Miki.Modules
 		[Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task BanUserAsync(EventContext e)
 		{
-			string[] s = e.arguments.Split(',');
-			if (s.Length == 1)
-			{
-				await User.BanAsync(long.Parse(e.arguments));
-			}
-			else
-			{
-				foreach(var n in s)
-				{
-					await User.BanAsync(long.Parse(n));
-				}
-			}
+			await User.BanAsync(long.Parse(e.Arguments.ToString()));
 		}
     }
 }

@@ -19,7 +19,7 @@ namespace Miki.Modules
             string image = "http://i.imgur.com/AHPnL.gif";
             IDiscordEmbed embed = Utils.Embed;
 
-            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.arguments)}";
+            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.Arguments.ToString())}";
 
             if (e.message.MentionedUserIds.Count > 0)
             {
@@ -88,9 +88,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} feeds {e.message.RemoveMentions(e.arguments)} cake";
+                embed.Title = $"{e.Author.Username} feeds {e.message.RemoveMentions(e.Arguments.ToString())} cake";
             }
             else
             {
@@ -121,9 +121,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} cuddles with {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} cuddles with {e.message.RemoveMentions(e.Arguments.Join().Argument)}";
             }
             else
             {
@@ -187,9 +187,9 @@ namespace Miki.Modules
             IDiscordEmbed embed = Utils.Embed
                 .SetImageUrl(images[r.Next(0, images.Length)]);
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} glares at {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} glares at {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -231,9 +231,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} high fives at {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} high fives at {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -279,9 +279,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} hugs {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} hugs {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -313,9 +313,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} pokes {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} pokes {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -348,9 +348,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} punches {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} punches {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -390,9 +390,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} kisses {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} kisses {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -470,9 +470,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} pats {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} pats {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -505,9 +505,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} slaps {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} slaps {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {
@@ -546,9 +546,9 @@ namespace Miki.Modules
 
             IDiscordEmbed embed = Utils.Embed;
 
-            if (e.arguments.Length > 0)
+            if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} bites {e.message.RemoveMentions(e.arguments)}";
+                embed.Title = $"{e.Author.Username} bites {e.message.RemoveMentions(e.Arguments.ToString())}";
             }
             else
             {

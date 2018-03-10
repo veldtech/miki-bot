@@ -127,22 +127,11 @@ namespace Miki
             return (float)Math.Round(value * 60 * 60);
         }
 
-		public static bool IsAll(string input, Locale locale = null)
+		public static bool IsAll(this ArgObject input, Locale locale = null)
 		{
-			return ((input == locale?.GetString("common_string_all")) || (input == "*"));
+			if (input == null) return false;
+			return ((input?.Argument == (locale?.GetString("common_string_all") ?? "all")) || (input?.Argument == "*"));
 		}
-		public static bool ToBool(this string input)
-        {
-            return (input.ToLower() == "yes" || input.ToLower() == "1" || input.ToLower() == "on");
-        }
-
-        public static async Task ForEachAsync<T>(this IEnumerable<T> list, Func<T, Task> func)
-        {
-            foreach(T x in list)
-            {
-                await func(x);
-            }
-        }
 
 		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message)
 			=> Embed.SetTitle($"🚫 {e.Channel.GetLocale().GetString(LocaleTags.ErrorMessageGeneric)}")
@@ -185,102 +174,6 @@ namespace Miki
 			return embed;
 		}
     }
-
-	public class Args
-	{
-		List<string> args;
-
-		public int Count => args.Count;
-
-		public Args(string a)
-		{
-			args = new List<string>();
-			args.AddRange(a.Split(' '));
-			args.RemoveAll(x => string.IsNullOrEmpty(x));
-		}
-
-		public bool Exists(string arg)
-		{
-			return args.Contains(arg);
-		}
-
-		public ArgObject First()
-			=> Get(0);
-
-		public ArgObject Get(int index)
-		{
-			index = Math.Clamp(index, 0, args.Count);
-
-			if (index >= args.Count)
-				return null;
-
-			return new ArgObject(args[index], index, this);
-		}
-
-		public ArgObject Join()
-			=> new ArgObject(string.Join(" ", args), 0, this); 
-
-		public void Remove(string value)
-		{
-			args.Remove(value);
-		}
-	}
-
-	public class ArgObject
-	{
-		public string Argument { get; private set; }
-
-		Args args;
-
-		int index;
-
-		public bool IsLast
-			=> (args.Count - 1 == index);
-
-		public bool IsMention
-			=> Regex.IsMatch(Argument, "<@(!?)\\d+>");
-
-		public ArgObject(string argument, int index, Args a)
-		{
-			Argument = argument;
-			this.index = index;
-			args = a;
-		}
-
-		public int AsInt(int defaultValue = 0)
-		{
-			if (int.TryParse(Argument, out int s))
-			{
-				return s;
-			}
-			return defaultValue;
-		}
-
-		public async Task<IDiscordUser> GetUserAsync(IDiscordGuild guild)
-		{
-			if(IsMention)
-			{
-				return await guild.GetUserAsync(ulong.Parse(Argument
-					.TrimStart('<')
-					.TrimStart('@')
-					.TrimStart('!')
-					.TrimEnd('>')));
-			}
-			else if(ulong.TryParse(Argument, out ulong id))
-			{
-				return await guild.GetUserAsync(id);
-			}
-			return await guild.GetUserAsync(Argument);
-		}
-
-		public ArgObject Next()
-		{
-			if (IsLast)
-				return null;
-
-			return args.Get(index + 1);
-		}
-	}
 
     public class MikiRandom : RandomNumberGenerator
     {

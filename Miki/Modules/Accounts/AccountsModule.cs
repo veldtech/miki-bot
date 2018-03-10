@@ -45,14 +45,15 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				Args args = new Args(e.arguments);
-				ArgObject argument = args.First();
-
 				long id = (long)e.Author.Id;
 
-				if (argument != null)
+				ArgObject arg = e.Arguments.FirstOrDefault();
+
+				if (arg != null)
 				{
-					IDiscordUser user = await args.Join().GetUserAsync(e.Guild);
+					IDiscordUser user = await arg.TakeUntilEnd()
+						.GetUserAsync(e.Guild);
+
 					if (user != null)
 					{
 						id = (long)user.Id;
@@ -99,8 +100,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			LeaderboardsOptions options = new LeaderboardsOptions();
 
-			Args args = new Args(e.arguments);
-			ArgObject argument = args.Get(0);
+			ArgObject argument = e.Arguments.FirstOrDefault();
 
 			switch (argument?.Argument.ToLower() ?? "")
 			{
@@ -194,9 +194,11 @@ namespace Miki.Modules.AccountsModule
 				long id = 0;
 				ulong uid = 0;
 
-				if (e.message.MentionedUserIds.Any())
+				var arg = e.Arguments.FirstOrDefault();
+
+				if (arg != null)
 				{
-					uid = e.message.MentionedUserIds.First();
+					uid = (await arg.GetUserAsync(e.Guild)).Id;
 					id = uid.ToDbLong();
 				}
 				else
@@ -219,11 +221,18 @@ namespace Miki.Modules.AccountsModule
 					"<:mbarmidoff:391971424824197123>", 
 					"<:mbarrightoff:391971424862208000>");
 
+				string icon = "";
+
+				if(await account.IsDonatorAsync(context))
+				{
+					icon = "https://cdn.discordapp.com/emojis/421969679561785354.png";
+				}
+
 				if (account != null)
 				{
 					IDiscordEmbed embed = Utils.Embed
 						.SetDescription(account.Title)
-						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), "", "https://patreon.com/mikibot")
+						.SetAuthor(locale.GetString("miki_global_profile_user_header", account.Name), icon, "https://patreon.com/mikibot")
 						.SetThumbnailUrl(discordUser.AvatarUrl);
 
 					long serverid = e.Guild.Id.ToDbLong();
@@ -263,7 +272,7 @@ namespace Miki.Modules.AccountsModule
 						.Build();
 
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
-					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "🔸");
+					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
 
 					List<Marriage> Marriages = account.Marriages?
 						.Select(x => x.Marriage)
@@ -342,13 +351,17 @@ namespace Miki.Modules.AccountsModule
 			using (var context = new MikiContext())
 			{
 				Locale locale = new Locale(e.Channel.Id.ToDbLong());
+				ArgObject arg = e.Arguments.FirstOrDefault();
+
+				if (arg == null)
+					return;
 
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				List<ulong> mentionedUsers = e.message.MentionedUserIds.ToList();
-				string[] args = e.arguments.Split(' ');
-				short repAmount = 1;
 
-				bool mentionedSelf = mentionedUsers.RemoveAll(x => x == e.Author.Id) > 0;
+				Dictionary<IDiscordUser, int> usersMentioned = new Dictionary<IDiscordUser, int>();
+
+				int totalAmountGiven = 0;
+				bool mentionedSelf = false;
 
 				var repObject = Global.redisClient.Get<ReputationObject>($"user:{giver.Id}:rep");
 
@@ -361,6 +374,48 @@ namespace Miki.Modules.AccountsModule
 					};
 				}
 
+				while (true || totalAmountGiven <= repObject.ReputationPointsLeft)
+				{
+					if (arg == null)
+						break;
+
+					IDiscordUser u = await arg.GetUserAsync(e.Guild);
+					int amount = 1;
+
+					if (u == null)
+						break;
+
+					arg = arg?.Next();
+
+					if ((arg?.AsInt(-1) ?? -1) != -1)
+					{
+						amount = arg.AsInt();
+						arg = arg.Next();
+					}
+					else if (Utils.IsAll(arg, locale))
+					{
+						amount = repObject.ReputationPointsLeft;
+						arg = arg.Next();
+					}
+
+					if (u.Id == e.Author.Id)
+					{
+						mentionedSelf = true;
+						continue;
+					}
+
+					totalAmountGiven += amount;
+
+					if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+					{
+						usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
+					}
+					else
+					{
+						usersMentioned.Add(u, amount);
+					}
+				}
+
 				IDiscordEmbed embed = Utils.Embed;
 
 				if(mentionedSelf)
@@ -368,7 +423,7 @@ namespace Miki.Modules.AccountsModule
 					embed.SetFooter(e.GetResource("warning_mention_self"), "");
 				}
 
-				if (mentionedUsers.Count == 0)
+				if (usersMentioned.Count == 0)
 				{
 					TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
 
@@ -382,28 +437,16 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					if (args.Length > 1)
-					{
-						if (Utils.IsAll(args[args.Length - 1], e.Channel.GetLocale()))
-						{
-							repAmount = repObject.ReputationPointsLeft;
-						}
-						else if (short.TryParse(args[1], out short x))
-						{
-							repAmount = x;
-						}					
-					}
-
-					if (repAmount <= 0)
+					if (totalAmountGiven <= 0)
 					{
 						e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
 							.QueueToChannel(e.Channel);
 						return;
 					}
 
-					if(mentionedUsers.Count * repAmount > repObject.ReputationPointsLeft)
+					if(usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
 					{
-						e.ErrorEmbedResource("error_rep_limit", mentionedUsers.Count, repAmount, repObject.ReputationPointsLeft)
+						e.ErrorEmbedResource("error_rep_limit", usersMentioned.Count, usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
 							.QueueToChannel(e.Channel);
 						return;
 					}
@@ -412,17 +455,16 @@ namespace Miki.Modules.AccountsModule
 				embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
 					.SetDescription(locale.GetString("rep_success"));
 
-				foreach (ulong user in mentionedUsers)
+				foreach (var user in usersMentioned)
 				{
-					IDiscordUser u = await e.Guild.GetUserAsync(user);
-					User receiver = await User.GetAsync(context, u);
+					User receiver = await User.GetAsync(context, user.Key);
 
-					receiver.Reputation += repAmount;
+					receiver.Reputation += user.Value;
 
-					embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - repAmount, receiver.Reputation, repAmount));
+					embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value));
 				}
 
-				repObject.ReputationPointsLeft -= (short)(repAmount * mentionedUsers.Count);
+				repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
 
 				await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
 
@@ -546,37 +588,48 @@ namespace Miki.Modules.AccountsModule
 		{
 			Locale locale = new Locale(e.Guild.Id);
 
-			string[] arguments = e.arguments.Split(' ');
-
-			if (arguments.Length < 2)
+			if (e.Arguments.Count < 2)
 			{
 				e.ErrorEmbedResource("give_error_no_arg")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			if (e.message.MentionedUserIds.Count <= 0)
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			IDiscordUser user = null;
+
+			if (arg != null)
+			{
+				user = await arg.GetUserAsync(e.Guild);
+			}
+
+			if (user == null)
 			{
 				e.ErrorEmbedResource("give_error_no_mention")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			if (!int.TryParse(arguments[1], out int goldSent))
+			arg = arg.Next();
+
+			int? amount = arg?.AsInt() ?? null;
+
+			if (amount == null)
 			{
 				e.ErrorEmbedResource("give_error_amount_unparsable")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			if (goldSent > 999999)
+			if (amount > 999999)
 			{
 				e.ErrorEmbedResource("give_error_max_mekos")
 					.QueueToChannel(e.Channel);
 				return;
 			}
 
-			if (goldSent <= 0)
+			if (amount <= 0)
 			{
 				e.ErrorEmbedResource("give_error_min_mekos")
 					.QueueToChannel(e.Channel);
@@ -588,13 +641,13 @@ namespace Miki.Modules.AccountsModule
 				User sender = await User.GetAsync(context, e.Author);
 				User receiver = await User.GetAsync(context, await e.Guild.GetUserAsync(e.message.MentionedUserIds.First()));
 
-				if (goldSent <= sender.Currency)
+				if (amount.Value <= sender.Currency)
 				{
-					await sender.AddCurrencyAsync(-goldSent, e.Channel, sender);
+					await sender.AddCurrencyAsync(-amount.Value, e.Channel, sender);
 
 					IDiscordEmbed em = Utils.Embed;
 					em.Title = "🔸 transaction";
-					em.Description = e.GetResource("give_description", sender.Name, receiver.Name, goldSent);
+					em.Description = e.GetResource("give_description", sender.Name, receiver.Name, amount.Value);
 
 					em.Color = new Miki.Common.Color(255, 140, 0);
 

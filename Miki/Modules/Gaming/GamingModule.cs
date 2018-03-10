@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO;
+using Miki.Common;
 
 namespace Miki.Modules.Overwatch
 {
@@ -18,16 +19,25 @@ namespace Miki.Modules.Overwatch
         [Command(Name = "overwatchuser", Aliases = new string[] { "owuser" })]
         public async Task OverwatchStatsAsync(EventContext e)
         {
-            string[] arguments = e.arguments.Split(' ');
+			ArgObject args = e.Arguments.FirstOrDefault();
 
-            string[] username = arguments
-                .Where(x => x.Contains("#"))
-                .FirstOrDefault()
+			if(args == null)
+			{
+				// TODO: add argument error message
+				return;
+			}
+
+            string[] username = args.Argument
                 .Split('#');
 
-            string[] toggles = arguments
-                .Where(x => x.StartsWith("-"))
-                .ToArray();
+			args = args.Next();
+
+			// Probably make this better
+			string[] toggles = args?.TakeUntilEnd()
+				.Argument
+				.Split(' ')
+				.Where(x => x.StartsWith("-"))
+				.ToArray() ?? new string[0];
 
             OverwatchUserResponse user = await InternalGetUser(e, username);
 
@@ -94,10 +104,11 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "osu")]
 		public async Task SendOsuSignatureAsync(EventContext e)
 		{
+			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+
 			using (WebClient webClient = new WebClient())
 			{
-				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
-													 e.arguments + "&countryrank");
+				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&countryrank");
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
@@ -109,14 +120,15 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "ctb")]
 		public async Task SendCatchTheBeatSignatureAsync(EventContext e)
 		{
+			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+
 			using (WebClient webClient = new WebClient())
 			{
-				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
-													 e.arguments + "&mode=2&countryrank");
+				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=2&countryrank");
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await e.Channel.SendFileAsync(mem, $"{e.arguments}.png");
+					await e.Channel.SendFileAsync(mem, $"{username}.png");
 				}
 			}
 		}
@@ -124,10 +136,11 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "mania")]
 		public async Task SendManiaSignatureAsync(EventContext e)
 		{
+			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+
 			using (WebClient webClient = new WebClient())
 			{
-				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
-													 e.arguments + "&mode=3&countryrank");
+				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=3&countryrank");
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
@@ -139,10 +152,11 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "taiko")]
 		public async Task SendTaikoSignatureAsync(EventContext e)
 		{
+			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+
 			using (WebClient webClient = new WebClient())
 			{
-				byte[] data = webClient.DownloadData("http://lemmmy.pw/osusig/sig.php?colour=pink&uname=" +
-													 e.arguments + "&mode=1&countryrank");
+				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=1&countryrank");
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{

@@ -28,11 +28,11 @@ namespace Miki.Modules
 		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.arguments))
+			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
 				Task.Run(async () => await SetupNotificationsInteractive<LevelNotificationsSetting>(e, DatabaseSettingId.LEVEL_NOTIFICATIONS));
 			else
 			{
-				MMLParser mml = new MMLParser(e.arguments);
+				MMLParser mml = new MMLParser(e.Arguments.ToString());
 				MSLResponse response = mml.Parse();
 
 				bool global = response.GetBool("g");
@@ -96,11 +96,11 @@ namespace Miki.Modules
 		[Command(Name = "showmodule")]
         public async Task ConfigAsync(EventContext e)
         {
-            IModule module = e.commandHandler.GetModule(e.arguments);
+            IModule module = e.commandHandler.GetModule(e.Arguments.ToString());
 
             if (module != null)
             {
-                IDiscordEmbed embed = Utils.Embed.SetTitle( e.arguments.ToUpper() );
+				IDiscordEmbed embed = Utils.Embed.SetTitle(e.Arguments.ToString().ToUpper());
 
                 string content = "";
 
@@ -169,14 +169,16 @@ namespace Miki.Modules
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetLocale(EventContext e)
 		{
-			if (Locale.LocaleNames.TryGetValue(e.arguments.ToLower(), out string langId))
+			string localeName = e.Arguments.FirstOrDefault()?.Argument ?? "";
+
+			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
 				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
-				Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{e.arguments}`"))
+				Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
-			e.ErrorEmbed( $"{e.arguments} is not a valid language. use `>listlocale` to check all languages available.")
+			e.ErrorEmbed( $"{localeName} is not a valid language. use `>listlocale` to check all languages available.")
 				.QueueToChannel(e.Channel);
 		}
 
@@ -185,19 +187,19 @@ namespace Miki.Modules
         {
 			Locale locale = new Locale(e.Channel.Id);
 
-			if (string.IsNullOrEmpty(e.arguments))
+			if (string.IsNullOrEmpty(e.Arguments.ToString()))
             {
                 e.ErrorEmbed(locale.GetString("miki_module_general_prefix_error_no_arg")).QueueToChannel(e.Channel);
                 return;
             }
 
-            await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.arguments);
+            await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.Arguments.ToString());
 
             IDiscordEmbed embed = Utils.Embed;
             embed.Title = locale.GetString("miki_module_general_prefix_success_header");
-            embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.arguments);
+            embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString());
 
-            embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.arguments}profile");
+            embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
 
             embed.QueueToChannel(e.Channel);
         }
