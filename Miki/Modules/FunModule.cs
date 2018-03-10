@@ -486,8 +486,8 @@ namespace Miki.Modules
         {
 			string lowercaseArguments = e.Arguments.ToString().ToLower().Split(' ')[0];
 
-			switch (lowercaseArguments)
-			{
+            switch(lowercaseArguments)
+            { 
 				case "-clear":
 				{
 					await CancelReminderAsync(e);
@@ -665,7 +665,7 @@ namespace Miki.Modules
 				.QueueToChannel(e.Channel);
 		}
 
-        [Command(Name = "safe")]
+		[Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
         {
             Locale locale = new Locale(e.Channel.Id);
