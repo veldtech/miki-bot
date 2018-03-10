@@ -10,6 +10,7 @@ using Miki.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Miki.Modules
 {
@@ -235,11 +236,14 @@ namespace Miki.Modules
 				IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 				User asker = await User.GetAsync(context, user);
 
-				Marriage Marriage = accepter.Marriages
-					.FirstOrDefault(x => asker.Marriages
-						.Any(z => z.MarriageId == x.MarriageId)).Marriage;
+				UserMarriedTo marriedTo = await context.UsersMarriedTo
+						.Include(x => x.Marriage)
+					.Where(x => x.UserId == accepter.Id)
+					.FirstOrDefaultAsync();
 
-                if (Marriage != null)
+
+
+                if (marriedTo.Marriage != null)
                 {
                     if (accepter.MarriageSlots < (await Marriage.GetMarriagesAsync(context, accepter.Id)).Count)
                     {
@@ -253,9 +257,9 @@ namespace Miki.Modules
                         return;
                     }
 
-					if (Marriage.IsProposing)
+					if (marriedTo.Marriage.IsProposing)
 					{
-						Marriage.AcceptProposal(context);
+						marriedTo.Marriage.AcceptProposal(context);
 
 						await context.SaveChangesAsync();
 

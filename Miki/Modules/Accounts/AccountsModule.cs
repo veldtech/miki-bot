@@ -300,14 +300,20 @@ namespace Miki.Modules.AccountsModule
 							}
 						}
 
+						string marriageText = string.Join("\n", MarriageStrings);
+						if(string.IsNullOrEmpty(marriageText))
+						{
+							marriageText = locale.GetString("miki_placeholder_null");
+						}
+
 						embed.AddInlineField(
 							locale.GetString("miki_module_accounts_profile_marriedto"),
-							string.Join("\n", MarriageStrings));
+							marriageText);
 					}
 
 					Random r = new Random((int)id - 3);
 
-					embed.Color = new Miki.Common.Color((float)r.NextDouble(), (float)r.NextDouble(),
+					embed.Color = new Common.Color((float)r.NextDouble(), (float)r.NextDouble(),
 						(float)r.NextDouble());
 
 					CommandUsage favouriteCommand = await context.CommandUsages
