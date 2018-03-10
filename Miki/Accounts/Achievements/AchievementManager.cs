@@ -89,20 +89,20 @@ namespace Miki.Accounts.Achievements
 				};
 			});
 
-			bot.MessageReceived += async (msg) =>
-			{
-				if (await provider.IsEnabled(msg.Channel.Id))
-				{
-					MessageEventPacket packet = new MessageEventPacket()
-					{
-						discordUser = msg.Author,
-						discordChannel = msg.Channel,
-						message = msg
-					};
+			//bot.MessageReceived += async (msg) =>
+			//{
+			//	if (await provider.IsEnabled(msg.Channel.Id))
+			//	{
+			//		MessageEventPacket packet = new MessageEventPacket()
+			//		{
+			//			discordUser = msg.Author,
+			//			discordChannel = msg.Channel,
+			//			message = msg
+			//		};
 
-					await OnMessage(packet);
-				}
-			};
+			//		await OnMessage(packet);
+			//	}
+			//};
 		}
 
 		internal void AddContainer(AchievementDataContainer container)
