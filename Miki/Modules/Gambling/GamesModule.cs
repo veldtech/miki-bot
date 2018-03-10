@@ -293,16 +293,17 @@ namespace Miki.Modules
         }
 
         private async Task StartFlip(EventContext e, int bet)
-        {
-			string sideParam = e.Arguments.Get(0).Argument.ToLower();
+		{
+			if (e.Arguments.Count < 2)
+			{
+				e.ErrorEmbed("Please pick either `heads` or `tails`!")
+					.QueueToChannel(e.Channel);
+				return;
+			}
+
+			string sideParam = e.Arguments.Get(1).Argument.ToLower();
 
             if (bet <= 0)
-            {
-				// TODO: add a error message
-                return;
-            }
-
-            if (e.Arguments.Count < 2)
             {
 				// TODO: add a error message
                 return;
@@ -321,8 +322,9 @@ namespace Miki.Modules
 
             if (pickedSide == -1)
             {
-				// TODO: add a error message
-                return;
+				e.ErrorEmbed("This is not a valid option!")
+					.QueueToChannel(e.Channel);
+				return;
             }
 
             string headsUrl = "https://miki.ai/assets/img/miki-default-heads.png";
