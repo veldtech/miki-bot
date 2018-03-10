@@ -237,7 +237,7 @@ namespace Miki.Modules.AccountsModule
 
 					long serverid = e.Guild.Id.ToDbLong();
 
-					LocalExperience localExp = account.LocalExperience.FirstOrDefault(x => x.ServerId == e.Guild.Id.ToDbLong());
+					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), id);
 					if(localExp == null)
 					{
 						localExp = await LocalExperience.CreateAsync(context, serverid, id);
@@ -274,11 +274,10 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
 
-					List<Marriage> Marriages = account.Marriages?
-						.Select(x => x.Marriage)
-						.Where(x => !x.IsProposing)
-						.OrderBy(mar => mar.TimeOfMarriage)
-						.ToList();
+					List<UserMarriedTo> Marriages = await context.UsersMarriedTo
+							.Include(x => x.Marriage)
+						.Where(x => x.UserId == id)
+						.ToListAsync();
 
 					List<User> users = new List<User>();
 
@@ -286,7 +285,7 @@ namespace Miki.Modules.AccountsModule
 
 					for (int i = 0; i < maxCount; i++)
 					{
-						users.Add(await context.Users.FindAsync(Marriages[i].GetOther(id)));
+						users.Add(await context.Users.FindAsync(Marriages[i].Marriage.GetOther(id)));
 					}
 
 					if (Marriages?.Count > 0)
@@ -295,9 +294,9 @@ namespace Miki.Modules.AccountsModule
 
 						for (int i = 0; i < maxCount; i++)
 						{
-							if (Marriages[i].GetOther(id) != 0)
+							if (Marriages[i].Marriage.GetOther(id) != 0)
 							{
-								MarriageStrings.Add($"💕 {users[i].Name} (_{Marriages[i].TimeOfMarriage.ToShortDateString()}_)");
+								MarriageStrings.Add($"💕 {users[i].Name} (_{Marriages[i].Marriage.TimeOfMarriage.ToShortDateString()}_)");
 							}
 						}
 
@@ -311,18 +310,20 @@ namespace Miki.Modules.AccountsModule
 					embed.Color = new Miki.Common.Color((float)r.NextDouble(), (float)r.NextDouble(),
 						(float)r.NextDouble());
 
-					CommandUsage favouriteCommand = account.CommandsUsed?
-						.OrderByDescending(c => c.Amount)
-						.FirstOrDefault();
+					CommandUsage favouriteCommand = await context.CommandUsages
+						.OrderByDescending(x => x.Amount)
+						.FirstOrDefaultAsync(x => x.UserId == id);
 
 					string favCommand = $"{favouriteCommand?.Name ?? locale.GetString("miki_placeholder_null")} ({ favouriteCommand?.Amount ?? 0 })";
 
 					embed.AddInlineField(locale.GetString("miki_module_accounts_profile_favourite_command"),
 						favCommand);
 
+					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
+
 					if (account.Achievements != null)
 					{
-						string achievements = AchievementManager.Instance.PrintAchievements(account.Achievements);
+						string achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
 
 					embed.AddInlineField(
 						locale.GetString("miki_generic_achievements"),
