@@ -237,10 +237,10 @@ namespace Miki.Modules.AccountsModule
 
 					long serverid = e.Guild.Id.ToDbLong();
 
-					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), id);
+					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
 					if(localExp == null)
 					{
-						localExp = await LocalExperience.CreateAsync(context, serverid, id);
+						localExp = await LocalExperience.CreateAsync(context, serverid, discordUser);
 					}
 
 					int rank = await localExp.GetRank(context);

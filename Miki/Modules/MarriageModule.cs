@@ -376,7 +376,7 @@ namespace Miki.Modules
         {
 			using (var context = new MikiContext())
 			{
-				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				User user = await User.GetAsync(context, e.Author);
 
 				int limit = 10;
 				bool isDonator = await user.IsDonatorAsync(context);

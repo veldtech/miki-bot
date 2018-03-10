@@ -103,10 +103,13 @@ namespace Miki
 					{
 						DogStatsd.Counter("commands.error.rate", 1);
 					}
-					
-					DogStatsd.Counter ("commands.count", 1, 1, new[] 
-					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
+
+					if (cmd.Module == null)
+						return;
+
 					DogStatsd.Histogram("commands.time", t, 0.1, new[]
+					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
+					DogStatsd.Counter("commands.count", 1, 1, new[]
 					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
 				};
 			});

@@ -230,7 +230,7 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
             {
-                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong());
+                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user);
                 if (u == null)
                 {
                     return;
