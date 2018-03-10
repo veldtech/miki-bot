@@ -99,15 +99,7 @@ namespace Miki.Models
 		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
-			User user = await context.Users.Where(x => x.Id == u.Id.ToDbLong())?
-				.Include(x => x.Achievements)
-				.Include(x => x.CommandsUsed)
-				.Include(x => x.Marriages)
-					.ThenInclude(x => x.Marriage)
-						.ThenInclude(x => x.Participants)
-				.Include(x => x.LocalExperience)
-				.Include(x => x.Pastas)
-				.Include(x => x.Connections)
+			User user = await context.Users.Where(x => x.Id == u.Id.ToDbLong())
 				.FirstOrDefaultAsync();
 
 			if(user == null)
