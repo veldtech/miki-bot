@@ -33,6 +33,8 @@ namespace Miki.Accounts
 
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
 
+		private bool isSyncing = false;
+
         public AccountManager(IBot bot)
         {
 			OnGlobalLevelUp += async (a, e, l) =>
@@ -86,6 +88,8 @@ namespace Miki.Accounts
         public async Task CheckAsync(IDiscordMessage e)
         {
             if (e.Author.IsBot) return;
+			if (isSyncing)
+				return;
 
 			try
 			{
@@ -144,8 +148,10 @@ namespace Miki.Accounts
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
 				{
+					isSyncing = true;
 					Log.Message($"Applying Experience for {experienceQueue.Count} users");
 					lastDbSync = DateTime.Now;
+
 					try
 					{
 						await UpdateGlobalDatabase();
@@ -156,7 +162,11 @@ namespace Miki.Accounts
 					{
 						Log.Error(ex.Message + "\n" + ex.StackTrace);
 					}
-					experienceQueue.Clear();
+					finally
+					{
+						experienceQueue.Clear();
+						isSyncing = false;
+					}
 					Log.Message($"Done Applying!");
 				}
 			}
