@@ -246,15 +246,4 @@ namespace Miki.Models
 		[ProtoMember(2)]
 		public short ReputationPointsLeft { get; set; }
 	}
-
-	// TODO: move to own file
-	[ProtoContract]
-	public class RealtimeExperienceObject
-	{
-		[ProtoMember(1)]
-		public int Experience { get; set; }
-
-		[ProtoMember(2)]
-		public DateTime LastExperienceTime { get; set; }
-	}
 }

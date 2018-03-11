@@ -326,15 +326,16 @@ namespace Miki.Modules.AccountsModule
 						favCommand);
 
 					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
+					string achievements = locale.GetString("miki_placeholder_null");
 
-					if (account.Achievements != null)
+					if (allAchievements.Count > 0)
 					{
-						string achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+						achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+					}
 
 					embed.AddInlineField(
 						locale.GetString("miki_generic_achievements"),
-						achievements != "" ? achievements : locale.GetString("miki_placeholder_null"));
-					}
+						achievements);
 
 					embed.SetFooter(
 						locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),

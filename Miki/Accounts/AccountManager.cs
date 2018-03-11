@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Miki.Modules;
+using System.Collections.Concurrent;
 
 namespace Miki.Accounts
 {
@@ -28,7 +29,7 @@ namespace Miki.Accounts
         public event LevelUpDelegate OnGlobalLevelUp;
 
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
-		private Dictionary<ulong, ExperienceAdded> experienceQueue = new Dictionary<ulong, ExperienceAdded>();
+		private ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
         private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
@@ -84,48 +85,56 @@ namespace Miki.Accounts
 			bot.GuildLeave  += Client_UserLeft;
 		}
 
-        public async Task CheckAsync(IDiscordMessage e)
-        {
-            if (e.Author.IsBot) return;
+		public async Task CheckAsync(IDiscordMessage e)
+		{
+			if (e.Author.IsBot)
+				return;
+
 			if (isSyncing)
 				return;
 
 			try
 			{
-				RealtimeExperienceObject o;
-				if (!await Global.redisClient.ExistsAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp"))
+				if(!lastTimeExpGranted.ContainsKey(e.Author.Id))
 				{
-					using (var context = new MikiContext())
+					lastTimeExpGranted.Add(e.Author.Id, DateTime.Now);
+				}
+
+				if (lastTimeExpGranted[e.Author.Id].AddMinutes(1) < DateTime.Now)
+				{
+					int currentExp = 0;
+					if (!await Global.redisClient.ExistsAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp"))
 					{
-						LocalExperience user = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.Author);
-
-						o = new RealtimeExperienceObject()
+						using (var context = new MikiContext())
 						{
-							Experience = user.Experience,
-							LastExperienceTime = DateTime.MinValue
-						};
+							LocalExperience user = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.Author);
 
-						await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", o);
+
+							await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", user.Experience);
+						}
 					}
-				}
-				else
-				{
-					o = await Global.redisClient.GetAsync<RealtimeExperienceObject>($"user:{e.Guild.Id}:{e.Author.Id}:exp");
-				}
+					else
+					{
+						currentExp = await Global.redisClient.GetAsync<int>($"user:{e.Guild.Id}:{e.Author.Id}:exp");
+					}
 
-				if (o.LastExperienceTime.AddMinutes(1) < DateTime.Now)
-				{
 					var bonusExp = 1;
-					o.Experience += bonusExp;
+					currentExp += bonusExp;
 
 					if (!experienceQueue.ContainsKey(e.Author.Id))
 					{
-						experienceQueue.Add(e.Author.Id, new ExperienceAdded()
+						var expObject = new ExperienceAdded()
 						{
 							UserId = e.Author.Id.ToDbLong(),
 							GuildId = e.Guild.Id.ToDbLong(),
 							Experience = bonusExp,
 							Name = e.Author.Username,
+						};
+
+						experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+						{
+							eo.Experience += expObject.Experience;
+							return eo;
 						});
 					}
 					else
@@ -133,16 +142,16 @@ namespace Miki.Accounts
 						experienceQueue[e.Author.Id].Experience += bonusExp;
 					}
 
-					int level = User.CalculateLevel(o.Experience);
+					int level = User.CalculateLevel(currentExp);
 
-					if (User.CalculateLevel(o.Experience - bonusExp) != level)
+					if (User.CalculateLevel(currentExp - bonusExp) != level)
 					{
 						await LevelUpLocalAsync(e, level);
 					}
 
-					o.LastExperienceTime = DateTime.Now;
+					lastTimeExpGranted[e.Author.Id] = DateTime.Now;
 
-					await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", o);
+					await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", currentExp);
 				}
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
@@ -169,7 +178,7 @@ namespace Miki.Accounts
 					Log.Message($"Done Applying!");
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.Error(ex.ToString());
 			}

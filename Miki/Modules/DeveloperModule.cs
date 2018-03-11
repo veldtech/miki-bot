@@ -237,11 +237,7 @@ namespace Miki.Modules
                 }
                 u.Experience = amount;
                 await context.SaveChangesAsync();
-				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", new RealtimeExperienceObject()
-				{
-					LastExperienceTime = DateTime.MinValue,
-					Experience = u.Experience
-				});
+				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
 				e.Channel.QueueMessageAsync(":ok_hand:");
             }
         }
