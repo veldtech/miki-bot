@@ -64,7 +64,12 @@ namespace Miki.Accounts.Achievements
 				// If no achievement has been found and want to unlock first
 				if (newRank == 0 && achievement == null)
 				{
-					context.Achievements.Add(new Achievement() { Id = userId, Name = ParentName, Rank = 0 });
+					context.Achievements.Add(new Achievement()
+					{
+						Id = userId,
+						Name = ParentName,
+						Rank = 0
+					});
 				}
 				// If achievement we want to unlock is the next achievement
 				else if (achievement.Rank == newRank - 1)

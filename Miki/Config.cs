@@ -140,5 +140,8 @@ namespace Miki
 		/// </summary>
 		[JsonProperty("pasta_report_channel_id")]
 		public ulong PastaReportChannel { get; internal set; }
+
+		[JsonProperty("message_worker_count")]
+		public int MessageWorkerCount { get; internal set; } = 4;
 	}
 }

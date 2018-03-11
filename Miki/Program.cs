@@ -40,6 +40,9 @@ namespace Miki
 
 			LoadDiscord();
 
+			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
+				MessageBucket.AddWorker();
+
 			using (var c = new MikiContext())
 			{			
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
