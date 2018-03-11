@@ -11,7 +11,10 @@ namespace Miki.Models
 {
     public class MikiContext : DbContext
     {
-        public DbSet<Achievement> Achievements { get; set; }
+		public static readonly LoggerFactory logger
+			= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => __ > LogLevel.Information, true) });
+
+		public DbSet<Achievement> Achievements { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
 		public DbSet<Connection> Connections { get; set; }
 		public DbSet<IsDonator> IsDonator { get; set; }
@@ -29,7 +32,7 @@ namespace Miki.Models
 		public DbSet<UserMarriedTo> UsersMarriedTo { get; set; }
         public DbSet<PastaVote> Votes { get; set; }
 
-        public MikiContext() : base()
+		public MikiContext() : base()
         {
 			
 		}
@@ -37,10 +40,7 @@ namespace Miki.Models
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseNpgsql(Global.Config.ConnString);
-			optionsBuilder.UseLoggerFactory(new LoggerFactory(new[]
-			{
-				new ConsoleLoggerProvider((_, __) => __ > LogLevel.Information, true)
-			}));
+			optionsBuilder.UseLoggerFactory(logger);
 			base.OnConfiguring(optionsBuilder);
 		}
 
