@@ -357,20 +357,21 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "rep")]
 		public async Task GiveReputationAsync(EventContext e)
 		{
+			Stopwatch sw = Stopwatch.StartNew();
+
 			using (var context = new MikiContext())
 			{
-				Locale locale = new Locale(e.Channel.Id.ToDbLong());
-				ArgObject arg = e.Arguments.FirstOrDefault();
+				Log.Message("Opening db" + sw.ElapsedMilliseconds + "ms");
 
-				if (arg == null)
-					return;
+				Locale locale = new Locale(e.Channel.Id.ToDbLong());
+
+				Log.Message("Opening locale" + sw.ElapsedMilliseconds + "ms");
 
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				Dictionary<IDiscordUser, int> usersMentioned = new Dictionary<IDiscordUser, int>();
+				Log.Message("Get giver" + sw.ElapsedMilliseconds + "ms");
 
-				int totalAmountGiven = 0;
-				bool mentionedSelf = false;
+				IDiscordEmbed embed = Utils.Embed;
 
 				var repObject = Global.redisClient.Get<ReputationObject>($"user:{giver.Id}:rep");
 
@@ -381,58 +382,16 @@ namespace Miki.Modules.AccountsModule
 						LastReputationGiven = DateTime.Now,
 						ReputationPointsLeft = 3
 					};
+					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
 				}
 
-				while (true || totalAmountGiven <= repObject.ReputationPointsLeft)
-				{
-					if (arg == null)
-						break;
+				Log.Message("Get RepObject" + sw.ElapsedMilliseconds + "ms");
 
-					IDiscordUser u = await arg.GetUserAsync(e.Guild);
-					int amount = 1;
+				ArgObject arg = e.Arguments.FirstOrDefault();
 
-					if (u == null)
-						break;
+				Log.Message("Get Arg" + sw.ElapsedMilliseconds + "ms");
 
-					arg = arg?.Next();
-
-					if ((arg?.AsInt(-1) ?? -1) != -1)
-					{
-						amount = arg.AsInt();
-						arg = arg.Next();
-					}
-					else if (Utils.IsAll(arg, locale))
-					{
-						amount = repObject.ReputationPointsLeft;
-						arg = arg.Next();
-					}
-
-					if (u.Id == e.Author.Id)
-					{
-						mentionedSelf = true;
-						continue;
-					}
-
-					totalAmountGiven += amount;
-
-					if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
-					{
-						usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
-					}
-					else
-					{
-						usersMentioned.Add(u, amount);
-					}
-				}
-
-				IDiscordEmbed embed = Utils.Embed;
-
-				if(mentionedSelf)
-				{
-					embed.SetFooter(e.GetResource("warning_mention_self"), "");
-				}
-
-				if (usersMentioned.Count == 0)
+				if (arg == null)
 				{
 					TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
 
@@ -446,41 +405,100 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					if (totalAmountGiven <= 0)
+					Dictionary<IDiscordUser, int> usersMentioned = new Dictionary<IDiscordUser, int>();
+
+					int totalAmountGiven = 0;
+					bool mentionedSelf = false;
+
+					while (true || totalAmountGiven <= repObject.ReputationPointsLeft)
 					{
-						e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
-							.QueueToChannel(e.Channel);
-						return;
+						if (arg == null)
+							break;
+
+						IDiscordUser u = await arg.GetUserAsync(e.Guild);
+						int amount = 1;
+
+						if (u == null)
+							break;
+
+						arg = arg?.Next();
+
+						if ((arg?.AsInt(-1) ?? -1) != -1)
+						{
+							amount = arg.AsInt();
+							arg = arg.Next();
+						}
+						else if (Utils.IsAll(arg, locale))
+						{
+							amount = repObject.ReputationPointsLeft;
+							arg = arg.Next();
+						}
+
+						if (u.Id == e.Author.Id)
+						{
+							mentionedSelf = true;
+							continue;
+						}
+
+						totalAmountGiven += amount;
+
+						if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+						{
+							usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
+						}
+						else
+						{
+							usersMentioned.Add(u, amount);
+						}
 					}
 
-					if(usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
+					if (mentionedSelf)
 					{
-						e.ErrorEmbedResource("error_rep_limit", usersMentioned.Count, usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
-							.QueueToChannel(e.Channel);
+						embed.SetFooter(e.GetResource("warning_mention_self"), "");
+					}
+
+					if (usersMentioned.Count == 0)
+					{
 						return;
 					}
+					else
+					{
+						if (totalAmountGiven <= 0)
+						{
+							e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
+								.QueueToChannel(e.Channel);
+							return;
+						}
+
+						if (usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
+						{
+							e.ErrorEmbedResource("error_rep_limit", usersMentioned.Count, usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
+								.QueueToChannel(e.Channel);
+							return;
+						}
+					}
+
+					embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
+						.SetDescription(locale.GetString("rep_success"));
+
+					foreach (var user in usersMentioned)
+					{
+						User receiver = await User.GetAsync(context, user.Key);
+
+						receiver.Reputation += user.Value;
+
+						embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value));
+					}
+
+					repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
+
+					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
+
+					embed.AddInlineField(locale.GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
+						.QueueToChannel(e.Channel);
+
+					await context.SaveChangesAsync();
 				}
-
-				embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
-					.SetDescription(locale.GetString("rep_success"));
-
-				foreach (var user in usersMentioned)
-				{
-					User receiver = await User.GetAsync(context, user.Key);
-
-					receiver.Reputation += user.Value;
-
-					embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value));
-				}
-
-				repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
-
-				await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
-
-				embed.AddInlineField(locale.GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
-					.QueueToChannel(e.Channel);
-
-				await context.SaveChangesAsync();
 			}
 		}
 
@@ -706,9 +724,9 @@ namespace Miki.Modules.AccountsModule
 				int streak = 1;
 				string redisKey = $"user:{e.Author.Id}:daily";
 
-				if (await Global.redisClient.ExistsAsync(redisKey))
+				if (await Global.redisClient.Database.KeyExistsAsync(redisKey))
 				{
-					streak = await Global.redisClient.GetAsync<int>(redisKey);
+					streak = int.Parse(await Global.redisClient.Database.StringGetAsync(redisKey));
 					streak++;
 				}
 

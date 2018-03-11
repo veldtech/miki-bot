@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Miki.Framework.FileHandling;
 using Miki.API;
 using StackExchange.Redis.Extensions.Protobuf;
+using StackExchange.Redis;
 
 namespace Miki
 {

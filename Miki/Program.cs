@@ -16,6 +16,7 @@ using StackExchange.Redis.Extensions.Protobuf;
 using Miki.Common;
 using Miki.Framework.Events;
 using StackExchange.Redis;
+using System.Threading;
 
 namespace Miki
 {
