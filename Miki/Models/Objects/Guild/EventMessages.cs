@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 
 namespace Miki.Models
 {
@@ -13,6 +16,8 @@ namespace Miki.Models
     [Table("EventMessages")]
     public class EventMessage
     {
+		static Dictionary<Tuple<long, short>, string> eventMessages = new Dictionary<Tuple<long, short>, string>();
+
         [Key]
         [Column("ChannelId", Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -24,5 +29,27 @@ namespace Miki.Models
 
         [Column("Message")]
         public string Message { get; set; }
-    }
+
+		public static async Task<string> GetAsync(long channelId, short eventType)
+		{
+			if(eventMessages.TryGetValue(new Tuple<long, short>(channelId, eventType), out string x))
+			{
+				return x;
+			}
+			else
+			{
+				using (var context = new MikiContext())
+				{
+					var eventMsg = await context.EventMessages.FindAsync(channelId, eventType);
+
+					if (eventMsg != null)
+					{
+						eventMessages.Add(new Tuple<long, short>(channelId, eventType), eventMsg.Message);
+					}
+
+					return eventMsg.Message;
+				}
+			}
+		}
+	}
 }

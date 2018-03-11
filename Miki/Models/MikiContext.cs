@@ -45,12 +45,6 @@ namespace Miki.Models
 
 			achievement.Property(x => x.UnlockedAt).HasDefaultValueSql("now()");
 
-			achievement
-				.HasOne(x => x.User)
-				.WithMany(x => x.Achievements)
-				.HasForeignKey(x => x.Id)
-				.HasPrincipalKey(x => x.Id);
-
 			#region Command Usage
 			var commandUsage = modelBuilder.Entity<CommandUsage>();
 
@@ -61,11 +55,6 @@ namespace Miki.Models
 				.Property(x => x.Amount)
 				.HasDefaultValue(1);
 
-			commandUsage
-				.HasOne(x => x.User)
-				.WithMany(x => x.CommandsUsed)
-				.HasForeignKey(x => x.UserId)
-				.HasPrincipalKey(x => x.Id);
 			#endregion
 
 			#region Connections
@@ -96,12 +85,6 @@ namespace Miki.Models
 
 			localExperience
 				.HasKey(c => new { c.ServerId, c.UserId });
-
-			localExperience
-				.HasOne(x => x.User)
-				.WithMany(x => x.LocalExperience)
-				.HasForeignKey(x => x.UserId)
-				.HasPrincipalKey(x => x.Id);
 
 			#endregion
 

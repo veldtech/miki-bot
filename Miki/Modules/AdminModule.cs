@@ -323,7 +323,7 @@ namespace Miki.Modules
 		{
 			Locale locale = new Locale(e.Channel.Id);
 
-			IDiscordSelfUser invoker = Bot.Instance.CurrentUser;
+			IDiscordUser invoker = await e.Guild.GetCurrentUserAsync();
 			if (!invoker.HasPermissions(e.Channel, DiscordGuildPermission.ManageMessages))
 			{
 				e.Channel.QueueMessageAsync(locale.GetString("miki_module_admin_prune_error_no_access"));

@@ -150,9 +150,7 @@ namespace Miki.Accounts.Achievements
 		}
 		public string PrintAchievements(List<Achievement> achievementNames)
 		{
-			return string.Join(" ", achievementNames
-				.Select(x => containers
-					.FirstOrDefault(z => z.Key == x.Name).Value.Achievements[x.Rank].Icon));
+			return string.Join(" ", achievementNames.Select(x => (containers.FirstOrDefault(z => z.Key == x.Name).Value.Achievements[x.Rank]?.Icon) ?? ""));
 		}
 
 		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)

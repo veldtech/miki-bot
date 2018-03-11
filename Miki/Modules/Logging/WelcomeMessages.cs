@@ -36,9 +36,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                data.ForEach(x => 
-					x.destinationChannel.QueueMessageAsync(x.message)
-				);
+                data.ForEach(x =>  x.destinationChannel.QueueMessageAsync(x.message));
             };
 
             m.UserLeaveGuild = async (guild, user) =>
@@ -50,7 +48,7 @@ namespace Miki.Modules
                     return;
                 }
 
-				data.ForEach(async x => x.destinationChannel.QueueMessageAsync(x.message));
+				data.ForEach(x => x.destinationChannel.QueueMessageAsync(x.message));
 			};
         }
 

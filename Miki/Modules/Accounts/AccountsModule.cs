@@ -329,9 +329,12 @@ namespace Miki.Modules.AccountsModule
 					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
 					string achievements = locale.GetString("miki_placeholder_null");
 
-					if (allAchievements.Count > 0)
+					if (allAchievements != null)
 					{
-						achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+						if (allAchievements.Count > 0)
+						{
+							achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+						}
 					}
 
 					embed.AddInlineField(
@@ -357,19 +360,11 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "rep")]
 		public async Task GiveReputationAsync(EventContext e)
 		{
-			Stopwatch sw = Stopwatch.StartNew();
-
 			using (var context = new MikiContext())
 			{
-				Log.Message("Opening db" + sw.ElapsedMilliseconds + "ms");
-
 				Locale locale = new Locale(e.Channel.Id.ToDbLong());
 
-				Log.Message("Opening locale" + sw.ElapsedMilliseconds + "ms");
-
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-
-				Log.Message("Get giver" + sw.ElapsedMilliseconds + "ms");
 
 				IDiscordEmbed embed = Utils.Embed;
 
@@ -385,11 +380,7 @@ namespace Miki.Modules.AccountsModule
 					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
 				}
 
-				Log.Message("Get RepObject" + sw.ElapsedMilliseconds + "ms");
-
 				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				Log.Message("Get Arg" + sw.ElapsedMilliseconds + "ms");
 
 				if (arg == null)
 				{
@@ -724,9 +715,9 @@ namespace Miki.Modules.AccountsModule
 				int streak = 1;
 				string redisKey = $"user:{e.Author.Id}:daily";
 
-				if (await Global.redisClient.Database.KeyExistsAsync(redisKey))
+				if (await Global.redisClient.ExistsAsync(redisKey))
 				{
-					streak = int.Parse(await Global.redisClient.Database.StringGetAsync(redisKey));
+					streak = await Global.redisClient.GetAsync<int>(redisKey);
 					streak++;
 				}
 

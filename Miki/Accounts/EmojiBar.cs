@@ -26,7 +26,7 @@ namespace Miki.Accounts
         {
             string output = "";
 
-            IDiscordUser u = await c.Guild.GetUserAsync(Bot.Instance.CurrentUser.Id);
+            IDiscordUser u = await c.Guild.GetCurrentUserAsync();
             if (!u.HasPermissions(c, DiscordGuildPermission.UseExternalEmojis))
             {
                 return "";
