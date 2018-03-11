@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Miki.Framework.Extension;
+using Microsoft.EntityFrameworkCore;
 
 namespace Miki.Modules
 {
@@ -155,33 +156,37 @@ namespace Miki.Modules
         public async Task<List<EventMessageObject>> GetMessage(IGuild guild, EventMessageType type, IUser user)
         {
             long guildId = guild.Id.ToDbLong();
-            var channels = await guild.GetTextChannelsAsync();
-            List<EventMessageObject> output = new List<EventMessageObject>();
+
+			var channels = await guild.GetTextChannelsAsync();
+			var channelIds = channels.Select(x => x.Id.ToDbLong());
+
+			List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())
             {
-                foreach (IMessageChannel c in channels)
+				var messageObjects = await context.EventMessages.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType).ToListAsync();
+
+				var allUsers = await guild.GetUsersAsync();
+
+				foreach (var c in messageObjects)
                 {
-                    EventMessage messageObject = await context.EventMessages.FindAsync(c.Id.ToDbLong(), (short)type);
-
-                    if (messageObject == null)
+                    if (c == null)
                     {
                         continue;
                     }
 
-                    if (string.IsNullOrEmpty(messageObject.Message))
+                    if (string.IsNullOrEmpty(c.Message))
                     {
                         continue;
                     }
 
-                    string modifiedMessage = messageObject.Message;
-					var allUsers = await c.GetUsersAsync().FlattenAsync();
+                    string modifiedMessage = c.Message;
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
 					modifiedMessage = modifiedMessage.Replace("-uc", (await (user as IGuildUser).Guild.GetUsersAsync()).Count.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
-                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count)).Username);   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", (user as IGuildUser).Guild.Name);
@@ -191,14 +196,12 @@ namespace Miki.Modules
 
                     modifiedMessage = modifiedMessage.Replace("-cc", (await (user as IGuildUser).Guild.GetChannelsAsync()).Count.ToString());
                     modifiedMessage = modifiedMessage.Replace("-vc", (await (user as IGuildUser).Guild.GetVoiceChannelsAsync()).Count.ToString());
-
-					EventMessageObject o = new EventMessageObject()
+					
+                    output.Add(new EventMessageObject()
 					{
 						message = modifiedMessage,
-						destinationChannel = c
-					};
-					
-                    output.Add(o);
+						destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId)
+					});
                 }
                 return output;
             }
