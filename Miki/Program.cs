@@ -117,7 +117,7 @@ namespace Miki
 
 			eventSystem.RegisterPrefixInstance("miki.", false);
 
-			bot.MessageReceived += Bot_MessageReceived;
+			//bot.MessageReceived += Bot_MessageReceived;
 	
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
 			eventSystem.AddDeveloper(121919449996460033);

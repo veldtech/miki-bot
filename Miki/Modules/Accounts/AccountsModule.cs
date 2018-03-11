@@ -276,7 +276,8 @@ namespace Miki.Modules.AccountsModule
 
 					List<UserMarriedTo> Marriages = await context.UsersMarriedTo
 							.Include(x => x.Marriage)
-						.Where(x => x.UserId == id)
+								.ThenInclude(x => x.Participants)
+						.Where(x => x.UserId == id && !x.Marriage.IsProposing)
 						.ToListAsync();
 
 					List<User> users = new List<User>();
