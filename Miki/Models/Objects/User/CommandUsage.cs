@@ -29,9 +29,27 @@ namespace Miki.Models
 			using (var context = new MikiContext())
 			{
 				CommandUsage achievement = await context.CommandUsages.FindAsync(userId, name);
+
+				if(achievement == null)
+				{
+					achievement = (await context.CommandUsages.AddAsync(new CommandUsage()
+					{
+						UserId = userId,
+						Amount = 0,
+						Name = name
+					})).Entity;
+					await context.SaveChangesAsync();
+				}
+
 				await Global.redisClient.AddAsync(key, achievement);
 				return achievement;
 			}
+		}
+
+		public static async Task UpdateCacheAsync(long userId, string name, CommandUsage usage)
+		{
+			string key = $"commandusage:{userId}:{name}";
+			await Global.redisClient.AddAsync(key, usage);
 		}
     }
 }

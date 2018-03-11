@@ -27,29 +27,19 @@ namespace Miki.Modules
 			EventSystem.Instance.AddCommandDoneEvent(x =>
 			{
 				x.Name = "--count-commands";
-				x.processEvent = async (msg, e, s, t) =>
+				x.processEvent = async (msg, e, success, t) =>
 				{
-					if (s)
+					Log.Notice($"sending count for command: {e.Name} by {msg.Author.ToString()}");
+
+					if (success)
 					{
 						using (var context = new MikiContext())
 						{
 							CommandUsage u = await CommandUsage.GetAsync(msg.Author.Id.ToDbLong(), e.Name);
-
-							if (u == null)
-							{
-								u = context.CommandUsages.Add(new CommandUsage() { UserId = msg.Author.Id.ToDbLong(), Amount = 1, Name = e.Name }).Entity;
-							}
-							else
-							{
-								u.Amount++;
-							}
-
 							User user = await User.GetAsync(context, msg.Author);
 
-							if (user != null)
-							{
-								user.Total_Commands++;
-							}
+							u.Amount++;
+							user.Total_Commands++;
 
 							await context.SaveChangesAsync();
 						}
@@ -252,8 +242,7 @@ namespace Miki.Modules
 		{
 			Locale locale = new Locale(e.Channel.Id);
 
-			ArgObject arg = e.Arguments
-				.FirstOrDefault();
+			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			if (arg != null)
 			{
@@ -271,7 +260,8 @@ namespace Miki.Modules
 
 					helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
-					helpListEmbed.Build().QueueToChannel(e.Channel);
+					helpListEmbed.Build()
+						.QueueToChannel(e.Channel);
 				}
 				else
 				{
@@ -311,7 +301,8 @@ namespace Miki.Modules
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.Build().QueueToChannel(e.Channel);
 
-			(await EventSystem.Instance.ListCommandsInEmbedAsync(e.message)).QueueToUser(e.Author);
+			(await EventSystem.Instance.ListCommandsInEmbedAsync(e.message))
+				.QueueToUser(e.Author);
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -384,7 +375,7 @@ namespace Miki.Modules
 				Embed embed = new EmbedBuilder()
 				{
 					Title = "Pong",
-					Color = DiscordExtensions.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), (float)ping / 1000)
+					Color = DiscordExtensions.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), Mathm.Clamp((float)ping / 1000, 0, 1))
 				}.AddInlineField("Miki", ping + "ms")
 				.AddInlineField("Discord", Bot.Instance.Client.Latency + "ms").Build();
 				

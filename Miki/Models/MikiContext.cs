@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Models.Objects.Guild;
 using Newtonsoft.Json;
 using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Miki.Models
 {
@@ -29,11 +31,16 @@ namespace Miki.Models
 
         public MikiContext() : base()
         {
+			
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseNpgsql(Global.Config.ConnString);
+			optionsBuilder.UseLoggerFactory(new LoggerFactory(new[]
+			{
+				new ConsoleLoggerProvider((_, __) => __ > LogLevel.Information, true)
+			}));
 			base.OnConfiguring(optionsBuilder);
 		}
 

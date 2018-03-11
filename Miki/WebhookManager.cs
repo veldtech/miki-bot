@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Miki.Framework;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core;
@@ -30,7 +31,7 @@ namespace Miki
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine(e.Message);
+						Log.ErrorAt("wbhook", e.ToString());
 					}
 				}
 			});
