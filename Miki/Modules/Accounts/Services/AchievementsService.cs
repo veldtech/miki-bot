@@ -1,13 +1,13 @@
 ﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 
 #pragma warning disable CS1998
 
@@ -20,14 +20,14 @@ namespace Miki.Modules.Accounts.Services
             Name = "Achievements";
         }
 
-        public override void Install(IModule m)
+        public override void Install(Module m)
         {
             base.Install(m);
             AchievementManager.Instance.provider = this;
             LoadAchievements();
         }
 
-        public override void Uninstall(IModule m)
+        public override void Uninstall(Module m)
         {
             base.Uninstall(m);
         }
@@ -436,18 +436,21 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "⭐",
 
                         CheckUserUpdate = async (p) =>
-                        {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Contributors"; });
+						{
+							if(p.userNew is IGuildUser guildUser)
+							{
+								if (guildUser.GuildId == 160067691783127041)
+								{
+									IRole role = guildUser.Guild.Roles.Where(r => r.Name == "Contributors").FirstOrDefault();
 
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
+									if (guildUser.RoleIds.Contains(role.Id))
+									{
+										return true;
+									}
+								}
+							}
+							return false;
+						}
                     }
                 };
             });
@@ -462,17 +465,20 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "🌟",
                         CheckUserUpdate = async (p) =>
                         {
-                            if (p.userNew.Guild.Id == 160067691783127041)
-                            {
-                                IDiscordRole role = p.userNew.Guild.Roles.Find(r => { return r.Name == "Developer"; });
+						if(p.userNew is IGuildUser guildUser)
+							{
+								if (guildUser.GuildId == 160067691783127041)
+								{
+									IRole role = guildUser.Guild.Roles.Where(r => r.Name == "Developer").FirstOrDefault();
 
-                                if (p.userNew.RoleIds.Contains(role.Id))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
+									if (guildUser.RoleIds.Contains(role.Id))
+									{
+										return true;
+									}
+								}
+							}
+							return false;
+						}
                     }
                 };
             });

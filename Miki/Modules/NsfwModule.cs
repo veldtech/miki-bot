@@ -1,12 +1,13 @@
 ﻿using Miki.Framework.Events.Attributes;
-using Miki.Common.Events;
 using Miki.Languages;
 using System.Threading.Tasks;
 using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
-using Miki.Common.Interfaces;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
+using Discord;
 
 namespace Miki.Modules
 {
@@ -21,7 +22,7 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -37,7 +38,7 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -53,7 +54,7 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -69,14 +70,14 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
 			CreateEmbed(s).QueueToChannel(e.Channel);
 		}
 
-		private IDiscordEmbed CreateEmbed(ILinkable s)
+		private Embed CreateEmbed(ILinkable s)
 		{
 			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
 
@@ -84,7 +85,7 @@ namespace Miki.Modules
 				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
 				.AddInlineField("Tags", FormatTags(s.Tags))
 				.AddInlineField("Score", s.Score)
-				.SetImageUrl(s.Url);
+				.WithImageUrl(s.Url).Build();
 		}
 
 		private string FormatTags(string Tags)

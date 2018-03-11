@@ -1,7 +1,5 @@
 ﻿using Discord;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki;
 using Miki.Accounts;
 using Miki.API.Leaderboards;
@@ -12,6 +10,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
 
 namespace Miki
 {
@@ -133,31 +133,34 @@ namespace Miki
 			return ((input?.Argument == (locale?.GetString("common_string_all") ?? "all")) || (input?.Argument == "*"));
 		}
 
-		public static IDiscordEmbed ErrorEmbed(this EventContext e, string message)
-			=> Embed.SetTitle($"🚫 {e.Channel.GetLocale().GetString(LocaleTags.ErrorMessageGeneric)}")
-			.SetDescription(message)
-			.SetColor(1.0f, 0.0f, 0.0f);
-		public static IDiscordEmbed ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
+		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
+			=> new EmbedBuilder()
+			{
+				Title = $"🚫 {e.Channel.GetLocale().GetString(LocaleTags.ErrorMessageGeneric)}",
+				Description = message,
+				Color = new Color(255, 0, 0),
+			};
+
+		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
 			=> ErrorEmbed(e, e.GetResource(resourceId, args));
 
+		public static EmbedBuilder Embed => new EmbedBuilder();
 
 		// TODO: Cache locale
         public static string GetResource(this EventContext c, string m, params object[] o) => new Locale(c.Channel.Id).GetString(m, o);
 
-        public static Locale GetLocale(this IDiscordMessageChannel c) => new Locale(c.Id);
+        public static Locale GetLocale(this IMessageChannel c) => new Locale(c.Id);
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static IDiscordEmbed Embed => new RuntimeEmbed(new EmbedBuilder());
-
-        public static IDiscordEmbed SuccessEmbed(Locale locale, string message)
+        public static Embed SuccessEmbed(Locale locale, string message)
         {
-            return new RuntimeEmbed(new EmbedBuilder())
+            return new EmbedBuilder()
             {
                 Title = locale.GetString(LocaleTags.SuccessMessageGeneric),
                 Description = message,
-                Color = new Common.Color(0, 1, 0)
-            };
+                Color = new Color(0, 1, 0)
+            }.Build();
         }
 
 		public static string DefaultIfEmpty(this string a, string b)
@@ -165,7 +168,7 @@ namespace Miki
 			return string.IsNullOrEmpty(a) ? b : a;
 		}
 
-		public static IDiscordEmbed RenderLeaderboards(IDiscordEmbed embed, List<LeaderboardsItem> items, int offset)
+		public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
 		{
 			for(int i = 0; i < Math.Min(items.Count, 12); i++)
 			{

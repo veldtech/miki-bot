@@ -1,10 +1,10 @@
 ﻿using Miki.Framework;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
+using Discord;
 
 namespace Miki.Models
 {
@@ -20,9 +20,8 @@ namespace Miki.Models
 		public int Price { get; set; }
 
         [NotMapped]
-        public IDiscordRole Role 
-			=> Bot.Instance.GetGuild((ulong)GuildId)
-				.GetRole((ulong)RoleId);
+        public IRole Role => Bot.Instance.Client.GetGuild((ulong)GuildId)
+			.GetRole((ulong)RoleId);
 
 		public static async Task<LevelRole> CreateAsync(long guildId, long roleId)
 		{

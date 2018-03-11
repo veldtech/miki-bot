@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
+using Miki.Framework.Events;
+using Discord;
 
 namespace Miki.Modules.Gambling.Managers
 {
@@ -43,15 +43,22 @@ namespace Miki.Modules.Gambling.Managers
             dealer.AddToHand(deck.DrawRandom(false));
         }
 
-        public IDiscordEmbed CreateEmbed(EventContext e)
-        {
-            return Utils.Embed
-                .SetAuthor(e.GetResource("miki_blackjack") + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot")
-                .SetDescription(e.GetResource("miki_blackjack_explanation") + "\n" +
-                                e.GetResource("miki_blackjack_hit") + "\n" + e.GetResource("miki_blackjack_stay"))
-                .AddInlineField(e.GetResource("miki_blackjack_cards_you", Worth(player)), player.Print())
-                .AddInlineField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print());
-        }
+		public Embed CreateEmbed(EventContext e)
+		{
+			string explanation = e.GetResource("miki_blackjack_explanation");
+
+			return new EmbedBuilder()
+			{
+				Author = new EmbedAuthorBuilder()
+				{
+					Name = e.GetResource("miki_blackjack") + " | " + e.Author.Username,
+					IconUrl = e.Author.GetAvatarUrl(),
+					Url = "https://patreon.com/mikibot"
+				},
+				Description = $"{explanation}\n{e.GetResource("miki_blackjack_hit")}\n{e.GetResource("miki_blackjack_stay")}"
+			}.AddField(e.GetResource("miki_blackjack_cards_you", Worth(player)), player.Print(), true)
+			.AddField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print(), true).Build();
+		}
 
         public int Worth(CardHand hand)
         {

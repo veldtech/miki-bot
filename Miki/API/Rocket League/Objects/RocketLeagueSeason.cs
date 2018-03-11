@@ -19,7 +19,7 @@ namespace Miki.API.RocketLeague
         public ulong? EndedOn;
     }
 
-    internal class RocketLeagueSeasonCache : ICacheable<RocketLeagueSeason>
+    internal class RocketLeagueSeasonCache
     {
         private string key = "";
 

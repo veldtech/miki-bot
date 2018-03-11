@@ -9,31 +9,9 @@ namespace Miki.API.RocketLeague
     {
         private string key = "";
 
-        public ICacheable<RocketLeaguePlatform> platforms;
-        public ICacheable<RocketLeaguePlaylist> playlists;
-        public ICacheable<RocketLeagueSeason> seasons;
-        public ICacheable<RocketLeagueTier> tiers;
-
         public RocketLeagueApi(RocketLeagueOptions o)
         {
             key = o.ApiKey;
-
-            platforms = new RocketLeaguePlatformCache(key)
-            {
-                UpdateSpan = o.CacheTime,
-            };
-            playlists = new RocketLeaguePlaylistCache(key)
-            {
-                UpdateSpan = o.CacheTime,
-            };
-            seasons = new RocketLeagueSeasonCache(key)
-            {
-                UpdateSpan = o.CacheTime,
-            };
-            tiers = new RocketLeagueTierCache(key)
-            {
-                UpdateSpan = o.CacheTime,
-            };
         }
 
         public async Task<RocketLeagueUser> GetUserAsync(string name, int platform = 1)

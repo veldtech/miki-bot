@@ -1,5 +1,4 @@
 ﻿using Miki.Framework;
-using Miki.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Miki.Models.Interfaces;
 using System;
@@ -7,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 
 namespace Miki.Models
 {
@@ -94,10 +94,10 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<GuildUser> CreateAsync(MikiContext context, IDiscordGuild guild)
+		public static async Task<GuildUser> CreateAsync(MikiContext context, IGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
-			int userCount = await guild.GetUserCountAsync();
+			int userCount = (await guild.GetUsersAsync()).Count;
 			int value = await context.LocalExperience
 								.Where(x => x.ServerId == id)
 								.SumAsync(x => x.Experience);
@@ -114,7 +114,7 @@ namespace Miki.Models
 			return outputGuildUser;
 		}
 
-		public static async Task<GuildUser> GetAsync(MikiContext context, IDiscordGuild guild)
+		public static async Task<GuildUser> GetAsync(MikiContext context, IGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
 			return await context.GuildUsers.FindAsync(id)

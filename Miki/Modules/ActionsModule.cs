@@ -1,11 +1,11 @@
 ﻿using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Extensions;
-using Miki.Common.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Framework.Events;
+using Discord;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -17,22 +17,22 @@ namespace Miki.Modules
         public async Task AskAsync(EventContext e)
         {
             string image = "http://i.imgur.com/AHPnL.gif";
-            IDiscordEmbed embed = Utils.Embed;
+			EmbedBuilder embed = new EmbedBuilder();
 
-            embed.Description = $"{e.Author.Username} asks {e.message.RemoveMentions(e.Arguments.ToString())}";
+            embed.Description = $"{e.Author.Username} asks {e.message.Content}";
 
             if (e.message.MentionedUserIds.Count > 0)
             {
                 if (e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
                 {
-                    IDiscordUser u = await e.Guild.GetUserAsync(185942988596183040);
+                    IUser u = await e.Guild.GetUserAsync(185942988596183040);
                     image = "http://i.imgur.com/AFcG8LU.gif";
                     embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
                 }
             }
 
             embed.ImageUrl = image;
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "cake")]
@@ -86,19 +86,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} feeds {e.message.RemoveMentions(e.Arguments.ToString())} cake";
+                embed.Title = $"{e.Author.Username} feeds {e.Arguments.ToString()} cake";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} feeds {e.Author.Username} cake";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} feeds {e.Author.Username} cake";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "cuddle")]
@@ -119,19 +119,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} cuddles with {e.message.RemoveMentions(e.Arguments.Join().Argument)}";
+                embed.Title = $"{e.Author.Username} cuddles with {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} cuddles with {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} cuddles with {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "glare")]
@@ -184,19 +184,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed
-                .SetImageUrl(images[r.Next(0, images.Length)]);
+            EmbedBuilder embed = Utils.Embed
+                .WithImageUrl(images[r.Next(0, images.Length)]);
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} glares at {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} glares at {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} glares at {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} glares at {e.Author.Username}";
             }
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "highfive")]
@@ -229,19 +229,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} high fives at {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} high fives at {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} high fives at {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} high fives at {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "hug")]
@@ -277,19 +277,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} hugs {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} hugs {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} hugs {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} hugs {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "poke")]
@@ -311,19 +311,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} pokes {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} pokes {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} pokes {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} pokes {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "punch")]
@@ -346,19 +346,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} punches {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} punches {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} punches {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} punches {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "kiss")]
@@ -388,19 +388,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} kisses {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} kisses {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} kisses {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} kisses {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "pat", Aliases = new string[] { "pet" })]
@@ -468,19 +468,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} pats {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} pats {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} pats {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} pats {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "slap")]
@@ -503,19 +503,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} slaps {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} slaps {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} slaps {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} slaps {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
         
         [Command(Name = "bite")]
@@ -544,19 +544,19 @@ namespace Miki.Modules
 
             Random r = new Random();
 
-            IDiscordEmbed embed = Utils.Embed;
+            EmbedBuilder embed = Utils.Embed;
 
             if (e.Arguments.Count > 0)
             {
-                embed.Title = $"{e.Author.Username} bites {e.message.RemoveMentions(e.Arguments.ToString())}";
+                embed.Title = $"{e.Author.Username} bites {e.Arguments.ToString()}";
             }
             else
             {
-                embed.Title = $"{e.message.Bot.Username} bites {e.Author.Username}";
+                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} bites {e.Author.Username}";
             }
             embed.ImageUrl = images[r.Next(0, images.Length)];
 
-            embed.QueueToChannel(e.Channel);
+            embed.Build().QueueToChannel(e.Channel);
         }
     }
 }

@@ -3,14 +3,13 @@ using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Languages;
 using Miki.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -31,7 +30,7 @@ namespace Miki.Modules
 			long askerId = 0;
 			long receiverId = 0;
 
-			IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+			IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
 			using (MikiContext context = new MikiContext())
 			{
@@ -48,19 +47,19 @@ namespace Miki.Modules
 
 				if (currentUser == null || mentionedPerson == null)
 				{
-					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_null")).QueueToChannel(e.Channel);
+					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_null")).Build().QueueToChannel(e.Channel);
 					return;
 				}
 
 				if (mentionedPerson.Id == currentUser.Id)
 				{
-					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_null")).QueueToChannel(e.Channel);
+					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_null")).Build().QueueToChannel(e.Channel);
 					return;
 				}
 
 				if (await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
 				{
-					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_exists")).QueueToChannel(e.Channel);
+					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_exists")).Build().QueueToChannel(e.Channel);
 					return;
 				}
 			}
@@ -68,14 +67,14 @@ namespace Miki.Modules
 			if (await Marriage.ProposeAsync(askerId, receiverId))
 			{
 				Utils.Embed
-					.SetTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
-					.SetDescription(locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
-					.SetColor(0.4f, 0.4f, 0.8f)
-					.SetThumbnailUrl("https://i.imgur.com/TKZSKIp.png")
+					.WithTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
+					.WithDescription(locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
+					.WithColor(0.4f, 0.4f, 0.8f)
+					.WithThumbnailUrl("https://i.imgur.com/TKZSKIp.png")
 					.AddInlineField("✅ To accept", $">acceptMarriage @user")
 					.AddInlineField("❌ To decline", $">declineMarriage @user")
-					.SetFooter("Take your time though! This proposal won't disappear", "")
-					.QueueToChannel(e.Channel);
+					.WithFooter("Take your time though! This proposal won't disappear", "")
+					.Build().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -85,23 +84,28 @@ namespace Miki.Modules
             {
                 User user = await User.GetAsync(context, cont.Author);
 
-                if (user.Currency >= costForUpgrade)
-                {
-                    user.MarriageSlots++;
-                    user.Currency -= costForUpgrade;
-                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                    notEnoughMekosErrorEmbed.Color = new Miki.Common.Color(0.4f, 1f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buyMarriageslot_success", user.MarriageSlots);
-                    notEnoughMekosErrorEmbed.QueueToChannel(cont.Channel);
-                    await context.SaveChangesAsync();
-                    await cont.commandHandler.RequestDisposeAsync();
-                }
-                else
-                {
-                    IDiscordEmbed notEnoughMekosErrorEmbed = new RuntimeEmbed(new EmbedBuilder());
-                    notEnoughMekosErrorEmbed.Color = new Miki.Common.Color(1, 0.4f, 0.6f);
-                    notEnoughMekosErrorEmbed.Description = cont.GetResource("buyMarriageslot_insufficient_mekos", (costForUpgrade - user.Currency));
-                    notEnoughMekosErrorEmbed.QueueToChannel(cont.Channel);
+				if (user.Currency >= costForUpgrade)
+				{
+					user.MarriageSlots++;
+					user.Currency -= costForUpgrade;
+
+					new EmbedBuilder()
+					{
+						Color = new Color(0.4f, 1f, 0.6f),
+						Description = cont.GetResource("buyMarriageslot_success", user.MarriageSlots),
+					}.Build().QueueToChannel(cont.Channel);
+
+					await context.SaveChangesAsync();
+
+					await cont.commandHandler.RequestDisposeAsync();
+				}
+				else
+				{
+					new EmbedBuilder()
+					{
+						Color = new Color(1, 0.4f, 0.6f),
+						Description = cont.GetResource("buyMarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
+					}.Build().QueueToChannel(cont.Channel);
                     await cont.commandHandler.RequestDisposeAsync();
                 }
             }
@@ -123,7 +127,7 @@ namespace Miki.Modules
                     if (users.Count == 0)
                     {
                         e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-							.QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
                     }
                     else if (users.Count == 1)
                     {
@@ -131,24 +135,24 @@ namespace Miki.Modules
                         if (currentMarriage == null)
                         {
                             e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-								.QueueToChannel(e.Channel);
+								.Build().QueueToChannel(e.Channel);
                             return;
                         }
 
                         if (currentMarriage.IsProposing)
                         {
                             e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-								.QueueToChannel(e.Channel);
+								.Build().QueueToChannel(e.Channel);
                             return;
                         }
 
                         await currentMarriage.RemoveAsync(context);
 
-                        IDiscordEmbed embed = Utils.Embed;
+                        EmbedBuilder embed = Utils.Embed;
                         embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                         embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, users.First().Name);
-                        embed.Color = new Common.Color(0.6f, 0.4f, 0.1f);
-                        embed.QueueToChannel(e.Channel);
+                        embed.Color = new Color(0.6f, 0.4f, 0.1f);
+                        embed.Build().QueueToChannel(e.Channel);
                         return;
                     }
                     else
@@ -165,11 +169,11 @@ namespace Miki.Modules
                                     await Marriage.RemoveAsync(context);
                                     done = true;
 
-                                    IDiscordEmbed embed = Utils.Embed;
+                                    EmbedBuilder embed = Utils.Embed;
                                     embed.Title = locale.GetString("miki_module_accounts_divorce_header");
                                     embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
-                                    embed.Color = new Common.Color(0.6f, 0.4f, 0.1f);
-                                    embed.QueueToChannel(e.Channel);
+                                    embed.Color = new Color(0.6f, 0.4f, 0.1f);
+                                    embed.Build().QueueToChannel(e.Channel);
                                     break;
                                 }
                             }
@@ -185,7 +189,7 @@ namespace Miki.Modules
                 if (e.Author.Id == e.message.MentionedUserIds.First())
                 {
                     e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
                     return;
                 }
 
@@ -202,11 +206,11 @@ namespace Miki.Modules
 
 						await Marriage.RemoveAsync(context);
 
-						IDiscordEmbed embed = Utils.Embed;
+						EmbedBuilder embed = Utils.Embed;
 						embed.Title = locale.GetString("miki_module_accounts_divorce_header");
 						embed.Description = locale.GetString("miki_module_accounts_divorce_content", user1, user2);
-						embed.Color = new Miki.Common.Color(0.6f, 0.4f, 0.1f);
-						embed.QueueToChannel(e.Channel);
+						embed.Color = new Color(0.6f, 0.4f, 0.1f);
+						embed.Build().QueueToChannel(e.Channel);
 					}
                 }
             }
@@ -218,14 +222,14 @@ namespace Miki.Modules
             if (e.message.MentionedUserIds.Count == 0)
             {
 				e.ErrorEmbed("Please mention the person you want to marry.")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
                 return;
             }
 
 			if (e.message.MentionedUserIds.First() == e.Author.Id)
 			{
 				e.ErrorEmbed("Please mention someone else than yourself.")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -233,7 +237,7 @@ namespace Miki.Modules
             {
 				User accepter = await User.GetAsync(context, e.Author);
 
-				IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 				User asker = await User.GetAsync(context, user);
 
 				UserMarriedTo marriedTo = await context.UsersMarriedTo
@@ -247,7 +251,7 @@ namespace Miki.Modules
                 {
                     if (accepter.MarriageSlots < (await Marriage.GetMarriagesAsync(context, accepter.Id)).Count)
                     {
-                        e.Channel.QueueMessageAsync($"{e.Author.GetName()} do not have enough Marriage slots, sorry :(");
+                        e.Channel.QueueMessageAsync($"{e.Author.Username} do not have enough Marriage slots, sorry :(");
                         return;
                     }
 
@@ -263,16 +267,17 @@ namespace Miki.Modules
 
 						await context.SaveChangesAsync();
 
-						Utils.Embed
-							.SetTitle("❤️ Happily married")
-							.SetColor(190, 25, 49)
-							.SetDescription($"Much love to { e.Author.GetName() } and { user.GetName() } in their future adventures together!")
-							.QueueToChannel(e.Channel);
+						new EmbedBuilder()
+						{ 
+							Title = ("❤️ Happily married"),
+							Color = new Color(190, 25, 49),
+							Description = ($"Much love to { e.Author.Username } and { user.Username } in their future adventures together!")
+						}.Build().QueueToChannel(e.Channel);
 					}
 					else
 					{
 						e.ErrorEmbed("You're already married to this person ya doofus!")
-							.QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
 					}
 				}
                 else
@@ -303,7 +308,7 @@ namespace Miki.Modules
                     return;
                 }
 
-				IDiscordUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
 				Marriage marriage = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
 
@@ -317,15 +322,17 @@ namespace Miki.Modules
 				{
 					await marriage.RemoveAsync(context);
 
-					Utils.Embed.SetTitle($"🔫 You shot down {user.GetName()}!")
-						.SetDescription($"Aww, don't worry {user.GetName()}. There is plenty of fish in the sea!")
-						.SetColor(191, 105, 82)
-						.QueueToChannel(e.Channel);
+					new EmbedBuilder()
+					{
+						Title = $"🔫 You shot down {user.Username}!",
+						Description = $"Aww, don't worry {user.Username}. There is plenty of fish in the sea!",
+						Color = new Color(191, 105, 82)
+					}.Build().QueueToChannel(e.Channel);
 				}
 				else
 				{
 					e.ErrorEmbed("You're already married to this person ya doofus!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 			}
         }
@@ -344,7 +351,7 @@ namespace Miki.Modules
                     proposalNames.Add($"{u.Name} [{u.Id}]");
                 }
 
-                IDiscordEmbed embed = Utils.Embed;
+                EmbedBuilder embed = new EmbedBuilder();
                 embed.Title = e.Author.Username;
                 embed.Description = "Here it shows both the people who you've proposed to and who have proposed to you.";
 
@@ -365,9 +372,9 @@ namespace Miki.Modules
 
                 embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                embed.Color = new Miki.Common.Color(1, 0.5f, 0);
-                embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).AvatarUrl;
-                embed.QueueToChannel(e.Channel);
+                embed.Color = new Color(1, 0.5f, 0);
+                embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).GetAvatarUrl();
+                embed.Build().QueueToChannel(e.Channel);
             }
         }
 
@@ -386,7 +393,7 @@ namespace Miki.Modules
 					limit += 5;
 				}
 
-				IDiscordEmbed embed = new RuntimeEmbed(new EmbedBuilder());
+				EmbedBuilder embed = new EmbedBuilder();
 
 				if (user.MarriageSlots >= limit)
 				{
@@ -395,26 +402,26 @@ namespace Miki.Modules
 					if (limit == 10 && !isDonator)
 					{
 						embed.AddField("Pro tip!", "Donators get 5 more slots!")
-							.SetFooter("Check `>donate` for more information!", "");
+							.WithFooter("Check `>donate` for more information!", "");
 					}
 
-					embed.Color = new Common.Color(1f, 0.6f, 0.4f);
-					embed.QueueToChannel(e.Channel);
+					embed.Color = new Color(1f, 0.6f, 0.4f);
+					embed.Build().QueueToChannel(e.Channel);
 					return;
 				}
 
 				int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
 				embed.Description = $"Do you want to buy a Marriage slot for **{costForUpgrade}**?\n\nType `yes` to confirm.";
-				embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
-				embed.QueueToChannel(e.Channel);
+				embed.Color = new Color(0.4f, 0.6f, 1f);
+				embed.Build().QueueToChannel(e.Channel);
 
 				CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
 					.AddPrefix("")
 					.DisposeInSeconds(20)
 					.SetOwner(e.message)
 					.AddCommand(
-						new RuntimeCommandEvent("yes")
+						new CommandEvent("yes")
 							.Default(async (cont) =>
 							{
 								await ConfirmBuyMarriageSlot(cont, costForUpgrade);

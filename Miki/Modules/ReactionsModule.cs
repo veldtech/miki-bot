@@ -1,7 +1,9 @@
 ﻿using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
 using System.Threading.Tasks;
+using Miki.Framework.Events;
+using Discord;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -50,12 +52,12 @@ namespace Miki.Modules
 		"http://i.imgur.com/VyabzAv.jpg"
             };
 
-            RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
-            em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
-
-            em.QueueToChannel(e.Channel);
-        }
+			new EmbedBuilder()
+			{
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.Build().QueueToChannel(e.Channel);
+		}
 
         [Command(Name = "lewd")]
         public async Task LewdAsync(EventContext e)
@@ -85,9 +87,12 @@ namespace Miki.Modules
 		"http://i.imgur.com/jlTqATG.gif"
             };
 
-            Utils.Embed.SetImageUrl(lewd[MikiRandom.Next(0, lewd.Length)])
-                .QueueToChannel(e.Channel.Id);
-        }
+
+			new EmbedBuilder()
+			{
+				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
+			}.Build().QueueToChannel(e.Channel);
+		}
 
         [Command(Name = "pout")]
         public async Task PoutAsync(EventContext e)
@@ -108,12 +113,12 @@ namespace Miki.Modules
                 "http://i.imgur.com/uTB2HIY.png"
             };
 
-            RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
 
-            em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
-
-            em.QueueToChannel(e.Channel);
-        }
+			new EmbedBuilder()
+			{
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.Build().QueueToChannel(e.Channel);
+		}
 
 		[Command( Name = "smug" )]
 		public async Task SmugAsync( EventContext e )
@@ -153,11 +158,10 @@ namespace Miki.Modules
 				"http://i.imgur.com/baiMBP6.png"
 			};
 
-			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
+			new EmbedBuilder()
 			{
-				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
-			};
-			em.QueueToChannel( e.Channel );
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.Build().QueueToChannel(e.Channel);
 		}
 
 		[Command( Name = "cry" )]
@@ -250,11 +254,10 @@ namespace Miki.Modules
 				"http://i.imgur.com/31WnXZ7.gif"
 			};
 
-			RuntimeEmbed em = new RuntimeEmbed( new Discord.EmbedBuilder() )
+			new EmbedBuilder()
 			{
-				ImageUrl = images[MikiRandom.Next( 0, images.Length )]
-			};
-			em.QueueToChannel( e.Channel );
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.Build().QueueToChannel(e.Channel);
 		}
 	        
 		[Command(Name = "stare")]
@@ -267,11 +270,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/rmfWuM0.gif"
            	};
 
-			RuntimeEmbed em = new RuntimeEmbed(new Discord.EmbedBuilder());
-
-       		em.ImageUrl = images[MikiRandom.Next(0, images.Length)];
-
-			em.QueueToChannel(e.Channel);
-        }
+			new EmbedBuilder()
+			{
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.Build().QueueToChannel(e.Channel);
+		}
 	}
 }

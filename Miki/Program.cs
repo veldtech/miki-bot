@@ -17,6 +17,7 @@ using Miki.Common;
 using Miki.Framework.Events;
 using StackExchange.Redis;
 using System.Threading;
+using Discord.WebSocket;
 
 namespace Miki
 {
@@ -118,7 +119,7 @@ namespace Miki
 
 			eventSystem.RegisterPrefixInstance("miki.", false);
 
-			//bot.MessageReceived += Bot_MessageReceived;
+			bot.Client.MessageReceived += Bot_MessageReceived;
 	
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
 			eventSystem.AddDeveloper(121919449996460033);
@@ -131,11 +132,11 @@ namespace Miki
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 
-			bot.ShardConnect += Bot_OnShardConnect;
-			bot.ShardDisconnect += Bot_OnShardDisconnect;
+			bot.Client.ShardConnected += Bot_OnShardConnect;
+			bot.Client.ShardDisconnected += Bot_OnShardDisconnect;
 		}
 
-		private async Task Bot_MessageReceived(Miki.Common.Interfaces.IDiscordMessage arg)
+		private async Task Bot_MessageReceived(IMessage arg)
 		{
 			DogStatsd.Counter("messages.received", 1);
 			await Task.Yield();
@@ -144,7 +145,7 @@ namespace Miki
 		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Set("guilds", Bot.Instance.Guilds.Count, Bot.Instance.Guilds.Count);
+			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
 			await Task.Yield();
 		}
 
@@ -157,20 +158,20 @@ namespace Miki
 			// if miki patreon is present, leave again.
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Set("guilds", Bot.Instance.Guilds.Count, Bot.Instance.Guilds.Count);
+			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
 		}
 
-		private async Task Bot_OnShardConnect(int shardId)
+		private async Task Bot_OnShardConnect(DiscordSocketClient client)
 		{
-			DogStatsd.Event("shard.connect", $"shard {shardId} has connected!");
-			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{shardId}");
+			DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
+			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
 			await Task.Yield();
 		}
 
-		private async Task Bot_OnShardDisconnect(Exception e, int shardId)
+		private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
 		{
-			DogStatsd.Event("shard.disconnect", $"shard {shardId} has disconnected!");
-			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{shardId}", null, e.Message);
+			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!");
+			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
 			await Task.Yield();
 		}
 	}

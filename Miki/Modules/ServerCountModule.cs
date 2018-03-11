@@ -3,7 +3,6 @@ using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -32,13 +31,13 @@ namespace Miki.Modules
 			public int GuildCount;
 		}
 
-        public ServerCountModule(RuntimeModule m)
+        public ServerCountModule(Module m)
         {
             m.JoinedGuild = OnUpdateGuilds;
             m.LeftGuild = OnUpdateGuilds;
         }
 
-        private async Task OnUpdateGuilds(IDiscordGuild g)
+        private async Task OnUpdateGuilds(IGuild g)
         {
             Bot bot = Bot.Instance as Bot;
 
@@ -63,7 +62,7 @@ namespace Miki.Modules
             }
         }
 
-        private async Task SendDiscordBotsOrg(Bot bot, IDiscordGuild g)
+        private async Task SendDiscordBotsOrg(Bot bot, IGuild g)
         {
 			//var shard = bot.GetShardFor(g);
 
@@ -73,9 +72,9 @@ namespace Miki.Modules
 			//await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
         }
 
-        private async Task SendDiscordPW(Bot bot, IDiscordGuild g)
+        private async Task SendDiscordPW(Bot bot, IGuild g)
         {
-			var shard = bot.GetShardFor(g);
+			var shard = bot.Client.GetShardFor(g);
 			var client = new RestClient("https://bots.discord.pw/api/bots/160105994217586689/stats");
 
 			var guildCount = new GuildCountObject()

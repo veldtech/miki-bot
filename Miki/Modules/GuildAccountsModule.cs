@@ -2,8 +2,6 @@
 using Miki.Framework;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Accounts;
 using Miki.Languages;
 using Miki.Models;
@@ -14,6 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Miki.Framework.Events;
+using Discord;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -57,25 +58,25 @@ namespace Miki.Modules
 
                     if (timer.Value.AddDays(7) <= DateTime.Now)
                     {
-                        IDiscordGuild guild = Bot.Instance.GetGuild(thisGuild.Id.FromDbLong());
+                        IGuild guild = Bot.Instance.Client.GetGuild(thisGuild.Id.FromDbLong());
 
                         GuildUser rival = await thisGuild.GetRival();
 
                         if (rival == null)
                         {
                             Utils.Embed
-                                .SetTitle(locale.GetString("miki_terms_weekly"))
-                                .SetDescription(context.GetResource("guildweekly_error_no_rival"))
-                                .QueueToChannel(context.Channel);
+                                .WithTitle(locale.GetString("miki_terms_weekly"))
+                                .WithDescription(context.GetResource("guildweekly_error_no_rival"))
+								.Build().QueueToChannel(context.Channel);
                             return;
                         }
 
                         if (rival.Experience > thisGuild.Experience)
                         {
                             Utils.Embed
-                                .SetTitle(locale.GetString("miki_terms_weekly"))
-                                .SetDescription(context.GetResource("guildweekly_error_low_level"))
-                                .QueueToChannel(context.Channel);
+                                .WithTitle(locale.GetString("miki_terms_weekly"))
+                                .WithDescription(context.GetResource("guildweekly_error_low_level"))
+								.Build().QueueToChannel(context.Channel);
                             return;
                         }
 
@@ -92,9 +93,9 @@ namespace Miki.Modules
                         await user.AddCurrencyAsync(mekosGained, context.Channel);
 
                         Utils.Embed
-                            .SetTitle(locale.GetString("miki_terms_weekly"))
+                            .WithTitle(locale.GetString("miki_terms_weekly"))
                             .AddInlineField("Mekos", mekosGained.ToString())
-                            .QueueToChannel(context.Channel);
+							.Build().QueueToChannel(context.Channel);
 
                         timer.Value = DateTime.Now;
                         await database.SaveChangesAsync();
@@ -102,17 +103,17 @@ namespace Miki.Modules
                     else
                     {
                         Utils.Embed
-                            .SetTitle(locale.GetString("miki_terms_weekly"))
-                            .SetDescription(context.GetResource("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(locale)))
-                            .QueueToChannel(context.Channel);
+                            .WithTitle(locale.GetString("miki_terms_weekly"))
+                            .WithDescription(context.GetResource("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(locale)))
+							.Build().QueueToChannel(context.Channel);
                     }
                 }
                 else
                 {
                     Utils.Embed
-                        .SetTitle(locale.GetString("miki_terms_weekly"))
-                        .SetDescription(locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
-                        .QueueToChannel(context.Channel);
+                        .WithTitle(locale.GetString("miki_terms_weekly"))
+                        .WithDescription(locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
+						.Build().QueueToChannel(context.Channel);
                 }
             }
         }
@@ -127,16 +128,16 @@ namespace Miki.Modules
                 if (thisGuild == null)
                 {
                     context.ErrorEmbed(context.GetResource("guild_error_null"))
-                        .QueueToChannel(context.Channel);
+						.Build().QueueToChannel(context.Channel);
                     return;
                 }
 
                 if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
                     Utils.Embed
-                       .SetTitle(context.GetResource("miki_terms_rival"))
-                       .SetDescription(context.GetResource("guildnewrival_error_timer_running"))
-                       .QueueToChannel(context.Channel);
+                       .WithTitle(context.GetResource("miki_terms_rival"))
+                       .WithDescription(context.GetResource("guildnewrival_error_timer_running"))
+					   .Build().QueueToChannel(context.Channel);
                     return;
                 }
 
@@ -147,7 +148,7 @@ namespace Miki.Modules
                 if (rivalGuilds.Count == 0)
                 {
                     context.ErrorEmbed(context.GetResource("guildnewrival_error_matchmaking_failed"))
-                        .QueueToChannel(context.Channel);
+						.Build().QueueToChannel(context.Channel);
                     return;
                 }
 
@@ -163,9 +164,9 @@ namespace Miki.Modules
                 await db.SaveChangesAsync();
 
                 Utils.Embed
-                    .SetTitle(context.GetResource("miki_terms_rival"))
-                    .SetDescription(context.GetResource("guildnewrival_success", rivalGuild.Name))
-                    .QueueToChannel(context.Channel);
+                    .WithTitle(context.GetResource("miki_terms_rival"))
+                    .WithDescription(context.GetResource("guildnewrival_success", rivalGuild.Name))
+					.Build().QueueToChannel(context.Channel);
             }
         }
 
@@ -184,10 +185,10 @@ namespace Miki.Modules
 
 				EmojiBar expBar = new EmojiBar(g.CalculateMaxExperience(g.Experience), onBarSet, offBarSet, 6);
 
-                IDiscordEmbed embed = Utils.Embed
-                    .SetAuthor(g.Name, e.Guild.AvatarUrl, "https://miki.veld.one")
-                    .SetColor(0.1f, 0.6f, 1)
-                    .SetThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
+                EmbedBuilder embed = Utils.Embed
+                    .WithAuthor(g.Name, e.Guild.IconUrl, "https://miki.veld.one")
+                    .WithColor(0.1f, 0.6f, 1)
+                    .WithThumbnailUrl("http://veld.one/assets/img/transparentfuckingimage.png")
                     .AddInlineField(e.GetResource("miki_terms_level"), level.ToString());
 
                 string expBarString = await expBar.Print(g.Experience, e.Channel);
@@ -210,7 +211,7 @@ namespace Miki.Modules
                     embed.AddInlineField(e.GetResource("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
                 }
 
-                embed.QueueToChannel(e.Channel);
+                embed.Build().QueueToChannel(e.Channel);
             }
         }
 
@@ -242,9 +243,9 @@ namespace Miki.Modules
 								g.MinimalExperienceToGetRewards = value;
 
 								Utils.Embed
-									.SetTitle(e.GetResource("miki_terms_config"))
-									.SetDescription(e.GetResource("guildconfig_expneeded", value))
-									.QueueToChannel(e.Channel);
+									.WithTitle(e.GetResource("miki_terms_config"))
+									.WithDescription(e.GetResource("guildconfig_expneeded", value))
+									.Build().QueueToChannel(e.Channel);
 							}
 						}
 					}
@@ -266,9 +267,9 @@ namespace Miki.Modules
 							string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
 
 							Utils.Embed
-								.SetTitle(e.GetResource("miki_terms_config"))
-								.SetDescription(resourceString)
-								.QueueToChannel(e.Channel);
+								.WithTitle(e.GetResource("miki_terms_config"))
+								.WithDescription(resourceString)
+								.Build().QueueToChannel(e.Channel);
 						}
 					}
 					break;

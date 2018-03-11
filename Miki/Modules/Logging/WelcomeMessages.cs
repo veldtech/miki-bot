@@ -2,13 +2,13 @@
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -25,10 +25,12 @@ namespace Miki.Modules
 		 * -uc  = user count
          */
 
-        public EventMessageModule(RuntimeModule m)
+        public EventMessageModule(Module m)
         {
-            m.UserJoinGuild = async (guild, user) =>
+            m.UserJoinGuild = async (user) =>
             {
+				IGuild guild = (user as IGuildUser).Guild;
+
                 List<EventMessageObject> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
 
                 if (data == null)
@@ -39,8 +41,10 @@ namespace Miki.Modules
                 data.ForEach(x =>  x.destinationChannel.QueueMessageAsync(x.message));
             };
 
-            m.UserLeaveGuild = async (guild, user) =>
+            m.UserLeaveGuild = async (user) =>
             {
+				IGuild guild = (user as IGuildUser).Guild;
+
 				List<EventMessageObject> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
 
                 if (data == null)
@@ -148,15 +152,15 @@ namespace Miki.Modules
             return true;
         }
 
-        public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
+        public async Task<List<EventMessageObject>> GetMessage(IGuild guild, EventMessageType type, IUser user)
         {
             long guildId = guild.Id.ToDbLong();
-            List<IDiscordMessageChannel> channels = await guild.GetChannelsAsync();
+            var channels = await guild.GetChannelsAsync();
             List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())
             {
-                foreach (IDiscordMessageChannel c in channels)
+                foreach (IMessageChannel c in channels)
                 {
                     EventMessage messageObject = await context.EventMessages.FindAsync(c.Id.ToDbLong(), (short)type);
 
@@ -171,22 +175,22 @@ namespace Miki.Modules
                     }
 
                     string modifiedMessage = messageObject.Message;
-                    List<IDiscordUser> allUsers = await c.GetUsersAsync();
+					var allUsers = await c.GetUsersAsync().FlattenAsync();
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", (await user.Guild.GetUserCountAsync()).ToString());
-                    modifiedMessage = modifiedMessage.Replace("-u", string.IsNullOrEmpty(user.Nickname) ? user.Username : user.Nickname);
+					modifiedMessage = modifiedMessage.Replace("-uc", (await (user as IGuildUser).Guild.GetUsersAsync()).Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
-                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers[MikiRandom.Next(0, allUsers.Count)].GetName());   
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
-                    modifiedMessage = modifiedMessage.Replace("-s", user.Guild.Name);
+                    modifiedMessage = modifiedMessage.Replace("-s", (user as IGuildUser).Guild.Name);
 
-                    modifiedMessage = modifiedMessage.Replace("-om", (await user.Guild.GetOwnerAsync()).Mention);
-                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty((await user.Guild.GetOwnerAsync()).Nickname) ? (await user.Guild.GetOwnerAsync()).Username : (await user.Guild.GetOwnerAsync()).Nickname);
+                    modifiedMessage = modifiedMessage.Replace("-om", (await (user as IGuildUser).Guild.GetOwnerAsync()).Mention);
+                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty((await (user as IGuildUser).Guild.GetOwnerAsync()).Nickname) ? (await (user as IGuildUser).Guild.GetOwnerAsync()).Username : (await (user as IGuildUser).Guild.GetOwnerAsync()).Nickname);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", (await user.Guild.GetChannelCountAsync()).ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", (await user.Guild.GetVoiceChannelCountAsync()).ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", (await (user as IGuildUser).Guild.GetChannelsAsync()).Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", (await (user as IGuildUser).Guild.GetVoiceChannelsAsync()).Count.ToString());
 
 					EventMessageObject o = new EventMessageObject()
 					{
@@ -203,7 +207,7 @@ namespace Miki.Modules
 
 	public struct EventMessageObject
 	{
-		public IDiscordMessageChannel destinationChannel;
+		public IMessageChannel destinationChannel;
 		public string message;
 	}
 }

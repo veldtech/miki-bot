@@ -31,8 +31,8 @@ namespace Miki.API.RocketLeague
         internal ulong? UpdatedAt { get; set; }
     }
 
-    internal class RocketLeaguePlaylistCache : ICacheable<RocketLeaguePlaylist>
-    {
+    internal class RocketLeaguePlaylistCache
+	{
         private string key = "";
 
         private List<RocketLeaguePlaylist> internalData = new List<RocketLeaguePlaylist>();

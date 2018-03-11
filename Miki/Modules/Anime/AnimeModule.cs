@@ -1,5 +1,4 @@
 ﻿using Miki.Framework.Events.Attributes;
-using Miki.Common.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,8 +8,10 @@ using Newtonsoft.Json;
 using System.Linq;
 using Miki.Anilist;
 using Miki.GraphQL;
-using Miki.Common.Interfaces;
 using Miki.Common;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
+using Discord;
 
 namespace Miki.Core.Modules.Anime
 {
@@ -49,17 +50,17 @@ namespace Miki.Core.Modules.Anime
 				}
 
 				Utils.Embed.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
-					.SetDescription(character.NativeName)
+					.WithDescription(character.NativeName)
 					.AddInlineField("Description", description)
-					.SetColor(0, 170, 255)
-					.SetThumbnailUrl(character.LargeImageUrl)
-					.SetFooter("Powered by anilist.co", "")
-					.QueueToChannel(e.Channel);
+					.WithColor(0, 170, 255)
+					.WithThumbnailUrl(character.LargeImageUrl)
+					.WithFooter("Powered by anilist.co", "")
+					.Build().QueueToChannel(e.Channel);
 			}
 			else
 			{
 				e.ErrorEmbed("Character not found!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -95,12 +96,12 @@ namespace Miki.Core.Modules.Anime
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
 					e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				else
 				{
 					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				return;
 			}
@@ -111,10 +112,10 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
 
 			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
-				.SetDescription(sb.ToString())
-				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.QueueToChannel(e.Channel);
+				.WithDescription(sb.ToString())
+				.WithColor(0, 170, 255)
+				.WithFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.Build().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "findmanga")]
@@ -138,19 +139,19 @@ namespace Miki.Core.Modules.Anime
 
 			arg = arg.Next();
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.Nsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, (e.Channel as ITextChannel).IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
 					e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				else
 				{
 					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				return;
 			}
@@ -161,10 +162,10 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
 			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
-				.SetDescription(sb.ToString())
-				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.QueueToChannel(e.Channel);
+				.WithDescription(sb.ToString())
+				.WithColor(0, 170, 255)
+				.WithFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.Build().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "findanime")]
@@ -189,19 +190,19 @@ namespace Miki.Core.Modules.Anime
 			arg = arg.Next();
 
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.Nsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, (e.Channel as ITextChannel).IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
 					e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				else
 				{
 					e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
-						.QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
 				}
 				return;
 			}
@@ -212,10 +213,10 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
 			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
-				.SetDescription(sb.ToString())
-				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.QueueToChannel(e.Channel);
+				.WithDescription(sb.ToString())
+				.WithColor(0, 170, 255)
+				.WithFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.Build().QueueToChannel(e.Channel);
 		}
 
 		private async Task GetMediaAsync(EventContext e, bool manga, params MediaFormat[] format)
@@ -237,7 +238,7 @@ namespace Miki.Core.Modules.Anime
 					new GraphQLParameter(format, "[MediaFormat]")
 				};
 
-				if (!e.Channel.Nsfw)
+				if (!(e.Channel as ITextChannel).IsNsfw)
 				{
 					filter += ", isAdult: $p2";
 					parameters.Add(new GraphQLParameter(false, "Boolean"));
@@ -255,8 +256,8 @@ namespace Miki.Core.Modules.Anime
 					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
 				}
 
-				IDiscordEmbed embed = Utils.Embed.SetAuthor(media.DefaultTitle, "https://anilist.co/img/logo_al.png", media.Url)
-					.SetDescription(media.NativeTitle);
+				EmbedBuilder embed = Utils.Embed.SetAuthor(media.DefaultTitle, "https://anilist.co/img/logo_al.png", media.Url)
+					.WithDescription(media.NativeTitle);
 
 				if (!manga)
 					embed.AddInlineField("Status", media.Status ?? "Unknown")
@@ -268,15 +269,15 @@ namespace Miki.Core.Modules.Anime
 					embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
 					.AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
 				.AddInlineField("Description", description ?? "None")
-					.SetColor(0, 170, 255)
-					.SetThumbnailUrl(media.CoverImage)
-					.SetFooter("Powered by anilist.co", "")
-					.QueueToChannel(e.Channel);
+					.WithColor(0, 170, 255)
+					.WithThumbnailUrl(media.CoverImage)
+					.WithFooter("Powered by anilist.co", "")
+					.Build().QueueToChannel(e.Channel);
 			}
 			else
 			{
 				e.ErrorEmbed("Anime not found!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 			}
 		}
 	}

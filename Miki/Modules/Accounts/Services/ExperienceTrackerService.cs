@@ -1,8 +1,8 @@
 ﻿using Miki.Framework.Events;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using Miki.Accounts;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace Miki.Modules.Accounts.Services
 {
@@ -13,19 +13,19 @@ namespace Miki.Modules.Accounts.Services
             Name = "Experience";
         }
 
-        public override void Install(IModule m)
+        public override void Install(Module m)
         {
             base.Install(m);
             m.MessageRecieved += Service_MessageReceived;
         }
 
-        public override void Uninstall(IModule m)
+        public override void Uninstall(Module m)
         {
             base.Uninstall(m);
             m.MessageRecieved -= Service_MessageReceived;
         }
 
-        public async Task Service_MessageReceived(IDiscordMessage m)
+        public async Task Service_MessageReceived(SocketMessage m)
         {
             if (await IsEnabled(m.Channel.Id))
             {

@@ -16,7 +16,7 @@ namespace Miki.API.RocketLeague
         public string Name = "";
     }
 
-    internal class RocketLeaguePlatformCache : ICacheable<RocketLeaguePlatform>
+    internal class RocketLeaguePlatformCache
     {
         private string key = "";
 

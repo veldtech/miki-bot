@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
-using Miki.Common.Interfaces;
+using Discord;
 using Miki.Modules;
 
 namespace Miki.Models
@@ -85,7 +85,7 @@ namespace Miki.Models
 		public static async Task UpdateAsync(ulong id, DatabaseSettingId settingId, int value)
 			=> await UpdateAsync((long)id, settingId, value);
 
-		public static async Task UpdateGuildAsync(IDiscordGuild guild, DatabaseSettingId settingId, int newSetting)
+		public static async Task UpdateGuildAsync(IGuild guild, DatabaseSettingId settingId, int newSetting)
 		{
 			var channels = await guild.GetChannelsAsync();
 			foreach (var channel in channels)

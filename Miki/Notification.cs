@@ -1,33 +1,33 @@
 ﻿using Discord;
 using Miki.Framework;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using Miki.Accounts.Achievements;
 using Miki.Models;
 using System.Threading.Tasks;
 using System;
+using Miki.Framework.Extension;
 
 namespace Miki
 {
 	internal class Notification
 	{
-		public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
+		public static void SendAchievement(AchievementDataContainer d, int rank, IMessageChannel channel, IUser user)
 		{
-			return; //SendAchievement(d.Achievements[rank], channel, user);
+			SendAchievement(d.Achievements[rank], channel, user);
 		}
-		public static void SendAchievement(BaseAchievement d, IDiscordMessageChannel channel, IDiscordUser user)
+		public static void SendAchievement(BaseAchievement d, IMessageChannel channel, IUser user)
 		{
-			return; //CreateAchievementEmbed(d, user).QueueToChannel(channel);	
+			CreateAchievementEmbed(d, user).QueueToChannel(channel);	
 		}
-		public static void SendAchievement(BaseAchievement baseAchievement, IDiscordUser user)
+		public static async Task SendAchievementAsync(BaseAchievement baseAchievement, IUser user)
 		{
-			return; //CreateAchievementEmbed(baseAchievement, user).QueueToUser(user);	
+			SendAchievement(baseAchievement, await user.GetOrCreateDMChannelAsync(), user);
 		}
 
-		private static IDiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)
+		private static Embed CreateAchievementEmbed(BaseAchievement baseAchievement, IUser user)
 		{
-			return Utils.Embed.SetTitle("Achievement Unlocked")
-				.SetDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{baseAchievement.Name}**! {baseAchievement.Icon}");
+			return Utils.Embed.WithTitle("Achievement Unlocked")
+				.WithDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{baseAchievement.Name}**! {baseAchievement.Icon}").Build();
 		}
 	}
 }

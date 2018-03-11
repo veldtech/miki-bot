@@ -16,7 +16,7 @@ namespace Miki.API.RocketLeague
         public string Name { get; set; } = "";
     }
 
-    internal class RocketLeagueTierCache : ICacheable<RocketLeagueTier>
+    internal class RocketLeagueTierCache
     {
         private string key = "";
 

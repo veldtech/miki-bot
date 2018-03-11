@@ -1,6 +1,5 @@
 ﻿using Miki.Framework;
 using Miki.Common;
-using Miki.Common.Interfaces;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Models;
 using StatsdClient;
@@ -9,22 +8,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Miki.Common.Events;
 using Miki.Framework.Events;
+using Discord;
 
 namespace Miki.Accounts.Achievements
 {
-	public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
+	public delegate Task<bool> CheckUserUpdateAchievement(IUser ub, IUser ua);
 
-	public delegate Task<bool> CheckCommandAchievement(User u, ICommandEvent e);
+	public delegate Task<bool> CheckCommandAchievement(User u, CommandEvent e);
 
 	public class AchievementManager
 	{
 		private static AchievementManager _instance = new AchievementManager(Bot.Instance);
 		public static AchievementManager Instance => _instance;
-		internal IService provider = null;
+		internal BaseService provider = null;
 
-		private IBot bot;
+		private Bot bot;
 		private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -37,7 +36,7 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementManager(IBot bot)
+		public AchievementManager(Bot bot)
 		{
 			this.bot = bot;
 
@@ -47,7 +46,7 @@ namespace Miki.Accounts.Achievements
 				{
 					LevelPacket p = new LevelPacket()
 					{
-						discordUser = await c.Guild.GetUserAsync(u.Id),
+						discordUser = await (c as IGuildChannel).GetUserAsync(u.Id),
 						discordChannel = c,
 						level = l,
 					};
@@ -153,7 +152,7 @@ namespace Miki.Accounts.Achievements
 			return string.Join(" ", achievementNames.Select(x => (containers.FirstOrDefault(z => z.Key == x.Name).Value.Achievements[x.Rank]?.Icon) ?? ""));
 		}
 
-		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordMessageChannel channel)
+		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IUser user, IMessageChannel channel)
 		{
 			DogStatsd.Counter("achievements.gained", 1);
 
@@ -180,13 +179,13 @@ namespace Miki.Accounts.Achievements
 			}
 		}
 
-		public async Task CallTransactionMadeEventAsync(IDiscordMessageChannel m, User receiver, User giver, int amount)
+		public async Task CallTransactionMadeEventAsync(IMessageChannel m, User receiver, User giver, int amount)
 		{
 			try
 			{
 				TransactionPacket p = new TransactionPacket();
 				p.discordChannel = m;
-				p.discordUser = Bot.Instance.GetUser(receiver.Id.FromDbLong());
+				p.discordUser = Bot.Instance.Client.GetUser(receiver.Id.FromDbLong());
 
 				if (giver != null)
 				{

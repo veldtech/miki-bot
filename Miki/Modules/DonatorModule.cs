@@ -1,7 +1,5 @@
 ﻿using Miki.Framework;
 using Miki.Framework.Events.Attributes;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Models;
 using System.IO;
 using System.Linq;
@@ -15,6 +13,9 @@ using Miki.Patreon.Types;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Miki.Accounts.Achievements;
+using Discord;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -81,7 +82,7 @@ namespace Miki.Modules
 
 						if (voteObject.Type == "upvote")
 						{
-							IDiscordUser user = Bot.Instance.GetUser(voteObject.UserId);
+							IUser user = Bot.Instance.Client.GetUser(voteObject.UserId);
 
 							if (user == null)
 								return;
@@ -99,10 +100,12 @@ namespace Miki.Modules
 
 								await context.SaveChangesAsync();
 
-								Utils.Embed.SetTitle("Thanks for voting!")
-									.SetDescription($"We've given you {addedCurrency} mekos to your profile")
-									.SetColor(64, 255, 64)
-									.QueueToUser(user);
+								new EmbedBuilder()
+								{
+									Title = "Thanks for voting!",
+									Description = ($"We've given you {addedCurrency} mekos to your profile"),
+									Color = new Color(64, 255, 64)
+								}.Build().QueueToUser(user);
 							}
 
 							var achievements = AchievementManager.Instance.GetContainerById("voter");
@@ -133,7 +136,7 @@ namespace Miki.Modules
 
 					if (ulong.TryParse(kofi.Message.Split(' ').Last(), out ulong uid))
 					{
-						IDiscordUser user = Bot.Instance.GetUser(uid);
+						IUser user = Bot.Instance.Client.GetUser(uid);
 
 						List<string> allKeys = new List<string>();
 
@@ -142,24 +145,29 @@ namespace Miki.Modules
 							allKeys.Add(DonatorKey.GenerateNew().Key.ToString());
 						}
 
-						Utils.Embed.SetTitle("You donated through ko-fi!")
-							.SetDescription("I work hard for miki's quality, thank you for helping me keep the bot running!")
-							.AddField("- Veld#0001", "Here are your key(s)!\n\n`" + string.Join("\n", allKeys) + "`")
-							.AddField("How to redeem this key?", $"use this command `>redeemkey`")
-							.QueueToUser(user);
+						new EmbedBuilder()
+						{
+							Title = "You donated through ko-fi!",
+							Description = "I work hard for miki's quality, thank you for helping me keep the bot running!"
+						}.AddField("- Veld#0001", "Here are your key(s)!\n\n`" + string.Join("\n", allKeys) + "`")
+						.AddField("How to redeem this key?", $"use this command `>redeemkey`")
+						.Build().QueueToUser(user);
 					}
 				}
 
 				if(value.auth_code == "PATREON_PLEDGES")
 				{
 					List<PatreonPledgeObject> pledgeObjects = JsonConvert.DeserializeObject<List<PatreonPledgeObject>>(value.data);
-					
+
 					foreach (PatreonPledgeObject pledge in pledgeObjects)
 					{
-						IDiscordUser user = Bot.Instance.GetUser(pledge.UserId);
+						IUser user = Bot.Instance.Client.GetUser(pledge.UserId);
 
-						IDiscordEmbed embed = Utils.Embed.SetTitle("You donation came through patreon!")
-							.SetDescription("I work hard for miki's quality, thank you for helping me keep the bot running! - Veld#0001");
+						EmbedBuilder embed = new EmbedBuilder()
+						{
+							Title = "You donation came through patreon!",
+							Description = "I work hard for miki's quality, thank you for helping me keep the bot running! - Veld#0001"
+						};
 
 						int max_per_embed = 20;
 
@@ -175,8 +183,8 @@ namespace Miki.Modules
 							embed.AddInlineField("Here are your key(s)!", $"`{string.Join("\n", allKeys)}`");
 						}
 
-						embed.AddField("How to redeem this key?", $"use this command `>redeemkey`")
-							.QueueToUser(user);
+						embed.AddField("How to redeem this key?", $"use this command `>redeemkey`", false)
+							.Build().QueueToUser(user);
 
 					}
 				}
@@ -186,20 +194,23 @@ namespace Miki.Modules
 					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
 					if(ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
 					{
-						Utils.Embed.SetTitle("Sad to see you leave!")
-							.SetDescription("However, I won't hold it against you, thank you for your timely support and I hope you'll happily continue using Miki")
-							.QueueToUser(s);
+						new EmbedBuilder()
+						{
+							Title = "Sad to see you leave!",
+							Description = "However, I won't hold it against you, thank you for your timely support and I hope you'll happily continue using Miki"
+						}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
 					}
 				}
 
 				if (value.auth_code == "PATREON_CREATE")
 				{
 					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
-					if(ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
+					if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
 					{
-						Utils.Embed.SetTitle("Welcome to the family")
-						.SetDescription("In maximal 24 hours you will receive another DM with key(s) depending on your patron amount. (5$/key). Thank you for your support!")
-						.QueueToUser(s);
+						new EmbedBuilder() {
+							Title = "Welcome to the family",
+							Description = ("In maximal 24 hours you will receive another DM with key(s) depending on your patron amount. (5$/key). Thank you for your support!")
+						}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
 					}
 				}
 			};
@@ -236,12 +247,13 @@ namespace Miki.Modules
 						donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
 					}
 					
-					Utils.Embed.SetTitle($"🎉 Congratulations, {e.Author.Username}")
-						.SetColor(226, 46, 68)
-						.SetDescription($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.")
-						.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-						.SetThumbnailUrl("https://i.imgur.com/OwwA5fV.png")
-						.QueueToChannel(e.Channel);
+					new EmbedBuilder() {
+						Title=($"🎉 Congratulations, {e.Author.Username}"),
+						Color=new Color(226, 46, 68),
+						Description=($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
+						ThumbnailUrl=("https://i.imgur.com/OwwA5fV.png")
+					}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
+					.Build().QueueToChannel(e.Channel);
 
 					context.DonatorKey.Remove(key);
 					await context.SaveChangesAsync();
@@ -292,7 +304,7 @@ namespace Miki.Modules
 
 		private async Task<string> GetUrlFromMessageAsync(EventContext e)
 		{
-			string url = e.Author.AvatarUrl;
+			string url = e.Author.GetAvatarUrl();
 
 			if (e.message.Attachments.Count > 0)
 			{
@@ -301,7 +313,7 @@ namespace Miki.Modules
 
 			if (e.message.MentionedUserIds.Count > 0)
 			{
-				url = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).AvatarUrl;
+				url = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).GetAvatarUrl();
 			}
 
 			return url;
@@ -331,14 +343,15 @@ namespace Miki.Modules
 			}
 		}
 
-        private void SendNotADonatorError(IDiscordMessageChannel channel)
+        private void SendNotADonatorError(IMessageChannel channel)
         {
-            Utils.Embed
-                .SetTitle("Sorry!")
-                .SetDescription("... but you haven't donated yet, please support us with a small donation to unlock these commands!")
-                .AddInlineField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
-                .AddInlineField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
-                .QueueToChannel(channel);
+			new EmbedBuilder()
+			{
+				Title = "Sorry!",
+				Description = "... but you haven't donated yet, please support us with a small donation to unlock these commands!",
+			}.AddField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
+			 .AddField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
+			 .Build().QueueToChannel(channel);
         }
     }
 }

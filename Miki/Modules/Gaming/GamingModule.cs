@@ -1,6 +1,4 @@
 ﻿using Miki.Framework.Events.Attributes;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Modules.Overwatch.API;
 using Miki.Modules.Overwatch.Objects;
 using System;
@@ -10,6 +8,9 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using Miki.Common;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
+using Discord;
 
 namespace Miki.Modules.Overwatch
 {
@@ -68,13 +69,13 @@ namespace Miki.Modules.Overwatch
                 if (!c.isValid)
                 {
                     e.ErrorEmbed("The user specified does not exist, or hasn't played on this specific region.")
-                        .QueueToChannel(e.Channel);
+						.Build().QueueToChannel(e.Channel);
                     return;
                 }
 
-                IDiscordEmbed embed = Utils.Embed
-                    .SetTitle(string.Join("#", username) + "'s Overwatch Profile")
-                    .SetThumbnailUrl(c.Stats.OverallStats.avatar);
+                EmbedBuilder embed = Utils.Embed
+                    .WithTitle(string.Join("#", username) + "'s Overwatch Profile")
+                    .WithThumbnailUrl(c.Stats.OverallStats.avatar);
 
                 var orderedPlaytime = c.PlayTime.OrderByDescending(x => x.Value);
 
@@ -91,12 +92,12 @@ namespace Miki.Modules.Overwatch
                      .AddInlineField("Time Played", c.Stats.GameStats.time_played + " hours")
                      .AddInlineField("Objective Time", c.Stats.GameStats.objective_time.FromHoursToSeconds().ToTimeString(e.Channel.GetLocale(), true));
 
-                embed.QueueToChannel(e.Channel);
+                embed.Build().QueueToChannel(e.Channel);
             }
             else
             {
                 e.ErrorEmbed("The user specified does not exist!")
-                    .QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
                 return;
             }
         }

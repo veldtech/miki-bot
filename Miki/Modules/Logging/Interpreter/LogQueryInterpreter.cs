@@ -1,4 +1,4 @@
-﻿using Miki.Common.Events;
+﻿using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,9 +83,6 @@ namespace Miki.Modules.Logging.Interpreter
         public static void Run(EventContext x)
         {
             List<Token> allTokens = instance.Tokenize(x.Arguments.Join().Argument);
-            
-
-            
         }
 
         public class Executor

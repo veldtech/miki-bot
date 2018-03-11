@@ -2,8 +2,6 @@
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Common.Events;
-using Miki.Common.Interfaces;
 using Miki.Languages;
 using Miki.Models;
 using System;
@@ -16,6 +14,8 @@ using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
 using Miki.Modules.Gambling.Managers;
+using Discord;
+using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
@@ -35,20 +35,20 @@ namespace Miki.Modules
 			if (e.Arguments.Count < 2)
 			{
 				e.ErrorEmbed("You need to choose a weapon!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 			}
 			else
 			{
 				User user;
 				RPSManager rps = RPSManager.Instance;
-				IDiscordEmbed resultMessage = Utils.Embed
-					.SetTitle("Rock, Paper, Scissors!");
+				EmbedBuilder resultMessage = Utils.Embed
+					.WithTitle("Rock, Paper, Scissors!");
 
 				if (rps.TryParse(e.Arguments.Get(1).Argument, out RPSWeapon playerWeapon))
 				{
 					RPSWeapon botWeapon = rps.GetRandomWeapon();
 
-					resultMessage.SetDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
+					resultMessage.WithDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
 
 					switch (rps.CalculateVictory(playerWeapon, botWeapon))
 					{
@@ -90,10 +90,10 @@ namespace Miki.Modules
 				}
 				else
 				{
-					resultMessage.SetDescription("Invalid weapon!").QueueToChannel(e.Channel);
+					resultMessage.WithDescription("Invalid weapon!").Build().QueueToChannel(e.Channel);
 					return;
 				}
-				resultMessage.QueueToChannel(e.Channel);
+				resultMessage.Build().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace Miki.Modules
             if (EventSystem.Instance.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
             {
                 e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
-                    .QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 
                 return;
             }
@@ -124,17 +124,17 @@ namespace Miki.Modules
 
             BlackjackManager bm = new BlackjackManager();
 
-            IDiscordMessage message = await bm.CreateEmbed(e)
+			IUserMessage message = await bm.CreateEmbed(e)
 					.SendToChannel(e.Channel);
 
             CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
                 .AddPrefix("")
                 .SetOwner(e.message)
                 .AddCommand(
-                    new RuntimeCommandEvent("hit")
+                    new CommandEvent("hit")
                         .Default(async (ec) => await OnBlackjackHit(ec, bm, message, bet)))
                 .AddCommand(
-                    new RuntimeCommandEvent("stand")
+                    new CommandEvent("stand")
                         .SetAliases("knock", "stay", "stop")
                         .Default(async (ec) => await OnBlackjackHold(ec, bm, message, bet))
                 ).Build();
@@ -143,7 +143,7 @@ namespace Miki.Modules
 
         }     
 
-        private async Task OnBlackjackHit(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
+        private async Task OnBlackjackHit(EventContext e, BlackjackManager bm, IUserMessage instanceMessage, int bet)
         {
             await e.message.DeleteAsync();
 
@@ -170,11 +170,15 @@ namespace Miki.Modules
 					await OnBlackjackDead( e, bm, instanceMessage, bet );
 					return;
 				}
-				await bm.CreateEmbed(e).ModifyMessage(instanceMessage);
+
+				await instanceMessage.ModifyAsync(x =>
+				{
+					x.Embed = bm.CreateEmbed(e);
+				});
             }
         }
 
-        private async Task OnBlackjackHold(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
+        private async Task OnBlackjackHold(EventContext e, BlackjackManager bm, IUserMessage instanceMessage,
             int bet, bool charlie = false )
         {
             bm.dealer.Hand.ForEach(x => x.isPublic = true);
@@ -223,7 +227,7 @@ namespace Miki.Modules
             }
         }
 
-        private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
+        private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IUserMessage instanceMessage,
             int bet)
         {
             await e.commandHandler.RequestDisposeAsync();
@@ -239,14 +243,16 @@ namespace Miki.Modules
                 }
             }
 
-            await bm.CreateEmbed(e)
-                .SetAuthor(e.GetResource("miki_blackjack_draw_title") + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot")
-                .SetDescription(e.GetResource("blackjack_draw_description") + "\n" +
-                                e.GetResource("miki_blackjack_current_balance", user.Currency))
-                .ModifyMessage(instanceMessage);
+			await instanceMessage.ModifyAsync(x =>
+			{
+				x.Embed = bm.CreateEmbed(e).ToEmbedBuilder()
+			   .SetAuthor(e.GetResource("miki_blackjack_draw_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
+			   .WithDescription(e.GetResource("blackjack_draw_description") + "\n" +
+							   e.GetResource("miki_blackjack_current_balance", user.Currency)).Build();
+			});
         }
 
-        private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
+        private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IUserMessage instanceMessage,
             int bet)
         {
             await e.commandHandler.RequestDisposeAsync();
@@ -257,14 +263,15 @@ namespace Miki.Modules
                 user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
             }
 
-            await bm.CreateEmbed(e)
-                .SetAuthor(e.GetResource("miki_blackjack_lose_title") + " | " + e.Author.Username, e.message.Bot.AvatarUrl, "https://patreon.com/mikibot")
-                .SetDescription(e.GetResource("miki_blackjack_lose_description") + "\n" +
-                                e.GetResource("miki_blackjack_new_balance", user.Currency))
-                .ModifyMessage(instanceMessage);
+			await instanceMessage.ModifyAsync(async x =>
+			{
+				x.Embed = bm.CreateEmbed(e).ToEmbedBuilder()
+					.SetAuthor(e.GetResource("miki_blackjack_lose_title") + " | " + e.Author.Username, (await e.Guild.GetCurrentUserAsync()).GetAvatarUrl(), "https://patreon.com/mikibot")
+					.WithDescription(e.GetResource("miki_blackjack_lose_description") + "\n" + e.GetResource("miki_blackjack_new_balance", user.Currency)).Build();
+			});
         }
 
-        private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
+        private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IUserMessage instanceMessage, int bet)
         {
             await e.commandHandler.RequestDisposeAsync();
 
@@ -279,11 +286,12 @@ namespace Miki.Modules
                 }
             }
 
-            await bm.CreateEmbed(e)
-                .SetAuthor(e.GetResource("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot")
-                .SetDescription(e.GetResource("miki_blackjack_win_description", bet * 2) + "\n" +
-                                e.GetResource("miki_blackjack_new_balance", user.Currency))
-                .ModifyMessage(instanceMessage);
+			await instanceMessage.ModifyAsync(x =>
+			{
+				x.Embed = bm.CreateEmbed(e).ToEmbedBuilder()
+				.SetAuthor(e.GetResource("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
+				.WithDescription(e.GetResource("miki_blackjack_win_description", bet * 2) + "\n" + e.GetResource("miki_blackjack_new_balance", user.Currency)).Build();
+			});
         }
 
         [Command(Name = "flip")]
@@ -297,7 +305,7 @@ namespace Miki.Modules
 			if (e.Arguments.Count < 2)
 			{
 				e.ErrorEmbed("Please pick either `heads` or `tails`!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -323,7 +331,7 @@ namespace Miki.Modules
             if (pickedSide == -1)
             {
 				e.ErrorEmbed("This is not a valid option!")
-					.QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
 				return;
             }
 
@@ -364,11 +372,11 @@ namespace Miki.Modules
 
             output += "\n" + e.GetResource("miki_blackjack_new_balance", currencyNow);
 
-            IDiscordEmbed embed = Utils.Embed
-                .SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.AvatarUrl,
-                    "https://patreon.com/mikibot")
-                .SetDescription(output)
-                .SetThumbnailUrl(imageUrl);
+			Embed embed = Utils.Embed
+				.SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.GetAvatarUrl(),
+					"https://patreon.com/mikibot")
+				.WithDescription(output)
+				.WithThumbnailUrl(imageUrl).Build();
 
             embed.QueueToChannel(e.Channel);
         }
@@ -404,8 +412,8 @@ namespace Miki.Modules
                     "🍒", "🍒", "🍒", "🍒",
                 };
 
-                IDiscordEmbed embed = Utils.Embed
-                    .SetAuthor(locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.AvatarUrl, "https://patreon.com/mikibot");
+                EmbedBuilder embed = new EmbedBuilder()
+                    .SetAuthor(locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
 
                 string[] objectsChosen =
                 {
@@ -520,7 +528,7 @@ namespace Miki.Modules
                 await u.AddCurrencyAsync(moneyReturned, e.Channel);
                 await context.SaveChangesAsync();
 
-                embed.QueueToChannel(e.Channel);
+                embed.Build().QueueToChannel(e.Channel);
             }
         }
 
@@ -556,40 +564,40 @@ namespace Miki.Modules
                     else
                     {
                         e.ErrorEmbed(e.GetResource("miki_error_gambling_parse_error"))
-                            .QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
                         return;
                     }
 
                     if (bet < 1)
                     {
                         e.ErrorEmbed(e.GetResource("miki_error_gambling_zero_or_less"))
-                            .QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
                     }
                     else if (bet > user.Currency)
                     {
                         e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-                            .QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
                     }
                     else if (bet > maxBet)
                     {
                         e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
-                            .QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
                         return;
                     }
                     else if (bet > noAskLimit)
                     {
-                        IDiscordEmbed embed = Utils.Embed;
+                        EmbedBuilder embed = Utils.Embed;
                         embed.Description =
                             $"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `yes` to confirm.";
-                        embed.Color = new Miki.Common.Color(0.4f, 0.6f, 1f);
-                        embed.QueueToChannel(e.Channel);
+                        embed.Color = new Color(0.4f, 0.6f, 1f);
+                        embed.Build().QueueToChannel(e.Channel);
 
                         CommandHandler confirmCommand = new CommandHandlerBuilder(EventSystem.Instance)
                             .AddPrefix("")
                             .DisposeInSeconds(20)
                             .SetOwner(e.message)
                             .AddCommand(
-                                new RuntimeCommandEvent("yes")
+                                new CommandEvent("yes")
                                     .Default((ec) => ValidateGlitch(ec, callback, bet)))
 									.Build();
 
@@ -607,7 +615,7 @@ namespace Miki.Modules
             else
             {
                 e.ErrorEmbed(e.GetResource("miki_error_gambling_no_arg"))
-                    .QueueToChannel(e.Channel);
+					.Build().QueueToChannel(e.Channel);
             }
         }
 
@@ -623,7 +631,7 @@ namespace Miki.Modules
 					if (bet > u.Currency)
 					{
 						e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-							.QueueToChannel(e.Channel);
+							.Build().QueueToChannel(e.Channel);
 						return;
 					}
 					await callback(e, bet);
