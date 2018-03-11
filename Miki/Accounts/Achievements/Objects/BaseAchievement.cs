@@ -59,7 +59,7 @@ namespace Miki.Accounts.Achievements
 		{
 			using (var context = new MikiContext())
 			{
-				var achievement = await context.Achievements.FindAsync(userId, ParentName);
+				var achievement = await Achievement.GetAsync(userId, Name);
 
 				// If no achievement has been found and want to unlock first
 				if (newRank == 0 && achievement == null)
@@ -76,6 +76,7 @@ namespace Miki.Accounts.Achievements
 					return false;
 				}
 
+				await Achievement.UpdateCacheAsync(userId, Name, achievement);
 				await context.SaveChangesAsync();
 			}
 			return true;

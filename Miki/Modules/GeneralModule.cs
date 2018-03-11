@@ -33,7 +33,8 @@ namespace Miki.Modules
 					{
 						using (var context = new MikiContext())
 						{
-							CommandUsage u = await context.CommandUsages.FindAsync(msg.Author.Id.ToDbLong(), e.Name);
+							CommandUsage u = await CommandUsage.GetAsync(msg.Author.Id.ToDbLong(), e.Name);
+
 							if (u == null)
 							{
 								u = context.CommandUsages.Add(new CommandUsage() { UserId = msg.Author.Id.ToDbLong(), Amount = 1, Name = e.Name }).Entity;
