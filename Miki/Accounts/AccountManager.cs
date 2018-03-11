@@ -32,7 +32,7 @@ namespace Miki.Accounts
 		private ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
-        private Dictionary<ulong, DateTime> lastTimeExpGranted = new Dictionary<ulong, DateTime>();
+        private ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
 
 		private bool isSyncing = false;
 
@@ -87,101 +87,94 @@ namespace Miki.Accounts
 
 		public async Task CheckAsync(IDiscordMessage e)
 		{
-			if (e.Author.IsBot)
-				return;
+			//if (e.Author.IsBot)
+			//	return;
 
-			if (isSyncing)
-				return;
+			//if (isSyncing)
+			//	return;
 
-			try
-			{
-				if(!lastTimeExpGranted.ContainsKey(e.Author.Id))
-				{
-					lastTimeExpGranted.Add(e.Author.Id, DateTime.Now);
-				}
+			//try
+			//{
+			//	if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+			//	{
+			//		int currentExp = 0;
+			//		if (!await Global.redisClient.ExistsAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp"))
+			//		{
+			//			using (var context = new MikiContext())
+			//			{
+			//				LocalExperience user = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.Author);
+			//				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", user.Experience);
+			//			}
+			//		}
+			//		else
+			//		{
+			//			currentExp = await Global.redisClient.GetAsync<int>($"user:{e.Guild.Id}:{e.Author.Id}:exp");
+			//		}
 
-				if (lastTimeExpGranted[e.Author.Id].AddMinutes(1) < DateTime.Now)
-				{
-					int currentExp = 0;
-					if (!await Global.redisClient.ExistsAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp"))
-					{
-						using (var context = new MikiContext())
-						{
-							LocalExperience user = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.Author);
+			//		var bonusExp = 1;
+			//		currentExp += bonusExp;
 
+			//		if (!experienceQueue.ContainsKey(e.Author.Id))
+			//		{
+			//			var expObject = new ExperienceAdded()
+			//			{
+			//				UserId = e.Author.Id.ToDbLong(),
+			//				GuildId = e.Guild.Id.ToDbLong(),
+			//				Experience = bonusExp,
+			//				Name = e.Author.Username,
+			//			};
 
-							await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", user.Experience);
-						}
-					}
-					else
-					{
-						currentExp = await Global.redisClient.GetAsync<int>($"user:{e.Guild.Id}:{e.Author.Id}:exp");
-					}
+			//			experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+			//			{
+			//				eo.Experience += expObject.Experience;
+			//				return eo;
+			//			});
+			//		}
+			//		else
+			//		{
+			//			experienceQueue[e.Author.Id].Experience += bonusExp;
+			//		}
 
-					var bonusExp = 1;
-					currentExp += bonusExp;
+			//		int level = User.CalculateLevel(currentExp);
 
-					if (!experienceQueue.ContainsKey(e.Author.Id))
-					{
-						var expObject = new ExperienceAdded()
-						{
-							UserId = e.Author.Id.ToDbLong(),
-							GuildId = e.Guild.Id.ToDbLong(),
-							Experience = bonusExp,
-							Name = e.Author.Username,
-						};
+			//		if (User.CalculateLevel(currentExp - bonusExp) != level)
+			//		{
+			//			await LevelUpLocalAsync(e, level);
+			//		}
 
-						experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
-						{
-							eo.Experience += expObject.Experience;
-							return eo;
-						});
-					}
-					else
-					{
-						experienceQueue[e.Author.Id].Experience += bonusExp;
-					}
+			//		lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
-					int level = User.CalculateLevel(currentExp);
+			//		await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", currentExp);
+			//	}
 
-					if (User.CalculateLevel(currentExp - bonusExp) != level)
-					{
-						await LevelUpLocalAsync(e, level);
-					}
+			//	if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
+			//	{
+			//		isSyncing = true;
+			//		Log.Message($"Applying Experience for {experienceQueue.Count} users");
+			//		lastDbSync = DateTime.Now;
 
-					lastTimeExpGranted[e.Author.Id] = DateTime.Now;
-
-					await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", currentExp);
-				}
-
-				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
-				{
-					isSyncing = true;
-					Log.Message($"Applying Experience for {experienceQueue.Count} users");
-					lastDbSync = DateTime.Now;
-
-					try
-					{
-						await UpdateGlobalDatabase();
-						await UpdateLocalDatabase();
-						await UpdateGuildDatabase();
-					}
-					catch (Exception ex)
-					{
-						Log.Error(ex.Message + "\n" + ex.StackTrace);
-					}
-					finally
-					{
-						experienceQueue.Clear();
-						isSyncing = false;
-					}
-					Log.Message($"Done Applying!");
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex.ToString());
-			}
+			//		try
+			//		{
+			//			await UpdateGlobalDatabase();
+			//			await UpdateLocalDatabase();
+			//			await UpdateGuildDatabase();
+			//		}
+			//		catch (Exception ex)
+			//		{
+			//			Log.Error(ex.Message + "\n" + ex.StackTrace);
+			//		}
+			//		finally
+			//		{
+			//			experienceQueue.Clear();
+			//			isSyncing = false;
+			//		}
+			//		Log.Message($"Done Applying!");
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	Log.Error(ex.ToString());
+			//}
 		}
 
 		public async Task UpdateGlobalDatabase()

@@ -9,14 +9,20 @@ using System;
 
 namespace Miki
 {
-    internal class Notification
-    {
-        public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
-			=> SendAchievement(d.Achievements[rank], channel, user);
+	internal class Notification
+	{
+		public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordMessageChannel channel, IDiscordUser user)
+		{
+			return; //SendAchievement(d.Achievements[rank], channel, user);
+		}
 		public static void SendAchievement(BaseAchievement d, IDiscordMessageChannel channel, IDiscordUser user)
-			=> CreateAchievementEmbed(d, user).QueueToChannel(channel);	
+		{
+			return; //CreateAchievementEmbed(d, user).QueueToChannel(channel);	
+		}
 		public static void SendAchievement(BaseAchievement baseAchievement, IDiscordUser user)
-			=>	CreateAchievementEmbed(baseAchievement, user).QueueToUser(user);	
+		{
+			return; //CreateAchievementEmbed(baseAchievement, user).QueueToUser(user);	
+		}
 
 		private static IDiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)
 		{

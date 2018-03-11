@@ -35,8 +35,10 @@ namespace Miki.Models
 		public static async Task<LocalExperience> GetAsync(MikiContext context, long serverId, IDiscordUser user)
 		{
 			long userId = user.Id.ToDbLong();
-			return await context.LocalExperience.FindAsync(serverId, userId)
-				?? await CreateAsync(context, serverId, user);
+			var localExperience = await context.LocalExperience.FindAsync(serverId, userId);
+			if(localExperience == null)
+				return await CreateAsync(context, serverId, user);
+			return localExperience;
 		}
 
 		public async Task<int> GetRank(MikiContext context)
