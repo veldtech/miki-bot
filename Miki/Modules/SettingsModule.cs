@@ -16,8 +16,8 @@ namespace Miki.Modules
 {
 	public enum LevelNotificationsSetting
 	{
-		ALL = 0,
-		REWARDS_ONLY = 1,
+		REWARDS_ONLY = 0,
+		ALL = 1,
 		NONE = 2
 	}
 

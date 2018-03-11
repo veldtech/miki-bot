@@ -105,7 +105,7 @@ namespace Miki.Accounts
 							LastExperienceTime = DateTime.MinValue
 						};
 
-						Task.Run(async () => await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", o));
+						await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", o);
 					}
 				}
 				else
@@ -115,8 +115,8 @@ namespace Miki.Accounts
 
 				if (o.LastExperienceTime.AddMinutes(1) < DateTime.Now)
 				{
-					var ranNum = MikiRandom.Next(4, 10);
-					o.Experience += ranNum;
+					var bonusExp = 1;
+					o.Experience += bonusExp;
 
 					if (!experienceQueue.ContainsKey(e.Author.Id))
 					{
@@ -124,18 +124,18 @@ namespace Miki.Accounts
 						{
 							UserId = e.Author.Id.ToDbLong(),
 							GuildId = e.Guild.Id.ToDbLong(),
-							Experience = ranNum,
+							Experience = bonusExp,
 							Name = e.Author.Username,
 						});
 					}
 					else
 					{
-						experienceQueue[e.Author.Id].Experience += ranNum;
+						experienceQueue[e.Author.Id].Experience += bonusExp;
 					}
 
 					int level = User.CalculateLevel(o.Experience);
 
-					if (User.CalculateLevel(o.Experience - ranNum) != level)
+					if (User.CalculateLevel(o.Experience - bonusExp) != level)
 					{
 						await LevelUpLocalAsync(e, level);
 					}
