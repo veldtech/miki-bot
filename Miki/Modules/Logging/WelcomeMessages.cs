@@ -155,7 +155,7 @@ namespace Miki.Modules
         public async Task<List<EventMessageObject>> GetMessage(IGuild guild, EventMessageType type, IUser user)
         {
             long guildId = guild.Id.ToDbLong();
-            var channels = await guild.GetChannelsAsync();
+            var channels = await guild.GetTextChannelsAsync();
             List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())
