@@ -126,30 +126,20 @@ namespace Miki.Accounts.Achievements
 			return null;
 		}
 
-		public string PrintAchievements(MikiContext context, ulong userid)
+		public string PrintAchievements(List<Achievement> achievementNames)
 		{
 			string output = "";
-			long id = userid.ToDbLong();
-
-			List<Achievement> achievements = context.Achievements
-				.Where(p => p.Id == id)
-				.ToList();
-
-			foreach (Achievement achievement in achievements)
+			foreach(var a in achievementNames)
 			{
-				if (containers.ContainsKey(achievement.Name))
+				if (containers.TryGetValue(a.Name, out var value))
 				{
-					if (containers[achievement.Name].Achievements.Count > achievement.Rank)
+					if(a.Rank < value.Achievements.Count)
 					{
-						output += containers[achievement.Name].Achievements[achievement.Rank].Icon + " ";
+						output += value.Achievements[a.Rank].Icon + " "; 
 					}
 				}
 			}
 			return output;
-		}
-		public string PrintAchievements(List<Achievement> achievementNames)
-		{
-			return string.Join(" ", achievementNames.Select(x => (containers.FirstOrDefault(z => z.Key == x.Name).Value.Achievements[x.Rank]?.Icon) ?? ""));
 		}
 
 		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IUser user, IMessageChannel channel)

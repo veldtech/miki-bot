@@ -29,6 +29,16 @@ namespace Miki.Modules.AccountsModule
 	[Module("Accounts")]
 	public class AccountsModule
 	{
+		EmojiBarSet onBarSet = new EmojiBarSet(
+			"<:mbarlefton:391971424442646534>",
+			"<:mbarmidon:391971424920797185>",
+			"<:mbarrighton:391971424488783875>");
+
+		EmojiBarSet offBarSet = new EmojiBarSet(
+			"<:mbarleftoff:391971424824459265>",
+			"<:mbarmidoff:391971424824197123>",
+			"<:mbarrightoff:391971424862208000>");
+
 		// TODO: install services automatically.
 		public AccountsModule(Module module)
 		{
@@ -211,16 +221,6 @@ namespace Miki.Modules.AccountsModule
 				IUser discordUser = await e.Guild.GetUserAsync(uid);
 				User account = await User.GetAsync(context, discordUser);
 
-				EmojiBarSet onBarSet = new EmojiBarSet(
-					"<:mbarlefton:391971424442646534>", 
-					"<:mbarmidon:391971424920797185>", 
-					"<:mbarrighton:391971424488783875>");
-
-				EmojiBarSet offBarSet = new EmojiBarSet(
-					"<:mbarleftoff:391971424824459265>", 
-					"<:mbarmidoff:391971424824197123>", 
-					"<:mbarrightoff:391971424862208000>");
-
 				string icon = "";
 
 				if(await account.IsDonatorAsync(context))
@@ -326,6 +326,9 @@ namespace Miki.Modules.AccountsModule
 						favCommand);
 
 					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
+
+					Log.Message("achievement count: " + allAchievements.Count);
+
 					string achievements = locale.GetString("miki_placeholder_null");
 
 					if (allAchievements != null)

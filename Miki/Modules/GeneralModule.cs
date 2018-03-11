@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Miki.API;
 using Miki.Dsl;
 using Miki.Framework.Extension;
+using Microsoft.EntityFrameworkCore;
 
 namespace Miki.Modules
 {
@@ -29,8 +30,6 @@ namespace Miki.Modules
 				x.Name = "--count-commands";
 				x.processEvent = async (msg, e, success, t) =>
 				{
-					Log.Notice($"sending count for command: {e.Name} by {msg.Author.ToString()}");
-
 					if (success)
 					{
 						using (var context = new MikiContext())

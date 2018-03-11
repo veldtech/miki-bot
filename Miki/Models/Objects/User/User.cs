@@ -96,11 +96,20 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<User> GetAsync(MikiContext context, IUser u)
+		public static async Task<User> GetAsync(MikiContext context, IUser u, Func<MikiContext, Task<User>> userFactory = null)
 		{
 			long id = u.Id.ToDbLong();
-			User user = await context.Users.Where(x => x.Id == u.Id.ToDbLong())
-				.FirstOrDefaultAsync();
+
+			User user = null;
+
+			if (userFactory == null)
+			{
+				user = await context.Users.FindAsync(id);
+			}
+			else
+			{
+				user = await userFactory(context);
+			}
 
 			if(user == null)
 			{
