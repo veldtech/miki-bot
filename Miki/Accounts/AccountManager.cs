@@ -39,7 +39,6 @@ namespace Miki.Accounts
         {
 			OnGlobalLevelUp += async (a, e, l) =>
 			{
-				await Task.Yield();
 				DogStatsd.Counter("levels.global", l);
 			};
 			OnLocalLevelUp  += async (a, e, l) =>

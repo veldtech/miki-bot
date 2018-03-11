@@ -55,8 +55,6 @@ namespace Miki
         /// </summary>
         public void LoadDiscord()
         {
-			Global.redisClient = new StackExchangeRedisCacheClient(new ProtobufSerializer(), Global.Config.RedisConnectionString);
-
 			if (!Global.Config.IsPatreonBot)
 			{
 				WebhookManager.Listen("webhook");

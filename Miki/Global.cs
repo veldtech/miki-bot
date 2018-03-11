@@ -5,6 +5,7 @@ using StackExchange.Redis.Extensions.Core;
 using Newtonsoft.Json;
 using Miki.Framework.FileHandling;
 using Miki.API;
+using StackExchange.Redis.Extensions.Protobuf;
 
 namespace Miki
 {
@@ -14,7 +15,19 @@ namespace Miki
     public class Global
     {
         public static RavenClient ravenClient;
-		public static ICacheClient redisClient;
+
+		private static Lazy<ICacheClient> lazyConnection = new Lazy<ICacheClient>(() =>
+		{
+			return new StackExchangeRedisCacheClient(new ProtobufSerializer(), Config.RedisConnectionString);
+		});
+
+		public static ICacheClient redisClient
+		{
+			get
+			{
+				return lazyConnection.Value;
+			}
+		}
 		public static Config Config
 		{
 			get
