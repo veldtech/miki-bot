@@ -40,7 +40,7 @@ namespace Miki.Modules.AccountsModule
 				.Install(module);
 		}
 
-		[Command(Name = "achievements")]
+		[Command(Name = "achievements", Aliases = new[] { "cheevos" })]
 		public async Task AchievementsAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
