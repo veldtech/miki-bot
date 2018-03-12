@@ -672,6 +672,7 @@ namespace Miki.Modules.AccountsModule
 				if (amount.Value <= sender.Currency)
 				{
 					await sender.AddCurrencyAsync(-amount.Value, e.Channel, sender);
+					await receiver.AddCurrencyAsync(amount.Value, e.Channel, sender);
 
 					new EmbedBuilder()
 					{

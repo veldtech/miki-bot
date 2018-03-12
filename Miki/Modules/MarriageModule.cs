@@ -321,8 +321,9 @@ namespace Miki.Modules
 
                 foreach (Marriage p in proposals)
                 {
-                    User u = await context.Users.FindAsync(p.GetOther(e.Author.Id.ToDbLong()));
-                    proposalNames.Add($"{u.Name} [{u.Id}]");
+					long id = p.GetOther(e.Author.Id.ToDbLong());
+					string u = await User.GetNameAsync(context, id);
+                    proposalNames.Add($"{u} [{id}]");
                 }
 
                 EmbedBuilder embed = new EmbedBuilder();
@@ -338,8 +339,9 @@ namespace Miki.Modules
 
                 foreach (Marriage p in proposals)
                 {
-                    User u = await context.Users.FindAsync(p.GetOther(e.Author.Id.ToDbLong()));
-                    proposalNames.Add($"{u.Name} [{u.Id}]");
+					long id = p.GetOther(e.Author.Id.ToDbLong());
+					string u = await User.GetNameAsync(context, id);
+                    proposalNames.Add($"{u} [{id}]");
                 }
 
                 output = string.Join("\n", proposalNames);
