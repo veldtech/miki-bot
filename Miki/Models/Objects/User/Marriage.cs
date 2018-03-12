@@ -157,25 +157,29 @@ namespace Miki.Models
 
 		private static async Task<List<Marriage>> InternalGetProposalsSentAsync(MikiContext context, long asker)
 		{
-			return await context.Marriages
-				.Where(p => p.Participants.FirstOrDefault(x => x.UserId == asker && x.Asker) != null && p.IsProposing == true)
-					.Include(x => x.Participants)
+			var allInstances = await context.Marriages
+				.Include(x => x.Participants)
+				.Where(x => x.Participants.Any(y => y.UserId == asker && y.Asker))
 				.ToListAsync();
+			allInstances.RemoveAll(x => !x.IsProposing);
+			return allInstances;
 		}
 
-        private static async Task<List<Marriage>> InternalGetProposalsReceivedAsync(MikiContext context, long receiver)
+		private static async Task<List<Marriage>> InternalGetProposalsReceivedAsync(MikiContext context, long receiver)
         {
-            return await context.Marriages
-				.Where(p => p.Participants.FirstOrDefault(x => x.UserId == receiver && !x.Asker) != null && p.IsProposing == true)
-					.Include(x => x.Participants)
+			var allInstances = await context.Marriages
+				.Include(x => x.Participants)
+				.Where(x => x.Participants.Any(y => y.UserId == receiver && !y.Asker))
 				.ToListAsync();
-        }
+			allInstances.RemoveAll(x => !x.IsProposing);
+			return allInstances;
+		}
 
-        private static async Task<Marriage> InternalGetMarriageAsync(MikiContext context, long receiver, long asker)
+		private static async Task<Marriage> InternalGetMarriageAsync(MikiContext context, long receiver, long asker)
         {
             return await context.Marriages
-				.Where(tm => tm.Participants.FirstOrDefault(x => x.UserId == receiver) != null && tm.Participants.FirstOrDefault(x => x.UserId == receiver) != null && tm.IsProposing == false)
 					.Include(x => x.Participants)
+				.Where(tm => tm.Participants.Any(x => x.UserId == receiver) && tm.Participants.Any(x => x.UserId == receiver))
 				.FirstOrDefaultAsync();
         }
 
