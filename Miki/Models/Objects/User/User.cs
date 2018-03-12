@@ -117,6 +117,18 @@ namespace Miki.Models
 			}
 			return user;
 		}
+		public static async Task<string> GetNameAsync(MikiContext context, long u)
+		{
+			string key = $"user:name:{u}";
+			if(await Global.redisClient.ExistsAsync(key))
+			{
+				return Global.redisClient.Get<string>(key);
+			}
+
+			User user = await context.Users.FindAsync(u);
+			await Global.redisClient.AddAsync(key, user.Name);
+			return user.Name;
+		}
 
         public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
         {

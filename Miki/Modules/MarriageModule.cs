@@ -21,33 +21,39 @@ namespace Miki.Modules
 		{
 			Locale locale = new Locale(e.Channel.Id);
 
-			if (e.message.MentionedUserIds.Count == 0)
-			{
-				e.Channel.QueueMessageAsync(locale.GetString("miki_module_accounts_marry_error_no_mention"));
-				return;
-			}
-
 			long askerId = 0;
 			long receiverId = 0;
 
-			IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
+			ArgObject args = e.Arguments.FirstOrDefault();
+
+			if (args == null)
+				return;
+
+			IGuildUser user = await args.GetUserAsync(e.Guild);
+
+			if (user == null)
+			{
+				e.Channel.QueueMessageAsync("Couldn't find this person..");
+				return;
+			}
 
 			using (MikiContext context = new MikiContext())
 			{
-
 				User mentionedPerson = await User.GetAsync(context, user);
 				User currentUser = await User.GetAsync(context, e.Author);
+
 				askerId = currentUser.Id;
 				receiverId = mentionedPerson.Id;
-
-				if (mentionedPerson.Banned)
-				{
-					return;
-				}
 
 				if (currentUser == null || mentionedPerson == null)
 				{
 					e.ErrorEmbed(locale.GetString("miki_module_accounts_marry_error_null")).Build().QueueToChannel(e.Channel);
+					return;
+				}
+
+				if (mentionedPerson.Banned)
+				{
+					e.ErrorEmbed("This person has been banned from Miki.").Build().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -92,7 +98,7 @@ namespace Miki.Modules
 					new EmbedBuilder()
 					{
 						Color = new Color(0.4f, 1f, 0.6f),
-						Description = cont.GetResource("buyMarriageslot_success", user.MarriageSlots),
+						Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots),
 					}.Build().QueueToChannel(cont.Channel);
 
 					await context.SaveChangesAsync();
@@ -104,117 +110,90 @@ namespace Miki.Modules
 					new EmbedBuilder()
 					{
 						Color = new Color(1, 0.4f, 0.6f),
-						Description = cont.GetResource("buyMarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
+						Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
 					}.Build().QueueToChannel(cont.Channel);
                     await cont.commandHandler.RequestDisposeAsync();
                 }
             }
         }
 
-        [Command(Name = "divorce")]
-        public async Task DivorceAsync(EventContext e)
-        {
+		[Command(Name = "divorce")]
+		public async Task DivorceAsync(EventContext e)
+		{
 			Locale locale = new Locale(e.Channel.Id);
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
+			using (MikiContext context = new MikiContext())
+			{
+				List<User> users = context.Users.Where(p => p.Name.ToLower() == e.Arguments.ToString().ToLower()).ToList();
 
-			if (arg != null)
-            {
-                using (MikiContext context = new MikiContext())
-                {
-                    List<User> users = context.Users.Where(p => p.Name.ToLower() == e.Arguments.ToString().ToLower()).ToList();
-
-                    if (users.Count == 0)
-                    {
-                        e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-							.Build().QueueToChannel(e.Channel);
-                    }
-                    else if (users.Count == 1)
-                    {
-                        Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, users.First().Id.FromDbLong());
-                        if (currentMarriage == null)
-                        {
-                            e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-								.Build().QueueToChannel(e.Channel);
-                            return;
-                        }
-
-                        if (currentMarriage.IsProposing)
-                        {
-                            e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-								.Build().QueueToChannel(e.Channel);
-                            return;
-                        }
-
-                        await currentMarriage.RemoveAsync(context);
-
-                        EmbedBuilder embed = Utils.Embed;
-                        embed.Title = locale.GetString("miki_module_accounts_divorce_header");
-                        embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, users.First().Name);
-                        embed.Color = new Color(0.6f, 0.4f, 0.1f);
-                        embed.Build().QueueToChannel(e.Channel);
-                        return;
-                    }
-                    else
-                    {
-                        List<Marriage> allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
-                        bool done = false;
-
-                        foreach (Marriage Marriage in allMarriages)
-                        {
-                            foreach (User user in users)
-                            {
-                                if (Marriage.GetOther(e.Author.Id) == user.Id.FromDbLong())
-                                {
-                                    await Marriage.RemoveAsync(context);
-                                    done = true;
-
-                                    EmbedBuilder embed = Utils.Embed;
-                                    embed.Title = locale.GetString("miki_module_accounts_divorce_header");
-                                    embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
-                                    embed.Color = new Color(0.6f, 0.4f, 0.1f);
-                                    embed.Build().QueueToChannel(e.Channel);
-                                    break;
-                                }
-                            }
-
-                            if (done)
-                                break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (e.Author.Id == e.message.MentionedUserIds.First())
-                {
-                    e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
+				if (users.Count == 0)
+				{
+					e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
 						.Build().QueueToChannel(e.Channel);
-                    return;
-                }
+				}
+				else if (users.Count == 1)
+				{
+					ArgObject arg = e.Arguments.FirstOrDefault();
 
-                using (MikiContext context = new MikiContext())
-                {
-					User author = await User.GetAsync(context, e.Author);
-					Marriage Marriage = author.Marriages
-						.FirstOrDefault(x => x.Marriage.GetOther(author.Id) == e.message.MentionedUserIds.First().ToDbLong())?.Marriage;
+					if (arg == null)
+						return;
 
-					if (Marriage != null)
+					IGuildUser user = await arg.GetUserAsync(e.Guild);
+
+					Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, user.Id);
+
+					if (currentMarriage == null)
 					{
-						string user1 = (await e.Guild.GetUserAsync(Marriage.GetMe(e.Author.Id))).Username;
-						string user2 = (await e.Guild.GetUserAsync(Marriage.GetOther(e.Author.Id))).Username;
-
-						await Marriage.RemoveAsync(context);
-
-						EmbedBuilder embed = Utils.Embed;
-						embed.Title = locale.GetString("miki_module_accounts_divorce_header");
-						embed.Description = locale.GetString("miki_module_accounts_divorce_content", user1, user2);
-						embed.Color = new Color(0.6f, 0.4f, 0.1f);
-						embed.Build().QueueToChannel(e.Channel);
+						e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
+							.Build().QueueToChannel(e.Channel);
+						return;
 					}
-                }
-            }
-        }
+
+					if (currentMarriage.IsProposing)
+					{
+						e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
+							.Build().QueueToChannel(e.Channel);
+						return;
+					}
+
+					await currentMarriage.RemoveAsync(context);
+
+					EmbedBuilder embed = Utils.Embed;
+					embed.Title = locale.GetString("miki_module_accounts_divorce_header");
+					embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Username);
+					embed.Color = new Color(0.6f, 0.4f, 0.1f);
+					embed.Build().QueueToChannel(e.Channel);
+					return;
+				}
+				else
+				{
+					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
+					bool done = false;
+
+					foreach (Marriage Marriage in allMarriages)
+					{
+						foreach (User user in users)
+						{
+							if (Marriage.GetOther(e.Author.Id) == user.Id.FromDbLong())
+							{
+								await Marriage.RemoveAsync(context);
+								done = true;
+
+								EmbedBuilder embed = Utils.Embed;
+								embed.Title = locale.GetString("miki_module_accounts_divorce_header");
+								embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
+								embed.Color = new Color(0.6f, 0.4f, 0.1f);
+								embed.Build().QueueToChannel(e.Channel);
+								break;
+							}
+						}
+
+						if (done)
+							break;
+					}
+				}
+			}
+		}
 
         [Command(Name = "acceptMarriage")]
         public async Task AcceptMarriageAsync(EventContext e)
@@ -240,14 +219,9 @@ namespace Miki.Modules
 				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 				User asker = await User.GetAsync(context, user);
 
-				UserMarriedTo marriedTo = await context.UsersMarriedTo
-						.Include(x => x.Marriage)
-					.Where(x => x.UserId == accepter.Id)
-					.FirstOrDefaultAsync();
+				Marriage marriage = await Marriage.GetEntryAsync(context, accepter.Id, asker.Id);
 
-
-
-                if (marriedTo.Marriage != null)
+                if (marriage != null)
                 {
                     if (accepter.MarriageSlots < (await Marriage.GetMarriagesAsync(context, accepter.Id)).Count)
                     {
@@ -261,9 +235,9 @@ namespace Miki.Modules
                         return;
                     }
 
-					if (marriedTo.Marriage.IsProposing)
+					if (marriage.IsProposing)
 					{
-						marriedTo.Marriage.AcceptProposal(context);
+						marriage.AcceptProposal(context);
 
 						await context.SaveChangesAsync();
 

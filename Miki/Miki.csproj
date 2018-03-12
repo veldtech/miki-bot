@@ -300,6 +300,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
+    <ProjectReference Include="D:\Projects\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
   </ItemGroup>
 
 </Project>

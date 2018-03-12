@@ -117,7 +117,7 @@ namespace Miki.Modules.Accounts.Services
                         CheckCommand = async (p) =>
                         {
 							await Task.Yield();
-							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.First() == p.message.Author.Id;
+							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.FirstOrDefault() == p.message.Author.Id;
                         },
 						Points = 5,
                     }

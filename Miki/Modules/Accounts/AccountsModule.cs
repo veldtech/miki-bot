@@ -218,7 +218,9 @@ namespace Miki.Modules.AccountsModule
 				}
 
 				Locale locale = new Locale(e.Channel.Id.ToDbLong());
+
 				IUser discordUser = await e.Guild.GetUserAsync(uid);
+
 				User account = await User.GetAsync(context, discordUser);
 
 				string icon = "";
@@ -247,6 +249,7 @@ namespace Miki.Modules.AccountsModule
 					int localLevel = User.CalculateLevel(localExp.Experience);
 					int maxLocalExp = User.CalculateLevelExperience(localLevel);
 					int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
+
 					EmojiBar expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
 
 					string infoValue = new MessageBuilder()
@@ -255,6 +258,7 @@ namespace Miki.Modules.AccountsModule
 						.AppendText(locale.GetString("miki_module_accounts_information_rank", rank))
 						.AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
 						.Build();
+
 					embed.AddInlineField(locale.GetString("miki_generic_information"), infoValue);
 
 					int globalLevel = User.CalculateLevel(account.Total_Experience);
@@ -274,19 +278,17 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
 
-					List<UserMarriedTo> Marriages = await context.UsersMarriedTo
-							.Include(x => x.Marriage)
-								.ThenInclude(x => x.Participants)
-						.Where(x => x.UserId == id && !x.Marriage.IsProposing)
-						.ToListAsync();
+					List<Marriage> Marriages = await Marriage.GetMarriagesAsync(context, id);
 
-					List<User> users = new List<User>();
+					Marriages.RemoveAll(x => x.IsProposing);
+
+					List<string> users = new List<string>();
 
 					int maxCount = Marriages?.Count ?? 0;
 
 					for (int i = 0; i < maxCount; i++)
 					{
-						users.Add(await context.Users.FindAsync(Marriages[i].Marriage.GetOther(id)));
+						users.Add(await User.GetNameAsync(context, Marriages[i].GetOther(id)));
 					}
 
 					if (Marriages?.Count > 0)
@@ -295,9 +297,9 @@ namespace Miki.Modules.AccountsModule
 
 						for (int i = 0; i < maxCount; i++)
 						{
-							if (Marriages[i].Marriage.GetOther(id) != 0)
+							if (Marriages[i].GetOther(id) != 0)
 							{
-								MarriageStrings.Add($"💕 {users[i].Name} (_{Marriages[i].Marriage.TimeOfMarriage.ToShortDateString()}_)");
+								MarriageStrings.Add($"💕 {users[i]} (_{Marriages[i].TimeOfMarriage.ToShortDateString()}_)");
 							}
 						}
 

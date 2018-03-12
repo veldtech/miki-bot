@@ -122,12 +122,11 @@ namespace Miki.Models
 						TimeOfMarriage = DateTime.Now,
 					}).Entity;
 
-					await context.SaveChangesAsync();
-
 					context.UsersMarriedTo.Add(new UserMarriedTo()
 					{
 						MarriageId = m.MarriageId,
-						UserId = receiver
+						UserId = receiver,
+						Asker = false
 					});
 
 					context.UsersMarriedTo.Add(new UserMarriedTo()
@@ -143,7 +142,7 @@ namespace Miki.Models
 			}
 			catch(Exception e)
 			{
-				Log.Message(e.Message + "\n" + e.StackTrace);
+				Log.Message(e.ToString());
 			}
 			return false;
         }
@@ -182,11 +181,13 @@ namespace Miki.Models
 
         private async static Task<List<Marriage>> InternalGetMarriagesAsync(MikiContext context, long userid)
         {
-            return await context
-                .Marriages
-                .Where(p => p.Participants.FirstOrDefault(x => x.UserId == userid) != null && !p.IsProposing)
-					.Include(x => x.Participants)
+			var allInstances = await context.Marriages
+				.Include(x => x.Participants)
+				.Where(x => x.Participants.Any(y => y.UserId == userid))
 				.ToListAsync();
+
+			allInstances.RemoveAll(x => x.IsProposing);
+			return allInstances;
         }
     }
 }
