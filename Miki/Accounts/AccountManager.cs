@@ -91,94 +91,94 @@ namespace Miki.Accounts
 
 		public async Task CheckAsync(IMessage e)
 		{
-			//if (e.Author.IsBot)
-			//	return;
+			if (e.Author.IsBot)
+				return;
 
-			//if (isSyncing)
-			//	return;
+			if (isSyncing)
+				return;
 
-			//try
-			//{
-			//	if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
-			//	{
-			//		int currentExp = 0;
-			//		if (!await Global.redisClient.ExistsAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp"))
-			//		{
-			//			using (var context = new MikiContext())
-			//			{
-			//				LocalExperience user = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), e.Author);
-			//				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", user.Experience);
-			//			}
-			//		}
-			//		else
-			//		{
-			//			currentExp = await Global.redisClient.GetAsync<int>($"user:{e.Guild.Id}:{e.Author.Id}:exp");
-			//		}
+			try
+			{
+				if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+				{
+					int currentExp = 0;
+					if (!await Global.redisClient.ExistsAsync($"user:{(e.Channel as IGuildChannel).Id}:{e.Author.Id}:exp"))
+					{
+						using (var context = new MikiContext())
+						{
+							LocalExperience user = await LocalExperience.GetAsync(context, (e.Channel as IGuildChannel).Guild.Id.ToDbLong(), e.Author);
+							await Global.redisClient.AddAsync($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp", user.Experience);
+						}
+					}
+					else
+					{
+						currentExp = await Global.redisClient.GetAsync<int>($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp");
+					}
 
-			//		var bonusExp = 1;
-			//		currentExp += bonusExp;
+					var bonusExp = 1;
+					currentExp += bonusExp;
 
-			//		if (!experienceQueue.ContainsKey(e.Author.Id))
-			//		{
-			//			var expObject = new ExperienceAdded()
-			//			{
-			//				UserId = e.Author.Id.ToDbLong(),
-			//				GuildId = e.Guild.Id.ToDbLong(),
-			//				Experience = bonusExp,
-			//				Name = e.Author.Username,
-			//			};
+					if (!experienceQueue.ContainsKey(e.Author.Id))
+					{
+						var expObject = new ExperienceAdded()
+						{
+							UserId = e.Author.Id.ToDbLong(),
+							GuildId = (e.Channel as IGuildChannel).Guild.Id.ToDbLong(),
+							Experience = bonusExp,
+							Name = e.Author.Username,
+						};
 
-			//			experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
-			//			{
-			//				eo.Experience += expObject.Experience;
-			//				return eo;
-			//			});
-			//		}
-			//		else
-			//		{
-			//			experienceQueue[e.Author.Id].Experience += bonusExp;
-			//		}
+						experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+						{
+							eo.Experience += expObject.Experience;
+							return eo;
+						});
+					}
+					else
+					{
+						experienceQueue[e.Author.Id].Experience += bonusExp;
+					}
 
-			//		int level = User.CalculateLevel(currentExp);
+					int level = User.CalculateLevel(currentExp);
 
-			//		if (User.CalculateLevel(currentExp - bonusExp) != level)
-			//		{
-			//			await LevelUpLocalAsync(e, level);
-			//		}
+					if (User.CalculateLevel(currentExp - bonusExp) != level)
+					{
+						await LevelUpLocalAsync(e, level);
+					}
 
-			//		lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
+					lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
-			//		await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", currentExp);
-			//	}
+					await Global.redisClient.AddAsync($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp", currentExp);
+				}
 
-			//	if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
-			//	{
-			//		isSyncing = true;
-			//		Log.Message($"Applying Experience for {experienceQueue.Count} users");
-			//		lastDbSync = DateTime.Now;
+				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
+				{
+					isSyncing = true;
+					Log.Message($"Applying Experience for {experienceQueue.Count} users");
+					lastDbSync = DateTime.Now;
 
-			//		try
-			//		{
-			//			await UpdateGlobalDatabase();
-			//			await UpdateLocalDatabase();
-			//			await UpdateGuildDatabase();
-			//		}
-			//		catch (Exception ex)
-			//		{
-			//			Log.Error(ex.Message + "\n" + ex.StackTrace);
-			//		}
-			//		finally
-			//		{
-			//			experienceQueue.Clear();
-			//			isSyncing = false;
-			//		}
-			//		Log.Message($"Done Applying!");
-			//	}
-			//}
-			//catch (Exception ex)
-			//{
-			//	Log.Error(ex.ToString());
-			//}
+					try
+					{
+						await UpdateGlobalDatabase();
+						await UpdateLocalDatabase();
+						await UpdateGuildDatabase();
+					}
+					catch (Exception ex)
+					{
+						Log.Error(ex.Message + "\n" + ex.StackTrace);
+					}
+					finally
+					{
+						experienceQueue.Clear();
+						isSyncing = false;
+					}
+					Log.Message($"Done Applying!");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex.ToString());
+			}
 		}
 
 		public async Task UpdateGlobalDatabase()
