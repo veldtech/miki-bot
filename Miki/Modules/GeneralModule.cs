@@ -40,6 +40,7 @@ namespace Miki.Modules
 							u.Amount++;
 							user.Total_Commands++;
 
+							await CommandUsage.UpdateCacheAsync(user.Id, e.Name, u);
 							await context.SaveChangesAsync();
 						}
 					}

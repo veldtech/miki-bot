@@ -20,8 +20,13 @@ namespace Miki.Models
 			string key = $"achievement:{userId}:{name}";
 
 			if (await Global.redisClient.ExistsAsync(key))
-				return context.Attach(await Global.redisClient.GetAsync<Achievement>(key))
-					.Entity;
+			{
+				Achievement a = await Global.redisClient.GetAsync<Achievement>(key);
+				if(a != null)
+				{
+					return context.Attach(a).Entity;
+				}
+			}			
 
 			Achievement achievement = await context.Achievements.FindAsync(userId, name);
 			await Global.redisClient.AddAsync(key, achievement);
