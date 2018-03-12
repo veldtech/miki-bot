@@ -16,6 +16,7 @@ using Miki.Accounts.Achievements;
 using Discord;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
+using StatsdClient;
 
 namespace Miki.Modules
 {
@@ -99,6 +100,8 @@ namespace Miki.Modules
 								u.Currency += addedCurrency;
 
 								await context.SaveChangesAsync();
+
+								DogStatsd.Increment("votes.dbl");
 
 								new EmbedBuilder()
 								{

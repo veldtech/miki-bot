@@ -15,19 +15,17 @@ namespace Miki.Models
 
 		public User User { get; set; }
 
-		public static async Task<Achievement> GetAsync(long userId, string name)
+		public static async Task<Achievement> GetAsync(MikiContext context, long userId, string name)
 		{
 			string key = $"achievement:{userId}:{name}";
 
 			if (await Global.redisClient.ExistsAsync(key))
-				return await Global.redisClient.GetAsync<Achievement>(key);
+				return context.Attach(await Global.redisClient.GetAsync<Achievement>(key))
+					.Entity;
 
-			using (var context = new MikiContext())
-			{
-				Achievement achievement = await context.Achievements.FindAsync(userId, name);
-				await Global.redisClient.AddAsync(key, achievement);
-				return achievement;
-			}
+			Achievement achievement = await context.Achievements.FindAsync(userId, name);
+			await Global.redisClient.AddAsync(key, achievement);
+			return achievement;
 		}
 
 		internal static async Task UpdateCacheAsync(long userId, string name, Achievement achievement)

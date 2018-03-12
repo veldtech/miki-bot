@@ -47,7 +47,7 @@ namespace Miki.Accounts.Achievements
 
 			using (var context = new MikiContext())
 			{
-				Achievement a = await Achievement.GetAsync(userId, Name);
+				Achievement a = await Achievement.GetAsync(context, userId, Name);
 
 				if (a == null)
 				{
