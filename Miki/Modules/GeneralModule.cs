@@ -34,7 +34,7 @@ namespace Miki.Modules
 					{
 						using (var context = new MikiContext())
 						{
-							CommandUsage u = await CommandUsage.GetAsync(msg.Author.Id.ToDbLong(), e.Name);
+							CommandUsage u = await CommandUsage.GetAsync(context, msg.Author.Id.ToDbLong(), e.Name);
 							User user = await User.GetAsync(context, msg.Author);
 
 							u.Amount++;

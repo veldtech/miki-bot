@@ -18,6 +18,9 @@ namespace Miki.Models
         public DateTime TimeOfMarriage { get; set; }
         public DateTime TimeOfProposal { get; set; }
 
+		public UserMarriedTo Asker
+			=> Participants.First(x => x.Asker);
+
 		public ulong GetMe(ulong id) 
 			=> GetMe(id.ToDbLong()).FromDbLong();
         public long GetMe(long id)
@@ -104,54 +107,39 @@ namespace Miki.Models
             return m;
         }
 
-        public static async Task<bool> IsBeingProposedBy(MikiContext context, long MarriageId)
-        {
-            return await InternalGetProposalAsync(context, MarriageId) != null;
-        }
-
-        public static async Task<bool> ProposeAsync(long receiver, long asker)
-        {
-			try
+		public static async Task ProposeAsync(long receiver, long asker)
+		{
+			using (var context = new MikiContext())
 			{
-				using (var context = new MikiContext())
+				Marriage m = context.Marriages.Add(new Marriage()
 				{
-					Marriage m = context.Marriages.Add(new Marriage()
-					{
-						IsProposing = true,
-						TimeOfProposal = DateTime.Now,
-						TimeOfMarriage = DateTime.Now,
-					}).Entity;
+					IsProposing = true,
+					TimeOfProposal = DateTime.Now,
+					TimeOfMarriage = DateTime.Now,
+				}).Entity;
 
-					context.UsersMarriedTo.Add(new UserMarriedTo()
-					{
-						MarriageId = m.MarriageId,
-						UserId = receiver,
-						Asker = false
-					});
+				context.UsersMarriedTo.Add(new UserMarriedTo()
+				{
+					MarriageId = m.MarriageId,
+					UserId = receiver,
+					Asker = false
+				});
 
-					context.UsersMarriedTo.Add(new UserMarriedTo()
-					{
-						MarriageId = m.MarriageId,
-						UserId = asker,
-						Asker = true
-					});
+				context.UsersMarriedTo.Add(new UserMarriedTo()
+				{
+					MarriageId = m.MarriageId,
+					UserId = asker,
+					Asker = true
+				});
 
-					await context.SaveChangesAsync();
-					return true;
-				}
+				await context.SaveChangesAsync();
 			}
-			catch(Exception e)
-			{
-				Log.Message(e.ToString());
-			}
-			return false;
-        }
+		}
 
         private static async Task<Marriage> InternalGetProposalAsync(MikiContext context, long MarriageId)
         {
 			return await context
-				.Marriages
-				.Include(x => x.Participants)
+				.Marriages.Include(x => x.Participants)
 				.FirstAsync(x => x.MarriageId == MarriageId);
         }
 

@@ -17,25 +17,11 @@ namespace Miki.Modules
         public async Task AskAsync(EventContext e)
         {
             string image = "http://i.imgur.com/AHPnL.gif";
-			EmbedBuilder embed = new EmbedBuilder();
 
-            embed.Description = $"{e.Author.Username} asks {e.message.Content}";
+			await QueueAction(e, "asks", image);
+		}
 
-            if (e.message.MentionedUserIds.Count > 0)
-            {
-                if (e.Author.Id == 114190551670194183 && e.message.MentionedUserIds.First() == 185942988596183040)
-                {
-                    IUser u = await e.Guild.GetUserAsync(185942988596183040);
-                    image = "http://i.imgur.com/AFcG8LU.gif";
-                    embed.Description = $"{e.Author.Username} asks {u.Username} for lewds";
-                }
-            }
-
-            embed.ImageUrl = image;
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "cake")]
+		[Command(Name = "cake")]
         public async Task CakeAsync(EventContext e)
         {
             string[] images = new string[]
@@ -84,24 +70,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/QSLpOIR.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "feeds", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} feeds {e.Arguments.ToString()} cake";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} feeds {e.Author.Username} cake";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "cuddle")]
+		[Command(Name = "cuddle")]
         public async Task CuddleAsync(EventContext e)
         {
             string[] images = new string[]
@@ -117,24 +89,10 @@ namespace Miki.Modules
                 
             };
 
-            Random r = new Random();
+			await QueueAction(e, "cuddles", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} cuddles with {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} cuddles with {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "glare")]
+		[Command(Name = "glare")]
         public async Task GlareAsync(EventContext e)
         {
             string[] images = new string[]
@@ -182,24 +140,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/qzPYYsK.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "glares at", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed
-                .WithImageUrl(images[r.Next(0, images.Length)]);
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} glares at {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} glares at {e.Author.Username}";
-            }
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "highfive")]
+		[Command(Name = "highfive")]
         public async Task HighFiveAsync(EventContext e)
         {
             string[] images = new string[]
@@ -227,24 +171,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/XYA8ET8.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "high-fives", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} high fives at {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} high fives at {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "hug")]
+		[Command(Name = "hug")]
         public async Task HugAsync(EventContext e)
         {
             string[] images = new string[]
@@ -275,24 +205,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/Y9sMTP4.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "hugs", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} hugs {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} hugs {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "poke")]
+		[Command(Name = "poke")]
         public async Task PokeAsync(EventContext e)
         {
             string[] images = new string[]
@@ -309,24 +225,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/urC9B1H.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "pokes", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} pokes {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} pokes {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "punch")]
+		[Command(Name = "punch")]
         public async Task PunchAsync(EventContext e)
         {
             string[] images = new string[]
@@ -344,24 +246,10 @@ namespace Miki.Modules
                 "http://imgur.com/pDohPrm.gif",
             };
 
-            Random r = new Random();
+			await QueueAction(e, "punches", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} punches {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} punches {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "kiss")]
+		[Command(Name = "kiss")]
         public async Task KissAsync(EventContext e)
         {
             string[] images = new string[]
@@ -386,24 +274,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/IVOBC8p.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "kisses", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} kisses {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} kisses {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "pat", Aliases = new string[] { "pet" })]
+		[Command(Name = "pat", Aliases = new string[] { "pet" })]
         public async Task PetAsync(EventContext e)
         {
             string[] images = new string[]
@@ -466,24 +340,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/wXw7IjY.gif"
             };
 
-            Random r = new Random();
+			await QueueAction(e, "pats", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} pats {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} pats {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-
-        [Command(Name = "slap")]
+		[Command(Name = "slap")]
         public async Task SlapAsync(EventContext e)
         {
             string[] images = new string[]
@@ -501,24 +361,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/pDohPrm.gif",
             };
 
-            Random r = new Random();
+			await QueueAction(e, "slaps", images[MikiRandom.Next(images.Length)]);
+		}
 
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} slaps {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} slaps {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
-        }
-        
-        [Command(Name = "bite")]
+		[Command(Name = "bite")]
         public async Task BiteAsync(EventContext e)
         {
             string[] images = new string[]
@@ -542,21 +388,27 @@ namespace Miki.Modules
                 "https://i.imgur.com/r9QOkEA.gif"
             };
 
-            Random r = new Random();
-
-            EmbedBuilder embed = Utils.Embed;
-
-            if (e.Arguments.Count > 0)
-            {
-                embed.Title = $"{e.Author.Username} bites {e.Arguments.ToString()}";
-            }
-            else
-            {
-                embed.Title = $"{(await e.Guild.GetCurrentUserAsync()).Username} bites {e.Author.Username}";
-            }
-            embed.ImageUrl = images[r.Next(0, images.Length)];
-
-            embed.Build().QueueToChannel(e.Channel);
+			await QueueAction(e, "bites", images[MikiRandom.Next(images.Length)]);
         }
-    }
+
+		public async Task QueueAction(EventContext e, string action, string imageUrl)
+		{
+			string username = (await e.Guild.GetCurrentUserAsync()).Username;
+
+			EmbedBuilder builder = new EmbedBuilder();
+
+			if (e.Arguments.Count > 0)
+			{
+				builder.Title = $"{e.Author.Username} {action} {e.Arguments.Join().RemoveMentions(e.Guild)}";
+			}
+			else
+			{
+				builder.Title = $"{username} {action} {e.Author.Username}";
+			}
+
+			builder.ImageUrl = imageUrl;
+
+			builder.Build().QueueToChannel(e.Channel);
+		}
+	}
 }

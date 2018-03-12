@@ -275,5 +275,6 @@ namespace Miki.Modules
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
 			}.Build().QueueToChannel(e.Channel);
 		}
+
 	}
 }

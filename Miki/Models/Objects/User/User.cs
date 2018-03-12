@@ -117,6 +117,7 @@ namespace Miki.Models
 			}
 			return user;
 		}
+
 		public static async Task<string> GetNameAsync(MikiContext context, long u)
 		{
 			string key = $"user:name:{u}";
@@ -130,7 +131,12 @@ namespace Miki.Models
 			return user.Name;
 		}
 
-        public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
+		public static async Task<List<User>> SearchUserAsync(MikiContext context, string name)
+		{
+			return await context.Users.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
+		}
+
+		public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
         {
 			if (Banned) return;
 			Currency -= amount;

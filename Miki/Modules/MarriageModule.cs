@@ -70,18 +70,17 @@ namespace Miki.Modules
 				}
 			}
 
-			if (await Marriage.ProposeAsync(askerId, receiverId))
-			{
-				Utils.Embed
-					.WithTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
-					.WithDescription(locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
-					.WithColor(0.4f, 0.4f, 0.8f)
-					.WithThumbnailUrl("https://i.imgur.com/TKZSKIp.png")
-					.AddInlineField("✅ To accept", $">acceptMarriage @user")
-					.AddInlineField("❌ To decline", $">declineMarriage @user")
-					.WithFooter("Take your time though! This proposal won't disappear", "")
-					.Build().QueueToChannel(e.Channel);
-			}
+			await Marriage.ProposeAsync(askerId, receiverId);
+
+			Utils.Embed
+				.WithTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
+				.WithDescription(locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
+				.WithColor(0.4f, 0.4f, 0.8f)
+				.WithThumbnailUrl("https://i.imgur.com/TKZSKIp.png")
+				.AddInlineField("✅ To accept", $">acceptMarriage @user")
+				.AddInlineField("❌ To decline", $">declineMarriage @user")
+				.WithFooter("Take your time though! This proposal won't disappear", "")
+				.Build().QueueToChannel(e.Channel);
 		}
 
         private async Task ConfirmBuyMarriageSlot(EventContext cont, int costForUpgrade)
@@ -121,25 +120,38 @@ namespace Miki.Modules
 		public async Task DivorceAsync(EventContext e)
 		{
 			Locale locale = new Locale(e.Channel.Id);
+			ArgObject arg = e.Arguments.Join();
+
+			if (arg == null)
+				return;
 
 			using (MikiContext context = new MikiContext())
 			{
-				List<User> users = context.Users.Where(p => p.Name.ToLower() == e.Arguments.ToString().ToLower()).ToList();
+				List<User> users = await User.SearchUserAsync(context, arg.Argument);
 
-				if (users.Count == 0)
+				if (users.Count > 0)
 				{
-					e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-						.Build().QueueToChannel(e.Channel);
-				}
-				else if (users.Count == 1)
-				{
-					ArgObject arg = e.Arguments.FirstOrDefault();
+					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
 
-					if (arg == null)
+					Marriage marriage = allMarriages.FirstOrDefault(x => users.Select(y => y.Id).Any(y => y == x.GetOther(e.Author.Id.ToDbLong())));
+					
+					if(marriage != null)
+					{
+						await marriage.RemoveAsync(context);
+
+						EmbedBuilder embed = Utils.Embed;
+						embed.Title = "🔔 " + locale.GetString("miki_module_accounts_divorce_header");
+						embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, await User.GetNameAsync(context, marriage.GetOther(e.Author.Id.ToDbLong())));
+						embed.Color = new Color(0.6f, 0.4f, 0.1f);
+						embed.Build().QueueToChannel(e.Channel);
 						return;
+					}
+				}
 
-					IGuildUser user = await arg.GetUserAsync(e.Guild);
+				IGuildUser user = await arg.GetUserAsync(e.Guild);
 
+				if (user != null)
+				{
 					Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, user.Id);
 
 					if (currentMarriage == null)
@@ -149,47 +161,16 @@ namespace Miki.Modules
 						return;
 					}
 
-					if (currentMarriage.IsProposing)
+					if (!currentMarriage.IsProposing)
 					{
-						e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
-							.Build().QueueToChannel(e.Channel);
+						await currentMarriage.RemoveAsync(context);
+
+						EmbedBuilder embed = Utils.Embed;
+						embed.Title = locale.GetString("miki_module_accounts_divorce_header");
+						embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Username);
+						embed.Color = new Color(0.6f, 0.4f, 0.1f);
+						embed.Build().QueueToChannel(e.Channel);
 						return;
-					}
-
-					await currentMarriage.RemoveAsync(context);
-
-					EmbedBuilder embed = Utils.Embed;
-					embed.Title = locale.GetString("miki_module_accounts_divorce_header");
-					embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Username);
-					embed.Color = new Color(0.6f, 0.4f, 0.1f);
-					embed.Build().QueueToChannel(e.Channel);
-					return;
-				}
-				else
-				{
-					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
-					bool done = false;
-
-					foreach (Marriage Marriage in allMarriages)
-					{
-						foreach (User user in users)
-						{
-							if (Marriage.GetOther(e.Author.Id) == user.Id.FromDbLong())
-							{
-								await Marriage.RemoveAsync(context);
-								done = true;
-
-								EmbedBuilder embed = Utils.Embed;
-								embed.Title = locale.GetString("miki_module_accounts_divorce_header");
-								embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Name);
-								embed.Color = new Color(0.6f, 0.4f, 0.1f);
-								embed.Build().QueueToChannel(e.Channel);
-								break;
-							}
-						}
-
-						if (done)
-							break;
 					}
 				}
 			}
@@ -234,6 +215,12 @@ namespace Miki.Modules
                         e.Channel.QueueMessageAsync($"{asker.Name} does not have enough Marriage slots, sorry :(");
                         return;
                     }
+
+					if(marriage.Asker.UserId != e.Author.Id.ToDbLong())
+					{
+						e.Channel.QueueMessageAsync($"You can not accept your own responses!");
+						return;
+					}
 
 					if (marriage.IsProposing)
 					{

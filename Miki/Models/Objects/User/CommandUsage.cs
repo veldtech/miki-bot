@@ -19,31 +19,31 @@ namespace Miki.Models
 
 		public User User { get; set; }
 
-		public static async Task<CommandUsage> GetAsync(long userId, string name)
+		public static async Task<CommandUsage> GetAsync(MikiContext context, long userId, string name)
 		{
 			string key = $"commandusage:{userId}:{name}";
 
 			if (await Global.redisClient.ExistsAsync(key))
-				return await Global.redisClient.GetAsync<CommandUsage>(key);
-
-			using (var context = new MikiContext())
 			{
-				CommandUsage achievement = await context.CommandUsages.FindAsync(userId, name);
-
-				if(achievement == null)
-				{
-					achievement = (await context.CommandUsages.AddAsync(new CommandUsage()
-					{
-						UserId = userId,
-						Amount = 0,
-						Name = name
-					})).Entity;
-					await context.SaveChangesAsync();
-				}
-
-				await Global.redisClient.AddAsync(key, achievement);
-				return achievement;
+				var usage = await Global.redisClient.GetAsync<CommandUsage>(key);
+				return context.Attach(usage).Entity;
 			}
+
+			CommandUsage achievement = await context.CommandUsages.FindAsync(userId, name);
+
+			if (achievement == null)
+			{
+				achievement = (await context.CommandUsages.AddAsync(new CommandUsage()
+				{
+					UserId = userId,
+					Amount = 0,
+					Name = name
+				})).Entity;
+				await context.SaveChangesAsync();
+			}
+
+			await Global.redisClient.AddAsync(key, achievement);
+			return achievement;
 		}
 
 		public static async Task UpdateCacheAsync(long userId, string name, CommandUsage usage)

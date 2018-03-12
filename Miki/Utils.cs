@@ -163,6 +163,14 @@ namespace Miki
             }.Build();
         }
 
+		public static string RemoveMentions(this ArgObject arg, IGuild guild)
+		{
+			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
+			{
+				return (guild.GetUserAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
+			}, RegexOptions.None);
+		}
+
 		public static string DefaultIfEmpty(this string a, string b)
 		{
 			return string.IsNullOrEmpty(a) ? b : a;
