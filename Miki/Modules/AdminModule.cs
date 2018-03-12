@@ -341,12 +341,9 @@ namespace Miki.Modules
 			IEnumerable<IMessage> messages = await e.Channel.GetMessagesAsync(amount).FlattenAsync();
 			List<IMessage> deleteMessages = new List<IMessage>();
 
-			if (messages.Count() < amount)
-			{
-				amount = messages.Count(); // Checks if the amount of messages to delete is more than the amount of messages availiable.
-			}
+			amount = messages.Count(); // Checks if the amount of messages to delete is more than the amount of messages availiable.
 
-			if (amount <= 1)
+			if (amount < 1)
 			{
 				string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
 				await e.message.DeleteAsync();
@@ -395,9 +392,11 @@ namespace Miki.Modules
 
 			IMessage _dMessage = await embed.Build().SendToChannel(e.Channel);
 
-			await Task.Delay(5000);
-
-			await _dMessage.DeleteAsync();
+			Task.Run(async () =>
+			{
+				await Task.Delay(5000);
+				await _dMessage.DeleteAsync();
+			});
 		}
 	}
 }

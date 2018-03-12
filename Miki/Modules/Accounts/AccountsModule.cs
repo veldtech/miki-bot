@@ -718,7 +718,8 @@ namespace Miki.Modules.AccountsModule
 
 				if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
 				{
-					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.").Build().QueueToChannel(e.Channel);
+					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.")
+					.AddInlineField("Need more mekos?", "Vote for us on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!").Build().QueueToChannel(e.Channel);
 					return;
 				}
 
