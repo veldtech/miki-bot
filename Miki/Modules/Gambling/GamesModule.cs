@@ -70,7 +70,7 @@ namespace Miki.Modules
 						allTickets.Clear();
 					}
 				}
-			}, "", new TimeSpan(1, 0, 0, 0), true);
+			}, "", new TimeSpan(0, 1, 0, 0), true);
 		}
 
 		[Command(Name = "rps")]
@@ -609,6 +609,9 @@ namespace Miki.Modules
 				{
 					arg = arg.Next();
 					int amount = arg?.AsInt(1) ?? 1;
+
+					if (amount < 1)
+						amount = 1;
 
 					using (var context = new MikiContext())
 					{
