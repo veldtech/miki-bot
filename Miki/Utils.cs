@@ -159,8 +159,8 @@ namespace Miki
         {
             return new EmbedBuilder()
             {
-                Title = locale.GetString(LocaleTags.SuccessMessageGeneric),
-                Description = message,
+                Title = "✅ " + locale.GetString(LocaleTags.SuccessMessageGeneric),
+				Description = message,
                 Color = new Color(0, 255, 0)
             }.Build();
         }

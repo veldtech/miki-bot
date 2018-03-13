@@ -598,6 +598,7 @@ namespace Miki.Modules
 				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
 				.AddInlineField("Total Tickets", allTickets.Count())
 				.AddInlineField("Ticket price", $"{100} mekos")
+				.AddInlineField("How to buy?", ">lottery buy [amount]")
 				.Build().QueueToChannel(e.Channel);
 				return;
 			}
