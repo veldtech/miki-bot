@@ -27,6 +27,7 @@ using Miki.API.Imageboards.Objects;
 using Miki.Core.API.Reminder;
 using Miki.Common.Builders;
 using Discord;
+using Miki.API.Reminders;
 
 namespace Miki.Modules
 {
@@ -169,7 +170,7 @@ namespace Miki.Modules
             "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
 };
 
-		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
+		private JobScheduler reminders = new JobScheduler();
 
         public FunModule(Module m)
         {
@@ -545,17 +546,24 @@ namespace Miki.Modules
 
 			if (timeUntilReminder > new TimeSpan(0, 0, 10))
 			{
-				int id = reminders.AddTask(e.Author.Id, (context) =>
+				IJob job = reminders.Add<DelayTask>((t) =>
 				{
-					Utils.Embed.WithTitle("⏰ Reminder")
+					t.name = reminderText;
+					t.sessionId = e.Author.Id;
+					t.repeated = repeated;
+					t.span = timeUntilReminder;
+					t.function = async () =>
+					{
+						Utils.Embed.WithTitle("⏰ Reminder")
 						.WithDescription(new MessageBuilder()
-							.AppendText(context)
+							.AppendText(t.name)
 							.BuildWithBlockCode())
 						.Build().QueueToUser(e.Author);
-				}, reminderText, timeUntilReminder, repeated);
+					};
+				});
 
 				Utils.Embed.WithTitle($"👌 {locale.GetString("term_ok")}")
-					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
+					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{job.JobId}`")
 					.WithColor(255, 220, 93)
 					.Build().QueueToChannel(e.Channel);
 			}
@@ -581,7 +589,7 @@ namespace Miki.Modules
 
 			if (Utils.IsAll(arg, locale))
 			{
-				if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
+				if (reminders.GetAllInstances(e.Author.Id) is List<IJob> instances)
 				{
 					instances.ForEach(i => i.Cancel());
 				}
@@ -595,12 +603,12 @@ namespace Miki.Modules
 			}
 			else if (int.TryParse(arg.Argument, out int id))
 			{
-				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
+				if (reminders.CancelJob(e.Author.Id, id) is IJob i)
 				{
 					Utils.Embed
 						.WithTitle($"⏰ {locale.GetString("reminders")}")
 						.WithColor(0.86f, 0.18f, 0.26f)
-						.WithDescription(locale.GetString("reminder_cancelled", $"`{i.Context}`"))
+						.WithDescription(locale.GetString("reminder_cancelled", $"`{i.Name}`"))
 						.Build().QueueToChannel(e.Channel);
 					return;
 				}
@@ -616,7 +624,7 @@ namespace Miki.Modules
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if(instances?.Count > 0)
 			{
-				instances = instances.OrderBy(x => x.Id).ToList();
+				instances = instances.OrderBy(x => x.JobId).ToList();
 
 				EmbedBuilder embed = new EmbedBuilder()
 				{
@@ -626,21 +634,21 @@ namespace Miki.Modules
 
 				foreach (var x in instances)
 				{
-					string tx = x.Context;
+					string tx = x.Name;
 					string status = "▶";
 
-					if (x.Context.Length > 30)
+					if (x.Name.Length > 30)
 					{
-						tx = new string(x.Context.Take(27).ToArray()) + "...";
+						tx = new string(x.Name.Take(27).ToArray()) + "...";
 					}
 
-					if(x.RepeatReminder)
+					if(x.Repeating)
 					{
 						status = "🔁";
 					}
 
 					embed.Description += 
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
+						$"{status} `{x.JobId.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
 				}
 				embed.Build().QueueToChannel(e.Channel);
 				return;

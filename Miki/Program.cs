@@ -67,7 +67,7 @@ namespace Miki
 
 				WebhookManager.OnEvent += async (eventArgs) =>
 				{
-					Console.WriteLine("[webhook] " + eventArgs.auth_code);
+					Log.Message("webhook: " + eventArgs.auth_code);
 				};
 			}
 

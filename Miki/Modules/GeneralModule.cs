@@ -21,7 +21,7 @@ namespace Miki.Modules
 	[Module("General")]
 	internal class GeneralModule
 	{
-		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
+		JobScheduler taskScheduler = new JobScheduler();
 
 		public GeneralModule(Module m)
 		{
@@ -144,7 +144,7 @@ namespace Miki.Modules
 			await (msg as IUserMessage).AddReactionAsync(emoji);
 
 			int updateTask = -1;
-
+/*
 			int task = taskScheduler.AddTask(e.Author.Id, async (desc) =>
 			{
 				await (msg as IUserMessage).RemoveReactionAsync(emoji, await e.Guild.GetCurrentUserAsync());
@@ -203,7 +203,7 @@ namespace Miki.Modules
 							.Build();
 					});
 				}
-			}, "", new TimeSpan(0, 5, 0), true);
+			}, "", new TimeSpan(0, 5, 0), true);*/
 		}
 
 		private EmbedBuilder CreateGiveawayEmbed(EventContext e, string text)
