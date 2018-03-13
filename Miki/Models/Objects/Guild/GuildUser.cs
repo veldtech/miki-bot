@@ -29,7 +29,7 @@ namespace Miki.Models
 		public DateTime LastRivalRenewed { get; set; }
 
 		[Column("banned")]
-		public bool Banned { get; set; }
+		public bool Banned { get; set; } = false;
 
 		#region Config
 

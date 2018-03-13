@@ -57,39 +57,32 @@ namespace Miki.Models
 
         public static async Task<User> CreateAsync(IMessage e)
         {
-			return await CreateAsync(e.Author);
+			return await CreateAsync(e.Author.Id.ToDbLong(), e.Author.Username);
         }
 		public static async Task<User> CreateAsync(IUser u)
+		{
+			return await CreateAsync(u.Id.ToDbLong(), u.Username);
+		}
+		public static async Task<User> CreateAsync(long id, string name = "use >syncname")
 		{
 			using (var context = new MikiContext())
 			{
 				User user = new User()
 				{
-					Id = u.Id.ToDbLong(),
+					Id = id,
 					Currency = 0,
 					AvatarUrl = "default",
 					HeaderUrl = "default",
 					LastDailyTime = Utils.MinDbValue,
 					MarriageSlots = 5,
-					Name = u.Username,
+					Name = name,
 					Title = "",
 					Total_Commands = 0,
 					Total_Experience = 0,
 					Reputation = 0
 				};
 
-				LocalExperience exp = new LocalExperience()
-				{
-					Experience = 0,
-					ServerId = (u as IGuildUser).Guild.Id.ToDbLong(),
-					UserId = u.Id.ToDbLong(),
-				};
-
-				user.LocalExperience = new List<LocalExperience> { exp };
-
 				await context.Users.AddAsync(user);
-				await context.LocalExperience.AddAsync(exp);
-
 				await context.SaveChangesAsync();
 
 				return user;

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Extension;
+using Discord.WebSocket;
 
 namespace Miki.Modules
 {
@@ -38,12 +39,19 @@ namespace Miki.Modules
 					return;
 				}
 
-                //if(user.Hierarchy >= currentUser.Hierarchy)
-                //{
-                //    e.ErrorEmbed(e.GetResource("permission_error_low", "ban"))
-                //        .QueueToChannel(e.Channel);
-                //    return;
-                //}
+				if ((user as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "ban")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
+				if ((user as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "ban")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
 
 				int pruneDays = 1;
 
@@ -100,12 +108,20 @@ namespace Miki.Modules
                     return;
                 }
 
-                //if (user.Hierarchy >= currentUser.Hierarchy)
-                //{
-                //    e.ErrorEmbed(e.GetResource("permission_error_low", "softban"))
-                //        .QueueToChannel(e.Channel);
-                //    return;
-                //}
+				if ((user as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "softban")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
+				if ((user as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "softban")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
 
 				string reason = argObject.TakeUntilEnd().Argument;
 
@@ -256,12 +272,19 @@ namespace Miki.Modules
                     return;
                 }
 
-                //if (bannedUser. >= currentUser.Hierarchy)
-                //{
-                //    e.ErrorEmbed(e.GetResource("permission_error_low", "kick"))
-                //        .QueueToChannel(e.Channel);
-                //    return;
-                //}
+				if ((bannedUser as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "kick")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
+
+				if ((bannedUser as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				{
+					e.ErrorEmbed(e.GetResource("permission_error_low", "kick")).Build()
+						.QueueToChannel(e.Channel);
+					return;
+				}
 
 				arg = arg.Next();
 

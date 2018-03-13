@@ -34,8 +34,8 @@ namespace Miki.Modules
 					{
 						using (var context = new MikiContext())
 						{
-							CommandUsage u = await CommandUsage.GetAsync(context, msg.Author.Id.ToDbLong(), e.Name);
 							User user = await User.GetAsync(context, msg.Author);
+							CommandUsage u = await CommandUsage.GetAsync(context, msg.Author.Id.ToDbLong(), e.Name);
 
 							u.Amount++;
 							user.Total_Commands++;
@@ -136,20 +136,10 @@ namespace Miki.Modules
 
 			List<IUser> winners = new List<IUser>();
 
-			EmbedBuilder embedBuilder = new EmbedBuilder()
-			{
-				Author = new EmbedAuthorBuilder()
-				{
-					Name = e.Author.Username + " is giving away",
-					IconUrl = e.Author.GetAvatarUrl()
-				},
-				ThumbnailUrl = "https://i.imgur.com/rIDHtwN.png",
-				Description = giveAwayText,
-				Color = new Color(253, 216, 136),
-			}.AddField("Time Remaining", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
-			.AddField("React to participate", "good luck", true);
-
-			IMessage msg = await embedBuilder.Build().SendToChannel(e.Channel);
+			IMessage msg = await CreateGiveawayEmbed(e, giveAwayText)
+			.AddField("Time Remaining", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
+			.AddField("React to participate", "good luck", true)
+			.Build().SendToChannel(e.Channel);
 
 			await (msg as IUserMessage).AddReactionAsync(emoji);
 
@@ -192,7 +182,9 @@ namespace Miki.Modules
 
 				await (msg as IUserMessage).ModifyAsync(x =>
 				{
-					x.Embed = embedBuilder.Build();
+					x.Embed = CreateGiveawayEmbed(e, giveAwayText)
+						.AddField("Winners", winnerText)
+						.Build();
 				});
 
 			}, "description var", timeLeft);
@@ -205,10 +197,28 @@ namespace Miki.Modules
 				{
 					await (msg as IUserMessage).ModifyAsync(x =>
 					{
-						x.Embed = embedBuilder.Build();
+						x.Embed = CreateGiveawayEmbed(e, giveAwayText)
+							.AddField("Time Remaining", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
+							.AddField("React to participate", "good luck", true)
+							.Build();
 					});
 				}
-			}, "", new TimeSpan(0, 1, 0), true);
+			}, "", new TimeSpan(0, 5, 0), true);
+		}
+
+		private EmbedBuilder CreateGiveawayEmbed(EventContext e, string text)
+		{
+			return new EmbedBuilder()
+			{
+				Author = new EmbedAuthorBuilder()
+				{
+					Name = e.Author.Username + " is giving away",
+					IconUrl = e.Author.GetAvatarUrl()
+				},
+				ThumbnailUrl = "https://i.imgur.com/rIDHtwN.png",
+				Description = text,
+				Color = new Color(253, 216, 136),
+			};
 		}
 
 		[Command(Name = "guildinfo")]

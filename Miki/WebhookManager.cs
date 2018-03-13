@@ -31,7 +31,7 @@ namespace Miki
 					}
 					catch (Exception e)
 					{
-						Log.ErrorAt("wbhook", e.ToString());
+						Log.Error(e);
 					}
 				}
 			});

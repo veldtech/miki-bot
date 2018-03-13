@@ -75,19 +75,23 @@ namespace Miki.Accounts.Achievements
 					}).Entity;
 				}
 				// If achievement we want to unlock is the next achievement
-				else if (achievement.Rank == newRank - 1)
+				if (achievement != null)
 				{
-					achievement.Rank++;
-				}
-				else
-				{
-					return false;
-				}
+					if (achievement.Rank == newRank - 1)
+					{
+						achievement.Rank++;
+					}
+					else
+					{
+						return false;
+					}
 
-				await Achievement.UpdateCacheAsync(userId, Name, achievement);
-				await context.SaveChangesAsync();
+					await Achievement.UpdateCacheAsync(userId, Name, achievement);
+					await context.SaveChangesAsync();
+					return true;
+				}
 			}
-			return true;
+			return false;
 		}
 	}
 }

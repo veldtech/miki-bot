@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
+using Microsoft.EntityFrameworkCore;
+using Miki.Models;
 
 namespace Miki
 {
@@ -159,7 +161,7 @@ namespace Miki
             {
                 Title = locale.GetString(LocaleTags.SuccessMessageGeneric),
                 Description = message,
-                Color = new Color(0, 1, 0)
+                Color = new Color(0, 255, 0)
             }.Build();
         }
 

@@ -16,12 +16,63 @@ using Miki.API.Cards.Objects;
 using Miki.Modules.Gambling.Managers;
 using Discord;
 using Miki.Framework.Extension;
+using Miki.API;
+using System.Collections.Concurrent;
 
 namespace Miki.Modules
 {
     [Module("Gambling")]
     public class GamblingModule
     {
+		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
+
+		ConcurrentBag<ulong> allTickets = new ConcurrentBag<ulong>();
+
+		int lotteryId = 0;
+
+		public GamblingModule()
+		{
+			lotteryId = taskScheduler.AddTask(0, (s) =>
+			{
+				if (allTickets.Count == 0)
+					return;
+
+				ulong winnerId = allTickets.ElementAt(MikiRandom.Next(allTickets.Count));
+				int wonAmount = (int)Math.Round(allTickets.Count * 100 * 0.75);
+
+				IUser user = Bot.Instance.Client.GetUser(winnerId);
+
+				using (var context = new MikiContext())
+				{
+					long id = winnerId.ToDbLong();
+					User profileUser = context.Users.Find(id);
+
+					if (user != null)
+					{
+						IMessageChannel channel = user.GetOrCreateDMChannelAsync().Result;
+
+						EmbedBuilder embed = new EmbedBuilder()
+						{
+							Author = new EmbedAuthorBuilder()
+							{
+								Name = "Winner winner chicken dinner",
+								IconUrl = user.GetAvatarUrl()
+							},
+							Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
+						};
+
+						profileUser.AddCurrencyAsync(wonAmount, channel);
+
+						embed.Build().QueueToChannel(channel);
+
+						context.SaveChanges();
+
+						allTickets.Clear();
+					}
+				}
+			}, "", new TimeSpan(1, 0, 0, 0), true);
+		}
+
 		[Command(Name = "rps")]
 		public async Task RPSAsync( EventContext e )
 		{
@@ -531,6 +582,59 @@ namespace Miki.Modules
                 embed.Build().QueueToChannel(e.Channel);
             }
         }
+
+		[Command(Name = "lottery")]
+		public async Task LotteryAsync(EventContext e)
+		{
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if(arg == null)
+			{
+				new EmbedBuilder()
+				{
+					Title = "🍀 Lottery",
+					Description = "Make the biggest gamble, and get paid off massively if legit."
+				}.AddInlineField("Tickets Owned", allTickets.Select(x => x == e.Author.Id).Count())
+				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
+				.AddInlineField("Total Tickets", allTickets.Count())
+				.AddInlineField("Ticket price", $"{100} mekos")
+				.Build().QueueToChannel(e.Channel);
+				return;
+			}
+
+			switch (arg.Argument.ToLower())
+			{
+				case "buy":
+				{
+					arg = arg.Next();
+					int amount = arg?.AsInt(1) ?? 1;
+
+					using (var context = new MikiContext())
+					{
+						User u = await User.GetAsync(context, e.Author);
+						
+						if(amount * 100 > u.Currency)
+						{
+							e.ErrorEmbedResource("miki_mekos_insufficient")
+								.Build().QueueToChannel(e.Channel);
+							return;
+						}
+
+						await u.AddCurrencyAsync(-amount * 100, e.Channel);
+
+						for(int i = 0; i < amount; i ++)
+						{
+							allTickets.Add(e.Author.Id);
+						}
+
+						await context.SaveChangesAsync();
+
+						Utils.SuccessEmbed(e.Channel.GetLocale(), $"Successfully bought {amount} tickets!")
+							.QueueToChannel(e.Channel);
+					}
+				} break;
+			}
+		}
 
 		// TODO: probable rewrite at some point
         public async Task ValidateBet(EventContext e, Func<EventContext, int, Task> callback = null, int maxBet = 1000000)

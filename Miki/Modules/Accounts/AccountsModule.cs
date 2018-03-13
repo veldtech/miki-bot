@@ -379,7 +379,7 @@ namespace Miki.Modules.AccountsModule
 						LastReputationGiven = DateTime.Now,
 						ReputationPointsLeft = 3
 					};
-					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
+					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject, new DateTimeOffset(DateTime.UtcNow.AddDays(1).Date));
 				}
 
 				ArgObject arg = e.Arguments.FirstOrDefault();
@@ -723,7 +723,7 @@ namespace Miki.Modules.AccountsModule
 					return;
 				}
 
-				int streak = 1;
+				int streak = 0;
 				string redisKey = $"user:{e.Author.Id}:daily";
 
 				if (await Global.redisClient.ExistsAsync(redisKey))
@@ -737,12 +737,16 @@ namespace Miki.Modules.AccountsModule
 				await u.AddCurrencyAsync(amount, e.Channel);
 				u.LastDailyTime = DateTime.Now;
 
-
-				Utils.Embed.WithTitle("💰 Daily")
+				var embed = Utils.Embed.WithTitle("💰 Daily")
 					.WithDescription($"Received **{amount}** Mekos! You now have `{u.Currency}` Mekos")
-					.WithColor(253, 216, 136)
-					.AddInlineField("Streak!", $"You're on a {streak} day daily streak!")
-					.Build().QueueToChannel(e.Channel);
+					.WithColor(253, 216, 136);
+
+				if (streak > 0)
+				{
+					embed.AddInlineField("Streak!", $"You're on a {streak} day daily streak!");
+				}
+
+				embed.Build().QueueToChannel(e.Channel);
 
 				await Global.redisClient.AddAsync(redisKey, streak, new TimeSpan(48, 0, 0));
 				await context.SaveChangesAsync();

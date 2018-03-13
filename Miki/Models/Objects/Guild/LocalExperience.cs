@@ -29,6 +29,10 @@ namespace Miki.Models
             experience.Experience = 0;
 
 			experience = (await context.LocalExperience.AddAsync(experience)).Entity;
+
+			if (await context.Users.FindAsync(userId) == null)
+				await User.CreateAsync(user);
+
             await context.SaveChangesAsync();
 
             return experience;

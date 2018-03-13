@@ -96,12 +96,14 @@ namespace Miki.Modules.Roles
 						IMessage m = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 						if (m.Content.ToLower()[0] == 'y')
 						{
-
-							User serverOwner = await context.Users.FindAsync(e.Guild.OwnerId.ToDbLong());
 							await user.AddCurrencyAsync(-newRole.Price);
-							await serverOwner.AddCurrencyAsync(newRole.Price);
 							await context.SaveChangesAsync();
-
+						}
+						else
+						{
+							await e.ErrorEmbed("Purchase Cancelled")
+								.Build().SendToChannel(e.Channel);
+							return;
 						}
 					}
 					else

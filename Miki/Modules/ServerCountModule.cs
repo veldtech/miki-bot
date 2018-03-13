@@ -40,11 +40,11 @@ namespace Miki.Modules
         private async Task OnUpdateGuilds(IGuild g)
         {
             Bot bot = Bot.Instance as Bot;
-
+			/*
             await SendCarbon(bot);
             await SendDiscordBotsOrg(bot, g);
             await SendDiscordPW(bot, g);
-        }
+        */}
 
         private async Task SendCarbon(Bot bot)
         {
@@ -64,16 +64,19 @@ namespace Miki.Modules
 
         private async Task SendDiscordBotsOrg(Bot bot, IGuild g)
         {
-			//var shard = bot.GetShardFor(g);
+			var shard = bot.Client.GetShardFor(g);
 
-			//if (api == null)
-			//	api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
+			if (api == null)
+				api = new AuthDiscordBotListApi(shard.CurrentUser.Id, Global.Config.DiscordBotsOrgKey);
 
-			//await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
-        }
+			await api.UpdateStats(shard.ShardId, bot.Information.ShardCount, new[] { shard.Guilds.Count });
+		}
 
         private async Task SendDiscordPW(Bot bot, IGuild g)
         {
+			if (string.IsNullOrEmpty(Global.Config.DiscordPwKey))
+				return;
+
 			var shard = bot.Client.GetShardFor(g);
 			var client = new RestClient("https://bots.discord.pw/api/bots/160105994217586689/stats");
 

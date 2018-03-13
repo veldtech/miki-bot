@@ -33,13 +33,11 @@ namespace Miki.Modules
 
                 if (thisUser == null)
                 {
-                    Log.ErrorAt("Guildweekly", "User is null");
                     return;
                 }
 
                 if (thisGuild == null)
                 {
-                    Log.ErrorAt("Guildweekly", "Guild is null");
                     return;
                 }
 

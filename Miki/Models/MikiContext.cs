@@ -93,6 +93,10 @@ namespace Miki.Models
 			localExperience
 				.HasKey(c => new { c.ServerId, c.UserId });
 
+			localExperience
+				.Property(x => x.Experience)
+				.HasDefaultValue(0);
+
 			#endregion
 
 			#region Guild User

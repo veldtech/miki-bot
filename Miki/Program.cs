@@ -18,6 +18,7 @@ using Miki.Framework.Events;
 using StackExchange.Redis;
 using System.Threading;
 using Discord.WebSocket;
+using Miki.Framework.Extension;
 
 namespace Miki
 {
@@ -78,6 +79,8 @@ namespace Miki
                 ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString
 			});
+
+			Log.OnLog += (msg, e) => Console.WriteLine(msg);
 
 			var eventSystem = EventSystem.Start(bot);
 
@@ -145,7 +148,7 @@ namespace Miki
 			await Task.Yield();
 		}
 
-		private async Task Client_LeftGuild(Discord.WebSocket.SocketGuild arg)
+		private async Task Client_LeftGuild(SocketGuild arg)
 		{
 			DogStatsd.Increment("guilds.left");
 			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
@@ -156,9 +159,37 @@ namespace Miki
 		{
 			Locale locale = new Locale(arg.Id);
 			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			await defaultChannel.SendMessageAsync(locale.GetString("miki_join_message"));
+			defaultChannel.QueueMessageAsync(locale.GetString("miki_join_message"));
 
-			// if miki patreon is present, leave again.
+			List<string> allArgs = new List<string>();
+			List<object> allParams = new List<object>();
+			List<object> allExpParams = new List<object>();
+
+			try
+			{
+				var users = await arg.GetUsersAsync();
+				for (int i = 0; i < users.Count; i++)
+				{
+					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+
+					allParams.Add(users.ElementAt(i).Id.ToDbLong());
+					allParams.Add(users.ElementAt(i).Username);
+
+					allExpParams.Add(users.ElementAt(i).GuildId.ToDbLong());
+					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
+				}
+
+				using (var context = new MikiContext())
+				{
+					await context.Database.ExecuteSqlCommandAsync($"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+					await context.Database.ExecuteSqlCommandAsync($"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+					await context.SaveChangesAsync();
+				}
+			}
+			catch(Exception e)
+			{
+				Log.Error(e.ToString());
+			}
 
 			DogStatsd.Increment("guilds.joined");
 			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);

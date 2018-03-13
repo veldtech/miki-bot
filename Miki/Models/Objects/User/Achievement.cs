@@ -7,10 +7,13 @@ namespace Miki.Models
 	[ProtoContract]
     public class Achievement
     {
+		[ProtoMember(1)]
         public long Id { get; set; }
-        public string Name { get; set; }
-        public short Rank { get; set; }
-
+		[ProtoMember(2)]
+		public string Name { get; set; }
+		[ProtoMember(3)]
+		public short Rank { get; set; }
+		[ProtoMember(4)]
 		public DateTime UnlockedAt { get; set; }
 
 		public User User { get; set; }
@@ -22,7 +25,7 @@ namespace Miki.Models
 			if (await Global.redisClient.ExistsAsync(key))
 			{
 				Achievement a = await Global.redisClient.GetAsync<Achievement>(key);
-				if(a != null)
+				if(a != null)	
 				{
 					return context.Attach(a).Entity;
 				}
