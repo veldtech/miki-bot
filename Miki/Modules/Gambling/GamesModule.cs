@@ -18,25 +18,59 @@ using Discord;
 using Miki.Framework.Extension;
 using Miki.API;
 using System.Collections.Concurrent;
-using Miki.API.Reminders;
 
 namespace Miki.Modules
 {
     [Module("Gambling")]
     public class GamblingModule
     {
-		JobScheduler taskScheduler = new JobScheduler();
+		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
 		ConcurrentBag<ulong> allTickets = new ConcurrentBag<ulong>();
 
-		IJob lotteryJob = null;
+		int lotteryId = 0;
 
 		public GamblingModule()
 		{
-			lotteryJob = taskScheduler.Add<TimeSpecificJob>((task) =>
+			lotteryId = taskScheduler.AddTask(0, (s) =>
 			{
+				if (allTickets.Count == 0)
+					return;
 
-			});
+				ulong winnerId = allTickets.ElementAt(MikiRandom.Next(allTickets.Count));
+				int wonAmount = (int)Math.Round(allTickets.Count * 100 * 0.75);
+
+				IUser user = Bot.Instance.Client.GetUser(winnerId);
+
+				using (var context = new MikiContext())
+				{
+					long id = winnerId.ToDbLong();
+					User profileUser = context.Users.Find(id);
+
+					if (user != null)
+					{
+						IMessageChannel channel = user.GetOrCreateDMChannelAsync().Result;
+
+						EmbedBuilder embed = new EmbedBuilder()
+						{
+							Author = new EmbedAuthorBuilder()
+							{
+								Name = "Winner winner chicken dinner",
+								IconUrl = user.GetAvatarUrl()
+							},
+							Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
+						};
+
+						profileUser.AddCurrencyAsync(wonAmount, channel);
+
+						embed.Build().QueueToChannel(channel);
+
+						context.SaveChanges();
+
+						allTickets.Clear();
+					}
+				}
+			}, "", new TimeSpan(1, 0, 0, 0), true);
 		}
 
 		[Command(Name = "rps")]
@@ -561,7 +595,7 @@ namespace Miki.Modules
 					Title = "🍀 Lottery",
 					Description = "Make the biggest gamble, and get paid off massively if legit."
 				}.AddInlineField("Tickets Owned", allTickets.Select(x => x == e.Author.Id).Count())
-				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryJob.JobId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
+				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
 				.AddInlineField("Total Tickets", allTickets.Count())
 				.AddInlineField("Ticket price", $"{100} mekos")
 				.AddInlineField("How to buy?", ">lottery buy [amount]")
@@ -600,46 +634,6 @@ namespace Miki.Modules
 							.QueueToChannel(e.Channel);
 					}
 				} break;
-			}
-		}
-
-		public async Task OnLotteryDraw()
-		{
-			if (allTickets.Count == 0)
-				return;
-
-			ulong winnerId = allTickets.ElementAt(MikiRandom.Next(allTickets.Count));
-			int wonAmount = (int)Math.Round(allTickets.Count * 100 * 0.75);
-
-			IUser user = Bot.Instance.Client.GetUser(winnerId);
-
-			using (var context = new MikiContext())
-			{
-				long id = winnerId.ToDbLong();
-				User profileUser = await context.Users.FindAsync(id);
-
-				if (user != null)
-				{
-					IMessageChannel channel = await user.GetOrCreateDMChannelAsync();
-
-					EmbedBuilder embed = new EmbedBuilder()
-					{
-						Author = new EmbedAuthorBuilder()
-						{
-							Name = "Winner winner chicken dinner",
-							IconUrl = user.GetAvatarUrl()
-						},
-						Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
-					};
-
-					await profileUser.AddCurrencyAsync(wonAmount, channel);
-
-					embed.Build().QueueToChannel(channel);
-
-					await context.SaveChangesAsync();
-
-					allTickets.Clear();
-				}
 			}
 		}
 
