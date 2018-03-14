@@ -38,22 +38,29 @@ namespace Miki.Core.API.Reminder
 
 		public void Start()
 		{
-			Task.Run(() => RunTask(), cancellationToken.Token);
+			Task.Run(() => StartAsync());
 		}
 
-		public async Task RunTask()
+		public async Task StartAsync()
 		{
+			do
+			{
+				await RunTask();
+			} while (RepeatReminder && !cancellationToken.IsCancellationRequested);
+			parent.RemoveReminder(Id);
+		}
+
+		public async Task<bool> RunTask()
+		{
+			StartTime = DateTime.Now;
+
 			await Task.Delay((int)Length.TotalMilliseconds);
 
 			cancellationToken.Token.ThrowIfCancellationRequested();
 
 			Function(Context);
 
-			if (RepeatReminder)
-			{
-				parent.CreateNewReminder(Function, Context, Length, RepeatReminder);
-			}
-			parent.RemoveReminder(Id);
+			return true;
 		}
 
 		public void Cancel()

@@ -18,6 +18,7 @@ using Discord;
 using Miki.Framework.Extension;
 using Miki.API;
 using System.Collections.Concurrent;
+using StackExchange.Redis;
 
 namespace Miki.Modules
 {
@@ -26,7 +27,9 @@ namespace Miki.Modules
     {
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		ConcurrentBag<ulong> allTickets = new ConcurrentBag<ulong>();
+		string lotteryKey = "lottery:tickets";
+
+		RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.redisClient);
 
 		int lotteryId = 0;
 
@@ -34,11 +37,15 @@ namespace Miki.Modules
 		{
 			lotteryId = taskScheduler.AddTask(0, (s) =>
 			{
-				if (allTickets.Count == 0)
+				long size = Global.redisClient.Database.ListLength(lotteryKey);
+
+				if (size < 1)
 					return;
 
-				ulong winnerId = allTickets.ElementAt(MikiRandom.Next(allTickets.Count));
-				int wonAmount = (int)Math.Round(allTickets.Count * 100 * 0.75);
+				string value = Global.redisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
+
+				ulong winnerId = ulong.Parse(value);
+				int wonAmount = (int)Math.Round(size * 100 * 0.75);
 
 				IUser user = Bot.Instance.Client.GetUser(winnerId);
 
@@ -67,10 +74,12 @@ namespace Miki.Modules
 
 						context.SaveChanges();
 
-						allTickets.Clear();
+						Global.redisClient.Database.KeyDelete(lotteryKey);
+						Global.redisClient.Database.StringSet("lottery:winner", profileUser.Name);
+						lotteryDict.ClearAsync();
 					}
 				}
-			}, "", new TimeSpan(0, 1, 0, 0), true);
+			}, "", new TimeSpan(0, 0, 0, 30), true);
 		}
 
 		[Command(Name = "rps")]
@@ -590,14 +599,25 @@ namespace Miki.Modules
 
 			if(arg == null)
 			{
+				long totalTickets = await Global.redisClient.Database.ListLengthAsync(lotteryKey);
+				long yourTickets = 0;
+				string latestWinner = Global.redisClient.Database.StringGet("lottery:winner");
+
+				if(await lotteryDict.ContainsAsync(e.Author.Id))
+				{
+					yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
+				}
+
 				new EmbedBuilder()
 				{
 					Title = "🍀 Lottery",
-					Description = "Make the biggest gamble, and get paid off massively if legit."
-				}.AddInlineField("Tickets Owned", allTickets.Select(x => x == e.Author.Id).Count())
+					Description = "Make the biggest gamble, and get paid off massively if legit.",
+					Color = new Color(119, 178, 85)
+				}.AddInlineField("Tickets Owned",yourTickets)
 				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
-				.AddInlineField("Total Tickets", allTickets.Count())
+				.AddInlineField("Total Tickets", totalTickets)
 				.AddInlineField("Ticket price", $"{100} mekos")
+				.AddInlineField("Latest Winner", latestWinner ?? "???")
 				.AddInlineField("How to buy?", ">lottery buy [amount]")
 				.Build().QueueToChannel(e.Channel);
 				return;
@@ -626,10 +646,23 @@ namespace Miki.Modules
 
 						await u.AddCurrencyAsync(-amount * 100, e.Channel);
 
+						RedisValue[] tickets = new RedisValue[amount];
+
 						for(int i = 0; i < amount; i ++)
 						{
-							allTickets.Add(e.Author.Id);
+							tickets[i] = e.Author.Id.ToString();
 						}
+
+						await Global.redisClient.Database.ListRightPushAsync(lotteryKey, tickets);
+
+						int totalTickets = 0;
+
+						if (await lotteryDict.ContainsAsync(e.Author.Id.ToString()))
+						{
+							totalTickets = int.Parse(await lotteryDict.GetAsync(e.Author.Id.ToString()));
+						}
+
+						await lotteryDict.AddAsync(e.Author.Id, amount + totalTickets);
 
 						await context.SaveChangesAsync();
 

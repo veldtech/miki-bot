@@ -14,6 +14,8 @@ using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using Microsoft.EntityFrameworkCore;
 using Miki.Models;
+using StackExchange.Redis;
+using StackExchange.Redis.Extensions.Core;
 
 namespace Miki
 {
@@ -199,6 +201,10 @@ namespace Miki
             return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
         }
 
+		public static long Next(long maxValue)
+		{
+			return Next(0L, maxValue);
+		}
         public static int Next(int maxValue)
         {
             return Next(0, maxValue);
@@ -209,7 +215,15 @@ namespace Miki
 			return Next(0, maxValue) + 1;
 		}
 
-        public static int Next(int minValue, int maxValue)
+		public static long Next(long minValue, long maxValue)
+		{
+			if (minValue > maxValue)
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+			return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
+		}
+		public static int Next(int minValue, int maxValue)
         {
             if (minValue > maxValue)
             {
@@ -264,4 +278,53 @@ namespace Miki
             return Value + " " + Identifier;
         }
     }
+
+	public class RedisDictionary
+	{
+		ICacheClient client;
+		string name;
+
+		string dictKey => $"{name}";
+
+		public async Task<IEnumerable<string>> GetKeysAsync() 
+			=> (await client.HashKeysAsync(dictKey));
+
+		public RedisDictionary(string name, ICacheClient client)
+		{
+			this.name = name;
+			this.client = client;
+		}
+		~RedisDictionary()
+		{
+			client.Remove(dictKey);
+		}
+
+		public async Task AddAsync(object key, object value)
+			=> await AddAsync(key.ToString(), value.ToString());
+		public async Task AddAsync(string key, object value)
+		{
+			await client.HashSetAsync(name, key, value);
+		}
+
+		public async Task<string> GetAsync(object key)
+			=> await GetAsync(key.ToString());
+		public async Task<string> GetAsync(string key)
+		{
+			if(await ContainsAsync(key))
+			{
+				return client.HashGet<string>(name, key);
+			}
+			throw new IndexOutOfRangeException($"No member found with key `{key}`");
+		}
+
+		public async Task ClearAsync()
+		{
+			await client.RemoveAsync(name);
+		}
+
+		public async Task<bool> ContainsAsync(object key)
+			=> await ContainsAsync(key.ToString());
+		public async Task<bool> ContainsAsync(string key)
+			=> await client.Database.HashExistsAsync(dictKey, key);
+	}
 }

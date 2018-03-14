@@ -26,10 +26,8 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-			new Program().Start()
-				.GetAwaiter()
-				.GetResult();
-        }
+			new Program().Start().GetAwaiter().GetResult();
+		}
 
 		public static Bot bot;
 		public static DateTime timeSinceStartup;

@@ -6,6 +6,7 @@
 		COMMANDS,
 		CURRENCY,
 		REPUTATION,
-		PASTA
+		PASTA,
+		GUILD
 	}
 }

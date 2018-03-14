@@ -156,6 +156,13 @@ namespace Miki.Modules.AccountsModule
 				}
 				break;
 
+				case "guild":
+				case "guilds":
+				{
+					options.type = LeaderboardsType.GUILD;
+				}
+				break;
+
 				default:
 				{
 					options.type = LeaderboardsType.EXPERIENCE;
