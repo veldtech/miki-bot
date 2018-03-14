@@ -84,7 +84,7 @@ namespace Miki.API.Imageboards.Objects
         public string HasChildren { get; set; }
 
         [JsonProperty("children")]
-        public List<string> Children { get; set; }
+        public string Children { get; set; }
 
         [JsonProperty("parent_id")]
         public string ParentId { get; set; }

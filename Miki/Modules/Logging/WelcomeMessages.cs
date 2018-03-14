@@ -160,6 +160,11 @@ namespace Miki.Modules
 			var channels = await guild.GetTextChannelsAsync();
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
+			var guildCount = (await (user as IGuildUser).Guild.GetUsersAsync()).Count;
+
+			var ownerMention = (await (user as IGuildUser).Guild.GetOwnerAsync()).Mention;
+			var ownerName = (await (user as IGuildUser).Guild.GetOwnerAsync()).Username;
+
 			List<EventMessageObject> output = new List<EventMessageObject>();
 
             using (var context = new MikiContext())
@@ -190,9 +195,10 @@ namespace Miki.Modules
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-s", (user as IGuildUser).Guild.Name);
+					modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
 
-                    modifiedMessage = modifiedMessage.Replace("-om", (await (user as IGuildUser).Guild.GetOwnerAsync()).Mention);
-                    modifiedMessage = modifiedMessage.Replace("-o", string.IsNullOrEmpty((await (user as IGuildUser).Guild.GetOwnerAsync()).Nickname) ? (await (user as IGuildUser).Guild.GetOwnerAsync()).Username : (await (user as IGuildUser).Guild.GetOwnerAsync()).Nickname);
+					modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
+                    modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
                     modifiedMessage = modifiedMessage.Replace("-cc", (await (user as IGuildUser).Guild.GetChannelsAsync()).Count.ToString());
                     modifiedMessage = modifiedMessage.Replace("-vc", (await (user as IGuildUser).Guild.GetVoiceChannelsAsync()).Count.ToString());

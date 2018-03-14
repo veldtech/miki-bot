@@ -175,18 +175,64 @@ namespace Miki.Modules
         {
             ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
             {
-               QueryKey = "http://e621.net/post/index.json?tags=",
-               ExplicitTag = "rating:e",
-               QuestionableTag = "rating:q",
-               SafeTag = "rating:s",
-               NetUseCredentials = true,
-               NetHeaders = new List<string>() { "User-Agent: Other" }
-            }));
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="));
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="));
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="));
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>("https://konachan.com/post.json?tags="));
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>("https://yande.re/post.json?tags="));
+				QueryKey = "http://e621.net/post/index.json?tags=",
+				ExplicitTag = "rating:e",
+				QuestionableTag = "rating:q",
+				SafeTag = "rating:s",
+				NetUseCredentials = true,
+				NetHeaders = new List<string>() { "User-Agent: Other" },
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
+			ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>(new ImageboardConfigurations
+			{
+				QueryKey = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>(new ImageboardConfigurations
+			{
+				QueryKey = "https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>(new ImageboardConfigurations
+			{
+				QueryKey = "http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>(new ImageboardConfigurations
+			{
+				QueryKey = "https://konachan.com/post.json?tags=",
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
+			
+            ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
+			{
+				QueryKey = "https://yande.re/post.json?tags=",
+				BlacklistedTags =
+				{
+					"loli",
+					"shota",
+				}
+			}));
         }
 
         [Command(Name = "8ball")]

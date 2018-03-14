@@ -336,8 +336,6 @@ namespace Miki.Modules.AccountsModule
 
 					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
 
-					Log.Message("achievement count: " + allAchievements.Count);
-
 					string achievements = locale.GetString("miki_placeholder_null");
 
 					if (allAchievements != null)

@@ -36,7 +36,11 @@ namespace Miki.Accounts
 
 		private bool isSyncing = false;
 
-        public AccountManager(Bot bot)
+		string GetContextKey(ulong guildid, ulong userid)
+			=> $"user:{guildid}:{userid}:exp";
+
+
+		public AccountManager(Bot bot)
         {
 			OnGlobalLevelUp += async (a, e, l) =>
 			{
@@ -99,23 +103,25 @@ namespace Miki.Accounts
 
 			try
 			{
+				string key = GetContextKey((e.Channel as IGuildChannel).GuildId, e.Author.Id);
+
 				if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
 				{
 					int currentExp = 0;
-					if (!await Global.redisClient.ExistsAsync($"user:{(e.Channel as IGuildChannel).Id}:{e.Author.Id}:exp"))
+					if (!await Global.redisClient.ExistsAsync(key))
 					{
 						using (var context = new MikiContext())
 						{
 							LocalExperience user = await LocalExperience.GetAsync(context, (e.Channel as IGuildChannel).Guild.Id.ToDbLong(), e.Author);
-							await Global.redisClient.AddAsync($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp", user.Experience);
+							await Global.redisClient.AddAsync(key, user.Experience);
 						}
 					}
 					else
 					{
-						currentExp = await Global.redisClient.GetAsync<int>($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp");
+						currentExp = await Global.redisClient.GetAsync<int>(key);
 					}
 
-					var bonusExp = 1;
+					var bonusExp = MikiRandom.Next(1, 4);
 					currentExp += bonusExp;
 
 					if (!experienceQueue.ContainsKey(e.Author.Id))
@@ -148,7 +154,7 @@ namespace Miki.Accounts
 
 					lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
-					await Global.redisClient.AddAsync($"user:{(e.Channel as IGuildChannel).Guild.Id}:{e.Author.Id}:exp", currentExp);
+					await Global.redisClient.AddAsync(key, currentExp);
 				}
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))

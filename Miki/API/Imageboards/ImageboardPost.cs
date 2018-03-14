@@ -68,8 +68,8 @@ namespace Miki.API.Imageboards
 
             if (nsfw)
             {
-                RemoveBannedTerms(tags);
-                AddBannedTerms(tags);                
+                RemoveBannedTerms(Config, tags);
+                AddBannedTerms(Config, tags);                
             }
 
             string outputTags = GetTags(tags.ToArray());
@@ -94,22 +94,17 @@ namespace Miki.API.Imageboards
             }
             return default(T);
         }
-
-        private static readonly List<string> BannedTags = new List<string>()
+        protected static void AddBannedTerms(ImageboardConfigurations config, List<string> tags)
         {
-            "loli",
-            "shota",
-            "gore",
-            "vore",
-            "death"
-        };
-
-        protected static void AddBannedTerms(List<string> tags)
-        {
-            BannedTags.ForEach(x => tags.Add("-" + x));
+            config.BlacklistedTags.ForEach(x => tags.Add("-" + x));
         }
 
-        protected static string GetTags(string[] tags)
+		protected static void RemoveBannedTerms(ImageboardConfigurations config, List<string> tags)
+		{
+			tags.RemoveAll(p => config.BlacklistedTags.Contains(p.ToLower()));
+		}
+
+		protected static string GetTags(string[] tags)
         {
             List<string> output = new List<string>();
 
@@ -134,11 +129,6 @@ namespace Miki.API.Imageboards
             string outputTags = string.Join("+", output);
             outputTags.Remove(outputTags.Length - 1);
             return outputTags;
-        }
-
-        protected static void RemoveBannedTerms(List<string> tags)
-        {
-            tags.RemoveAll(p => BannedTags.Contains(p));
         }
     }
 }

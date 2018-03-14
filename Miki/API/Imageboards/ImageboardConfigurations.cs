@@ -18,5 +18,6 @@ namespace Miki.API.Imageboards
         public bool NetUseCredentials = false;
         public ICredentials NetCredentials = CredentialCache.DefaultCredentials;
         public List<string> NetHeaders = new List<string>();
+		public List<string> BlacklistedTags = new List<string>();
     }
 }
