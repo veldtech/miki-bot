@@ -79,7 +79,7 @@ namespace Miki.Modules
 						lotteryDict.ClearAsync();
 					}
 				}
-			}, "", new TimeSpan(0, 0, 0, 30), true);
+			}, "", new TimeSpan(0, 1, 0, 0), true);
 		}
 
 		[Command(Name = "rps")]
