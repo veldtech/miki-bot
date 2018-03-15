@@ -114,6 +114,7 @@ namespace Miki.Accounts
 						{
 							LocalExperience user = await LocalExperience.GetAsync(context, (e.Channel as IGuildChannel).Guild.Id.ToDbLong(), e.Author);
 							await Global.redisClient.AddAsync(key, user.Experience);
+							currentExp = user.Experience;
 						}
 					}
 					else

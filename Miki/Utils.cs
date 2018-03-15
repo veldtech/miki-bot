@@ -284,10 +284,8 @@ namespace Miki
 		ICacheClient client;
 		string name;
 
-		string dictKey => $"{name}";
-
 		public async Task<IEnumerable<string>> GetKeysAsync() 
-			=> (await client.HashKeysAsync(dictKey));
+			=> (await client.HashKeysAsync(name));
 
 		public RedisDictionary(string name, ICacheClient client)
 		{
@@ -296,7 +294,7 @@ namespace Miki
 		}
 		~RedisDictionary()
 		{
-			client.Remove(dictKey);
+			client.Remove(name);
 		}
 
 		public async Task AddAsync(object key, object value)
@@ -325,6 +323,6 @@ namespace Miki
 		public async Task<bool> ContainsAsync(object key)
 			=> await ContainsAsync(key.ToString());
 		public async Task<bool> ContainsAsync(string key)
-			=> await client.Database.HashExistsAsync(dictKey, key);
+			=> await client.Database.HashExistsAsync(name, key);
 	}
 }

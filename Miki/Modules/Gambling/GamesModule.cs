@@ -35,51 +35,54 @@ namespace Miki.Modules
 
 		public GamblingModule()
 		{
-			lotteryId = taskScheduler.AddTask(0, (s) =>
+			if (!Global.Config.IsPatreonBot)
 			{
-				long size = Global.redisClient.Database.ListLength(lotteryKey);
-
-				if (size < 1)
-					return;
-
-				string value = Global.redisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
-
-				ulong winnerId = ulong.Parse(value);
-				int wonAmount = (int)Math.Round(size * 100 * 0.75);
-
-				IUser user = Bot.Instance.Client.GetUser(winnerId);
-
-				using (var context = new MikiContext())
+				lotteryId = taskScheduler.AddTask(0, (s) =>
 				{
-					long id = winnerId.ToDbLong();
-					User profileUser = context.Users.Find(id);
+					long size = Global.redisClient.Database.ListLength(lotteryKey);
 
-					if (user != null)
+					if (size < 1)
+						return;
+
+					string value = Global.redisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
+
+					ulong winnerId = ulong.Parse(value);
+					int wonAmount = (int)Math.Round(size * 100 * 0.75);
+
+					IUser user = Bot.Instance.Client.GetUser(winnerId);
+
+					using (var context = new MikiContext())
 					{
-						IMessageChannel channel = user.GetOrCreateDMChannelAsync().Result;
+						long id = winnerId.ToDbLong();
+						User profileUser = context.Users.Find(id);
 
-						EmbedBuilder embed = new EmbedBuilder()
+						if (user != null)
 						{
-							Author = new EmbedAuthorBuilder()
+							IMessageChannel channel = user.GetOrCreateDMChannelAsync().Result;
+
+							EmbedBuilder embed = new EmbedBuilder()
 							{
-								Name = "Winner winner chicken dinner",
-								IconUrl = user.GetAvatarUrl()
-							},
-							Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
-						};
+								Author = new EmbedAuthorBuilder()
+								{
+									Name = "Winner winner chicken dinner",
+									IconUrl = user.GetAvatarUrl()
+								},
+								Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
+							};
 
-						profileUser.AddCurrencyAsync(wonAmount, channel);
+							profileUser.AddCurrencyAsync(wonAmount, channel);
 
-						embed.Build().QueueToChannel(channel);
+							embed.Build().QueueToChannel(channel);
 
-						context.SaveChanges();
+							context.SaveChanges();
 
-						Global.redisClient.Database.KeyDelete(lotteryKey);
-						Global.redisClient.Database.StringSet("lottery:winner", profileUser.Name);
-						lotteryDict.ClearAsync();
+							Global.redisClient.Database.KeyDelete(lotteryKey);
+							Global.redisClient.Database.StringSet("lottery:winner", profileUser.Name);
+							lotteryDict.ClearAsync();
+						}
 					}
-				}
-			}, "", new TimeSpan(0, 1, 0, 0), true);
+				}, "", new TimeSpan(0, 1, 0, 0), true);
+			}
 		}
 
 		[Command(Name = "rps")]

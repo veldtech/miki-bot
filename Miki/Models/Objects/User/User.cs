@@ -222,9 +222,8 @@ namespace Miki.Models
 			{
 				User u = await context.Users.FindAsync(id);
 
-				context.Marriages.RemoveRange(
-					await context.UsersMarriedTo.Where(x => x.UserId == id).Select(x => x.Marriage).ToListAsync()
-				);
+				await Marriage.DivorceAllMarriagesAsync(context, id);
+				await Marriage.DeclineAllProposalsAsync(context, id);
 
 				context.CommandUsages.RemoveRange(
 					await context.CommandUsages.Where(x => x.UserId == id).ToListAsync()

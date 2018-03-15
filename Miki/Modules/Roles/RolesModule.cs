@@ -64,8 +64,10 @@ namespace Miki.Modules.Roles
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				User user = (await context.Users.FindAsync(e.Author.Id.ToDbLong()));
+					
 				IGuildUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
+				LocalExperience localUser = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
 
 				if (!newRole?.Optable ?? false)
 				{
@@ -74,9 +76,11 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if (newRole.RequiredLevel > user.Level)
+				int level = User.CalculateLevel(localUser.Experience);
+
+				if (newRole.RequiredLevel > level)
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - user.Level))
+					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - level))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}

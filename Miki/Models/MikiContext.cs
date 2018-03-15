@@ -240,17 +240,15 @@ namespace Miki.Models
 			#region UserMarriedTo
 			var usermarried = modelBuilder.Entity<UserMarriedTo>();
 
-			usermarried.HasKey(x => new { x.UserId, x.MarriageId });
+			usermarried.HasKey(x => new { x.AskerId, x.ReceiverId });
 
 			usermarried.HasOne(x => x.User)
 				.WithMany(x => x.Marriages)
-				.HasForeignKey(x => x.UserId)
+				.HasForeignKey(x => x.AskerId)
 				.HasPrincipalKey(x => x.Id);
 
 			usermarried.HasOne(x => x.Marriage)
-				.WithMany(x => x.Participants)
-				.HasForeignKey(x => x.MarriageId)
-				.HasPrincipalKey(x => x.MarriageId);
+				.WithOne(x => x.Participants);
 			#endregion
 
 			#region Pasta Vote

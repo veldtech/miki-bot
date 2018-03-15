@@ -133,11 +133,11 @@ namespace Miki.Modules
 				{
 					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
 
-					Marriage marriage = allMarriages.FirstOrDefault(x => users.Select(y => y.Id).Any(y => y == x.GetOther(e.Author.Id.ToDbLong())));
+					UserMarriedTo marriage = allMarriages.FirstOrDefault(x => users.Any(y => y.Id == x.AskerId || y.Id == x.ReceiverId));
 					
 					if(marriage != null)
 					{
-						await marriage.RemoveAsync(context);
+						await marriage.Marriage.RemoveAsync(context);
 
 						EmbedBuilder embed = Utils.Embed;
 						embed.Title = "🔔 " + locale.GetString("miki_module_accounts_divorce_header");
@@ -152,18 +152,18 @@ namespace Miki.Modules
 
 				if (user != null)
 				{
-					Marriage currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, user.Id);
+					UserMarriedTo currentMarriage = await Marriage.GetMarriageAsync(context, e.Author.Id, user.Id);
 
 					if (currentMarriage == null)
 					{
-						e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_Marriage"))
+						e.ErrorEmbed(locale.GetString("miki_module_accounts_error_no_marriage"))
 							.Build().QueueToChannel(e.Channel);
 						return;
 					}
 
-					if (!currentMarriage.IsProposing)
+					if (!currentMarriage.Marriage.IsProposing)
 					{
-						await currentMarriage.RemoveAsync(context);
+						await currentMarriage.Marriage.RemoveAsync(context);
 
 						EmbedBuilder embed = Utils.Embed;
 						embed.Title = locale.GetString("miki_module_accounts_divorce_header");
@@ -176,7 +176,7 @@ namespace Miki.Modules
 			}
 		}
 
-        [Command(Name = "acceptMarriage")]
+        [Command(Name = "acceptmarriage")]
         public async Task AcceptMarriageAsync(EventContext e)
         {
             if (e.message.MentionedUserIds.Count == 0)
@@ -200,7 +200,7 @@ namespace Miki.Modules
 				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 				User asker = await User.GetAsync(context, user);
 
-				Marriage marriage = await Marriage.GetEntryAsync(context, accepter.Id, asker.Id);
+				UserMarriedTo marriage = await Marriage.GetEntryAsync(context, accepter.Id, asker.Id);
 
                 if (marriage != null)
                 {
@@ -216,15 +216,15 @@ namespace Miki.Modules
                         return;
                     }
 
-					if(marriage.Asker.UserId != e.Author.Id.ToDbLong())
+					if(marriage.ReceiverId != e.Author.Id.ToDbLong())
 					{
 						e.Channel.QueueMessageAsync($"You can not accept your own responses!");
 						return;
 					}
 
-					if (marriage.IsProposing)
+					if (marriage.Marriage.IsProposing)
 					{
-						marriage.AcceptProposal(context);
+						marriage.Marriage.AcceptProposal(context);
 
 						await context.SaveChangesAsync();
 
@@ -249,7 +249,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "declineMarriage")]
+        [Command(Name = "declinemarriage")]
         public async Task DeclineMarriageAsync(EventContext e)
         {
             Locale locale = new Locale(e.Channel.Id);
@@ -271,17 +271,17 @@ namespace Miki.Modules
 
 				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 
-				Marriage marriage = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
+				UserMarriedTo entry = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
 
-				if (marriage == null)
+				if (entry == null)
 				{
 					e.Channel.QueueMessageAsync(locale.GetString("miki_Marriage_null"));
 					return;
 				}
 
-				if (marriage.IsProposing)
+				if (entry.Marriage.IsProposing)
 				{
-					await marriage.RemoveAsync(context);
+					await entry.Marriage.RemoveAsync(context);
 
 					new EmbedBuilder()
 					{
@@ -303,10 +303,10 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                List<Marriage> proposals = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
+                List<UserMarriedTo> proposals = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
                 List<string> proposalNames = new List<string>();
 
-                foreach (Marriage p in proposals)
+                foreach (UserMarriedTo p in proposals)
                 {
 					long id = p.GetOther(e.Author.Id.ToDbLong());
 					string u = await User.GetNameAsync(context, id);
@@ -324,7 +324,7 @@ namespace Miki.Modules
                 proposals = await Marriage.GetProposalsSent(context, e.Author.Id.ToDbLong());
                 proposalNames = new List<string>();
 
-                foreach (Marriage p in proposals)
+                foreach (UserMarriedTo p in proposals)
                 {
 					long id = p.GetOther(e.Author.Id.ToDbLong());
 					string u = await User.GetNameAsync(context, id);

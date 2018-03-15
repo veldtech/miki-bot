@@ -179,7 +179,9 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			bool setValue = arg.AsBoolean() ?? false;
+			bool? setValue = arg.AsBoolean();
+			if (!setValue.HasValue)
+				setValue = arg.Argument.ToLower() == "yes" || arg.Argument == "1";
 
 			if (!command.CanBeDisabled)
             {
@@ -198,8 +200,8 @@ namespace Miki.Modules
 				}
 			}
 
-			await command.SetEnabled(e.Channel.Id, setValue);
-            Utils.SuccessEmbed(locale, ((setValue) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {command.Name}")
+			await command.SetEnabled(e.Channel.Id, setValue ?? false);
+            Utils.SuccessEmbed(locale, ((setValue ?? false) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {command.Name}")
 				.QueueToChannel(e.Channel);
         }
 
@@ -217,6 +219,7 @@ namespace Miki.Modules
 
 			string moduleName = arg.Argument;
 
+
 			Module m = EventSystem.Instance.GetModuleByName(moduleName);
             if (m == null)
             {
@@ -227,9 +230,11 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			bool setValue = arg.AsBoolean() ?? false;
+			bool? setValue = arg.AsBoolean();
+			if (!setValue.HasValue)
+				setValue = arg.Argument.ToLower() == "yes" || arg.Argument == "1";
 
-            if (!m.CanBeDisabled && !setValue)
+			if (!m.CanBeDisabled && !setValue.Value)
             {
                 e.ErrorEmbed(locale.GetString("miki_admin_cannot_disable", $"`{moduleName}`"))
 					.Build().QueueToChannel(e.Channel);
@@ -246,9 +251,9 @@ namespace Miki.Modules
 				}
 			}
 
-			await m.SetEnabled(e.Channel.Id, setValue);
+			await m.SetEnabled(e.Channel.Id, (setValue ?? false));
 
-            Utils.SuccessEmbed(locale, (setValue ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {m.Name}")
+            Utils.SuccessEmbed(locale, ((setValue ?? false) ? locale.GetString("miki_generic_enabled") : locale.GetString("miki_generic_disabled")) + $" {m.Name}")
 				.QueueToChannel(e.Channel);
         }
 

@@ -285,9 +285,9 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
 
-					List<Marriage> Marriages = await Marriage.GetMarriagesAsync(context, id);
+					List<UserMarriedTo> Marriages = await Marriage.GetMarriagesAsync(context, id);
 
-					Marriages.RemoveAll(x => x.IsProposing);
+					Marriages.RemoveAll(x => x.Marriage.IsProposing);
 
 					List<string> users = new List<string>();
 
@@ -306,7 +306,7 @@ namespace Miki.Modules.AccountsModule
 						{
 							if (Marriages[i].GetOther(id) != 0)
 							{
-								MarriageStrings.Add($"💕 {users[i]} (_{Marriages[i].TimeOfMarriage.ToShortDateString()}_)");
+								MarriageStrings.Add($"💕 {users[i]} (_{Marriages[i].Marriage.TimeOfMarriage.ToShortDateString()}_)");
 							}
 						}
 
