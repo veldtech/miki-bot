@@ -187,10 +187,12 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
+				int page = Math.Max((e.Arguments.Join()?.AsInt(0) ?? 0) - 1, 0);
+
 				long guildId = e.Guild.Id.ToDbLong();
 				List<LevelRole> roles = await context.LevelRoles
 					.Where(x => x.GuildId == guildId)
-					.Skip(0)
+					.Skip(page * 25)
 					.Take(25)
 					.ToListAsync();
 
@@ -237,6 +239,7 @@ namespace Miki.Modules.Roles
 				Utils.Embed.WithTitle("📄 Available Roles")
 					.WithDescription(stringBuilder.ToString())
 					.WithColor(204, 214, 221)
+					.WithFooter("page " + (page + 1))
 					.Build().QueueToChannel(e.Channel);
 			}
 		}

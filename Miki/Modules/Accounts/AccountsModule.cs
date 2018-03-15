@@ -507,56 +507,6 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		// TODO: rework into miki api
-		//[Command(Name = "syncavatar")]
-		//public async Task SyncAvatarAsync(EventContext e)
-		//{
-		//	string localFilename = @"c:\inetpub\miki.veld.one\assets\img\user\" + e.Author.Id + ".png";
-
-		//	HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Author.GetAvatarUrl());
-		//	HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-		//	// Check that the remote file was found. The ContentType
-		//	// check is performed since a request for a non-existent
-		//	// image file might be redirected to a 404-page, which would
-		//	// yield the StatusCode "OK", even though the image was not
-		//	// found.
-		//	if ((response.StatusCode == HttpStatusCode.OK ||
-		//		 response.StatusCode == HttpStatusCode.Moved ||
-		//		 response.StatusCode == HttpStatusCode.Redirect) &&
-		//		response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
-		//	{
-		//		// if the remote file was found, download oit
-		//		using (Stream inputStream = response.GetResponseStream())
-		//		using (Stream outputStream = File.OpenWrite(localFilename))
-		//		{
-		//			byte[] buffer = new byte[4096];
-		//			int bytesRead;
-		//			do
-		//			{
-		//				bytesRead = inputStream.Read(buffer, 0, buffer.Length);
-		//				outputStream.Write(buffer, 0, bytesRead);
-		//			} while (bytesRead != 0);
-		//		}
-		//	}
-
-		//	using (var context = new MikiContext())
-		//	{
-		//		User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-		//		if (user == null)
-		//		{
-		//			return;
-		//		}
-		//		user.AvatarUrl = e.Author.Id.ToString();
-		//		await context.SaveChangesAsync();
-		//	}
-
-		//	Embed embed = Utils.Embed;
-		//	embed.Title = "👌 OKAY";
-		//	embed.Description = e.GetResource("sync_success", e.GetResource("term_avatar"));
-		//	embed.QueueToChannel(e.Channel);
-		//}
-
 		[Command(Name = "syncname")]
 		public async Task SyncNameAsync(EventContext e)
 		{
@@ -757,71 +707,6 @@ namespace Miki.Modules.AccountsModule
 				await context.SaveChangesAsync();
 			}
 		}
-
-		/*[Command(Name = "setrolelevel")]
-		public async Task SetRoleLevelAsync(EventContext e)
-		{
-			using (var context = new MikiContext())
-			{
-				Locale locale = new Locale(e.Channel.Id.ToDbLong());
-
-				List<string> allArgs = new List<string>();
-				allArgs.AddRange(e.arguments.Split(' '));
-				if (allArgs.Count >= 2)
-				{
-					int levelrequirement = int.Parse(allArgs[allArgs.Count - 1]);
-					allArgs.RemoveAt(allArgs.Count - 1);
-					IRole role = e.Guild.Roles
-						.Find(r => r.Name.ToLower() == string.Join(" ", allArgs).TrimEnd(' ').TrimStart(' ').ToLower());
-
-					if (role == null)
-					{
-						e.ErrorEmbed(e.GetResource("error_role_not_found"))
-							.QueueToChannel(e.Channel);
-						return;
-					}
-
-					LevelRole lr = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-					if (lr == null)
-					{
-						lr = context.LevelRoles.Add(new LevelRole()
-						{
-							GuildId = e.Guild.Id.ToDbLong(),
-							RoleId = role.Id.ToDbLong(),
-							RequiredLevel = levelrequirement
-						}).Entity;
-
-						Embed embed = Utils.Embed;
-						embed.Title = "Added Role!";
-						embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
-
-						IUser currentUser = await e.GetCurrentUserAsync();
-
-						if (!currentUser.HasPermissions(e.Channel, GuildPermission.ManageRoles))
-						{
-							embed.AddInlineField(e.GetResource("miki_warning"), e.GetResource("setrolelevel_error_no_permissions", $"`{e.GetResource("permission_manage_roles")}`"));
-						}
-
-						embed.QueueToChannel(e.Channel);
-					}
-					else
-					{
-						lr.RequiredLevel = levelrequirement;
-
-						Embed embed = Utils.Embed;
-						embed.Title = "Updated Role!";
-						embed.Description = $"I'll give someone the role {role.Name} when he/she reaches level {levelrequirement}!";
-						embed.QueueToChannel(e.Channel);
-					}
-					await context.SaveChangesAsync();
-				}
-				else
-				{
-					e.ErrorEmbed("Make sure to fill out both the role and the level when creating this!")
-						.QueueToChannel(e.Channel);
-				}
-			}
-		}*/
 
 		//[Command(Name = "mybadges")]
 		//public async Task MyBadgesAsync(EventContext e)

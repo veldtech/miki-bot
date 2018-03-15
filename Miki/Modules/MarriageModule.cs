@@ -37,6 +37,12 @@ namespace Miki.Modules
 				return;
 			}
 
+			if (user.Id == (await e.Guild.GetCurrentUserAsync()).Id)
+			{
+				e.Channel.QueueMessageAsync("owo");
+				return;
+			}
+
 			using (MikiContext context = new MikiContext())
 			{
 				User mentionedPerson = await User.GetAsync(context, user);
@@ -179,14 +185,15 @@ namespace Miki.Modules
         [Command(Name = "acceptmarriage")]
         public async Task AcceptMarriageAsync(EventContext e)
         {
-            if (e.message.MentionedUserIds.Count == 0)
-            {
-				e.ErrorEmbed("Please mention the person you want to marry.")
-					.Build().QueueToChannel(e.Channel);
-                return;
-            }
+			IUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
 
-			if (e.message.MentionedUserIds.First() == e.Author.Id)
+			if(user == null)
+			{
+				e.ErrorEmbed("I couldn't find this user!")
+					.Build().QueueToChannel(e.Channel);
+			}
+
+			if (user.Id == e.Author.Id)
 			{
 				e.ErrorEmbed("Please mention someone else than yourself.")
 					.Build().QueueToChannel(e.Channel);
@@ -196,8 +203,6 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
 				User accepter = await User.GetAsync(context, e.Author);
-
-				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
 				User asker = await User.GetAsync(context, user);
 
 				UserMarriedTo marriage = await Marriage.GetEntryAsync(context, accepter.Id, asker.Id);
@@ -263,19 +268,13 @@ namespace Miki.Modules
                     return;
                 }
 
-                if (e.message.MentionedUserIds.Count == 0)
-                {
-                    e.Channel.QueueMessageAsync(locale.GetString("miki_Marriage_no_mention"));
-                    return;
-                }
+				IUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
 
-				IUser user = await e.Guild.GetUserAsync(e.message.MentionedUserIds.First());
-
-				UserMarriedTo entry = await Marriage.GetEntryAsync(context, e.message.MentionedUserIds.First(), e.Author.Id);
+				UserMarriedTo entry = await Marriage.GetEntryAsync(context, user.Id, e.Author.Id);
 
 				if (entry == null)
 				{
-					e.Channel.QueueMessageAsync(locale.GetString("miki_Marriage_null"));
+					e.Channel.QueueMessageAsync(locale.GetString("miki_marriage_null"));
 					return;
 				}
 
