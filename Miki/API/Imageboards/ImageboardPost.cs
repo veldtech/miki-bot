@@ -79,8 +79,6 @@ namespace Miki.API.Imageboards
             {
                 string result = Encoding.UTF8.GetString(b);
 
-                Log.Message(typeof(T).ToString());
-
 				JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
 				List<T> d = JsonConvert.DeserializeObject<List<T>>(result, settings);
 

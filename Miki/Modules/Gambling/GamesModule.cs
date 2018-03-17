@@ -19,6 +19,7 @@ using Miki.Framework.Extension;
 using Miki.API;
 using System.Collections.Concurrent;
 using StackExchange.Redis;
+using Miki.Accounts.Achievements;
 
 namespace Miki.Modules
 {
@@ -79,6 +80,23 @@ namespace Miki.Modules
 							Global.redisClient.Database.KeyDelete(lotteryKey);
 							Global.redisClient.Database.StringSet("lottery:winner", profileUser.Name);
 							lotteryDict.ClearAsync();
+
+							var lotteryAchievement = AchievementManager.Instance.GetContainerById("lottery");
+
+							if (wonAmount > 100000)
+							{
+								lotteryAchievement.Achievements[0].UnlockAsync(channel, user, 0);
+							}
+
+							if(wonAmount > 10000000)
+							{
+								lotteryAchievement.Achievements[1].UnlockAsync(channel, user, 1);
+							}
+
+							if(wonAmount > 250000000)
+							{
+								lotteryAchievement.Achievements[2].UnlockAsync(channel, user, 1);
+							}
 						}
 					}
 				}, "", new TimeSpan(0, 1, 0, 0), true);

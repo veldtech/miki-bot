@@ -605,13 +605,6 @@ namespace Miki.Modules.AccountsModule
 				return;
 			}
 
-			if (amount > 999999)
-			{
-				e.ErrorEmbedResource("give_error_max_mekos")
-					.Build().QueueToChannel(e.Channel);
-				return;
-			}
-
 			if (amount <= 0)
 			{
 				e.ErrorEmbedResource("give_error_min_mekos")
@@ -864,7 +857,7 @@ namespace Miki.Modules.AccountsModule
 						.WithTitle($"Leaderboards: {leaderboardOptions.type.ToString()}")
 						.Build().QueueToChannel(mContext.Channel);
 				}
-			}
+			}	
 		}
 	}
 }

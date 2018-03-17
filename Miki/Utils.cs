@@ -163,7 +163,7 @@ namespace Miki
             {
                 Title = "✅ " + locale.GetString(LocaleTags.SuccessMessageGeneric),
 				Description = message,
-                Color = new Color(0, 255, 0)
+                Color = new Color(119, 178, 85)
             }.Build();
         }
 

@@ -40,11 +40,11 @@ namespace Miki.Modules
         private async Task OnUpdateGuilds(IGuild g)
         {
             Bot bot = Bot.Instance as Bot;
-			/*
+			
             await SendCarbon(bot);
             await SendDiscordBotsOrg(bot, g);
             await SendDiscordPW(bot, g);
-        */}
+        }
 
         private async Task SendCarbon(Bot bot)
         {

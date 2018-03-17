@@ -117,12 +117,25 @@ namespace Miki.Models
 			}
 		}
 
+		/// <summary>
+		/// gets specific proposal
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="askerid"></param>
+		/// <param name="userid"></param>
+		/// <returns></returns>
         private static async Task<UserMarriedTo> InternalGetProposalAsync(MikiContext context, long askerid, long userid)
         {
 			return await context.UsersMarriedTo.Include(x => x.Marriage)
 				.FirstOrDefaultAsync(x => (x.AskerId == askerid || x.ReceiverId == userid) && x.Marriage.IsProposing);
 		}
 
+		/// <summary>
+		/// gets the proposals sent to userid
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="asker"></param>
+		/// <returns></returns>
 		private static async Task<List<UserMarriedTo>> InternalGetProposalsSentAsync(MikiContext context, long asker)
 		{
 			var allInstances = await context.UsersMarriedTo.Include(x => x.Marriage)
@@ -131,6 +144,12 @@ namespace Miki.Models
 			return allInstances;
 		}
 
+		/// <summary>
+		/// Gets the proposals received by userid
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="userid"></param>
+		/// <returns></returns>
 		private static async Task<List<UserMarriedTo>> InternalGetProposalsReceivedAsync(MikiContext context, long userid)
         {
 			var allInstances = await context.UsersMarriedTo
@@ -140,6 +159,13 @@ namespace Miki.Models
 			return allInstances;
 		}
 
+		/// <summary>
+		/// Gets marriage instance of receiver and asker
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="receiver"></param>
+		/// <param name="asker"></param>
+		/// <returns></returns>
 		private static async Task<UserMarriedTo> InternalGetMarriageAsync(MikiContext context, long receiver, long asker)
         {
 			return await context.UsersMarriedTo
@@ -147,6 +173,12 @@ namespace Miki.Models
 				.FirstOrDefaultAsync(x => x.ReceiverId == receiver && x.AskerId == asker && !x.Marriage.IsProposing);
 		}
 
+		/// <summary>
+		/// Gets all marriages the user id is married to
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="userid"></param>
+		/// <returns></returns>
         private async static Task<List<UserMarriedTo>> InternalGetMarriagesAsync(MikiContext context, long userid)
         {
 			var allInstances = await context.UsersMarriedTo
