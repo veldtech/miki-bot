@@ -192,7 +192,7 @@ namespace Miki.Modules.AccountsModule
 
 			if ((argument?.AsInt(0) ?? 0) != 0)
 			{
-				options.pageNumber = argument.AsInt();
+				options.pageNumber = argument.AsInt() - 1;
 				argument = argument?.Next();
 			}
 
@@ -497,7 +497,7 @@ namespace Miki.Modules.AccountsModule
 
 					repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
 
-					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject);
+					await Global.redisClient.AddAsync($"user:{giver.Id}:rep", repObject, new DateTimeOffset(DateTime.UtcNow.AddDays(1).Date));
 
 					embed.AddInlineField(locale.GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
 						.Build().QueueToChannel(e.Channel);
@@ -674,7 +674,7 @@ namespace Miki.Modules.AccountsModule
 				if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
 				{
 					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.GetLocale())}` before using it again.")
-					.AddInlineField("Need more mekos?", "Vote for us on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!").Build().QueueToChannel(e.Channel);
+					.AddInlineField("Need more mekos?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!").Build().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -860,7 +860,7 @@ namespace Miki.Modules.AccountsModule
 					LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(leaderboardOptions);
 
 					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-						.WithFooter(locale.GetString("page_index", p + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
+						.WithFooter(locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
 						.WithTitle($"Leaderboards: {leaderboardOptions.type.ToString()}")
 						.Build().QueueToChannel(mContext.Channel);
 				}

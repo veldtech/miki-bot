@@ -133,27 +133,6 @@ namespace Miki.Modules
 
 			using (MikiContext context = new MikiContext())
 			{
-				List<User> users = await User.SearchUserAsync(context, arg.Argument);
-
-				if (users.Count > 0)
-				{
-					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
-
-					UserMarriedTo marriage = allMarriages.FirstOrDefault(x => users.Any(y => y.Id == x.AskerId || y.Id == x.ReceiverId));
-					
-					if(marriage != null)
-					{
-						await marriage.Marriage.RemoveAsync(context);
-
-						EmbedBuilder embed = Utils.Embed;
-						embed.Title = "🔔 " + locale.GetString("miki_module_accounts_divorce_header");
-						embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, await User.GetNameAsync(context, marriage.GetOther(e.Author.Id.ToDbLong())));
-						embed.Color = new Color(0.6f, 0.4f, 0.1f);
-						embed.Build().QueueToChannel(e.Channel);
-						return;
-					}
-				}
-
 				IGuildUser user = await arg.GetUserAsync(e.Guild);
 
 				if (user != null)
@@ -174,6 +153,27 @@ namespace Miki.Modules
 						EmbedBuilder embed = Utils.Embed;
 						embed.Title = locale.GetString("miki_module_accounts_divorce_header");
 						embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, user.Username);
+						embed.Color = new Color(0.6f, 0.4f, 0.1f);
+						embed.Build().QueueToChannel(e.Channel);
+						return;
+					}
+				}
+
+				List<User> users = await User.SearchUserAsync(context, arg.Argument);
+
+				if (users.Count > 0)
+				{
+					var allMarriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
+
+					UserMarriedTo marriage = allMarriages.FirstOrDefault(x => users.Any(y => y.Id == x.AskerId || y.Id == x.ReceiverId));
+
+					if (marriage != null)
+					{
+						await marriage.Marriage.RemoveAsync(context);
+
+						EmbedBuilder embed = Utils.Embed;
+						embed.Title = "🔔 " + locale.GetString("miki_module_accounts_divorce_header");
+						embed.Description = locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, await User.GetNameAsync(context, marriage.GetOther(e.Author.Id.ToDbLong())));
 						embed.Color = new Color(0.6f, 0.4f, 0.1f);
 						embed.Build().QueueToChannel(e.Channel);
 						return;

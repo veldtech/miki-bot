@@ -98,10 +98,16 @@ namespace Miki.Modules
             EmbedBuilder embed = Utils.Embed;
             embed.Title = "Shards";
 
-			foreach (var c in Bot.Instance.Client.Shards)
+			for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
 			{
-				embed.Description += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`";
-            }
+				for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
+				{
+					DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
+
+					embed.AddInlineField($"{i * 20} - {(i + 1) * 20}" ,
+						$"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`");
+				}
+			}
 
             embed.Build().QueueToChannel(e.Channel);
 
