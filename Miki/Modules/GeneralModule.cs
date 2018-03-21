@@ -137,7 +137,7 @@ namespace Miki.Modules
 			List<IUser> winners = new List<IUser>();
 
 			IMessage msg = await CreateGiveawayEmbed(e, giveAwayText)
-			.AddField("Time Remaining", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
+			.AddField("Time", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
 			.AddField("React to participate", "good luck", true)
 			.Build().SendToChannel(e.Channel);
 
@@ -147,63 +147,51 @@ namespace Miki.Modules
 
 			int task = taskScheduler.AddTask(e.Author.Id, async (desc) =>
 			{
-				await (msg as IUserMessage).RemoveReactionAsync(emoji, await e.Guild.GetCurrentUserAsync());
+				msg = await e.Channel.GetMessageAsync(msg.Id);
 
-				List<IUser> reactions = new List<IUser>();
-
-				int reactionsGained = 0;
-
-				do
+				if (msg != null)
 				{
-					reactions.AddRange(await (msg as IUserMessage).GetReactionUsersAsync(emoji, 100, reactions.LastOrDefault()?.Id ?? null));
-					reactionsGained += 100;
-				} while (reactions.Count == reactionsGained);
+					await (msg as IUserMessage).RemoveReactionAsync(emoji, await e.Guild.GetCurrentUserAsync());
 
-				// Select random winners
-				for (int i = 0; i < amount; i++)
-				{
-					if (reactions.Count == 0)
-						break;
+					List<IUser> reactions = new List<IUser>();
 
-					int index = MikiRandom.Next(reactions.Count);
+					int reactionsGained = 0;
 
-					winners.Add(reactions[index]);
+					do
+					{
+						reactions.AddRange(await (msg as IUserMessage).GetReactionUsersAsync(emoji, 100, reactions.LastOrDefault()?.Id ?? null));
+						reactionsGained += 100;
+					} while (reactions.Count == reactionsGained);
 
-					if (isUnique)
-						reactions.RemoveAt(index);
-				}
+					// Select random winners
+					for (int i = 0; i < amount; i++)
+					{
+						if (reactions.Count == 0)
+							break;
 
-				if (updateTask != -1)
-					taskScheduler.CancelReminder(e.Author.Id, updateTask);
+						int index = MikiRandom.Next(reactions.Count);
 
-				string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
-				if (string.IsNullOrEmpty(winnerText))
-					winnerText = "nobody!";
+						winners.Add(reactions[index]);
 
-				await (msg as IUserMessage).ModifyAsync(x =>
-				{
-					x.Embed = CreateGiveawayEmbed(e, giveAwayText)
-						.AddField("Winners", winnerText)
-						.Build();
-				});
+						if (isUnique)
+							reactions.RemoveAt(index);
+					}
 
-			}, "description var", timeLeft);
+					if (updateTask != -1)
+						taskScheduler.CancelReminder(e.Author.Id, updateTask);
 
-			updateTask = taskScheduler.AddTask(e.Author.Id, async (_) =>
-			{
-				var taskInstance = taskScheduler.GetInstance(e.Author.Id, task);
+					string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
+					if (string.IsNullOrEmpty(winnerText))
+						winnerText = "nobody!";
 
-				if (taskInstance != null)
-				{
 					await (msg as IUserMessage).ModifyAsync(x =>
 					{
 						x.Embed = CreateGiveawayEmbed(e, giveAwayText)
-							.AddField("Time Remaining", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
-							.AddField("React to participate", "good luck", true)
+							.AddField("Winners", winnerText)
 							.Build();
 					});
 				}
-			}, "", new TimeSpan(0, 5, 0), true);
+			}, "description var", timeLeft);
 		}
 
 		private EmbedBuilder CreateGiveawayEmbed(EventContext e, string text)
