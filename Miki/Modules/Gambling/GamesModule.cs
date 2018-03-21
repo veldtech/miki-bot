@@ -208,7 +208,12 @@ namespace Miki.Modules
 
         private async Task OnBlackjackHit(EventContext e, BlackjackManager bm, IUserMessage instanceMessage, int bet)
         {
-            await e.message.DeleteAsync();
+			IGuildUser me = await e.Guild.GetCurrentUserAsync();
+
+			if (me.GetPermissions(e.Channel as IGuildChannel).Has(ChannelPermission.ManageMessages))
+			{
+				await e.message.DeleteAsync();
+			}
 
             bm.player.AddToHand(bm.deck.DrawRandom());
 
@@ -248,8 +253,13 @@ namespace Miki.Modules
 
             if (!charlie)
             {
-                await e.message.DeleteAsync();
-            }
+				IGuildUser me = await e.Guild.GetCurrentUserAsync();
+
+				if (me.GetPermissions(e.Channel as IGuildChannel).Has(ChannelPermission.ManageMessages))
+				{
+					await e.message.DeleteAsync();
+				}
+			}
 
             while (true)
             {

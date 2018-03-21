@@ -1,5 +1,6 @@
 ﻿using Miki.Common;
 using Miki.Common.Builders;
+using Miki.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,11 +44,18 @@ namespace Miki.Core.API.Reminder
 
 		public async Task StartAsync()
 		{
-			do
+			try
 			{
-				await RunTask();
-			} while (RepeatReminder && !cancellationToken.IsCancellationRequested);
-			parent.RemoveReminder(Id);
+				do
+				{
+					await RunTask();
+				} while (RepeatReminder && !cancellationToken.IsCancellationRequested);
+				parent.RemoveReminder(Id);
+			}
+			catch(Exception e)
+			{
+				Log.Error(e);
+			}
 		}
 
 		public async Task<bool> RunTask()
