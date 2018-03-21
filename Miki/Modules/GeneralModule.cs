@@ -463,9 +463,7 @@ namespace Miki.Modules
 		[Command(Name = "whois")]
 		public async Task WhoIsAsync(EventContext e)
 		{
-			ulong id = 0;
-
-			ArgObject arg = e.Arguments.FirstOrDefault();
+			ArgObject arg = e.Arguments.Join();
 
 			if (arg == null)
 			{
@@ -487,7 +485,7 @@ namespace Miki.Modules
 			embed.Title = $"Who is {user.Username}!?";
 			embed.WithColor(0.5f, 0f, 1.0f);
 
-			embed.ImageUrl = (await e.Guild.GetUserAsync(id)).GetAvatarUrl();
+			embed.ImageUrl = user.GetAvatarUrl();
 
 			embed.AddInlineField(
 				l.GetString("miki_module_whois_tag_personal"),

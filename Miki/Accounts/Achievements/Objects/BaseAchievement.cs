@@ -59,10 +59,7 @@ namespace Miki.Accounts.Achievements
 		{
 			using (var context = new MikiContext())
 			{
-				var achievement = await Achievement.GetAsync(context, userId, Name);
-
-				Log.Message($"achievement: {achievement}");
-				Log.Message($"newrank    : {newRank}");
+				var achievement = await Achievement.GetAsync(context, userId, ParentName);
 
 				// If no achievement has been found and want to unlock first
 				if (achievement == null && newRank == 0)
@@ -73,6 +70,10 @@ namespace Miki.Accounts.Achievements
 						Name = ParentName,
 						Rank = 0
 					}).Entity;
+
+					await Achievement.UpdateCacheAsync(userId, Name, achievement);
+					await context.SaveChangesAsync();
+					return true;
 				}
 				// If achievement we want to unlock is the next achievement
 				if (achievement != null)
@@ -86,7 +87,7 @@ namespace Miki.Accounts.Achievements
 						return false;
 					}
 
-					await Achievement.UpdateCacheAsync(userId, Name, achievement);
+					await Achievement.UpdateCacheAsync(userId, ParentName, achievement);
 					await context.SaveChangesAsync();
 					return true;
 				}

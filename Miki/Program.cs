@@ -118,14 +118,13 @@ namespace Miki
 				};
 			});
 
-			EventSystem.Instance.RegisterPrefixInstance(">")
-				.RegisterAsDefault();
-
+			eventSystem.RegisterPrefixInstance(">").RegisterAsDefault();
 			eventSystem.RegisterPrefixInstance("miki.", false);
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
 	
 			bot.OnError = async (ex) => Log.Message(ex.ToString());
+
 			eventSystem.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.Config.DeveloperIds)

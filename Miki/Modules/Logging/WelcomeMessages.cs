@@ -160,10 +160,12 @@ namespace Miki.Modules
 			var channels = await guild.GetTextChannelsAsync();
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
-			var guildCount = (await (user as IGuildUser).Guild.GetUsersAsync()).Count;
+			var guildCount = (await guild.GetUsersAsync()).Count;
 
-			var ownerMention = (await (user as IGuildUser).Guild.GetOwnerAsync()).Mention;
-			var ownerName = (await (user as IGuildUser).Guild.GetOwnerAsync()).Username;
+			IGuildUser owner = await guild.GetOwnerAsync();
+
+			var ownerMention = owner.Mention;
+			var ownerName = owner.Username;
 
 			List<EventMessageObject> output = new List<EventMessageObject>();
 

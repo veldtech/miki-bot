@@ -287,7 +287,7 @@ namespace Miki.Modules
 
 		[Command(Name = "box")]
 		public async Task BoxAsync(EventContext e)
-			=> await PerformCall(e, $"/api/box?text={e.Arguments.Join().Argument}&url={(await GetUrlFromMessageAsync(e))}");
+			=> await PerformCall(e, $"/api/box?text={e.Arguments.Join().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
 
 		[Command(Name = "disability")]
 		public async Task DisabilityAsync(EventContext e)
@@ -295,11 +295,11 @@ namespace Miki.Modules
 
 		[Command(Name = "tohru")]
 		public async Task TohruAsync(EventContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Join().Argument);
+			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
 
         [Command(Name = "truth")]
         public async Task TruthAsync(EventContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Join().Argument);
+			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
 
 		[Command(Name = "trapcard")]
 		public async Task YugiAsync(EventContext e)
@@ -309,14 +309,14 @@ namespace Miki.Modules
 		{
 			string url = e.Author.GetAvatarUrl();
 
-			if (e.message.Attachments.Count > 0)
-			{
-				url = e.message.Attachments.First().Url;
-			}
-
 			if (e.message.MentionedUserIds.Count > 0)
 			{
 				url = (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).GetAvatarUrl();
+			}
+
+			if (e.message.Attachments.Count > 0)
+			{
+				url = e.message.Attachments.First().Url;
 			}
 
 			return url;

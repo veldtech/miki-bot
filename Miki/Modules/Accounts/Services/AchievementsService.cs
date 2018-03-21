@@ -83,7 +83,36 @@ namespace Miki.Modules.Accounts.Services
 
 					}
 				};
-            });  
+            });
+
+			AchievementDataContainer LotteryAchievements = new AchievementDataContainer(x =>
+			{
+				x.Name = "lottery";
+				x.Achievements = new List<BaseAchievement>()
+				{
+					// Win a lottery > 100k
+					new BaseAchievement()
+					{
+						Name = "Celebrator",
+						Icon = "🍺",
+						Points = 5,
+					},
+					// Win a lottery > 10m
+					new BaseAchievement()
+					{
+						Name = "Absolute Madman",
+						Icon = "🍸",
+						Points = 10,
+					},
+					// Win a lottery > 250m
+					new BaseAchievement()
+					{
+						Name = "Pop da champagne",
+						Icon = "🍾",
+						Points = 15
+					}
+				};
+			});
 
             AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
             {

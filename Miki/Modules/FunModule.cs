@@ -280,22 +280,23 @@ namespace Miki.Modules
 				.Build().QueueToChannel(e.Channel);
         }
 
-  //      [Command(Name = "cat")]
-  //      public async Task CatAsync(EventContext e)
-  //      {
-  //          WebClient c = new WebClient();
-  //          byte[] b = c.DownloadData("http://random.cat/meow");
-  //          string str = Encoding.Default.GetString(b);
-  //          CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
+		[Command(Name = "cat")]
+		public async Task CatAsync(EventContext e)
+		{
+			WebClient c = new WebClient();
+			byte[] b = c.DownloadData("http://aws.random.cat/meow");
+			string str = Encoding.Default.GetString(b);
+			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
 
-		//	Utils.Embed
-		//		.WithTitle("🐱 Kitties!")
-		//		.WithColor(0.8f, 0.6f, 0.4f)
-		//		.SetImageUrl(cat.File)
-		//		.QueueToChannel(e.Channel);
-		//}
+			Utils.Embed
+				.WithTitle("🐱 Kitties!")
+				.WithColor(0.8f, 0.6f, 0.4f)
+				.WithImageUrl(cat.File)
+				.Build()
+				.QueueToChannel(e.Channel);
+		}
 
-        [Command(Name = "compliment")]
+		[Command(Name = "compliment")]
         public async Task ComplimentAsync(EventContext e)
         {
             string[] I_LIKE =
