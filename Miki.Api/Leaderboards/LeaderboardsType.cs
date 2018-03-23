@@ -7,6 +7,6 @@
 		CURRENCY,
 		REPUTATION,
 		PASTA,
-		GUILD
+		GUILDS
 	}
 }

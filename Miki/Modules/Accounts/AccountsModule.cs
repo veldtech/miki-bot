@@ -159,9 +159,11 @@ namespace Miki.Modules.AccountsModule
 				case "guild":
 				case "guilds":
 				{
-					options.type = LeaderboardsType.GUILD;
+					options.type = LeaderboardsType.GUILDS;
+					argument = argument?.Next();
 				}
 				break;
+
 
 				default:
 				{
@@ -182,7 +184,7 @@ namespace Miki.Modules.AccountsModule
 			// Null-conditional operators do not apply on async methods.
 			if (argument != null)
 			{
-				IUser user = (await argument.GetUserAsync(e.Guild));
+				IUser user = await argument.GetUserAsync(e.Guild);
 				if (user != null)
 				{
 					options.mentionedUserId = user.Id;
