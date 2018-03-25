@@ -19,8 +19,17 @@ using StackExchange.Redis.Extensions.Core;
 
 namespace Miki
 {
-    public static class Utils   
-    {
+	public static class Utils
+	{
+		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
+		{
+			if (Enum.TryParse(argument.Argument, true, out T result))
+			{
+				return result;
+			}
+			return defaultValue;
+		}
+
         public static DateTime UnixToDateTime(long unix)
         {
             DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

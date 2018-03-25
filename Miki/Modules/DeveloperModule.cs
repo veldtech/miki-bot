@@ -14,75 +14,87 @@ using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
-    [Module("Experimental")]
-    internal class DeveloperModule
-    {
-        public DeveloperModule(Module module)
-        {
-        }
+	[Module("Experimental")]
+	internal class DeveloperModule
+	{
+		public DeveloperModule(Module module)
+		{
+		}
 
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task IdentifyEmojiAsync(EventContext e)
-        {
-            Emote emote = Emote.Parse(e.Arguments.ToString());
+		public async Task IdentifyEmojiAsync(EventContext e)
+		{
+			Emote emote = Emote.Parse(e.Arguments.ToString());
 
-            Utils.Embed.WithTitle("Emoji Identified!")
-                .AddInlineField("Name", emote.Name)
-                .AddInlineField("Id", emote.Id.ToString())
-                .AddInlineField("Created At", emote.CreatedAt.ToString())
-                .AddInlineField("Code", "`" + emote.ToString() + "`")
-                .WithThumbnailUrl(emote.Url)
+			Utils.Embed.WithTitle("Emoji Identified!")
+				.AddInlineField("Name", emote.Name)
+				.AddInlineField("Id", emote.Id.ToString())
+				.AddInlineField("Created At", emote.CreatedAt.ToString())
+				.AddInlineField("Code", "`" + emote.ToString() + "`")
+				.WithThumbnailUrl(emote.Url)
 				.Build().QueueToChannel(e.Channel);
 
 			await Task.Yield();
 		}
 
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SayAsync(EventContext e)
-        {
-            e.Channel.QueueMessageAsync(e.Arguments.ToString());
-        }
+		public async Task SayAsync(EventContext e)
+		{
+			e.Channel.QueueMessageAsync(e.Arguments.ToString());
+		}
 
-        [Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SayEmbedAsync(EventContext e)
-        {
-            Utils.Embed.AddInlineField("SAY", e.Arguments.ToString()).Build()
+		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task SayEmbedAsync(EventContext e)
+		{
+			Utils.Embed.AddInlineField("SAY", e.Arguments.ToString()).Build()
 				.QueueToChannel(e.Channel);
 
 			await Task.Yield();
 		}
 
-        [Command(Name = "setgame", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetGameAsync(EventContext e)
-        {
-           // await (e.message.Channel as IGuildChannel).G.SetGameAsync(e.Arguments.ToString());
-        }
+		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task SetGameAsync(EventContext e)
+		{
+			var arg = e.Arguments.FirstOrDefault();
 
-        [Command(Name = "setstream", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetStreamAsync(EventContext e)
-        {
-            //await e.message.Discord.SetGameAsync(e.Arguments.ToString(), "https://www.twitch.tv/velddev");
-        }
+			if (arg == null)
+				return;
 
-        [Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task IgnoreIdAsync(EventContext e)
-        {
-            if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
-            {
-                EventSystem.Instance.Ignore(id);
-                e.Channel.QueueMessageAsync(":ok_hand:");
-            }
-        }
+			ActivityType type = arg.FromEnum<ActivityType>(ActivityType.Playing);
 
-        [Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task ShowCacheAsync(EventContext e)
-        {
-            e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
-        }
+			arg = arg.Next();
 
-        [Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task ChangeAvatarAsync(EventContext e)
-        {
+			string text = arg.TakeUntilEnd().Argument;
+			string url = null;
+
+			if (type == ActivityType.Streaming)
+				url = "https://twitch.tv/velddev";
+
+			foreach (var x in Bot.Instance.Client.Shards)
+			{
+				await x.SetGameAsync(text, url, type);
+			}
+		}
+
+		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task IgnoreIdAsync(EventContext e)
+		{
+			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
+			{
+				EventSystem.Instance.Ignore(id);
+				e.Channel.QueueMessageAsync(":ok_hand:");
+			}
+		}
+
+		[Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task ShowCacheAsync(EventContext e)
+		{
+			e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
+		}
+
+		[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task ChangeAvatarAsync(EventContext e)
+		{
 			using (Stream s = new FileStream("./" + e.Arguments.ToString(), FileMode.Open))
 			{
 				await Bot.Instance.Client.GetShardFor(e.Guild).CurrentUser.ModifyAsync(z =>
@@ -90,13 +102,13 @@ namespace Miki.Modules
 					z.Avatar = new Image(s);
 				});
 			}
-        }
+		}
 
-        [Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
-        public async Task DumpShards(EventContext e)
-        {
-            EmbedBuilder embed = Utils.Embed;
-            embed.Title = "Shards";
+		[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
+		public async Task DumpShards(EventContext e)
+		{
+			EmbedBuilder embed = Utils.Embed;
+			embed.Title = "Shards";
 
 			for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
 			{
@@ -104,71 +116,72 @@ namespace Miki.Modules
 				{
 					DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
 
-					embed.AddInlineField($"{i * 20} - {(i + 1) * 20}" ,
+					embed.AddInlineField($"{i * 20} - {(i + 1) * 20}",
 						$"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`");
 				}
 			}
 
-            embed.Build().QueueToChannel(e.Channel);
+			embed.Build().QueueToChannel(e.Channel);
 
 			await Task.Yield();
-        }
+		}
 
-        [Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SpellCheckAsync(EventContext context)
-        {
+		[Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task SpellCheckAsync(EventContext context)
+		{
 			EmbedBuilder embed = Utils.Embed;
 
-            embed.Title  = "Spellcheck - top results";
+			embed.Title = "Spellcheck - top results";
 
-            API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
-            List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
-                                                                 .OrderBy(z => z.score)
-                                                                 .ToList();
-            int x = 1;
+			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
+			List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
+																 .OrderBy(z => z.score)
+																 .ToList();
+			int x = 1;
 
-            foreach (API.StringComparison.StringComparison c in best)
-            {
-                embed.AddInlineField($"#{x}", c);
-                x++;
-                if (x > 16) break;
-            }
+			foreach (API.StringComparison.StringComparison c in best)
+			{
+				embed.AddInlineField($"#{x}", c);
+				x++;
+				if (x > 16)
+					break;
+			}
 
-            embed.Build().QueueToChannel(context.Channel);
+			embed.Build().QueueToChannel(context.Channel);
 
 			await Task.Yield();
-        }
+		}
 
-        [Command(Name = "setdonator", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetDonator(EventContext context)
-        {
-            using (MikiContext database = new MikiContext())
-            {
-                if (context.message.MentionedUserIds.Count > 0)
-                {
-                    Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
-                    if (a == null)
-                    {
-                        database.Achievements.Add(new Achievement() { Id = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
-                        await database.SaveChangesAsync();
-                    }
-                }
-                else
-                {
-                    ulong.TryParse(context.message.Content, out ulong x);
-                    if (x != 0)
-                    {
-                        database.Achievements.Add(new Achievement() { Id = x.ToDbLong(), Name = "donator", Rank = 0 });
-                        await database.SaveChangesAsync();
-                    }
-                }
-                context.Channel.QueueMessageAsync(":ok_hand:");
-            }
-        }
+		[Command(Name = "setdonator", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task SetDonator(EventContext context)
+		{
+			using (MikiContext database = new MikiContext())
+			{
+				if (context.message.MentionedUserIds.Count > 0)
+				{
+					Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
+					if (a == null)
+					{
+						database.Achievements.Add(new Achievement() { Id = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
+						await database.SaveChangesAsync();
+					}
+				}
+				else
+				{
+					ulong.TryParse(context.message.Content, out ulong x);
+					if (x != 0)
+					{
+						database.Achievements.Add(new Achievement() { Id = x.ToDbLong(), Name = "donator", Rank = 0 });
+						await database.SaveChangesAsync();
+					}
+				}
+				context.Channel.QueueMessageAsync(":ok_hand:");
+			}
+		}
 
-        [Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetMekos(EventContext e)
-        {
+		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task SetMekos(EventContext e)
+		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			IUser user = await arg.GetUserAsync(e.Guild);
@@ -177,26 +190,26 @@ namespace Miki.Modules
 
 			int amount = arg?.AsInt(0) ?? 0;
 
-            using (var context = new MikiContext())
-            {
-                User u = await context.Users.FindAsync((long)user.Id);
-                if (u == null)
-                {
-                    return;
-                }
+			using (var context = new MikiContext())
+			{
+				User u = await context.Users.FindAsync((long)user.Id);
+				if (u == null)
+				{
+					return;
+				}
 				u.Currency = amount;
-                await context.SaveChangesAsync();
-                e.Channel.QueueMessageAsync(":ok_hand:");
-            }
-        }
+				await context.SaveChangesAsync();
+				e.Channel.QueueMessageAsync(":ok_hand:");
+			}
+		}
 
-        [Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task FindUserById(EventContext e)
-        {
-            IUser u = Bot.Instance.Client.GetUser(ulong.Parse(e.Arguments.ToString()));
+		[Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task FindUserById(EventContext e)
+		{
+			IUser u = Bot.Instance.Client.GetUser(ulong.Parse(e.Arguments.ToString()));
 
-            e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
-        }
+			e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
+		}
 
 		[Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task CreateKeyAsync(EventContext e)
@@ -214,8 +227,8 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetExp(EventContext e)
-        {
+		public async Task SetExp(EventContext e)
+		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			IUser user = await arg.GetUserAsync(e.Guild);
@@ -225,23 +238,23 @@ namespace Miki.Modules
 			int amount = arg?.AsInt(0) ?? 0;
 
 			using (var context = new MikiContext())
-            {
-                LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user);
-                if (u == null)
-                {
-                    return;
-                }
-                u.Experience = amount;
-                await context.SaveChangesAsync();
+			{
+				LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user);
+				if (u == null)
+				{
+					return;
+				}
+				u.Experience = amount;
+				await context.SaveChangesAsync();
 				await Global.redisClient.AddAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
 				e.Channel.QueueMessageAsync(":ok_hand:");
-            }
-        }
+			}
+		}
 
 		[Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task BanUserAsync(EventContext e)
 		{
 			await User.BanAsync(long.Parse(e.Arguments.ToString()));
 		}
-    }
+	}
 }

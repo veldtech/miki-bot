@@ -132,12 +132,19 @@ namespace Miki.Modules
 			int amount = mml.Get("amount", 1);
 			TimeSpan timeLeft = mml.Get("time", "1h").GetTimeFromString();
 
+			if(amount > 10)
+			{
+				e.ErrorEmbed("We can only allow up to 10 picks per giveaway")
+					.Build().QueueToChannel(e.Channel);
+				return;
+			}
+
 			giveAwayText = giveAwayText + ((amount > 1) ? " x " + amount : "");
 
 			List<IUser> winners = new List<IUser>();
 
 			IMessage msg = await CreateGiveawayEmbed(e, giveAwayText)
-			.AddField("Time", timeLeft.ToTimeString(e.Channel.GetLocale(), true), true)
+			.AddField("Time", (DateTime.Now + timeLeft).ToShortTimeString(), true)
 			.AddField("React to participate", "good luck", true)
 			.Build().SendToChannel(e.Channel);
 
@@ -374,8 +381,7 @@ namespace Miki.Modules
 				{
 					Title = "Pong",
 					Color = DiscordExtensions.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), Mathm.Clamp((float)ping / 1000, 0, 1))
-				}.AddInlineField("Miki", ping + "ms")
-				.AddInlineField("Discord", Bot.Instance.Client.Latency + "ms").Build();
+				}.AddInlineField("Miki", ping + "ms").Build();
 				
 				await message.ModifyAsync(x => {
 					x.Embed = embed;
@@ -391,8 +397,6 @@ namespace Miki.Modules
 			Utils.Embed.WithTitle(locale.GetString("miki_module_general_prefix_help_header"))
 				.WithDescription(locale.GetString("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
 				.Build().QueueToChannel(e.Channel);
-
-			await Task.Yield();
 		}
 
 		[Command(Name = "stats")]
@@ -455,16 +459,14 @@ namespace Miki.Modules
 
 			if (arg == null)
 			{
-				// TODO: error message
-				return;
+				throw new ArgumentNullException();
 			}
 
 			IGuildUser user = await arg.GetUserAsync(e.Guild);
 
 			if (user == null)
 			{
-				// TODO: error message
-				return;
+				throw new ArgumentNullException("user");
 			}
 
 			Locale l = new Locale(e.Channel.Id);
