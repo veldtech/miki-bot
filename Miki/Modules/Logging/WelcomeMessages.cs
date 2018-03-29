@@ -196,10 +196,11 @@ namespace Miki.Modules
                     modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count)).Username);   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
+                    modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
                     modifiedMessage = modifiedMessage.Replace("-s", (user as IGuildUser).Guild.Name);
-					modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
 
-					modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
+
+	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
                     modifiedMessage = modifiedMessage.Replace("-cc", (await (user as IGuildUser).Guild.GetChannelsAsync()).Count.ToString());
