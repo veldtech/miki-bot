@@ -941,5 +941,16 @@ namespace Miki.Modules.AccountsModule
 				}
 			}
 		}
+		
+		[Command(Name = "vote")]
+		public async Task VoteAsync(EventContext e)
+		{
+			Utils.Embed
+				.SetTitle("Support Miki on Discord Bots")
+				.SetDescription("Show your support for Miki by voting for her every 24 hours on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote)! The 200 mekos doesn't hurt, either. ;)")
+				.QueueToChannel(e.Channel);
+
+			await Task.Yield();
+		}		
 	}
 }
