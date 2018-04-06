@@ -90,10 +90,10 @@ namespace Miki.Modules
 
 							User u = await User.GetAsync(context, user);
 
-							if (!await Global.redisClient.ExistsAsync($"dbl:vote:{voteObject.UserId}"))
+							if (!await Global.RedisClient.ExistsAsync($"dbl:vote:{voteObject.UserId}"))
 							{
 								u.DblVotes++;
-								await Global.redisClient.AddAsync($"dbl:vote:{voteObject.UserId}", 1, new TimeSpan(1, 0, 0, 0));
+								await Global.RedisClient.AddAsync($"dbl:vote:{voteObject.UserId}", 1, new TimeSpan(1, 0, 0, 0));
 
 								int addedCurrency = 100 * ((await u.IsDonatorAsync(context)) ? 2 : 1);
 

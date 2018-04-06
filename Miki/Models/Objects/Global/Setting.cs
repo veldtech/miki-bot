@@ -32,9 +32,9 @@ namespace Miki.Models
 		=> await GetAsync((long)id, settingId);
 		public static async Task<int> GetAsync(long id, DatabaseSettingId settingId)
 		{
-			if (await Global.redisClient.ExistsAsync(GetKey(id, settingId)))
+			if (await Global.RedisClient.ExistsAsync(GetKey(id, settingId)))
 			{
-				return await Global.redisClient.GetAsync<int>(GetKey(id, settingId));
+				return await Global.RedisClient.GetAsync<int>(GetKey(id, settingId));
 			}
 
 			using (var context = new MikiContext())
@@ -49,7 +49,7 @@ namespace Miki.Models
 						Value = 0
 					})).Entity;
 				}
-				await Global.redisClient.AddAsync(GetKey(id, settingId), s.Value);
+				await Global.RedisClient.AddAsync(GetKey(id, settingId), s.Value);
 				return s.Value;
 			}
 		}
@@ -78,7 +78,7 @@ namespace Miki.Models
 					s.Value = value;
 				}
 
-				await Global.redisClient.AddAsync(GetKey(id, settingId), value);
+				await Global.RedisClient.AddAsync(GetKey(id, settingId), value);
 				await context.SaveChangesAsync();
 			}
 		}

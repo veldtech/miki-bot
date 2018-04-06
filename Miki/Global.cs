@@ -7,6 +7,7 @@ using Miki.Framework.FileHandling;
 using Miki.API;
 using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis;
+using Amazon.S3;
 
 namespace Miki
 {
@@ -17,18 +18,12 @@ namespace Miki
     {
         public static RavenClient ravenClient;
 
-		private static Lazy<ICacheClient> lazyConnection = new Lazy<ICacheClient>(() =>
+		private static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
 		{
 			return new StackExchangeRedisCacheClient(new ProtobufSerializer(), Config.RedisConnectionString);
 		});
 
-		public static ICacheClient redisClient
-		{
-			get
-			{
-				return lazyConnection.Value;
-			}
-		}
+		public static ICacheClient RedisClient => redisClientPool.Value;
 		public static Config Config
 		{
 			get
@@ -52,9 +47,23 @@ namespace Miki
 				return config;
 			}
 		}
+		public static AmazonS3Client CdnClient
+		{
+			get
+			{
+				if (cdnClient == null)
+					cdnClient = new AmazonS3Client(Config.CdnAccessKey, Config.CdnSecretKey, new AmazonS3Config()
+					{
+						ServiceURL = Config.CdnRegionEndpoint
+					});
+				return cdnClient;
+			}
+		}
+
 		public static MikiApi MikiApi => mikiApi;
 
 		private static Config config = null;
+		private static AmazonS3Client cdnClient;
 		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
 	}
   

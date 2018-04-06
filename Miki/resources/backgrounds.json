@@ -1,0 +1,58 @@
+﻿[
+    {
+        "id": 0,
+        "name": "Distant Island",
+        "price": 500,
+        "tags": [
+            "nature"
+        ]
+    },
+    {
+        "id": 1,
+        "name": "Cherry Blossoms",
+        "price": 500,
+        "tags": [
+            "nature"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Maneki neko",
+        "price": 500,
+        "tags": [
+            "misc"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Moonlight",
+        "price": 500,
+        "tags": [
+            "nature"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Earth from above",
+        "price": 500,
+        "tags": [
+            "space"
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Galaxies",
+        "price": 500,
+        "tags": [
+            "space"
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Crystal skies",
+        "price": 500,
+        "tags": [
+            "space"
+        ]
+    }
+]

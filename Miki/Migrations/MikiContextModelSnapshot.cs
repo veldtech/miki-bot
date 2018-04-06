@@ -187,7 +187,7 @@ namespace Miki.Core.Migrations
 
                     b.Property<DateTime>("ValidUntil")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(new DateTime(2018, 3, 14, 11, 9, 18, 393, DateTimeKind.Local));
+                        .HasDefaultValue(new DateTime(2018, 3, 27, 21, 12, 33, 714, DateTimeKind.Local));
 
                     b.HasKey("UserId");
 
@@ -271,6 +271,29 @@ namespace Miki.Core.Migrations
                     b.HasKey("GuildId", "UserId");
 
                     b.ToTable("Timers");
+                });
+
+            modelBuilder.Entity("Miki.Models.Objects.User.ProfileVisuals", b =>
+                {
+                    b.Property<long>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0L);
+
+                    b.Property<string>("BackgroundColor")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("#000000");
+
+                    b.Property<int>("BackgroundId")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("ForegroundColor")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("#000000");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("ProfileVisuals");
                 });
 
             modelBuilder.Entity("Miki.Models.PastaVote", b =>

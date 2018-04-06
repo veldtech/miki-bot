@@ -22,9 +22,9 @@ namespace Miki.Models
 		{
 			string key = $"achievement:{userId}:{name}";
 
-			if (await Global.redisClient.ExistsAsync(key))
+			if (await Global.RedisClient.ExistsAsync(key))
 			{
-				Achievement a = await Global.redisClient.GetAsync<Achievement>(key);
+				Achievement a = await Global.RedisClient.GetAsync<Achievement>(key);
 				if(a != null)	
 				{
 					return context.Attach(a).Entity;
@@ -32,7 +32,7 @@ namespace Miki.Models
 			}			
 
 			Achievement achievement = await context.Achievements.FindAsync(userId, name);
-			await Global.redisClient.AddAsync(key, achievement);
+			await Global.RedisClient.AddAsync(key, achievement);
 			return achievement;
 		}
 
@@ -40,7 +40,7 @@ namespace Miki.Models
 		{
 			string key = $"achievement:{userId}:{name}";
 
-			await Global.redisClient.AddAsync(key, achievement);
+			await Global.RedisClient.AddAsync(key, achievement);
 		}
 	}
 }

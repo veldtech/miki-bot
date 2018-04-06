@@ -405,6 +405,20 @@ namespace Miki.Modules.Accounts.Services
 					}
 				};
 			});
+
+			AchievementDataContainer SlotsAchievement = new AchievementDataContainer(x =>
+			{
+				x.Name = "slots";
+				x.Achievements = new List<BaseAchievement>
+				{
+					new BaseAchievement()
+					{
+						Name = "Jackpot",
+						Icon = "🎰",
+						Points = 15
+					}
+				};
+			});
 		
             #region Achievement Achievements
 

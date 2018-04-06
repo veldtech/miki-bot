@@ -19,6 +19,11 @@ using StackExchange.Redis;
 using System.Threading;
 using Discord.WebSocket;
 using Miki.Framework.Extension;
+using Amazon.S3.Model;
+using Miki.Framework.Languages;
+using System.Reflection;
+using System.Resources;
+using Microsoft.Extensions.Logging;
 
 namespace Miki
 {
@@ -34,8 +39,15 @@ namespace Miki
 
 		public async Task Start()
 		{
-			Locale.Load();
 			timeSinceStartup = DateTime.Now;
+
+			Log.OnLog += (msg, e) => Console.WriteLine(msg);
+
+			LogColor color = new LogColor();
+			color.Foreground = ConsoleColor.Red;
+			Log.Theme.SetColor(LogLevel.Error, color);
+
+			LoadLocales();
 
 			LoadDiscord();
 
@@ -54,10 +66,32 @@ namespace Miki
 			await bot.ConnectAsync();
 		}
 
-        /// <summary>
-        /// The program runs all discord services and loads all the data here.
-        /// </summary>
-        public void LoadDiscord()
+		private void LoadLocales()
+		{
+			string nspace = "Miki.Languages";
+
+			var q = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.Namespace == nspace);
+
+			// en_US -> en-us
+			q.ToList().ForEach(t =>
+			{
+				try
+				{
+					string[] l = t.Name.Split('_');
+					l[1] = l[1].ToUpper();
+
+					ResourceManager resources = new ResourceManager($"Miki.Languages.{string.Join("-", l)}", t.Assembly);
+					string languageName = resources.GetString("current_language_name");
+					Locale.LoadLanguage(t.Name.ToLower().Replace("_", "-"), languageName, resources);
+				}
+				catch
+				{
+					Log.Error($"Language {t.Name} did not load correctly");
+				}
+			});
+		}
+
+		public void LoadDiscord()
         {
 			if (!Global.Config.IsPatreonBot)
 			{
@@ -77,8 +111,6 @@ namespace Miki
                 ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString
 			});
-
-			Log.OnLog += (msg, e) => Console.WriteLine(msg);
 
 			var eventSystem = EventSystem.Start(bot);
 
@@ -134,15 +166,23 @@ namespace Miki
 
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
+			bot.Client.UserUpdated += Client_UserUpdated;
 
 			bot.Client.ShardConnected += Bot_OnShardConnect;
 			bot.Client.ShardDisconnected += Bot_OnShardDisconnect;
 		}
 
+		private async Task Client_UserUpdated(SocketUser oldUser, SocketUser newUser)
+		{
+			if (oldUser.AvatarId != newUser.AvatarId)
+			{
+				await Utils.SyncAvatarAsync(newUser);
+			}
+		}
+
 		private async Task Bot_MessageReceived(IMessage arg)
 		{
-			DogStatsd.Counter("messages.received", 1);
-			await Task.Yield();
+			DogStatsd.Increment("messages.received");
 		}
 
 		private async Task Client_LeftGuild(SocketGuild arg)
@@ -154,9 +194,8 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IGuild arg)
 		{
-			Locale locale = new Locale(arg.Id);
 			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			defaultChannel.QueueMessageAsync(locale.GetString("miki_join_message"));
+			defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
 
 			List<string> allArgs = new List<string>();
 			List<object> allParams = new List<object>();
@@ -178,8 +217,10 @@ namespace Miki
 
 				using (var context = new MikiContext())
 				{
-					await context.Database.ExecuteSqlCommandAsync($"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
-					await context.Database.ExecuteSqlCommandAsync($"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+					await context.Database.ExecuteSqlCommandAsync(
+						$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+					await context.Database.ExecuteSqlCommandAsync(
+						$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
 					await context.SaveChangesAsync();
 				}
 			}

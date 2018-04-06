@@ -2,7 +2,6 @@
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
-using Miki.Languages;
 using Miki.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +10,9 @@ using Miki.Dsl;
 using System;
 using Discord;
 using Miki.Framework.Extension;
+using Amazon.S3.Model;
+using Miki.Framework.Languages;
+using Miki.Exceptions;
 
 namespace Miki.Modules
 {
@@ -36,7 +38,7 @@ namespace Miki.Modules
 				MSLResponse response = mml.Parse();
 
 				bool global = response.GetBool("g");
-				LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"));
+				LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
 
 				await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
 			}
@@ -182,7 +184,7 @@ namespace Miki.Modules
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
 				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
-				Utils.SuccessEmbed(e.Channel.GetLocale(), e.GetResource("localization_set", $"`{localeName}`"))
+				Utils.SuccessEmbed(e.Channel.Id, e.GetResource("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
 				return;
 			}
@@ -193,27 +195,39 @@ namespace Miki.Modules
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PrefixAsync(EventContext e)
 		{
-			Locale locale = new Locale(e.Channel.Id);
-
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.ErrorEmbed(locale.GetString("miki_module_general_prefix_error_no_arg")).Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.GetResource("miki_module_general_prefix_error_no_arg")).Build().QueueToChannel(e.Channel);
 				return;
 			}
 
 			await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.Arguments.ToString());
 
 			EmbedBuilder embed = Utils.Embed;
-			embed.Title = locale.GetString("miki_module_general_prefix_success_header");
-			embed.Description = locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString());
+			embed.Title = e.GetResource("miki_module_general_prefix_success_header");
+			embed.Description = e.GetResource("miki_module_general_prefix_success_message", e.Arguments.ToString());
 
-			embed.AddField(locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
+			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
 
 			embed.Build().QueueToChannel(e.Channel);
 		}
 
+		[Command(Name = "usersettings")]
+		public async Task UserSettingsAsync(EventContext e)
+		{
+			
+		}
+
+		[Command(Name = "syncavatar")]
+		public async Task SyncAvatarAsync(EventContext e)
+		{
+			await Utils.SyncAvatarAsync(e.Author);
+			Utils.SuccessEmbed(e.Channel.Id, "We've updated your avatar!")
+				.QueueToChannel(e.Channel);
+		}
+
 		[Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
-		public void DoListLocale(EventContext e)
+		public async Task ListLocaleAsync(EventContext e)
 		{
 			new EmbedBuilder() {
 				Title = ("Available locales"),

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Amazon;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,5 +144,14 @@ namespace Miki
 
 		[JsonProperty("message_worker_count")]
 		public int MessageWorkerCount { get; internal set; } = 4;
+
+		[JsonProperty("cdn_region_endpoint")]
+		public string CdnRegionEndpoint { get; internal set; }
+
+		[JsonProperty("cdn_access_key")]
+		public string CdnAccessKey { get; internal set; }
+
+		[JsonProperty("cdn_secret_key")]
+		public string CdnSecretKey { get; internal set; }
 	}
 }

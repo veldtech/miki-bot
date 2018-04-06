@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Miki.Modules;
 using System.Collections.Concurrent;
 using Miki.Framework.Extension;
+using Miki.Framework.Languages;
 
 namespace Miki.Accounts
 {
@@ -52,8 +53,6 @@ namespace Miki.Accounts
 
 			   long guildId = (e as IGuildChannel).GuildId.ToDbLong();
 
-			   Locale locale = new Locale(e.Id);
-
 			   List<LevelRole> rolesObtained = new List<LevelRole>();
 
 			   using (var context = new MikiContext())
@@ -75,8 +74,8 @@ namespace Miki.Accounts
 
 			   EmbedBuilder embed = new EmbedBuilder()
 			   {
-				   Title = (locale.GetString("miki_accounts_level_up_header")),
-				   Description = (locale.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l)),
+				   Title = Locale.GetString(e.Id, "miki_accounts_level_up_header"),
+				   Description = Locale.GetString(e.Id, "miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
 				   Color = new Color(1, 0.7f, 0.2f)
 			   };
 
@@ -108,18 +107,18 @@ namespace Miki.Accounts
 				if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
 				{
 					int currentExp = 0;
-					if (!await Global.redisClient.ExistsAsync(key))
+					if (!await Global.RedisClient.ExistsAsync(key))
 					{
 						using (var context = new MikiContext())
 						{
 							LocalExperience user = await LocalExperience.GetAsync(context, (e.Channel as IGuildChannel).Guild.Id.ToDbLong(), e.Author);
-							await Global.redisClient.AddAsync(key, user.Experience);
+							await Global.RedisClient.AddAsync(key, user.Experience);
 							currentExp = user.Experience;
 						}
 					}
 					else
 					{
-						currentExp = await Global.redisClient.GetAsync<int>(key);
+						currentExp = await Global.RedisClient.GetAsync<int>(key);
 					}
 
 					var bonusExp = MikiRandom.Next(1, 4);
@@ -155,7 +154,7 @@ namespace Miki.Accounts
 
 					lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
-					await Global.redisClient.AddAsync(key, currentExp);
+					await Global.RedisClient.AddAsync(key, currentExp);
 				}
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))

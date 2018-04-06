@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Miki.Models.Objects.User;
 
 namespace Miki.Models
 {
@@ -172,6 +173,19 @@ namespace Miki.Models
 				.WithMany(x => x.Pastas)
 				.HasForeignKey(x => x.CreatorId)
 				.HasPrincipalKey(x => x.Id);
+			#endregion
+
+			#region ProfileVisuals
+
+			var profileVisuals = modelBuilder.Entity<ProfileVisuals>();
+
+			profileVisuals.Property(x => x.UserId).HasDefaultValue(0);
+			profileVisuals.HasKey(x => x.UserId);
+
+			profileVisuals.Property(x => x.BackgroundId).HasDefaultValue(0);
+			profileVisuals.Property(x => x.ForegroundColor).HasDefaultValue("#000000");
+			profileVisuals.Property(x => x.BackgroundColor).HasDefaultValue("#000000");
+			
 			#endregion
 
 			#region Setting

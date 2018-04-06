@@ -20,6 +20,8 @@ using Miki.API;
 using System.Collections.Concurrent;
 using StackExchange.Redis;
 using Miki.Accounts.Achievements;
+using Miki.Framework.Languages;
+using Miki.Accounts.Achievements.Objects;
 
 namespace Miki.Modules
 {
@@ -30,7 +32,7 @@ namespace Miki.Modules
 
 		string lotteryKey = "lottery:tickets";
 
-		RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.redisClient);
+		RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.RedisClient);
 
 		int lotteryId = 0;
 
@@ -40,12 +42,12 @@ namespace Miki.Modules
 			{
 				lotteryId = taskScheduler.AddTask(0, (s) =>
 				{
-					long size = Global.redisClient.Database.ListLength(lotteryKey);
+					long size = Global.RedisClient.Database.ListLength(lotteryKey);
 
 					if (size < 1)
 						return;
 
-					string value = Global.redisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
+					string value = Global.RedisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
 
 					ulong winnerId = ulong.Parse(value);
 					int wonAmount = (int)Math.Round(size * 100 * 0.75);
@@ -77,8 +79,8 @@ namespace Miki.Modules
 
 							context.SaveChanges();
 
-							Global.redisClient.Database.KeyDelete(lotteryKey);
-							Global.redisClient.Database.StringSet("lottery:winner", profileUser.Name);
+							Global.RedisClient.Database.KeyDelete(lotteryKey);
+							Global.RedisClient.Database.StringSet("lottery:winner", profileUser.Name);
 							lotteryDict.ClearAsync();
 
 							var lotteryAchievement = AchievementManager.Instance.GetContainerById("lottery");
@@ -181,8 +183,6 @@ namespace Miki.Modules
         [Command(Name = "blackjack", Aliases = new[] {"bj"})]
         public async Task BlackjackAsync(EventContext e)
         {
-            Locale locale = e.Channel.GetLocale();
-
             if (EventSystem.Instance.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
             {
                 e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
@@ -483,7 +483,6 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-                Locale locale = new Locale(e.Channel.Id);
 
                 int moneyReturned = 0;
 
@@ -504,7 +503,7 @@ namespace Miki.Modules
                 };
 
                 EmbedBuilder embed = new EmbedBuilder()
-                    .SetAuthor(locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
+                    .SetAuthor(e.GetResource(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
 
                 string[] objectsChosen =
                 {
@@ -600,19 +599,25 @@ namespace Miki.Modules
                     if (score["⭐"] == 3)
                     {
                         moneyReturned = (int) Math.Ceiling(bet * 12f);
+
+						await AchievementManager.Instance.GetContainerById("slots").CheckAsync(new BasePacket()
+						{
+							discordChannel = e.Channel,
+							discordUser = e.Author
+						});
                     }
                 }
 
                 if (moneyReturned == 0)
                 {
                     moneyReturned = -bet;
-                    embed.AddField(locale.GetString("miki_module_fun_slots_lose_header"),
-                        locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
+                    embed.AddField(e.GetResource("miki_module_fun_slots_lose_header"),
+                        e.GetResource("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
                 }
                 else
                 {
-                    embed.AddField(locale.GetString(LocaleTags.SlotsWinHeader),
-                        locale.GetString(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
+                    embed.AddField(e.GetResource(LocaleTags.SlotsWinHeader),
+                        e.GetResource(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
                 }
 
                 embed.Description = string.Join(" ", objectsChosen);    
@@ -630,9 +635,9 @@ namespace Miki.Modules
 
 			if(arg == null)
 			{
-				long totalTickets = await Global.redisClient.Database.ListLengthAsync(lotteryKey);
+				long totalTickets = await Global.RedisClient.Database.ListLengthAsync(lotteryKey);
 				long yourTickets = 0;
-				string latestWinner = Global.redisClient.Database.StringGet("lottery:winner");
+				string latestWinner = Global.RedisClient.Database.StringGet("lottery:winner");
 
 				if(await lotteryDict.ContainsAsync(e.Author.Id))
 				{
@@ -645,7 +650,7 @@ namespace Miki.Modules
 					Description = "Make the biggest gamble, and get paid off massively if legit.",
 					Color = new Color(119, 178, 85)
 				}.AddInlineField("Tickets Owned",yourTickets)
-				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.GetLocale(), true))
+				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.Id, true))
 				.AddInlineField("Total Tickets", totalTickets)
 				.AddInlineField("Ticket price", $"{100} mekos")
 				.AddInlineField("Latest Winner", latestWinner ?? "???")
@@ -684,7 +689,7 @@ namespace Miki.Modules
 							tickets[i] = e.Author.Id.ToString();
 						}
 
-						await Global.redisClient.Database.ListRightPushAsync(lotteryKey, tickets);
+						await Global.RedisClient.Database.ListRightPushAsync(lotteryKey, tickets);
 
 						int totalTickets = 0;
 
@@ -697,7 +702,7 @@ namespace Miki.Modules
 
 						await context.SaveChangesAsync();
 
-						Utils.SuccessEmbed(e.Channel.GetLocale(), $"Successfully bought {amount} tickets!")
+						Utils.SuccessEmbed(e.Channel.Id, $"Successfully bought {amount} tickets!")
 							.QueueToChannel(e.Channel);
 					}
 				} break;
@@ -797,7 +802,11 @@ namespace Miki.Modules
 			{
 				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 				await e.commandHandler.RequestDisposeAsync();
-				await e.message.DeleteAsync();
+
+				if((await e.Guild.GetCurrentUserAsync()).GetPermissions(e.Channel as IGuildChannel).ManageMessages)
+					await e.message.DeleteAsync();
+
+
 				if (callback != null)
 				{
 					if (bet > u.Currency)

@@ -27,6 +27,8 @@ using Miki.API.Imageboards.Objects;
 using Miki.Core.API.Reminder;
 using Miki.Common.Builders;
 using Discord;
+using Miki.Framework.Languages;
+using Miki.Framework.Exceptions;
 
 namespace Miki.Modules
 {
@@ -170,6 +172,7 @@ namespace Miki.Modules
 };
 
 		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
+		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
 
         public FunModule(Module m)
         {
@@ -238,14 +241,12 @@ namespace Miki.Modules
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
-			Locale l = new Locale(e.Channel.Id);
-
-			string output = l.GetString("miki_module_fun_8ball_result", new object[] { e.Author.Username, l.GetString(reactions[MikiRandom.Next(0, reactions.Length)]) });
+			string output = e.GetResource("miki_module_fun_8ball_result", 
+				e.Author.Username, e.GetResource(reactions[MikiRandom.Next(0, reactions.Length)]));
             e.Channel.QueueMessageAsync(output);
         }
 
-	[Command(Name = "bird", Aliases = new string[] { "birb" })]
-
+		[Command(Name = "bird", Aliases = new string[] { "birb" })]	
         public async Task BirdAsync(EventContext e)
         {
             string[] bird =
@@ -364,7 +365,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -388,7 +389,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
             }
         }
 
@@ -397,7 +398,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -421,7 +422,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(new Locale(e.Channel.Id).GetString(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
             }
         }
 
@@ -436,19 +437,18 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.Channel.QueueMessageAsync(new Locale(e.Guild.Id).GetString(LocaleTags.ErrorPickNoArgs));
+                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ErrorPickNoArgs));
                 return;
             }
             string[] choices = e.Arguments.ToString().Split(',');
 
-            Locale locale = e.Channel.GetLocale();
-            e.Channel.QueueMessageAsync(locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+            e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
         {
-            e.Channel.QueueMessageAsync(new Locale(e.Guild.Id.ToDbLong()).GetString(puns[MikiRandom.Next(0, puns.Length)]));
+            e.Channel.QueueMessageAsync(e.GetResource(puns[MikiRandom.Next(0, puns.Length)]));
         }
 
 		[Command(Name = "roll")]
@@ -558,8 +558,6 @@ namespace Miki.Modules
 
 		private void PlaceReminder(EventContext e)
 		{
-			Locale locale = e.Channel.GetLocale();
-
 			string args = e.Arguments.Join().Argument;
 
 			int inIndex = args.ToLower().LastIndexOf(" in ");
@@ -573,7 +571,7 @@ namespace Miki.Modules
 
 			if (splitIndex == -1)
 			{
-				e.ErrorEmbed(locale.GetString("error_argument_null", "time"))
+				e.ErrorEmbed(e.GetResource("error_argument_null", "time"))
 					.Build().QueueToChannel(e.Channel);
 				return;
 			}
@@ -601,8 +599,8 @@ namespace Miki.Modules
 						.Build().QueueToUser(e.Author);
 				}, reminderText, timeUntilReminder, repeated);
 
-				Utils.Embed.WithTitle($"👌 {locale.GetString("term_ok")}")
-					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.GetLocale())}**\nYour reminder code is `{id}`")
+				Utils.Embed.WithTitle($"👌 {e.GetResource("term_ok")}")
+					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.Id)}**\nYour reminder code is `{id}`")
 					.WithColor(255, 220, 93)
 					.Build().QueueToChannel(e.Channel);
 			}
@@ -615,18 +613,17 @@ namespace Miki.Modules
 
 		private async Task CancelReminderAsync(EventContext e)
 		{
-			Locale locale = e.Channel.GetLocale();
 			ArgObject arg = e.Arguments.FirstOrDefault();
 			arg = arg?.Next();
 
 			if (arg == null)
 			{
-				e.ErrorEmbed(locale.GetString("error_argument_null", "id"))
+				e.ErrorEmbed(e.GetResource("error_argument_null", "id"))
 					.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
-			if (Utils.IsAll(arg, locale))
+			if (Utils.IsAll(arg))
 			{
 				if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
 				{
@@ -634,9 +631,9 @@ namespace Miki.Modules
 				}
 
 				Utils.Embed
-					.WithTitle($"⏰ {locale.GetString("reminders")}")
+					.WithTitle($"⏰ {e.GetResource("reminders")}")
 					.WithColor(0.86f, 0.18f, 0.26f)
-					.WithDescription(locale.GetString("reminder_cancelled_all"))
+					.WithDescription(e.GetResource("reminder_cancelled_all"))
 					.Build().QueueToChannel(e.Channel);
 				return;
 			}
@@ -645,21 +642,19 @@ namespace Miki.Modules
 				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
 				{
 					Utils.Embed
-						.WithTitle($"⏰ {locale.GetString("reminders")}")
+						.WithTitle($"⏰ {e.GetResource("reminders")}")
 						.WithColor(0.86f, 0.18f, 0.26f)
-						.WithDescription(locale.GetString("reminder_cancelled", $"`{i.Context}`"))
+						.WithDescription(e.GetResource("reminder_cancelled", $"`{i.Context}`"))
 						.Build().QueueToChannel(e.Channel);
 					return;
 				}
 			}
-			e.ErrorEmbed(locale.GetString("error_reminder_null"))
+			e.ErrorEmbed(e.GetResource("error_reminder_null"))
 				.Build().QueueToChannel(e.Channel);
 		}
 
 		private void ListReminders(EventContext e)
 		{
-			Locale locale = e.Channel.GetLocale();
-
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if(instances?.Count > 0)
 			{
@@ -667,7 +662,7 @@ namespace Miki.Modules
 
 				EmbedBuilder embed = new EmbedBuilder()
 				{
-					Title = $"⏰ {locale.GetString("reminders")}",
+					Title = $"⏰ {e.GetResource("reminders")}",
 					Color = new Color(0.86f, 0.18f, 0.26f)
 				};
 
@@ -687,37 +682,34 @@ namespace Miki.Modules
 					}
 
 					embed.Description += 
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.GetLocale(), true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.Id, true)}`\n";
 				}
 				embed.Build().QueueToChannel(e.Channel);
 				return;
 			}
 
-			e.ErrorEmbed(locale.GetString("error_no_reminders"))
+			e.ErrorEmbed(e.GetResource("error_no_reminders"))
 				.Build().QueueToChannel(e.Channel);
 		}
 
 		private async Task HelpReminderAsync(EventContext e)
 		{
-			Locale locale = e.Channel.GetLocale();
 			string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
 
 			new EmbedBuilder() { 
-				Title = $"⏰ {locale.GetString("reminders")}",
+				Title = $"⏰ {e.GetResource("reminders")}",
 				Color = new Color(0.86f, 0.18f, 0.26f),
-				Description = locale.GetString("reminder_help_description")
-			}.AddInlineField(locale.GetString("term_commands"), 
-				$"`{prefix}{locale.GetString("reminder_help_add")}` - {locale.GetString("reminder_desc_add")}\n" +
-				$"`{prefix}{locale.GetString("reminder_help_clear")}` - {locale.GetString("reminder_desc_clear")}\n" +
-				$"`{prefix}{locale.GetString("reminder_help_list")}` - {locale.GetString("reminder_desc_list")}\n")
+				Description = e.GetResource("reminder_help_description")
+			}.AddInlineField(e.GetResource("term_commands"), 
+				$"`{prefix}{e.GetResource("reminder_help_add")}` - {e.GetResource("reminder_desc_add")}\n" +
+				$"`{prefix}{e.GetResource("reminder_help_clear")}` - {e.GetResource("reminder_desc_clear")}\n" +
+				$"`{prefix}{e.GetResource("reminder_help_list")}` - {e.GetResource("reminder_desc_list")}\n")
 			.Build().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "safe")]
         public async Task DoSafe(EventContext e)
         {
-            Locale locale = new Locale(e.Channel.Id);
-
             ILinkable s = null;
 
 			ArgObject arg = e.Arguments.FirstOrDefault();
@@ -781,6 +773,29 @@ namespace Miki.Modules
 
             e.Channel.QueueMessageAsync(s.Url);
         }
+
+		[Command(Name = "ship")]
+		public async Task ShipAsync(EventContext e)
+		{
+			IGuildUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
+
+			// TODO: implement UserNullException
+			if (user == null)
+				return;
+
+			if (!await Global.RedisClient.ExistsAsync($"user:{e.Author.Id}:avatar:synced"))
+				await Utils.SyncAvatarAsync(e.Author);
+
+			if (!await Global.RedisClient.ExistsAsync($"user:{user.Id}:avatar:synced"))
+				await Utils.SyncAvatarAsync(user);
+
+			Random r = new Random((int)((e.Author.Id + user.Id) % int.MaxValue));
+
+			int value = r.Next(0, 100);
+
+			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.Author.Id}&other={user.Id}&value={value}");
+			await e.Channel.SendFileAsync(s, "meme.png");
+		}
 
         [Command( Name = "greentext", Aliases = new string[] { "green", "gt" } )]
         public async Task GreentextAsync( EventContext e )

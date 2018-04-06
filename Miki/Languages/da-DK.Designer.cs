@@ -151,6 +151,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to danish.
+        /// </summary>
+        internal static string current_language_name {
+            get {
+                return ResourceManager.GetString("current_language_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Servere.
         /// </summary>
         internal static string discord_servers {

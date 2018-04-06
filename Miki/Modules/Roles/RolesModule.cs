@@ -51,14 +51,14 @@ namespace Miki.Modules.Roles
 
 				if (role == null)
 				{
-					e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
+					e.ErrorEmbedResource("error_role_null")
 						.Build().QueueToChannel(e.Channel);
 					return;
 				}
 
 				if ((e.Author as IGuildUser).RoleIds.Contains(role.Id))
 				{
-					e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_already_given"))
+					e.ErrorEmbed(e.GetResource("error_role_already_given"))
 						.Build().QueueToChannel(e.Channel);
 					return;
 				}
@@ -71,7 +71,7 @@ namespace Miki.Modules.Roles
 
 				if (!newRole?.Optable ?? false)
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
+					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}
@@ -80,14 +80,14 @@ namespace Miki.Modules.Roles
 
 				if (newRole.RequiredLevel > level)
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - level))
+					await e.ErrorEmbed(e.GetResource("error_role_level_low", newRole.RequiredLevel - level))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}
 
 				if (newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
+					await e.ErrorEmbed(e.GetResource("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}
@@ -112,7 +112,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						await e.ErrorEmbed(e.Channel.GetLocale().GetString("user_error_insufficient_mekos"))
+						await e.ErrorEmbed(e.GetResource("user_error_insufficient_mekos"))
 							.Build().SendToChannel(e.Channel);
 						return;
 					}
@@ -158,14 +158,14 @@ namespace Miki.Modules.Roles
 
 				if (role == null)
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_null"))
+					await e.ErrorEmbed(e.GetResource("error_role_null"))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}
 
 				if (!(e.Author as IGuildUser).RoleIds.Contains(role.Id))
 				{
-					await e.ErrorEmbed(e.Channel.GetLocale().GetString("error_role_forbidden"))
+					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
 						.Build().SendToChannel(e.Channel);
 					return;
 				}
@@ -198,7 +198,7 @@ namespace Miki.Modules.Roles
 
 				StringBuilder stringBuilder = new StringBuilder();
 
-				roles = roles.OrderBy(x => x.Role.Name).ToList();
+				roles = roles.OrderBy(x => x.Role?.Name ?? "").ToList();
 
 				foreach(var role in roles)
 				{
@@ -207,31 +207,38 @@ namespace Miki.Modules.Roles
 						if(role.Role == null)
 						{
 							context.LevelRoles.Remove(role);
+							continue;
 						}
+
 						stringBuilder.Append($"`{role.Role.Name.PadRight(20)}|`");
-						if(role.RequiredLevel > 0)
+
+						if (role.RequiredLevel > 0)
 						{
 							stringBuilder.Append($"⭐{role.RequiredLevel} ");
 						}
-						if(role.Automatic)
+
+						if (role.Automatic)
 						{
 							stringBuilder.Append($"⚙️");
 						}
+
 						if (role.RequiredRole != 0)
 						{
 							stringBuilder.Append($"🔨`{e.Guild.GetRole(role.RequiredRole.FromDbLong())?.Name ?? "non-existing role"}`");
 						}
+
 						if (role.Price != 0)
 						{
 							stringBuilder.Append($"🔸{role.Price} ");
 						}
+
 						stringBuilder.AppendLine();
 					}
 				}
 
 				if(stringBuilder.Length == 0)
 				{
-					stringBuilder.Append(e.Channel.GetLocale().GetString("miki_placeholder_null"));
+					stringBuilder.Append(e.GetResource("miki_placeholder_null"));
 				}
 
 				await context.SaveChangesAsync();

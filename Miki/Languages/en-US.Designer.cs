@@ -151,6 +151,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to english.
+        /// </summary>
+        internal static string current_language_name {
+            get {
+                return ResourceManager.GetString("current_language_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Servers.
         /// </summary>
         internal static string discord_servers {
@@ -174,6 +183,24 @@ namespace Miki.Languages {
         internal static string error_argument_null {
             get {
                 return ResourceManager.GetString("error_argument_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I couldn&apos;t update your avatar..
+        /// </summary>
+        internal static string error_avatar_sync {
+            get {
+                return ResourceManager.GetString("error_avatar_sync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an unknown error..
+        /// </summary>
+        internal static string error_default {
+            get {
+                return ResourceManager.GetString("error_default", resourceCulture);
             }
         }
         
@@ -5170,15 +5197,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Patreon.
-        /// </summary>
-        internal static string socMiki_Frameworkl_patreon {
-            get {
-                return ResourceManager.GetString("social_patreon", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to General real time stats about Miki!.
         /// </summary>
         internal static string stats_description {
@@ -5220,6 +5238,15 @@ namespace Miki.Languages {
         internal static string term_commands {
             get {
                 return ResourceManager.GetString("term_commands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Emoji.
+        /// </summary>
+        internal static string term_emoji {
+            get {
+                return ResourceManager.GetString("term_emoji", resourceCulture);
             }
         }
         
@@ -5359,7 +5386,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We saw you tried to mention yourself. You can&apos;t do this!.
+        ///   Looks up a localized string similar to I saw you tried to mention yourself. You can&apos;t do this!.
         /// </summary>
         internal static string warning_mention_self {
             get {
