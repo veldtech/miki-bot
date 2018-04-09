@@ -25,27 +25,27 @@ namespace Miki.Modules
 
 		public GeneralModule(Module m)
 		{
-			EventSystem.Instance.AddCommandDoneEvent(x =>
-			{
-				x.Name = "--count-commands";
-				x.processEvent = async (msg, e, success, t) =>
-				{
-					if (success)
-					{
-						using (var context = new MikiContext())
-						{
-							User user = await User.GetAsync(context, msg.Author);
-							CommandUsage u = await CommandUsage.GetAsync(context, msg.Author.Id.ToDbLong(), e.Name);
+			//EventSystem.Instance.AddCommandDoneEvent(x =>
+			//{
+			//	x.Name = "--count-commands";
+			//	x.processEvent = async (msg, e, success, t) =>
+			//	{
+			//		if (success)
+			//		{
+			//			using (var context = new MikiContext())
+			//			{
+			//				User user = await User.GetAsync(context, msg.Author);
+			//				CommandUsage u = await CommandUsage.GetAsync(context, msg.Author.Id.ToDbLong(), e.Name);
 
-							u.Amount++;
-							user.Total_Commands++;
+			//				u.Amount++;
+			//				user.Total_Commands++;
 
-							await CommandUsage.UpdateCacheAsync(user.Id, e.Name, u);
-							await context.SaveChangesAsync();
-						}
-					}
-				};
-			});
+			//				await CommandUsage.UpdateCacheAsync(user.Id, e.Name, u);
+			//				await context.SaveChangesAsync();
+			//			}
+			//		}
+			//	};
+			//});
 		}
 
 		[Command(Name = "avatar")]

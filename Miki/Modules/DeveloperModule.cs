@@ -112,13 +112,15 @@ namespace Miki.Modules
 
 			for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
 			{
+				string title = $"{i * 20} - {(i + 1) * 20}";
+				string content = "";
 				for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
 				{
 					DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
 
-					embed.AddInlineField($"{i * 20} - {(i + 1) * 20}",
-						$"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`");
+					content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
 				}
+				embed.AddInlineField(title, content);
 			}
 
 			embed.Build().QueueToChannel(e.Channel);

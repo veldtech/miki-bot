@@ -51,7 +51,7 @@ namespace Miki
 				}
 			}
 
-			await bot.ConnectAsync();
+			await bot.ConnectAsync(Global.Config.Token);
 		}
 
         /// <summary>
@@ -69,13 +69,18 @@ namespace Miki
 				};
 			}
 
-			bot = new Bot(new ClientInformation()
+			bot = new Bot(new DistributedShardConfig()
+			{
+				AmountShards = Global.Config.AmountShards,
+				ShardId = Global.Config.ShardId,
+				TotalShards = Global.Config.ShardCount,
+				ConnectionTimeout = 100000,
+			}, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.6",
-                Token = Global.Config.Token,
-                ShardCount = Global.Config.ShardCount,
-				DatabaseConnectionString = Global.Config.ConnString
+				ShardCount = Global.Config.ShardCount,
+				DatabaseConnectionString = Global.Config.ConnString,
 			});
 
 			Log.OnLog += (msg, e) => Console.WriteLine(msg);
@@ -123,8 +128,6 @@ namespace Miki
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
 	
-			bot.OnError = async (ex) => Log.Message(ex.ToString());
-
 			eventSystem.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.Config.DeveloperIds)

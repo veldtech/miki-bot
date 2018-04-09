@@ -143,5 +143,8 @@ namespace Miki
 
 		[JsonProperty("message_worker_count")]
 		public int MessageWorkerCount { get; internal set; } = 4;
+
+		[JsonProperty("amount_shards")]
+		public int AmountShards { get; internal set; }
 	}
 }
