@@ -1,28 +1,46 @@
 ﻿using Discord;
+using Miki.Framework.Events;
+using Miki.Framework.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Miki.API.EmbedMenus
 {
-    public class Menu : IMenuItem
+    public class Menu
     {
-		public IMessage Message;
+		public IUserMessage Message;
+		public IMenuItem Root;
+		public IUser Owner;
 
-		public IReadOnlyList<IMenuItem> Children => new List<IMenuItem>() { root };
-		public string Name => name;
-		public IMenuItem Parent => parent;
-		public Menu MenuInstance => menuInstance;
-
-		IMenuItem root;
-		string name;
-		IMenuItem parent;
-		Menu menuInstance;
-
-		public void Select()
+		public Menu(Action<Menu> builder)
 		{
-			root.Select();
+			builder.Invoke(this);
+			Root.MenuInstance = this;
+			Root.Parent = null;
+		}
+		
+		public async Task<Args> ListenMessageAsync()
+		{
+			if (Owner == null)
+				throw new ArgumentNullException("Owner");
+
+			if(Message == null)
+				throw new ArgumentNullException("Message");
+
+			var msg = await EventSystem.Instance.ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
+			Args a = new Args(msg.Content);
+			return a;
+		}
+
+		public async Task StartAsync(IMessageChannel channel)
+		{
+			Message = await Root.Build().SendToChannel(channel);
+			(Root as BaseItem).SetMenu(this);
+			(Root as BaseItem).SetParent(null);
+			await Root.SelectAsync();
 		}
 	}
 }

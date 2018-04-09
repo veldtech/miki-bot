@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Miki.API.EmbedMenus
 {
@@ -9,9 +10,11 @@ namespace Miki.API.EmbedMenus
 	{
 		IReadOnlyList<IMenuItem> Children { get; }
 		string Name { get; }
-		IMenuItem Parent { get; }
-		Menu MenuInstance { get; }
 
-		void Select();
+		IMenuItem Parent { get; set; }
+		Menu MenuInstance { get; set; }
+
+		Task SelectAsync();
+		Embed Build();
 	}
 }

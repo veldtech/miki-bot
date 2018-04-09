@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Extension;
+using Miki.API.EmbedMenus;
 
 namespace Miki.Modules
 {
@@ -124,6 +125,45 @@ namespace Miki.Modules
 			embed.Build().QueueToChannel(e.Channel);
 
 			await Task.Yield();
+		}
+
+		[Command(Name = "menutest", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task MenuTestAsync(EventContext context)
+		{
+			await new Menu(m =>
+			{
+				m.Owner = context.Author;
+				m.Root = new SubMenuItem()
+				{
+					MenuInstance = m,
+					Parent = null,
+					name = "Test menu",
+					children = new List<IMenuItem>()
+					{
+						new SubMenuItem()
+						{
+							MenuInstance = m,
+							Parent = m.Root,
+							name = "Option 1",
+							children = null,
+						},
+						new SubMenuItem()
+						{
+							MenuInstance = m,
+							Parent = m.Root,
+							name = "Option 2",
+							children = null,
+						},
+						new PreviewItem()
+						{
+							MenuInstance = m,
+							Parent = m.Root,
+							name = "Show me an image",
+							imageUrl = "https://cdn.discordapp.com/attachments/431318403119185931/431543971823484938/unknown.png",
+						}
+					},
+				};
+			}).StartAsync(context.Channel);
 		}
 
 		[Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]

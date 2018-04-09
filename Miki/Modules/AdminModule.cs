@@ -329,8 +329,8 @@ namespace Miki.Modules
 
 			string moduleName = arg.Argument;
 
-
 			Module m = EventSystem.Instance.GetModuleByName(moduleName);
+
 			if (m == null)
 			{
 				e.ErrorEmbed($"{arg.Argument} is not a valid module.")
@@ -338,7 +338,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			arg = arg.Next();
+			arg = arg?.Next();
 
 			bool? setValue = arg.AsBoolean();
 			if (!setValue.HasValue)
