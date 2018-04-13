@@ -196,6 +196,7 @@ namespace Miki
 
 		private async Task Bot_OnShardConnect(DiscordSocketClient client)
 		{
+			Log.Message($"shard {client.ShardId} has connected!");
 			DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
 			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
 			await Task.Yield();
@@ -203,7 +204,8 @@ namespace Miki
 
 		private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
 		{
-			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!");
+			Log.Error($"shard {client.ShardId} has disconnected!");
+			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
 			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
 			await Task.Yield();
 		}
