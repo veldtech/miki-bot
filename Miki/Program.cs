@@ -63,7 +63,7 @@ namespace Miki
 				}
 			}
 
-			await bot.ConnectAsync();
+			await bot.ConnectAsync(Global.Config.Token);
 		}
 
 		private void LoadLocales()
@@ -93,7 +93,7 @@ namespace Miki
 
 		public void LoadDiscord()
         {
-			if (!Global.Config.IsPatreonBot)
+			if (!Global.Config.IsMainBot)
 			{
 				WebhookManager.Listen("webhook");
 
@@ -103,13 +103,18 @@ namespace Miki
 				};
 			}
 
-			bot = new Bot(new ClientInformation()
+			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
+			{
+				ShardId = Global.Config.ShardId,
+				TotalShards = Global.Config.ShardCount,
+				ConnectionTimeout = 100000,
+				LargeThreshold = 250,
+			}, new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.6",
-                Token = Global.Config.Token,
-                ShardCount = Global.Config.ShardCount,
-				DatabaseConnectionString = Global.Config.ConnString
+                Version = "0.6.1",
+				ShardCount = Global.Config.ShardCount,
+				DatabaseConnectionString = Global.Config.ConnString,
 			});
 
 			var eventSystem = EventSystem.Start(bot);
@@ -155,8 +160,6 @@ namespace Miki
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
 	
-			bot.OnError = async (ex) => Log.Message(ex.ToString());
-
 			eventSystem.AddDeveloper(121919449996460033);
 
 			foreach (ulong l in Global.Config.DeveloperIds)

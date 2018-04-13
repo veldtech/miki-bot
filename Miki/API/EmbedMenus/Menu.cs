@@ -11,9 +11,11 @@ namespace Miki.API.EmbedMenus
 {
     public class Menu
     {
-		public IUserMessage Message;
+		public IUserMessage Message => message;
 		public IMenuItem Root;
 		public IUser Owner;
+
+		private IUserMessage message;
 
 		public Menu(Action<Menu> builder)
 		{
@@ -37,7 +39,7 @@ namespace Miki.API.EmbedMenus
 
 		public async Task StartAsync(IMessageChannel channel)
 		{
-			Message = await Root.Build().SendToChannel(channel);
+			message = await Root.Build().SendToChannel(channel);
 			(Root as BaseItem).SetMenu(this);
 			(Root as BaseItem).SetParent(null);
 			await Root.SelectAsync();

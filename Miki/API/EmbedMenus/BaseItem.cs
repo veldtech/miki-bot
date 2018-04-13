@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 
+// TODO: build this into it's own library(?)
 namespace Miki.API.EmbedMenus
 {
 	class BaseItem : IMenuItem

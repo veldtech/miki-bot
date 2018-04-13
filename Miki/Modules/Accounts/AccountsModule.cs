@@ -26,6 +26,7 @@ using Miki.Framework.Extension;
 using Miki.Rest;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Framework.Languages;
+using Miki.API.EmbedMenus;
 
 namespace Miki.Modules.AccountsModule
 {
@@ -391,11 +392,79 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		[Command(Name = "editprofile")]
-		public async Task EditProfileAsync(EventContext e)
+		// TODO
+		//[Command(Name = "editprofile")]
+		//public async Task EditProfileAsync(EventContext e)
+		//{
+		//	Menu editProfileMenu = new Menu(x =>
+		//	{
+		//		x.Owner = e.Author;
+		//		x.Root = new SubMenuItem()
+		//		{
+		//			name = "Edit Profile Menu",
+		//			children = new List<IMenuItem>()
+		//			{
+						
+		//			}
+		//		};
+		//	});
+		//}
+
+		[Command(Name = "setprofilebackground")]
+		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
-			
+
 		}
+
+		[Command(Name = "setprofilebcolor")]
+		public async Task SetProfileBackColorAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				User author = await User.GetAsync(context, e.Author);
+
+				if(author.Currency > 250)
+				{
+					new EmbedBuilder()
+						.WithTitle("Hold on!")
+						.WithDescription("Changing your background color costs 250 mekos. type a hex to purchase")
+						.Build().QueueToChannel(e.Channel);
+
+					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+				}
+				else
+				{
+					e.ErrorEmbedResource("insufficient_mekos").Build()
+						.QueueToChannel(e.Channel);
+				}
+			}
+		}
+
+		[Command(Name = "setprofilefcolor")]
+		public async Task SetProfileForeColorAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				User author = await User.GetAsync(context, e.Author);
+
+				if (author.Currency > 500)
+				{
+					new EmbedBuilder()
+						.WithTitle("Hold on!")
+						.WithDescription("Changing your foreground color costs 500 mekos. type a hex to purchase")
+						.Build().QueueToChannel(e.Channel);
+
+					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+				}
+				else
+				{
+					e.ErrorEmbedResource("insufficient_mekos").Build()
+						.QueueToChannel(e.Channel);
+				}
+			}
+		}
+
+
 
 		[Command(Name = "rep")]
 		public async Task GiveReputationAsync(EventContext e)

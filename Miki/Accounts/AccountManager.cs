@@ -16,6 +16,7 @@ using Miki.Modules;
 using System.Collections.Concurrent;
 using Miki.Framework.Extension;
 using Miki.Framework.Languages;
+using Z.EntityFramework.Plus;
 
 namespace Miki.Accounts
 {
@@ -191,6 +192,7 @@ namespace Miki.Accounts
 		{
 			if (experienceQueue.Count == 0)
 				return;
+
 
 			List<string> userQuery = new List<string>();
 			string x = "WITH new_values (id, name, experience) as (values";

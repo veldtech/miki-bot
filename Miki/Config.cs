@@ -134,7 +134,7 @@ namespace Miki
 		/// Check if this is the patreon
 		/// </summary>
 		[JsonProperty("is_patreon_bot")]
-		public bool IsPatreonBot { get; internal set; }
+		public bool IsMainBot { get; internal set; }
 
 		/// <summary>
 		/// Channel id for pasta reports
@@ -153,5 +153,8 @@ namespace Miki
 
 		[JsonProperty("cdn_secret_key")]
 		public string CdnSecretKey { get; internal set; }
+
+		[JsonProperty("amount_shards")]
+		public int AmountShards { get; internal set; }
 	}
 }

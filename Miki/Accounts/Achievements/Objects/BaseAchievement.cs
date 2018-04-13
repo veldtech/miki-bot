@@ -42,6 +42,7 @@ namespace Miki.Accounts.Achievements
        
 			if (await UnlockIsValid(userid, r))
 			{
+				await AchievementManager.Instance.CallAchievementUnlockEventAsync(this, user, channel);
 				Notification.SendAchievement(this, channel, user);
 			}
 		}
