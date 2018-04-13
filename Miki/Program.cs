@@ -69,9 +69,8 @@ namespace Miki
 				};
 			}
 
-			bot = new Bot(new DistributedShardConfig()
+			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
 			{
-				AmountShards = Global.Config.AmountShards,
 				ShardId = Global.Config.ShardId,
 				TotalShards = Global.Config.ShardCount,
 				ConnectionTimeout = 100000,
