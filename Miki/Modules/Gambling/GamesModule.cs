@@ -154,7 +154,7 @@ namespace Miki.Modules
 								user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 								if (user != null)
 								{
-									await user.RemoveCurrencyAsync(context, null, bet);
+									await user.AddCurrencyAsync(-bet, e.Channel, null);
 									await context.SaveChangesAsync();
 								}
 							}
@@ -199,7 +199,7 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				await user.RemoveCurrencyAsync(context, null, bet);
+				await user.AddCurrencyAsync(-bet, e.Channel);
 				await context.SaveChangesAsync();
             }
 

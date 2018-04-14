@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Miki.Framework.Events;
 using Miki.Common;
 using Discord;
+using StatsdClient;
 
 namespace Miki.Models
 {
@@ -46,6 +47,8 @@ namespace Miki.Models
         public async Task AddCurrencyAsync(int amount, IMessageChannel channel = null, User fromUser = null)
         {
 			if (Banned) return;
+
+			DogStatsd.Counter("currency.change", amount);
 
             Currency += amount;
 
@@ -128,13 +131,6 @@ namespace Miki.Models
 		{
 			return await context.Users.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
 		}
-
-		public async Task RemoveCurrencyAsync(MikiContext context, User sentTo, int amount)
-        {
-			if (Banned) return;
-			Currency -= amount;
-            await context.SaveChangesAsync();
-        }
 
         public static int CalculateLevel(int exp)
         {

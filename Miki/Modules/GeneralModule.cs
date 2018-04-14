@@ -51,21 +51,27 @@ namespace Miki.Modules
 		[Command(Name = "avatar")]
 		public async Task AvatarAsync(EventContext e)
 		{
-			if (e.message.MentionedUserIds.Count > 0)
+			ArgObject arg = e.Arguments.FirstOrDefault();
+
+			if(arg == null)
 			{
-				e.Channel.QueueMessageAsync(string.Join(".", (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).GetAvatarUrl()));
+				e.Channel.QueueMessageAsync(e.Author.GetAvatarUrl());
 			}
 			else
 			{
-				e.Channel.QueueMessageAsync(string.Join(".", e.Author.GetAvatarUrl()));
-			}
-		}
+				if (arg.Argument == "-s")
+				{
+					e.Channel.QueueMessageAsync(e.Guild.IconUrl);
+					return;
+				}
 
-		[Command(Name = "avatar", On = "-s")]
-		public async Task ServerAvatarAsync(EventContext e)
-		{
-			e.Channel.QueueMessageAsync(string.Join(".", e.Guild.IconUrl));
-			await Task.Yield();
+				IGuildUser user = await arg.GetUserAsync(e.Guild);
+				
+				if(user != null)
+				{
+					e.Channel.QueueMessageAsync(user.GetAvatarUrl());
+				}
+			}
 		}
 
 		[Command(Name = "calc", Aliases = new string[] { "calculate" })]

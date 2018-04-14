@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Miki.Framework.Extension;
+using Miki.Exceptions;
 
 namespace Miki.Modules.Roles
 {
@@ -271,20 +272,27 @@ namespace Miki.Modules.Roles
 				while (true)
 				{
 					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-	
+
 					if (msg.Content.Length < 20)
 					{
 						break;
 					}
-
-					await sourceMessage.ModifyAsync(x =>
+					else
 					{
-						x.Embed = e.ErrorEmbed("That role name is way too long! Try again.").Build();
-					});
+						await sourceMessage.ModifyAsync(x =>
+						{
+							x.Embed = e.ErrorEmbed("That role name is way too long! Try again.").Build();
+						});
+					}
 				}
 
 				List<IRole> rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
 				IRole role = null;
+
+				if(rolesFound.Count == 0)
+				{
+					throw new RoleNullException();
+				}
 
 				if(rolesFound.Count > 1)
 				{
