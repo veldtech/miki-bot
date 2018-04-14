@@ -28,12 +28,10 @@ namespace Miki.Modules
 	[Module("Gambling")]
 	public class GamblingModule
 	{
+		// TODO: move to api
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
-
 		string lotteryKey = "lottery:tickets";
-
 		RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.RedisClient);
-
 		int lotteryId = 0;
 
 		public GamblingModule()
@@ -44,7 +42,7 @@ namespace Miki.Modules
 				{
 					long size = Global.RedisClient.Database.ListLength(lotteryKey);
 
-					if (size < 1)
+					if (size == 0)
 						return;
 
 					string value = Global.RedisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
@@ -157,7 +155,7 @@ namespace Miki.Modules
 								user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 								if (user != null)
 								{
-									await user.RemoveCurrencyAsync(context, null, bet);
+									await user.AddCurrencyAsync(-bet, e.Channel, null);
 									await context.SaveChangesAsync();
 								}
 							}
@@ -195,12 +193,12 @@ namespace Miki.Modules
 			await ValidateBet(e, StartBlackjack);
 		}
 
-		public async Task StartBlackjack(EventContext e, int bet)
-		{
-			using (var context = new MikiContext())
-			{
-				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				await user.RemoveCurrencyAsync(context, null, bet);
+        public async Task StartBlackjack(EventContext e, int bet)
+        {
+            using (var context = new MikiContext())
+            {
+                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+				await user.AddCurrencyAsync(-bet, e.Channel);
 				await context.SaveChangesAsync();
 			}
 
