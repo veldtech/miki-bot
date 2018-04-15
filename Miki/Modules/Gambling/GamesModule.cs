@@ -648,13 +648,15 @@ namespace Miki.Modules
 					yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
 				}
 
+				string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.Id, true) ?? "1h?m?s - will be fixed soon!";
+
 				new EmbedBuilder()
 				{
 					Title = "🍀 Lottery",
 					Description = "Make the biggest gamble, and get paid off massively if legit.",
 					Color = new Color(119, 178, 85)
 				}.AddInlineField("Tickets Owned", yourTickets)
-				.AddInlineField("Drawing In", taskScheduler.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.Id, true))
+				.AddInlineField("Drawing In", timeLeft)
 				.AddInlineField("Total Tickets", totalTickets)
 				.AddInlineField("Ticket price", $"{100} mekos")
 				.AddInlineField("Latest Winner", latestWinner ?? "???")
