@@ -111,8 +111,9 @@ namespace Miki.Modules.Overwatch
             {
                 return null;
             }
-
-            if (int.TryParse(username[1], out int descriminator))
+	
+	    int descriminator;
+            if (int.TryParse(username[1], out descriminator))
             {
                 string name = username[0];
                 OverwatchUserResponse user = await OverwatchAPI.GetUser(name, descriminator);
