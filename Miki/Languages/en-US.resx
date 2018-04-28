@@ -1955,7 +1955,8 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
     <value>You do not seem to have the role {0}! You can not do this without this role!</value>
   </data>
   <data name="error_argument_null" xml:space="preserve">
-    <value>The argument was not completed for `{0}`!</value>
+    <value>You are missing an argument, please check the {0} for help!</value>
+    <comment>0 = "documentation url"</comment>
   </data>
   <data name="error_no_reminders" xml:space="preserve">
     <value>You have no reminders active!</value>
@@ -2016,5 +2017,17 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="term_emoji" xml:space="preserve">
     <value>Emoji</value>
+  </data>
+  <data name="error_insufficient_currency" xml:space="preserve">
+    <value>You do not have enough mekos! You need {0} more mekos to be able to do this.</value>
+  </data>
+  <data name="error_default_user" xml:space="preserve">
+    <value>Unexpected user error.</value>
+  </data>
+  <data name="error_background_owned" xml:space="preserve">
+    <value>You already own this background, you can't buy it again!</value>
+  </data>
+  <data name="error_background_not_owned" xml:space="preserve">
+    <value>You don't have this background unlocked!</value>
   </data>
 </root>

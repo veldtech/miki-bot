@@ -2,7 +2,7 @@
     {
         "id": 0,
         "name": "Distant Island",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "nature"
         ]
@@ -10,7 +10,7 @@
     {
         "id": 1,
         "name": "Cherry Blossoms",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "nature"
         ]
@@ -18,15 +18,15 @@
     {
         "id": 2,
         "name": "Maneki neko",
-        "price": 500,
+        "price": 50000,
         "tags": [
-            "misc"
+            "japan"
         ]
     },
     {
         "id": 3,
         "name": "Moonlight",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "nature"
         ]
@@ -34,7 +34,7 @@
     {
         "id": 4,
         "name": "Earth from above",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "space"
         ]
@@ -42,7 +42,7 @@
     {
         "id": 5,
         "name": "Galaxies",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "space"
         ]
@@ -50,9 +50,146 @@
     {
         "id": 6,
         "name": "Crystal skies",
-        "price": 500,
+        "price": 50000,
         "tags": [
             "space"
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Discordbots White",
+        "price": -1,
+        "tags": [
+            "reward"
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Discordbots Black",
+        "price": -1,
+        "tags": [
+            "reward"
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Paper",
+        "price": 50000,
+        "tags": [
+            "pattern"
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Wooden",
+        "price": 50000,
+        "tags": [
+            "pattern"
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Tiles",
+        "price": 50000,
+        "tags": [
+            "pattern"
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Blue stripes",
+        "price": 50000,
+        "tags": [
+            "pattern"
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Plaid",
+        "price": 50000,
+        "tags": [
+            "pattern"
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Small Plants",
+        "price": 50000,
+        "tags": [
+            "pattern",
+            "nature"
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Basic blue",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Basic cyan",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 17,
+        "name": "Basic green",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 18,
+        "name": "Basic yellow",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 19,
+        "name": "Basic orange",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 20,
+        "name": "Basic red",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 21,
+        "name": "Basic pink",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
+        ]
+    },
+    {
+        "id": 22,
+        "name": "Basic purple",
+        "price": 1500,
+        "tags": [
+            "basic",
+            "color"
         ]
     }
 ]

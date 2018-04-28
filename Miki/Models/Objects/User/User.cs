@@ -13,6 +13,7 @@ using Miki.Framework.Events;
 using Miki.Common;
 using Discord;
 using StatsdClient;
+using Miki.Exceptions;
 
 namespace Miki.Models
 {
@@ -47,6 +48,14 @@ namespace Miki.Models
         public async Task AddCurrencyAsync(int amount, IMessageChannel channel = null, User fromUser = null)
         {
 			if (Banned) return;
+
+			if (amount < 0)
+			{
+				if (Currency < Math.Abs(amount))
+				{
+					throw new InsufficientCurrencyException(this, Math.Abs(amount + Currency));
+				}
+			}
 
 			DogStatsd.Counter("currency.change", amount);
 

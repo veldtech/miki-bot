@@ -17,6 +17,8 @@ using Discord;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using StatsdClient;
+using Miki.Exceptions;
+using System.Diagnostics;
 
 namespace Miki.Modules
 {
@@ -79,14 +81,14 @@ namespace Miki.Modules
 				{
 					using (var context = new MikiContext())
 					{
-						DblVoteObject voteObject = JsonConvert.DeserializeObject<DblVoteObject>(value.data);
+						DblVoteObject voteObject = value.data.ToObject<DblVoteObject>();
 
 						if (voteObject.Type == "upvote")
 						{
 							IUser user = Bot.Instance.Client.GetUser(voteObject.UserId);
 
 							if (user == null)
-								return;
+								throw new RabbitException();
 
 							User u = await User.GetAsync(context, user);
 
@@ -132,10 +134,9 @@ namespace Miki.Modules
 					}
 				}
 
-				if(value.auth_code == "KOFI_DONATE")
+				if (value.auth_code == "KOFI_DONATE")
 				{
-					JObject data = JsonConvert.DeserializeObject<JObject>(value.data);
-					KofiObject kofi = JsonConvert.DeserializeObject<KofiObject>(data.GetValue("data").ToObject<string>());
+					KofiObject kofi = value.data.ToObject<KofiObject>();
 
 					if (ulong.TryParse(kofi.Message.Split(' ').Last(), out ulong uid))
 					{
@@ -160,7 +161,7 @@ namespace Miki.Modules
 
 				if(value.auth_code == "PATREON_PLEDGES")
 				{
-					List<PatreonPledgeObject> pledgeObjects = JsonConvert.DeserializeObject<List<PatreonPledgeObject>>(value.data);
+					List<PatreonPledgeObject> pledgeObjects = value.data.ToObject<List<PatreonPledgeObject>>();
 
 					foreach (PatreonPledgeObject pledge in pledgeObjects)
 					{
@@ -188,14 +189,13 @@ namespace Miki.Modules
 
 						embed.AddField("How to redeem this key?", $"use this command `>redeemkey`", false)
 							.Build().QueueToUser(user);
-
 					}
 				}
 
 				if(value.auth_code == "PATREON_DELETE")
 				{
-					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
-					if(ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
+					PatreonPledge p = value.data.ToObject<PatreonPledge>();
+					if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
 					{
 						new EmbedBuilder()
 						{
@@ -203,17 +203,26 @@ namespace Miki.Modules
 							Description = "However, I won't hold it against you, thank you for your timely support and I hope you'll happily continue using Miki"
 						}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
 					}
+					else
+					{
+						throw new RabbitException();
+					}
 				}
 
 				if (value.auth_code == "PATREON_CREATE")
 				{
-					PatreonPledge p = JsonConvert.DeserializeObject<PatreonPledge>(value.data);
+					PatreonPledge p = value.data.ToObject<PatreonPledge>();
 					if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
 					{
-						new EmbedBuilder() {
+						new EmbedBuilder()
+						{
 							Title = "Welcome to the family",
 							Description = ("In maximal 24 hours you will receive another DM with key(s) depending on your patron amount. (5$/key). Thank you for your support!")
 						}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
+					}
+					else
+					{
+						throw new RabbitException();
 					}
 				}
 			};

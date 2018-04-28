@@ -254,7 +254,7 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			int page = (arg?.AsInt(0) ?? 0);
+			int page = (arg?.AsInt() ?? 0);
 
             using (var context = new MikiContext())
             {
@@ -357,10 +357,7 @@ namespace Miki.Modules
 				user = e.Author;
 			}
 
-			if ((arg?.AsInt(0) ?? 0) != 0)
-			{
-				page = arg.AsInt();
-			}
+			page = arg.AsInt() ?? 0;
 
 			using (MikiContext context = new MikiContext())
 			{

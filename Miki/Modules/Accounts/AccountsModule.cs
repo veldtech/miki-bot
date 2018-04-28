@@ -1,32 +1,30 @@
-	#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using Discord;
-using Miki.Framework;
-using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using Miki.Common.Builders;
 using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.API.Leaderboards;
-using Miki.Languages;
+using Miki.Common.Builders;
+using Miki.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.Framework.Extension;
+using Miki.Framework.Languages;
 using Miki.Models;
+using Miki.Models.Objects.Backgrounds;
+using Miki.Models.Objects.User;
 using Miki.Modules.Accounts.Services;
-using Newtonsoft.Json;
+using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Miki.Framework.Extension;
-using Miki.Rest;
-using Miki.Models.Objects.Backgrounds;
-using Miki.Framework.Languages;
-using Miki.API.EmbedMenus;
 
 namespace Miki.Modules.AccountsModule
 {
@@ -219,15 +217,16 @@ namespace Miki.Modules.AccountsModule
 				}
 			}
 
-			if ((argument?.AsInt(0) ?? 0) != 0)
+			if ((argument?.AsInt() ?? 0) != 0)
 			{
-				options.pageNumber = argument.AsInt() - 1;
+				options.pageNumber = argument.AsInt().Value - 1;
 				argument = argument?.Next();
 			}
 
 			await ShowLeaderboardsAsync(e.message, options);
 		}
 
+		// TODO: rework, or atleast clean up.
 		[Command(Name = "profile")]
 		public async Task ProfileAsync(EventContext e)
 		{
@@ -392,31 +391,73 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		// TODO
-		//[Command(Name = "editprofile")]
-		//public async Task EditProfileAsync(EventContext e)
-		//{
-		//	Menu editProfileMenu = new Menu(x =>
-		//	{
-		//		x.Owner = e.Author;
-		//		x.Root = new SubMenuItem()
-		//		{
-		//			name = "Edit Profile Menu",
-		//			children = new List<IMenuItem>()
-		//			{
-						
-		//			}
-		//		};
-		//	});
-		//}
-
-		[Command(Name = "setprofilebackground")]
+		[Command(Name = "setbackground")]
 		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
+			int? backgroundId = e.Arguments.First().AsInt();
+			long userId = e.Author.Id.ToDbLong();
+			using (var context = new MikiContext())
+			{
+				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
 
+				if (bo == null)
+				{
+					throw new BackgroundNotOwnedException();
+				}
+
+				ProfileVisuals v = await context.ProfileVisuals.FindAsync(userId);
+				v.BackgroundId = bo.BackgroundId;
+
+				await context.SaveChangesAsync();
+			}
 		}
 
-		[Command(Name = "setprofilebcolor")]
+		[Command(Name = "buybackground")]
+		public async Task BuyProfileBackgroundAsync(EventContext e)
+		{
+			int? backgroundId = e.Arguments.First().AsInt();
+
+			if (backgroundId.HasValue)
+			{
+				Background background = Global.Backgrounds.Backgrounds[backgroundId.Value];
+
+				new EmbedBuilder()
+					.WithTitle("Buy Background")
+					.WithDescription($"This background for your profile will cost {background.Price} mekos, Type yes to buy.")
+					.WithImageUrl(background.ImageUrl)
+					.Build().QueueToChannel(e.Channel);
+
+				IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+				if(msg.Content.ToLower()[0] == 'y')
+				{
+					using (var context = new MikiContext())
+					{
+						User user = await User.GetAsync(context, e.Author);
+						long userId = e.Author.Id.ToDbLong();
+
+						BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
+						
+						if(bo == null)
+						{
+							await user.AddCurrencyAsync(-background.Price, e.Channel);
+							await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+							{
+								UserId = e.Author.Id.ToDbLong(),
+								BackgroundId = background.Id,
+							});
+							await context.SaveChangesAsync();
+						}
+						else
+						{
+							throw new BackgroundOwnedException();
+						}
+					}
+				}
+			}
+		}
+
+		[Command(Name = "setbackcolor")]
 		public async Task SetProfileBackColorAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
@@ -431,6 +472,26 @@ namespace Miki.Modules.AccountsModule
 						.Build().QueueToChannel(e.Channel);
 
 					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+					if (Regex.IsMatch(msg.Content.ToUpper(), "#([A-F0-9]{6})"))
+					{
+						User user = await User.GetAsync(context, e.Author);
+
+						if (user.Currency >= 250)
+						{
+							ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+							visuals.BackgroundColor = msg.Content.ToUpper();
+							await context.SaveChangesAsync();
+
+							Utils.SuccessEmbed(e.Channel.Id,
+								$"Your background color has been successfully changed to `{msg.Content.ToUpper()}`")
+								.QueueToChannel(e.Channel);
+						}
+						else
+						{
+							throw new InsufficientCurrencyException(user, 250);
+						}
+					}
 				}
 				else
 				{
@@ -440,31 +501,56 @@ namespace Miki.Modules.AccountsModule
 			}
 		}
 
-		[Command(Name = "setprofilefcolor")]
+		[Command(Name = "setfrontcolor")]
 		public async Task SetProfileForeColorAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
 			{
-				User author = await User.GetAsync(context, e.Author);
+				User user = await User.GetAsync(context, e.Author);
 
-				if (author.Currency > 500)
+				if (user.Currency > 250)
 				{
 					new EmbedBuilder()
 						.WithTitle("Hold on!")
-						.WithDescription("Changing your foreground color costs 500 mekos. type a hex to purchase")
+						.WithDescription("Changing your foreground color costs 250 mekos. type a hex to purchase")
 						.Build().QueueToChannel(e.Channel);
 
 					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+					// TODO: wrap into function
+					if (Regex.IsMatch(msg.Content.ToUpper(), "#([A-F0-9]{6})"))
+					{
+						ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+						visuals.ForegroundColor = msg.Content.ToUpper();
+						await context.SaveChangesAsync();
+
+						Utils.SuccessEmbed(e.Channel.Id,
+							$"Your foreground color has been successfully changed to `{msg.Content.ToUpper()}`")
+							.QueueToChannel(e.Channel);
+					}
 				}
 				else
 				{
-					e.ErrorEmbedResource("insufficient_mekos").Build()
-						.QueueToChannel(e.Channel);
+					throw new InsufficientCurrencyException(user, 250);
 				}
 			}
 		}
 
+		[Command(Name = "backgroundsowned")]
+		public async Task BackgroundsOwnedAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				List<BackgroundsOwned> backgroundsOwned = await context.BackgroundsOwned.Where(x => x.UserId == e.Author.Id.ToDbLong())
+					.ToListAsync();
 
+				new EmbedBuilder()
+					.WithTitle($"{e.Author.Username}'s backgrounds")
+					.WithDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`" )))
+					.Build()
+					.QueueToChannel(e.Channel);
+			}
+		}
 
 		[Command(Name = "rep")]
 		public async Task GiveReputationAsync(EventContext e)
@@ -523,9 +609,9 @@ namespace Miki.Modules.AccountsModule
 
 						arg = arg?.Next();
 
-						if ((arg?.AsInt(-1) ?? -1) != -1)
+						if ((arg?.AsInt() ?? -1) != -1)
 						{
-							amount = arg.AsInt();
+							amount = arg.AsInt().Value;
 							arg = arg.Next();
 						}
 						else if (Utils.IsAll(arg))
@@ -788,6 +874,8 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField("Streak!", $"You're on a {streak} day daily streak!");
 				}
 
+				embed.AddInlineField("Need more mekos?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!");
+
 				embed.Build().QueueToChannel(e.Channel);
 
 				await Global.RedisClient.AddAsync(redisKey, streak, new TimeSpan(48, 0, 0));
@@ -826,7 +914,6 @@ namespace Miki.Modules.AccountsModule
 					{
 						case LeaderboardsType.COMMANDS:
 						{
-							embed.Title = Locale.GetString(mContext.Channel.Id, "miki_module_accounts_leaderboards_commands_header");
 							if (leaderboardOptions.mentionedUserId != 0)
 							{
 								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
@@ -946,7 +1033,11 @@ namespace Miki.Modules.AccountsModule
 
 					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
 						.WithFooter(Locale.GetString(mContext.Channel.Id, "page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
-						.WithTitle($"Leaderboards: {leaderboardOptions.type.ToString()}")
+						.WithAuthor(
+							"Leaderboards: " + leaderboardOptions.type + " (click me!)", 
+							null, 
+							Global.MikiApi.BuildLeaderboardsUrl(leaderboardOptions)
+						)
 						.Build().QueueToChannel(mContext.Channel);
 				}
 			}	

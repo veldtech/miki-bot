@@ -188,11 +188,14 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				int page = Math.Max((e.Arguments.Join()?.AsInt(0) ?? 0) - 1, 0);
+				int page = Math.Max((e.Arguments.Join()?.AsInt() ?? 0) - 1, 0);
 
 				long guildId = e.Guild.Id.ToDbLong();
+
+				// TODO: consider adding a name of the role in the database.
 				List<LevelRole> roles = await context.LevelRoles
 					.Where(x => x.GuildId == guildId)
+					.OrderBy(x => x.RoleId)
 					.Skip(page * 25)
 					.Take(25)
 					.ToListAsync();
@@ -293,15 +296,29 @@ namespace Miki.Modules.Roles
 					}
 				}
 
-				List<IRole> rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
+				string roleName = msg.Content;	
+
+				List<IRole> rolesFound = GetRolesByName(e.Guild, roleName.ToLower());
 				IRole role = null;
 
 				if(rolesFound.Count == 0)
 				{
-					throw new RoleNullException();
-				}
+					// Hey, I couldn't find this role, Can I make a new one?
+					await sourceMessage.ModifyAsync(x =>
+					{
+						x.Embed = e.ErrorEmbed($"There's no role that is named `{roleName}`, Shall I create it? Y/N").Build();
+					});
 
-				if(rolesFound.Count > 1)
+					msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+					if(msg.Content.ToLower()[0] != 'y')
+					{
+						throw new RoleNullException();
+					}
+
+					role = await e.Guild.CreateRoleAsync(roleName);
+				}
+				else if (rolesFound.Count > 1)
 				{
 					string roleIds = string.Join("\n", rolesFound.Select(x => $"`{x.Name}`: {x.Id}"));
 

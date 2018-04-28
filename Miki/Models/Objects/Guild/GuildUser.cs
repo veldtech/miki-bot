@@ -1,6 +1,5 @@
 ﻿using Miki.Framework;
 using Microsoft.EntityFrameworkCore;
-using Miki.Models.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,7 +10,7 @@ using Discord;
 namespace Miki.Models
 {
 	[Table("GuildUsers")]
-	public class GuildUser : IDatabaseUser
+	public class GuildUser
 	{
 		[Key, Column("EntityId", Order = 0)]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]

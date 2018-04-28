@@ -8,6 +8,7 @@ using Miki.API;
 using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis;
 using Amazon.S3;
+using Miki.Models.Objects.Backgrounds;
 
 namespace Miki
 {
@@ -24,6 +25,9 @@ namespace Miki
 		});
 
 		public static ICacheClient RedisClient => redisClientPool.Value;
+
+		public static BackgroundStore Backgrounds => backgrounds;
+
 		public static Config Config
 		{
 			get
@@ -65,8 +69,9 @@ namespace Miki
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
 		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
+		static BackgroundStore backgrounds = new BackgroundStore();
 	}
-  
+
 	public class Constants
 	{
 		public const string NotDefined = "$not-defined";

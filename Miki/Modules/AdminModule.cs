@@ -55,9 +55,10 @@ namespace Miki.Modules
 
 				int pruneDays = 1;
 
-				if (argObject.AsInt(-1) != -1)
+				// TODO: refactor
+				if ((argObject.AsInt() ?? -1) != -1)
 				{
-					pruneDays = argObject.AsInt();
+					pruneDays = argObject.AsInt().Value;
 					argObject?.Next();
 				}
 

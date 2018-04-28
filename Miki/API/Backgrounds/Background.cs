@@ -19,7 +19,7 @@ namespace Miki.Models.Objects.Backgrounds
     public class Background
     {
 		[JsonProperty("id")]
-		public long Id { get; set; }
+		public int Id { get; set; }
 
 		[JsonProperty("name")]
 		public string Name { get; set; }
@@ -30,6 +30,6 @@ namespace Miki.Models.Objects.Backgrounds
 		[JsonProperty("tags")]
 		public List<string> Tags { get; set; }
 
-		public string GetImageUrl => $"https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/{ Id }.png";
+		public string ImageUrl => $"https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-{ Id }.png";
     }
 }

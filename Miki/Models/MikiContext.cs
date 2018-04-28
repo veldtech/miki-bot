@@ -16,6 +16,7 @@ namespace Miki.Models
 			= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => __ > LogLevel.Information, false) });
 
 		public DbSet<Achievement> Achievements { get; set; }
+		public DbSet<BackgroundsOwned> BackgroundsOwned { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
 		public DbSet<Connection> Connections { get; set; }
 		public DbSet<IsDonator> IsDonator { get; set; }
@@ -27,6 +28,7 @@ namespace Miki.Models
         public DbSet<LevelRole> LevelRoles { get; set; }
         public DbSet<Marriage> Marriages { get; set; }
         public DbSet<GlobalPasta> Pastas { get; set; }
+		public DbSet<ProfileVisuals> ProfileVisuals { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<Timer> Timers { get; set; }
         public DbSet<User> Users { get; set; }
@@ -47,11 +49,21 @@ namespace Miki.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			#region Achievements
 			var achievement = modelBuilder.Entity<Achievement>();
 
 			achievement.HasKey(c => new { c.Id, c.Name });
 
 			achievement.Property(x => x.UnlockedAt).HasDefaultValueSql("now()");
+			#endregion
+
+			#region BackgroundsOwned
+
+			var backgroundsOwned = modelBuilder.Entity<BackgroundsOwned>();
+
+			backgroundsOwned.HasKey(x => new { x.UserId, x.BackgroundId });
+
+			#endregion
 
 			#region Command Usage
 			var commandUsage = modelBuilder.Entity<CommandUsage>();

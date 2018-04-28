@@ -659,7 +659,7 @@ namespace Miki.Modules
 				.AddInlineField("Drawing In", timeLeft)
 				.AddInlineField("Total Tickets", totalTickets)
 				.AddInlineField("Ticket price", $"{100} mekos")
-				.AddInlineField("Latest Winner", latestWinner ?? "???")
+				.AddInlineField("Latest Winner", latestWinner ?? "no name")
 				.AddInlineField("How to buy?", ">lottery buy [amount]")
 				.Build().QueueToChannel(e.Channel);
 				return;
@@ -670,7 +670,7 @@ namespace Miki.Modules
 				case "buy":
 				{
 					arg = arg.Next();
-					int amount = arg?.AsInt(1) ?? 1;
+					int amount = arg?.AsInt() ?? 1;
 
 					if (amount < 1)
 						amount = 1;

@@ -178,7 +178,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The argument was not completed for `{0}`!.
+        ///   Looks up a localized string similar to You are missing an argument, please check the {0} for help!.
         /// </summary>
         internal static string error_argument_null {
             get {
@@ -196,11 +196,47 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have this background unlocked!.
+        /// </summary>
+        internal static string error_background_not_owned {
+            get {
+                return ResourceManager.GetString("error_background_not_owned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You already own this background, you can&apos;t buy it again!.
+        /// </summary>
+        internal static string error_background_owned {
+            get {
+                return ResourceManager.GetString("error_background_owned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unknown error..
         /// </summary>
         internal static string error_default {
             get {
                 return ResourceManager.GetString("error_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected user error..
+        /// </summary>
+        internal static string error_default_user {
+            get {
+                return ResourceManager.GetString("error_default_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You do not have enough mekos! You need {0} more mekos to be able to do this..
+        /// </summary>
+        internal static string error_insufficient_currency {
+            get {
+                return ResourceManager.GetString("error_insufficient_currency", resourceCulture);
             }
         }
         

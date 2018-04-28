@@ -21,15 +21,15 @@ namespace Miki.API.EmbedMenus
 			ArgObject arg = a.FirstOrDefault();
 			if (arg != null)
 			{
-				int pageId = arg.AsInt(-1);
-				if(pageId != -1)
+				int? pageId = arg.AsInt();
+				if(pageId != null)
 				{
-					pageId = Math.Clamp(pageId, 1, Children.Count + 1);
+					pageId = Math.Clamp(pageId.Value, 1, Children.Count + 1);
 					await (MenuInstance.Message as IUserMessage).ModifyAsync(x =>
 					{	
-						x.Embed = Children[pageId - 1].Build();
+						x.Embed = Children[pageId.Value - 1].Build();
 					});
-					await Children[pageId - 1].SelectAsync();
+					await Children[pageId.Value - 1].SelectAsync();
 				}
 			}
 		}

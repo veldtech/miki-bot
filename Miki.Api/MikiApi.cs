@@ -34,22 +34,35 @@ namespace Miki.API
 			client.SetAuthorization(token);
 		}
 
+		/// <summary>
+		/// Builds the url to the leaderboards page on the miki website
+		/// </summary>
+		/// <param name="options">Leaderboards Options Object</param>
+		/// <returns>https://miki.ai/leaderboards/{guild_id?}/{type}/{page}</returns>
+		public string BuildLeaderboardsUrl(LeaderboardsOptions options)
+			=> "https://miki.ai" + BuildLeaderboardsRoute(options);
+
+		/// <summary>
+		/// Pulls the leaderboards data from the API
+		/// </summary>
+		/// <param name="options">Leaderboards Options Object</param>
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
+			=> (await client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
+
+		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
 				.Append("/leaderboards")
 				.Append((options.guildId == 0) ? "" : $"/{options.guildId}")
 				.Append($"/{options.type.ToString().ToLower()}");
 
-			if(options.type == LeaderboardsType.COMMANDS && !string.IsNullOrEmpty(options.commandSpecified))
+			if (options.type == LeaderboardsType.COMMANDS && !string.IsNullOrEmpty(options.commandSpecified))
 			{
 				sb.Append($"/{options.commandSpecified.ToLower()}");
 			}
 
 			sb.Append($"/{options.pageNumber}");
-
-			var response = await client.GetAsync<LeaderboardsObject>(sb.ToString());
-			return response.Data;
+			return sb.ToString();
 		}
 	}
 }

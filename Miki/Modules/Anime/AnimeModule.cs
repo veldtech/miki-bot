@@ -29,11 +29,13 @@ namespace Miki.Core.Modules.Anime
 		{
 			ICharacter character = null;
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
+			ArgObject arg = e.Arguments.First();
 
-			if ((arg?.AsInt(-1) ?? -1) != -1)
+			int? characterId = arg.AsInt();
+
+			if (characterId != null)
 			{
-				character = await anilistClient.GetCharacterAsync(arg.AsInt());
+				character = await anilistClient.GetCharacterAsync(characterId.Value);
 			}
 			else
 			{
@@ -78,10 +80,9 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			if (e.Arguments.LastOrDefault()?.AsInt(0) != 0)
+			if (e.Arguments.LastOrDefault()?.AsInt() != null)
 			{
-				page = e.Arguments.LastOrDefault()
-					.AsInt();
+				page = e.Arguments.LastOrDefault().AsInt().Value;
 			}
 
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
@@ -128,10 +129,9 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			if (e.Arguments.LastOrDefault()?.AsInt(0) != 0)
+			if (e.Arguments.LastOrDefault()?.AsInt() != null)
 			{
-				page = e.Arguments.LastOrDefault()
-					.AsInt();
+				page = e.Arguments.LastOrDefault().AsInt().Value;
 			}
 
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
@@ -178,12 +178,8 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			if(e.Arguments.LastOrDefault()?.AsInt(0) != 0)
-			{
-				page = e.Arguments.LastOrDefault()
-					.AsInt();
-			}
-
+			page = e.Arguments.LastOrDefault().AsInt() ?? 0;
+		
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
 			string searchQuery = arg.Argument;
 
@@ -223,11 +219,13 @@ namespace Miki.Core.Modules.Anime
 		{
 			IMedia media = null;
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
+			ArgObject arg = e.Arguments.First();
 
-			if ((arg?.AsInt(-1) ?? -1) != -1)
+			int? mediaId = arg.AsInt();
+
+			if (mediaId != null)
 			{
-				media = await anilistClient.GetMediaAsync(arg.AsInt());
+				media = await anilistClient.GetMediaAsync(mediaId.Value);
 			}
 			else
 			{

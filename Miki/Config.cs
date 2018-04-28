@@ -156,5 +156,8 @@ namespace Miki
 
 		[JsonProperty("amount_shards")]
 		public int AmountShards { get; internal set; }
+
+		[JsonProperty("rabbit_url")]
+		public Uri RabbitUrl { get; internal set; }
 	}
 }
