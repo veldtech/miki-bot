@@ -61,6 +61,7 @@ namespace Miki
 						{
 							int rCount = int.Parse(value.ToString() ?? "0") + 1;
 
+							prop.Headers = new Dictionary<string, object>();
 							prop.Headers.Add("x-retry-count", rCount);
 
 							if (rCount > 10)
@@ -70,6 +71,7 @@ namespace Miki
 						}
 						else
 						{
+							prop.Headers = new Dictionary<string, object>();
 							prop.Headers.Add("x-retry-count", 1);
 						}
 						channel.BasicPublish("miki", "*", false, prop, ea.Body);

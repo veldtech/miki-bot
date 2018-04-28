@@ -21,7 +21,6 @@ namespace Miki.Models
 
 		public void Remove(MikiContext context)
 		{
-			context.Marriages.Remove(Marriage);
 			context.UsersMarriedTo.Remove(this);
 		}
 	}
