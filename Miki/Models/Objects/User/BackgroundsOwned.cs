@@ -16,10 +16,11 @@ namespace Miki.Models.Objects.User
 		public static async Task<BackgroundsOwned> GetAsync(long userId, int backgroundId, MikiContext context)
 		{
 			var bg = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
-			if(bg == null)
+			if (bg == null)
 			{
 				return (await context.BackgroundsOwned.AddAsync(new BackgroundsOwned() { UserId = userId, BackgroundId = backgroundId })).Entity;
 			}
 			return bg;
 		}
+	}
 }
