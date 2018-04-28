@@ -93,15 +93,12 @@ namespace Miki
 
 		public void LoadDiscord()
         {
-			if (!Global.Config.IsMainBot)
-			{
-				WebhookManager.Listen("webhook");
+			WebhookManager.Listen("webhook");
 
-				WebhookManager.OnEvent += async (eventArgs) =>
-				{
-					Console.WriteLine("[webhook] " + eventArgs.auth_code);
-				};
-			}
+			WebhookManager.OnEvent += async (eventArgs) =>
+			{
+				Console.WriteLine("[webhook] " + eventArgs.auth_code);
+			};
 
 			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
 			{
