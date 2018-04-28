@@ -398,14 +398,14 @@ namespace Miki.Modules.AccountsModule
 			long userId = e.Author.Id.ToDbLong();
 			using (var context = new MikiContext())
 			{
-				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
+				BackgroundsOwned bo = await BackgroundsOwned.GetAsync(userId, backgroundId, context);
 
 				if (bo == null)
 				{
 					throw new BackgroundNotOwnedException();
 				}
 
-				ProfileVisuals v = await context.ProfileVisuals.FindAsync(userId);
+				ProfileVisuals v = await ProfileVisuals.GetAsync(userId, context);
 				v.BackgroundId = bo.BackgroundId;
 
 				await context.SaveChangesAsync();
