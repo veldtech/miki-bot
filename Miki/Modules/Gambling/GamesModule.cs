@@ -208,7 +208,10 @@ namespace Miki.Modules
 					.SendToChannel(e.Channel);
 
 			if (bm.Worth(bm.player) == 21)
+			{
+				await Task.Delay(1000);
 				await OnBlackjackWin(e, bm, message, bet);
+			}
 
 			CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
 				.AddPrefix("")

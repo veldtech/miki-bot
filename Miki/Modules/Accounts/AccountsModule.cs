@@ -421,36 +421,48 @@ namespace Miki.Modules.AccountsModule
 			{
 				Background background = Global.Backgrounds.Backgrounds[backgroundId.Value];
 
-				new EmbedBuilder()
-					.WithTitle("Buy Background")
-					.WithDescription($"This background for your profile will cost {background.Price} mekos, Type yes to buy.")
-					.WithImageUrl(background.ImageUrl)
+
+				var embed = new EmbedBuilder();
+				embed.WithTitle("Buy Background");
+
+				if (background.Price > 0)
+				{
+					embed.WithDescription($"This background for your profile will cost {background.Price} mekos, Type yes to buy.");
+				}
+				else
+				{
+					embed.WithDescription($"This background is not for sale.");
+				}
+				embed.WithImageUrl(background.ImageUrl)
 					.Build().QueueToChannel(e.Channel);
 
-				IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-
-				if(msg.Content.ToLower()[0] == 'y')
+				if (background.Price > 0)
 				{
-					using (var context = new MikiContext())
-					{
-						User user = await User.GetAsync(context, e.Author);
-						long userId = e.Author.Id.ToDbLong();
+					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
-						BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
-						
-						if(bo == null)
+					if (msg.Content.ToLower()[0] == 'y')
+					{
+						using (var context = new MikiContext())
 						{
-							await user.AddCurrencyAsync(-background.Price, e.Channel);
-							await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+							User user = await User.GetAsync(context, e.Author);
+							long userId = e.Author.Id.ToDbLong();
+
+							BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
+
+							if (bo == null)
 							{
-								UserId = e.Author.Id.ToDbLong(),
-								BackgroundId = background.Id,
-							});
-							await context.SaveChangesAsync();
-						}
-						else
-						{
-							throw new BackgroundOwnedException();
+								await user.AddCurrencyAsync(-background.Price, e.Channel);
+								await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+								{
+									UserId = e.Author.Id.ToDbLong(),
+									BackgroundId = background.Id,
+								});
+								await context.SaveChangesAsync();
+							}
+							else
+							{
+								throw new BackgroundOwnedException();
+							}
 						}
 					}
 				}
@@ -462,9 +474,9 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				User author = await User.GetAsync(context, e.Author);
+				User user = await User.GetAsync(context, e.Author);
 
-				if(author.Currency > 250)
+				if(user.Currency > 250)
 				{
 					new EmbedBuilder()
 						.WithTitle("Hold on!")
@@ -475,28 +487,19 @@ namespace Miki.Modules.AccountsModule
 
 					if (Regex.IsMatch(msg.Content.ToUpper(), "#([A-F0-9]{6})"))
 					{
-						User user = await User.GetAsync(context, e.Author);
+						ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+						visuals.BackgroundColor = msg.Content.ToUpper();
+						await user.AddCurrencyAsync(-250, e.Channel);
+						await context.SaveChangesAsync();
 
-						if (user.Currency >= 250)
-						{
-							ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
-							visuals.BackgroundColor = msg.Content.ToUpper();
-							await context.SaveChangesAsync();
-
-							Utils.SuccessEmbed(e.Channel.Id,
-								$"Your background color has been successfully changed to `{msg.Content.ToUpper()}`")
-								.QueueToChannel(e.Channel);
-						}
-						else
-						{
-							throw new InsufficientCurrencyException(user, 250);
-						}
+						Utils.SuccessEmbed(e.Channel.Id,
+							$"Your background color has been successfully changed to `{msg.Content.ToUpper()}`")
+							.QueueToChannel(e.Channel);
 					}
 				}
 				else
 				{
-					e.ErrorEmbedResource("insufficient_mekos").Build()
-						.QueueToChannel(e.Channel);
+					throw new InsufficientCurrencyException(user, 250);
 				}
 			}
 		}
@@ -512,22 +515,24 @@ namespace Miki.Modules.AccountsModule
 				{
 					new EmbedBuilder()
 						.WithTitle("Hold on!")
-						.WithDescription("Changing your foreground color costs 250 mekos. type a hex to purchase")
+						.WithDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
 						.Build().QueueToChannel(e.Channel);
 
 					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
-					// TODO: wrap into function
-					if (Regex.IsMatch(msg.Content.ToUpper(), "#([A-F0-9]{6})"))
-					{
-						ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
-						visuals.ForegroundColor = msg.Content.ToUpper();
-						await context.SaveChangesAsync();
+					var match = Regex.Match(msg.Content.ToUpper(), "#([A-F0-9]{6})");
 
-						Utils.SuccessEmbed(e.Channel.Id,
-							$"Your foreground color has been successfully changed to `{msg.Content.ToUpper()}`")
-							.QueueToChannel(e.Channel);
-					}
+					if(match != null || match.Captures.Count == 0)
+						throw new InvalidOperationException();
+
+					ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+					visuals.ForegroundColor = match.Captures[0].Value;
+					await user.AddCurrencyAsync(-250, e.Channel);
+					await context.SaveChangesAsync();
+
+					Utils.SuccessEmbed(e.Channel.Id,
+						$"Your foreground color has been successfully changed to `{match.Captures[0].Value}`")
+						.QueueToChannel(e.Channel);
 				}
 				else
 				{
@@ -903,144 +908,17 @@ namespace Miki.Modules.AccountsModule
 			{
 				int p = Math.Max(leaderboardOptions.pageNumber - 1, 0);
 
-				if (Global.MikiApi == null)
-				{
-					EmbedBuilder embed = new EmbedBuilder()
-					{
-						Color = new Color(1.0f, 0.6f, 0.4f)
-					};
+				LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(leaderboardOptions);
 
-					switch (leaderboardOptions.type)
-					{
-						case LeaderboardsType.COMMANDS:
-						{
-							if (leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-
-								var mentionedUser = await context.Users.FindAsync(mentionedId);
-								p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalCommandsRankAsync()) - 1) / 12));
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Total_Commands)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for (int i = 0; i < output.Count; i++)
-							{
-								string nameToOutput = leaderboardOptions.mentionedUserId != 0 ? string.Join("", output[i].Name.Take(16)) : "~" + string.Join("", output[i].Name.Take(16)) + "~";
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {nameToOutput}", $"{output[i].Total_Commands} commands used!");
-							}
-						}
-						break;
-
-						case LeaderboardsType.CURRENCY:
-						{
-							embed.Title = Locale.GetString(mContext.Channel.Id, "miki_module_accounts_leaderboards_mekos_header");
-							if (leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								var mentionedUser = await context.Users.FindAsync(mentionedId);
-								p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalMekosRankAsync()) - 1) / 12));
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Currency)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for (int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Currency} mekos!");
-							}
-						}
-						break;
-
-						case LeaderboardsType.EXPERIENCE:
-						{
-							embed.Title = Locale.GetString(mContext.Channel.Id, "miki_module_accounts_leaderboards_header");
-							if (leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								var mentionedUser = await context.Users.FindAsync(mentionedId);
-								p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalRankAsync()) - 1) / 12));
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Total_Experience)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for (int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Total_Experience} experience!");
-							}
-						}
-						break;
-
-						case LeaderboardsType.REPUTATION:
-						{
-							embed.Title = Locale.GetString(mContext.Channel.Id, "miki_module_accounts_leaderboards_reputation_header");
-							if (leaderboardOptions.mentionedUserId != 0)
-							{
-								long mentionedId = leaderboardOptions.mentionedUserId.ToDbLong();
-								var mentionedUser = await context.Users.FindAsync(mentionedId);
-								p = (int)Math.Ceiling((double)(((await mentionedUser.GetGlobalReputationRankAsync()) - 1) / 12));
-							}
-							List<User> output = await context.Users
-								.OrderByDescending(x => x.Reputation)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							for (int i = 0; i < output.Count; i++)
-							{
-								embed.AddInlineField($"#{i + (12 * p) + 1}: {string.Join("", output[i].Name.Take(16))}",
-									$"{output[i].Reputation} reputation!");
-							}
-						}
-						break;
-
-						case LeaderboardsType.PASTA:
-						{
-							List<GlobalPasta> leaderboards = await context.Pastas
-								.OrderByDescending(x => x.Score)
-								.Skip(12 * p)
-								.Take(12)
-								.ToListAsync();
-
-							embed.WithTitle(Locale.GetString(mContext.Channel.Id, "toppasta_title"));
-
-							foreach (GlobalPasta t in leaderboards)
-							{
-								int amount = t.Score;
-								embed.AddInlineField(t.Id, (t == leaderboards.First() ? "💖 " + amount : (amount < 0 ? "💔 " : "❤ ") + amount));
-							}
-						}
-						break;
-					}
-
-
-					embed.WithFooter(Locale.GetString(mContext.Channel.Id, "page_index", p + 1, Math.Ceiling(context.Users.Count() / 12f)))
-						.Build().QueueToChannel(mContext.Channel);
-				}
-				else
-				{
-					LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(leaderboardOptions);
-
-					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-						.WithFooter(Locale.GetString(mContext.Channel.Id, "page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
-						.WithAuthor(
-							"Leaderboards: " + leaderboardOptions.type + " (click me!)", 
-							null, 
-							Global.MikiApi.BuildLeaderboardsUrl(leaderboardOptions)
-						)
-						.Build().QueueToChannel(mContext.Channel);
-				}
-			}	
+				Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
+					.WithFooter(Locale.GetString(mContext.Channel.Id, "page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
+					.WithAuthor(
+						"Leaderboards: " + leaderboardOptions.type + " (click me!)",
+						null,
+						Global.MikiApi.BuildLeaderboardsUrl(leaderboardOptions)
+					)
+					.Build().QueueToChannel(mContext.Channel);
+			}
 		}
 	}
 }

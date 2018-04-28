@@ -56,11 +56,14 @@ namespace Miki
 					catch (RabbitException e)
 					{
 						var prop = channel.CreateBasicProperties();
-						if (prop.Headers.TryGetValue("x-retry-count", out object value))
+
+						if (ea.BasicProperties.Headers.TryGetValue("x-retry-count", out object value))
 						{
-							int rCount = int.Parse(value.ToString()) + 1;
-							prop.Headers["x-retry-count"] = rCount;
-							if(rCount > 10)
+							int rCount = int.Parse(value.ToString() ?? "0") + 1;
+
+							prop.Headers.Add("x-retry-count", rCount);
+
+							if (rCount > 10)
 							{
 								return;
 							}
