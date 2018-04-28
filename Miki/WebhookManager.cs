@@ -55,7 +55,21 @@ namespace Miki
 					}
 					catch (RabbitException e)
 					{
-						channel.BasicNack(ea.DeliveryTag, false, true);
+						var prop = channel.CreateBasicProperties();
+						if (prop.Headers.TryGetValue("x-retry-count", out object value))
+						{
+							int rCount = int.Parse(value.ToString()) + 1;
+							prop.Headers["x-retry-count"] = rCount;
+							if(rCount > 10)
+							{
+								return;
+							}
+						}
+						else
+						{
+							prop.Headers.Add("x-retry-count", 1);
+						}
+						channel.BasicPublish("miki", "*", false, prop, ea.Body);
 					}
 					catch (Exception e)
 					{

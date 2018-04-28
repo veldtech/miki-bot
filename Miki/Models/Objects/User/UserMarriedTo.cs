@@ -1,4 +1,5 @@
 ﻿using Miki.Framework;
+using System.Threading.Tasks;
 
 namespace Miki.Models
 {
@@ -16,6 +17,12 @@ namespace Miki.Models
 		public long GetOther(long id)
 		{
 			return AskerId == id ? ReceiverId : AskerId;
+		}
+
+		public void Remove(MikiContext context)
+		{
+			context.Marriages.Remove(Marriage);
+			context.UsersMarriedTo.Remove(this);
 		}
 	}
 }

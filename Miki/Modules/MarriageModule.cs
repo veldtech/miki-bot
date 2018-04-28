@@ -145,7 +145,7 @@ namespace Miki.Modules
 					embed.Color = new Color(0.6f, 0.4f, 0.1f);
 					embed.Build().QueueToChannel(e.Channel);
 
-					await m.Marriage.RemoveAsync(context);
+					m.Remove(context);
 					await context.SaveChangesAsync();
 				});
 			}
@@ -246,7 +246,7 @@ namespace Miki.Modules
 						Color = new Color(191, 105, 82)
 					}.Build().QueueToChannel(e.Channel);
 
-					await m.Marriage.RemoveAsync(context);
+					m.Remove(context);
 					await context.SaveChangesAsync();
 				});
 			}

@@ -30,12 +30,6 @@ namespace Miki.Models
             TimeOfMarriage = DateTime.Now;
             IsProposing = false;
         }
-
-        public async Task RemoveAsync(MikiContext context)
-        {
-            context.Marriages.Remove(this);
-            await context.SaveChangesAsync();
-        }
 		
         public static async Task DeclineAllProposalsAsync(MikiContext context, long me)
         {
