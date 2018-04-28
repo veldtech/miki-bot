@@ -395,10 +395,14 @@ namespace Miki.Modules.AccountsModule
 		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
 			int? backgroundId = e.Arguments.First().AsInt();
+
+			if (backgroundId == null)
+				throw new ArgumentNullException("background");
+
 			long userId = e.Author.Id.ToDbLong();
 			using (var context = new MikiContext())
 			{
-				BackgroundsOwned bo = await BackgroundsOwned.GetAsync(userId, backgroundId, context);
+				BackgroundsOwned bo = await BackgroundsOwned.GetAsync(userId, backgroundId ?? 0, context);
 
 				if (bo == null)
 				{

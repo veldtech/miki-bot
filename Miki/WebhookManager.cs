@@ -56,12 +56,12 @@ namespace Miki
 					catch (RabbitException e)
 					{
 						var prop = channel.CreateBasicProperties();
+						prop.Headers = new Dictionary<string, object>();
 
 						if (ea.BasicProperties.Headers.TryGetValue("x-retry-count", out object value))
 						{
 							int rCount = int.Parse(value.ToString() ?? "0") + 1;
 
-							prop.Headers = new Dictionary<string, object>();
 							prop.Headers.Add("x-retry-count", rCount);
 
 							if (rCount > 10)
@@ -71,7 +71,6 @@ namespace Miki
 						}
 						else
 						{
-							prop.Headers = new Dictionary<string, object>();
 							prop.Headers.Add("x-retry-count", 1);
 						}
 						channel.BasicPublish("miki", "*", false, prop, ea.Body);
