@@ -207,12 +207,6 @@ namespace Miki.Modules
 			IUserMessage message = await bm.CreateEmbed(e)
 					.SendToChannel(e.Channel);
 
-			if (bm.Worth(bm.player) == 21)
-			{
-				await Task.Delay(1000);
-				await OnBlackjackWin(e, bm, message, bet);
-			}
-
 			CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
 				.AddPrefix("")
 				.SetOwner(e.message)
