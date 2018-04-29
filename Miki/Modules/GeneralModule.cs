@@ -113,7 +113,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				Title = "Changelog",
-				Description = "Check out my changelog blog [here](https://blog.miki.ai/)"
+				Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
 			}.Build().QueueToChannel(e.Channel);
 		}
 
