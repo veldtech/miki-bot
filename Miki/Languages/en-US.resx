@@ -1350,7 +1350,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>You ({0})</value>
   </data>
   <data name="miki_blackjack_explanation" xml:space="preserve">
-    <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to you.</value>
+    <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to the house.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
     <value>Use `hit` to draw a new card.</value>

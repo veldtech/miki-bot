@@ -610,7 +610,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The one who&apos;s closest to 21 wins. All cards count their own number up to 10. Ties go to you..
+        ///   Looks up a localized string similar to The one who&apos;s closest to 21 wins. All cards count their own number up to 10. Ties go to the house..
         /// </summary>
         internal static string miki_blackjack_explanation {
             get {

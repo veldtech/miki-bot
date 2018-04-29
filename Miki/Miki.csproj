@@ -151,6 +151,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.18" />
+    <PackageReference Include="CountLib" Version="1.0.0" />
     <PackageReference Include="Discord.Net" Version="2.0.0-beta" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.1.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
