@@ -29,6 +29,7 @@ using Miki.Common.Builders;
 using Discord;
 using Miki.Framework.Languages;
 using Miki.Framework.Exceptions;
+using Miki.Exceptions;
 
 namespace Miki.Modules
 {
@@ -777,7 +778,9 @@ namespace Miki.Modules
 		[Command(Name = "ship")]
 		public async Task ShipAsync(EventContext e)
 		{
-			IGuildUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
+			ArgObject o = e.Arguments.First().TakeUntilEnd();
+
+			IGuildUser user = await o.GetUserAsync(e.Guild);
 
 			// TODO: implement UserNullException
 			if (user == null)
@@ -789,7 +792,7 @@ namespace Miki.Modules
 			if (!await Global.RedisClient.ExistsAsync($"user:{user.Id}:avatar:synced"))
 				await Utils.SyncAvatarAsync(user);
 
-			Random r = new Random((int)((e.Author.Id + user.Id) % int.MaxValue));
+			Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
 

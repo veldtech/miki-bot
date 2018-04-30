@@ -13,7 +13,7 @@ namespace Miki.Models
     public class MikiContext : DbContext
     {
 		public static readonly LoggerFactory logger
-			= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => __ > LogLevel.Information, false) });
+			= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => __ > LogLevel.Debug, false) });
 
 		public DbSet<Achievement> Achievements { get; set; }
 		public DbSet<BackgroundsOwned> BackgroundsOwned { get; set; }

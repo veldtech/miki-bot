@@ -133,21 +133,18 @@ namespace Miki.Modules
 				if (marriages.Count == 0)
 					throw new Exception("You're not married to anyone.");
 
-				Task.Run(async () =>
-				{
-					UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
+				UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
 
-					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+				string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
 
-					EmbedBuilder embed = Utils.Embed;
-					embed.Title = $"🔔 {e.GetResource("miki_module_accounts_divorce_header")}";
-					embed.Description = e.GetResource("miki_module_accounts_divorce_content", e.Author.Username, otherName);
-					embed.Color = new Color(0.6f, 0.4f, 0.1f);
-					embed.Build().QueueToChannel(e.Channel);
+				EmbedBuilder embed = Utils.Embed;
+				embed.Title = $"🔔 {e.GetResource("miki_module_accounts_divorce_header")}";
+				embed.Description = e.GetResource("miki_module_accounts_divorce_content", e.Author.Username, otherName);
+				embed.Color = new Color(0.6f, 0.4f, 0.1f);
+				embed.Build().QueueToChannel(e.Channel);
 
-					m.Remove(context);
-					await context.SaveChangesAsync();
-				});
+				m.Remove(context);
+				await context.SaveChangesAsync();
 			}
 		}
 
@@ -233,22 +230,19 @@ namespace Miki.Modules
 				if (marriages.Count == 0)
 					throw new Exception("You do not have any proposals.");
 
-				Task.Run(async () =>
+				UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
+
+				string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+
+				new EmbedBuilder()
 				{
-					UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
+					Title = $"🔫 You shot down {otherName}!",
+					Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
+					Color = new Color(191, 105, 82)
+				}.Build().QueueToChannel(e.Channel);
 
-					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
-
-					new EmbedBuilder()
-					{
-						Title = $"🔫 You shot down {otherName}!",
-						Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
-						Color = new Color(191, 105, 82)
-					}.Build().QueueToChannel(e.Channel);
-
-					m.Remove(context);
-					await context.SaveChangesAsync();
-				});
+				m.Remove(context);
+				await context.SaveChangesAsync();
 			}
         }
 
@@ -358,10 +352,12 @@ namespace Miki.Modules
 				Color = new Color(231, 90, 112)
 			};
 
+			var m = marriages.OrderBy(x => x.Marriage.TimeOfMarriage);
+
 			StringBuilder builder = new StringBuilder();
 			
-			for(int i = 0; i < marriages.Count; i++)
-				builder.AppendLine($"`{(i+1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, marriages[i].GetOther(e.Author.Id.ToDbLong()))}");
+			for(int i = 0; i < m.Count(); i++)
+				builder.AppendLine($"`{(i+1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(e.Author.Id.ToDbLong()))}");
 
 			embed.Description += "\n\n" + builder.ToString();
 
@@ -371,7 +367,7 @@ namespace Miki.Modules
 
 			if(int.TryParse(message.Content, out int response))
 			{
-				if(response >= 1 && response < marriages.Count)
+				if(response > 0 && response <= marriages.Count)
 				{
 					return marriages[response - 1];
 				}
