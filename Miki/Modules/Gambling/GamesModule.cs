@@ -301,6 +301,11 @@ namespace Miki.Modules
 					}
 					else
 					{
+						if (bm.Worth(bm.dealer) == bm.Worth(bm.player))
+						{
+							await OnBlackjackDraw(e, bm, instanceMessage, bet);
+							return;
+						}
 						await OnBlackjackDead(e, bm, instanceMessage, bet);
 						return;
 					}
