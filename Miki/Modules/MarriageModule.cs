@@ -369,7 +369,7 @@ namespace Miki.Modules
 			{
 				if(response > 0 && response <= marriages.Count)
 				{
-					return marriages[response - 1];
+					return m.ElementAt(response - 1);
 				}
 				throw new Exception("This number is not listed, cancelling divorce.");
 			}
