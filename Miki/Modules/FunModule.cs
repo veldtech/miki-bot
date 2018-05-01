@@ -589,7 +589,7 @@ namespace Miki.Modules
 
 			TimeSpan timeUntilReminder = args.GetTimeFromString();
 
-			if (timeUntilReminder > new TimeSpan(0, 0, 10))
+			if (timeUntilReminder > new TimeSpan(0, 10, 0))
 			{
 				int id = reminders.AddTask(e.Author.Id, (context) =>
 				{
@@ -607,7 +607,7 @@ namespace Miki.Modules
 			}
 			else
 			{
-				e.ErrorEmbed("Sorry, but I can only remind you something after 10 seconds.")
+				e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
 					.Build().QueueToChannel(e.Channel);
 			}
 		}
