@@ -607,7 +607,7 @@ namespace Miki.Modules
 			}
 			else
 			{
-				e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
+				e.ErrorEmbed("Sorry, but I can only remind you something after 10 seconds.")
 					.Build().QueueToChannel(e.Channel);
 			}
 		}
