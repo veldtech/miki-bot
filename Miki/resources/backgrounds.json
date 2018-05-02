@@ -191,5 +191,53 @@
             "basic",
             "color"
         ]
+    },
+    {
+        "id": 23,
+        "name": "Aesthetic palms",
+        "price": 60000,
+        "tags": [
+            "aesthetic"
+        ]
+    },
+    {
+        "id": 24,
+        "name": "Miki blur",
+        "price": 100000,
+        "tags": [
+            "aesthetic"
+        ]
+    },
+    {
+        "id": 25,
+        "name": "Aesthetic coastline",
+        "price": 60000,
+        "tags": [
+            "aesthetic"
+        ]
+    },
+    {
+        "id": 26,
+        "name": "Aesthetic sea",
+        "price": 60000,
+        "tags": [
+            "aesthetic"
+        ]
+    },
+    {
+        "id": 27,
+        "name": "Aesthetic sky",
+        "price": 60000,
+        "tags": [
+            "aesthetic"
+        ]
+    },
+    {
+        "id": 28,
+        "name": "Aesthetic clouds",
+        "price": 60000,
+        "tags": [
+            "aesthetic"
+        ]
     }
 ]

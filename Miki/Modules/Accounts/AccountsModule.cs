@@ -401,7 +401,7 @@ namespace Miki.Modules.AccountsModule
 			long userId = e.Author.Id.ToDbLong();
 			using (var context = new MikiContext())
 			{
-				BackgroundsOwned bo = await BackgroundsOwned.GetAsync(userId, backgroundId ?? 0, context);
+				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId ?? 0, context);
 
 				if (bo == null)
 				{
