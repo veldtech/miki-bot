@@ -27,8 +27,8 @@ namespace Miki
 			connection = factory.CreateConnection();
 			channel = connection.CreateModel();
 			channel.ExchangeDeclare("miki", ExchangeType.Direct, true);
-			channel.QueueDeclare("webhooks", true, false, false, null);
-			channel.QueueBind("webhooks", "miki", "*", null);
+			channel.QueueDeclare(v, true, false, false, null);
+			channel.QueueBind(v, "miki", "*", null);
 
 			var consumer = new EventingBasicConsumer(channel);
 			consumer.Received += async (ch, ea) =>

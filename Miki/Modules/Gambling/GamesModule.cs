@@ -430,13 +430,13 @@ namespace Miki.Modules
 				return;
 			}
 
-			string headsUrl = "https://miki.ai/assets/img/miki-default-heads.png";
-			string tailsUrl = "https://miki.ai/assets/img/miki-default-tails.png";
+			string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
+			string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
 
 			if (e.Arguments.Contains("-bonus"))
 			{
-				headsUrl = "https://miki.ai/assets/img/miki-secret-heads.png";
-				tailsUrl = "https://miki.ai/assets/img/miki-secret-tails.png";
+				headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-heads.png";
+				tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-tails.png";
 			}
 
 			int side = MikiRandom.Next(2);

@@ -119,7 +119,6 @@ namespace Miki.Modules.AccountsModule
 				await Utils.SyncAvatarAsync(e.Author);
 
 			Stream s = await client.GetStreamAsync("api/user?id=" + e.Author.Id);
-
 			if (s == null)
 			{
 				e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
@@ -414,6 +413,9 @@ namespace Miki.Modules.AccountsModule
 
 				await context.SaveChangesAsync();
 			}
+
+			Utils.SuccessEmbed(e.Channel.Id, "Successfully set background.")
+				.QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "buybackground")]
@@ -462,6 +464,9 @@ namespace Miki.Modules.AccountsModule
 									BackgroundId = background.Id,
 								});
 								await context.SaveChangesAsync();
+
+								Utils.SuccessEmbed(e.Channel.Id, "Background purchased!")
+									.QueueToChannel(e.Channel);
 							}
 							else
 							{
@@ -480,30 +485,31 @@ namespace Miki.Modules.AccountsModule
 			{
 				User user = await User.GetAsync(context, e.Author);
 
-				if(user.Currency > 250)
+				new EmbedBuilder()
+					.WithTitle("Hold on!")
+					.WithDescription("Changing your background color costs 250 mekos. type a hex to purchase")
+					.Build().QueueToChannel(e.Channel);
+
+				IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
+
+				if (x.Count > 0)
 				{
-					new EmbedBuilder()
-						.WithTitle("Hold on!")
-						.WithDescription("Changing your background color costs 250 mekos. type a hex to purchase")
-						.Build().QueueToChannel(e.Channel);
+					ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+					var hex = x.First().Groups.Last().Value;
 
-					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+					visuals.BackgroundColor = hex;
+					await user.AddCurrencyAsync(-250, e.Channel);
+					await context.SaveChangesAsync();
 
-					if (Regex.IsMatch(msg.Content.ToUpper(), "#([A-F0-9]{6})"))
-					{
-						ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
-						visuals.BackgroundColor = msg.Content.ToUpper();
-						await user.AddCurrencyAsync(-250, e.Channel);
-						await context.SaveChangesAsync();
-
-						Utils.SuccessEmbed(e.Channel.Id,
-							$"Your background color has been successfully changed to `{msg.Content.ToUpper()}`")
-							.QueueToChannel(e.Channel);
-					}
+					Utils.SuccessEmbed(e.Channel.Id,
+						$"Your background color has been successfully changed to `{hex}`")
+						.QueueToChannel(e.Channel);
 				}
 				else
 				{
-					throw new InsufficientCurrencyException(user, 250);
+					throw new ArgumentException("Argument was not a hex color");
 				}
 			}
 		}
@@ -515,32 +521,31 @@ namespace Miki.Modules.AccountsModule
 			{
 				User user = await User.GetAsync(context, e.Author);
 
-				if (user.Currency > 250)
+				new EmbedBuilder()
+					.WithTitle("Hold on!")
+					.WithDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
+					.Build().QueueToChannel(e.Channel);
+
+				IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
+
+				if (x.Count > 0)
 				{
-					new EmbedBuilder()
-						.WithTitle("Hold on!")
-						.WithDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
-						.Build().QueueToChannel(e.Channel);
-
-					IMessage msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-
-					var match = Regex.Match(msg.Content.ToUpper(), "#([A-F0-9]{6})");
-
-					if(match != null || match.Captures.Count == 0)
-						throw new InvalidOperationException();
-
 					ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
-					visuals.ForegroundColor = match.Captures[0].Value;
+					var hex = x.First().Groups.Last().Value;
+
+					visuals.ForegroundColor = hex;
 					await user.AddCurrencyAsync(-250, e.Channel);
 					await context.SaveChangesAsync();
 
 					Utils.SuccessEmbed(e.Channel.Id,
-						$"Your foreground color has been successfully changed to `{match.Captures[0].Value}`")
+						$"Your foreground color has been successfully changed to `{hex}`")
 						.QueueToChannel(e.Channel);
 				}
 				else
 				{
-					throw new InsufficientCurrencyException(user, 250);
+					throw new ArgumentException("Argument was not a hex color");
 				}
 			}
 		}

@@ -53,7 +53,7 @@ namespace Miki.Models
 			{
 				if (Currency < Math.Abs(amount))
 				{
-					throw new InsufficientCurrencyException(this, Math.Abs(amount + Currency));
+					throw new InsufficientCurrencyException(this, Math.Abs(amount));
 				}
 			}
 
@@ -101,20 +101,13 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<User> GetAsync(MikiContext context, IUser u, Func<MikiContext, Task<User>> userFactory = null)
+		public static async Task<User> GetAsync(MikiContext context, IUser u)
 		{
 			long id = u.Id.ToDbLong();
 
 			User user = null;
 
-			if (userFactory == null)
-			{
-				user = await context.Users.FindAsync(id);
-			}
-			else
-			{
-				user = await userFactory(context);
-			}
+			user = await context.Users.FindAsync(id);
 
 			if(user == null)
 			{

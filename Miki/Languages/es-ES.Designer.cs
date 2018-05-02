@@ -2164,7 +2164,8 @@ namespace Miki.Languages {
         ///pasta &lt;3 &lt;palabra clave&gt;
         ///pasta love &lt;palabra clave&gt;
         ///pasta downvote &lt;palabra clave&gt;
-        ///pasta &lt;/3 &lt;palabra clave&gt;pasta hate &lt;palabra clave&gt;        /// [rest of string was truncated]&quot;;.
+        ///pasta &lt;/3 &lt;palabra clave&gt;pasta hate &lt;palabra clave&gt;
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string miki_command_usage_pasta {
             get {

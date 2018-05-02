@@ -93,7 +93,7 @@ namespace Miki
 
 		public void LoadDiscord()
         {
-			WebhookManager.Listen("webhook");
+			WebhookManager.Listen("webhooks");
 
 			WebhookManager.OnEvent += async (eventArgs) =>
 			{
@@ -235,7 +235,7 @@ namespace Miki
 
 		private async Task Bot_OnShardConnect(DiscordSocketClient client)
 		{
-			Log.Message($"shard {client.ShardId} has connected!");
+			Log.Message($"shard {client.ShardId} has connected as {client.CurrentUser.ToString()}!");
 			DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
 			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
 			await Task.Yield();
@@ -243,7 +243,7 @@ namespace Miki
 
 		private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
 		{
-			Log.Error($"shard {client.ShardId} has disconnected!");
+			Log.Error($"Shard {client.ShardId} has disconnected!");
 			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
 			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
 			await Task.Yield();

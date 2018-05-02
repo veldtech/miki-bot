@@ -19,6 +19,7 @@ using StackExchange.Redis.Extensions.Core;
 using Miki.Framework.Languages;
 using Amazon.S3.Model;
 using Miki.Exceptions;
+using Amazon.S3;
 
 namespace Miki
 {
@@ -225,7 +226,7 @@ namespace Miki
 			request.BucketName = "miki-cdn";
 			request.Key = $"avatars/{user.Id}.png";
 			request.ContentType = "image/png";
-			request.CannedACL = new Amazon.S3.S3CannedACL("public-read");
+			request.CannedACL = new S3CannedACL("public-read");
 
 			using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
 			{
@@ -237,6 +238,13 @@ namespace Miki
 			if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
 			{
 				throw new AvatarSyncException();
+			}
+
+			using (var context = new MikiContext())
+			{
+				User u = await User.GetAsync(context, user);
+				u.HeaderUrl = u.Id.ToString();
+				await context.SaveChangesAsync();
 			}
 
 			await Global.RedisClient.AddAsync($"user:{user.Id}:avatar:synced", true);

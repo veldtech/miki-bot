@@ -35,10 +35,9 @@ namespace Miki.Models
 		public DbSet<UserMarriedTo> UsersMarriedTo { get; set; }
         public DbSet<PastaVote> Votes { get; set; }
 
-		public MikiContext() : base()
-        {
-			
-		}
+		public MikiContext() 
+			: base()
+		{ }	
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -53,8 +52,8 @@ namespace Miki.Models
 			var achievement = modelBuilder.Entity<Achievement>();
 
 			achievement.HasKey(c => new { c.Id, c.Name });
-
 			achievement.Property(x => x.UnlockedAt).HasDefaultValueSql("now()");
+			
 			#endregion
 
 			#region BackgroundsOwned
@@ -146,9 +145,11 @@ namespace Miki.Models
 			role.HasKey(c => new { c.GuildId, c.RoleId });
 
 			role.Property(x => x.Automatic)
+				.IsRequired()
 				.HasDefaultValue(false);
 
 			role.Property(x => x.Optable)
+				.IsRequired()
 				.HasDefaultValue(false);
 
 			role.Property(x => x.RequiredRole)
@@ -259,7 +260,7 @@ namespace Miki.Models
 			isDonator.Property(x => x.UserId).ValueGeneratedNever();
 
 			isDonator.Property(x => x.TotalPaidCents).HasDefaultValue(0);
-			isDonator.Property(x => x.ValidUntil).HasDefaultValue(DateTime.Now - new TimeSpan(1, 0, 0, 0, 0));
+			isDonator.Property(x => x.ValidUntil).HasDefaultValueSql("now()");
 
 			#endregion
 

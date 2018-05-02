@@ -18,7 +18,7 @@ using Miki.Framework.Extension;
 
 namespace Miki.Modules
 {
-    [Module("Guild Accounts")]
+    [Module("Guild_Accounts")]
     internal class GuildAccountsModule
     {
         [Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
