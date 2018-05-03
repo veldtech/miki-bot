@@ -251,7 +251,8 @@ namespace Miki.Modules
 				"http://i.imgur.com/pkT7JFw.gif",
 				"http://i.imgur.com/Tx15hPX.gif",
 				"http://i.imgur.com/YANiZ2a.gif",
-				"http://i.imgur.com/31WnXZ7.gif"
+				"http://i.imgur.com/31WnXZ7.gif",
+				"http://i.imgur.com/u1wxWx9.gif"
 			};
 
 			new EmbedBuilder()
