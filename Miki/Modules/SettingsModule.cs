@@ -62,7 +62,7 @@ namespace Miki.Modules
 
 			while (true)
 			{
-				var msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+				var msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
 				if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
 				{
@@ -82,7 +82,7 @@ namespace Miki.Modules
 				.WithDescription("Do you want this to apply for every channel? say `yes` if you do.")
 				.Build().SendToChannel(e.Channel);
 
-			var cMsg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+			var cMsg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 			bool global = (cMsg.Content.ToLower()[0] == 'y');
 
 			await SettingsBaseEmbed

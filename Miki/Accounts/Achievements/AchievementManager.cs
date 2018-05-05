@@ -71,22 +71,18 @@ namespace Miki.Accounts.Achievements
 				}
 			};
 
-			EventSystem.Instance.AddCommandDoneEvent(x =>
+			bot.GetAttachedObject<EventSystem>().OnCommandDone += async (m, e, s, t) =>
 			{
-				x.Name = "--achievement-manager-command";
-				x.processEvent = async (m, e, s, t) =>
+				CommandPacket p = new CommandPacket()
 				{
-					CommandPacket p = new CommandPacket()
-					{
-						discordUser = m.Author,
-						discordChannel = m.Channel,
-						message = m,
-						command = e,
-						success = s
-					};
-					await OnCommandUsed?.Invoke(p);
+					discordUser = m.Author,
+					discordChannel = m.Channel,
+					message = m,
+					command = e,
+					success = s
 				};
-			});
+				await OnCommandUsed?.Invoke(p);
+			};
 
 			//bot.MessageReceived += async (msg) =>
 			//{

@@ -82,7 +82,7 @@ namespace Miki.Modules
 		{
 			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
 			{
-				EventSystem.Instance.Ignore(id);
+				Bot.Instance.GetAttachedObject<EventSystem>().Ignore(id);
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
 		}

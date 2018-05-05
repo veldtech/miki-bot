@@ -182,7 +182,7 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
-			if (EventSystem.Instance.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
+			if (e.EventSystem.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
 			{
 				e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
 					.Build().QueueToChannel(e.Channel);
@@ -207,7 +207,7 @@ namespace Miki.Modules
 			IUserMessage message = await bm.CreateEmbed(e)
 					.SendToChannel(e.Channel);
 
-			CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
+			CommandHandler c = new CommandHandlerBuilder(Bot.Instance.GetAttachedObject<EventSystem>())
 				.AddPrefix("")
 				.SetOwner(e.message)
 				.AddCommand(
@@ -223,7 +223,7 @@ namespace Miki.Modules
 				//		.Default(async (ec) => await OnBlackjackDouble(ec, bm, message, bet)))
 				.Build();
 
-			EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
+			Bot.Instance.GetAttachedObject<EventSystem>().AddPrivateCommandHandler(e.message, c);
 
 		}
 
@@ -778,7 +778,7 @@ namespace Miki.Modules
 						embed.Color = new Color(0.4f, 0.6f, 1f);
 						embed.Build().QueueToChannel(e.Channel);
 
-						CommandHandler confirmCommand = new CommandHandlerBuilder(EventSystem.Instance)
+						CommandHandler confirmCommand = new CommandHandlerBuilder(Bot.Instance.GetAttachedObject<EventSystem>())
 							.AddPrefix("")
 							.DisposeInSeconds(20)
 							.SetOwner(e.message)
@@ -787,7 +787,7 @@ namespace Miki.Modules
 									.Default((ec) => ValidateGlitch(ec, callback, bet)))
 									.Build();
 
-						EventSystem.Instance.AddPrivateCommandHandler(e.message, confirmCommand);
+						Bot.Instance.GetAttachedObject<EventSystem>().AddPrivateCommandHandler(e.message, confirmCommand);
 					}
 					else
 					{

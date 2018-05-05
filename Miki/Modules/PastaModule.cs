@@ -156,7 +156,7 @@ namespace Miki.Modules
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.CreatorId == e.Author.Id.ToDbLong() || EventSystem.Instance.DeveloperIds.Contains(e.Author.Id))
+                if (p.CreatorId == e.Author.Id.ToDbLong() || Bot.Instance.GetAttachedObject<EventSystem>().DeveloperIds.Contains(e.Author.Id))
                 {
                     p.Text = arg.TakeUntilEnd().Argument;
                     await context.SaveChangesAsync();

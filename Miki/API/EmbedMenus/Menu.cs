@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Miki.Framework;
 
 namespace Miki.API.EmbedMenus
 {
@@ -32,7 +33,7 @@ namespace Miki.API.EmbedMenus
 			if(Message == null)
 				throw new ArgumentNullException("Message");
 
-			var msg = await EventSystem.Instance.ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
+			var msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
 			Args a = new Args(msg.Content);
 			return a;
 		}

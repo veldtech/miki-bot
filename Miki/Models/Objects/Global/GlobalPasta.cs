@@ -50,7 +50,7 @@ namespace Miki.Models
 		public bool CanDeletePasta(ulong userId)
 		{
 			return userId == CreatorId.FromDbLong() ||
-				EventSystem.Instance.DeveloperIds.Contains(userId);
+				Bot.Instance.GetAttachedObject<EventSystem>().DeveloperIds.Contains(userId);
 		}
 
 		public async Task<int> GetScoreAsync()

@@ -330,7 +330,7 @@ namespace Miki.Modules
 
 			string moduleName = arg.Argument;
 
-			Module m = EventSystem.Instance.GetModuleByName(moduleName);
+			Module m = e.EventSystem.GetModuleByName(moduleName);
 
 			if (m == null)
 			{

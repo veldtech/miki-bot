@@ -264,13 +264,14 @@ namespace Miki.Modules
 
 			if (arg != null)
 			{
-				CommandEvent ev = EventSystem.Instance.CommandHandler.GetCommandEvent(arg.Argument);
+				CommandEvent ev = Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetCommandEvent(arg.Argument);
 
 				if (ev == null)
 				{
 					EmbedBuilder helpListEmbed = Utils.Embed;
 					helpListEmbed.Title = e.GetResource("miki_module_help_error_null_header");
-					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message", await EventSystem.Instance.GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
+					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message",
+						await Bot.Instance.GetAttachedObject<EventSystem>().GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
 					helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
@@ -283,7 +284,7 @@ namespace Miki.Modules
 				}
 				else
 				{
-					if (EventSystem.Instance.CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
+					if (Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
 					{
 						return;
 					}
@@ -321,7 +322,7 @@ namespace Miki.Modules
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.Build().QueueToChannel(e.Channel);
 
-			(await EventSystem.Instance.ListCommandsInEmbedAsync(e.message))
+			(await e.EventSystem.ListCommandsInEmbedAsync(e.message))
 				.QueueToUser(e.Author);
 		}
 
@@ -421,7 +422,7 @@ namespace Miki.Modules
 				Description = e.GetResource("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetResource("discord_servers")}", Bot.Instance.Client.Guilds.Count.ToString())
-			 .AddField("💬 " + e.GetResource("term_commands"), EventSystem.Instance.CommandsUsed)
+			 .AddField("💬 " + e.GetResource("term_commands"), Bot.Instance.GetAttachedObject<EventSystem>().CommandsUsed)
 			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .Build().QueueToChannel(e.Channel);

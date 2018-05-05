@@ -327,7 +327,7 @@ namespace Miki.Modules
 				embed.Color = new Color(0.4f, 0.6f, 1f);
 				embed.Build().QueueToChannel(e.Channel);
 
-				CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
+				CommandHandler c = new CommandHandlerBuilder(Bot.Instance.GetAttachedObject<EventSystem>())
 					.AddPrefix("")
 					.DisposeInSeconds(20)
 					.SetOwner(e.message)
@@ -339,7 +339,7 @@ namespace Miki.Modules
 							}))
 							.Build();
 
-				EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
+				Bot.Instance.GetAttachedObject<EventSystem>().AddPrivateCommandHandler(e.message, c);
 			}
         }
 
@@ -363,7 +363,7 @@ namespace Miki.Modules
 
 			embed.Build().QueueToChannel(e.Channel);
 
-			IMessage message = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+			IMessage message = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
 
 			if(int.TryParse(message.Content, out int response))
 			{

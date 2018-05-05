@@ -11,11 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis.Extensions.Core;
-using StackExchange.Redis.Extensions.Protobuf;
 using Miki.Common;
 using Miki.Framework.Events;
-using StackExchange.Redis;
 using System.Threading;
 using Discord.WebSocket;
 using Miki.Framework.Extension;
@@ -59,7 +56,7 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					EventSystem.Instance.Ignore(u.Id.FromDbLong());
+					Bot.Instance.GetAttachedObject<EventSystem>().Ignore(u.Id.FromDbLong());
 				}
 			}
 
@@ -114,7 +111,18 @@ namespace Miki
 				DatabaseConnectionString = Global.Config.ConnString,
 			});
 
-			var eventSystem = EventSystem.Start(bot);
+			var eventSystem = new EventSystem(new EventSystemConfig()
+			{
+				developers = Global.Config.DeveloperIds.ToArray()
+			});
+
+			CommandMap map = new CommandMap();
+
+			eventSystem.CommandMap = map;
+
+			bot.Attach(eventSystem);
+
+			map.RegisterAttributeCommands(Assembly.GetExecutingAssembly());
 
             if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
@@ -132,38 +140,33 @@ namespace Miki
 				DogStatsd.Configure(dogstatsdConfig);
 			}
 
-			eventSystem.AddCommandDoneEvent(x =>
+			eventSystem.OnCommandDone += async (msg, command, success, time) =>
 			{
-				x.Name = "datadog-command-done";
-				x.processEvent = async (msg, cmd, success, t) =>
+				if (!success)
 				{
-					if (!success)
-					{
-						DogStatsd.Counter("commands.error.rate", 1);
-					}
+					DogStatsd.Counter("commands.error.rate", 1);
+				}
 
-					if (cmd.Module == null)
-						return;
+				if (command.Module == null)
+					return;
 
-					DogStatsd.Histogram("commands.time", t, 0.1, new[]
-					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
-					DogStatsd.Counter("commands.count", 1, 1, new[]
-					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
-				};
-			});
+				DogStatsd.Histogram("commands.time", time, 0.1, new[]
+				{
+					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+					$"commandname:{command.Name.ToLowerInvariant()}"
+				});
+
+				DogStatsd.Counter("commands.count", 1, 1, new[]
+				{
+					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+					$"commandname:{command.Name.ToLowerInvariant()}"
+				});
+			};
 
 			eventSystem.RegisterPrefixInstance(">").RegisterAsDefault();
 			eventSystem.RegisterPrefixInstance("miki.", false);
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
-	
-			eventSystem.AddDeveloper(121919449996460033);
-
-			foreach (ulong l in Global.Config.DeveloperIds)
-			{
-				eventSystem.AddDeveloper(l);
-			}
-
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 			bot.Client.UserUpdated += Client_UserUpdated;
