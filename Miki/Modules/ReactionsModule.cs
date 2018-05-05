@@ -94,6 +94,12 @@ namespace Miki.Modules
 			}.Build().QueueToChannel(e.Channel);
 		}
 
+        [Command(Name = "popcorn")]
+        public async Task PopcornAsync(EventContext e)
+        {
+            string image = "http://i.imgur.com/TA6Wl0H.gif";
+	}
+	    
         [Command(Name = "pout")]
         public async Task PoutAsync(EventContext e)
         {
