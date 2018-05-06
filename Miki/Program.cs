@@ -58,7 +58,7 @@ namespace Miki
 				{
 					Bot.Instance.GetAttachedObject<EventSystem>().Ignore(u.Id.FromDbLong());
 				}
-			}
+			}	
 
 			await bot.ConnectAsync(Global.Config.Token);
 		}
@@ -106,14 +106,14 @@ namespace Miki
 			}, new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.6.1",
+                Version = "0.6.2",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 			});
 
 			var eventSystem = new EventSystem(new EventSystemConfig()
 			{
-				developers = Global.Config.DeveloperIds.ToArray()
+				Developers = Global.Config.DeveloperIds.ToArray()
 			});
 
 			CommandMap map = new CommandMap();
@@ -148,7 +148,9 @@ namespace Miki
 				}
 
 				if (command.Module == null)
+				{
 					return;
+				}
 
 				DogStatsd.Histogram("commands.time", time, 0.1, new[]
 				{
