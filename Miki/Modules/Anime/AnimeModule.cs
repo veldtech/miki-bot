@@ -29,7 +29,7 @@ namespace Miki.Core.Modules.Anime
 		{
 			ICharacter character = null;
 
-			ArgObject arg = e.Arguments.First();
+			ArgObject arg = e.Arguments.Join();
 
 			int? characterId = arg.AsInt();
 
@@ -219,7 +219,7 @@ namespace Miki.Core.Modules.Anime
 		{
 			IMedia media = null;
 
-			ArgObject arg = e.Arguments.First();
+			ArgObject arg = e.Arguments.Join();
 
 			int? mediaId = arg.AsInt();
 

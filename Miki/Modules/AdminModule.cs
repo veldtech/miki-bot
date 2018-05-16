@@ -55,8 +55,7 @@ namespace Miki.Modules
 
 				int pruneDays = 1;
 
-				// TODO: refactor
-				if ((argObject.AsInt() ?? -1) != -1)
+				if (argObject.AsInt() != null)
 				{
 					pruneDays = argObject.AsInt().Value;
 					argObject?.Next();
@@ -89,8 +88,7 @@ namespace Miki.Modules
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task CleanAsync(EventContext e)
 		{
-			// TODO: refactor
-			await PruneAsync(e, _target: Bot.Instance.Client.CurrentUser.Id);
+			await PruneAsync(e, 100, Bot.Instance.Client.CurrentUser.Id);
 		}
 
 		[Command(Name = "editexp", Accessibility = EventAccessibility.ADMINONLY)]
@@ -215,7 +213,7 @@ namespace Miki.Modules
 
 			if (amount < 1)
 			{
-				string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
+				string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
 				await e.message.DeleteAsync();
 
 				e.ErrorEmbed(e.GetResource("miki_module_admin_prune_no_messages", prefix))
@@ -281,7 +279,7 @@ namespace Miki.Modules
 
 			string commandId = arg.Argument;
 
-			Event command = e.EventSystem.CommandHandler.GetCommandEvent(commandId);
+			Event command = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.FirstOrDefault(x => x.Name == commandId);
 
 			if (command == null)
 			{
@@ -330,7 +328,7 @@ namespace Miki.Modules
 
 			string moduleName = arg.Argument;
 
-			Module m = EventSystem.Instance.GetModuleByName(moduleName);
+			Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
 
 			if (m == null)
 			{

@@ -13,6 +13,7 @@ using Miki.Framework.Extension;
 using Amazon.S3.Model;
 using Miki.Framework.Languages;
 using Miki.Exceptions;
+using Miki.Framework.Events.Commands;
 
 namespace Miki.Modules
 {
@@ -60,9 +61,11 @@ namespace Miki.Modules
 
 			int newSetting;
 
+			IMessage msg = null;
+
 			while (true)
 			{
-				var msg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
 				if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
 				{
@@ -82,8 +85,8 @@ namespace Miki.Modules
 				.WithDescription("Do you want this to apply for every channel? say `yes` if you do.")
 				.Build().SendToChannel(e.Channel);
 
-			var cMsg = await EventSystem.Instance.ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-			bool global = (cMsg.Content.ToLower()[0] == 'y');
+			msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+			bool global = (msg.Content.ToLower()[0] == 'y');
 
 			await SettingsBaseEmbed
 				.WithDescription($"Setting `{settingName}` Updated!")
@@ -102,7 +105,7 @@ namespace Miki.Modules
 		[Command(Name = "showmodule")]
 		public async Task ConfigAsync(EventContext e)
 		{
-			Module module = e.commandHandler.GetModule(e.Arguments.ToString());
+			Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == e.Arguments.ToString().ToLower());
 
 			if (module != null)
 			{
@@ -137,7 +140,7 @@ namespace Miki.Modules
 		public async Task ShowModulesAsync(EventContext e)
 		{
 			List<string> modules = new List<string>();
-			CommandHandler commandHandler = e.EventSystem.CommandHandler;
+			SimpleCommandHandler commandHandler = e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
 			EventAccessibility userEventAccessibility = commandHandler.GetUserAccessibility(e.message);
 
 			foreach (CommandEvent ev in commandHandler.Commands)
@@ -157,7 +160,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < modules.Count(); i++)
 			{
-				string output = $"{(await e.commandHandler.GetModule(modules[i]).IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
+				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
 				if (i < modules.Count() / 2 + 1)
 				{
 					firstColumn += output;
@@ -201,8 +204,6 @@ namespace Miki.Modules
 				return;
 			}
 
-			await PrefixInstance.Default.ChangeForGuildAsync(e.Guild.Id, e.Arguments.ToString());
-
 			EmbedBuilder embed = Utils.Embed;
 			embed.Title = e.GetResource("miki_module_general_prefix_success_header");
 			embed.Description = e.GetResource("miki_module_general_prefix_success_message", e.Arguments.ToString());
@@ -210,12 +211,6 @@ namespace Miki.Modules
 			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
 
 			embed.Build().QueueToChannel(e.Channel);
-		}
-
-		[Command(Name = "usersettings")]
-		public async Task UserSettingsAsync(EventContext e)
-		{
-			
 		}
 
 		[Command(Name = "syncavatar")]

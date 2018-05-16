@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Extension;
 using Miki.API.EmbedMenus;
+using Miki.Framework.Events.Filters;
 
 namespace Miki.Modules
 {
@@ -82,7 +83,7 @@ namespace Miki.Modules
 		{
 			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
 			{
-				EventSystem.Instance.Ignore(id);
+				e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
 		}
@@ -175,7 +176,7 @@ namespace Miki.Modules
 
 			embed.Title = "Spellcheck - top results";
 
-			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
+			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(z => z.Name));
 			List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
 																 .OrderBy(z => z.score)
 																 .ToList();

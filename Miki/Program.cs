@@ -24,6 +24,9 @@ using Miki.Framework.Languages;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Extensions.Logging;
+using Miki.Framework.Events.Filters;
+using Miki.Framework.Events.Commands;
+using System.Diagnostics;
 
 namespace Miki
 {
@@ -59,7 +62,8 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					EventSystem.Instance.Ignore(u.Id.FromDbLong());
+					bot.GetAttachedObject<EventSystem>().MessageFilter
+						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
 			}
 
@@ -94,11 +98,7 @@ namespace Miki
 		public void LoadDiscord()
         {
 			WebhookManager.Listen("webhooks");
-
-			WebhookManager.OnEvent += async (eventArgs) =>
-			{
-				Console.WriteLine("[webhook] " + eventArgs.auth_code);
-			};
+			WebhookManager.OnEvent += (eventArgs) => new Task(() => Console.WriteLine("[webhook] " + eventArgs.auth_code));
 
 			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
 			{
@@ -114,7 +114,24 @@ namespace Miki
 				DatabaseConnectionString = Global.Config.ConnString,
 			});
 
-			var eventSystem = EventSystem.Start(bot);
+			EventSystem eventSystem = new EventSystem(new EventSystemConfig()
+			{
+				Developers = Global.Config.DeveloperIds,
+				ErrorEmbedBuilder = new EmbedBuilder().WithTitle($"🚫 Something went wrong!").WithColor(new Color(1.0f, 0.0f, 0.0f))
+			});
+
+			var handler = new SimpleCommandHandler(Framework.Events.CommandMap.CreateFromAssembly());
+			handler.AddPrefix(">", true);
+			handler.AddPrefix("miki.");
+
+			var sessionHandler = new SessionBasedCommandHandler();
+			var messageHandler = new MessageListener();
+
+			eventSystem.AddCommandHandler(sessionHandler);
+			eventSystem.AddCommandHandler(messageHandler);
+			eventSystem.AddCommandHandler(handler);
+
+			bot.Attach(eventSystem);
 
             if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
@@ -132,37 +149,25 @@ namespace Miki
 				DogStatsd.Configure(dogstatsdConfig);
 			}
 
-			eventSystem.AddCommandDoneEvent(x =>
+			eventSystem.OnCommandDone += (ex, cmd, msg) =>
 			{
-				x.Name = "datadog-command-done";
-				x.processEvent = async (msg, cmd, success, t) =>
+				if (ex != null)
 				{
-					if (!success)
-					{
-						DogStatsd.Counter("commands.error.rate", 1);
-					}
+					DogStatsd.Counter("commands.error.rate", 1);
+				}
 
-					if (cmd.Module == null)
-						return;
+				if (cmd.Module == null)
+				{
+					return Task.CompletedTask;
+				}
 
-					DogStatsd.Histogram("commands.time", t, 0.1, new[]
-					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
-					DogStatsd.Counter("commands.count", 1, 1, new[]
-					{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
-				};
-			});
-
-			eventSystem.RegisterPrefixInstance(">").RegisterAsDefault();
-			eventSystem.RegisterPrefixInstance("miki.", false);
+				DogStatsd.Histogram("commands.time", t, 0.1, new[]
+				{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
+				DogStatsd.Counter("commands.count", 1, 1, new[]
+				{ $"commandtype:{cmd.Module.Name.ToLowerInvariant()}", $"commandname:{cmd.Name.ToLowerInvariant()}" });
+			};
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
-	
-			eventSystem.AddDeveloper(121919449996460033);
-
-			foreach (ulong l in Global.Config.DeveloperIds)
-			{
-				eventSystem.AddDeveloper(l);
-			}
 
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
@@ -180,9 +185,10 @@ namespace Miki
 			}
 		}
 
-		private async Task Bot_MessageReceived(IMessage arg)
+		private Task Bot_MessageReceived(IMessage arg)
 		{
 			DogStatsd.Increment("messages.received");
+			return Task.CompletedTask;
 		}
 
 		private async Task Client_LeftGuild(SocketGuild arg)

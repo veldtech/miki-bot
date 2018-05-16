@@ -47,12 +47,6 @@ namespace Miki.Models
 			}
 		}
 
-		public bool CanDeletePasta(ulong userId)
-		{
-			return userId == CreatorId.FromDbLong() ||
-				EventSystem.Instance.DeveloperIds.Contains(userId);
-		}
-
 		public async Task<int> GetScoreAsync()
 		{
 			using (var c = new MikiContext())

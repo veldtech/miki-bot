@@ -32,9 +32,9 @@ namespace Miki.API.EmbedMenus
 			if(Message == null)
 				throw new ArgumentNullException("Message");
 
-			var msg = await EventSystem.Instance.ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
-			Args a = new Args(msg.Content);
-			return a;
+			//var msg = await EventSystem.Instance.ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
+			//Args a = new Args(msg.Content);
+			return null;
 		}
 
 		public async Task StartAsync(IMessageChannel channel)

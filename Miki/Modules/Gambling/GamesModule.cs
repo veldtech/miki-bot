@@ -22,6 +22,7 @@ using StackExchange.Redis;
 using Miki.Accounts.Achievements;
 using Miki.Framework.Languages;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Framework.Events.Commands;
 
 namespace Miki.Modules
 {
@@ -182,14 +183,6 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
-			if (EventSystem.Instance.PrivateCommandHandlerExist(e.Author.Id, e.Channel.Id))
-			{
-				e.ErrorEmbed(e.GetResource("blackjack_error_instance_exists"))
-					.Build().QueueToChannel(e.Channel);
-
-				return;
-			}
-
 			await ValidateBet(e, StartBlackjack);
 		}
 
@@ -207,24 +200,17 @@ namespace Miki.Modules
 			IUserMessage message = await bm.CreateEmbed(e)
 					.SendToChannel(e.Channel);
 
-			CommandHandler c = new CommandHandlerBuilder(EventSystem.Instance)
-				.AddPrefix("")
-				.SetOwner(e.message)
-				.AddCommand(
-					new CommandEvent("hit")
-						.Default(async (ec) => await OnBlackjackHit(ec, bm, message, bet)))
-				.AddCommand(
-					new CommandEvent("stand")
-						.SetAliases("knock", "stay", "stop")
-						.Default(async (ec) => await OnBlackjackHold(ec, bm, message, bet)))
-				//.AddCommand(
-				//	new CommandEvent("double")
-				//		.SetAliases("d")
-				//		.Default(async (ec) => await OnBlackjackDouble(ec, bm, message, bet)))
-				.Build();
+			Framework.Events.CommandMap map = new Framework.Events.CommandMap();
+			SimpleCommandHandler c = new SimpleCommandHandler(map);
+			c.AddPrefix("");
+			c.AddCommand(new CommandEvent("hit")
+				.Default(async (ec) => await OnBlackjackHit(ec, bm, message, bet)));
+			c.AddCommand(new CommandEvent("stand")
+				.SetAliases("knock", "stay", "stop")
+				.Default(async (ec) => await OnBlackjackHold(ec, bm, message, bet)));
 
-			EventSystem.Instance.AddPrivateCommandHandler(e.message, c);
-
+			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSession(
+				new CommandSession() { UserId = e.Author.Id, ChannelId = e.Channel.Id }, c, new TimeSpan(1, 0, 0));
 		}
 
 		private async Task OnBlackjackHit(EventContext e, BlackjackManager bm, IUserMessage instanceMessage, int bet)
@@ -324,7 +310,8 @@ namespace Miki.Modules
 		private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IUserMessage instanceMessage,
 			int bet)
 		{
-			await e.commandHandler.RequestDisposeAsync();
+			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSession(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -349,7 +336,8 @@ namespace Miki.Modules
 		private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IUserMessage instanceMessage,
 			int bet)
 		{
-			await e.commandHandler.RequestDisposeAsync();
+			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSession(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -367,7 +355,8 @@ namespace Miki.Modules
 
 		private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IUserMessage instanceMessage, int bet)
 		{
-			await e.commandHandler.RequestDisposeAsync();
+			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSession(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -772,22 +761,29 @@ namespace Miki.Modules
 					}
 					else if (bet > noAskLimit)
 					{
+						IUserMessage confirmationMessage = null;
+
+						Framework.Events.CommandMap map = new Framework.Events.CommandMap();
+						map.AddCommand(new CommandEvent()
+						{
+							Name = "yes",
+							ProcessCommand = async (ec) => {
+								await confirmationMessage.DeleteAsync();
+								await ValidateGlitch(ec, callback, bet);
+							}
+						});
+
+						SimpleCommandHandler commandHandler = new SimpleCommandHandler(map);
+						commandHandler.AddPrefix("");
+
+						e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+							.AddSession(new CommandSession { ChannelId = e.Channel.Id, UserId = e.Author.Id }, commandHandler, new TimeSpan(0,2,0));
+
 						EmbedBuilder embed = Utils.Embed;
 						embed.Description =
 							$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `yes` to confirm.";
 						embed.Color = new Color(0.4f, 0.6f, 1f);
-						embed.Build().QueueToChannel(e.Channel);
-
-						CommandHandler confirmCommand = new CommandHandlerBuilder(EventSystem.Instance)
-							.AddPrefix("")
-							.DisposeInSeconds(20)
-							.SetOwner(e.message)
-							.AddCommand(
-								new CommandEvent("yes")
-									.Default((ec) => ValidateGlitch(ec, callback, bet)))
-									.Build();
-
-						EventSystem.Instance.AddPrivateCommandHandler(e.message, confirmCommand);
+						confirmationMessage = await embed.Build().SendToChannel(e.Channel);
 					}
 					else
 					{
@@ -805,12 +801,14 @@ namespace Miki.Modules
 			}
 		}
 
+		// TODO: change name of method to fit better to what the method does.
 		public async Task ValidateGlitch(EventContext e, Func<EventContext, int, Task> callback, int bet)
 		{
 			using (var context = new MikiContext())
 			{
 				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				await e.commandHandler.RequestDisposeAsync();
+				e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+					.RemoveSession(e.Author.Id, e.Channel.Id);
 
 				if ((await e.Guild.GetCurrentUserAsync()).GetPermissions(e.Channel as IGuildChannel).ManageMessages)
 					await e.message.DeleteAsync();
