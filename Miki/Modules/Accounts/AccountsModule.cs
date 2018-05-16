@@ -10,6 +10,7 @@ using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
+using Miki.Framework.Events.Commands;
 using Miki.Framework.Extension;
 using Miki.Framework.Languages;
 using Miki.Models;
@@ -205,7 +206,6 @@ namespace Miki.Modules.AccountsModule
 				argument = argument.Next();
 			}
 
-			// Null-conditional operators do not apply on async methods.
 			if (argument != null)
 			{
 				IUser user = await argument.GetUserAsync(e.Guild);
@@ -222,10 +222,24 @@ namespace Miki.Modules.AccountsModule
 				argument = argument?.Next();
 			}
 
-			await ShowLeaderboardsAsync(e.message, options);
+			using (var context = new MikiContext())
+			{
+				int p = Math.Max(options.pageNumber - 1, 0);
+
+				LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(options);
+
+				Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
+					.WithFooter(Locale.GetString(e.Channel.Id, "page_index", 
+						obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
+					.WithAuthor(
+						"Leaderboards: " + options.type + " (click me!)",
+						null,
+						Global.MikiApi.BuildLeaderboardsUrl(options)
+					)
+					.Build().QueueToChannel(e.Channel);
+			}
 		}
 
-		// TODO: rework, or atleast clean up.
 		[Command(Name = "profile")]
 		public async Task ProfileAsync(EventContext e)
 		{
@@ -444,7 +458,11 @@ namespace Miki.Modules.AccountsModule
 
 				if (background.Price > 0)
 				{
+<<<<<<< HEAD
 					IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+=======
+					IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+>>>>>>> live
 
 					if (msg.Content.ToLower()[0] == 'y')
 					{
@@ -490,7 +508,11 @@ namespace Miki.Modules.AccountsModule
 					.WithDescription("Changing your background color costs 250 mekos. type a hex to purchase")
 					.Build().QueueToChannel(e.Channel);
 
+<<<<<<< HEAD
 				IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+=======
+				IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+>>>>>>> live
 
 				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
 
@@ -526,7 +548,11 @@ namespace Miki.Modules.AccountsModule
 					.WithDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
 					.Build().QueueToChannel(e.Channel);
 
+<<<<<<< HEAD
 				IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+=======
+				IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+>>>>>>> live
 
 				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
 
@@ -910,24 +936,5 @@ namespace Miki.Modules.AccountsModule
 		//		await e.Channel.SendMessage(output.DefaultIfEmpty("none, yet!"));
 		//	}
 		//}
-
-		public async Task ShowLeaderboardsAsync(IMessage mContext, LeaderboardsOptions leaderboardOptions)
-		{
-			using (var context = new MikiContext())
-			{
-				int p = Math.Max(leaderboardOptions.pageNumber - 1, 0);
-
-				LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(leaderboardOptions);
-
-				Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-					.WithFooter(Locale.GetString(mContext.Channel.Id, "page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
-					.WithAuthor(
-						"Leaderboards: " + leaderboardOptions.type + " (click me!)",
-						null,
-						Global.MikiApi.BuildLeaderboardsUrl(leaderboardOptions)
-					)
-					.Build().QueueToChannel(mContext.Channel);
-			}
-		}
 	}
 }

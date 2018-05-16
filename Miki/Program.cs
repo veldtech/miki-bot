@@ -21,6 +21,9 @@ using Miki.Framework.Languages;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Extensions.Logging;
+using Miki.Framework.Events.Filters;
+using Miki.Framework.Events.Commands;
+using System.Diagnostics;
 
 namespace Miki
 {
@@ -56,7 +59,8 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					Bot.Instance.GetAttachedObject<EventSystem>().Ignore(u.Id.FromDbLong());
+					bot.GetAttachedObject<EventSystem>().MessageFilter
+						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
 			}	
 
@@ -91,11 +95,7 @@ namespace Miki
 		public void LoadDiscord()
         {
 			WebhookManager.Listen("webhooks");
-
-			WebhookManager.OnEvent += async (eventArgs) =>
-			{
-				Console.WriteLine("[webhook] " + eventArgs.auth_code);
-			};
+			WebhookManager.OnEvent += (eventArgs) => new Task(() => Console.WriteLine("[webhook] " + eventArgs.auth_code));
 
 			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
 			{
@@ -110,19 +110,25 @@ namespace Miki
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 			});
-
-			var eventSystem = new EventSystem(new EventSystemConfig()
+            
+            EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
-				Developers = Global.Config.DeveloperIds.ToArray()
+				Developers = Global.Config.DeveloperIds,
+				ErrorEmbedBuilder = new EmbedBuilder().WithTitle($"🚫 Something went wrong!").WithColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
-			CommandMap map = new CommandMap();
+			var handler = new SimpleCommandHandler(Framework.Events.CommandMap.CreateFromAssembly());
+			handler.AddPrefix(">", true);
+			handler.AddPrefix("miki.");
 
-			eventSystem.CommandMap = map;
+			var sessionHandler = new SessionBasedCommandHandler();
+			var messageHandler = new MessageListener();
+
+			eventSystem.AddCommandHandler(sessionHandler);
+			eventSystem.AddCommandHandler(messageHandler);
+			eventSystem.AddCommandHandler(handler);
 
 			bot.Attach(eventSystem);
-
-			map.RegisterAttributeCommands(Assembly.GetExecutingAssembly());
 
             if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
@@ -165,10 +171,8 @@ namespace Miki
 				});
 			};
 
-			eventSystem.RegisterPrefixInstance(">").RegisterAsDefault();
-			eventSystem.RegisterPrefixInstance("miki.", false);
-
 			bot.Client.MessageReceived += Bot_MessageReceived;
+
 			bot.Client.JoinedGuild += Client_JoinedGuild;
 			bot.Client.LeftGuild += Client_LeftGuild;
 			bot.Client.UserUpdated += Client_UserUpdated;
@@ -185,9 +189,10 @@ namespace Miki
 			}
 		}
 
-		private async Task Bot_MessageReceived(IMessage arg)
+		private Task Bot_MessageReceived(IMessage arg)
 		{
 			DogStatsd.Increment("messages.received");
+			return Task.CompletedTask;
 		}
 
 		private async Task Client_LeftGuild(SocketGuild arg)

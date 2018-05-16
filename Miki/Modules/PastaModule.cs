@@ -119,9 +119,9 @@ namespace Miki.Modules
                     return;
                 }
 
-                if (pasta.CanDeletePasta(e.Author.Id))
-                {
-                    context.Pastas.Remove(pasta);
+				if (pasta.CreatorId == e.Author.Id.ToDbLong())
+				{
+					context.Pastas.Remove(pasta);
 
                     List<PastaVote> votes = context.Votes.Where(p => p.Id == e.Arguments.ToString()).ToList();
                     context.Votes.RemoveRange(votes);
@@ -156,7 +156,7 @@ namespace Miki.Modules
 
                 GlobalPasta p = await context.Pastas.FindAsync(tag);
 
-                if (p.CreatorId == e.Author.Id.ToDbLong() || Bot.Instance.GetAttachedObject<EventSystem>().DeveloperIds.Contains(e.Author.Id))
+                if (p.CreatorId == e.Author.Id.ToDbLong())
                 {
                     p.Text = arg.TakeUntilEnd().Argument;
                     await context.SaveChangesAsync();

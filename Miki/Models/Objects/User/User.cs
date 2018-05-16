@@ -14,6 +14,7 @@ using Miki.Common;
 using Discord;
 using StatsdClient;
 using Miki.Exceptions;
+using Miki.Framework.Events.Filters;
 
 namespace Miki.Models
 {
@@ -235,7 +236,11 @@ namespace Miki.Models
 					await context.LocalExperience.Where(x => x.UserId == id).ToListAsync()
 				);
 
+<<<<<<< HEAD
 				Bot.Instance.GetAttachedObject<EventSystem>().Ignore(id.FromDbLong());
+=======
+				Bot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(id.FromDbLong());
+>>>>>>> live
 				u.Banned = true;
 				u.Total_Commands = 0;
 				u.Total_Experience = 0;

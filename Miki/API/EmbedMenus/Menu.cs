@@ -32,8 +32,8 @@ namespace Miki.API.EmbedMenus
 
 			if(Message == null)
 				throw new ArgumentNullException("Message");
-
-			var msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(Message.Channel.Id, Owner.Id);
+            
+			var msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(Owner.Id, Message.Channel.Id);
 			Args a = new Args(msg.Content);
 			return a;
 		}

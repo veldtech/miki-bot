@@ -5,7 +5,8 @@
         "price": 50000,
         "tags": [
             "nature"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 1,
@@ -13,7 +14,8 @@
         "price": 50000,
         "tags": [
             "nature"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 2,
@@ -21,7 +23,8 @@
         "price": 50000,
         "tags": [
             "japan"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 3,
@@ -29,7 +32,8 @@
         "price": 50000,
         "tags": [
             "nature"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 4,
@@ -37,7 +41,8 @@
         "price": 50000,
         "tags": [
             "space"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 5,
@@ -45,7 +50,8 @@
         "price": 50000,
         "tags": [
             "space"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 6,
@@ -53,7 +59,8 @@
         "price": 50000,
         "tags": [
             "space"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 7,
@@ -61,7 +68,8 @@
         "price": -1,
         "tags": [
             "reward"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 8,
@@ -69,7 +77,8 @@
         "price": -1,
         "tags": [
             "reward"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 9,
@@ -77,7 +86,8 @@
         "price": 50000,
         "tags": [
             "pattern"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 10,
@@ -85,7 +95,8 @@
         "price": 50000,
         "tags": [
             "pattern"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 11,
@@ -93,7 +104,8 @@
         "price": 50000,
         "tags": [
             "pattern"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 12,
@@ -101,7 +113,8 @@
         "price": 50000,
         "tags": [
             "pattern"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 13,
@@ -109,7 +122,8 @@
         "price": 50000,
         "tags": [
             "pattern"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 14,
@@ -118,7 +132,8 @@
         "tags": [
             "pattern",
             "nature"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 15,
@@ -127,7 +142,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 16,
@@ -136,7 +152,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 17,
@@ -145,7 +162,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 18,
@@ -154,7 +172,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 19,
@@ -163,7 +182,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 20,
@@ -172,7 +192,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 21,
@@ -181,7 +202,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 22,
@@ -190,7 +212,8 @@
         "tags": [
             "basic",
             "color"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 23,
@@ -198,7 +221,8 @@
         "price": 60000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 24,
@@ -206,7 +230,8 @@
         "price": 100000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 25,
@@ -214,7 +239,8 @@
         "price": 60000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 26,
@@ -222,7 +248,8 @@
         "price": 60000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 27,
@@ -230,7 +257,8 @@
         "price": 60000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
     },
     {
         "id": 28,
@@ -238,6 +266,107 @@
         "price": 60000,
         "tags": [
             "aesthetic"
-        ]
+        ],
+        "quality": 0
+    },
+    {
+        "id": 29,
+        "name": "Aesthetic palms (uncommon)",
+        "price": -1,
+        "tags": [
+            "aesthetic",
+            "lootbox"
+        ],
+        "quality": 1
+    },
+    {
+        "id": 30,
+        "name": "Aesthetic coastline (uncommon)",
+        "price": -1,
+        "tags": [
+            "aesthetic",
+            "lootbox"
+        ],
+        "quality": 1
+    },
+    {
+        "id": 31,
+        "name": "Aesthetic sky (uncommon)",
+        "price": -1,
+        "tags": [
+            "aesthetic",
+            "lootbox"
+        ],
+        "quality": 1
+    },
+    {
+        "id": 32,
+        "name": "Business Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 0
+    },
+    {
+        "id": 33,
+        "name": "Chemist Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 0
+    },
+    {
+        "id": 34,
+        "name": "Florist Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 1
+    },
+    {
+        "id": 35,
+        "name": "Idol Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 1
+    },
+    {
+        "id": 36,
+        "name": "Maid Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 2
+    },
+    {
+        "id": 37,
+        "name": "Mechanic Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 0
+    },
+    {
+        "id": 38,
+        "name": "Astro Miki",
+        "price": -1,
+        "tags": [
+            "miki",
+            "lootbox"
+        ],
+        "quality": 2
     }
 ]

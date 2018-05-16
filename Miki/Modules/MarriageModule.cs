@@ -13,6 +13,8 @@ using Miki.Framework.Extension;
 using System.Text;
 using Miki.Framework.Exceptions;
 using System;
+using Miki.Framework.Events.Commands;
+using Miki.Framework.Languages;
 
 namespace Miki.Modules
 {
@@ -109,7 +111,7 @@ namespace Miki.Modules
 
 					await context.SaveChangesAsync();
 
-					await cont.commandHandler.RequestDisposeAsync();
+					cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSession(cont.Author.Id, cont.Channel.Id);
 				}
 				else
 				{
@@ -118,9 +120,9 @@ namespace Miki.Modules
 						Color = new Color(1, 0.4f, 0.6f),
 						Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
 					}.Build().QueueToChannel(cont.Channel);
-                    await cont.commandHandler.RequestDisposeAsync();
-                }
-            }
+					cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSession(cont.Author.Id, cont.Channel.Id);
+				}
+			}
         }
 
 		[Command(Name = "divorce")]
@@ -249,6 +251,8 @@ namespace Miki.Modules
         [Command(Name = "showproposals")]
         public async Task ShowProposalsAsync(EventContext e)
         {
+			int page = e.Arguments.FirstOrDefault()?.AsInt() - 1 ?? 0;
+
             using (var context = new MikiContext())
             {
                 List<UserMarriedTo> proposals = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
@@ -261,9 +265,15 @@ namespace Miki.Modules
                     proposalNames.Add($"{u} [{id}]");
                 }
 
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.Title = e.Author.Username;
-                embed.Description = "Here it shows both the people who you've proposed to and who have proposed to you.";
+				int pageCount = (int)Math.Ceiling((float)proposalNames.Count / 35);
+
+				proposalNames = proposalNames.Skip(page * 35)
+					.Take(35)
+					.ToList();
+
+				EmbedBuilder embed = new EmbedBuilder()
+					.WithTitle(e.Author.Username)
+					.WithDescription("Here it shows both the people who you've proposed to and who have proposed to you.");
 
                 string output = string.Join("\n", proposalNames);
 
@@ -279,13 +289,23 @@ namespace Miki.Modules
                     proposalNames.Add($"{u} [{id}]");
                 }
 
-                output = string.Join("\n", proposalNames);
+				pageCount = Math.Max(pageCount, (int)Math.Ceiling((float)proposalNames.Count / 35));
+
+				proposalNames = proposalNames.Skip(page * 35)
+					.Take(35)
+					.ToList();
+
+				output = string.Join("\n", proposalNames);
 
                 embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
                 embed.Color = new Color(1, 0.5f, 0);
                 embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).GetAvatarUrl();
-                embed.Build().QueueToChannel(e.Channel);
+				if (pageCount > 1)
+				{
+					embed.WithFooter(Locale.GetString(e.Channel.Id, "page_footer", page + 1, pageCount));
+				}
+				embed.Build().QueueToChannel(e.Channel);
             }
         }
 
@@ -340,6 +360,11 @@ namespace Miki.Modules
 							.Build();
 
 				Bot.Instance.GetAttachedObject<EventSystem>().AddPrivateCommandHandler(e.message, c);
+				SimpleCommandHandler commandHandler = new SimpleCommandHandler(new CommandMap());
+				commandHandler.AddPrefix("");
+				commandHandler.AddCommand(new CommandEvent("yes").Default(async (c) => await ConfirmBuyMarriageSlot(c, costForUpgrade)));
+
+				e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSession(e.CreateSession(), commandHandler, new TimeSpan(0, 0, 20));
 			}
         }
 
@@ -363,9 +388,9 @@ namespace Miki.Modules
 
 			embed.Build().QueueToChannel(e.Channel);
 
-			IMessage message = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+			IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
-			if(int.TryParse(message.Content, out int response))
+			if (int.TryParse(msg.Content, out int response))
 			{
 				if(response > 0 && response <= marriages.Count)
 				{
