@@ -589,7 +589,7 @@ namespace Miki.Modules
 
 			TimeSpan timeUntilReminder = args.GetTimeFromString();
 
-			if (timeUntilReminder > new TimeSpan(0, 0, 10))
+			if (timeUntilReminder > new TimeSpan(0, 10, 0))
 			{
 				int id = reminders.AddTask(e.Author.Id, (context) =>
 				{

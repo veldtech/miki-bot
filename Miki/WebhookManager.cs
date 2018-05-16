@@ -37,11 +37,11 @@ namespace Miki
 				try
 				{
 					string payload = Encoding.UTF8.GetString(ea.Body);
-					Console.WriteLine(payload);
 					resp = JsonConvert.DeserializeObject<WebhookResponse>(payload);
 				}
-				catch
+				catch(Exception e)
 				{
+					Log.Error(e);
 					channel.BasicReject(ea.DeliveryTag, false);
 					return;
 				}
@@ -90,6 +90,8 @@ namespace Miki
 	{
 		[JsonProperty("auth_code")]
 		public string auth_code;
-		public JObject data;
+
+		[JsonProperty("data")]
+		public JToken data;
 	}
 }
