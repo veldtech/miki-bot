@@ -1,4 +1,5 @@
-**What went wrong?**
+**Type of submission? [IDEA/IMPROVEMENT/BUG]**
 
+**Explain your submission?**
 
-**How do I reproduce this issue?**
+**(BUGS ONLY) How do I reproduce this?**
