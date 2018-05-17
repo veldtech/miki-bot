@@ -264,22 +264,14 @@ namespace Miki.Modules
 
 			if (arg != null)
 			{
-<<<<<<< HEAD
-				CommandEvent ev = Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetCommandEvent(arg.Argument);
-=======
 				CommandEvent ev = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.FirstOrDefault(x => x.Name.ToLower() == arg.Argument.ToString().ToLower());
->>>>>>> live
 
 				if (ev == null)
 				{
 					EmbedBuilder helpListEmbed = Utils.Embed;
 					helpListEmbed.Title = e.GetResource("miki_module_help_error_null_header");
-<<<<<<< HEAD
-					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message",
-						await Bot.Instance.GetAttachedObject<EventSystem>().GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
-=======
+
 					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message", await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id));
->>>>>>> live
 					helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(x => x.Name));
@@ -292,11 +284,7 @@ namespace Miki.Modules
 				}
 				else
 				{
-<<<<<<< HEAD
-					if (Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
-=======
 					if (e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message) < ev.Accessibility)
->>>>>>> live
 					{
 						return;
 					}
@@ -334,10 +322,6 @@ namespace Miki.Modules
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.Build().QueueToChannel(e.Channel);
 
-<<<<<<< HEAD
-			(await e.EventSystem.ListCommandsInEmbedAsync(e.message))
-				.QueueToUser(e.Author);
-=======
 
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			
@@ -353,7 +337,6 @@ namespace Miki.Modules
 			}
 
 			embedBuilder.Build().QueueToUser(e.Author);
->>>>>>> live
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -452,11 +435,7 @@ namespace Miki.Modules
 				Description = e.GetResource("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetResource("discord_servers")}", Bot.Instance.Client.Guilds.Count.ToString())
-<<<<<<< HEAD
-			 .AddField("💬 " + e.GetResource("term_commands"), Bot.Instance.GetAttachedObject<EventSystem>().CommandsUsed)
-=======
 			 .AddField("💬 " + e.GetResource("term_commands"), e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Sum(x => x.TimesUsed))
->>>>>>> live
 			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .Build().QueueToChannel(e.Channel);

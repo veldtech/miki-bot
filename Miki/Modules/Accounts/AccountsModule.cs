@@ -458,11 +458,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (background.Price > 0)
 				{
-<<<<<<< HEAD
-					IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-=======
 					IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
->>>>>>> live
 
 					if (msg.Content.ToLower()[0] == 'y')
 					{
@@ -508,11 +504,7 @@ namespace Miki.Modules.AccountsModule
 					.WithDescription("Changing your background color costs 250 mekos. type a hex to purchase")
 					.Build().QueueToChannel(e.Channel);
 
-<<<<<<< HEAD
-				IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-=======
 				IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
->>>>>>> live
 
 				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
 
@@ -548,11 +540,7 @@ namespace Miki.Modules.AccountsModule
 					.WithDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
 					.Build().QueueToChannel(e.Channel);
 
-<<<<<<< HEAD
-				IMessage msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-=======
 				IMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
->>>>>>> live
 
 				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
 

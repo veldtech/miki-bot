@@ -345,26 +345,15 @@ namespace Miki.Modules
 
 				embed.Description = $"Do you want to buy a Marriage slot for **{costForUpgrade}**?\n\nType `yes` to confirm.";
 				embed.Color = new Color(0.4f, 0.6f, 1f);
-				embed.Build().QueueToChannel(e.Channel);
 
-				CommandHandler c = new CommandHandlerBuilder(Bot.Instance.GetAttachedObject<EventSystem>())
-					.AddPrefix("")
-					.DisposeInSeconds(20)
-					.SetOwner(e.message)
-					.AddCommand(
-						new CommandEvent("yes")
-							.Default(async (cont) =>
-							{
-								await ConfirmBuyMarriageSlot(cont, costForUpgrade);
-							}))
-							.Build();
-
-				Bot.Instance.GetAttachedObject<EventSystem>().AddPrivateCommandHandler(e.message, c);
 				SimpleCommandHandler commandHandler = new SimpleCommandHandler(new CommandMap());
 				commandHandler.AddPrefix("");
-				commandHandler.AddCommand(new CommandEvent("yes").Default(async (c) => await ConfirmBuyMarriageSlot(c, costForUpgrade)));
+				commandHandler.AddCommand(new CommandEvent("yes")
+					.Default(async (cx) => await ConfirmBuyMarriageSlot(cx, costForUpgrade)));
 
 				e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSession(e.CreateSession(), commandHandler, new TimeSpan(0, 0, 20));
+
+				embed.Build().QueueToChannel(e.Channel);
 			}
         }
 

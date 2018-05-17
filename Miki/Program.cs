@@ -117,6 +117,8 @@ namespace Miki
 				ErrorEmbedBuilder = new EmbedBuilder().WithTitle($"🚫 Something went wrong!").WithColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
+			bot.Attach(eventSystem);
+
 			var handler = new SimpleCommandHandler(Framework.Events.CommandMap.CreateFromAssembly());
 			handler.AddPrefix(">", true);
 			handler.AddPrefix("miki.");
@@ -127,8 +129,6 @@ namespace Miki
 			eventSystem.AddCommandHandler(sessionHandler);
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
-
-			bot.Attach(eventSystem);
 
             if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
@@ -146,9 +146,9 @@ namespace Miki
 				DogStatsd.Configure(dogstatsdConfig);
 			}
 
-			eventSystem.OnCommandDone += async (msg, command, success, time) =>
+			eventSystem.OnCommandDone += async (exception, command, message, time) =>
 			{
-				if (!success)
+				if (exception != null)
 				{
 					DogStatsd.Counter("commands.error.rate", 1);
 				}

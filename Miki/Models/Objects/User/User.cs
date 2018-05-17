@@ -236,11 +236,8 @@ namespace Miki.Models
 					await context.LocalExperience.Where(x => x.UserId == id).ToListAsync()
 				);
 
-<<<<<<< HEAD
-				Bot.Instance.GetAttachedObject<EventSystem>().Ignore(id.FromDbLong());
-=======
 				Bot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(id.FromDbLong());
->>>>>>> live
+
 				u.Banned = true;
 				u.Total_Commands = 0;
 				u.Total_Experience = 0;

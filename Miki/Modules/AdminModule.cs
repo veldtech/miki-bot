@@ -328,11 +328,8 @@ namespace Miki.Modules
 
 			string moduleName = arg.Argument;
 
-<<<<<<< HEAD
-			Module m = e.EventSystem.GetModuleByName(moduleName);
-=======
 			Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
->>>>>>> live
+
 
 			if (m == null)
 			{

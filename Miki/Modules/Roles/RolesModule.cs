@@ -99,11 +99,7 @@ namespace Miki.Modules.Roles
 					if (user.Currency >= newRole.Price)
 					{
 						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
-<<<<<<< HEAD
-						IMessage m = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-=======
 						IMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
->>>>>>> live
 						if (m.Content.ToLower()[0] == 'y')
 						{
 							await user.AddCurrencyAsync(-newRole.Price);

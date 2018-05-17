@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Api", "Miki.Api\Miki.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki", "Miki\Miki.csproj", "{47D35B14-7C48-4E30-A0B6-B1B94304FD56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "..\Miki.Framework\Miki.Framework\Miki.Framework.csproj", "{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "D:\Projects\Miki.Framework\Miki.Framework\Miki.Framework.csproj", "{2DFE402C-37EE-43EA-8B39-F7197CA37311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +33,14 @@ Global
 		{47D35B14-7C48-4E30-A0B6-B1B94304FD56}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47D35B14-7C48-4E30-A0B6-B1B94304FD56}.Release|x64.ActiveCfg = Release|Any CPU
 		{47D35B14-7C48-4E30-A0B6-B1B94304FD56}.Release|x64.Build.0 = Release|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Debug|x64.Build.0 = Debug|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Release|x64.ActiveCfg = Release|Any CPU
-		{6118ADFE-4691-4C1B-8AA1-D4604A0C4177}.Release|x64.Build.0 = Release|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Debug|x64.Build.0 = Debug|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Release|x64.ActiveCfg = Release|Any CPU
+		{2DFE402C-37EE-43EA-8B39-F7197CA37311}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
