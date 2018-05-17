@@ -1,9 +1,24 @@
-**Command / Event that caused the issue**
+---
+name: Bug report
+about: Create a report to help us improve
 
-**Arguments given (e.g. >cry "because I lost my mekos")**
+---
 
-**Error Code**
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-**Describe what you were doing**
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-**How to reproduce (step by step)**
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
+
+**Additional context**
+Add any other context about the problem here.
