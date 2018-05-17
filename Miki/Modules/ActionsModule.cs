@@ -85,7 +85,13 @@ namespace Miki.Modules
                 "http://i.imgur.com/zG60zPk.gif",
                 "http://i.imgur.com/ct76LIg.gif",
                 "http://i.imgur.com/guBWT22.gif",
-                "http://i.imgur.com/Asnv32U.gif"
+                "http://i.imgur.com/Asnv32U.gif",
+		"http://i.imgur.com/Qv5CAqB.gif",
+		"http://i.imgur.com/aHErxah.gif",
+		"http://i.imgur.com/B49G7oQ.gif",
+		"http://i.imgur.com/w6cGU77.gif",
+		"http://i.imgur.com/X0Ud0Gi.gif",
+		"https://i.imgur.com/fIgeJUr.gif"
                 
             };
 
@@ -222,7 +228,10 @@ namespace Miki.Modules
                 "http://i.imgur.com/3kerpju.gif",
                 "http://i.imgur.com/uMBRFjX.gif",
                 "http://i.imgur.com/YDJFoBV.gif",
-                "http://i.imgur.com/urC9B1H.gif"
+                "http://i.imgur.com/urC9B1H.gif",
+		"http://i.imgur.com/PaKqsBx.gif",
+		"http://i.imgur.com/u4iUyeH.gif",
+		"http://i.imgur.com/ta1u312.gif"
             };
 
 			await QueueAction(e, "pokes", images[MikiRandom.Next(images.Length)]);
@@ -271,7 +280,8 @@ namespace Miki.Modules
                 "http://i.imgur.com/XLjH6zQ.gif",
                 "http://i.imgur.com/W7arBvy.gif",
                 "http://i.imgur.com/W9htMol.gif",
-                "http://i.imgur.com/IVOBC8p.gif"
+                "http://i.imgur.com/IVOBC8p.gif",
+		"http://i.imgur.com/eYf50FP.gif"
             };
 
 			await QueueAction(e, "kisses", images[MikiRandom.Next(images.Length)]);
@@ -295,7 +305,6 @@ namespace Miki.Modules
                 "http://i.imgur.com/5c0JGlx.gif",
                 "http://i.imgur.com/SuU9WQV.gif",
                 "http://i.imgur.com/UuYqD7v.gif",
-                
                 "http://i.imgur.com/7wZ6s5M.gif",
                 "http://i.imgur.com/VuucXay.gif",
                 "http://i.imgur.com/pnb1k5P.gif",
@@ -308,12 +317,9 @@ namespace Miki.Modules
                 "http://i.imgur.com/qL5SShC.gif",
                 "http://i.imgur.com/fvgSWgw.gif",
                 "http://i.imgur.com/bOrLVXd.gif",
-                
                 "http://i.imgur.com/UwcwNiU.gif",
-                
                 "http://i.imgur.com/Y9iZrGG.gif",
                 "http://i.imgur.com/75FpUOd.gif",
-                
                 "http://i.imgur.com/V2VFPSj.gif",
                 "http://i.imgur.com/RFd1Gar.gif",
                 "http://i.imgur.com/bgXEKqK.gif",
@@ -326,18 +332,17 @@ namespace Miki.Modules
                 "http://i.imgur.com/Q8i2yZz.gif",
                 "http://i.imgur.com/46QOOlu.gif",
                 "http://i.imgur.com/XhuyMe4.gif",
-                
                 "http://i.imgur.com/1d9y1s1.gif",
                 "http://i.imgur.com/npxQPMH.gif",
                 "http://i.imgur.com/VcvVbSb.gif",
                 "http://i.imgur.com/G7WpBeD.gif",
-                
                 "http://i.imgur.com/VMQhPNA.gif",
                 "http://i.imgur.com/xbqhigm.gif",
                 "http://i.imgur.com/ilc8zXi.gif",
                 "http://i.imgur.com/4GgbYst.gif",
                 "http://i.imgur.com/1mr4NWL.gif",
-                "http://i.imgur.com/wXw7IjY.gif"
+                "http://i.imgur.com/wXw7IjY.gif",
+		"http://i.imgur.com/VlqEQJF.gif"
             };
 
 			await QueueAction(e, "pats", images[MikiRandom.Next(images.Length)]);
@@ -359,6 +364,9 @@ namespace Miki.Modules
                 "http://i.imgur.com/iekwz4h.gif",
                 "http://i.imgur.com/q7AmR8n.gif",
                 "http://i.imgur.com/pDohPrm.gif",
+		"http://i.imgur.com/eib0EBw.gif",
+		"http://i.imgur.com/XGpq4S7.gif",
+		"http://i.imgur.com/uvXG6uU.gif"
             };
 
 			await QueueAction(e, "slaps", images[MikiRandom.Next(images.Length)]);
@@ -385,7 +393,9 @@ namespace Miki.Modules
                 "https://i.imgur.com/dqsYXOL.gif",
                 "https://i.imgur.com/2K66vgG.gif",
                 "https://i.imgur.com/VKgFBJY.gif",
-                "https://i.imgur.com/r9QOkEA.gif"
+                "https://i.imgur.com/r9QOkEA.gif",
+		"https://i.imgur.com/mYuvdak.gif",
+		"https://i.imgur.com/8t1MHam.gif"
             };
 
 			await QueueAction(e, "bites", images[MikiRandom.Next(images.Length)]);
