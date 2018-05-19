@@ -463,6 +463,20 @@ namespace Miki.Modules.Accounts.Services
                 };
 				
             });
+	    
+	    AchievementDataContainer ShiplessAchievement = new AchievementDataContainer(x =>
+	    {
+	    	x.Name = "shipless";
+		x.Achievement = new List<BaseAchievement>()
+		{
+			newMessageAchievement()
+			{
+				Name = "Shipless"
+				Icon = "⚓️"
+				Points = 5
+			}
+		}
+	    });
 
             #endregion Misc Achievements
 
@@ -565,8 +579,8 @@ namespace Miki.Modules.Accounts.Services
 						Points = 0,
 					},
 				};
-            });
-
+	    });
+		
             #endregion User Update Achievements (don't disable these)
 
             #region Transaction Achievements

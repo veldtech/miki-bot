@@ -795,6 +795,13 @@ namespace Miki.Modules
 			Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
+			
+				if int value == 0
+					await AchievementManager.Instant.GetContainerById("shipless").CheckAsync(new BasePacket()
+					{
+						discordChannel = e.Channel,
+						discordUser = e.Author
+					});
 
 			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.Author.Id}&other={user.Id}&value={value}");
 			await e.Channel.SendFileAsync(s, "meme.png");
