@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Extension;
 using Miki.API.EmbedMenus;
+using System.Text.RegularExpressions;
 
 namespace Miki.Modules
 {
@@ -44,11 +45,27 @@ namespace Miki.Modules
 			e.Channel.QueueMessageAsync(e.Arguments.ToString());
 		}
 
-		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		[Command(Name = "sayembed")]
 		public async Task SayEmbedAsync(EventContext e)
 		{
-			Utils.Embed.AddInlineField("SAY", e.Arguments.ToString()).Build()
-				.QueueToChannel(e.Channel);
+			EmbedBuilder b = Utils.Embed;
+			string text = e.Arguments.ToString();
+
+			if (e.message.Attachments.Count == 0)
+			{
+				Match m = Regex.Match(e.message.Content, "(http(s)?://)(i.)?(imgur.com)/([A-Za-z0-9]+)(.png|.gif(v)?)");
+				if(m != null)
+				{
+					text.Replace(m.Value, "");
+					b.WithImageUrl(m.Value);
+				}
+			}
+			else
+			{
+				b.WithImageUrl(e.message.Attachments.First().Url);
+			}
+
+			b.Build().QueueToChannel(e.Channel);
 
 			await Task.Yield();
 		}

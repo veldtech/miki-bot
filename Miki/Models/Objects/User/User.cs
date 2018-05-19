@@ -131,32 +131,18 @@ namespace Miki.Models
 
 		public static async Task<List<User>> SearchUserAsync(MikiContext context, string name)
 		{
-			return await context.Users.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
+			return await context.Users
+				.Where(x => x.Name.ToLower() == name.ToLower())
+				.ToListAsync();
 		}
 
         public static int CalculateLevel(int exp)
         {
-            int experience = exp;
-            int Level = 0;
-            int output = 0;
-            while (experience >= output)
-            {
-                output = CalculateNextLevelIteration(output, Level);
-                Level++;
-            }
-            return Level;
-        }
+			return (int)Math.Sqrt(exp) / 10;
+		}
 		public static int CalculateLevelExperience(int level)
 		{
-			int Level = 0;
-			int output = 0;
-			do
-			{
-				output = CalculateNextLevelIteration(output, Level);
-				Level++;
-			} while (Level < level);
-
-			return output;
+			return (level * level * 10);
 		}
 
 		public async Task<int> GetGlobalReputationRankAsync()
