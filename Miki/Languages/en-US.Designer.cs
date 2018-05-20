@@ -322,6 +322,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to I&apos;m already waiting for a response from you in this channel. Please finish your previous actions first!.
+        /// </summary>
+        internal static string error_session_in_use {
+            get {
+                return ResourceManager.GetString("error_session_in_use", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This term couldn&apos;t been found!.
         /// </summary>
         internal static string error_term_invalid {
@@ -4810,15 +4819,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to page {0} of {1}.
-        /// </summary>
-        internal static string miki_module_pasta_search_footer {
-            get {
-                return ResourceManager.GetString("miki_module_pasta_search_footer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 🔎 I found these pastas.
         /// </summary>
         internal static string miki_module_pasta_search_header {
@@ -4995,6 +4995,15 @@ namespace Miki.Languages {
         internal static string mypasta_title {
             get {
                 return ResourceManager.GetString("mypasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to page {0} of {1}.
+        /// </summary>
+        internal static string page_footer {
+            get {
+                return ResourceManager.GetString("page_footer", resourceCulture);
             }
         }
         

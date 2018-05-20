@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Discord;
 using Miki.Framework.Extension;
 using Miki.Exceptions;
+using Miki.Framework.Events.Commands;
 
 namespace Miki.Modules.Roles
 {
@@ -98,7 +99,7 @@ namespace Miki.Modules.Roles
 					if (user.Currency >= newRole.Price)
 					{
 						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
-						IMessage m = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+						IMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 						if (m.Content.ToLower()[0] == 'y')
 						{
 							await user.AddCurrencyAsync(-newRole.Price);
@@ -281,7 +282,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
 					if (msg.Content.Length < 20)
 					{
@@ -309,9 +310,9 @@ namespace Miki.Modules.Roles
 						x.Embed = e.ErrorEmbed($"There's no role that is named `{roleName}`, Shall I create it? Y/N").Build();
 					});
 
-					msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
-					if(msg.Content.ToLower()[0] != 'y')
+					if (msg.Content.ToLower()[0] != 'y')
 					{
 						throw new RoleNullException();
 					}
@@ -335,8 +336,8 @@ namespace Miki.Modules.Roles
 					sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
 					while(true)
 					{
-						msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-						if(ulong.TryParse(msg.Content, out ulong id))
+						msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+						if (ulong.TryParse(msg.Content, out ulong id))
 						{
 							role = rolesFound.Where(x => x.Id == id)
 								.FirstOrDefault();
@@ -385,7 +386,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
 					rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
 					IRole parentRole = null;
@@ -407,7 +408,7 @@ namespace Miki.Modules.Roles
 						sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
 						while (true)
 						{
-							msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+							msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 							if (ulong.TryParse(msg.Content, out ulong id))
 							{
 								parentRole = rolesFound.Where(x => x.Id == id)
@@ -460,7 +461,7 @@ namespace Miki.Modules.Roles
 
 				while (true)
 				{
-					msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
 					if (int.TryParse(msg.Content, out int r))
 					{
@@ -491,8 +492,8 @@ namespace Miki.Modules.Roles
 					.WithColor(138, 182, 239);
 
 				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
-					
-				msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+
+				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 				if (msg == null)
 				{
 					return;
@@ -506,7 +507,7 @@ namespace Miki.Modules.Roles
 
 				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
 
-				msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
+				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
 				newRole.Optable = msg.Content.ToLower()[0] == 'y';
 
@@ -520,8 +521,9 @@ namespace Miki.Modules.Roles
 
 					while (true)
 					{
-						msg = await Bot.Instance.GetAttachedObject<EventSystem>().ListenNextMessageAsync(e.Channel.Id, e.Author.Id);
-						if (msg == null)
+						msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+
+                        if (msg == null)
 						{
 							return;
 						}

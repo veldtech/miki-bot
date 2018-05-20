@@ -235,7 +235,7 @@ namespace Miki.Modules
 				emojiOutput = string.Join(",", emojiNames);
 			}
 
-			string prefix = await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id);
+			string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
 
 			new EmbedBuilder()
 			{
@@ -264,17 +264,17 @@ namespace Miki.Modules
 
 			if (arg != null)
 			{
-				CommandEvent ev = Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetCommandEvent(arg.Argument);
+				CommandEvent ev = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.FirstOrDefault(x => x.Name.ToLower() == arg.Argument.ToString().ToLower());
 
 				if (ev == null)
 				{
 					EmbedBuilder helpListEmbed = Utils.Embed;
 					helpListEmbed.Title = e.GetResource("miki_module_help_error_null_header");
-					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message",
-						await Bot.Instance.GetAttachedObject<EventSystem>().GetPrefixInstance(">").GetForGuildAsync(e.Guild.Id));
+
+					helpListEmbed.Description = e.GetResource("miki_module_help_error_null_message", await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id));
 					helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
-					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.commandHandler.GetAllEventNames());
+					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(x => x.Name));
 					API.StringComparison.StringComparison best = comparer.GetBest(arg.Argument);
 
 					helpListEmbed.AddField(e.GetResource("miki_module_help_didyoumean"), best.text);
@@ -284,7 +284,7 @@ namespace Miki.Modules
 				}
 				else
 				{
-					if (Bot.Instance.GetAttachedObject<EventSystem>().CommandHandler.GetUserAccessibility(e.message) < ev.Accessibility)
+					if (e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message) < ev.Accessibility)
 					{
 						return;
 					}
@@ -322,8 +322,21 @@ namespace Miki.Modules
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.Build().QueueToChannel(e.Channel);
 
-			(await e.EventSystem.ListCommandsInEmbedAsync(e.message))
-				.QueueToUser(e.Author);
+
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			
+			foreach (Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
+			{
+				List<CommandEvent> events = m.Events
+					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message) >= x.Accessibility).ToList();
+
+				if (events.Count > 0)
+				{
+					embedBuilder.AddField(m.Name.ToUpper(), string.Join(", ", events.Select(x => "`" + x.Name + "`")));
+				}
+			}
+
+			embedBuilder.Build().QueueToUser(e.Author);
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -405,7 +418,7 @@ namespace Miki.Modules
 		public async Task PrefixHelpAsync(EventContext e)
 		{
 			Utils.Embed.WithTitle(e.GetResource("miki_module_general_prefix_help_header"))
-				.WithDescription(e.GetResource("miki_module_general_prefix_help", await PrefixInstance.Default.GetForGuildAsync(e.Guild.Id)))
+				.WithDescription(e.GetResource("miki_module_general_prefix_help", await e.commandHandler.GetPrefixAsync(e.Guild.Id)))
 				.Build().QueueToChannel(e.Channel);
 		}
 
@@ -422,11 +435,10 @@ namespace Miki.Modules
 				Description = e.GetResource("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetResource("discord_servers")}", Bot.Instance.Client.Guilds.Count.ToString())
-			 .AddField("💬 " + e.GetResource("term_commands"), Bot.Instance.GetAttachedObject<EventSystem>().CommandsUsed)
+			 .AddField("💬 " + e.GetResource("term_commands"), e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Sum(x => x.TimesUsed))
 			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .Build().QueueToChannel(e.Channel);
-
 		}
 
 		[Command(Name = "urban")]
@@ -486,7 +498,7 @@ namespace Miki.Modules
 
 			var roles = e.Guild.Roles.Where(x => user.RoleIds.Contains(x.Id) && x.Color.RawValue != Color.Default.RawValue).OrderByDescending(x => x.Position);
 
-			Color c = roles.FirstOrDefault().Color;
+			Color c = roles.FirstOrDefault()?.Color ?? new Color();
 
 			StringBuilder builder = new StringBuilder();
 			builder.AppendLine($"User Id      : **{user.Id}**");
@@ -500,7 +512,9 @@ namespace Miki.Modules
 			string r = string.Join(" ", roles.Select(x => x.Name));
 
 			if (string.IsNullOrEmpty(r))
+			{
 				r = "none (yet!)";
+			}
 
 			if (r.Length <= 1000)
 			{

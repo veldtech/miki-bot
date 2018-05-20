@@ -20,7 +20,7 @@ namespace Miki
 		/// All user ids with admin access
 		/// </summary>
 		[JsonProperty("developers")]
-		public List<ulong> DeveloperIds { get; set; } = new List<ulong>();
+		public ulong[] DeveloperIds { get; set; }
 
 		/// <summary>
 		/// Amount of shards for the bot to start

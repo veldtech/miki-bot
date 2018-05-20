@@ -19,8 +19,18 @@ namespace Miki.Accounts.Achievements
 
 	public class AchievementManager
 	{
-		private static AchievementManager _instance = new AchievementManager(Bot.Instance);
-		public static AchievementManager Instance => _instance;
+		private static AchievementManager _instance;
+		public static AchievementManager Instance
+		{
+			get
+			{
+				if (_instance == null)
+					_instance = new AchievementManager(Bot.Instance);
+
+				return _instance;
+			}
+		}
+
 		internal BaseService provider = null;
 
 		private Bot bot;
@@ -71,7 +81,7 @@ namespace Miki.Accounts.Achievements
 				}
 			};
 
-			bot.GetAttachedObject<EventSystem>().OnCommandDone += async (m, e, s, t) =>
+			bot.GetAttachedObject<EventSystem>().OnCommandDone += async (ex, e, m, t) =>
 			{
 				CommandPacket p = new CommandPacket()
 				{
@@ -79,25 +89,10 @@ namespace Miki.Accounts.Achievements
 					discordChannel = m.Channel,
 					message = m,
 					command = e,
-					success = s
+					success = ex == null
 				};
 				await OnCommandUsed?.Invoke(p);
 			};
-
-			//bot.MessageReceived += async (msg) =>
-			//{
-			//	if (await provider.IsEnabled(msg.Channel.Id))
-			//	{
-			//		MessageEventPacket packet = new MessageEventPacket()
-			//		{
-			//			discordUser = msg.Author,
-			//			discordChannel = msg.Channel,
-			//			message = msg
-			//		};
-
-			//		await OnMessage(packet);
-			//	}
-			//};
 		}
 
 		internal void AddContainer(AchievementDataContainer container)

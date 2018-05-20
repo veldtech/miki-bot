@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Miki.Framework.Extension;
 using Miki.API.EmbedMenus;
 using System.Text.RegularExpressions;
+using Miki.Framework.Events.Filters;
 
 namespace Miki.Modules
 {
@@ -54,9 +55,9 @@ namespace Miki.Modules
 			if (e.message.Attachments.Count == 0)
 			{
 				Match m = Regex.Match(e.message.Content, "(http(s)?://)(i.)?(imgur.com)/([A-Za-z0-9]+)(.png|.gif(v)?)");
-				if(m != null)
+				if(m.Success)
 				{
-					text.Replace(m.Value, "");
+					text = text.Replace(m.Value, "");
 					b.WithImageUrl(m.Value);
 				}
 			}
@@ -64,6 +65,8 @@ namespace Miki.Modules
 			{
 				b.WithImageUrl(e.message.Attachments.First().Url);
 			}
+
+			b.WithDescription(text);
 
 			b.Build().QueueToChannel(e.Channel);
 
@@ -99,7 +102,7 @@ namespace Miki.Modules
 		{
 			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
 			{
-				Bot.Instance.GetAttachedObject<EventSystem>().Ignore(id);
+				e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
 		}
@@ -192,7 +195,7 @@ namespace Miki.Modules
 
 			embed.Title = "Spellcheck - top results";
 
-			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.commandHandler.GetAllEventNames());
+			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(z => z.Name));
 			List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
 																 .OrderBy(z => z.score)
 																 .ToList();
