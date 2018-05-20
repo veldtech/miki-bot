@@ -179,21 +179,39 @@ namespace Miki.Modules
         {
             ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
             {
-				QueryKey = "http://e621.net/post/index.json?tags=",
+				QueryKey = new Uri("http://e621.net/post/index.json?tags="),
 				ExplicitTag = "rating:e",
 				QuestionableTag = "rating:q",
 				SafeTag = "rating:s",
 				NetUseCredentials = true,
-				NetHeaders = new List<string>() { "User-Agent: Other" },
+				NetHeaders = new List<Tuple<string, string>>() {
+					new Tuple<string, string>("User-Agent", "Other"),
+				},
 				BlacklistedTags =
 				{
 					"loli",
 					"shota",
 				}
 			}));
+			ImageboardProviderPool.AddProvider(new ImageboardProvider<DanbooruPost>(new ImageboardConfigurations
+			{
+				QueryKey = new Uri("https://danbooru.donmai.us/posts.json?tags="),
+				ExplicitTag = "rating:e",
+				QuestionableTag = "rating:q",
+				SafeTag = "rating:s",
+				NetUseCredentials = true,
+				NetHeaders = {
+					new Tuple<string, string>("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(Global.Config.DanbooruCredentials))}"),
+				},
+				BlacklistedTags =
+				{
+					"loli",
+					"shota"
+				}
+			}));
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>(new ImageboardConfigurations
 			{
-				QueryKey = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -202,7 +220,7 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -211,7 +229,7 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>(new ImageboardConfigurations
 			{
-				QueryKey = "http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -220,17 +238,17 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://konachan.com/post.json?tags=",
+				QueryKey = new Uri("https://konachan.com/post.json?tags="),
 				BlacklistedTags =
 				{
 					"loli",
 					"shota",
 				}
 			}));
-			
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
+
+			ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://yande.re/post.json?tags=",
+				QueryKey = new Uri("https://yande.re/post.json?tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -727,25 +745,25 @@ namespace Miki.Modules
 					{
 						case "safebooru":
 						{
-							s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
@@ -758,12 +776,12 @@ namespace Miki.Modules
 				}
 				else
 				{
-					s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
 				}
 			}
 			else
 			{
-				s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
 			}
 
             if (s == null)

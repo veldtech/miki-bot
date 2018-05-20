@@ -9,7 +9,7 @@ namespace Miki.API.Imageboards
 {
     public class ImageboardConfigurations
     {
-        public string QueryKey = "";
+        public Uri QueryKey = null;
 
         public string ExplicitTag = "rating:explicit";
         public string QuestionableTag = "rating:questionable";
@@ -17,7 +17,7 @@ namespace Miki.API.Imageboards
 
         public bool NetUseCredentials = false;
         public ICredentials NetCredentials = CredentialCache.DefaultCredentials;
-        public List<string> NetHeaders = new List<string>();
+        public List<Tuple<string, string>> NetHeaders = new List<Tuple<string, string>>();
 		public List<string> BlacklistedTags = new List<string>();
     }
 }

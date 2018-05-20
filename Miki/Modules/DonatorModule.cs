@@ -67,9 +67,9 @@ namespace Miki.Modules
 		public int KeysRewarded;
 	}
 
-    [Module(Name = "Donator")]
-    internal class DonatorModule
-    {
+	[Module(Name = "Donator")]
+	internal class DonatorModule
+	{
 		RestClient client = new RestClient(Global.Config.ImageApiUrl)
 			.AddHeader("Authorization", Global.Config.MikiApiKey);
 
@@ -77,7 +77,7 @@ namespace Miki.Modules
 		{
 			WebhookManager.OnEvent += async (value) =>
 			{
-				if(value.auth_code == "DBL_VOTE")
+				if (value.auth_code == "DBL_VOTE")
 				{
 					using (var context = new MikiContext())
 					{
@@ -120,15 +120,18 @@ namespace Miki.Modules
 								case 1:
 								{
 									await achievements.Achievements[0].UnlockAsync(user);
-								} break;
+								}
+								break;
 								case 25:
 								{
 									await achievements.Achievements[1].UnlockAsync(user, 1);
-								} break;
+								}
+								break;
 								case 200:
 								{
 									await achievements.Achievements[2].UnlockAsync(user, 2);
-								} break;
+								}
+								break;
 							}
 						}
 					}
@@ -159,7 +162,7 @@ namespace Miki.Modules
 					}
 				}
 
-				if(value.auth_code == "PATREON_PLEDGES")
+				if (value.auth_code == "PATREON_PLEDGES")
 				{
 					List<PatreonPledgeObject> pledgeObjects = value.data.ToObject<List<PatreonPledgeObject>>();
 
@@ -192,7 +195,7 @@ namespace Miki.Modules
 					}
 				}
 
-				if(value.auth_code == "PATREON_DELETE")
+				if (value.auth_code == "PATREON_DELETE")
 				{
 					PatreonPledge p = value.data.ToObject<PatreonPledge>();
 					if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
@@ -258,12 +261,13 @@ namespace Miki.Modules
 					{
 						donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
 					}
-					
-					new EmbedBuilder() {
-						Title=($"🎉 Congratulations, {e.Author.Username}"),
-						Color=new Color(226, 46, 68),
-						Description=($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
-						ThumbnailUrl=("https://i.imgur.com/OwwA5fV.png")
+
+					new EmbedBuilder()
+					{
+						Title = ($"🎉 Congratulations, {e.Author.Username}"),
+						Color = new Color(226, 46, 68),
+						Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
+						ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
 					}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
 					.Build().QueueToChannel(e.Channel);
 
@@ -274,7 +278,7 @@ namespace Miki.Modules
 
 					var achievements = AchievementManager.Instance.GetContainerById("donator");
 
-					if(donatorStatus.KeysRedeemed == 1)
+					if (donatorStatus.KeysRedeemed == 1)
 					{
 						await achievements.Achievements[0].UnlockAsync(e.Channel, e.Author, 0);
 					}
@@ -306,8 +310,8 @@ namespace Miki.Modules
 		public async Task TohruAsync(EventContext e)
 			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
 
-        [Command(Name = "truth")]
-        public async Task TruthAsync(EventContext e)
+		[Command(Name = "truth")]
+		public async Task TruthAsync(EventContext e)
 			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
 
 		[Command(Name = "trapcard")]
@@ -355,8 +359,8 @@ namespace Miki.Modules
 			}
 		}
 
-        private void SendNotADonatorError(IMessageChannel channel)
-        {
+		private void SendNotADonatorError(IMessageChannel channel)
+		{
 			new EmbedBuilder()
 			{
 				Title = "Sorry!",
@@ -364,6 +368,6 @@ namespace Miki.Modules
 			}.AddField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
 			 .AddField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
 			 .Build().QueueToChannel(channel);
-        }
-    }
+		}
+	}
 }

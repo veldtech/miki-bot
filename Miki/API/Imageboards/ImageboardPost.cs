@@ -9,6 +9,7 @@ using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
 using Newtonsoft.Json;
+using Miki.Rest;
 
 namespace Miki.API.Imageboards
 {
@@ -16,7 +17,11 @@ namespace Miki.API.Imageboards
     {
         public ImageboardConfigurations Config = new ImageboardConfigurations();
 
-        public ImageboardProvider(string queryKey)
+		public ImageboardProvider(string queryKey)
+			: this(new Uri(queryKey))
+		{
+		}
+        public ImageboardProvider(Uri queryKey)
         {
             Config.QueryKey = queryKey;
         }
@@ -25,73 +30,67 @@ namespace Miki.API.Imageboards
             Config = config;
         }
 
-        public virtual T GetPost(string content, ImageboardRating r)
-        {
-            WebClient c = new WebClient();
-            byte[] b;
-            bool nsfw = false;
-            string[] command = content.Split(' ');
+		public virtual async Task<T> GetPostAsync(string content, ImageboardRating r)
+		{
+			bool nsfw = false;
+			string[] command = content.Split(' ');
 
-            List<string> tags = new List<string>();
+			List<string> tags = new List<string>();
 
-            if (Config.NetUseCredentials)
-            {
-                c.UseDefaultCredentials = true;
-                c.Credentials = Config.NetCredentials;
-                Config.NetHeaders.ForEach(x => c.Headers.Add(x));
-            }
-
-            switch (r)
-            {
-                case ImageboardRating.EXPLICIT:
-                {
-                    tags.Add(Config.ExplicitTag);
-                    nsfw = true;
-                }
-                    break;
-
-                case ImageboardRating.QUESTIONABLE:
-                {
-                    tags.Add(Config.QuestionableTag);
-                    nsfw = true;
-                }
-                    break;
-
-                case ImageboardRating.SAFE:
-                {
-                    tags.Add(Config.SafeTag);
-                    
-                }
-                    break;
-            }
-            tags.AddRange(command);
-
-            if (nsfw)
-            {
-                RemoveBannedTerms(Config, tags);
-                AddBannedTerms(Config, tags);                
-            }
-
-            string outputTags = GetTags(tags.ToArray());
-
-            b = c.DownloadData(Config.QueryKey + outputTags);
-            if (b != null)
-            {
-                string result = Encoding.UTF8.GetString(b);
-
-				JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-				List<T> d = JsonConvert.DeserializeObject<List<T>>(result, settings);
-
-				if (d != null)
+			switch (r)
+			{
+				case ImageboardRating.EXPLICIT:
 				{
-					if (d.Any())
+					tags.Add(Config.ExplicitTag);
+					nsfw = true;
+				}
+				break;
+
+				case ImageboardRating.QUESTIONABLE:
+				{
+					tags.Add(Config.QuestionableTag);
+					nsfw = true;
+				}
+				break;
+
+				case ImageboardRating.SAFE:
+				{
+					tags.Add(Config.SafeTag);
+
+				}
+				break;
+			}
+			tags.AddRange(command);
+
+			if (nsfw)
+			{
+				RemoveBannedTerms(Config, tags);
+				AddBannedTerms(Config, tags);
+			}
+
+			string outputTags = GetTags(tags.ToArray());
+
+			using (RestClient c = new RestClient(Config.QueryKey + outputTags))
+			{
+				if (Config.NetUseCredentials)
+				{
+					//c.UseDefaultCredentials = true;
+					Config.NetHeaders.ForEach(x => c.Headers.Add(x.Item1, x.Item2));
+				}
+
+				var b = await c.GetAsync<List<T>>("");
+
+				if (b.Success)
+				{
+					if (b.Data.Any())
 					{
-						return d[MikiRandom.Next(0, d.Count)];
+						return b.Data[MikiRandom.Next(0, b.Data.Count)];
 					}
 				}
-            }
-            return default(T);
-        }
+				return default(T);
+			}
+		}
+
         protected static void AddBannedTerms(ImageboardConfigurations config, List<string> tags)
         {
             config.BlacklistedTags.ForEach(x => tags.Add("-" + x));

@@ -159,5 +159,8 @@ namespace Miki
 
 		[JsonProperty("rabbit_url")]
 		public Uri RabbitUrl { get; internal set; }
+
+		[JsonProperty("danbooru_credentials")]
+		public string DanbooruCredentials { get; internal set; }
 	}
 }
