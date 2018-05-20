@@ -182,7 +182,7 @@ namespace Miki.Modules
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetLocale(EventContext e)
 		{
-			string localeName = e.Arguments.FirstOrDefault()?.Argument ?? "";
+			string localeName = e.Arguments.ToString() ?? "";
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
@@ -208,7 +208,8 @@ namespace Miki.Modules
 			embed.Title = e.GetResource("miki_module_general_prefix_success_header");
 			embed.Description = e.GetResource("miki_module_general_prefix_success_message", e.Arguments.ToString());
 
-			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
+			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile")
+				.AddField("Your language not here?", "Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)! ");
 
 			embed.Build().QueueToChannel(e.Channel);
 		}
