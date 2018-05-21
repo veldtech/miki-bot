@@ -119,7 +119,10 @@ namespace Miki
 
 			bot.Attach(eventSystem);
 
-			var handler = new SimpleCommandHandler(Framework.Events.CommandMap.CreateFromAssembly());
+			var commandMap = Framework.Events.CommandMap.CreateFromAssembly();
+			commandMap.Install(eventSystem, bot);
+
+			var handler = new SimpleCommandHandler(commandMap);
 			handler.AddPrefix(">", true);
 			handler.AddPrefix("miki.");
 
@@ -134,42 +137,6 @@ namespace Miki
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }
-
-			if(!string.IsNullOrWhiteSpace(Global.Config.DatadogKey))
-			{
-				var dogstatsdConfig = new StatsdConfig
-				{
-					StatsdServerName = Global.Config.DatadogHost,
-					StatsdPort = 8125,
-					Prefix = "miki"
-				};
-				DogStatsd.Configure(dogstatsdConfig);
-			}
-
-			eventSystem.OnCommandDone += async (exception, command, message, time) =>
-			{
-				if (exception != null)
-				{
-					DogStatsd.Counter("commands.error.rate", 1);
-				}
-
-				if (command.Module == null)
-				{
-					return;
-				}
-
-				DogStatsd.Histogram("commands.time", time, 0.1, new[]
-				{
-					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-					$"commandname:{command.Name.ToLowerInvariant()}"
-				});
-
-				DogStatsd.Counter("commands.count", 1, 1, new[]
-				{
-					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-					$"commandname:{command.Name.ToLowerInvariant()}"
-				});
-			};
 
 			bot.Client.MessageReceived += Bot_MessageReceived;
 
