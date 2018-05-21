@@ -1,20 +1,21 @@
-﻿using Miki.Models;
+﻿using Miki.Framework.Exceptions;
+using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Miki.Exceptions
 {
-	class InsufficientCurrencyException : UserException
+	class InsufficientCurrencyException : BotException
 	{
 		public override string Resource => "error_insufficient_currency";
-		public override object[] Parameters => new object[] { mekosRequired - User.Currency };
+		public override object[] Parameters => new object[] { mekos };
 
-		private int mekosRequired = 0;
+		private int mekos = 0;
 
-		public InsufficientCurrencyException(User user, int mekosRequired) : base(user)
+		public InsufficientCurrencyException(int currencyOwned, int mekosRequired) : base()
 		{
-			this.mekosRequired = mekosRequired;
+			mekos = mekosRequired - currencyOwned;
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace Miki.Models
 			{
 				if (Currency < Math.Abs(amount))
 				{
-					throw new InsufficientCurrencyException(this, Math.Abs(amount));
+					throw new InsufficientCurrencyException(Currency, Math.Abs(amount));
 				}
 			}
 
