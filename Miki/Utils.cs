@@ -96,18 +96,19 @@ namespace Miki
                     t.Add(new TimeValue(Locale.GetString(channelId, "time_minute"), time.Minutes, minified));
                 }
             }
-            if (time.Seconds > 0)
-            {
-                if (time.Seconds > 1)
-                {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_seconds"), time.Seconds, minified));
-                }
-                else
-                {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_second"), time.Seconds, minified));
-                }
-            }
 
+			if (t.Count == 0 || time.Seconds > 0)
+			{
+				if (time.Seconds > 1)
+				{
+					t.Add(new TimeValue(Locale.GetString(channelId, "time_seconds"), time.Seconds, minified));
+				}
+				else
+				{
+					t.Add(new TimeValue(Locale.GetString(channelId, "time_second"), time.Seconds, minified));
+				}
+			}
+            
             if (t.Count != 0)
             {
                 List<string> s = new List<string>();
@@ -139,11 +140,6 @@ namespace Miki
                 return text;
             }
             return "";
-        }
-
-        public static float FromHoursToSeconds(this float value)
-        {
-            return (float)Math.Round(value * 60 * 60);
         }
 
 		public static bool IsAll(this ArgObject input)
