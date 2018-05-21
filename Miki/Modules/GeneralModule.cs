@@ -26,7 +26,7 @@ namespace Miki.Modules
 	{
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		public GeneralModule(Module m)
+		public GeneralModule(Module m, Bot b)
 		{
 			//EventSystem.Instance.AddCommandDoneEvent(x =>
 			//{
@@ -392,7 +392,7 @@ namespace Miki.Modules
 		public async Task PingAsync(EventContext e)
 		{
 			IUserMessage message = await e.CreateEmbedBuilder()
-				.WithTitle("Ping")
+				.WithTitle(new StringResource("Ping"))
 				.WithDescription("ping_placeholder")
 				.Build()
 				.SendToChannel(e.Channel);
@@ -490,7 +490,7 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				throw new ArgumentNullException("user");
+				user = e.Author as IGuildUser;
 			}
 
 			var embed = e.CreateEmbedBuilder();
@@ -501,7 +501,7 @@ namespace Miki.Modules
 
 			var roles = e.Guild.Roles.Where(x => user.RoleIds.Contains(x.Id) && x.Color.RawValue != Color.Default.RawValue).OrderByDescending(x => x.Position);
 
-			Color c = roles.FirstOrDefault()?.Color ?? new Color();
+			Color c = roles.FirstOrDefault()?.Color ?? Color.Default;
 
 			StringBuilder builder = new StringBuilder();
 			builder.AppendLine($"User Id      : **{user.Id}**");

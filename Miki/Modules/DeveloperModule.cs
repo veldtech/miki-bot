@@ -20,10 +20,6 @@ namespace Miki.Modules
 	[Module("Experimental")]
 	internal class DeveloperModule
 	{
-		public DeveloperModule(Module module)
-		{
-		}
-
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdentifyEmojiAsync(EventContext e)
 		{

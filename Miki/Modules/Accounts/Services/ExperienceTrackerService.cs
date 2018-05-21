@@ -3,25 +3,26 @@ using Miki.Common;
 using Miki.Accounts;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using Miki.Framework;
 
 namespace Miki.Modules.Accounts.Services
 {
-    internal class ExperienceTrackerService : BaseService
+    public class ExperienceTrackerService : BaseService
     {
         public ExperienceTrackerService()
         {
             Name = "Experience";
         }
 
-        public override void Install(Module m)
+        public override void Install(Module m, Bot b)
         {
-            base.Install(m);
+            base.Install(m, b);
             m.MessageRecieved += Service_MessageReceived;
         }
 
-        public override void Uninstall(Module m)
+        public override void Uninstall(Module m, Bot b)
         {
-            base.Uninstall(m);
+            base.Uninstall(m, b);
             m.MessageRecieved -= Service_MessageReceived;
         }
 

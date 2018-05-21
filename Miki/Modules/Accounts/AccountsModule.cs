@@ -32,6 +32,12 @@ namespace Miki.Modules.AccountsModule
 	[Module("Accounts")]
 	public class AccountsModule
 	{
+		[Service("experience")]
+		public ExperienceTrackerService experienceService { get; set; }
+
+		[Service("achievements")]
+		public AchievementsService achievementsService { get; set; }
+
 		BackgroundStore store = new BackgroundStore();
 
 		RestClient client = new RestClient(Global.Config.ImageApiUrl)
@@ -46,16 +52,6 @@ namespace Miki.Modules.AccountsModule
 			"<:mbarleftoff:391971424824459265>",
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
-
-		// TODO: install services automatically.
-		public AccountsModule(Module module)
-		{
-			new AchievementsService()
-				.Install(module);
-
-			new ExperienceTrackerService()
-				.Install(module);
-		}
 
 		[Command(Name = "achievements")]
 		public async Task AchievementsAsync(EventContext e)

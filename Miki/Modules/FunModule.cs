@@ -175,7 +175,7 @@ namespace Miki.Modules
 		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
 		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
 
-        public FunModule(Module m)
+        public FunModule(Module m, Bot b)
         {
             ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
             {

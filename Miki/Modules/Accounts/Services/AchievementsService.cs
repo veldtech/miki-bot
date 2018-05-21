@@ -13,23 +13,23 @@ using Discord;
 
 namespace Miki.Modules.Accounts.Services
 {
-    internal class AchievementsService : BaseService
+    public class AchievementsService : BaseService
     {
         public AchievementsService()
         {
             Name = "Achievements";
         }
 
-        public override void Install(Module m)
+        public override void Install(Module m, Bot bot)
         {
-            base.Install(m);
+            base.Install(m, bot);
             AchievementManager.Instance.provider = this;
             LoadAchievements();
         }
 
-        public override void Uninstall(Module m)
+        public override void Uninstall(Module m, Bot bot)
         {
-            base.Uninstall(m);
+            base.Uninstall(m, bot);
         }
 
         public void LoadAchievements()

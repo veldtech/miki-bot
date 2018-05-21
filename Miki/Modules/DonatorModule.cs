@@ -231,6 +231,21 @@ namespace Miki.Modules
 			};
 		}
 
+		[Command(Name = "changetitle")]
+		public async Task ChangeTitleAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				IsDonator donator = await context.IsDonator.FindAsync((long)e.Author.Id);
+				User user = await context.Users.FindAsync((long)e.Author.Id);
+
+				donator.AddBalance(-10);
+				user.Title = e.Arguments.ToString();
+
+				await context.SaveChangesAsync();
+			}
+		}
+
 		[Command(Name = "redeemkey")]
 		public async Task RedeemKeyAsync(EventContext e)
 		{

@@ -13,7 +13,7 @@ namespace Miki.Modules
 	{
 		private CountLib countLib;
 
-		public ServerCountModule(Module m)
+		public ServerCountModule(Module m, Bot b)
 		{
 			m.JoinedGuild = OnUpdateGuilds;
 			m.LeftGuild = OnUpdateGuilds;
