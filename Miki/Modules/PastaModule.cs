@@ -14,6 +14,7 @@ using Miki.Framework.Extension;
 using Discord;
 using System.Text.RegularExpressions;
 using Miki.Framework.Languages;
+using Miki.Exceptions;
 
 namespace Miki.Modules
 {
@@ -96,7 +97,11 @@ namespace Miki.Modules
 			arg = arg.Next();
 			string text = arg.TakeUntilEnd().Argument;
 
-
+			using (var context = new MikiContext())
+			{
+				await GlobalPasta.AddAsync(context, id, text, (long)e.Author.Id);
+				await context.SaveChangesAsync();
+			}
         }
 
         [Command(Name = "deletepasta")]
@@ -409,7 +414,11 @@ namespace Miki.Modules
 
 		private async Task VotePasta(EventContext e, bool vote)
 		{
-			string pastaName = e.Arguments.ToString(); 
+			string pastaName = e.Arguments.ToString();
+
+			// TODO: add resource friendly exception for arguments
+			if (string.IsNullOrEmpty(pastaName))
+				throw new ArgumentNullException("pasta name");
 
 			using (var context = new MikiContext())
 			{

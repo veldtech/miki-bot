@@ -4585,7 +4585,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This pasta already exists! Try a different name..
+        ///   Looks up a localized string similar to Pasta with name {0} already exists! Try a different name..
         /// </summary>
         internal static string miki_module_pasta_create_error_already_exist {
             get {
