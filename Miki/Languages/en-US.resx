@@ -2033,4 +2033,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_session_in_use" xml:space="preserve">
     <value>I'm already waiting for a response from you in this channel. Please finish your previous actions first!</value>
   </data>
+  <data name="whois_title" xml:space="preserve">
+    <value>Who is {0}!?</value>
+  </data>
 </root>

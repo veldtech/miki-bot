@@ -17,6 +17,7 @@ using Miki.Framework.Extension;
 using Microsoft.EntityFrameworkCore;
 using Miki.Framework.Languages;
 using System.Text;
+using Miki.Framework.Language;
 
 namespace Miki.Modules
 {
@@ -363,7 +364,7 @@ namespace Miki.Modules
 			embed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(e.GetResource("miki_module_general_info_made_by_header"),
-				e.GetResource("miki_module_general_info_made_by_description") + " Drummss, Fuzen, IA, Luke, Milk, n0t, Phanrazak, Rappy, Tal, Vallode, GrammarJew");
+				e.GetResource("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
 
 
 			embed.AddField(e.GetResource("miki_module_general_info_links"),
@@ -390,22 +391,22 @@ namespace Miki.Modules
 		[Command(Name = "ping", Aliases = new string[] { "lag" })]
 		public async Task PingAsync(EventContext e)
 		{
-			IUserMessage message = await new EmbedBuilder()
-			{
-				Title = "Ping",
-				Description = e.GetResource("ping_placeholder")
-			}.Build().SendToChannel(e.Channel);
+			IUserMessage message = await e.CreateEmbedBuilder()
+				.WithTitle("Ping")
+				.WithDescription("ping_placeholder")
+				.Build()
+				.SendToChannel(e.Channel);
 
 			await Task.Delay(100);
 
 			if (message != null)
 			{
-				double ping = (message.Timestamp - e.message.Timestamp).TotalMilliseconds;
+				float ping = (float)(message.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
 				Embed embed = new EmbedBuilder()
 				{
 					Title = "Pong",
-					Color = DiscordExtensions.Lerp(new Color(0, 1, 0), new Color(1, 0, 0), Mathm.Clamp((float)ping / 1000, 0, 1))
+					Color = new Color(0, 1, 0).Lerp(new Color(1, 0, 0), ping / 1000)
 				}.AddInlineField("Miki", ping + "ms").Build();
 				
 				await message.ModifyAsync(x => {
@@ -417,7 +418,8 @@ namespace Miki.Modules
 		[Command(Name = "prefix")]
 		public async Task PrefixHelpAsync(EventContext e)
 		{
-			Utils.Embed.WithTitle(e.GetResource("miki_module_general_prefix_help_header"))
+			e.CreateEmbedBuilder()
+				.WithTitle("miki_module_general_prefix_help_header")
 				.WithDescription(e.GetResource("miki_module_general_prefix_help", await e.commandHandler.GetPrefixAsync(e.Guild.Id)))
 				.Build().QueueToChannel(e.Channel);
 		}
@@ -463,7 +465,8 @@ namespace Miki.Modules
 					Description = e.GetResource("miki_module_general_urban_author", entry.Author)
 				}.AddField(e.GetResource("miki_module_general_urban_definition"), entry.Definition, true)
 				.AddField(e.GetResource("miki_module_general_urban_example"), entry.Example, true)
-				.AddField(e.GetResource("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown, true)
+				.AddField(e.GetResource("miki_module_general_urban_rating"), 
+				"👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown, true)
 				.Build().QueueToChannel(e.Channel);
 			}
 			else
@@ -490,11 +493,11 @@ namespace Miki.Modules
 				throw new ArgumentNullException("user");
 			}
 
-			EmbedBuilder embed = Utils.Embed;
-			embed.Title = $"Who is {user.Username}!?";
-			embed.WithColor(0.5f, 0f, 1.0f);
+			var embed = e.CreateEmbedBuilder();
+			embed.WithTitle("whois_title", user.Username);
+			embed.embedBuilder.WithColor(0.5f, 0f, 1.0f);
 
-			embed.ImageUrl = user.GetAvatarUrl();
+			embed.embedBuilder.ImageUrl = user.GetAvatarUrl();
 
 			var roles = e.Guild.Roles.Where(x => user.RoleIds.Contains(x.Id) && x.Color.RawValue != Color.Default.RawValue).OrderByDescending(x => x.Position);
 
@@ -507,7 +510,10 @@ namespace Miki.Modules
 			builder.AppendLine($"Joined at   : **{user.JoinedAt.ToString()}**");
 			builder.AppendLine($"Color Hex : **#{c.ToHexString()}**");
 
-			embed.AddField(e.GetResource("miki_module_whois_tag_personal"), builder.ToString());
+			embed.AddField(
+				e.CreateResource("miki_module_whois_tag_personal"), 
+				new StringResource(builder.ToString())
+			);
 
 			string r = string.Join(" ", roles.Select(x => x.Name));
 
@@ -518,7 +524,10 @@ namespace Miki.Modules
 
 			if (r.Length <= 1000)
 			{
-				embed.AddField(e.GetResource("miki_module_general_guildinfo_roles"), r);
+				embed.AddField(
+					e.CreateResource("miki_module_general_guildinfo_roles"), 
+					new StringResource(r)
+				);
 			}
 
 			embed.Build().QueueToChannel(e.Channel);

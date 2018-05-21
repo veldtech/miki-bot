@@ -5438,5 +5438,14 @@ namespace Miki.Languages {
                 return ResourceManager.GetString("warning_mention_self", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who is {0}!?.
+        /// </summary>
+        internal static string whois_title {
+            get {
+                return ResourceManager.GetString("whois_title", resourceCulture);
+            }
+        }
     }
 }
