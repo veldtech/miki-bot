@@ -845,16 +845,16 @@ Fuzzy</comment>
     <value>miki_comando_usos_alternânciaerros</value>
   </data>
   <data name="miki_generic_achievements" xml:space="preserve">
-    <value>miki_genérico_conquistas</value>
+    <value>Conquistas</value>
   </data>
   <data name="miki_generic_disabled" xml:space="preserve">
-    <value>miki_genérico_desabilitado</value>
+    <value>desabilitado</value>
   </data>
   <data name="miki_generic_enabled" xml:space="preserve">
-    <value>miki_genérico_habilitado</value>
+    <value>habilitado</value>
   </data>
   <data name="miki_generic_global_information" xml:space="preserve">
-    <value>miki_genérico_global_Informação</value>
+    <value>Informação Global</value>
   </data>
   <data name="miki_generic_information" xml:space="preserve">
     <value>Em formação</value>
