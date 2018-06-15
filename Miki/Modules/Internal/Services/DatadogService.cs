@@ -1,4 +1,5 @@
-﻿using Miki.Framework;
+﻿using Miki.Configuration;
+using Miki.Framework;
 using Miki.Framework.Events;
 using StatsdClient;
 using System;
@@ -10,9 +11,12 @@ namespace Miki.Modules.Internal.Services
 {
     public class DatadogService : BaseService
     {
+		[Configurable]
+		public string DatadogKey { get; set; } = "";
+
 		public override void Install(Module m, Bot b)
 		{
-			if (string.IsNullOrWhiteSpace(Global.Config.DatadogKey))
+			if (string.IsNullOrWhiteSpace(DatadogKey))
 			{
 				Log.Warning("Datadog not initialized due to missing config");
 				return;

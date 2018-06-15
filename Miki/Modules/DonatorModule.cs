@@ -46,18 +46,6 @@ namespace Miki.Modules
 		public string Url;
 	}
 
-	public class DblVoteObject
-	{
-		[JsonProperty("bot")]
-		public ulong BotId;
-
-		[JsonProperty("user")]
-		public ulong UserId;
-
-		[JsonProperty("type")]
-		public string Type;
-	}
-
 	public class PatreonPledgeObject
 	{
 		[JsonProperty("user_id")]

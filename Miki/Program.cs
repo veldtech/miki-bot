@@ -24,6 +24,8 @@ using Microsoft.Extensions.Logging;
 using Miki.Framework.Events.Filters;
 using Miki.Framework.Events.Commands;
 using System.Diagnostics;
+using Miki.Configuration;
+using Miki.Modules;
 
 namespace Miki
 {
@@ -49,7 +51,7 @@ namespace Miki
 
 			LoadLocales();
 
-			LoadDiscord();
+			await LoadDiscord();
 
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
 				MessageBucket.AddWorker();
@@ -92,11 +94,8 @@ namespace Miki
 			});
 		}
 
-		public void LoadDiscord()
+		public async Task LoadDiscord()
         {
-			WebhookManager.Listen("webhooks");
-			WebhookManager.OnEvent += (eventArgs) => new Task(() => Console.WriteLine("[webhook] " + eventArgs.auth_code));
-
 			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
 			{
 				ShardId = Global.Config.ShardId,
@@ -118,8 +117,14 @@ namespace Miki
 			});
 
 			bot.Attach(eventSystem);
+			ConfigurationManager mg = new ConfigurationManager();
 
-			var commandMap = Framework.Events.CommandMap.CreateFromAssembly();
+			var commandMap = new CommandMap();
+			commandMap.OnModuleLoaded += (module) =>
+			{
+				mg.RegisterType(module.GetReflectedInstance());
+			};
+			commandMap.RegisterAttributeCommands();
 			commandMap.Install(eventSystem, bot);
 
 			var handler = new SimpleCommandHandler(commandMap);
@@ -133,7 +138,29 @@ namespace Miki
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
 
-            if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+			foreach(var x in mg.Containers)
+			{
+				Console.WriteLine(x.Type.Name);
+				foreach(var y in x.ConfigurableItems)
+				{
+					Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
+				}
+			}
+
+			Console.WriteLine("---- loading config.json ----\nVALUES CHANGED TO:");
+
+			await mg.ImportAsync(new JsonSerializationProvider(), "./testexport.json");
+
+			foreach (var x in mg.Containers)
+			{
+				Console.WriteLine(x.Type.Name);
+				foreach (var y in x.ConfigurableItems)
+				{
+					Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
+				}
+			}
+
+			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }

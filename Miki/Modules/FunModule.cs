@@ -1,17 +1,21 @@
-using Miki.Framework;
-using Miki.Framework.Events.Attributes;
-using Miki.Framework.Extension;
-using Miki.Common;
+using Discord;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
-using Miki.API;
 using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
-using Miki.Languages;
+using Miki.API.Imageboards.Objects;
+using Miki.Common.Builders;
+using Miki.Configuration;
+using Miki.Core.API.Reminder;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.Framework.Extension;
+using Miki.Framework.Languages;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -22,21 +26,25 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Miki.Framework.Events;
-using Miki.API.Imageboards.Objects;
-using Miki.Core.API.Reminder;
-using Miki.Common.Builders;
-using Discord;
-using Miki.Framework.Languages;
-using Miki.Framework.Exceptions;
-using Miki.Exceptions;
 
 namespace Miki.Modules
 {
-    [Module(Name = "Fun")]
+	[Module(Name = "Fun")]
     public class FunModule
     {
-        private string[] puns =
+		/// <summary>
+		/// IMGUR API Key (RapidAPI)
+		/// </summary>
+		[Configurable]
+		public string ImgurKey { get; set; } = "";
+
+		/// <summary>
+		/// IMGUR Client ID (RapidAPI)
+		/// </summary>
+		[Configurable]
+		public string ImgurClientId { get; set; } = "";
+
+		private string[] puns =
         {
                 "miki_module_fun_pun_1",
                 "miki_module_fun_pun_2",
@@ -113,64 +121,6 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
-        private string[] lunchposts =
-{
-            "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchpost-1969?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/meian-alien?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/falcon-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/eternal-bark-engine-shall-we-feast?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/wuff-wuff-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/in-this-woof-monochrome-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/dogtone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/ufo-romance-in-the-nut-sky-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/necromastiff?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/the-dumbest-one-on-the-album?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/reach-fur-the-lunch-immurrtal-goat-from-psydo?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/pure-furries-whereabouts-of-the-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/pawdemic-picnic-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/moon-pup-homunculus-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/ancient-pups-song-firepsy-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/tummy-rumbling?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/fantasy-nation-lunchbreak-pupper-prayer-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/feast-of-the-crysanthemum-canine?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent-standalone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/present-world-oppahaul-lunch-mix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/food-circulating-melody-native-lunch-owo-remix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/a-lunch-sample",
-            "https://soundcloud.com/ghostcoffee-342990942/something-neato-my-dood",
-            "https://soundcloud.com/ghostcoffee-342990942/the-best-one",
-            "https://soundcloud.com/ghostcoffee-342990942/pure-gentlemen-whereabouts-of-the-style",
-            "https://soundcloud.com/ghostcoffee-342990942/scooby-goo",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchstep",
-            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/take-on-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/bonus-chief-keef-lunchus",
-            "https://soundcloud.com/ghostcoffee-342990942/lunch-signal",
-            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-2",
-            "https://soundcloud.com/ghostcoffee-342990942/wild-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/equivilant-1",
-            "https://soundcloud.com/ghostcoffee-342990942/exchange-1",
-            "https://soundcloud.com/ghostcoffee-342990942/gangnam-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/hourai-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/lord-of-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchvril-14th-1",
-            "https://soundcloud.com/ghostcoffee-342990942/making-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/megalunchovania",
-            "https://soundcloud.com/ghostcoffee-342990942/midnight-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/say-whats-for-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/stop-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/supah-woof-bros-3",
-            "https://soundcloud.com/ghostcoffee-342990942/the-worst-one-1",
-            "https://soundcloud.com/ghostcoffee-342990942/tnlunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/w-o-o-f-w-a-v-e-1",
-            "https://soundcloud.com/ghostcoffee-342990942/whats-for-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/woofing-in-the-90s-1",
-            "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
-};
 
 		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
 		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
@@ -268,8 +218,7 @@ namespace Miki.Modules
 		[Command(Name = "bird", Aliases = new string[] { "birb" })]	
         public async Task BirdAsync(EventContext e)
         {
-            string[] bird =
-            {
+            string[] bird = {
                 "http://i.imgur.com/aN948tq.jpg",
                 "http://i.imgur.com/cYPsbR5.jpg",
                 "http://i.imgur.com/18sRay4.jpg",
@@ -293,6 +242,7 @@ namespace Miki.Modules
                 "http://i.imgur.com/2nukcqZ.jpg",
                 "http://i.imgur.com/BxwgwHh.jpg"
             };
+
 			Utils.Embed
 				.WithTitle("🐦 Birbs!")
 				.WithColor(0.8f, 0.4f, 0.4f)
@@ -388,7 +338,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
+			var client = new MashapeClient(ImgurClientId, ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()} ext:gif");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -421,7 +371,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
+			var client = new MashapeClient(ImgurClientId, ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()}");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -443,12 +393,6 @@ namespace Miki.Modules
             {
                 e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
             }
-        }
-
-        [Command(Name = "lunch")]
-        public async Task LunchAsync(EventContext e)
-        {
-            e.Channel.QueueMessageAsync(e.GetResource("lunch_line") + "\n" + lunchposts[MikiRandom.Next(0, lunchposts.Length)]);
         }
 
         [Command(Name = "pick")]
