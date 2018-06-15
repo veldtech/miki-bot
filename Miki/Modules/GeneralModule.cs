@@ -18,12 +18,16 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Framework.Languages;
 using System.Text;
 using Miki.Framework.Language;
+using Miki.Configuration;
 
 namespace Miki.Modules
 {
 	[Module("General")]
 	internal class GeneralModule
 	{
+		[Configurable]
+		public string UrbanKey { get; set; } = "";
+
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
 		public GeneralModule(Module m, Bot b)
@@ -429,7 +433,7 @@ namespace Miki.Modules
 		{
 			await Task.Yield();
 
-			TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
+			//TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
 			new EmbedBuilder()
 			{
@@ -438,7 +442,7 @@ namespace Miki.Modules
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetResource("discord_servers")}", Bot.Instance.Client.Guilds.Count.ToString())
 			 .AddField("💬 " + e.GetResource("term_commands"), e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Sum(x => x.TimesUsed))
-			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
+			// .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .Build().QueueToChannel(e.Channel);
 		}
@@ -449,7 +453,7 @@ namespace Miki.Modules
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 				return;
 
-			UrbanDictionaryApi api = new UrbanDictionaryApi(Global.Config.UrbanKey);
+			UrbanDictionaryApi api = new UrbanDictionaryApi(UrbanKey);
 			UrbanDictionaryEntry entry = await api.GetEntryAsync(e.Arguments.ToString());
 
 			if (entry != null)

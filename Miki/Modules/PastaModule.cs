@@ -15,13 +15,17 @@ using Discord;
 using System.Text.RegularExpressions;
 using Miki.Framework.Languages;
 using Miki.Exceptions;
+using Miki.Configuration;
 
 namespace Miki.Modules
 {
     [Module("pasta")]
     public class PastaModule
     {
-        [Command(Name = "mypasta")]
+		[Configurable]
+		public ulong PastaReportsChannelId { get; set; } = 0;
+
+		[Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
             int page = 0;
@@ -334,7 +338,7 @@ namespace Miki.Modules
 				.WithDescription($"Reported pasta `{pastaId}`.```{reason}```")
 				.WithColor(255, 0 , 0)
 				.WithFooter(DateTime.Now.ToString(), "")
-				.Build().QueueToChannel(Bot.Instance.Client.GetChannel(Global.Config.PastaReportChannel) as IMessageChannel);
+				.Build().QueueToChannel(Bot.Instance.Client.GetChannel(PastaReportsChannelId) as IMessageChannel);
 		}
 
 		public async Task FavouritePastaList(EventContext e, bool lovedPastas = true)

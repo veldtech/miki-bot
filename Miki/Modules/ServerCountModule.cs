@@ -5,12 +5,16 @@ using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using CountAPI;
+using Miki.Configuration;
 
 namespace Miki.Modules
 {
 	[Module("internal:servercount")]
-	internal class ServerCountModule
+	public class ServerCountModule
 	{
+		[Configurable]
+		private string ConnectionString { get; set; } = "default";
+
 		private CountLib countLib;
 
 		public ServerCountModule(Module m, Bot b)

@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
+    <ProjectReference Include="..\Miki.Configuration\Miki.Configuration.csproj" />
   </ItemGroup>
 
   <ItemGroup>

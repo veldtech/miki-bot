@@ -12,6 +12,7 @@ using Miki.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using Discord;
+using Miki.Configuration;
 
 namespace Miki.Core.Modules.Anime
 {
