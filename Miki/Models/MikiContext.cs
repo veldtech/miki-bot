@@ -17,6 +17,7 @@ namespace Miki.Models
 
 		public DbSet<Achievement> Achievements { get; set; }
 		public DbSet<BackgroundsOwned> BackgroundsOwned { get; set; }
+		public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<CommandUsage> CommandUsages { get; set; }
 		public DbSet<Connection> Connections { get; set; }
 		public DbSet<IsDonator> IsDonator { get; set; }

@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Framework.Events;
 using Discord;
 using Miki.Framework.Extension;
+using Miki.Framework.Language;
 
 namespace Miki.Modules
 {
@@ -167,7 +168,86 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "guildprofile")]
+		[Command(Name = "guildbank")]
+		public async Task GuildBankAsync(EventContext e)
+		{
+			using (var context = new MikiContext())
+			{
+				GuildUser user = await GuildUser.GetAsync(context, e.Guild);
+			
+				switch (e.Arguments.FirstOrDefault()?.Argument.ToLower() ?? "")
+				{
+					case "bal":
+					case "balance":
+					{
+						GuildBankBalance(e, context, user);
+					} break;
+					case "deposit":
+					{
+						await GuildBankDepositAsync(e, context, user);
+					}
+					break;
+					default:
+					{
+						await GuildBankInfoAsync(e, user);
+					} break;
+				}
+			}
+		}
+
+		public async Task GuildBankInfoAsync(EventContext e, GuildUser c)
+		{
+			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
+
+			e.CreateEmbedBuilder()
+				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
+				.WithDescription(new LanguageResource("guildbank_info_description"))
+				.WithColor(new Color(255, 255, 255))
+				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
+				.AddField(
+					new LanguageResource("guildbank_info_help"),
+					new LanguageResource("guildbank_info_help_description", prefix),
+					true
+				).Build().QueueToChannel(e.Channel);
+		}
+
+		public void GuildBankBalance(EventContext e, MikiContext context, GuildUser c)
+		{
+			BankAccount.GetAsync(context, c, e.Author);
+
+			e.CreateEmbedBuilder()
+				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
+				.WithColor(new Color(255,255,255))
+				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
+				.AddField(
+					new LanguageResource("guildbank_balance_title"),
+					new LanguageResource("guildbank_balance", c.Currency),
+					true
+				)
+				.AddField(
+					new LanguageResource("guildbank_balance_total_deposited", )
+				).Build().QueueToChannel(e.Channel);
+		}
+
+		public async Task GuildBankDepositAsync(EventContext e, MikiContext context, GuildUser c)
+		{
+			int? totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
+
+			User user = await User.GetAsync(context, e.Author);
+
+			await user.AddCurrencyAsync(-totalDeposited.Value);
+			c.AddCurrency(totalDeposited.Value, user);
+
+			e.CreateEmbedBuilder()
+				.WithTitle(new LanguageResource("guildbank_deposit_title", e.Author.Username, totalDeposited))
+				.WithColor(new Color(255, 255, 255))
+				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
+				.Build().QueueToChannel(e.Channel);
+
+			await context.SaveChangesAsync();
+		}
+
+		[Command(Name = "guildprofile")]
         public async Task GuildProfile(EventContext e)
         {
             using (MikiContext context = new MikiContext())

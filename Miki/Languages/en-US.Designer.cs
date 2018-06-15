@@ -430,6 +430,79 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} mekos are currently stored in the guild bank..
+        /// </summary>
+        internal static string guildbank_balance {
+            get {
+                return ResourceManager.GetString("guildbank_balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mekos.
+        /// </summary>
+        internal static string guildbank_balance_title {
+            get {
+                return ResourceManager.GetString("guildbank_balance_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve successfully deposited {0} mekos!.
+        /// </summary>
+        internal static string guildbank_deposit_success {
+            get {
+                return ResourceManager.GetString("guildbank_deposit_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} deposited {1} mekos into the guild bank!.
+        /// </summary>
+        internal static string guildbank_deposit_title {
+            get {
+                return ResourceManager.GetString("guildbank_deposit_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is your guild&apos;s bank, use it to store mekos to save up for guild upgrades!.
+        /// </summary>
+        internal static string guildbank_info_description {
+            get {
+                return ResourceManager.GetString("guildbank_info_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commands.
+        /// </summary>
+        internal static string guildbank_info_help {
+            get {
+                return ResourceManager.GetString("guildbank_info_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}guildbank deposit &lt;mekos&gt; - to deposit the mekos to the bank
+        ///{0}guildbank balance - to check the total money.
+        /// </summary>
+        internal static string guildbank_info_help_description {
+            get {
+                return ResourceManager.GetString("guildbank_info_help_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}&apos;s savings.
+        /// </summary>
+        internal static string guildbank_title {
+            get {
+                return ResourceManager.GetString("guildbank_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your users need {0} experience to use &gt;guildweekly now!.
         /// </summary>
         internal static string guildconfig_expneeded {

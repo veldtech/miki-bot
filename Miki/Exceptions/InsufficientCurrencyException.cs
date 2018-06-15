@@ -11,11 +11,11 @@ namespace Miki.Exceptions
 		public override string Resource => "error_insufficient_currency";
 		public override object[] Parameters => new object[] { mekos };
 
-		private int mekos = 0;
+		private long mekos = 0;
 
-		public InsufficientCurrencyException(int currencyOwned, int mekosRequired) : base()
+		public InsufficientCurrencyException(object currencyOwned, int mekosRequired) : base()
 		{
-			mekos = mekosRequired - currencyOwned;
+			mekos = mekosRequired - (long)currencyOwned;
 		}
 	}
 }

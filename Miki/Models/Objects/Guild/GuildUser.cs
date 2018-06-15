@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Miki.Exceptions;
+using StatsdClient;
 
 namespace Miki.Models
 {
@@ -17,6 +19,8 @@ namespace Miki.Models
 		public long Id { get; set; }
 
 		public string Name { get; set; }
+
+		public long Currency { get; set; } = 0;
 
 		public int Experience { get; set; }
 
@@ -37,7 +41,26 @@ namespace Miki.Models
 
 		#endregion Config
 
-		// TODO: rework this
+		public void AddCurrency(int amount, User FromUser)
+		{
+			if (Banned)
+			{
+				throw new UserBannedException(FromUser);
+			}
+
+			if (amount < 0)
+			{
+				if (Currency < Math.Abs(amount))
+				{
+					throw new InsufficientCurrencyException(Currency, Math.Abs(amount));
+				}
+			}
+
+			DogStatsd.Counter("currency.change", amount);
+
+			Currency += amount;
+		}
+
 		public int CalculateLevel(int exp)
 		{
 			int experience = exp;

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Miki.Exceptions
 {
-    class UserException : BotException
+    public class UserException : BotException
     {
 		public override string Resource => "error_default_user";
 		public readonly User User;
