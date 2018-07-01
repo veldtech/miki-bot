@@ -11,10 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
 using Miki.Framework.Extension;
 using Miki.Exceptions;
 using Miki.Framework.Events.Commands;
+using Miki.Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Modules.Roles
 {
@@ -29,8 +30,8 @@ namespace Miki.Modules.Roles
 			{
 				string roleName = e.Arguments.ToString();
 
-				List<IRole> roles = GetRolesByName(e.Guild, roleName);
-				IRole role = null;
+				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
+				IDiscordRole role = null;
 
 				if (roles.Count > 1)
 				{
@@ -38,7 +39,7 @@ namespace Miki.Modules.Roles
 					if(levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
-							.Build().QueueToChannel(e.Channel);
+							.ToEmbed().QueueToChannel(e.Channel);
 						return;
 					}
 					else
@@ -54,27 +55,29 @@ namespace Miki.Modules.Roles
 				if (role == null)
 				{
 					e.ErrorEmbedResource("error_role_null")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((e.Author as IGuildUser).RoleIds.Contains(role.Id))
+				IDiscordGuildUser author = await e.Guild.GetUserAsync(e.Author.Id);
+
+				if (author.RoleIds.Contains(role.Id))
 				{
 					e.ErrorEmbed(e.GetResource("error_role_already_given"))
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = (await context.Users.FindAsync(e.Author.Id.ToDbLong()));
-					
-				IGuildUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
+
+				IDiscordGuildUser discordUser = await e.Guild.GetUserAsync(user.Id.FromDbLong());
 				LocalExperience localUser = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
 
 				if (!newRole?.Optable ?? false)
 				{
 					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
-						.Build().SendToChannel(e.Channel);
+						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
@@ -83,14 +86,17 @@ namespace Miki.Modules.Roles
 				if (newRole.RequiredLevel > level)
 				{
 					await e.ErrorEmbed(e.GetResource("error_role_level_low", newRole.RequiredLevel - level))
-						.Build().SendToChannel(e.Channel);
+						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
 				if (newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
-					await e.ErrorEmbed(e.GetResource("error_role_required", $"**{e.Guild.GetRole(newRole.RequiredRole.FromDbLong()).Name}**"))
-						.Build().SendToChannel(e.Channel);
+					await e.ErrorEmbed(
+						e.GetResource(
+							"error_role_required", 
+							$"**{(await e.Guild.GetRoleAsync(newRole.RequiredRole.FromDbLong())).Name}**"
+						)).ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
@@ -99,7 +105,7 @@ namespace Miki.Modules.Roles
 					if (user.Currency >= newRole.Price)
 					{
 						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
-						IMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+						IDiscordMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 						if (m.Content.ToLower()[0] == 'y')
 						{
 							await user.AddCurrencyAsync(-newRole.Price);
@@ -108,24 +114,24 @@ namespace Miki.Modules.Roles
 						else
 						{
 							await e.ErrorEmbed("Purchase Cancelled")
-								.Build().SendToChannel(e.Channel);
+								.ToEmbed().SendToChannel(e.Channel);
 							return;
 						}
 					}
 					else
 					{
 						await e.ErrorEmbed(e.GetResource("user_error_insufficient_mekos"))
-							.Build().SendToChannel(e.Channel);
+							.ToEmbed().SendToChannel(e.Channel);
 						return;
 					}
 				}
 
-				await (e.Author as IGuildUser).AddRoleAsync(newRole.Role);
+				await author.AddRoleAsync(newRole.Role);
 
-				Utils.Embed.WithTitle("I AM")
-					.WithColor(128, 255, 128)
-					.WithDescription($"You're a(n) {role.Name} now!")
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle("I AM")
+					.SetColor(128, 255, 128)
+					.SetDescription($"You're a(n) {role.Name} now!")
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -136,8 +142,8 @@ namespace Miki.Modules.Roles
 
 			using (var context = new MikiContext())
 			{
-				List<IRole> roles = GetRolesByName(e.Guild, roleName);
-				IRole role = null;
+				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
+				IDiscordRole role = null;
 
 				if (roles.Count > 1)
 				{
@@ -145,7 +151,7 @@ namespace Miki.Modules.Roles
 					if (levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
-							.Build().QueueToChannel(e.Channel);
+							.ToEmbed().QueueToChannel(e.Channel);
 						return;
 					}
 					else
@@ -161,26 +167,28 @@ namespace Miki.Modules.Roles
 				if (role == null)
 				{
 					await e.ErrorEmbed(e.GetResource("error_role_null"))
-						.Build().SendToChannel(e.Channel);
+						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
-				if (!(e.Author as IGuildUser).RoleIds.Contains(role.Id))
+				IDiscordGuildUser author = await e.Guild.GetUserAsync(e.Author.Id);
+
+				if (!author.RoleIds.Contains(role.Id))
 				{
 					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
-						.Build().SendToChannel(e.Channel);
+						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				await (e.Author as IGuildUser).RemoveRoleAsync(newRole.Role);
+				await author.RemoveRoleAsync(newRole.Role);
 
-				Utils.Embed.WithTitle("I AM NOT")
-					.WithColor(255, 128, 128)
-					.WithDescription($"You're no longer a(n) {role.Name}!")
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle("I AM NOT")
+					.SetColor(255, 128, 128)
+					.SetDescription($"You're no longer a(n) {role.Name}!")
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -229,7 +237,7 @@ namespace Miki.Modules.Roles
 
 						if (role.RequiredRole != 0)
 						{
-							stringBuilder.Append($"🔨`{e.Guild.GetRole(role.RequiredRole.FromDbLong())?.Name ?? "non-existing role"}`");
+							stringBuilder.Append($"🔨`{(await e.Guild.GetRoleAsync(role.RequiredRole.FromDbLong()))?.Name ?? "non-existing role"}`");
 						}
 
 						if (role.Price != 0)
@@ -248,11 +256,11 @@ namespace Miki.Modules.Roles
 
 				await context.SaveChangesAsync();
 					
-				Utils.Embed.WithTitle("📄 Available Roles")
-					.WithDescription(stringBuilder.ToString())
-					.WithColor(204, 214, 221)
-					.WithFooter("page " + (page + 1))
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle("📄 Available Roles")
+					.SetDescription(stringBuilder.ToString())
+					.SetColor(204, 214, 221)
+					.SetFooter("page " + (page + 1))
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -274,11 +282,11 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				EmbedBuilder sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-					.WithDescription("Type out the role name you want to config")
-					.WithColor(138, 182, 239);
-				IUserMessage sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
-				IMessage msg = null;
+				EmbedBuilder sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription("Type out the role name you want to config")
+					.SetColor(138, 182, 239);
+				IDiscordMessage sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
+				IDiscordMessage msg = null;
 
 				while (true)
 				{
@@ -290,24 +298,25 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						await sourceMessage.ModifyAsync(x =>
+						await sourceMessage.EditAsync(new EditMessageArgs
 						{
-							x.Embed = e.ErrorEmbed("That role name is way too long! Try again.").Build();
+							embed = e.ErrorEmbed("That role name is way too long! Try again.")
+								.ToEmbed()
 						});
 					}
 				}
 
 				string roleName = msg.Content;	
 
-				List<IRole> rolesFound = GetRolesByName(e.Guild, roleName.ToLower());
-				IRole role = null;
+				List<IDiscordRole> rolesFound = await GetRolesByName(e.Guild, roleName.ToLower());
+				IDiscordRole role = null;
 
 				if(rolesFound.Count == 0)
 				{
 					// Hey, I couldn't find this role, Can I make a new one?
-					await sourceMessage.ModifyAsync(x =>
+					await sourceMessage.EditAsync(new EditMessageArgs
 					{
-						x.Embed = e.ErrorEmbed($"There's no role that is named `{roleName}`, Shall I create it? Y/N").Build();
+						embed = e.ErrorEmbed($"There's no role that is named `{roleName}`, Shall I create it? Y/N").ToEmbed()
 					});
 
 					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
@@ -317,7 +326,10 @@ namespace Miki.Modules.Roles
 						throw new RoleNullException();
 					}
 
-					role = await e.Guild.CreateRoleAsync(roleName);
+					role = await e.Guild.CreateRoleAsync(new CreateRoleArgs
+					{
+						Name = roleName,
+					});
 				}
 				else if (rolesFound.Count > 1)
 				{
@@ -328,12 +340,12 @@ namespace Miki.Modules.Roles
 						roleIds = roleIds.Substring(0, 1024);
 					}
 
-					sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-							.WithDescription("I found multiple roles with that name, which one would you like? please enter the ID")
+					sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+							.SetDescription("I found multiple roles with that name, which one would you like? please enter the ID")
 							.AddInlineField("Roles - Ids", roleIds)
-							.WithColor(138, 182, 239);
+							.SetColor(138, 182, 239);
 
-					sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+					sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 					while(true)
 					{
 						msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
@@ -348,17 +360,18 @@ namespace Miki.Modules.Roles
 							}
 							else
 							{
-								await sourceMessage.ModifyAsync(x => {
-									x.Embed = e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
-									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).Build();
+								await sourceMessage.EditAsync(new EditMessageArgs {
+									embed = e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
+									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).ToEmbed()
 								});
 							}
 						}
 						else
 						{
-							await sourceMessage.ModifyAsync(x => {
-								x.Embed = e.ErrorEmbed("I couldn't find that role. Try again!")
-								.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).Build();
+							await sourceMessage.EditAsync(new EditMessageArgs
+							{
+								embed = e.ErrorEmbed("I couldn't find that role. Try again!")
+								.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).ToEmbed()
 							});
 						}
 					}
@@ -378,18 +391,18 @@ namespace Miki.Modules.Roles
 					})).Entity;
 				}
 
-				sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-					.WithDescription("Is there a role that is needed to get this role? Type out the role name, or `-` to skip")
-					.WithColor(138, 182, 239);
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription("Is there a role that is needed to get this role? Type out the role name, or `-` to skip")
+					.SetColor(138, 182, 239);
 
-				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+				sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 
 				while (true)
 				{
 					msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
-					rolesFound = GetRolesByName(e.Guild, msg.Content.ToLower());
-					IRole parentRole = null;
+					rolesFound = (await GetRolesByName(e.Guild, msg.Content.ToLower()));
+					IDiscordRole parentRole = null;
 
 					if (rolesFound.Count > 1)
 					{
@@ -400,12 +413,12 @@ namespace Miki.Modules.Roles
 							roleIds = roleIds.Substring(0, 1024);
 						}
 
-						sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-								.WithDescription("I found multiple roles with that name, which one would you like? please enter the ID")
+						sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+								.SetDescription("I found multiple roles with that name, which one would you like? please enter the ID")
 								.AddInlineField("Roles - Ids", roleIds)
-								.WithColor(138, 182, 239);
+								.SetColor(138, 182, 239);
 
-						sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+						sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 						while (true)
 						{
 							msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
@@ -420,18 +433,18 @@ namespace Miki.Modules.Roles
 								}
 								else
 								{
-									await sourceMessage.ModifyAsync(x => {
-										x.Embed = e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
-										.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).Build();
+									await sourceMessage.EditAsync(new EditMessageArgs {
+										embed = e.ErrorEmbed("I couldn't find that role id in the list. Try again!")
+										.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).ToEmbed()
 									}) ;
 								}
 							}
 							else
 							{
-								await sourceMessage.ModifyAsync(x =>
+								await sourceMessage.EditAsync(new EditMessageArgs
 								{
-									x.Embed = e.ErrorEmbed("I couldn't find that role. Try again!")
-									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).Build();
+									embed = e.ErrorEmbed("I couldn't find that role. Try again!")
+									.AddInlineField("Roles - Ids", string.Join("\n", roleIds)).ToEmbed()
 								});
 							}
 						}
@@ -447,17 +460,17 @@ namespace Miki.Modules.Roles
 						break;
 					}
 
-					await sourceMessage.ModifyAsync(x =>
+					await sourceMessage.EditAsync(new EditMessageArgs
 					{
-						x.Embed = e.ErrorEmbed("I couldn't find that role. Try again!").Build();
+						embed = e.ErrorEmbed("I couldn't find that role. Try again!").ToEmbed()
 					});
 				}
 
-				sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-					.WithDescription($"Is there a level requirement? type a number, if there is no requirement type 0")
-					.WithColor(138, 182, 239);
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Is there a level requirement? type a number, if there is no requirement type 0")
+					.SetColor(138, 182, 239);
 
-				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+				sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 
 				while (true)
 				{
@@ -472,26 +485,27 @@ namespace Miki.Modules.Roles
 						}
 						else
 						{
-							await sourceMessage.ModifyAsync(x =>
+							await sourceMessage.EditAsync(new EditMessageArgs
 							{
-								x.Embed = sourceEmbed.WithDescription($"Please pick a number above 0. Try again").Build();
+								embed = sourceEmbed.SetDescription($"Please pick a number above 0. Try again")
+									.ToEmbed()
 							});
 						}
 					}
 					else
 					{
-						await sourceMessage.ModifyAsync(x =>
+						await sourceMessage.EditAsync(new EditMessageArgs
 						{
-							x.Embed = sourceEmbed.WithDescription($"Are you sure `{msg.Content}` is a number? Try again").Build();
+							embed = sourceEmbed.SetDescription($"Are you sure `{msg.Content}` is a number? Try again").ToEmbed()
 						});
 					}
 				}
 
-				sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-					.WithDescription($"Should I give them when the user level ups? type `yes`, otherwise it will be considered as no")
-					.WithColor(138, 182, 239);
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Should I give them when the user level ups? type `yes`, otherwise it will be considered as no")
+					.SetColor(138, 182, 239);
 
-				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+				sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 
 				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 				if (msg == null)
@@ -501,11 +515,11 @@ namespace Miki.Modules.Roles
 
 				newRole.Automatic = msg.Content.ToLower()[0] == 'y';
 
-				sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-					.WithDescription($"Should users be able to opt in? type `yes`, otherwise it will be considered as no")
-					.WithColor(138, 182, 239);
+				sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+					.SetDescription($"Should users be able to opt in? type `yes`, otherwise it will be considered as no")
+					.SetColor(138, 182, 239);
 
-				sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+				sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 
 				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
@@ -513,11 +527,11 @@ namespace Miki.Modules.Roles
 
 				if (newRole.Optable)
 				{
-					sourceEmbed = Utils.Embed.WithTitle("⚙ Interactive Mode")
-						.WithDescription($"Do you want the user to pay mekos for the role? Enter any amount. Enter 0 to keep the role free.")
-						.WithColor(138, 182, 239);
+					sourceEmbed = Utils.Embed.SetTitle("⚙ Interactive Mode")
+						.SetDescription($"Do you want the user to pay mekos for the role? Enter any amount. Enter 0 to keep the role free.")
+						.SetColor(138, 182, 239);
 
-					sourceMessage = await sourceEmbed.Build().SendToChannel(e.Channel);
+					sourceMessage = await sourceEmbed.ToEmbed().SendToChannel(e.Channel);
 
 					while (true)
 					{
@@ -537,27 +551,27 @@ namespace Miki.Modules.Roles
 							}
 							else
 							{
-								await sourceMessage.ModifyAsync(x =>
+								await sourceMessage.EditAsync(new EditMessageArgs
 								{
-									x.Embed = e.ErrorEmbed($"Please pick a number above 0. Try again").Build();
+									embed = e.ErrorEmbed($"Please pick a number above 0. Try again").ToEmbed()
 								});
 							}
 						}
 						else
 						{
-							await sourceMessage.ModifyAsync(x =>
+							await sourceMessage.EditAsync(new EditMessageArgs
 							{
-								x.Embed = e.ErrorEmbed($"Not quite sure if this is a number 🤔").Build();
+								embed = e.ErrorEmbed($"Not quite sure if this is a number 🤔").ToEmbed()
 							});
 						}
 					}
 				}
 
 				await context.SaveChangesAsync();
-				Utils.Embed.WithTitle("⚙ Role Config")
-					.WithColor(102, 117, 127)
-					.WithDescription($"Updated {role.Name}!")
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle("⚙ Role Config")
+					.SetColor(102, 117, 127)
+					.SetDescription($"Updated {role.Name}!")
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -567,14 +581,14 @@ namespace Miki.Modules.Roles
 			{
 				string roleName = e.Arguments.ToString().Split('"')[1];
 
-				IRole role = null;
+				IDiscordRole role = null;
 				if (ulong.TryParse(roleName, out ulong s))
 				{
-					role = e.Guild.GetRole(s);
+					role = await e.Guild.GetRoleAsync(s);
 				}
 				else
 				{
-					role = GetRolesByName(e.Guild, roleName).FirstOrDefault();
+					role = (await GetRolesByName(e.Guild, roleName)).FirstOrDefault();
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
@@ -585,7 +599,7 @@ namespace Miki.Modules.Roles
 				if (role.Name.Length > 20)
 				{
 					await e.ErrorEmbed("Please keep role names below 20 letters.")
-						.Build().SendToChannel(e.Channel);
+						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
 
@@ -622,7 +636,10 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						var r = e.Guild.Roles.Where(x => x.Name.ToLower() == arguments.GetString("role-required").ToLower()).FirstOrDefault();
+						var r = (await e.Guild.GetRolesAsync())
+							.Where(x => x.Name.ToLower() == arguments.GetString("role-required").ToLower())
+							.FirstOrDefault();
+
 						if (r != null)
 						{
 							id = r.Id.ToDbLong();
@@ -636,16 +653,15 @@ namespace Miki.Modules.Roles
 				}
 
 				await context.SaveChangesAsync();
-				Utils.Embed.WithTitle("⚙ Role Config")
-					.WithColor(102, 117, 127)
-					.WithDescription($"Updated {role.Name}!")
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle("⚙ Role Config")
+					.SetColor(102, 117, 127)
+					.SetDescription($"Updated {role.Name}!")
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
-
 		}
 
-		public List<IRole> GetRolesByName(IGuild guild, string roleName)
-		=> guild.Roles.Where(x => x.Name.ToLower() == roleName.ToLower()).ToList();
+		public async Task<List<IDiscordRole>> GetRolesByName(IDiscordGuild guild, string roleName)
+			=> (await guild.GetRolesAsync()).Where(x => x.Name.ToLower() == roleName.ToLower()).ToList();
 		
 	}
 }

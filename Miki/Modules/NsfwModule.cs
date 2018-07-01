@@ -7,8 +7,9 @@ using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
-using Discord;
 using System;
+using Miki.Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
@@ -25,7 +26,7 @@ namespace Miki.Modules
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -35,7 +36,7 @@ namespace Miki.Modules
 			catch (Exception ex)
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -49,17 +50,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				CreateEmbed(s)
 					.QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -83,7 +84,7 @@ namespace Miki.Modules
 			catch (Exception ex)
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -97,7 +98,7 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -107,7 +108,7 @@ namespace Miki.Modules
 			catch(Exception ex)
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -121,7 +122,7 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -130,11 +131,11 @@ namespace Miki.Modules
 			catch (Exception ex)
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
-		private Embed CreateEmbed(ILinkable s)
+		private DiscordEmbed CreateEmbed(ILinkable s)
 		{
 			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
 
@@ -142,7 +143,7 @@ namespace Miki.Modules
 				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
 				.AddInlineField("Tags", FormatTags(s.Tags))
 				.AddInlineField("Score", s.Score)
-				.WithImageUrl(s.Url).Build();
+				.SetImage(s.Url).ToEmbed();
 		}
 
 		private string FormatTags(string Tags)

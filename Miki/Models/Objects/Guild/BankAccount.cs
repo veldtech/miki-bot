@@ -1,4 +1,4 @@
-﻿using Discord;
+﻿using Miki.Discord.Common;
 using Miki.Framework;
 using ProtoBuf;
 using System;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Miki.Models.Objects.Guild
 {
 	[ProtoContract]
-    class BankAccount
+    public class BankAccount
     {
 		[ProtoMember(1)]
 		public long UserId { get; set; }
@@ -25,7 +25,7 @@ namespace Miki.Models.Objects.Guild
 		[ProtoMember(4)]
 		public long TotalDeposited { get; set; }
 
-		public static async Task<BankAccount> GetAsync(MikiContext context, IUser user, IGuild guild)
+		public static async Task<BankAccount> GetAsync(MikiContext context, IDiscordUser user, IDiscordGuild guild)
 		{
 			if (await Global.RedisClient.ExistsAsync($"bankaccount:{guild.Id}:{user.Id}"))
 			{

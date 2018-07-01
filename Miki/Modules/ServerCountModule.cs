@@ -1,11 +1,10 @@
-﻿using Discord;
-using Miki.Framework;
+﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using CountAPI;
 using Miki.Configuration;
+using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
@@ -24,11 +23,12 @@ namespace Miki.Modules
 			countLib = new CountLib();
 		}
 
-		private async Task OnUpdateGuilds(IGuild g)
+		private async Task OnUpdateGuilds(IDiscordGuild g)
 		{
 			Bot bot = Bot.Instance;
-			DiscordSocketClient client = bot.Client.GetShardFor(g);
-			await countLib.PostStats(client.ShardId, client.Guilds.Count);
+
+			//DiscordSocketClient client = bot.Client.GetShardFor(g);
+			//await countLib.PostStats(client.ShardId, client.Guilds.Count);
 		}
 	}
 }

@@ -11,10 +11,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
 using Miki.Common;
-using Discord;
 using StatsdClient;
 using Miki.Exceptions;
 using Miki.Framework.Events.Filters;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -46,7 +46,7 @@ namespace Miki.Models
 
 		public int Level => CalculateLevel(Total_Experience);
 
-        public async Task AddCurrencyAsync(int amount, IMessageChannel channel = null, User fromUser = null)
+        public async Task AddCurrencyAsync(int amount, IDiscordChannel channel = null, User fromUser = null)
         {
 			if (Banned) return;
 
@@ -64,15 +64,15 @@ namespace Miki.Models
 
             if (channel != null)
             {
-                await AchievementManager.Instance.CallTransactionMadeEventAsync(channel, this, fromUser, Currency);
+                await AchievementManager.Instance.CallTransactionMadeEventAsync((IDiscordGuildChannel)channel, this, fromUser, Currency);
             }
         }
 
-        public static async Task<User> CreateAsync(IMessage e)
+        public static async Task<User> CreateAsync(IDiscordMessage e)
         {
 			return await CreateAsync(e.Author.Id.ToDbLong(), e.Author.Username);
         }
-		public static async Task<User> CreateAsync(IUser u)
+		public static async Task<User> CreateAsync(IDiscordUser u)
 		{
 			return await CreateAsync(u.Id.ToDbLong(), u.Username);
 		}
@@ -102,7 +102,7 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<User> GetAsync(MikiContext context, IUser u)
+		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
 

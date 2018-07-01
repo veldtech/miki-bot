@@ -7,7 +7,8 @@ using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
 using Miki.Framework.Events;
-using Discord;
+using Miki.Discord.Common;
+using Miki.Discord;
 
 namespace Miki.Modules.Gambling.Managers
 {
@@ -43,13 +44,13 @@ namespace Miki.Modules.Gambling.Managers
             dealer.AddToHand(deck.DrawRandom(false));
         }
 
-		public Embed CreateEmbed(EventContext e)
+		public EmbedBuilder CreateEmbed(EventContext e)
 		{
 			string explanation = e.GetResource("miki_blackjack_explanation");
 
 			return new EmbedBuilder()
 			{
-				Author = new EmbedAuthorBuilder()
+				Author = new EmbedAuthor()
 				{
 					Name = e.GetResource("miki_blackjack") + " | " + e.Author.Username,
 					IconUrl = e.Author.GetAvatarUrl(),
@@ -57,7 +58,7 @@ namespace Miki.Modules.Gambling.Managers
 				},
 				Description = $"{explanation}\n{e.GetResource("miki_blackjack_hit")}\n{e.GetResource("miki_blackjack_stay")}"
 			}.AddField(e.GetResource("miki_blackjack_cards_you", Worth(player)), player.Print(), true)
-			.AddField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print(), true).Build();
+			.AddField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print(), true);
 		}
 
         public int Worth(CardHand hand)

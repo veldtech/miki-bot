@@ -1,4 +1,3 @@
-using Discord;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
@@ -11,6 +10,8 @@ using Miki.API.Imageboards.Objects;
 using Miki.Common.Builders;
 using Miki.Configuration;
 using Miki.Core.API.Reminder;
+using Miki.Discord;
+using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
@@ -244,10 +245,10 @@ namespace Miki.Modules
             };
 
 			Utils.Embed
-				.WithTitle("🐦 Birbs!")
-				.WithColor(0.8f, 0.4f, 0.4f)
-				.WithImageUrl(bird[MikiRandom.Next(0, bird.Length)])
-				.Build().QueueToChannel(e.Channel);
+				.SetTitle("🐦 Birbs!")
+				.SetColor(0.8f, 0.4f, 0.4f)
+				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
+				.ToEmbed().QueueToChannel(e.Channel);
         }
 
 		[Command(Name = "cat")]
@@ -259,10 +260,10 @@ namespace Miki.Modules
 			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
 
 			Utils.Embed
-				.WithTitle("🐱 Kitties!")
-				.WithColor(0.8f, 0.6f, 0.4f)
-				.WithImageUrl(cat.File)
-				.Build()
+				.SetTitle("🐱 Kitties!")
+				.SetColor(0.8f, 0.6f, 0.4f)
+				.SetImage(cat.File)
+				.ToEmbed()
 				.QueueToChannel(e.Channel);
 		}
 
@@ -323,10 +324,10 @@ namespace Miki.Modules
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			Utils.Embed
-				.WithTitle("🐶 Doggo!")
-				.WithColor(0.8f, 0.8f, 0.8f)
-				.WithImageUrl("https://random.dog/" + url)
-				.Build().QueueToChannel(e.Channel);
+				.SetTitle("🐶 Doggo!")
+				.SetColor(0.8f, 0.8f, 0.8f)
+				.SetImage("https://random.dog/" + url)
+				.ToEmbed().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "gif")]
@@ -479,8 +480,8 @@ namespace Miki.Modules
 		[Command(Name = "roulette")]
 		public async Task RouletteAsync(EventContext e)
 		{
-			IEnumerable<IUser> users = await e.Channel.GetUsersAsync().FlattenAsync();
-			List<IUser> realUsers = users.Where(user => !user.IsBot).ToList();
+			IEnumerable<IDiscordUser> users = await e.Guild.GetUsersAsync();
+			List<IDiscordUser> realUsers = users.Where(user => !user.IsBot).ToList();
 
 			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";
 			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
@@ -535,7 +536,7 @@ namespace Miki.Modules
 			if (splitIndex == -1)
 			{
 				e.ErrorEmbed(e.GetResource("error_argument_null", "time"))
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -555,22 +556,22 @@ namespace Miki.Modules
 			{
 				int id = reminders.AddTask(e.Author.Id, (context) =>
 				{
-					Utils.Embed.WithTitle("⏰ Reminder")
-						.WithDescription(new MessageBuilder()
+					Utils.Embed.SetTitle("⏰ Reminder")
+						.SetDescription(new MessageBuilder()
 							.AppendText(context)
 							.BuildWithBlockCode())
-						.Build().QueueToUser(e.Author);
+						.ToEmbed().QueueToChannel(e.Author.GetDMChannel().Result);
 				}, reminderText, timeUntilReminder, repeated);
 
-				Utils.Embed.WithTitle($"👌 {e.GetResource("term_ok")}")
-					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.Id)}**\nYour reminder code is `{id}`")
-					.WithColor(255, 220, 93)
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle($"👌 {e.GetResource("term_ok")}")
+					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.Id)}**\nYour reminder code is `{id}`")
+					.SetColor(255, 220, 93)
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 			else
 			{
 				e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -582,7 +583,7 @@ namespace Miki.Modules
 			if (arg == null)
 			{
 				e.ErrorEmbed(e.GetResource("error_argument_null", "id"))
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -594,10 +595,10 @@ namespace Miki.Modules
 				}
 
 				Utils.Embed
-					.WithTitle($"⏰ {e.GetResource("reminders")}")
-					.WithColor(0.86f, 0.18f, 0.26f)
-					.WithDescription(e.GetResource("reminder_cancelled_all"))
-					.Build().QueueToChannel(e.Channel);
+					.SetTitle($"⏰ {e.GetResource("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f)
+					.SetDescription(e.GetResource("reminder_cancelled_all"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 			else if (int.TryParse(arg.Argument, out int id))
@@ -605,15 +606,15 @@ namespace Miki.Modules
 				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
 				{
 					Utils.Embed
-						.WithTitle($"⏰ {e.GetResource("reminders")}")
-						.WithColor(0.86f, 0.18f, 0.26f)
-						.WithDescription(e.GetResource("reminder_cancelled", $"`{i.Context}`"))
-						.Build().QueueToChannel(e.Channel);
+						.SetTitle($"⏰ {e.GetResource("reminders")}")
+						.SetColor(0.86f, 0.18f, 0.26f)
+						.SetDescription(e.GetResource("reminder_cancelled", $"`{i.Context}`"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
 			e.ErrorEmbed(e.GetResource("error_reminder_null"))
-				.Build().QueueToChannel(e.Channel);
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		private void ListReminders(EventContext e)
@@ -624,10 +625,8 @@ namespace Miki.Modules
 				instances = instances.OrderBy(x => x.Id).ToList();
 
 				EmbedBuilder embed = new EmbedBuilder()
-				{
-					Title = $"⏰ {e.GetResource("reminders")}",
-					Color = new Color(0.86f, 0.18f, 0.26f)
-				};
+					.SetTitle($"⏰ {e.GetResource("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f);
 
 				foreach (var x in instances)
 				{
@@ -647,27 +646,27 @@ namespace Miki.Modules
 					embed.Description += 
 						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.Id, true)}`\n";
 				}
-				embed.Build().QueueToChannel(e.Channel);
+				embed.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
 			e.ErrorEmbed(e.GetResource("error_no_reminders"))
-				.Build().QueueToChannel(e.Channel);
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		private async Task HelpReminderAsync(EventContext e)
 		{
 			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
 
-			new EmbedBuilder() { 
-				Title = $"⏰ {e.GetResource("reminders")}",
-				Color = new Color(0.86f, 0.18f, 0.26f),
-				Description = e.GetResource("reminder_help_description")
-			}.AddInlineField(e.GetResource("term_commands"), 
+			new EmbedBuilder()
+				.SetTitle($"⏰ {e.GetResource("reminders")}")
+				.SetColor(0.86f, 0.18f, 0.26f)
+				.SetDescription(e.GetResource("reminder_help_description"))
+				.AddInlineField(e.GetResource("term_commands"), 
 				$"`{prefix}{e.GetResource("reminder_help_add")}` - {e.GetResource("reminder_desc_add")}\n" +
 				$"`{prefix}{e.GetResource("reminder_help_clear")}` - {e.GetResource("reminder_desc_clear")}\n" +
 				$"`{prefix}{e.GetResource("reminder_help_list")}` - {e.GetResource("reminder_desc_list")}\n")
-			.Build().QueueToChannel(e.Channel);
+			.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "safe")]
@@ -730,7 +729,7 @@ namespace Miki.Modules
 
             if (s == null)
             {
-                e.ErrorEmbed("We couldn't find an image with these tags!").Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed("We couldn't find an image with these tags!").ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -742,7 +741,7 @@ namespace Miki.Modules
 		{
 			ArgObject o = e.Arguments.First().TakeUntilEnd();
 
-			IGuildUser user = await o.GetUserAsync(e.Guild);
+			IDiscordGuildUser user = await o.GetUserAsync(e.Guild);
 
 			// TODO: implement UserNullException
 			if (user == null)
@@ -815,9 +814,8 @@ namespace Miki.Modules
             };
 
 			new EmbedBuilder()
-			{
-				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+				.SetImage(images[MikiRandom.Next(0, images.Length)])
+				.ToEmbed().QueueToChannel(e.Channel);
         }
     }
 }

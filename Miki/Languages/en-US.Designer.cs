@@ -214,6 +214,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command is only allowed in a NSFW channel..
+        /// </summary>
+        internal static string error_channel_not_nsfw {
+            get {
+                return ResourceManager.GetString("error_channel_not_nsfw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unknown error..
         /// </summary>
         internal static string error_default {

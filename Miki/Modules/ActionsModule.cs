@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
-using Discord;
+using Miki.Discord;
 using Miki.Framework.Extension;
 
 namespace Miki.Modules
@@ -393,7 +393,7 @@ namespace Miki.Modules
 
 		public async Task QueueAction(EventContext e, string action, string imageUrl)
 		{
-			string username = (await e.Guild.GetCurrentUserAsync()).Username;
+			string username = (await e.Guild.GetSelfAsync()).Username;
 
 			EmbedBuilder builder = new EmbedBuilder();
 
@@ -408,7 +408,7 @@ namespace Miki.Modules
 
 			builder.ImageUrl = imageUrl;
 
-			builder.Build().QueueToChannel(e.Channel);
+			builder.ToEmbed().QueueToChannel(e.Channel);
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Common;
-using Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -18,7 +18,7 @@ namespace Miki.Models
 
 		public User User { get; set; }
 
-		public static async Task<LocalExperience> CreateAsync(MikiContext context, long ServerId, IUser user)
+		public static async Task<LocalExperience> CreateAsync(MikiContext context, long ServerId, IDiscordUser user)
         {
 			long userId = user.Id.ToDbLong();
             LocalExperience experience = null;
@@ -37,7 +37,7 @@ namespace Miki.Models
 
             return experience;
         }
-		public static async Task<LocalExperience> GetAsync(MikiContext context, long serverId, IUser user)
+		public static async Task<LocalExperience> GetAsync(MikiContext context, long serverId, IDiscordUser user)
 		{
 			long userId = user.Id.ToDbLong();
 			var localExperience = await context.LocalExperience.FindAsync(serverId, userId);
@@ -54,7 +54,7 @@ namespace Miki.Models
 			
 			return x + 1;
 		}
-		public static async Task<int> GetRankAsync(MikiContext context, long serverId, IUser user)
+		public static async Task<int> GetRankAsync(MikiContext context, long serverId, IDiscordUser user)
 		{
 			return await (await GetAsync(context, serverId, user)).GetRank(context);
 		}

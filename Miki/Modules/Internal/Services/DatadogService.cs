@@ -1,6 +1,7 @@
 ﻿using Miki.Configuration;
 using Miki.Framework;
 using Miki.Framework.Events;
+using Miki.Logging;
 using StatsdClient;
 using System;
 using System.Collections.Generic;

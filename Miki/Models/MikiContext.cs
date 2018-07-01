@@ -43,7 +43,7 @@ namespace Miki.Models
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseNpgsql(Global.Config.ConnString);
-			optionsBuilder.UseLoggerFactory(logger);
+			//optionsBuilder.UseLoggerFactory(logger);
 			base.OnConfiguring(optionsBuilder);
 		}
 
@@ -64,6 +64,9 @@ namespace Miki.Models
 			backgroundsOwned.HasKey(x => new { x.UserId, x.BackgroundId });
 
 			#endregion
+
+			var bankAccounts = modelBuilder.Entity<BankAccount>();
+			bankAccounts.HasKey(x => new { x.GuildId, x.UserId });
 
 			#region Command Usage
 			var commandUsage = modelBuilder.Entity<CommandUsage>();

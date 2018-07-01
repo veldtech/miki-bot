@@ -1,5 +1,4 @@
-﻿using Discord;
-using Miki.Framework.Events;
+﻿using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using System;
 using System.Collections.Generic;
@@ -8,16 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Miki.Framework;
 using Miki.Framework.Events.Commands;
+using Miki.Discord.Common;
+using Miki.Discord;
 
 namespace Miki.API.EmbedMenus
 {
     public class Menu
     {
-		public IUserMessage Message => message;
+		public IDiscordMessage Message => message;
 		public IMenuItem Root;
-		public IUser Owner;
+		public IDiscordUser Owner;
 
-		private IUserMessage message;
+		private IDiscordMessage message;
 
 		public Menu(Action<Menu> builder)
 		{
@@ -34,12 +35,13 @@ namespace Miki.API.EmbedMenus
 			if(Message == null)
 				throw new ArgumentNullException("Message");
             
-			var msg = await Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>().WaitForNextMessage(Owner.Id, Message.Channel.Id);
+			var msg = await Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>()
+				.WaitForNextMessage(Owner.Id, (await Message.GetChannelAsync()).Id);
 			Args a = new Args(msg.Content);
 			return a;
 		}
 
-		public async Task StartAsync(IMessageChannel channel)
+		public async Task StartAsync(IDiscordChannel channel)
 		{
 			message = await Root.Build().SendToChannel(channel);
 			(Root as BaseItem).SetMenu(this);

@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
 using Miki.Exceptions;
 using StatsdClient;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -116,7 +116,7 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<GuildUser> CreateAsync(MikiContext context, IGuild guild)
+		public static async Task<GuildUser> CreateAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
 			int userCount = (await guild.GetUsersAsync()).Count;
@@ -136,7 +136,7 @@ namespace Miki.Models
 			return outputGuildUser;
 		}
 
-		public static async Task<GuildUser> GetAsync(MikiContext context, IGuild guild)
+		public static async Task<GuildUser> GetAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
 			return await context.GuildUsers.FindAsync(id)

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Discord.Common;
 
 #pragma warning disable CS1998
 
@@ -181,8 +181,7 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "😱",
                         CheckCommand = async (p) =>
                         {
-							await Task.Yield();
-							return Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message) < p.command.Accessibility;
+							return await Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message) < p.command.Accessibility;
                         },
 						Points = 5
                     }
@@ -480,11 +479,11 @@ namespace Miki.Modules.Accounts.Services
 
                         CheckUserUpdate = async (p) =>
 						{
-							if(p.userNew is IGuildUser guildUser)
+							if(p.userNew is IDiscordGuildUser guildUser)
 							{
 								if (guildUser.GuildId == 160067691783127041)
 								{
-									IRole role = guildUser.Guild.Roles.Where(r => r.Name == "Contributors").FirstOrDefault();
+									IDiscordRole role = (await guildUser.GetGuildAsync()).GetRolesAsync().Result.Where(r => r.Name == "Contributors").FirstOrDefault();
 
 									if (guildUser.RoleIds.Contains(role.Id))
 									{
@@ -508,11 +507,11 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "🌟",
                         CheckUserUpdate = async (p) =>
                         {
-						if(p.userNew is IGuildUser guildUser)
+						if(p.userNew is IDiscordGuildUser guildUser)
 							{
 								if (guildUser.GuildId == 160067691783127041)
 								{
-									IRole role = guildUser.Guild.Roles.Where(r => r.Name == "Developer").FirstOrDefault();
+									IDiscordRole role = (await guildUser.GetGuildAsync()).GetRolesAsync().Result.Where(r => r.Name == "Developer").FirstOrDefault();
 
 									if (guildUser.RoleIds.Contains(role.Id))
 									{

@@ -2,8 +2,9 @@
 using Miki.Common;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
-using Discord;
 using Miki.Framework.Extension;
+using Miki.Discord.Common;
+using Miki.Discord;
 
 namespace Miki.Modules
 {
@@ -56,7 +57,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
         [Command(Name = "lewd")]
@@ -91,7 +92,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
         [Command(Name = "pout")]
@@ -117,7 +118,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command( Name = "smug" )]
@@ -161,7 +162,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command( Name = "cry" )]
@@ -257,7 +258,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 	        
 		[Command(Name = "stare")]
@@ -273,7 +274,7 @@ namespace Miki.Modules
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 	}

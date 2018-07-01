@@ -1,31 +1,23 @@
-﻿using Discord;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Common;
+using Miki.Configuration;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.FileHandling;
-using Miki.Languages;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Commands;
+using Miki.Framework.Events.Filters;
+using Miki.Framework.Languages;
+using Miki.Logging;
 using Miki.Models;
-using Newtonsoft.Json;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Common;
-using Miki.Framework.Events;
-using System.Threading;
-using Discord.WebSocket;
-using Miki.Framework.Extension;
-using Amazon.S3.Model;
-using Miki.Framework.Languages;
 using System.Reflection;
 using System.Resources;
-using Microsoft.Extensions.Logging;
-using Miki.Framework.Events.Filters;
-using Miki.Framework.Events.Commands;
-using System.Diagnostics;
-using Miki.Configuration;
-using Miki.Modules;
+using System.Threading.Tasks;
 
 namespace Miki
 {
@@ -41,13 +33,14 @@ namespace Miki
 
 		public async Task Start()
 		{
+
 			timeSinceStartup = DateTime.Now;
 
 			Log.OnLog += (msg, e) => Console.WriteLine(msg);
 
 			LogColor color = new LogColor();
 			color.Foreground = ConsoleColor.Red;
-			Log.Theme.SetColor(LogLevel.Error, color);
+			Log.Theme.SetColor(Logging.LogLevel.Error, color);
 
 			LoadLocales();
 
@@ -64,9 +57,8 @@ namespace Miki
 					bot.GetAttachedObject<EventSystem>().MessageFilter
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
-			}	
-
-			await bot.ConnectAsync(Global.Config.Token);
+			}
+			await Task.Delay(-1);
 		}
 
 		private void LoadLocales()
@@ -96,24 +88,19 @@ namespace Miki
 
 		public async Task LoadDiscord()
         {
-			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
-			{
-				ShardId = Global.Config.ShardId,
-				TotalShards = Global.Config.ShardCount,
-				ConnectionTimeout = 100000,
-				LargeThreshold = 250,
-			}, new ClientInformation()
+			bot = new Bot(Global.Config.AmountShards, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.6.2",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
-			});
+				Token = Global.Config.Token
+			}, Global.RedisClient, Global.Config.RabbitUrl.ToString());
             
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
-				ErrorEmbedBuilder = new EmbedBuilder().WithTitle($"🚫 Something went wrong!").WithColor(new Color(1.0f, 0.0f, 0.0f))
+				ErrorEmbedBuilder = new EmbedBuilder().SetTitle($"🚫 Something went wrong!").SetColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
 			bot.Attach(eventSystem);
@@ -138,44 +125,41 @@ namespace Miki
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
 
-			foreach(var x in mg.Containers)
-			{
-				Console.WriteLine(x.Type.Name);
-				foreach(var y in x.ConfigurableItems)
-				{
-					Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
-				}
-			}
+			//foreach(var x in mg.Containers)
+			//{
+			//	Console.WriteLine(x.Type.Name);
+			//	foreach(var y in x.ConfigurableItems)
+			//	{
+			//		Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
+			//	}
+			//}
 
-			Console.WriteLine("---- loading config.json ----\nVALUES CHANGED TO:");
+			//Console.WriteLine("---- loading config.json ----\nVALUES CHANGED TO:");
 
-			await mg.ImportAsync(new JsonSerializationProvider(), "./testexport.json");
+			////await mg.ImportAsync(new JsonSerializationProvider(), "./testexport.json");
 
-			foreach (var x in mg.Containers)
-			{
-				Console.WriteLine(x.Type.Name);
-				foreach (var y in x.ConfigurableItems)
-				{
-					Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
-				}
-			}
+			//foreach (var x in mg.Containers)
+			//{
+			//	Console.WriteLine(x.Type.Name);
+			//	foreach (var y in x.ConfigurableItems)
+			//	{
+			//		Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
+			//	}
+			//}
 
 			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }
 
-			bot.Client.MessageReceived += Bot_MessageReceived;
+			bot.Client.MessageCreate += Bot_MessageReceived;
 
-			bot.Client.JoinedGuild += Client_JoinedGuild;
-			bot.Client.LeftGuild += Client_LeftGuild;
-			bot.Client.UserUpdated += Client_UserUpdated;
-
-			bot.Client.ShardConnected += Bot_OnShardConnect;
-			bot.Client.ShardDisconnected += Bot_OnShardDisconnect;
+			bot.Client.GuildJoin += Client_JoinedGuild;
+			bot.Client.GuildLeave += Client_LeftGuild;
+			bot.Client.UserUpdate += Client_UserUpdated;
 		}
 
-		private async Task Client_UserUpdated(SocketUser oldUser, SocketUser newUser)
+		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
 			if (oldUser.AvatarId != newUser.AvatarId)
 			{
@@ -183,22 +167,21 @@ namespace Miki
 			}
 		}
 
-		private Task Bot_MessageReceived(IMessage arg)
+		private Task Bot_MessageReceived(IDiscordMessage arg)
 		{
 			DogStatsd.Increment("messages.received");
 			return Task.CompletedTask;
 		}
 
-		private async Task Client_LeftGuild(SocketGuild arg)
+		private async Task Client_LeftGuild(ulong guildId)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
 			await Task.Yield();
 		}
 
-		private async Task Client_JoinedGuild(IGuild arg)
+		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
-			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
+			IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
 			defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
 
 			List<string> allArgs = new List<string>();
@@ -215,7 +198,7 @@ namespace Miki
 					allParams.Add(users.ElementAt(i).Id.ToDbLong());
 					allParams.Add(users.ElementAt(i).Username);
 
-					allExpParams.Add(users.ElementAt(i).GuildId.ToDbLong());
+					allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
 					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
 				}
 
@@ -234,23 +217,23 @@ namespace Miki
 			}
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
+		//	DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
 		}
 
-		private async Task Bot_OnShardConnect(DiscordSocketClient client)
-		{
-			Log.Message($"shard {client.ShardId} has connected as {client.CurrentUser.ToString()}!");
-			DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
-			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
-			await Task.Yield();
-		}
+		//private async Task Bot_OnShardConnect(DiscordSocketClient client)
+		//{
+		//	Log.Message($"shard {client.ShardId} has connected as {client.CurrentUser.ToString()}!");
+		//	DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
+		//	DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
+		//	await Task.Yield();
+		//}
 
-		private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
-		{
-			Log.Error($"Shard {client.ShardId} has disconnected!");
-			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
-			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
-			await Task.Yield();
-		}
+		//private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
+		//{
+		//	Log.Error($"Shard {client.ShardId} has disconnected!");
+		//	DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
+		//	DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
+		//	await Task.Yield();
+		//}
 	}
 }

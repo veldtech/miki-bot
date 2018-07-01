@@ -2061,4 +2061,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="guildbank_title" xml:space="preserve">
     <value>{0}'s savings</value>
   </data>
+  <data name="error_channel_not_nsfw" xml:space="preserve">
+    <value>This command is only allowed in a NSFW channel.</value>
+  </data>
 </root>

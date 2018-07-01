@@ -10,7 +10,6 @@ using System.IO;
 using Miki.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
-using Discord;
 
 namespace Miki.Modules.Overwatch
 {

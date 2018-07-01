@@ -9,6 +9,7 @@ using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis;
 using Amazon.S3;
 using Miki.Models.Objects.Backgrounds;
+using Miki.Framework;
 
 namespace Miki
 {
@@ -27,6 +28,8 @@ namespace Miki
 		public static ICacheClient RedisClient => redisClientPool.Value;
 
 		public static BackgroundStore Backgrounds => backgrounds;
+
+		public static Bot Client { get; set; }
 
 		public static Config Config
 		{
@@ -68,7 +71,7 @@ namespace Miki
 
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
-		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
+		private static MikiApi mikiApi = null;
 		static BackgroundStore backgrounds = new BackgroundStore();
 	}
 

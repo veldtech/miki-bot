@@ -1,7 +1,7 @@
 ﻿using Miki.Framework;
 using Miki.Common;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Accounts
 {
@@ -22,12 +22,12 @@ namespace Miki.Accounts
             Width = width;
         }
 
-        public async Task<string> Print(int currentValue, IMessageChannel c)
+        public async Task<string> Print(int currentValue, IDiscordGuildChannel c)
         {
             string output = "";
 
-            IGuildUser u = await (c as IGuildChannel).Guild.GetCurrentUserAsync();
-            if (!u.GuildPermissions.Has(GuildPermission.UseExternalEmojis))
+            IDiscordGuildUser u = await (await c.GetGuildAsync()).GetSelfAsync();
+            if (!(await c.GetPermissionsAsync(u)).HasFlag(GuildPermission.UseExternalEmojis))
             {
                 return "";
             }

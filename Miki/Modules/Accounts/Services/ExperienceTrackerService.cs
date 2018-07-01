@@ -2,8 +2,8 @@
 using Miki.Common;
 using Miki.Accounts;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using Miki.Framework;
+using Miki.Discord.Common;
 
 namespace Miki.Modules.Accounts.Services
 {
@@ -26,9 +26,9 @@ namespace Miki.Modules.Accounts.Services
             m.MessageRecieved -= Service_MessageReceived;
         }
 
-        public async Task Service_MessageReceived(SocketMessage m)
+        public async Task Service_MessageReceived(IDiscordMessage m)
         {
-            if (await IsEnabled(m.Channel.Id))
+            if (await IsEnabled(m.GetChannelAsync().Result.Id))
             {
                 await AccountManager.Instance.CheckAsync(m);
             }

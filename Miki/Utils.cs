@@ -1,5 +1,4 @@
-﻿using Discord;
-using Miki.Common;
+﻿using Miki.Common;
 using Miki;
 using Miki.Accounts;
 using Miki.API.Leaderboards;
@@ -20,6 +19,9 @@ using Miki.Framework.Languages;
 using Amazon.S3.Model;
 using Miki.Exceptions;
 using Amazon.S3;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
 
 namespace Miki
 {
@@ -150,11 +152,9 @@ namespace Miki
 
 		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
 			=> new EmbedBuilder()
-			{
-				Title = $"🚫 {e.GetResource(LocaleTags.ErrorMessageGeneric)}",
-				Description = message,
-				Color = new Color(255, 0, 0),
-			};
+				.SetTitle($"🚫 {e.GetResource(LocaleTags.ErrorMessageGeneric)}")
+				.SetDescription(message)
+				.SetColor(1.0f, 0.0f, 0.0f);
 
 		public static string GetResource(this EventContext e, string resource, params object[] args)
 			=> Locale.GetString(e.Channel.Id, resource, args);
@@ -166,17 +166,17 @@ namespace Miki
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static Embed SuccessEmbed(ulong id, string message)
+        public static DiscordEmbed SuccessEmbed(ulong id, string message)
         {
             return new EmbedBuilder()
             {
                 Title = "✅ " + Locale.GetString(id, LocaleTags.SuccessMessageGeneric),
 				Description = message,
                 Color = new Color(119, 178, 85)
-            }.Build();
+            }.ToEmbed();
         }
 
-		public static string RemoveMentions(this ArgObject arg, IGuild guild)
+		public static string RemoveMentions(this ArgObject arg, IDiscordGuild guild)
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
 			{
@@ -216,7 +216,7 @@ namespace Miki
 			return new string(chars);
 		}
 
-		public static async Task SyncAvatarAsync(IUser user)
+		public static async Task SyncAvatarAsync(IDiscordUser user)
 		{
 			PutObjectRequest request = new PutObjectRequest();
 			request.BucketName = "miki-cdn";
@@ -224,10 +224,10 @@ namespace Miki
 			request.ContentType = "image/png";
 			request.CannedACL = new S3CannedACL("public-read");
 
-			using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
-			{
-				request.InputStream = await client.GetStreamAsync("");
-			}
+			//using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
+			//{
+			//	request.InputStream = await client.GetStreamAsync("");
+			//}
 
 			var response = await Global.CdnClient.PutObjectAsync(request);
 

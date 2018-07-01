@@ -1,5 +1,5 @@
-﻿using Discord;
-using Miki.Common;
+﻿using Miki.Common;
+using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Models;
 
@@ -7,8 +7,8 @@ namespace Miki.Accounts.Achievements.Objects
 {
     public class BasePacket
     {
-        public IUser discordUser;
-        public IMessageChannel discordChannel;
+        public IDiscordUser discordUser;
+        public IDiscordChannel discordChannel;
     }
 
     public class AchievementPacket : BasePacket
@@ -19,12 +19,12 @@ namespace Miki.Accounts.Achievements.Objects
 
     public class MessageEventPacket : BasePacket
     {
-        public IMessage message;
+        public IDiscordMessage message;
     }
 
     public class UserUpdatePacket : BasePacket
     {
-        public IUser userNew;
+        public IDiscordUser userNew;
     }
 
     public class TransactionPacket : BasePacket
@@ -36,7 +36,7 @@ namespace Miki.Accounts.Achievements.Objects
 
     public class CommandPacket : BasePacket
     {
-        public IMessage message;
+        public IDiscordMessage message;
         public CommandEvent command;
         public bool success;
     }

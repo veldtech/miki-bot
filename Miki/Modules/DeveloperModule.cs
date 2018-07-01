@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
-using Miki.Framework;
+﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
@@ -14,6 +12,9 @@ using Miki.Framework.Extension;
 using Miki.API.EmbedMenus;
 using System.Text.RegularExpressions;
 using Miki.Framework.Events.Filters;
+using Miki.Discord.Rest.Entities;
+using Miki.Discord.Common;
+using Miki.Discord;
 
 namespace Miki.Modules
 {
@@ -23,15 +24,15 @@ namespace Miki.Modules
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdentifyEmojiAsync(EventContext e)
 		{
-			Emote emote = Emote.Parse(e.Arguments.ToString());
+		//	Emote emote = Emote.Parse(e.Arguments.ToString());
 
-			Utils.Embed.WithTitle("Emoji Identified!")
-				.AddInlineField("Name", emote.Name)
-				.AddInlineField("Id", emote.Id.ToString())
-				.AddInlineField("Created At", emote.CreatedAt.ToString())
-				.AddInlineField("Code", "`" + emote.ToString() + "`")
-				.WithThumbnailUrl(emote.Url)
-				.Build().QueueToChannel(e.Channel);
+			Utils.Embed.SetTitle("Emoji Identified!")
+				//.AddInlineField("Name", emote.Name)
+				//.AddInlineField("Id", emote.Id.ToString())
+				//.AddInlineField("Created At", emote.CreatedAt.ToString())
+				//.AddInlineField("Code", "`" + emote.ToString() + "`")
+				//.SetThumbnail(emote.Url)
+				.ToEmbed().QueueToChannel(e.Channel);
 
 			await Task.Yield();
 		}
@@ -48,23 +49,23 @@ namespace Miki.Modules
 			EmbedBuilder b = Utils.Embed;
 			string text = e.Arguments.ToString();
 
-			if (e.message.Attachments.Count == 0)
-			{
-				Match m = Regex.Match(e.message.Content, "(http(s)?://)(i.)?(imgur.com)/([A-Za-z0-9]+)(.png|.gif(v)?)");
-				if(m.Success)
-				{
-					text = text.Replace(m.Value, "");
-					b.WithImageUrl(m.Value);
-				}
-			}
-			else
-			{
-				b.WithImageUrl(e.message.Attachments.First().Url);
-			}
+			//if (e.message.Attachments.Count == 0)
+			//{
+			//	Match m = Regex.Match(e.message.Content, "(http(s)?://)(i.)?(imgur.com)/([A-Za-z0-9]+)(.png|.gif(v)?)");
+			//	if(m.Success)
+			//	{
+			//		text = text.Replace(m.Value, "");
+			//		b.SetImage(m.Value);
+			//	}
+			//}
+			//else
+			//{
+			//	b.SetImage(e.message.Attachments.First().Url);
+			//}
 
-			b.WithDescription(text);
+			b.SetDescription(text);
 
-			b.Build().QueueToChannel(e.Channel);
+			b.ToEmbed().QueueToChannel(e.Channel);
 
 			await Task.Yield();
 		}
@@ -87,10 +88,10 @@ namespace Miki.Modules
 			if (type == ActivityType.Streaming)
 				url = "https://twitch.tv/velddev";
 
-			foreach (var x in Bot.Instance.Client.Shards)
-			{
-				await x.SetGameAsync(text, url, type);
-			}
+			//foreach (var x in Bot.Instance.Client.Shards)
+			//{
+			//	await x.SetGameAsync(text, url, type);
+			//}
 		}
 
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -109,41 +110,41 @@ namespace Miki.Modules
 			e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
 		}
 
-		[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task ChangeAvatarAsync(EventContext e)
-		{
-			using (Stream s = new FileStream("./" + e.Arguments.ToString(), FileMode.Open))
-			{
-				await Bot.Instance.Client.GetShardFor(e.Guild).CurrentUser.ModifyAsync(z =>
-				{
-					z.Avatar = new Image(s);
-				});
-			}
-		}
+		//[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		//public async Task ChangeAvatarAsync(EventContext e)
+		//{
+		//	using (Stream s = new FileStream("./" + e.Arguments.ToString(), FileMode.Open))
+		//	{
+		//		await Bot.Instance.Client.GetShardFor(e.Guild).CurrentUser.ModifyAsync(z =>
+		//		{
+		//			z.Avatar = new Image(s);
+		//		});
+		//	}
+		//}
 
-		[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
-		public async Task DumpShards(EventContext e)
-		{
-			EmbedBuilder embed = Utils.Embed;
-			embed.Title = "Shards";
+		//[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
+		//public async Task DumpShards(EventContext e)
+		//{
+		//	EmbedBuilder embed = Utils.Embed;
+		//	embed.Title = "Shards";
 
-			for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
-			{
-				string title = $"{i * 20} - {(i + 1) * 20}";
-				string content = "";
-				for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
-				{
-					DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
+		//	for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
+		//	{
+		//		string title = $"{i * 20} - {(i + 1) * 20}";
+		//		string content = "";
+		//		for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
+		//		{
+		//			DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
 
-					content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
-				}
-				embed.AddInlineField(title, content);
-			}
+		//			content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
+		//		}
+		//		embed.AddInlineField(title, content);
+		//	}
 
-			embed.Build().QueueToChannel(e.Channel);
+		//	embed.Build().QueueToChannel(e.Channel);
 
-			await Task.Yield();
-		}
+		//	await Task.Yield();
+		//}
 
 		[Command(Name = "menutest", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task MenuTestAsync(EventContext context)
@@ -205,7 +206,7 @@ namespace Miki.Modules
 					break;
 			}
 
-			embed.Build().QueueToChannel(context.Channel);
+			embed.ToEmbed().QueueToChannel(context.Channel);
 
 			await Task.Yield();
 		}
@@ -242,7 +243,7 @@ namespace Miki.Modules
 		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
-			IUser user = await arg.GetUserAsync(e.Guild);
+			IDiscordUser user = await arg.GetUserAsync(e.Guild);
 
 			arg = arg.Next();
 
@@ -264,7 +265,7 @@ namespace Miki.Modules
 		[Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task FindUserById(EventContext e)
 		{
-			IUser u = Bot.Instance.Client.GetUser(ulong.Parse(e.Arguments.ToString()));
+			IDiscordUser u = null;// Bot.Instance.Client.GetUser(ulong.Parse(e.Arguments.ToString()));
 
 			e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
 		}
@@ -289,7 +290,7 @@ namespace Miki.Modules
 		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
-			IUser user = await arg.GetUserAsync(e.Guild);
+			IDiscordUser user = await arg.GetUserAsync(e.Guild);
 
 			arg = arg.Next();
 
