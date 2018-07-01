@@ -103,6 +103,8 @@ namespace Miki
 				ErrorEmbedBuilder = new EmbedBuilder().SetTitle($"🚫 Something went wrong!").SetColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
+			eventSystem.MessageFilter.AddFilter(new UserFilter());
+
 			bot.Attach(eventSystem);
 			ConfigurationManager mg = new ConfigurationManager();
 
