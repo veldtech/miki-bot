@@ -33,7 +33,6 @@ namespace Miki
 
 		public async Task Start()
 		{
-
 			timeSinceStartup = DateTime.Now;
 
 			Log.OnLog += (msg, e) => Console.WriteLine(msg);
@@ -100,7 +99,9 @@ namespace Miki
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
-				ErrorEmbedBuilder = new EmbedBuilder().SetTitle($"🚫 Something went wrong!").SetColor(new Color(1.0f, 0.0f, 0.0f))
+				ErrorEmbedBuilder = new EmbedBuilder()
+					.SetTitle($"🚫 Something went wrong!")
+					.SetColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
 			eventSystem.MessageFilter.AddFilter(new UserFilter());

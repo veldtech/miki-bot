@@ -410,10 +410,11 @@ namespace Miki.Modules
 
 				DiscordEmbed embed = new EmbedBuilder()
 					.SetTitle("Pong")
-					.SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), ping / 1000))
+					.SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
 					.AddInlineField("Miki", ping + "ms").ToEmbed();
 				
 				await message.EditAsync(new EditMessageArgs{
+					content = "",
 					embed = embed
 				});
 			}
