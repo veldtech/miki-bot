@@ -90,18 +90,23 @@ namespace Miki.Accounts
 			   embed.ToEmbed().QueueToChannel(e);
 		   };
 
-		//	bot.Client.GuildUpdated += Client_GuildUpdated;
-		//	bot.Client.JoinedGuild   += Client_UserJoined;
-		//	bot.Client.LeftGuild  += Client_UserLeft;
+			//	bot.Client.GuildUpdated += Client_GuildUpdated;
+			//	bot.Client.JoinedGuild   += Client_UserJoined;\
+			//	bot.Client.LeftGuild  += Client_UserLeft;
+			bot.Client.MessageCreate += CheckAsync;
 		}
 
 		public async Task CheckAsync(IDiscordMessage e)
 		{
 			if (e.Author.IsBot)
+			{
 				return;
+			}
 
 			if (isSyncing)
+			{
 				return;
+			}
 
 			try
 			{
@@ -116,7 +121,7 @@ namespace Miki.Accounts
 						{
 							LocalExperience user = await LocalExperience.GetAsync(
 								context, 
-								(await e.GetChannelAsync() as IDiscordGuildChannel).GuildId.ToDbLong(), 
+								(long)(await e.GetChannelAsync() as IDiscordGuildChannel).GuildId, 
 								e.Author
 							);
 
@@ -222,6 +227,7 @@ namespace Miki.Accounts
 				await context.SaveChangesAsync();
 			}
 		}
+
 		public async Task UpdateLocalDatabase()
 		{
 			if (experienceQueue.Count == 0)
@@ -245,6 +251,7 @@ namespace Miki.Accounts
 				await context.SaveChangesAsync();
 			}
 		}
+
 		public async Task UpdateGuildDatabase()
 		{
 			if (experienceQueue.Count == 0)
@@ -270,7 +277,6 @@ namespace Miki.Accounts
 		}
 
 		#region Events
-
 		public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
         {
             await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
@@ -319,7 +325,6 @@ namespace Miki.Accounts
                 await context.SaveChangesAsync();
             }
         }
-
         #endregion Events
     }
 

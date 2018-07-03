@@ -82,7 +82,7 @@ namespace Miki.Accounts.Achievements
 				}
 			};
 
-			bot.GetAttachedObject<EventSystem>().OnCommandDone += async (ex, e, m, t) =>
+			bot.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
 			{
 				CommandPacket p = new CommandPacket()
 				{
@@ -90,7 +90,7 @@ namespace Miki.Accounts.Achievements
 					discordChannel = await m.GetChannelAsync(),
 					message = m,
 					command = e,
-					success = ex == null
+					success = true
 				};
 				await OnCommandUsed?.Invoke(p);
 			};

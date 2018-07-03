@@ -34,7 +34,7 @@ namespace Miki
 		public async Task Start()
 		{
 			timeSinceStartup = DateTime.Now;
-
+			 
 			Log.OnLog += (msg, e) => Console.WriteLine(msg);
 
 			LogColor color = new LogColor();
@@ -114,10 +114,9 @@ namespace Miki
 			{
 				mg.RegisterType(module.GetReflectedInstance());
 			};
-			commandMap.RegisterAttributeCommands();
-			commandMap.Install(eventSystem, bot);
 
 			var handler = new SimpleCommandHandler(commandMap);
+
 			handler.AddPrefix(">", true);
 			handler.AddPrefix("miki.");
 
@@ -127,6 +126,9 @@ namespace Miki
 			eventSystem.AddCommandHandler(sessionHandler);
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
+
+			commandMap.RegisterAttributeCommands();
+			commandMap.Install(eventSystem, bot);
 
 			//foreach(var x in mg.Containers)
 			//{
@@ -155,7 +157,12 @@ namespace Miki
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }
 
-			bot.Client.MessageCreate += Bot_MessageReceived;
+			handler.OnMessageProcessed += async (cmd, msg, time) =>
+			{
+				Log.Message($"{cmd.Name} processed in {time}ms");
+			};
+
+			bot.Client.MessageCreate += Bot_MessageReceived;;
 
 			bot.Client.GuildJoin += Client_JoinedGuild;
 			bot.Client.GuildLeave += Client_LeftGuild;

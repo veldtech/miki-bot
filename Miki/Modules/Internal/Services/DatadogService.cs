@@ -38,31 +38,30 @@ namespace Miki.Modules.Internal.Services
 
 			if(eventSystem != null)
 			{
-				eventSystem.OnCommandDone += (exception, command, message, time) =>
+				var defaultHandler = eventSystem.GetCommandHandler<SimpleCommandHandler>();
+
+				if (defaultHandler != null)
 				{
-					if (exception != null)
+					defaultHandler.OnMessageProcessed += (command, message, time) =>
 					{
-						DogStatsd.Counter("commands.error.rate", 1);
-					}
+						if (command.Module == null)
+						{
+							return Task.CompletedTask;
+						}
 
-					if (command.Module == null)
-					{
+						DogStatsd.Histogram("commands.time", time, 0.1, new[] {
+						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+						$"commandname:{command.Name.ToLowerInvariant()}"
+						});
+
+						DogStatsd.Counter("commands.count", 1, 1, new[] {
+						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+						$"commandname:{command.Name.ToLowerInvariant()}"
+						});
+
 						return Task.CompletedTask;
-					}
-
-					DogStatsd.Histogram("commands.time", time, 0.1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
-					});
-
-					DogStatsd.Counter("commands.count", 1, 1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
-					});
-
-					return Task.CompletedTask;
-				};
-
+					};
+				}
 			}
 
 			Log.Message("Datadog set up!");
