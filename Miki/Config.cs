@@ -47,6 +47,12 @@ namespace Miki
 		public string DatadogHost { get; set; } = "127.0.0.1";
 
 		/// <summary>
+		/// Datadog Agent api key
+		/// </summary>
+		[JsonProperty("datadog_key")]
+		public string DatadogKey { get; set; } = "";
+
+		/// <summary>
 		/// Database connection string
 		/// </summary>
 		[JsonProperty("connection_string")]

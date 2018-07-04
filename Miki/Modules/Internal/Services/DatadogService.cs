@@ -17,12 +17,6 @@ namespace Miki.Modules.Internal.Services
 
 		public override void Install(Module m, Bot b)
 		{
-			if (string.IsNullOrWhiteSpace(DatadogKey))
-			{
-				Log.Warning("Datadog not initialized due to missing config");
-				return;
-			}
-
 			var dogstatsdConfig = new StatsdConfig
 			{
 				StatsdServerName = Global.Config.DatadogHost,
@@ -35,6 +29,15 @@ namespace Miki.Modules.Internal.Services
 			base.Install(m, b);
 
 			var eventSystem = b.GetAttachedObject<EventSystem>();
+			var restClient = b.Client._apiClient;
+
+			restClient.RestClient.OnRequestComplete += (method, uri) =>
+			{
+				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
+				{
+					$"http_method:{method}", $"http_uri:{uri}"
+				});
+			};
 
 			if(eventSystem != null)
 			{
