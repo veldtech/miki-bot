@@ -110,64 +110,67 @@ namespace Miki.Accounts
 
 			try
 			{
-				string key = GetContextKey((await e.GetChannelAsync() as IDiscordGuildChannel).GuildId, e.Author.Id);
-
-				if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+				if (await e.GetChannelAsync() is IDiscordGuildChannel channel)
 				{
-					int currentExp = 0;
-					if (!await Global.RedisClient.ExistsAsync(key))
-					{
-						using (var context = new MikiContext())
-						{
-							LocalExperience user = await LocalExperience.GetAsync(
-								context, 
-								(long)(await e.GetChannelAsync() as IDiscordGuildChannel).GuildId, 
-								e.Author
-							);
+					string key = GetContextKey(channel.GuildId, e.Author.Id);
 
-							await Global.RedisClient.AddAsync(key, user.Experience);
-							currentExp = user.Experience;
+					if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+					{
+						int currentExp = 0;
+						if (!await Global.RedisClient.ExistsAsync(key))
+						{
+							using (var context = new MikiContext())
+							{
+								LocalExperience user = await LocalExperience.GetAsync(
+									context,
+									(long)channel.GuildId,
+									e.Author
+								);
+
+								await Global.RedisClient.AddAsync(key, user.Experience);
+								currentExp = user.Experience;
+							}
 						}
-					}
-					else
-					{
-						currentExp = await Global.RedisClient.GetAsync<int>(key);
-					}
-
-					var bonusExp = MikiRandom.Next(1, 4);
-					currentExp += bonusExp;
-
-					if (!experienceQueue.ContainsKey(e.Author.Id))
-					{
-						var expObject = new ExperienceAdded()
+						else
 						{
-							UserId = e.Author.Id.ToDbLong(),
-							GuildId = (await e.GetChannelAsync() as IDiscordGuildChannel).GuildId.ToDbLong(),
-							Experience = bonusExp,
-							Name = e.Author.Username,
-						};
+							currentExp = await Global.RedisClient.GetAsync<int>(key);
+						}
 
-						experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+						var bonusExp = MikiRandom.Next(1, 4);
+						currentExp += bonusExp;
+
+						if (!experienceQueue.ContainsKey(e.Author.Id))
 						{
-							eo.Experience += expObject.Experience;
-							return eo;
-						});
+							var expObject = new ExperienceAdded()
+							{
+								UserId = e.Author.Id.ToDbLong(),
+								GuildId = channel.GuildId.ToDbLong(),
+								Experience = bonusExp,
+								Name = e.Author.Username,
+							};
+
+							experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+							{
+								eo.Experience += expObject.Experience;
+								return eo;
+							});
+						}
+						else
+						{
+							experienceQueue[e.Author.Id].Experience += bonusExp;
+						}
+
+						int level = User.CalculateLevel(currentExp);
+
+						if (User.CalculateLevel(currentExp - bonusExp) != level)
+						{
+							await LevelUpLocalAsync(e, level);
+						}
+
+						lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
+
+						await Global.RedisClient.AddAsync(key, currentExp);
 					}
-					else
-					{
-						experienceQueue[e.Author.Id].Experience += bonusExp;
-					}
-
-					int level = User.CalculateLevel(currentExp);
-
-					if (User.CalculateLevel(currentExp - bonusExp) != level)
-					{
-						await LevelUpLocalAsync(e, level);
-					}
-
-					lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
-
-					await Global.RedisClient.AddAsync(key, currentExp);
 				}
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))

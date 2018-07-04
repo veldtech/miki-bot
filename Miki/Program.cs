@@ -25,7 +25,8 @@ namespace Miki
     {
         private static void Main(string[] args)
         {
-			new Program().Start().GetAwaiter().GetResult();
+			new Program().Start()
+				.GetAwaiter().GetResult();
 		}
 
 		public static Bot bot;
@@ -192,7 +193,11 @@ namespace Miki
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
 			IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
+
+			if (defaultChannel != null)
+			{
+				defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
+			}
 
 			List<string> allArgs = new List<string>();
 			List<object> allParams = new List<object>();

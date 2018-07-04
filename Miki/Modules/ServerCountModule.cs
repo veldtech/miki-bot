@@ -14,13 +14,13 @@ namespace Miki.Modules
 		[Configurable]
 		private string ConnectionString { get; set; } = "default";
 
-		private CountLib countLib;
+		private CountLib _countLib;
 
 		public ServerCountModule(Module m, Bot b)
 		{
 			m.JoinedGuild = OnUpdateGuilds;
 			m.LeftGuild = OnUpdateGuilds;
-			countLib = new CountLib();
+		//	countLib = new CountLib(ConnectionString);
 		}
 
 		private async Task OnUpdateGuilds(IDiscordGuild g)
