@@ -203,33 +203,33 @@ namespace Miki
 			List<object> allParams = new List<object>();
 			List<object> allExpParams = new List<object>();
 
-			try
-			{
-				var users = await arg.GetUsersAsync();
-				for (int i = 0; i < users.Count; i++)
-				{
-					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+			//try
+			//{
+			//	var users = await arg.GetUsersAsync();
+			//	for (int i = 0; i < users.Count; i++)
+			//	{
+			//		allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-					allParams.Add(users.ElementAt(i).Id.ToDbLong());
-					allParams.Add(users.ElementAt(i).Username);
+			//		allParams.Add(users.ElementAt(i).Id.ToDbLong());
+			//		allParams.Add(users.ElementAt(i).Username);
 
-					allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
-					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
-				}
+			//		allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
+			//		allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
+			//	}
 
-				using (var context = new MikiContext())
-				{
-					await context.Database.ExecuteSqlCommandAsync(
-						$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
-					await context.Database.ExecuteSqlCommandAsync(
-						$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
-					await context.SaveChangesAsync();
-				}
-			}
-			catch(Exception e)
-			{
-				Log.Error(e.ToString());
-			}
+			//	using (var context = new MikiContext())
+			//	{
+			//		await context.Database.ExecuteSqlCommandAsync(
+			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+			//		await context.Database.ExecuteSqlCommandAsync(
+			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+			//		await context.SaveChangesAsync();
+			//	}
+			//}
+			//catch(Exception e)
+			//{
+			//	Log.Error(e.ToString());
+			//}
 
 			DogStatsd.Increment("guilds.joined");
 		//	DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
