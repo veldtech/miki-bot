@@ -637,35 +637,35 @@ namespace Miki.Modules.AccountsModule
 						if (u == null)
 							break;
 
-						arg = arg?.Next();
+							arg = arg?.Next();
 
-						if ((arg?.AsInt() ?? -1) != -1)
-						{
-							amount = arg.AsInt().Value;
-							arg = arg.Next();
-						}
-						else if (Utils.IsAll(arg))
-						{
-							amount = repObject.ReputationPointsLeft;
-							arg = arg.Next();
-						}
+							if ((arg?.AsInt() ?? -1) != -1)
+							{
+								amount = arg.AsInt().Value;
+								arg = arg.Next();
+							}
+							else if (Utils.IsAll(arg))
+							{
+								amount = repObject.ReputationPointsLeft;
+								arg = arg.Next();
+							}
 
-						if (u.Id == e.Author.Id)
-						{
-							mentionedSelf = true;
-							continue;
-						}
+							if (u.Id == e.Author.Id)
+							{
+								mentionedSelf = true;
+								continue;
+							}
 
-						totalAmountGiven += amount;
+							totalAmountGiven += amount;
 
-						if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
-						{
-							usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
-						}
-						else
-						{
-							usersMentioned.Add(u, amount);
-						}
+							if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+							{
+								usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
+							}
+							else
+							{
+								usersMentioned.Add(u, amount);
+							}
 					}
 
 					if (mentionedSelf)
