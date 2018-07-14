@@ -186,13 +186,6 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
-			new EmbedBuilder().SetTitle("Oh no...")
-				.SetDescription("This command has been disabled until later notice :(")
-				.SetColor(1f, 0f, 0f)
-				.ToEmbed()
-				.QueueToChannel(e.Channel);
-			return;
-
 			await ValidateBet(e, StartBlackjack);
 		}
 

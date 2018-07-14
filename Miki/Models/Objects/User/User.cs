@@ -139,7 +139,7 @@ namespace Miki.Models
 
         public static int CalculateLevel(int exp)
         {
-			return (int)Math.Sqrt(exp / 10);
+			return (int)Math.Sqrt(exp / 10) + 1;
 		}
 		public static int CalculateLevelExperience(int level)
 		{
