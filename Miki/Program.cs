@@ -35,9 +35,14 @@ namespace Miki
 		public async Task Start()
 		{
 			timeSinceStartup = DateTime.Now;
-			 
-			Log.OnLog += (msg, e) => Console.WriteLine(msg);
 
+			Log.OnLog += (msg, e) =>
+			{
+				if (e > LogLevel.Information)
+				{
+					Console.WriteLine(msg);
+				}
+			};
 			LogColor color = new LogColor();
 			color.Foreground = ConsoleColor.Red;
 			Log.Theme.SetColor(Logging.LogLevel.Error, color);
