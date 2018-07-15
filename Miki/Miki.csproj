@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Messaging\Miki.Discord.Messaging.csproj" />
+    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
   </ItemGroup>

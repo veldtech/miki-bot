@@ -29,7 +29,6 @@ namespace Miki
 				.GetAwaiter().GetResult();
 		}
 
-		public static Bot bot;
 		public static DateTime timeSinceStartup;
 
 		public async Task Start()
@@ -38,14 +37,14 @@ namespace Miki
 
 			Log.OnLog += (msg, e) =>
 			{
-				if (e > LogLevel.Information)
+				if (e >= LogLevel.Information)
 				{
 					Console.WriteLine(msg);
 				}
 			};
-			LogColor color = new LogColor();
-			color.Foreground = ConsoleColor.Red;
-			Log.Theme.SetColor(Logging.LogLevel.Error, color);
+
+			Log.Theme.SetColor(LogLevel.Error, new LogColor { Foreground = ConsoleColor.Red });
+			Log.Theme.SetColor(LogLevel.Warning, new LogColor { Foreground = ConsoleColor.Yellow });
 
 			LoadLocales();
 
@@ -59,7 +58,7 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					bot.GetAttachedObject<EventSystem>().MessageFilter
+					Global.Client.GetAttachedObject<EventSystem>().MessageFilter
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
 			}
@@ -93,7 +92,7 @@ namespace Miki
 
 		public async Task LoadDiscord()
         {
-			bot = new Bot(Global.Config.AmountShards, new ClientInformation()
+			Global.Client = new Bot(Global.Config.AmountShards, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.6.2",
@@ -112,7 +111,7 @@ namespace Miki
 
 			eventSystem.MessageFilter.AddFilter(new UserFilter());
 
-			bot.Attach(eventSystem);
+			Global.Client.Attach(eventSystem);
 			ConfigurationManager mg = new ConfigurationManager();
 
 			var commandMap = new CommandMap();
@@ -134,29 +133,7 @@ namespace Miki
 			eventSystem.AddCommandHandler(handler);
 
 			commandMap.RegisterAttributeCommands();
-			commandMap.Install(eventSystem, bot);
-
-			//foreach(var x in mg.Containers)
-			//{
-			//	Console.WriteLine(x.Type.Name);
-			//	foreach(var y in x.ConfigurableItems)
-			//	{
-			//		Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
-			//	}
-			//}
-
-			//Console.WriteLine("---- loading config.json ----\nVALUES CHANGED TO:");
-
-			////await mg.ImportAsync(new JsonSerializationProvider(), "./testexport.json");
-
-			//foreach (var x in mg.Containers)
-			//{
-			//	Console.WriteLine(x.Type.Name);
-			//	foreach (var y in x.ConfigurableItems)
-			//	{
-			//		Console.WriteLine($"=> {y.Type.Name} : {y.Type.PropertyType} = {y.GetValue<object>().ToString()}");
-			//	}
-			//}
+			commandMap.Install(eventSystem, Global.Client);
 
 			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
@@ -165,14 +142,15 @@ namespace Miki
 
 			handler.OnMessageProcessed += async (cmd, msg, time) =>
 			{
+				await Task.Yield();
 				Log.Message($"{cmd.Name} processed in {time}ms");
 			};
 
-			bot.Client.MessageCreate += Bot_MessageReceived;;
+			Global.Client.Client.MessageCreate += Bot_MessageReceived;;
 
-			bot.Client.GuildJoin += Client_JoinedGuild;
-			bot.Client.GuildLeave += Client_LeftGuild;
-			bot.Client.UserUpdate += Client_UserUpdated;
+			Global.Client.Client.GuildJoin += Client_JoinedGuild;
+			Global.Client.Client.GuildLeave += Client_LeftGuild;
+			Global.Client.Client.UserUpdate += Client_UserUpdated;
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)

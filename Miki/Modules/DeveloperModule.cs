@@ -75,6 +75,7 @@ namespace Miki.Modules
 		public async Task IdenUserAsync(EventContext e)
 		{
 			var user = await Global.Client.Client._apiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+
 			if (user == null)
 			{
 				await e.Channel.SendMessageAsync($"none.");
@@ -87,7 +88,8 @@ namespace Miki.Modules
 		public async Task IdenGuildUserAsync(EventContext e)
 		{
 			var user = await Global.Client.Client._apiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
-			if(user == null)
+
+			if (user == null)
 			{
 				await e.Channel.SendMessageAsync($"none.");
 			}
