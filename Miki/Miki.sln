@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Messaging", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Rest", "..\..\Miki.Rest\Miki.Rest\Miki.Rest.csproj", "{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Logging", "..\..\Miki.Logging\Miki.Logging\Miki.Logging\Miki.Logging.csproj", "{F156FBA0-D1CF-477A-8E57-D91985622408}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F156FBA0-D1CF-477A-8E57-D91985622408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F156FBA0-D1CF-477A-8E57-D91985622408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F156FBA0-D1CF-477A-8E57-D91985622408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F156FBA0-D1CF-477A-8E57-D91985622408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

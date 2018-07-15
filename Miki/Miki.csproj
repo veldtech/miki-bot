@@ -16,6 +16,7 @@
     <PackageReference Include="Miki.Anilist" Version="0.5.1" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
+    <PackageReference Include="Miki.Logging" Version="1.1.2" />
     <PackageReference Include="Miki.Patreon" Version="0.1.0" />
     <PackageReference Include="Miki.Rest" Version="1.5.1" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
