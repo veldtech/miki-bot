@@ -113,7 +113,7 @@ namespace Miki.Modules
 
 					await context.SaveChangesAsync();
 
-					cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSession(cont.Author.Id, cont.Channel.Id);
+					await cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(cont.Author.Id, cont.Channel.Id);
 				}
 				else
 				{
@@ -122,7 +122,7 @@ namespace Miki.Modules
 						Color = new Color(1, 0.4f, 0.6f),
 						Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
 					}.ToEmbed().QueueToChannel(cont.Channel);
-					cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSession(cont.Author.Id, cont.Channel.Id);
+					await cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(cont.Author.Id, cont.Channel.Id);
 				}
 			}
         }
@@ -353,7 +353,7 @@ namespace Miki.Modules
 				commandHandler.AddCommand(new CommandEvent("yes")
 					.Default(async (cx) => await ConfirmBuyMarriageSlot(cx, costForUpgrade)));
 
-				e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSession(e.CreateSession(), commandHandler, new TimeSpan(0, 0, 20));
+				await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSessionAsync(e.CreateSession(), commandHandler, new TimeSpan(0, 0, 20));
 
 				embed.ToEmbed().QueueToChannel(e.Channel);
 			}

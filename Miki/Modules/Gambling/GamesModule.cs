@@ -213,7 +213,7 @@ namespace Miki.Modules
 				.SetAliases("knock", "stay", "stop")
 				.Default(async (ec) => await OnBlackjackHold(ec, bm, message, bet)));
 
-			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSession(
+			await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSessionAsync(
 				new CommandSession() { UserId = e.Author.Id, ChannelId = e.Channel.Id }, c, new TimeSpan(1, 0, 0));
 		}
 
@@ -314,8 +314,8 @@ namespace Miki.Modules
 		private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
 			int bet)
 		{
-			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-				.RemoveSession(e.Author.Id, e.Channel.Id);
+			await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -346,8 +346,8 @@ namespace Miki.Modules
 		private async Task OnBlackjackDead(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage,
 			int bet)
 		{
-			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-				.RemoveSession(e.Author.Id, e.Channel.Id);
+			await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -371,8 +371,8 @@ namespace Miki.Modules
 
 		private async Task OnBlackjackWin(EventContext e, BlackjackManager bm, IDiscordMessage instanceMessage, int bet)
 		{
-			e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-				.RemoveSession(e.Author.Id, e.Channel.Id);
+			await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+				.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
 
 			User user;
 			using (var context = new MikiContext())
@@ -793,8 +793,8 @@ namespace Miki.Modules
 						SimpleCommandHandler commandHandler = new SimpleCommandHandler(map);
 						commandHandler.AddPrefix("");
 
-						e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-							.AddSession(new CommandSession { ChannelId = e.Channel.Id, UserId = e.Author.Id }, commandHandler, new TimeSpan(0,2,0));
+						await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+							.AddSessionAsync(new CommandSession { ChannelId = e.Channel.Id, UserId = e.Author.Id }, commandHandler, new TimeSpan(0,2,0));
 
 						EmbedBuilder embed = Utils.Embed;
 						embed.Description =
@@ -824,8 +824,8 @@ namespace Miki.Modules
 			using (var context = new MikiContext())
 			{
 				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-					.RemoveSession(e.Author.Id, e.Channel.Id);
+				await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
+					.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
 
 				//if ((await e.Guild.GetSelfAsync()).GetPermissions(e.Channel).ManageMessages)
 				//	await e.message.DeleteAsync();
