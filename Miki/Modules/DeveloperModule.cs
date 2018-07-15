@@ -15,6 +15,7 @@ using Miki.Framework.Events.Filters;
 using Miki.Discord.Rest.Entities;
 using Miki.Discord.Common;
 using Miki.Discord;
+using Newtonsoft.Json;
 
 namespace Miki.Modules
 {
@@ -43,7 +44,7 @@ namespace Miki.Modules
 			e.Channel.QueueMessageAsync(e.Arguments.ToString());
 		}
 
-		[Command(Name = "sayembed")]
+		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SayEmbedAsync(EventContext e)
 		{
 			EmbedBuilder b = Utils.Embed;
@@ -68,6 +69,30 @@ namespace Miki.Modules
 			b.ToEmbed().QueueToChannel(e.Channel);
 
 			await Task.Yield();
+		}
+
+		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task IdenUserAsync(EventContext e)
+		{
+			var user = await Global.Client.Client._apiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+			if (user == null)
+			{
+				await e.Channel.SendMessageAsync($"none.");
+			}
+
+			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+		}
+
+		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task IdenGuildUserAsync(EventContext e)
+		{
+			var user = await Global.Client.Client._apiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
+			if(user == null)
+			{
+				await e.Channel.SendMessageAsync($"none.");
+			}
+
+			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
