@@ -109,6 +109,9 @@ namespace Miki.Modules
 				await GlobalPasta.AddAsync(context, id, text, (long)e.Author.Id);
 				await context.SaveChangesAsync();
 			}
+
+			Utils.SuccessEmbed(e.Channel.Id, e.GetResource("miki_module_pasta_create_success", id))
+				.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "deletepasta")]
