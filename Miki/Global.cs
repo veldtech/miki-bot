@@ -1,6 +1,7 @@
 ﻿using SharpRaven;
 using System;
 using StatsdClient;
+using StackExchange.Redis.Extensions.Core;
 using Newtonsoft.Json;
 using Miki.Framework.FileHandling;
 using Miki.API;
@@ -9,7 +10,6 @@ using Amazon.S3;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Framework;
 using Miki.Discord.Caching;
-using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Protobuf;
 
 namespace Miki
