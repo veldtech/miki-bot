@@ -131,6 +131,10 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "leaderboards", Aliases = new[] { "lb", "leaderboard", "top" })]
 		public async Task LeaderboardsAsync(EventContext e)
 		{
+			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.QueueToChannel(e.Channel);
+			return;
+
 			LeaderboardsOptions options = new LeaderboardsOptions();
 
 			ArgObject argument = e.Arguments.FirstOrDefault();

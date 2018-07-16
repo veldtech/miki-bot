@@ -186,6 +186,10 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
+			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.QueueToChannel(e.Channel);
+			return;
+
 			await ValidateBet(e, StartBlackjack);
 		}
 
@@ -642,6 +646,10 @@ namespace Miki.Modules
 		[Command(Name = "lottery")]
 		public async Task LotteryAsync(EventContext e)
 		{
+			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.QueueToChannel(e.Channel);
+			return;
+
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			if (arg == null)

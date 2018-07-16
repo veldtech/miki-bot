@@ -172,6 +172,10 @@ namespace Miki.Modules
 		[Command(Name = "guildbank")]
 		public async Task GuildBankAsync(EventContext e)
 		{
+			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.QueueToChannel(e.Channel);
+			return;
+
 			using (var context = new MikiContext())
 			{
 				GuildUser user = await GuildUser.GetAsync(context, e.Guild);
