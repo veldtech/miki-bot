@@ -33,6 +33,15 @@ namespace Miki
 		public SingletonCache(ConnectionMultiplexer c)
 		{
 			connection = c;
+
+			connection.ConnectionFailed += (s, args) =>
+			{
+				if(args.Exception != null)
+				{
+					Log.Error(args.Exception);
+				}
+			};
+
 			client = new StackExchangeCacheClient(new ProtobufSerializer(), connection);
 		}
 
