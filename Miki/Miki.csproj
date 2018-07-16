@@ -14,6 +14,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Miki.Anilist" Version="0.5.1" />
+    <PackageReference Include="Miki.Cache" Version="0.1.1" />
+    <PackageReference Include="Miki.Cache.Serializer.Protobuf" Version="1.0.1" />
+    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="1.0.1" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
@@ -35,14 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache.Serializer.Protobuf\Miki.Cache.Serializer.Protobuf.csproj" />
-    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache.StackExchange.Redis\Miki.Cache.StackExchange.Redis.csproj" />
-    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache\Miki.Cache.csproj" />
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Caching\Miki.Discord.Caching.csproj" />
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Messaging\Miki.Discord.Messaging.csproj" />
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
-    <ProjectReference Include="..\..\Miki.Discord\Miki.Discord\Miki.Discord.csproj" />
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
   </ItemGroup>
