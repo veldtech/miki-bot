@@ -26,6 +26,21 @@ using System.Threading.Tasks;
 
 namespace Miki
 {
+	public class SingletonCache : ICachePool
+	{
+		ConnectionMultiplexer connection;
+
+		public SingletonCache(ConnectionMultiplexer c)
+		{
+			connection = c;
+			client = new StackExchangeCacheClient(new ProtobufSerializer(), connection);
+		}
+
+		private StackExchangeCacheClient client;
+
+		public ICacheClient Get => client;
+	}
+
 	public class Program
     {
         private static void Main(string[] args)
@@ -109,9 +124,8 @@ namespace Miki
 				options.Password = Global.Config.RedisPassword;
 			}
 
-			StackExchangeCachePool pool = new StackExchangeCachePool(
-				new ProtobufSerializer(),
-				options
+			SingletonCache pool = new SingletonCache(
+				ConnectionMultiplexer.Connect(options)
 			);
 
 			Global.Client = new Bot(Global.Config.AmountShards, pool, new ClientInformation()
