@@ -22,11 +22,11 @@ namespace Miki.Accounts
             Width = width;
         }
 
-        public async Task<string> Print(int currentValue, IDiscordGuildChannel c)
+        public async Task<string> Print(int currentValue, IDiscordGuild g, IDiscordGuildChannel c)
         {
             string output = "";
 
-            IDiscordGuildUser u = await (await c.GetGuildAsync()).GetSelfAsync();
+            IDiscordGuildUser u = await g.GetSelfAsync();
             if (!(await c.GetPermissionsAsync(u)).HasFlag(GuildPermission.UseExternalEmojis))
             {
                 return "";

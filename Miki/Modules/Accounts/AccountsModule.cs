@@ -297,7 +297,7 @@ namespace Miki.Modules.AccountsModule
 
 					string infoValue = new MessageBuilder()
 						.AppendText(e.GetResource("miki_module_accounts_information_level", localLevel, localExp.Experience, maxLocalExp))
-						.AppendText(await expBar.Print(localExp.Experience - minLocalExp, (IDiscordGuildChannel)e.Channel))
+						.AppendText(await expBar.Print(localExp.Experience - minLocalExp, e.Guild, (IDiscordGuildChannel)e.Channel))
 						.AppendText(e.GetResource("miki_module_accounts_information_rank", rank))
 						.AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
 						.Build();
@@ -315,7 +315,7 @@ namespace Miki.Modules.AccountsModule
 					string globalInfoValue = new MessageBuilder()
 						.AppendText(e.GetResource("miki_module_accounts_information_level", globalLevel, account.Total_Experience, maxGlobalExp))
 						.AppendText(
-							await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Channel as IDiscordGuildChannel)
+							await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Guild, e.Channel as IDiscordGuildChannel)
 						)
 						.AppendText(e.GetResource("miki_module_accounts_information_rank", globalRank), MessageFormatting.Plain, false)
 						.Build();
