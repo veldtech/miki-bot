@@ -292,7 +292,7 @@ namespace Miki.Modules
 				}
 				else
 				{
-					if (await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message) < ev.Accessibility)
+					if (await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message, e.Channel) < ev.Accessibility)
 					{
 						return;
 					}
@@ -334,7 +334,7 @@ namespace Miki.Modules
 			foreach (Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
 			{
 				List<CommandEvent> events = m.Events
-					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message).Result >= x.Accessibility).ToList();
+					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message, e.Channel).Result >= x.Accessibility).ToList();
 
 				if (events.Count > 0)
 				{

@@ -21,7 +21,7 @@ namespace Miki
     {
         public static RavenClient ravenClient;
 
-		private static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
+		internal static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
 		{
 			return new StackExchangeRedisCacheClient(new ProtobufSerializer(), Config.RedisConnectionString);
 		});
