@@ -269,7 +269,7 @@ namespace Miki.Modules
                     .SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png")
                     .AddInlineField(e.GetResource("miki_terms_level"), level.ToString());
 
-                string expBarString = await expBar.Print(g.Experience, e.Channel as IDiscordGuildChannel);
+                string expBarString = await expBar.Print(g.Experience, e.Guild, e.Channel as IDiscordGuildChannel);
 
                 if (string.IsNullOrWhiteSpace(expBarString))
                 { 
