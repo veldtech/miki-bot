@@ -111,6 +111,8 @@ namespace Miki
 			}
 
 			options.AbortOnConnectFail = false;
+			options.ConnectRetry = 10;
+			options.KeepAlive = 2;
 
 			StackExchangeCachePool pool = new StackExchangeCachePool(
 				new ProtobufSerializer(),
