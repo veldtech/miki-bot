@@ -1,8 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Cache;
+using Miki.Cache.Serializers.Protobuf;
+using Miki.Cache.StackExchange;
 using Miki.Common;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Discord.Internal;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
@@ -11,6 +15,7 @@ using Miki.Framework.Events.Filters;
 using Miki.Framework.Languages;
 using Miki.Logging;
 using Miki.Models;
+using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
@@ -92,14 +97,31 @@ namespace Miki
 
 		public async Task LoadDiscord()
         {
-			Global.Client = new Bot(Global.Config.AmountShards, new ClientInformation()
+			ConfigurationOptions options = new ConfigurationOptions();
+
+			foreach (string s in Global.Config.RedisEndPoints)
+			{
+				options.EndPoints.Add(s);
+			}
+
+			if(!string.IsNullOrWhiteSpace(Global.Config.RedisPassword))
+			{
+				options.Password = Global.Config.RedisPassword;
+			}
+
+			StackExchangeCachePool pool = new StackExchangeCachePool(
+				new ProtobufSerializer(),
+				options
+			);
+
+			Global.Client = new Bot(Global.Config.AmountShards, pool, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.6.2",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
-			}, Global.RedisClient, Global.Config.RabbitUrl.ToString());
+			}, Global.Config.RabbitUrl.ToString());
             
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
@@ -114,7 +136,7 @@ namespace Miki
 			Global.Client.Attach(eventSystem);
 			ConfigurationManager mg = new ConfigurationManager();
 
-			var commandMap = new CommandMap();
+			var commandMap = new Framework.Events.CommandMap();
 			commandMap.OnModuleLoaded += (module) =>
 			{
 				mg.RegisterType(module.GetReflectedInstance());
