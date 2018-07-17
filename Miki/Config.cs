@@ -104,7 +104,7 @@ namespace Miki
 		public int AmountShards { get; internal set; } = 1;
 
 		[JsonProperty("rabbit_url")]
-		public Uri RabbitUrl { get; internal set; } = new Uri("amqp://localhost");
+		public string RabbitUrl { get; internal set; }
 
 		[JsonProperty("danbooru_credentials")]
 		public string DanbooruCredentials { get; internal set; } = "";

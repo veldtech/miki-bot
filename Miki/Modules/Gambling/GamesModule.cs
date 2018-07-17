@@ -187,6 +187,7 @@ namespace Miki.Modules
 		public async Task BlackjackAsync(EventContext e)
 		{
 			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.ToEmbed()
 				.QueueToChannel(e.Channel);
 			return;
 
@@ -647,6 +648,7 @@ namespace Miki.Modules
 		public async Task LotteryAsync(EventContext e)
 		{
 			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.ToEmbed()
 				.QueueToChannel(e.Channel);
 			return;
 

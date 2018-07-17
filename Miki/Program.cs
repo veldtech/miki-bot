@@ -14,6 +14,7 @@ using Miki.Models;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
@@ -100,7 +101,28 @@ namespace Miki
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
 			}, Global.RedisClient, Global.Config.RabbitUrl.ToString());
-            
+
+			Task.Run(async () =>
+			{
+				while(true)
+				{
+					var result = await Global.RedisClient.Database.PingAsync();
+
+					if(result == null)
+					{
+						Process.GetCurrentProcess().Kill();
+					}
+
+					if (result.TotalMilliseconds > 2500)
+					{
+						Process.GetCurrentProcess().Kill();
+					}
+
+					Log.Message("Redis heartbeat successful!, delay: " + result.TotalMilliseconds + "ms");
+					await Task.Delay(6000);
+				}
+			});
+
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,

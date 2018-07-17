@@ -132,6 +132,7 @@ namespace Miki.Modules.AccountsModule
 		public async Task LeaderboardsAsync(EventContext e)
 		{
 			Utils.ErrorEmbed(e, "This command has been temporarily disabled.")
+				.ToEmbed()
 				.QueueToChannel(e.Channel);
 			return;
 
