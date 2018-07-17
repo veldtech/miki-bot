@@ -93,33 +93,35 @@ namespace Miki
 
 		public async Task LoadDiscord()
         {
-			Global.Client = new Bot(Global.Config.AmountShards, new ClientInformation()
+			Global.Client = new Bot(Global.Config.AmountShards, Global.RedisClient, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.6.2",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
-			}, Global.RedisClient, Global.Config.RabbitUrl.ToString());
+			}, Global.Config.RabbitUrl.ToString());
 
 			Task.Run(async () =>
 			{
 				while(true)
 				{
-					var result = await Global.RedisClient.Database.PingAsync();
+					try
+					{
+						var result = await Global.RedisClient.Database.PingAsync();
 
-					if(result == null)
+						if (result == null)
+						{
+							Process.GetCurrentProcess().Kill();
+						}
+
+						Log.Message("Redis heartbeat successful!, delay: " + result.TotalMilliseconds + "ms");
+						await Task.Delay(6000);
+					}
+					catch(Exception e)
 					{
 						Process.GetCurrentProcess().Kill();
 					}
-
-					if (result.TotalMilliseconds > 2500)
-					{
-						Process.GetCurrentProcess().Kill();
-					}
-
-					Log.Message("Redis heartbeat successful!, delay: " + result.TotalMilliseconds + "ms");
-					await Task.Delay(6000);
 				}
 			});
 

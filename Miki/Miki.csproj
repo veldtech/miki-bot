@@ -15,9 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Miki.Anilist" Version="0.5.1" />
-    <PackageReference Include="Miki.Cache" Version="0.1.1" />
-    <PackageReference Include="Miki.Cache.Serializer.Protobuf" Version="1.0.1" />
-    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="1.0.1" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
