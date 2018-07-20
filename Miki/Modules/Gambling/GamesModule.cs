@@ -17,7 +17,6 @@ using Miki.Modules.Gambling.Managers;
 using Miki.Framework.Extension;
 using Miki.API;
 using System.Collections.Concurrent;
-using StackExchange.Redis;
 using Miki.Accounts.Achievements;
 using Miki.Framework.Languages;
 using Miki.Accounts.Achievements.Objects;
@@ -25,6 +24,8 @@ using Miki.Framework.Events.Commands;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Cache.StackExchange;
+using StackExchange.Redis;
 
 namespace Miki.Modules
 {
@@ -43,12 +44,12 @@ namespace Miki.Modules
 			{
 				lotteryId = taskScheduler.AddTask(0, (s) =>
 				{
-					long size = Global.RedisClient.Database.ListLength(lotteryKey);
+					long size = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLength(lotteryKey);
 
 					if (size == 0)
 						return;
 
-					string value = Global.RedisClient.Database.ListGetByIndex(lotteryKey, MikiRandom.Next(size));
+					string value = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListGetByIndex(lotteryKey, MikiRandom.Next(size));
 
 					ulong winnerId = ulong.Parse(value);
 					int wonAmount = (int)Math.Round(size * 100 * 0.75);
@@ -80,8 +81,8 @@ namespace Miki.Modules
 
 							context.SaveChanges();
 
-							Global.RedisClient.Database.KeyDelete(lotteryKey);
-							Global.RedisClient.Database.StringSet("lottery:winner", profileUser.Name ?? "unknown");
+							Global.RedisClient.RemoveAsync(lotteryKey);
+							Global.RedisClient.UpsertAsync("lottery:winner", profileUser.Name ?? "unknown");
 							lotteryDict.ClearAsync();
 
 							var lotteryAchievement = AchievementManager.Instance.GetContainerById("lottery");
@@ -646,10 +647,10 @@ namespace Miki.Modules
 
 			if (arg == null)
 			{
-				long totalTickets = await Global.RedisClient.Database.ListLengthAsync(lotteryKey);
+				long totalTickets = await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLengthAsync(lotteryKey);
 				long yourTickets = 0;
 
-				string latestWinner = Global.RedisClient.Database.StringGet("lottery:winner");
+				string latestWinner = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).StringGet("lottery:winner");
 
 				if (await lotteryDict.ContainsAsync(e.Author.Id))
 				{
@@ -703,7 +704,7 @@ namespace Miki.Modules
 							tickets[i] = e.Author.Id.ToString();
 						}
 
-						await Global.RedisClient.Database.ListRightPushAsync(lotteryKey, tickets);
+						await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListRightPushAsync(lotteryKey, tickets);
 
 						int totalTickets = 0;
 

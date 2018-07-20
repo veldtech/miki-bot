@@ -33,7 +33,7 @@ namespace Miki.Modules
 			CreateEmbed(s)
 				.QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -81,7 +81,7 @@ namespace Miki.Modules
 				CreateEmbed(s)
 					.QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -105,7 +105,7 @@ namespace Miki.Modules
 				CreateEmbed(s)
 					.QueueToChannel(e.Channel);
 			}
-			catch(Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -128,7 +128,7 @@ namespace Miki.Modules
 
 				CreateEmbed(s).QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
 					.ToEmbed().QueueToChannel(e.Channel);

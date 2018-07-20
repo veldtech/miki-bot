@@ -589,7 +589,7 @@ namespace Miki.Modules.AccountsModule
 			{
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				var repObject = Global.RedisClient.Get<ReputationObject>($"user:{giver.Id}:rep");
+				var repObject = await Global.RedisClient.GetAsync<ReputationObject>($"user:{giver.Id}:rep");
 
 				if (repObject == null)
 				{
@@ -598,7 +598,7 @@ namespace Miki.Modules.AccountsModule
 						LastReputationGiven = DateTime.Now,
 						ReputationPointsLeft = 3
 					};
-					await Global.RedisClient.AddAsync($"user:{giver.Id}:rep", repObject, new DateTimeOffset(DateTime.UtcNow.AddDays(1).Date));
+					await Global.RedisClient.UpsertAsync($"user:{giver.Id}:rep", repObject, DateTime.UtcNow - DateTime.UtcNow.AddDays(1));
 				}
 
 				ArgObject arg = e.Arguments.FirstOrDefault();
@@ -711,7 +711,7 @@ namespace Miki.Modules.AccountsModule
 
 					repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
 
-					await Global.RedisClient.AddAsync($"user:{giver.Id}:rep", repObject, new DateTimeOffset(DateTime.UtcNow.AddDays(1).Date));
+					await Global.RedisClient.UpsertAsync($"user:{giver.Id}:rep", repObject, DateTime.UtcNow - DateTime.UtcNow.AddDays(1));
 
 					embed.AddInlineField(e.GetResource("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
 						.ToEmbed().QueueToChannel(e.Channel);
@@ -909,7 +909,7 @@ namespace Miki.Modules.AccountsModule
 
 				embed.ToEmbed().QueueToChannel(e.Channel);
 
-				await Global.RedisClient.AddAsync(redisKey, streak, new TimeSpan(48, 0, 0));
+				await Global.RedisClient.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
 				await context.SaveChangesAsync();
 			}
 		}

@@ -32,7 +32,7 @@ namespace Miki.Models.Objects.Guild
 				return context.BankAccounts.Attach(await Global.RedisClient.GetAsync<BankAccount>($"bankaccount:{guild.Id}:{user.Id}")).Entity;
 			}
 			BankAccount account = await context.BankAccounts.FindAsync(guild.Id.ToString(), user.Id.ToDbLong());
-			await Global.RedisClient.AddAsync<BankAccount>($"bankaccount:{guild.Id}:{user.Id}", account);
+			await Global.RedisClient.UpsertAsync<BankAccount>($"bankaccount:{guild.Id}:{user.Id}", account);
 			return account;
 		}
     }

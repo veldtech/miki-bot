@@ -14,7 +14,6 @@ using Miki.Framework.Extension;
 using Microsoft.EntityFrameworkCore;
 using Miki.Models;
 using StackExchange.Redis;
-using StackExchange.Redis.Extensions.Core;
 using Miki.Framework.Languages;
 using Amazon.S3.Model;
 using Miki.Exceptions;
@@ -22,6 +21,7 @@ using Amazon.S3;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Cache.StackExchange;
 
 namespace Miki
 {
@@ -243,7 +243,7 @@ namespace Miki
 				await context.SaveChangesAsync();
 			}
 
-			await Global.RedisClient.AddAsync($"user:{user.Id}:avatar:synced", true);
+			await Global.RedisClient.UpsertAsync($"user:{user.Id}:avatar:synced", true);
 		}
 	}
 
@@ -338,27 +338,29 @@ namespace Miki
 
 	public class RedisDictionary
 	{
-		ICacheClient client;
+		Cache.ICacheClient client;
 		string name;
 
 		public async Task<IEnumerable<string>> GetKeysAsync() 
-			=> (await client.HashKeysAsync(name));
+			=> (await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashKeysAsync(name))
+				.Cast<string>()
+				.ToList();
 
-		public RedisDictionary(string name, ICacheClient client)
+		public RedisDictionary(string name, Miki.Cache.ICacheClient client)
 		{
 			this.name = name;
 			this.client = client;
 		}
 		~RedisDictionary()
 		{
-			client.Remove(name);
+			client.RemoveAsync(name);
 		}
 
 		public async Task AddAsync(object key, object value)
 			=> await AddAsync(key.ToString(), value.ToString());
 		public async Task AddAsync(string key, object value)
 		{
-			await client.HashSetAsync(name, key, value);
+			await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashSetAsync(name, key, value.ToString());
 		}
 
 		public async Task<string> GetAsync(object key)
@@ -367,7 +369,7 @@ namespace Miki
 		{
 			if(await ContainsAsync(key))
 			{
-				return client.HashGet<string>(name, key);
+				return (client as StackExchangeCacheClient).Client.GetDatabase(0).HashGet(name, key);
 			}
 			throw new IndexOutOfRangeException($"No member found with key `{key}`");
 		}
@@ -380,6 +382,6 @@ namespace Miki
 		public async Task<bool> ContainsAsync(object key)
 			=> await ContainsAsync(key.ToString());
 		public async Task<bool> ContainsAsync(string key)
-			=> await client.Database.HashExistsAsync(name, key);
+			=> await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashExistsAsync(name, key);
 	}
 }

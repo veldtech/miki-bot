@@ -46,9 +46,10 @@ namespace Miki.Accounts
 
 		public AccountManager(Bot bot)
         {
-			OnGlobalLevelUp += async (a, e, l) =>
+			OnGlobalLevelUp += (a, e, l) =>
 			{
 				DogStatsd.Counter("levels.global", l);
+				return Task.CompletedTask;
 			};
 			OnLocalLevelUp += async (a, e, l) =>
 		   {
@@ -127,7 +128,7 @@ namespace Miki.Accounts
 									e.Author
 								);
 
-								await Global.RedisClient.AddAsync(key, user.Experience);
+								await Global.RedisClient.UpsertAsync(key, user.Experience);
 								currentExp = user.Experience;
 							}
 						}
@@ -169,7 +170,7 @@ namespace Miki.Accounts
 
 						lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
-						await Global.RedisClient.AddAsync(key, currentExp);
+						await Global.RedisClient.UpsertAsync(key, currentExp);
 					}
 				}
 

@@ -122,11 +122,11 @@ namespace Miki.Models
 			string key = $"user:name:{u}";
 			if(await Global.RedisClient.ExistsAsync(key))
 			{
-				return Global.RedisClient.Get<string>(key);
+				return await Global.RedisClient.GetAsync<string>(key);
 			}
 
 			User user = await context.Users.FindAsync(u);
-			await Global.RedisClient.AddAsync(key, user.Name);
+			await Global.RedisClient.UpsertAsync(key, user.Name);
 			return user.Name;
 		}
 

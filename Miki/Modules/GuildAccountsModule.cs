@@ -181,7 +181,7 @@ namespace Miki.Modules
 					case "bal":
 					case "balance":
 					{
-						GuildBankBalance(e, context, user);
+						await GuildBankBalance(e, context, user);
 					} break;
 					case "deposit":
 					{
@@ -214,7 +214,7 @@ namespace Miki.Modules
 
 		public async Task GuildBankBalance(EventContext e, MikiContext context, GuildUser c)
 		{
-			await BankAccount.GetAsync(context, e.Author, e.Guild);
+			var account = await BankAccount.GetAsync(context, e.Author, e.Guild);
 
 			e.CreateEmbedBuilder()
 				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
@@ -226,7 +226,7 @@ namespace Miki.Modules
 					true
 				)
 				.AddField(
-					new LanguageResource("guildbank_balance_total_deposited", 0), new StringResource("rip")
+					new LanguageResource("guildbank_balance_total_deposited", "{}"), new StringResource(account.TotalDeposited.ToString())
 				).Build().QueueToChannel(e.Channel);
 		}
 

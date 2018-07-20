@@ -9,8 +9,9 @@ using Amazon.S3;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Framework;
 using Miki.Discord.Caching;
-using StackExchange.Redis.Extensions.Core;
-using StackExchange.Redis.Extensions.Protobuf;
+using Miki.Cache;
+using Miki.Cache.Serializers.Protobuf;
+using Miki.Cache.StackExchange;
 
 namespace Miki
 {
@@ -23,7 +24,7 @@ namespace Miki
 
 		internal static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
 		{
-			return new StackExchangeRedisCacheClient(new ProtobufSerializer(), Config.RedisConnectionString);
+			return new StackExchangeCacheClient(new ProtobufSerializer(), ConnectionMultiplexer.Connect(Config.RedisConnectionString));
 		});
 
 		public static ICacheClient RedisClient => redisClientPool.Value;

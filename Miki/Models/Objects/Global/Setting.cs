@@ -49,7 +49,7 @@ namespace Miki.Models
 						Value = 0
 					})).Entity;
 				}
-				await Global.RedisClient.AddAsync(GetKey(id, settingId), s.Value);
+				await Global.RedisClient.UpsertAsync(GetKey(id, settingId), s.Value);
 				return s.Value;
 			}
 		}
@@ -78,7 +78,7 @@ namespace Miki.Models
 					s.Value = value;
 				}
 
-				await Global.RedisClient.AddAsync(GetKey(id, settingId), value);
+				await Global.RedisClient.UpsertAsync(GetKey(id, settingId), value);
 				await context.SaveChangesAsync();
 			}
 		}
