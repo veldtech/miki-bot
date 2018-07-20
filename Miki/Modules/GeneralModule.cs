@@ -409,7 +409,7 @@ namespace Miki.Modules
 				float ping = (float)(message.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
 				DiscordEmbed embed = new EmbedBuilder()
-					.SetTitle("Pong")
+					.SetTitle("Pong - " + Environment.MachineName)
 					.SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
 					.AddInlineField("Miki", ping + "ms").ToEmbed();
 				
