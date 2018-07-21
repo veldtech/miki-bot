@@ -97,6 +97,32 @@ namespace Miki.Modules
 			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
+		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task IdenGuildChannelAsync(EventContext e)
+		{
+			var user = await Global.Client.Client._apiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
+		
+			if (user == null)
+			{
+				await e.Channel.SendMessageAsync($"none.");
+			}
+
+			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+		}
+
+		[Command(Name = "identifyguild", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task IdenGuildAsync(EventContext e)
+		{
+			var user = await Global.Client.Client._apiClient.GetGuildAsync(ulong.Parse(e.Arguments.ToString()));
+
+			if (user == null)
+			{
+				await e.Channel.SendMessageAsync($"none.");
+			}
+
+			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+		}
+
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetGameAsync(EventContext e)
 		{

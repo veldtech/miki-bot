@@ -97,21 +97,9 @@ namespace Miki
 
 		public async Task LoadDiscord()
         {
-			ConfigurationOptions options = new ConfigurationOptions();
-
-			foreach (string s in Global.Config.RedisEndPoints)
-			{
-				options.EndPoints.Add(s);
-			}
-
-			if(!string.IsNullOrWhiteSpace(Global.Config.RedisPassword))
-			{
-				options.Password = Global.Config.RedisPassword;
-			}
-
 			StackExchangeCachePool pool = new StackExchangeCachePool(
 				new ProtobufSerializer(),
-				options
+				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
 			);
 
 			Global.Client = new Bot(Global.Config.AmountShards, pool, new ClientInformation()
@@ -144,7 +132,7 @@ namespace Miki
 
 			var handler = new SimpleCommandHandler(commandMap);
 
-			handler.AddPrefix(">", true);
+			handler.AddPrefix(">", true, true);
 			handler.AddPrefix("miki.");
 
 			var sessionHandler = new SessionBasedCommandHandler();

@@ -119,7 +119,7 @@ namespace Miki.Modules
 
 				foreach (CommandEvent ev in module.Events.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				embed.AddInlineField("Events", content);
@@ -128,7 +128,7 @@ namespace Miki.Modules
 
 				foreach (BaseService ev in module.Services.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				if (!string.IsNullOrEmpty(content))
@@ -162,7 +162,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < modules.Count(); i++)
 			{
-				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
+				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
 				if (i < modules.Count() / 2 + 1)
 				{
 					firstColumn += output;
@@ -204,6 +204,8 @@ namespace Miki.Modules
 				e.ErrorEmbed(e.GetResource("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
+
+			await e.Prefix.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.SetTitle(e.GetResource("miki_module_general_prefix_success_header"));

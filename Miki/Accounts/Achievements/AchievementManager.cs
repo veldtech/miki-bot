@@ -53,7 +53,7 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnGlobalLevelUp += async (u, c, l) =>
 			{
-				if (await provider.IsEnabled(c.Id))
+				if (await provider.IsEnabled(Global.RedisClient, c.Id))
 				{
 					LevelPacket p = new LevelPacket()
 					{
@@ -67,7 +67,7 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
 			{
-				if (await provider.IsEnabled(msg.ChannelId))
+				if (await provider.IsEnabled(Global.RedisClient, msg.ChannelId))
 				{
 					TransactionPacket p = new TransactionPacket()
 					{

@@ -28,7 +28,7 @@ namespace Miki.Modules.Accounts.Services
 
         public async Task Service_MessageReceived(IDiscordMessage m)
         {
-            if (await IsEnabled(m.GetChannelAsync().Result.Id))
+            if (await IsEnabled(Global.RedisClient, m.GetChannelAsync().Result.Id))
             {
                 await AccountManager.Instance.CheckAsync(m);
             }

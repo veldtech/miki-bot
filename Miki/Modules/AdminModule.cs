@@ -319,7 +319,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await command.SetEnabled(e.Channel.Id, setValue ?? false);
+			await command.SetEnabled(Global.RedisClient, e.Channel.Id, setValue ?? false);
 			Utils.SuccessEmbed(e.Channel.Id, ((setValue ?? false) ? e.GetResource("miki_generic_enabled") : e.GetResource("miki_generic_disabled")) + $" {command.Name}")
 				.QueueToChannel(e.Channel);
 		}
@@ -369,7 +369,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await m.SetEnabled(e.Channel.Id, (setValue ?? false));
+			await m.SetEnabled(Global.RedisClient, e.Channel.Id, (setValue ?? false));
 
 			Utils.SuccessEmbed(e.Channel.Id, ((setValue ?? false) ? e.GetResource("miki_generic_enabled") : e.GetResource("miki_generic_disabled")) + $" {m.Name}")
 				.QueueToChannel(e.Channel);
