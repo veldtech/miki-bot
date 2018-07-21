@@ -11,6 +11,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "..\..\Mik
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Rest", "..\..\Miki.Rest\Miki.Rest\Miki.Rest.csproj", "{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord", "..\..\Miki.Discord\Miki.Discord\Miki.Discord.csproj", "{34D0DC0F-DBDB-42FE-930E-6B72E5F469AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Caching", "..\..\Miki.Discord\Miki.Discord.Caching\Miki.Discord.Caching.csproj", "{2E6C92DE-7CB3-41CC-89C5-894957ADDEA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Rest", "..\..\Miki.Discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj", "{8D751C67-BDBD-4C07-979B-A5EA4FB3A6B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Cache.Serializer.Protobuf", "..\..\Miki.Cache\Miki.Cache.Serializer.Protobuf\Miki.Cache.Serializer.Protobuf.csproj", "{EC2CE85B-9604-46A4-8AB2-90023A0D0991}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Cache.StackExchange.Redis", "..\..\Miki.Cache\Miki.Cache.StackExchange.Redis\Miki.Cache.StackExchange.Redis.csproj", "{B0F5139C-2675-410B-B358-598020EBF509}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +43,26 @@ Global
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D25A3DB-F8A8-4335-B54C-0E721FCC9D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34D0DC0F-DBDB-42FE-930E-6B72E5F469AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34D0DC0F-DBDB-42FE-930E-6B72E5F469AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34D0DC0F-DBDB-42FE-930E-6B72E5F469AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34D0DC0F-DBDB-42FE-930E-6B72E5F469AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E6C92DE-7CB3-41CC-89C5-894957ADDEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E6C92DE-7CB3-41CC-89C5-894957ADDEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E6C92DE-7CB3-41CC-89C5-894957ADDEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E6C92DE-7CB3-41CC-89C5-894957ADDEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D751C67-BDBD-4C07-979B-A5EA4FB3A6B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D751C67-BDBD-4C07-979B-A5EA4FB3A6B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D751C67-BDBD-4C07-979B-A5EA4FB3A6B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D751C67-BDBD-4C07-979B-A5EA4FB3A6B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2CE85B-9604-46A4-8AB2-90023A0D0991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2CE85B-9604-46A4-8AB2-90023A0D0991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2CE85B-9604-46A4-8AB2-90023A0D0991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2CE85B-9604-46A4-8AB2-90023A0D0991}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F5139C-2675-410B-B358-598020EBF509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F5139C-2675-410B-B358-598020EBF509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F5139C-2675-410B-B358-598020EBF509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F5139C-2675-410B-B358-598020EBF509}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

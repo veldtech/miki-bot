@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Cache\Miki.Cache.StackExchange.Redis\Miki.Cache.StackExchange.Redis.csproj" />
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
   </ItemGroup>

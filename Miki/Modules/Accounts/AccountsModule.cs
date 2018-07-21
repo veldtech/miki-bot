@@ -436,37 +436,42 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "buybackground")]
 		public async Task BuyProfileBackgroundAsync(EventContext e)
 		{
-			int? backgroundId = e.Arguments.First().AsInt();
-
-			if (backgroundId.HasValue)
+			ArgObject arguments = e.Arguments.FirstOrDefault();
+			if (arguments.TryParseInt(out int id))
 			{
-				Background background = Global.Backgrounds.Backgrounds[backgroundId.Value];
+				if (id >= Global.Backgrounds.Backgrounds.Count || id < 0)
+				{
+					e.ErrorEmbed("This background does not exist!")
+						.ToEmbed()
+						.QueueToChannel(e.Channel);
+					return;
+				}
 
+				Background background = Global.Backgrounds.Backgrounds[id];
 
-				var embed = new EmbedBuilder();
-				embed.SetTitle("Buy Background");
+				var embed = new EmbedBuilder()
+					.SetTitle("Buy Background")
+					.SetImage(background.ImageUrl);
 
 				if (background.Price > 0)
 				{
-					embed.SetDescription($"This background for your profile will cost {background.Price} mekos, Type yes to buy.");
+					embed.SetDescription($"This background for your profile will cost {background.Price} mekos, Type `>buybackground {id} yes` to buy.");
 				}
 				else
 				{
 					embed.SetDescription($"This background is not for sale.");
 				}
-				embed.SetImage(background.ImageUrl)
-					.ToEmbed().QueueToChannel(e.Channel);
 
-				if (background.Price > 0)
+				arguments = arguments.Next();
+
+				if (arguments?.Argument.ToLower() == "yes")
 				{
-					IDiscordMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-
-					if (msg.Content.ToLower()[0] == 'y')
+					if (background.Price > 0)
 					{
 						using (var context = new MikiContext())
 						{
 							User user = await User.GetAsync(context, e.Author);
-							long userId = e.Author.Id.ToDbLong();
+							long userId = (long)e.Author.Id;
 
 							BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
 
@@ -478,6 +483,7 @@ namespace Miki.Modules.AccountsModule
 									UserId = e.Author.Id.ToDbLong(),
 									BackgroundId = background.Id,
 								});
+
 								await context.SaveChangesAsync();
 
 								Utils.SuccessEmbed(e.Channel.Id, "Background purchased!")
@@ -489,6 +495,11 @@ namespace Miki.Modules.AccountsModule
 							}
 						}
 					}
+				}
+				else
+				{
+					embed.ToEmbed()
+						.QueueToChannel(e.Channel);
 				}
 			}
 		}
@@ -598,7 +609,12 @@ namespace Miki.Modules.AccountsModule
 						LastReputationGiven = DateTime.Now,
 						ReputationPointsLeft = 3
 					};
-					await Global.RedisClient.UpsertAsync($"user:{giver.Id}:rep", repObject, DateTime.UtcNow - DateTime.UtcNow.AddDays(1));
+
+					await Global.RedisClient.UpsertAsync(
+						$"user:{giver.Id}:rep", 
+						repObject, 
+						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
+					);
 				}
 
 				ArgObject arg = e.Arguments.FirstOrDefault();
@@ -619,7 +635,7 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					Dictionary<IDiscordUser, int> usersMentioned = new Dictionary<IDiscordUser, int>();
+					Dictionary<IDiscordUser, short> usersMentioned = new Dictionary<IDiscordUser, short>();
 
 					EmbedBuilder embed = new EmbedBuilder();
 
@@ -632,7 +648,7 @@ namespace Miki.Modules.AccountsModule
 							break;
 
 						IDiscordUser u = await arg.GetUserAsync(e.Guild);
-						int amount = 1;
+						short amount = 1;
 
 						if (u == null)
 							break;
@@ -641,7 +657,7 @@ namespace Miki.Modules.AccountsModule
 
 							if ((arg?.AsInt() ?? -1) != -1)
 							{
-								amount = arg.AsInt().Value;
+								amount = (short)arg.AsInt().Value;
 								arg = arg.Next();
 							}
 							else if (Utils.IsAll(arg))
@@ -706,12 +722,19 @@ namespace Miki.Modules.AccountsModule
 
 						receiver.Reputation += user.Value;
 
-						embed.AddInlineField(receiver.Name, string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value));
+						embed.AddInlineField(
+							receiver.Name, 
+							string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value)
+						);
 					}
 
-					repObject.ReputationPointsLeft -= (short)(usersMentioned.Sum(x => x.Value));
+					repObject.ReputationPointsLeft -= (short)usersMentioned.Sum(x => x.Value);
 
-					await Global.RedisClient.UpsertAsync($"user:{giver.Id}:rep", repObject, DateTime.UtcNow - DateTime.UtcNow.AddDays(1));
+					await Global.RedisClient.UpsertAsync(
+						$"user:{giver.Id}:rep", 
+						repObject,
+						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
+					);
 
 					embed.AddInlineField(e.GetResource("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft)
 						.ToEmbed().QueueToChannel(e.Channel);
