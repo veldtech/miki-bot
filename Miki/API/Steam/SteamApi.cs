@@ -12,7 +12,6 @@ using Miki.Rest;
 
 namespace Miki.API.Steam
 {
-
 	class SteamApi
 	{
 		const string baseUrl = "http://api.steampowered.com";

@@ -110,19 +110,6 @@ namespace Miki.Modules
 			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
-		[Command(Name = "identifyguild", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdenGuildAsync(EventContext e)
-		{
-			var user = await Global.Client.Client._apiClient.GetGuildAsync(ulong.Parse(e.Arguments.ToString()));
-
-			if (user == null)
-			{
-				await e.Channel.SendMessageAsync($"none.");
-			}
-
-			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
-		}
-
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetGameAsync(EventContext e)
 		{
@@ -148,19 +135,21 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IgnoreIdAsync(EventContext e)
+		public Task IgnoreIdAsync(EventContext e)
 		{
 			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
 			{
 				e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task ShowCacheAsync(EventContext e)
+		public Task ShowCacheAsync(EventContext e)
 		{
 			e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
+			return Task.CompletedTask;
 		}
 
 		//[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
