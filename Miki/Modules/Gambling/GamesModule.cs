@@ -26,6 +26,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Cache.StackExchange;
 using StackExchange.Redis;
+using Miki.API.Gambling;
 
 namespace Miki.Modules
 {
@@ -187,7 +188,42 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
+			ArgObject args = e.Arguments.FirstOrDefault();
+
+			switch (args?.Argument.ToLower() ?? "")
+			{
+				case "new":
+				{
+
+				} break;
+				case "hit":
+				{
+				
+				} break;
+				case "stand":
+				{
+
+				} break;
+				default:
+				{
+
+				} break;
+			}
+
 			await ValidateBet(e, StartBlackjack);
+		}
+
+		public async Task OnBlackjackNew(EventContext e, ArgObject args)
+		{
+			string bet = args?.Argument ?? "";
+
+			if (await ValidateBet(e, args, bet, 1000000))
+			{
+				BlackjackContext context = new BlackjackContext();
+				context.Bet = bet;
+
+				Global.RedisClient.UpsertAsync($"miki:blackjack:{e.Author.Id}", );
+			}
 		}
 
         public async Task StartBlackjack(EventContext e, int bet)
@@ -725,11 +761,8 @@ namespace Miki.Modules
 			}
 		}
 
-		// TODO: probable rewrite at some point
-		public async Task ValidateBet(EventContext e, Func<EventContext, int, Task> callback = null, int maxBet = 1000000)
+		public async Task<bool> ValidateBetAsync(EventContext e, ArgObject arg, string betString, int maxBet = 1000000)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
 			if (arg != null)
 			{
 				const int noAskLimit = 10000;
@@ -741,12 +774,13 @@ namespace Miki.Modules
 					if (user == null)
 					{
 						// TODO: add user null error
-						return;
+						return false;
 					}
 
-					string checkArg = arg.Argument;
+					arg = arg?.Next();
+					string checkArg = arg?.Argument;
 
-					if (int.TryParse(checkArg, out int bet))
+					if (int.TryParse(betString, out int bet))
 					{
 
 					}
@@ -758,7 +792,7 @@ namespace Miki.Modules
 					{
 						e.ErrorEmbed(e.GetResource("miki_error_gambling_parse_error"))
 							.ToEmbed().QueueToChannel(e.Channel);
-						return;
+						return false;
 					}
 
 					if (bet < 1)
@@ -775,74 +809,49 @@ namespace Miki.Modules
 					{
 						e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
 							.ToEmbed().QueueToChannel(e.Channel);
-						return;
+						return false;
 					}
 					else if (bet > noAskLimit)
 					{
-						IDiscordMessage confirmationMessage = null;
-
-						Framework.Events.CommandMap map = new Framework.Events.CommandMap();
-						map.AddCommand(new CommandEvent()
+						arg = arg?.Next();
+						if (arg?.Argument.ToLower() == "ok")
 						{
-							Name = "yes",
-							ProcessCommand = async (ec) => {
-								await confirmationMessage.DeleteAsync();
-								await ValidateGlitch(ec, callback, bet);
+							return true;
+						}
+						else
+						{
+							User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+							//if ((await e.Guild.GetSelfAsync()).GetPermissions(e.Channel).ManageMessages)
+							//	await e.message.DeleteAsync();
+
+							if (bet > u.Currency)
+							{
+								e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
+									.AddInlineField("Pro tip!", "You can get more daily mekos by voting on us [here!](https://discordbots.org/bot/160105994217586689)")
+									.ToEmbed().QueueToChannel(e.Channel);
+								return false;
 							}
-						});
 
-						SimpleCommandHandler commandHandler = new SimpleCommandHandler(map);
-						commandHandler.AddPrefix("");
-
-						await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-							.AddSessionAsync(new CommandSession { ChannelId = e.Channel.Id, UserId = e.Author.Id }, commandHandler, new TimeSpan(0,2,0));
-
-						EmbedBuilder embed = Utils.Embed;
-						embed.Description =
-							$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nType `yes` to confirm.";
-						embed.Color = new Color(0.4f, 0.6f, 1f);
-						confirmationMessage = await embed.ToEmbed().SendToChannel(e.Channel);
+							EmbedBuilder embed = Utils.Embed;
+							embed.Description =
+								$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.";
+							embed.Color = new Color(0.4f, 0.6f, 1f);
+							embed.ToEmbed().QueueToChannel(e.Channel);
+						}
 					}
 					else
 					{
-						if (callback != null)
-						{
-							await callback(e, bet);
-						}
+						return true;
 					}
 				}
+				return false;
 			}
 			else
 			{
 				e.ErrorEmbed(e.GetResource("miki_error_gambling_no_arg"))
 					.ToEmbed().QueueToChannel(e.Channel);
-			}
-		}
-
-		// TODO: change name of method to fit better to what the method does.
-		public async Task ValidateGlitch(EventContext e, Func<EventContext, int, Task> callback, int bet)
-		{
-			using (var context = new MikiContext())
-			{
-				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-				await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-					.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
-
-				//if ((await e.Guild.GetSelfAsync()).GetPermissions(e.Channel).ManageMessages)
-				//	await e.message.DeleteAsync();
-
-
-				if (callback != null)
-				{
-					if (bet > u.Currency)
-					{
-						e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
-							.AddInlineField("Pro tip!", "You can get more daily mekos by voting on us [here!](https://discordbots.org/bot/160105994217586689)")
-							.ToEmbed().QueueToChannel(e.Channel);
-						return;
-					}
-					await callback(e, bet);
-				}
+				return false;
 			}
 		}
 	}
