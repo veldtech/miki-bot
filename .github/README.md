@@ -22,11 +22,11 @@ Below you will find a basic workflow of how the branches should work. Please fol
       * *(e.g., helper_veld_201610 or helper_documentation_201610)*
 * Make your changes in the branch you have just created.
 * Commit those changes, and then push the branch to the remote git repository.
-* When changes are approved, and are ready for release, the branch will be merged into the **master** branch.
+* When changes are approved and are ready for release, the branch will be merged into the **master** branch.
   * *Note: The working branch at this time will be deleted from the repository.*
   
 ## Dependencies
-The following dependencies are mostly gotten from nuget, I'll link a github source repo otherwise.
+The following dependencies are mostly gotten from NuGet, I'll link a Github source repo otherwise.
 
 * Entity Framework 6.0
 * Discord.Net
@@ -41,7 +41,7 @@ Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
 Support server: https://discord.gg/55sAjsW<br>
-Trello: https://trello.com/b/4Mgl8nBa/miki<br>
+
 
 ## Feature requests
 [![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
