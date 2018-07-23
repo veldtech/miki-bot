@@ -8,6 +8,7 @@ Below you will find a basic workflow of how the branches should work. Please fol
 ### Workflow for branches
 ### Dependencies
 ### Useful links
+### Getting Started
 
 ## Workflow for Branches
 
@@ -45,3 +46,60 @@ Support server: https://discord.gg/55sAjsW<br>
 
 ## Feature requests
 [![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
+
+
+## Getting Started 
+Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
+
+#### Important:
+If you have any questions about the setup process **do not** ask in the support server. DM me at Xetera#9596 instead, as Veld and I are one of the only people that can help you with this as of now.
+
+## Installation Steps:
+1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
+
+2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
+
+3) Add your bot token in Miki/miki/settings.json.
+
+4) Download [RabbitMQ](https://www.rabbitmq.com/download.html) and have the service running.
+
+5) Download [Redis](https://redis.io/download) and get that running too.
+
+6) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
+
+7) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
+
+```js
+"connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
+```
+
+8) Install the `uuid-ossp` postgres extensions on the `Miki` database.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+9) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+
+    * Tools -> NuGet Package Manager -> Package Manager Console
+
+10) Navigate to `Miki.Framework` and run `Update-Database` to apply the migrations there as well. 
+
+11) Clone the [gateway repository](https://github.com/Mikibot/sharder/tree/js) in a separate location.
+
+12) Download [Node.js](https://nodejs.org/en/) if you don't have it installed already.
+
+13) Run `npm install` in the sharder download location to setup the dependencies.
+
+14) Create a `config.js` by copy pasting the format from `config.js.example` and filling in your bot token.
+
+15) Run `node gateway.js`.
+
+16) Run Miki. 🎉
+
+## Possible issues:
+These will likely be fixed in the near future (if it's not already by the time you're reading this):
+
+* A lack of API keys might be giving you issues in the `DonatorModule` and `FunModule`, the simplest way to solve it is to just comment out the lines that raise exceptions and  the lines that reference the client **(there shouldn't be more than 2 reference max, if so, you're doing something wrong).**
+
+* If you're having trouble running migrations make sure your `EntityFramework` for both base `Miki` and `Miki.Framework` is on version 2.0.1-2.0.3 **NOT** 2.1.1.
