@@ -5,10 +5,10 @@ Below you will find a basic workflow of how the branches should work. Please fol
 
 ## Table of contents
 
-### Workflow for branches
-### Dependencies
-### Useful links
-### Getting Started
+### [Workflow for branches](#workflow-for-branches-1)
+### [Dependencies](#dependencies-1)
+### [Useful links](#useful-links-1)
+### [Getting Started](#getting-started-1)
 
 ## Workflow for Branches
 
