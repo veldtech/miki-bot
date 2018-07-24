@@ -27,15 +27,25 @@ Below you will find a basic workflow of how the branches should work. Please fol
   * *Note: The working branch at this time will be deleted from the repository.*
   
 ## Dependencies
-The following dependencies are mostly gotten from NuGet, I'll link a Github source repo otherwise.
-
+* AWSSDK.S3
 * Entity Framework 6.0
-* Discord.Net
-* IA ([source](https://github.com/velddev/IA))
-* IA.SDK ([source](https://github.com/velddev/IA.SDK))
 * Imgur.API
+* Miki.Anilist
+* Miki.Cache
+* Miki.Configuration
+* Miki.Discord
+* Miki.Dsl
+* Miki.Logging
+* Miki.Rest
 * Newtonsoft.Json
-  
+* Npgsql
+
+### Optional Dependencies
+* CountLib
+* Miki.Patreon
+* SharpRaven
+* SteamKit2
+ 
 ## Useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
