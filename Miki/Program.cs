@@ -40,23 +40,21 @@ namespace Miki
 		{
 			timeSinceStartup = DateTime.Now;
 
-			Log.OnLog += (msg, e) =>
-			{
-				if (e >= LogLevel.Information)
-				{
-					Console.WriteLine(msg);
-				}
-			};
-
-			Log.Theme.SetColor(LogLevel.Error, new LogColor { Foreground = ConsoleColor.Red });
-			Log.Theme.SetColor(LogLevel.Warning, new LogColor { Foreground = ConsoleColor.Yellow });
+			InitLogging();
 
 			LoadLocales();
 
 			await LoadDiscord();
 
+			if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+			{
+				Global.MikiApi = new API.MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey);
+			}
+
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
+			{
 				MessageBucket.AddWorker();
+			}
 
 			using (var c = new MikiContext())
 			{			
@@ -161,6 +159,20 @@ namespace Miki
 			Global.Client.Client.GuildJoin += Client_JoinedGuild;
 			Global.Client.Client.GuildLeave += Client_LeftGuild;
 			Global.Client.Client.UserUpdate += Client_UserUpdated;
+		}
+
+		private void InitLogging()
+		{
+			Log.OnLog += (msg, e) =>
+			{
+				if (e >= LogLevel.Information)
+				{
+					Console.WriteLine(msg);
+				}
+			};
+
+			Log.Theme.SetColor(LogLevel.Error, new LogColor { Foreground = ConsoleColor.Red });
+			Log.Theme.SetColor(LogLevel.Warning, new LogColor { Foreground = ConsoleColor.Yellow });
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)

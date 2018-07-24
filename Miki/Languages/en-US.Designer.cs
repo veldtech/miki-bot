@@ -710,7 +710,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `hit` to draw a new card..
+        ///   Looks up a localized string similar to Use `&gt;bj hit` to draw a new card..
         /// </summary>
         internal static string miki_blackjack_hit {
             get {
@@ -755,7 +755,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `stay` to finalize your points..
+        ///   Looks up a localized string similar to Use `&gt;bj stay` to finalize your points..
         /// </summary>
         internal static string miki_blackjack_stay {
             get {

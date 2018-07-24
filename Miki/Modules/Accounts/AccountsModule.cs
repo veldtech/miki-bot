@@ -928,8 +928,6 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField("Streak!", $"You're on a {streak} day daily streak!");
 				}
 
-				embed.AddInlineField("Need more mekos?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!");
-
 				embed.ToEmbed().QueueToChannel(e.Channel);
 
 				await Global.RedisClient.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));

@@ -31,22 +31,6 @@ namespace Miki.API.Gambling
         }
     }
 
-	[ProtoContract]
-	internal class BlackjackContext
-	{
-		[ProtoMember(1)]
-		public int Bet;
-
-		[ProtoMember(2)]
-		public CardHand Player;
-
-		[ProtoMember(3)]
-		public CardHand Opponent;
-
-		[ProtoMember(4)]
-		public CardSet Deck;
-	}
-
 	internal class SlotsItem
     {
         public SlotsItem(string emoji, float weight)
