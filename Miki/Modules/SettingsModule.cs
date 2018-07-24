@@ -33,19 +33,14 @@ namespace Miki.Modules
 		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
-				Task.Run(async () => await SetupNotificationsInteractive<LevelNotificationsSetting>(e, DatabaseSettingId.LEVEL_NOTIFICATIONS));
-			else
-			{
-				MMLParser mml = new MMLParser(e.Arguments.ToString());
-				MSLResponse response = mml.Parse();
+			MMLParser mml = new MMLParser(e.Arguments.ToString());
+			MSLResponse response = mml.Parse();
 
-				bool global = response.GetBool("g");
-				LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
+			bool global = response.GetBool("g");
+			LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
 
-				await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
-			}
-		}
+			await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
+		}	
 
 		public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
 		{

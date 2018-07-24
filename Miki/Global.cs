@@ -69,11 +69,10 @@ namespace Miki
 			}
 		}
 
-		public static MikiApi MikiApi => mikiApi;
+		public static MikiApi MikiApi { get; set; }
 
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
-		private static MikiApi mikiApi = null;
 		static BackgroundStore backgrounds = new BackgroundStore();
 	}
 

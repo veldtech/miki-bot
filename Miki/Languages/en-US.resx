@@ -1353,7 +1353,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to the house.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value>Use `hit` to draw a new card.</value>
+    <value>Use `&gt;bj hit` to draw a new card.</value>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
     <value>You lose your bet to Miki.</value>
@@ -1365,7 +1365,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>You didn't include the amount bet! Correct usage: &gt;blackjack &lt;amount&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value>Use `stay` to finalize your points.</value>
+    <value>Use `&gt;bj stay` to finalize your points.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
     <value>Miki has not been able to beat your score and this means you get the jackpot. You gained {0} mekos!</value>
