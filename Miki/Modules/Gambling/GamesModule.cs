@@ -234,6 +234,18 @@ namespace Miki.Modules
 
 			if (bet.HasValue)
 			{
+				using(var context = new MikiContext())
+				{
+					var user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+					
+					if(user == null)
+						return;
+					
+					user.Currency -= bet.Value;
+					
+					await context.SaveChangesAsync();	
+				}
+				
 				if(await Global.RedisClient.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
 				{
 					e.ErrorEmbed("You still have a blackjack game running here, please either stop it by using `>blackjack stay` or finish playing it. This game will expire in 24 hours.")
