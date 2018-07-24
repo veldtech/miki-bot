@@ -52,7 +52,9 @@ Support server: https://discord.gg/55sAjsW<br>
 Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
 
 #### Important:
-If you have any questions about the setup process **do not** ask in the support server. DM me at Xetera#9596 instead, as Veld and I are one of the only people that can help you with this as of now.
+Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
+
+If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you. DM Xetera#9596 for questions instead.
 
 ## Installation Steps:
 1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
