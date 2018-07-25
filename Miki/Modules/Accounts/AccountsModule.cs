@@ -204,16 +204,6 @@ namespace Miki.Modules.AccountsModule
 				argument = argument.Next();
 			}
 
-			if (argument != null)
-			{
-				IDiscordUser user = await argument.GetUserAsync(e.Guild);
-				if (user != null)
-				{
-					options.mentionedUserId = user.Id;
-					argument = argument.Next();
-				}
-			}
-
 			if ((argument?.AsInt() ?? 0) != 0)
 			{
 				options.pageNumber = argument.AsInt().Value - 1;

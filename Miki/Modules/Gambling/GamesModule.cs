@@ -225,7 +225,6 @@ namespace Miki.Modules
 						.QueueToChannel(e.Channel);
 				} break;
 			}
-
 		}
 
 		public async Task OnBlackjackNew(EventContext e, ArgObject args)
