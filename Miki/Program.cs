@@ -113,6 +113,7 @@ namespace Miki
 					.SetColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
+			eventSystem.MessageFilter.AddFilter(new BotFilter());
 			eventSystem.MessageFilter.AddFilter(new UserFilter());
 
 			Global.Client.Attach(eventSystem);
