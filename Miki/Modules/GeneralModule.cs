@@ -309,12 +309,12 @@ namespace Miki.Modules
 
 					explainedHelpEmbed.AddField(
 						e.GetResource("miki_module_general_help_description"),
-						(Locale.HasString(e.Channel.Id, "miki_command_description_" + ev.Name.ToLower())) 
+						(await Locale.HasStringAsync(e.Channel.Id, "miki_command_description_" + ev.Name.ToLower())) 
 							? e.GetResource("miki_command_description_" + ev.Name.ToLower()) : e.GetResource("miki_placeholder_null"));
 
 					explainedHelpEmbed.AddField(
 						e.GetResource("miki_module_general_help_usage"),
-						(Locale.HasString(e.Channel.Id, "miki_command_usage_" + ev.Name.ToLower())) 
+						(await Locale.HasStringAsync(e.Channel.Id, "miki_command_usage_" + ev.Name.ToLower())) 
 							? e.GetResource("miki_command_usage_" + ev.Name.ToLower()) : e.GetResource("miki_placeholder_null"));
 
 					explainedHelpEmbed.ToEmbed().QueueToChannel(e.Channel);
@@ -342,7 +342,7 @@ namespace Miki.Modules
 				}
 			}
 
-			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannel());
+			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannelAsync());
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
@@ -389,7 +389,7 @@ namespace Miki.Modules
 		public async Task InviteAsync(EventContext e)
 		{
 			e.Channel.QueueMessageAsync(e.GetResource("miki_module_general_invite_message"));
-			(await e.Author.GetDMChannel()).QueueMessageAsync(e.GetResource("miki_module_general_invite_dm")
+			(await e.Author.GetDMChannelAsync()).QueueMessageAsync(e.GetResource("miki_module_general_invite_dm")
 				+ "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
 		}
 
@@ -443,7 +443,7 @@ namespace Miki.Modules
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetResource("discord_servers")}",/* Bot.Instance.Client.Guilds.Count.ToString()*/0)
 			 .AddField("💬 " + e.GetResource("term_commands"), e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Sum(x => x.TimesUsed))
-			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Channel.Id))
+			 .AddField("⏰ Uptime", await timeSinceStart.ToTimeStringAsync(e.Channel.Id))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .ToEmbed().QueueToChannel(e.Channel);
 		}

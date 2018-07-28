@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Cache.Serializer.Proto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Cache.StackExchange.Redis", "..\..\Miki.Cache\Miki.Cache.StackExchange.Redis\Miki.Cache.StackExchange.Redis.csproj", "{B0F5139C-2675-410B-B358-598020EBF509}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Messaging", "..\..\Miki.Discord\Miki.Discord.Messaging\Miki.Discord.Messaging.csproj", "{A7C35288-5D53-4ED1-B468-EE79AE6BC2CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Common", "..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj", "{9B1DAB6B-C3A1-4DE3-B365-6E6F8F59C16E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{B0F5139C-2675-410B-B358-598020EBF509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0F5139C-2675-410B-B358-598020EBF509}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0F5139C-2675-410B-B358-598020EBF509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7C35288-5D53-4ED1-B468-EE79AE6BC2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7C35288-5D53-4ED1-B468-EE79AE6BC2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7C35288-5D53-4ED1-B468-EE79AE6BC2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7C35288-5D53-4ED1-B468-EE79AE6BC2CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B1DAB6B-C3A1-4DE3-B365-6E6F8F59C16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B1DAB6B-C3A1-4DE3-B365-6E6F8F59C16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B1DAB6B-C3A1-4DE3-B365-6E6F8F59C16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B1DAB6B-C3A1-4DE3-B365-6E6F8F59C16E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

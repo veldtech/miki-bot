@@ -28,23 +28,19 @@ namespace Miki
 {
 	public class Program
     {
-        private static void Main(string[] args)
-        {
-			new Program().Start()
-				.GetAwaiter().GetResult();
-		}
-
 		public static DateTime timeSinceStartup;
 
-		public async Task Start()
+		static async Task Main()
 		{
+			Program p = new Program();
+
 			timeSinceStartup = DateTime.Now;
 
-			InitLogging();
+			p.InitLogging();
 
-			LoadLocales();
+			p.LoadLocales();
 
-			await LoadDiscord();
+			await p.LoadDiscord();
 
 			if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
 			{

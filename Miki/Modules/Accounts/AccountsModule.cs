@@ -217,7 +217,7 @@ namespace Miki.Modules.AccountsModule
 				LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(options);
 
 				Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-					.SetFooter(Locale.GetString(e.Channel.Id, "page_index", 
+					.SetFooter(await Locale.GetStringAsync(e.Channel.Id, "page_index", 
 						obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
 					.SetAuthor(
 						"Leaderboards: " + options.type + " (click me!)",
@@ -536,16 +536,8 @@ namespace Miki.Modules.AccountsModule
 			using (var context = new MikiContext())
 			{
 				User user = await User.GetAsync(context, e.Author);
-
-				new EmbedBuilder()
-					.SetTitle("Hold on!")
-					.SetDescription("Changing your foreground(text) color costs 250 mekos. type a hex(e.g. #00FF00) to purchase")
-					.ToEmbed().QueueToChannel(e.Channel);
-
-				IDiscordMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>()
-					.WaitForNextMessage(e.CreateSession());
-
-				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
+	
+				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
 
 				if (x.Count > 0)
 				{
@@ -562,7 +554,11 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-					throw new ArgumentException("Argument was not a hex color");
+
+					new EmbedBuilder()
+						.SetTitle("Setting a foreground color!")
+						.SetDescription("Changing your foreground(text) color costs 250 mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
+						.ToEmbed().QueueToChannel(e.Channel);
 				}
 			}
 		}
@@ -618,7 +614,7 @@ namespace Miki.Modules.AccountsModule
 						Title = (e.GetResource("miki_module_accounts_rep_header")),
 						Description = (e.GetResource("miki_module_accounts_rep_description"))
 					}.AddInlineField(e.GetResource("miki_module_accounts_rep_total_received"), giver.Reputation.ToString())
-						.AddInlineField(e.GetResource("miki_module_accounts_rep_reset"), pointReset.ToTimeString(e.Channel.Id))
+						.AddInlineField(e.GetResource("miki_module_accounts_rep_reset"), await pointReset.ToTimeStringAsync(e.Channel.Id))
 						.AddInlineField(e.GetResource("miki_module_accounts_rep_remaining"), repObject.ReputationPointsLeft)
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
@@ -889,7 +885,9 @@ namespace Miki.Modules.AccountsModule
 
 				if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
 				{
-					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{(u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Channel.Id)}` before using it again.")
+					var time = await (u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeStringAsync(e.Channel.Id);
+
+					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.")
 					.AddInlineField("Need more mekos?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!")
 					.ToEmbed().QueueToChannel(e.Channel);
 					return;

@@ -64,7 +64,7 @@ namespace Miki.Modules
 
 						if (user != null)
 						{
-							IDiscordChannel channel = user.GetDMChannel().Result;
+							IDiscordChannel channel = user.GetDMChannelAsync().Result;
 
 							EmbedBuilder embed = new EmbedBuilder()
 							{
@@ -362,9 +362,6 @@ namespace Miki.Modules
 
 		private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm)
 		{
-			await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>()
-				.RemoveSessionAsync(e.Author.Id, e.Channel.Id);
-
 			User user;
 			using (var context = new MikiContext())
 			{
@@ -708,7 +705,7 @@ namespace Miki.Modules
 					yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
 				}
 
-				string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Channel.Id, true) ?? "1h?m?s - will be fixed soon!";
+				string timeLeft = await taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeStringAsync(e.Channel.Id, true) ?? "1h?m?s - will be fixed soon!";
 
 				new EmbedBuilder()
 				{

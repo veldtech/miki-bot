@@ -103,7 +103,7 @@ namespace Miki.Modules
                     {
                         Utils.Embed
                             .SetTitle(e.GetResource("miki_terms_weekly"))
-                            .SetDescription(e.GetResource("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(e.Channel.Id)))
+                            .SetDescription(e.GetResource("guildweekly_error_timer_running", await (timer.Value.AddDays(7) - DateTime.Now).ToTimeStringAsync(e.Channel.Id)))
 							.ToEmbed().QueueToChannel(e.Channel);
                     }
                 }

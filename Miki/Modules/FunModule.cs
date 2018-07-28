@@ -504,7 +504,7 @@ namespace Miki.Modules
 				} break;
 				case "-list":
 				{
-					ListReminders(e);
+					await ListRemindersAsync(e);
 				} break;
 				default:
 				{
@@ -514,13 +514,13 @@ namespace Miki.Modules
 					}
 					else
 					{
-						PlaceReminder(e);
+						await PlaceReminderAsync(e);
 					}
 				} break;
 			}
 	    }
 
-		private void PlaceReminder(EventContext e)
+		private async Task PlaceReminderAsync(EventContext e)
 		{
 			string args = e.Arguments.Join().Argument;
 
@@ -560,11 +560,11 @@ namespace Miki.Modules
 						.SetDescription(new MessageBuilder()
 							.AppendText(context)
 							.BuildWithBlockCode())
-						.ToEmbed().QueueToChannel(e.Author.GetDMChannel().Result);
+						.ToEmbed().QueueToChannel(e.Author.GetDMChannelAsync().Result);
 				}, reminderText, timeUntilReminder, repeated);
 
 				Utils.Embed.SetTitle($"👌 {e.GetResource("term_ok")}")
-					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.Id)}**\nYour reminder code is `{id}`")
+					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{await timeUntilReminder.ToTimeStringAsync(e.Channel.Id)}**\nYour reminder code is `{id}`")
 					.SetColor(255, 220, 93)
 					.ToEmbed().QueueToChannel(e.Channel);
 			}
@@ -617,7 +617,7 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		private void ListReminders(EventContext e)
+		private async Task ListRemindersAsync(EventContext e)
 		{
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if(instances?.Count > 0)
@@ -644,7 +644,7 @@ namespace Miki.Modules
 					}
 
 					embed.Description += 
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.Id, true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {await x.TimeLeft.ToTimeStringAsync(e.Channel.Id, true)}`\n";
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
 				return;

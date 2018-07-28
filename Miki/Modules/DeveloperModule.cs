@@ -280,6 +280,23 @@ namespace Miki.Modules
 			}
 		}
 
+		[Command(Name = "presence", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task PresenceTestAsync(EventContext e)
+		{
+			IDiscordPresence presence = await e.Author.GetPresenceAsync();
+
+			var embed = new EmbedBuilder()
+				.SetTitle($"{e.Author.Username} - {presence.Status}")
+				.SetThumbnail(e.Author.GetAvatarUrl());
+
+			if(presence.Activity != null)
+			{
+				embed.SetDescription($"{presence.Activity.Name} - {presence.Activity.Details ?? ""}\n{presence.Activity.State ?? ""}");
+			}
+
+			embed.ToEmbed().QueueToChannel(e.Channel);
+		}
+
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetMekos(EventContext e)
 		{

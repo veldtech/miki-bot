@@ -47,55 +47,55 @@ namespace Miki
             return time;
         }
 
-        public static string ToTimeString(this int seconds, ulong channelId, bool minified = false)
+        public static async Task<string> ToTimeStringAsync(this int seconds, ulong channelId, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
-            return time.ToTimeString(channelId, minified);
+            return await time.ToTimeStringAsync(channelId, minified);
         }
-        public static string ToTimeString(this float seconds, ulong channelId, bool minified = false)
+        public static async Task<string> ToTimeStringAsync(this float seconds, ulong channelId, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
+            return await time.ToTimeStringAsync(channelId, minified);
         }
-        public static string ToTimeString(this long seconds, ulong channelId, bool minified = false)
+        public static async Task<string> ToTimeStringAsync(this long seconds, ulong channelId, bool minified = false)
         {
             TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
+            return await time.ToTimeStringAsync(channelId, minified);
         }
-		public static string ToTimeString(this TimeSpan time, ulong channelId,  bool minified = false)
+		public static async Task<string> ToTimeStringAsync(this TimeSpan time, ulong channelId,  bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if (Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_days"), time.Days, minified));
                 }
             }
             if (time.Hours > 0)
             {
                 if (time.Hours > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hours"), time.Hours, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_hours"), time.Hours, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hour"), time.Hours, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_hour"), time.Hours, minified));
                 }
             }
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minutes"), time.Minutes, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minute"), time.Minutes, minified));
+                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_minute"), time.Minutes, minified));
                 }
             }
 
@@ -103,11 +103,11 @@ namespace Miki
 			{
 				if (time.Seconds > 1)
 				{
-					t.Add(new TimeValue(Locale.GetString(channelId, "time_seconds"), time.Seconds, minified));
+					t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_seconds"), time.Seconds, minified));
 				}
 				else
 				{
-					t.Add(new TimeValue(Locale.GetString(channelId, "time_second"), time.Seconds, minified));
+					t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_second"), time.Seconds, minified));
 				}
 			}
             
@@ -131,7 +131,7 @@ namespace Miki
 
                     if (!minified)
                     {
-                        text += $", {Locale.GetString(channelId, "time_and")} " + s[s.Count - 1].ToString();
+                        text += $", {await Locale.GetStringAsync(channelId, "time_and")} " + s[s.Count - 1].ToString();
                     }
                 }
                 else if (t.Count == 1)
@@ -157,7 +157,7 @@ namespace Miki
 				.SetColor(1.0f, 0.0f, 0.0f);
 
 		public static string GetResource(this EventContext e, string resource, params object[] args)
-			=> Locale.GetString(e.Channel.Id, resource, args);
+			=> Locale.GetStringAsync(e.Channel.Id, resource, args).Result;
 
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
 			=> ErrorEmbed(e, e.GetResource(resourceId, args));
@@ -170,7 +170,7 @@ namespace Miki
         {
             return new EmbedBuilder()
             {
-                Title = "✅ " + Locale.GetString(id, LocaleTags.SuccessMessageGeneric),
+                Title = "✅ " + Locale.GetStringAsync(id, LocaleTags.SuccessMessageGeneric).Result,
 				Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();
@@ -224,10 +224,12 @@ namespace Miki
 			request.ContentType = "image/png";
 			request.CannedACL = new S3CannedACL("public-read");
 
-			//using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
-			//{
-			//	request.InputStream = await client.GetStreamAsync("");
-			//}
+			string avatarUrl = user.GetAvatarUrl();
+
+			using (var client = new Rest.RestClient(avatarUrl, true))
+			{
+				request.InputStream = await client.GetStreamAsync();
+			}
 
 			var response = await Global.CdnClient.PutObjectAsync(request);
 
@@ -243,7 +245,7 @@ namespace Miki
 				await context.SaveChangesAsync();
 			}
 
-			await Global.RedisClient.UpsertAsync($"user:{user.Id}:avatar:synced", true);
+			await Global.RedisClient.UpsertAsync($"avatar:{user.Id}:synced", true);
 		}
 	}
 

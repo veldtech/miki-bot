@@ -22,7 +22,7 @@ namespace Miki
 		}
 		public static async Task SendAchievementAsync(BaseAchievement baseAchievement, IDiscordUser user)
 		{
-			SendAchievement(baseAchievement, await user.GetDMChannel(), user);
+			SendAchievement(baseAchievement, await user.GetDMChannelAsync(), user);
 		}
 
 		private static DiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)

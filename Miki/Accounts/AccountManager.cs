@@ -78,8 +78,8 @@ namespace Miki.Accounts
 
 			   EmbedBuilder embed = new EmbedBuilder()
 			   {
-				   Title = Locale.GetString(e.Id, "miki_accounts_level_up_header"),
-				   Description = Locale.GetString(e.Id, "miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
+				   Title = await Locale.GetStringAsync(e.Id, "miki_accounts_level_up_header"),
+				   Description = await Locale.GetStringAsync(e.Id, "miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
 				   Color = new Color(1, 0.7f, 0.2f)
 			   };
 

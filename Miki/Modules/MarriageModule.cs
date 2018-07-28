@@ -305,7 +305,7 @@ namespace Miki.Modules
                 embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).GetAvatarUrl();
 				if (pageCount > 1)
 				{
-					embed.SetFooter(Locale.GetString(e.Channel.Id, "page_footer", page + 1, pageCount));
+					embed.SetFooter(await Locale.GetStringAsync(e.Channel.Id, "page_footer", page + 1, pageCount));
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
             }
