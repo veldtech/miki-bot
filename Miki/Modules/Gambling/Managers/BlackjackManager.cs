@@ -80,7 +80,7 @@ namespace Miki.Modules.Gambling.Managers
 
 		public EmbedBuilder CreateEmbed(EventContext e)
 		{
-			string explanation = e.GetResource("miki_blackjack_explanation");
+			string explanation = e.Locale.GetString("miki_blackjack_explanation");
 
 			CardHand Player = GetPlayer(e.Author.Id);
 			CardHand Dealer = GetPlayer(0);
@@ -89,13 +89,13 @@ namespace Miki.Modules.Gambling.Managers
 			{
 				Author = new EmbedAuthor()
 				{
-					Name = e.GetResource("miki_blackjack") + " | " + e.Author.Username,
+					Name = e.Locale.GetString("miki_blackjack") + " | " + e.Author.Username,
 					IconUrl = e.Author.GetAvatarUrl(),
 					Url = "https://patreon.com/mikibot"
 				},
-				Description = $"{explanation}\n{e.GetResource("miki_blackjack_hit")}\n{e.GetResource("miki_blackjack_stay")}"
-			}.AddField(e.GetResource("miki_blackjack_cards_you", Worth(Player)), Player.Print(), true)
-			.AddField(e.GetResource("miki_blackjack_cards_miki", Worth(Dealer)), Dealer.Print(), true);
+				Description = $"{explanation}\n{e.Locale.GetString("miki_blackjack_hit")}\n{e.Locale.GetString("miki_blackjack_stay")}"
+			}.AddField(e.Locale.GetString("miki_blackjack_cards_you", Worth(Player)), Player.Print(), true)
+			.AddField(e.Locale.GetString("miki_blackjack_cards_miki", Worth(Dealer)), Dealer.Print(), true);
 		}
 
 		public BlackjackContext ToContext()

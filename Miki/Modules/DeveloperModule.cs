@@ -242,7 +242,7 @@ namespace Miki.Modules
 
 			foreach (API.StringComparison.StringComparison c in best)
 			{
-				embed.AddInlineField($"#{x}", c);
+				embed.AddInlineField($"#{x}", c.ToString());
 				x++;
 				if (x > 16)
 					break;

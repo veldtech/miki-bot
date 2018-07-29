@@ -58,7 +58,7 @@ namespace Miki.Modules
 
 				if (currentUser == null || mentionedPerson == null)
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -70,13 +70,13 @@ namespace Miki.Modules
 
 				if (mentionedPerson.Id == currentUser.Id)
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				if (await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_accounts_marry_error_exists")).ToEmbed().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("miki_module_accounts_marry_error_exists")).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
@@ -84,8 +84,8 @@ namespace Miki.Modules
 			await Marriage.ProposeAsync(askerId, receiverId);
 
 			Utils.Embed
-				.SetTitle("💍" + e.GetResource("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
-				.SetDescription(e.GetResource("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
+				.SetTitle("💍" + e.Locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
+				.SetDescription(e.Locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
 				.SetColor(0.4f, 0.4f, 0.8f)
 				.SetThumbnail("https://i.imgur.com/TKZSKIp.png")
 				.AddInlineField("✅ To accept", $">acceptmarriage @user")
@@ -108,7 +108,7 @@ namespace Miki.Modules
 					new EmbedBuilder()
 					{
 						Color = new Color(0.4f, 1f, 0.6f),
-						Description = cont.GetResource("buymarriageslot_success", user.MarriageSlots),
+						Description = cont.Locale.GetString("buymarriageslot_success", user.MarriageSlots),
 					}.ToEmbed().QueueToChannel(cont.Channel);
 
 					await context.SaveChangesAsync();
@@ -120,7 +120,7 @@ namespace Miki.Modules
 					new EmbedBuilder()
 					{
 						Color = new Color(1, 0.4f, 0.6f),
-						Description = cont.GetResource("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
+						Description = cont.Locale.GetString("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
 					}.ToEmbed().QueueToChannel(cont.Channel);
 					await cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(cont.Author.Id, cont.Channel.Id);
 				}
@@ -142,8 +142,8 @@ namespace Miki.Modules
 				string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
 
 				EmbedBuilder embed = Utils.Embed;
-				embed.Title = $"🔔 {e.GetResource("miki_module_accounts_divorce_header")}";
-				embed.Description = e.GetResource("miki_module_accounts_divorce_content", e.Author.Username, otherName);
+				embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
+				embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherName);
 				embed.Color = new Color(0.6f, 0.4f, 0.1f);
 				embed.ToEmbed().QueueToChannel(e.Channel);
 
@@ -305,7 +305,7 @@ namespace Miki.Modules
                 embed.ThumbnailUrl = (await e.Guild.GetUserAsync(e.Author.Id)).GetAvatarUrl();
 				if (pageCount > 1)
 				{
-					embed.SetFooter(await Locale.GetStringAsync(e.Channel.Id, "page_footer", page + 1, pageCount));
+					embed.SetFooter(e.Locale.GetString("page_footer", page + 1, pageCount));
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
             }

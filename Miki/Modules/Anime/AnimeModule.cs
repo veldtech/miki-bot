@@ -260,10 +260,10 @@ namespace Miki.Core.Modules.Anime
 
 				if (!manga)
 					embed.AddInlineField("Status", media.Status ?? "Unknown")
-					.AddInlineField("Episodes", media.Episodes ?? 0);
+					.AddInlineField("Episodes", (media.Episodes ?? 0).ToString());
 				else
-					embed.AddInlineField("Volumes", media.Volumes ?? 0)
-						.AddInlineField("Chapters", media.Chapters ?? 0);
+					embed.AddInlineField("Volumes", (media.Volumes ?? 0).ToString())
+						.AddInlineField("Chapters", (media.Chapters ?? 0).ToString());
 
 					embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
 					.AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")

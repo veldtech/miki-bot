@@ -378,13 +378,13 @@ namespace Miki.Modules
 				{
 					embed = bm.CreateEmbed(e)
 				   .SetAuthor(
-						e.GetResource("miki_blackjack_draw_title") + " | " + e.Author.Username, 
+						e.Locale.GetString("miki_blackjack_draw_title") + " | " + e.Author.Username, 
 						e.Author.GetAvatarUrl(), 
 						"https://patreon.com/mikibot"
 					)
 				   .SetDescription(
-						e.GetResource("blackjack_draw_description") + "\n" +
-						e.GetResource("miki_blackjack_current_balance", user.Currency)
+						e.Locale.GetString("blackjack_draw_description") + "\n" +
+						e.Locale.GetString("miki_blackjack_current_balance", user.Currency)
 					).ToEmbed()
 				}
 			);
@@ -404,12 +404,10 @@ namespace Miki.Modules
 				{
 					embed = bm.CreateEmbed(e)
 							.SetAuthor(
-								e.GetResource("miki_blackjack_lose_title") + " | " + e.Author.Username,
+								e.Locale.GetString("miki_blackjack_lose_title") + " | " + e.Author.Username,
 								(await e.Guild.GetSelfAsync()).GetAvatarUrl(), "https://patreon.com/mikibot"
 							)
-							.SetDescription(
-								e.GetResource("miki_blackjack_lose_description") + "\n" + e.GetResource("miki_blackjack_new_balance",
-								user.Currency)
+							.SetDescription(e.Locale.GetString("miki_blackjack_lose_description") + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency)
 							).ToEmbed()
 				});
 
@@ -432,8 +430,8 @@ namespace Miki.Modules
 			await Global.Client.Client._apiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
 			{
 				embed = bm.CreateEmbed(e)
-					.SetAuthor(e.GetResource("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
-					.SetDescription(e.GetResource("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.GetResource("miki_blackjack_new_balance", user.Currency))
+					.SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
+					.SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
 					.ToEmbed()
 			});
 
@@ -508,17 +506,17 @@ namespace Miki.Modules
 
 			if (win)
 			{
-				output = e.GetResource("flip_description_win", $"`{bet}`");
+				output = e.Locale.GetString("flip_description_win", $"`{bet}`");
 			}
 			else
 			{
-				output = e.GetResource("flip_description_lose");
+				output = e.Locale.GetString("flip_description_lose");
 			}
 
-			output += "\n" + e.GetResource("miki_blackjack_new_balance", currencyNow);
+			output += "\n" + e.Locale.GetString("miki_blackjack_new_balance", currencyNow);
 
 			DiscordEmbed embed = Utils.Embed
-				.SetAuthor(e.GetResource("flip_header") + " | " + e.Author.Username, e.Author.GetAvatarUrl(),
+				.SetAuthor(e.Locale.GetString("flip_header") + " | " + e.Author.Username, e.Author.GetAvatarUrl(),
 					"https://patreon.com/mikibot")
 				.SetDescription(output)
 				.SetThumbnail(imageUrl)
@@ -563,7 +561,7 @@ namespace Miki.Modules
 				};
 
 				EmbedBuilder embed = new EmbedBuilder()
-					.SetAuthor(e.GetResource(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
+					.SetAuthor(e.Locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
 
 				string[] objectsChosen =
 				{
@@ -671,13 +669,13 @@ namespace Miki.Modules
 				if (moneyReturned == 0)
 				{
 					moneyReturned = -bet;
-					embed.AddField(e.GetResource("miki_module_fun_slots_lose_header"),
-						e.GetResource("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
+					embed.AddField(e.Locale.GetString("miki_module_fun_slots_lose_header"),
+						e.Locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
 				}
 				else
 				{
-					embed.AddField(e.GetResource(LocaleTags.SlotsWinHeader),
-						e.GetResource(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
+					embed.AddField(e.Locale.GetString(LocaleTags.SlotsWinHeader),
+						e.Locale.GetString(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
 				}
 
 				embed.Description = string.Join(" ", objectsChosen);
@@ -705,16 +703,16 @@ namespace Miki.Modules
 					yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
 				}
 
-				string timeLeft = await taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeStringAsync(e.Channel.Id, true) ?? "1h?m?s - will be fixed soon!";
+				string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Locale, true) ?? "1h?m?s - will be fixed soon!";
 
 				new EmbedBuilder()
 				{
 					Title = "🍀 Lottery",
 					Description = "Make the biggest gamble, and get paid off massively if legit.",
 					Color = new Color(119, 178, 85)
-				}.AddInlineField("Tickets Owned", yourTickets)
+				}.AddInlineField("Tickets Owned", yourTickets.ToString())
 				.AddInlineField("Drawing In", timeLeft)
-				.AddInlineField("Total Tickets", totalTickets)
+				.AddInlineField("Total Tickets", totalTickets.ToString())
 				.AddInlineField("Ticket price", $"{100} mekos")
 				.AddInlineField("Latest Winner", latestWinner ?? "no name")
 				.AddInlineField("How to buy?", ">lottery buy [amount]")
@@ -765,7 +763,7 @@ namespace Miki.Modules
 
 						await context.SaveChangesAsync();
 
-						Utils.SuccessEmbed(e.Channel.Id, $"Successfully bought {amount} tickets!")
+						e.SuccessEmbed($"Successfully bought {amount} tickets!")
 							.QueueToChannel(e.Channel);
 					}
 				}
@@ -801,20 +799,20 @@ namespace Miki.Modules
 					}
 					else
 					{
-						e.ErrorEmbed(e.GetResource("miki_error_gambling_parse_error"))
+						e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}
 
 					if (bet < 1)
 					{
-						e.ErrorEmbed(e.GetResource("miki_error_gambling_zero_or_less"))
+						e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_zero_or_less"))
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}
 					else if (bet > user.Currency)
 					{
-						e.ErrorEmbed(e.GetResource("miki_mekos_insufficient"))
+						e.ErrorEmbed(e.Locale.GetString("miki_mekos_insufficient"))
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}
@@ -849,7 +847,7 @@ namespace Miki.Modules
 			}
 			else
 			{
-				e.ErrorEmbed(e.GetResource("miki_error_gambling_no_arg"))
+				e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_no_arg"))
 					.ToEmbed().QueueToChannel(e.Channel);
 				return null;
 			}

@@ -182,9 +182,11 @@ namespace Miki.Modules
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
-				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
-				Utils.SuccessEmbed(e.Channel.Id, e.GetResource("localization_set", $"`{localeName}`"))
+				await e.Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
+
+				e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
+
 				return;
 			}
 			e.ErrorEmbed($"{localeName} is not a valid language. use `>listlocale` to check all languages available.")
@@ -196,17 +198,17 @@ namespace Miki.Modules
 		{
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.ErrorEmbed(e.GetResource("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
 			await e.Prefix.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
 
 			EmbedBuilder embed = Utils.Embed;
-			embed.SetTitle(e.GetResource("miki_module_general_prefix_success_header"));
-			embed.SetDescription(e.GetResource("miki_module_general_prefix_success_message", e.Arguments.ToString()));
+			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
+			embed.SetDescription(e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()));
 
-			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile")
+			embed.AddField(e.Locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile")
 				.AddField("Your language not here?", "Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)! ");
 
 			embed.ToEmbed().QueueToChannel(e.Channel);
@@ -216,7 +218,7 @@ namespace Miki.Modules
 		public async Task SyncAvatarAsync(EventContext e)
 		{
 			await Utils.SyncAvatarAsync(e.Author);
-			Utils.SuccessEmbed(e.Channel.Id, "We've updated your avatar!")
+			e.SuccessEmbed("We've updated your avatar!")
 				.QueueToChannel(e.Channel);
 		}
 

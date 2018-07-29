@@ -22,6 +22,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Cache.StackExchange;
+using Miki.Framework.Language;
 
 namespace Miki
 {
@@ -47,55 +48,40 @@ namespace Miki
             return time;
         }
 
-        public static async Task<string> ToTimeStringAsync(this int seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
-            return await time.ToTimeStringAsync(channelId, minified);
-        }
-        public static async Task<string> ToTimeStringAsync(this float seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return await time.ToTimeStringAsync(channelId, minified);
-        }
-        public static async Task<string> ToTimeStringAsync(this long seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return await time.ToTimeStringAsync(channelId, minified);
-        }
-		public static async Task<string> ToTimeStringAsync(this TimeSpan time, ulong channelId,  bool minified = false)
+		public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if (Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
             if (time.Hours > 0)
             {
                 if (time.Hours > 1)
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_hours"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_hour"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
                 }
             }
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_minutes"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_minute"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
                 }
             }
 
@@ -103,11 +89,11 @@ namespace Miki
 			{
 				if (time.Seconds > 1)
 				{
-					t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_seconds"), time.Seconds, minified));
+					t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
 				}
 				else
 				{
-					t.Add(new TimeValue(await Locale.GetStringAsync(channelId, "time_second"), time.Seconds, minified));
+					t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
 				}
 			}
             
@@ -131,7 +117,7 @@ namespace Miki
 
                     if (!minified)
                     {
-                        text += $", {await Locale.GetStringAsync(channelId, "time_and")} " + s[s.Count - 1].ToString();
+                        text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
                     }
                 }
                 else if (t.Count == 1)
@@ -152,25 +138,22 @@ namespace Miki
 
 		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
 			=> new EmbedBuilder()
-				.SetTitle($"🚫 {e.GetResource(LocaleTags.ErrorMessageGeneric)}")
+				.SetTitle($"🚫 {e.Locale.GetString(LocaleTags.ErrorMessageGeneric)}")
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
-		public static string GetResource(this EventContext e, string resource, params object[] args)
-			=> Locale.GetStringAsync(e.Channel.Id, resource, args).Result;
-
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
-			=> ErrorEmbed(e, e.GetResource(resourceId, args));
+			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
 
 		public static EmbedBuilder Embed => new EmbedBuilder();
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static DiscordEmbed SuccessEmbed(ulong id, string message)
+        public static DiscordEmbed SuccessEmbed(this EventContext e, string message)
         {
             return new EmbedBuilder()
             {
-                Title = "✅ " + Locale.GetStringAsync(id, LocaleTags.SuccessMessageGeneric).Result,
+                Title = "✅ " + e.Locale.GetString(LocaleTags.SuccessMessageGeneric),
 				Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();

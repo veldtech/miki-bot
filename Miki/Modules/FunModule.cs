@@ -211,8 +211,8 @@ namespace Miki.Modules
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
-			string output = e.GetResource("miki_module_fun_8ball_result", 
-				e.Author.Username, e.GetResource(reactions[MikiRandom.Next(0, reactions.Length)]));
+			string output = e.Locale.GetString("miki_module_fun_8ball_result", 
+				e.Author.Username, e.Locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
             e.Channel.QueueMessageAsync(output);
         }
 
@@ -335,7 +335,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -359,7 +359,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
             }
         }
 
@@ -368,7 +368,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
@@ -392,7 +392,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
             }
         }
 
@@ -401,18 +401,18 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ErrorPickNoArgs));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ErrorPickNoArgs));
                 return;
             }
             string[] choices = e.Arguments.ToString().Split(',');
 
-            e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+            e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
         {
-            e.Channel.QueueMessageAsync(e.GetResource(puns[MikiRandom.Next(0, puns.Length)]));
+            e.Channel.QueueMessageAsync(e.Locale.GetString(puns[MikiRandom.Next(0, puns.Length)]));
         }
 
 		[Command(Name = "roll")]
@@ -474,7 +474,7 @@ namespace Miki.Modules
 			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
 			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
-			e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.RollResult, e.Author.Username, rollResult));
+			e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.RollResult, e.Author.Username, rollResult));
 		}
 
 		[Command(Name = "roulette")]
@@ -485,8 +485,8 @@ namespace Miki.Modules
 
 			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";
 			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
-				e.GetResource(LocaleTags.RouletteMessageNoArg, mention) :
-				e.GetResource(LocaleTags.RouletteMessage, e.Arguments.ToString(), mention);
+				e.Locale.GetString(LocaleTags.RouletteMessageNoArg, mention) :
+				e.Locale.GetString(LocaleTags.RouletteMessage, e.Arguments.ToString(), mention);
 
 			e.Channel.QueueMessageAsync(send);
 		}
@@ -535,7 +535,7 @@ namespace Miki.Modules
 
 			if (splitIndex == -1)
 			{
-				e.ErrorEmbed(e.GetResource("error_argument_null", "time"))
+				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "time"))
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
@@ -563,8 +563,8 @@ namespace Miki.Modules
 						.ToEmbed().QueueToChannel(e.Author.GetDMChannelAsync().Result);
 				}, reminderText, timeUntilReminder, repeated);
 
-				Utils.Embed.SetTitle($"👌 {e.GetResource("term_ok")}")
-					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{await timeUntilReminder.ToTimeStringAsync(e.Channel.Id)}**\nYour reminder code is `{id}`")
+				Utils.Embed.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
+					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
 					.SetColor(255, 220, 93)
 					.ToEmbed().QueueToChannel(e.Channel);
 			}
@@ -582,7 +582,7 @@ namespace Miki.Modules
 
 			if (arg == null)
 			{
-				e.ErrorEmbed(e.GetResource("error_argument_null", "id"))
+				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "id"))
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
@@ -595,9 +595,9 @@ namespace Miki.Modules
 				}
 
 				Utils.Embed
-					.SetTitle($"⏰ {e.GetResource("reminders")}")
+					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 					.SetColor(0.86f, 0.18f, 0.26f)
-					.SetDescription(e.GetResource("reminder_cancelled_all"))
+					.SetDescription(e.Locale.GetString("reminder_cancelled_all"))
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
@@ -606,14 +606,14 @@ namespace Miki.Modules
 				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
 				{
 					Utils.Embed
-						.SetTitle($"⏰ {e.GetResource("reminders")}")
+						.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 						.SetColor(0.86f, 0.18f, 0.26f)
-						.SetDescription(e.GetResource("reminder_cancelled", $"`{i.Context}`"))
+						.SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
-			e.ErrorEmbed(e.GetResource("error_reminder_null"))
+			e.ErrorEmbed(e.Locale.GetString("error_reminder_null"))
 				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
@@ -625,7 +625,7 @@ namespace Miki.Modules
 				instances = instances.OrderBy(x => x.Id).ToList();
 
 				EmbedBuilder embed = new EmbedBuilder()
-					.SetTitle($"⏰ {e.GetResource("reminders")}")
+					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 					.SetColor(0.86f, 0.18f, 0.26f);
 
 				foreach (var x in instances)
@@ -644,13 +644,13 @@ namespace Miki.Modules
 					}
 
 					embed.Description += 
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {await x.TimeLeft.ToTimeStringAsync(e.Channel.Id, true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Locale, true)}`\n";
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
-			e.ErrorEmbed(e.GetResource("error_no_reminders"))
+			e.ErrorEmbed(e.Locale.GetString("error_no_reminders"))
 				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
@@ -659,13 +659,13 @@ namespace Miki.Modules
 			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
 
 			new EmbedBuilder()
-				.SetTitle($"⏰ {e.GetResource("reminders")}")
+				.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 				.SetColor(0.86f, 0.18f, 0.26f)
-				.SetDescription(e.GetResource("reminder_help_description"))
-				.AddInlineField(e.GetResource("term_commands"), 
-				$"`{prefix}{e.GetResource("reminder_help_add")}` - {e.GetResource("reminder_desc_add")}\n" +
-				$"`{prefix}{e.GetResource("reminder_help_clear")}` - {e.GetResource("reminder_desc_clear")}\n" +
-				$"`{prefix}{e.GetResource("reminder_help_list")}` - {e.GetResource("reminder_desc_list")}\n")
+				.SetDescription(e.Locale.GetString("reminder_help_description"))
+				.AddInlineField(e.Locale.GetString("term_commands"), 
+				$"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
+				$"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
+				$"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
 			.ToEmbed().QueueToChannel(e.Channel);
 		}
 

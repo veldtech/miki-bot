@@ -63,7 +63,7 @@ namespace Miki.Modules.Roles
 
 				if (author.RoleIds.Contains(role.Id))
 				{
-					e.ErrorEmbed(e.GetResource("error_role_already_given"))
+					e.ErrorEmbed(e.Locale.GetString("error_role_already_given"))
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
@@ -76,7 +76,7 @@ namespace Miki.Modules.Roles
 
 				if (!newRole?.Optable ?? false)
 				{
-					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
+					await e.ErrorEmbed(e.Locale.GetString("error_role_forbidden"))
 						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
@@ -85,7 +85,7 @@ namespace Miki.Modules.Roles
 
 				if (newRole.RequiredLevel > level)
 				{
-					await e.ErrorEmbed(e.GetResource("error_role_level_low", newRole.RequiredLevel - level))
+					await e.ErrorEmbed(e.Locale.GetString("error_role_level_low", newRole.RequiredLevel - level))
 						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
@@ -93,7 +93,7 @@ namespace Miki.Modules.Roles
 				if (newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
 					await e.ErrorEmbed(
-						e.GetResource(
+						e.Locale.GetString(
 							"error_role_required", 
 							$"**{(await e.Guild.GetRoleAsync(newRole.RequiredRole.FromDbLong())).Name}**"
 						)).ToEmbed().SendToChannel(e.Channel);
@@ -120,7 +120,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						await e.ErrorEmbed(e.GetResource("user_error_insufficient_mekos"))
+						await e.ErrorEmbed(e.Locale.GetString("user_error_insufficient_mekos"))
 							.ToEmbed().SendToChannel(e.Channel);
 						return;
 					}
@@ -166,7 +166,7 @@ namespace Miki.Modules.Roles
 
 				if (role == null)
 				{
-					await e.ErrorEmbed(e.GetResource("error_role_null"))
+					await e.ErrorEmbed(e.Locale.GetString("error_role_null"))
 						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
@@ -175,7 +175,7 @@ namespace Miki.Modules.Roles
 
 				if (!author.RoleIds.Contains(role.Id))
 				{
-					await e.ErrorEmbed(e.GetResource("error_role_forbidden"))
+					await e.ErrorEmbed(e.Locale.GetString("error_role_forbidden"))
 						.ToEmbed().SendToChannel(e.Channel);
 					return;
 				}
@@ -251,7 +251,7 @@ namespace Miki.Modules.Roles
 
 				if(stringBuilder.Length == 0)
 				{
-					stringBuilder.Append(e.GetResource("miki_placeholder_null"));
+					stringBuilder.Append(e.Locale.GetString("miki_placeholder_null"));
 				}
 
 				await context.SaveChangesAsync();

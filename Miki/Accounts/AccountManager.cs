@@ -19,6 +19,7 @@ using Miki.Logging;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Discord;
+using Miki.Framework.Language;
 
 namespace Miki.Accounts
 {
@@ -76,10 +77,12 @@ namespace Miki.Accounts
 			   if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
 				   return;
 
+			   LocaleInstance instance = await Locale.GetLanguageInstanceAsync(e.Id);
+
 			   EmbedBuilder embed = new EmbedBuilder()
 			   {
-				   Title = await Locale.GetStringAsync(e.Id, "miki_accounts_level_up_header"),
-				   Description = await Locale.GetStringAsync(e.Id, "miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
+				   Title = instance.GetString("miki_accounts_level_up_header"),
+				   Description = instance.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
 				   Color = new Color(1, 0.7f, 0.2f)
 			   };
 
