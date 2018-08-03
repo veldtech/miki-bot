@@ -130,6 +130,8 @@ namespace Miki.Modules
 		[Command(Name = "divorce")]
 		public async Task DivorceAsync(EventContext e)
 		{
+			e.Arguments.FirstOrDefault();
+
 			using (MikiContext context = new MikiContext())
 			{
 				var marriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
@@ -250,6 +252,17 @@ namespace Miki.Modules
 			}
         }
 
+		[Command(Name = "showmarriages")]
+		public async Task ShowMarriagesAsync(EventContext e)
+		{
+			using (MikiContext context = new MikiContext())
+			{
+
+
+				EmbedBuilder b = await BuildMarriageEmbedAsync()
+		}
+		}
+
         [Command(Name = "showproposals")]
         public async Task ShowProposalsAsync(EventContext e)
         {
@@ -359,37 +372,20 @@ namespace Miki.Modules
 			}
         }
 
-		private async Task<UserMarriedTo> SelectMarriageAsync(EventContext e, MikiContext context, List<UserMarriedTo> marriages)
+		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, EventContext e, MikiContext context, List<UserMarriedTo> marriages)
 		{
-			EmbedBuilder embed = new EmbedBuilder()
-			{
-				Title = "💔  Select marriage to divorce",
-				Description = "Please type in the number of which marriage you want to divorce.",
-				Color = new Color(231, 90, 112)
-			};
-
 			var m = marriages.OrderBy(x => x.Marriage.TimeOfMarriage);
 
 			StringBuilder builder = new StringBuilder();
-			
-			for(int i = 0; i < m.Count(); i++)
-				builder.AppendLine($"`{(i+1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(e.Author.Id.ToDbLong()))}");
+
+			for (int i = 0; i < m.Count(); i++)
+			{
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(e.Author.Id.ToDbLong()))}");
+			}
 
 			embed.Description += "\n\n" + builder.ToString();
 
-			embed.ToEmbed().QueueToChannel(e.Channel);
-
-			IDiscordMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-
-			if (int.TryParse(msg.Content, out int response))
-			{
-				if(response > 0 && response <= marriages.Count)
-				{
-					return m.ElementAt(response - 1);
-				}
-				throw new Exception("This number is not listed, cancelling divorce.");
-			}
-			throw new Exception("This is not a number, cancelling divorce.");
+			return embed;
 		}
     }
 }

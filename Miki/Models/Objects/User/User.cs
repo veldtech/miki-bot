@@ -120,7 +120,8 @@ namespace Miki.Models
 		public static async Task<string> GetNameAsync(MikiContext context, long u)
 		{
 			string key = $"user:name:{u}";
-			if(await Global.RedisClient.ExistsAsync(key))
+
+			if (await Global.RedisClient.ExistsAsync(key))
 			{
 				return await Global.RedisClient.GetAsync<string>(key);
 			}
