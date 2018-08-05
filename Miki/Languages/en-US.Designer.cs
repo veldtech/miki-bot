@@ -259,6 +259,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You do not have any proposals..
+        /// </summary>
+        internal static string error_proposals_empty {
+            get {
+                return ResourceManager.GetString("error_proposals_empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This reminder was not found!.
         /// </summary>
         internal static string error_reminder_null {

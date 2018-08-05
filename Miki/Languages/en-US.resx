@@ -2064,4 +2064,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_channel_not_nsfw" xml:space="preserve">
     <value>This command is only allowed in a NSFW channel.</value>
   </data>
+  <data name="error_proposals_empty" xml:space="preserve">
+    <value>You do not have any proposals.</value>
+  </data>
 </root>

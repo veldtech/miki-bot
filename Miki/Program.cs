@@ -12,6 +12,7 @@ using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Commands;
 using Miki.Framework.Events.Filters;
+using Miki.Framework.Exceptions;
 using Miki.Framework.Languages;
 using Miki.Logging;
 using Miki.Models;
@@ -108,10 +109,21 @@ namespace Miki
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
-				ErrorEmbedBuilder = new EmbedBuilder()
-					.SetTitle($"🚫 Something went wrong!")
-					.SetColor(new Color(1.0f, 0.0f, 0.0f))
 			});
+
+			eventSystem.OnError += async (ex, context) =>
+			{
+				await Task.Yield();
+				if(ex is BotException botEx)
+				{
+					Utils.ErrorEmbedResource(context, botEx.Resource)
+						.ToEmbed().QueueToChannel(context.Channel);
+				}
+				else
+				{
+					Log.Error(ex);
+				}
+			};
 
 			eventSystem.MessageFilter.AddFilter(new BotFilter());
 			eventSystem.MessageFilter.AddFilter(new UserFilter());
@@ -224,33 +236,16 @@ namespace Miki
 			//		await context.Database.ExecuteSqlCommandAsync(
 			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
 			//		await context.Database.ExecuteSqlCommandAsync(
+			//catch(Exception e)
 			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
 			//		await context.SaveChangesAsync();
 			//	}
 			//}
-			//catch(Exception e)
 			//{
 			//	Log.Error(e.ToString());
 			//}
 
 			DogStatsd.Increment("guilds.joined");
-		//	DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
 		}
-
-		//private async Task Bot_OnShardConnect(DiscordSocketClient client)
-		//{
-		//	Log.Message($"shard {client.ShardId} has connected as {client.CurrentUser.ToString()}!");
-		//	DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
-		//	DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
-		//	await Task.Yield();
-		//}
-
-		//private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
-		//{
-		//	Log.Error($"Shard {client.ShardId} has disconnected!");
-		//	DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
-		//	DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
-		//	await Task.Yield();
-		//}
 	}
 }

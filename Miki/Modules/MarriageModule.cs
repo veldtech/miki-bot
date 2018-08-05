@@ -20,7 +20,7 @@ using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
-    [Module(Name = "Marriage")]
+	[Module(Name = "Marriage")]
     public class MarriageModule
     {
 		[Command(Name = "marry")]
@@ -130,27 +130,45 @@ namespace Miki.Modules
 		[Command(Name = "divorce")]
 		public async Task DivorceAsync(EventContext e)
 		{
-			e.Arguments.FirstOrDefault();
-
 			using (MikiContext context = new MikiContext())
 			{
+				ArgObject selection = e.Arguments.FirstOrDefault();
+				int? selectionId = null;
+
+				if (selection != null)
+				{
+					selectionId = selection.AsInt();
+				}
+
 				var marriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
 
 				if (marriages.Count == 0)
-					throw new Exception("You're not married to anyone.");
+					throw new Exception("You do not have any proposals.");
 
-				UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
+				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-				string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+				if (selectionId != null)
+				{
+					var m = marriages[selectionId.Value - 1];
+					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
 
-				EmbedBuilder embed = Utils.Embed;
-				embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
-				embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherName);
-				embed.Color = new Color(0.6f, 0.4f, 0.1f);
-				embed.ToEmbed().QueueToChannel(e.Channel);
+					EmbedBuilder embed = Utils.Embed;
+					embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
+					embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherName);
+					embed.Color = new Color(0.6f, 0.4f, 0.1f);
+					embed.ToEmbed().QueueToChannel(e.Channel);
 
-				m.Remove(context);
-				await context.SaveChangesAsync();
+					m.Remove(context);
+					await context.SaveChangesAsync();
+				}
+				else
+				{
+					var embed = new EmbedBuilder();
+
+					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
+
+					embed.ToEmbed().QueueToChannel(e.Channel);
+				}
 			}
 		}
 
@@ -231,37 +249,48 @@ namespace Miki.Modules
         {
 			using (MikiContext context = new MikiContext())
 			{
+				ArgObject selection = e.Arguments.FirstOrDefault();
+				int? selectionId = null;
+
+				if(selection != null)
+				{
+					selectionId = selection.AsInt();
+				}
+
 				var marriages = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
 
 				if (marriages.Count == 0)
-					throw new Exception("You do not have any proposals.");
-
-				UserMarriedTo m = await SelectMarriageAsync(e, context, marriages);
-
-				string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
-
-				new EmbedBuilder()
 				{
-					Title = $"🔫 You shot down {otherName}!",
-					Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
-					Color = new Color(191, 105, 82)
-				}.ToEmbed().QueueToChannel(e.Channel);
+					throw BotException.CreateCustom("error_proposals_empty");
+				}
 
-				m.Remove(context);
-				await context.SaveChangesAsync();
+				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
+
+				if (selectionId != null)
+				{
+					var m = marriages[selectionId.Value - 1];
+					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+
+					new EmbedBuilder()
+					{
+						Title = $"🔫 You shot down {otherName}!",
+						Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
+						Color = new Color(191, 105, 82)
+					}.ToEmbed().QueueToChannel(e.Channel);
+
+					m.Remove(context);
+					await context.SaveChangesAsync();
+				}
+				else
+				{
+					var embed = new EmbedBuilder();
+
+					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
+
+					embed.ToEmbed().QueueToChannel(e.Channel);
+				}
 			}
         }
-
-		[Command(Name = "showmarriages")]
-		public async Task ShowMarriagesAsync(EventContext e)
-		{
-			using (MikiContext context = new MikiContext())
-			{
-
-
-				EmbedBuilder b = await BuildMarriageEmbedAsync()
-		}
-		}
 
         [Command(Name = "showproposals")]
         public async Task ShowProposalsAsync(EventContext e)
@@ -358,21 +387,11 @@ namespace Miki.Modules
 
 				int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
-				embed.Description = $"Do you want to buy a Marriage slot for **{costForUpgrade}**?\n\nType `yes` to confirm.";
-				embed.Color = new Color(0.4f, 0.6f, 1f);
-
-				SimpleCommandHandler commandHandler = new SimpleCommandHandler(new CommandMap());
-				commandHandler.AddPrefix("");
-				commandHandler.AddCommand(new CommandEvent("yes")
-					.Default(async (cx) => await ConfirmBuyMarriageSlot(cx, costForUpgrade)));
-
-				await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().AddSessionAsync(e.CreateSession(), commandHandler, new TimeSpan(0, 0, 20));
-
-				embed.ToEmbed().QueueToChannel(e.Channel);
+				await ConfirmBuyMarriageSlot(e, costForUpgrade);
 			}
         }
 
-		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, EventContext e, MikiContext context, List<UserMarriedTo> marriages)
+		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, MikiContext context, List<UserMarriedTo> marriages)
 		{
 			var m = marriages.OrderBy(x => x.Marriage.TimeOfMarriage);
 
@@ -380,7 +399,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < m.Count(); i++)
 			{
-				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(e.Author.Id.ToDbLong()))}");
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(userId))}");
 			}
 
 			embed.Description += "\n\n" + builder.ToString();

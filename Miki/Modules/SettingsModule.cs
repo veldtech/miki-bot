@@ -208,9 +208,6 @@ namespace Miki.Modules
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
 			embed.SetDescription(e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()));
 
-			embed.AddField(e.Locale.GetString("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile")
-				.AddField("Your language not here?", "Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)! ");
-
 			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
 
@@ -228,7 +225,10 @@ namespace Miki.Modules
 			new EmbedBuilder() {
 				Title = ("Available locales"),
 				Description = ("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
-			}.ToEmbed().QueueToChannel(e.Channel);
+			}.AddField(
+				"Your language not here?", 
+				"Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)!"
+			).ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		private EmbedBuilder SettingsBaseEmbed =>
