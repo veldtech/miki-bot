@@ -143,10 +143,12 @@ namespace Miki.Modules
 				var marriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
 
 				if (marriages.Count == 0)
-					throw new Exception("You do not have any proposals.");
+				{
+					throw BotException.CreateCustom("error_proposals_empty");
+				}
 
 				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
-
+				
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
@@ -163,7 +165,16 @@ namespace Miki.Modules
 				}
 				else
 				{
-					var embed = new EmbedBuilder();
+					var embed = new EmbedBuilder()
+					{
+						Title = "💍 Marriages",
+						Footer = new EmbedFooter()
+						{
+							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}divorce <number> to decline",
+						},
+						Color = new Color(154, 170, 180)
+
+					};
 
 					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
 
@@ -283,7 +294,16 @@ namespace Miki.Modules
 				}
 				else
 				{
-					var embed = new EmbedBuilder();
+					var embed = new EmbedBuilder()
+					{
+						Title = "💍 Proposals",
+						Footer = new EmbedFooter()
+						{
+							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}declinemarriage <number> to decline",
+						},
+						Color = new Color(154, 170, 180)
+
+					};
 
 					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
 
@@ -393,13 +413,11 @@ namespace Miki.Modules
 
 		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, MikiContext context, List<UserMarriedTo> marriages)
 		{
-			var m = marriages.OrderBy(x => x.Marriage.TimeOfMarriage);
-
 			StringBuilder builder = new StringBuilder();
 
-			for (int i = 0; i < m.Count(); i++)
+			for (int i = 0; i < marriages.Count; i++)
 			{
-				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, m.ElementAt(i).GetOther(userId))}");
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, marriages[i].GetOther(userId))}");
 			}
 
 			embed.Description += "\n\n" + builder.ToString();
