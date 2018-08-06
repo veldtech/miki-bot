@@ -59,7 +59,28 @@ namespace Miki.Modules
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
+	[Command(Name = "dab")]
+        public async Task DabAsync(EventContext e)
+        {
+        	string[] images = new string[]
+           	{
+                "https://i.imgur.com/Cfe7bWI.gif",
+                "https://i.imgur.com/2amGx1y.gif",
+                "https://i.imgur.com/YeuLLNC.mp4",
+		"https://i.imgur.com/vzwCDSt.mp4",
+		"https://i.imgur.com/EyewECt.gif",
+		"https://i.imgur.com/DsIMslz.gif",
+		"https://i.imgur.com/nf8HRh2.gif"
+           	};
 
+			new EmbedBuilder()
+			{
+				ImageUrl = images[MikiRandom.Next(0, images.Length)]
+			}.ToEmbed().QueueToChannel(e.Channel);
+		}
+
+	}
+	
         [Command(Name = "lewd")]
         public async Task LewdAsync(EventContext e)
         {
