@@ -16,6 +16,7 @@ using Miki.Framework.Exceptions;
 using Miki.Framework.Languages;
 using Miki.Logging;
 using Miki.Models;
+using SharpRaven.Data;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
@@ -100,7 +101,7 @@ namespace Miki
 			Global.Client = new Bot(Global.Config.AmountShards, pool, new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.6.2",
+                Version = "0.7",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
@@ -113,7 +114,6 @@ namespace Miki
 
 			eventSystem.OnError += async (ex, context) =>
 			{
-				await Task.Yield();
 				if(ex is BotException botEx)
 				{
 					Utils.ErrorEmbedResource(context, botEx.Resource)
@@ -122,6 +122,7 @@ namespace Miki
 				else
 				{
 					Log.Error(ex);
+					await Global.ravenClient.CaptureAsync(new SentryEvent(ex));
 				}
 			};
 
@@ -198,10 +199,10 @@ namespace Miki
 			return Task.CompletedTask;
 		}
 
-		private async Task Client_LeftGuild(ulong guildId)
+		private Task Client_LeftGuild(ulong guildId)
 		{
 			DogStatsd.Increment("guilds.left");
-			await Task.Yield();
+			return Task.CompletedTask;
 		}
 
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
@@ -217,33 +218,36 @@ namespace Miki
 			List<object> allParams = new List<object>();
 			List<object> allExpParams = new List<object>();
 
-			//try
-			//{
-			//	var users = await arg.GetUsersAsync();
-			//	for (int i = 0; i < users.Count; i++)
-			//	{
-			//		allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+			try
+			{
+				var users = await arg.GetUsersAsync();
 
-			//		allParams.Add(users.ElementAt(i).Id.ToDbLong());
-			//		allParams.Add(users.ElementAt(i).Username);
+				for (int i = 0; i < users.Count; i++)
+				{
+					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-			//		allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
-			//		allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
-			//	}
+					allParams.Add(users.ElementAt(i).Id.ToDbLong());
+					allParams.Add(users.ElementAt(i).Username);
 
-			//	using (var context = new MikiContext())
-			//	{
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//catch(Exception e)
-			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
-			//		await context.SaveChangesAsync();
-			//	}
-			//}
-			//{
-			//	Log.Error(e.ToString());
-			//}
+					allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
+					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
+				}
+
+				using (var context = new MikiContext())
+				{
+					await context.Database.ExecuteSqlCommandAsync(
+						$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+
+					await context.Database.ExecuteSqlCommandAsync(
+						$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+
+					await context.SaveChangesAsync();
+				}
+			}
+			catch (Exception e)
+			{
+				Log.Error(e.ToString());
+			}
 
 			DogStatsd.Increment("guilds.joined");
 		}
