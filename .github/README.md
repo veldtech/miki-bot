@@ -51,7 +51,7 @@ Bot invite: https://discordapp.com/oauth2/authorize?&client_id=16018538931381862
 Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
-Support server: https://discord.gg/55sAjsW<br>
+Support server: https://discord.gg/39Xpj7K<br>
 
 
 ## Feature requests
