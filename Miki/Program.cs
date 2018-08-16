@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.API;
 using Miki.Cache;
 using Miki.Cache.Serializers.Protobuf;
 using Miki.Cache.StackExchange;
@@ -6,6 +7,8 @@ using Miki.Common;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Discord.Gateway.Centralized;
+using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Internal;
 using Miki.Discord.Rest;
 using Miki.Framework;
@@ -16,6 +19,7 @@ using Miki.Framework.Exceptions;
 using Miki.Framework.Languages;
 using Miki.Logging;
 using Miki.Models;
+using Miki.Net.WebSockets;
 using SharpRaven.Data;
 using StackExchange.Redis;
 using StatsdClient;
@@ -46,7 +50,7 @@ namespace Miki
 
 			if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
 			{
-				Global.MikiApi = new API.MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey);
+				Global.MikiApi = new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey);
 			}
 
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
@@ -92,20 +96,27 @@ namespace Miki
 		}
 
 		public async Task LoadDiscord()
-        {
+		{
 			StackExchangeCachePool pool = new StackExchangeCachePool(
 				new ProtobufSerializer(),
 				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
 			);
 
-			Global.Client = new Bot(Global.Config.AmountShards, pool, new ClientInformation()
+			var client = new DistributedGateway(new MessageClientConfiguration
+			{
+				ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+				QueueName = "gateway",
+				ExchangeName = "consumer"
+			});
+		
+			Global.Client = new Bot(client, pool, new ClientInformation()
             {
                 Name = "Miki",
                 Version = "0.7",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
-			}, Global.Config.RabbitUrl.ToString());
+			});
             
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
@@ -169,6 +180,8 @@ namespace Miki
 			Global.Client.Client.GuildJoin += Client_JoinedGuild;
 			Global.Client.Client.GuildLeave += Client_LeftGuild;
 			Global.Client.Client.UserUpdate += Client_UserUpdated;
+
+			await Global.Client.StartAsync();
 		}
 
 		private void InitLogging()
@@ -220,17 +233,15 @@ namespace Miki
 
 			try
 			{
-				var users = await arg.GetUsersAsync();
-
-				for (int i = 0; i < users.Count; i++)
+				for (int i = 0; i < arg.Members.Count; i++)
 				{
 					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-					allParams.Add(users.ElementAt(i).Id.ToDbLong());
-					allParams.Add(users.ElementAt(i).Username);
+					allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
+					allParams.Add(arg.Members.ElementAt(i).Username);
 
-					allExpParams.Add((await users.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
-					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
+					allExpParams.Add((await arg.Members.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
+					allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
 				}
 
 				using (var context = new MikiContext())

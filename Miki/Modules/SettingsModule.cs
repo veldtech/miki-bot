@@ -138,7 +138,7 @@ namespace Miki.Modules
 		{
 			List<string> modules = new List<string>();
 			SimpleCommandHandler commandHandler = e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
-			EventAccessibility userEventAccessibility = await commandHandler.GetUserAccessibility(e.message, e.Channel);
+			EventAccessibility userEventAccessibility = await commandHandler.GetUserAccessibility(e);
 
 			foreach (CommandEvent ev in commandHandler.Commands)
 			{

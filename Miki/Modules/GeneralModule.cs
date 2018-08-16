@@ -232,7 +232,7 @@ namespace Miki.Modules
 		[Command(Name = "guildinfo")]
 		public async Task GuildInfoAsync(EventContext e)
 		{
-			IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
+			IDiscordGuildUser owner = e.Guild.GetOwner();
 
 			//var emojiNames = e.Guild.Emotes.Select(x => x.ToString());
 			string emojiOutput = "none (yet!)";
@@ -254,13 +254,12 @@ namespace Miki.Modules
 				},
 			}.AddInlineField("👑 " + e.Locale.GetString("miki_module_general_guildinfo_owned_by"), $"{owner.Username}#{owner.Discriminator}")
 			.AddInlineField("👉 " +  e.Locale.GetString("miki_label_prefix"), prefix)
-			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), (await e.Guild.GetChannelsAsync()).Count.ToString())
-			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), (await e.Guild.GetVoiceChannelsAsync()).Count.ToString())
-			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), (await e.Guild.GetUsersAsync()).Count.ToString())
-			//.AddInlineField("🤖 " +  e.GetResource("term_shard"), Bot.Instance.Client.GetShardFor(e.Guild).ShardId)
-			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), (await e.Guild.GetRolesAsync()).Count.ToString())
+			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), e.Guild.Channels.Count.ToString())
+			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), e.Guild.Channels.Count.ToString())
+			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), e.Guild.Roles.Count.ToString())
+			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), e.Guild.Roles.Count.ToString())
 			.AddField("📜 " +  e.Locale.GetString("miki_module_general_guildinfo_roles"), 
-				string.Join(",", (await e.Guild.GetRolesAsync()).Select(x => $"`{x.Name}`")))
+				string.Join(",", e.Guild.Roles.Select(x => $"`{x.Name}`")))
 			.AddField("😃 " + e.Locale.GetString("term_emoji"), emojiOutput)
 			.ToEmbed().QueueToChannel(e.Channel);
 		}
@@ -292,7 +291,7 @@ namespace Miki.Modules
 				}
 				else
 				{
-					if (await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message, e.Channel) < ev.Accessibility)
+					if (await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e) < ev.Accessibility)
 					{
 						return;
 					}
@@ -336,7 +335,7 @@ namespace Miki.Modules
 			foreach (Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
 			{
 				List<CommandEvent> events = m.Events
-					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e.message, e.Channel).Result >= x.Accessibility).ToList();
+					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e).Result >= x.Accessibility).ToList();
 
 				if (events.Count > 0)
 				{
@@ -506,7 +505,7 @@ namespace Miki.Modules
 
 			embed.EmbedBuilder.ImageUrl = user.GetAvatarUrl();
 
-			var roles = (await e.Guild.GetRolesAsync()).Where(x => user.RoleIds.Contains(x.Id) && x.Color.Value != 0).OrderByDescending(x => x.Position);
+			var roles = e.Guild.Roles.Where(x => user.RoleIds?.Contains(x.Id) ?? false && x.Color.Value != 0).OrderByDescending(x => x.Position);
 
 			Color c = roles.FirstOrDefault()?.Color ?? new Color(0);
 
@@ -516,7 +515,7 @@ namespace Miki.Modules
 				$"Username: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty((user as IDiscordGuildUser).Nickname) ? "" : $"({(user as IDiscordGuildUser).Nickname})")}**");
 			//builder.AppendLine($"Created at: **{user.CreatedAt.ToString()}**");
 			builder.AppendLine($"Joined at   : **{user.JoinedAt.ToString()}**");
-			builder.AppendLine($"Color Hex : **#{c.ToHexString()}**");
+			builder.AppendLine($"Color Hex : **{c.ToString()}**");
 
 			embed.AddField(
 				e.CreateResource("miki_module_whois_tag_personal"), 

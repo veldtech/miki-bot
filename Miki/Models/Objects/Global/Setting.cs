@@ -87,8 +87,7 @@ namespace Miki.Models
 
 		public static async Task UpdateGuildAsync(IDiscordGuild guild, DatabaseSettingId settingId, int newSetting)
 		{
-			var channels = await guild.GetChannelsAsync();
-			foreach (var channel in channels)
+			foreach (var channel in guild.Channels)
 			{
 				await UpdateAsync((long)channel.Id, settingId, newSetting);
 			}

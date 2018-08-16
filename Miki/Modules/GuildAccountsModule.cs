@@ -300,13 +300,7 @@ namespace Miki.Modules
             {
                 GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				if(arg == null)
-				{
-					// TODO: error message
-					return;
-				}
+				ArgObject arg = e.Arguments.First();
 
 				switch (arg.Argument)
 				{
@@ -338,7 +332,9 @@ namespace Miki.Modules
 							bool? result = arg.AsBoolean();
 
 							if (!result.HasValue)
+							{
 								return;
+							}
 
 							g.VisibleOnLeaderboards = result.Value;
 

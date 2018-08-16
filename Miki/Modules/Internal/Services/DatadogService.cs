@@ -13,7 +13,7 @@ namespace Miki.Modules.Internal.Services
     public class DatadogService : BaseService
     {
 		[Configurable]
-		public string DatadogKey { get; set; } = "";
+		public string DatadogHost { get; set; } = "";
 
 		public override void Install(Module m, Bot b)
 		{
@@ -29,15 +29,15 @@ namespace Miki.Modules.Internal.Services
 			base.Install(m, b);
 
 			var eventSystem = b.GetAttachedObject<EventSystem>();
-			var restClient = b.Client._apiClient;
 
-			restClient.RestClient.OnRequestComplete += (method, uri) =>
-			{
-				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
-				{
-					$"http_method:{method}", $"http_uri:{uri}"
-				});
-			};
+			// TODO (Veld): reimplement this
+			//b.HttpClient.RestClient.OnRequestComplete += (method, uri) =>
+			//{
+			//	DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
+			//	{
+			//		$"http_method:{method}", $"http_uri:{uri}"
+			//	});
+			//};
 
 			if(eventSystem != null)
 			{
@@ -72,7 +72,6 @@ namespace Miki.Modules.Internal.Services
 		public override void Uninstall(Module m, Bot b)
 		{
 			base.Uninstall(m, b);
-			
 		}
 	}
 }

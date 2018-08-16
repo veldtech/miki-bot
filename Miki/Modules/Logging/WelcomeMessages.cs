@@ -158,12 +158,12 @@ namespace Miki.Modules
         {
             long guildId = guild.Id.ToDbLong();
 
-			var channels = await guild.GetTextChannelsAsync();
+			var channels = guild.Channels;
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
-			var guildCount = (await guild.GetUsersAsync()).Count;
+			var guildCount = guild.Members.Count;
 
-			IDiscordGuildUser owner = await guild.GetOwnerAsync();
+			IDiscordGuildUser owner = guild.GetOwner();
 
 			var ownerMention = owner.Mention;
 			var ownerName = owner.Username;
@@ -176,7 +176,7 @@ namespace Miki.Modules
 					.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType)
 					.ToListAsync();
 
-				var allUsers = await guild.GetUsersAsync();
+				var allUsers = guild.Members;
 
 				foreach (var c in messageObjects)
                 {
@@ -196,8 +196,7 @@ namespace Miki.Modules
 					string modifiedMessage = c.Message;
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", 
-						(await g.GetUsersAsync()).Count().ToString());
+					modifiedMessage = modifiedMessage.Replace("-uc", g.Members.Count.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
                     modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
@@ -211,8 +210,8 @@ namespace Miki.Modules
 	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", (await g.GetChannelsAsync()).Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", (await g.GetVoiceChannelsAsync()).Count().ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", g.Channels.Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", g.Channels.Count().ToString());
 					
                     output.Add(new EventMessageObject()
 					{

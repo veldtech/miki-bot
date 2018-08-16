@@ -42,6 +42,12 @@ namespace Miki
 		public string SharpRavenKey { get; set; } = "";
 
 		/// <summary>
+		/// Datadog Agent host
+		/// </summary>
+		[JsonProperty("datadog_host")]
+		public string DatadogHost { get; set; } = "127.0.0.1";
+
+		/// <summary>
 		/// Database connection string
 		/// </summary>
 		[JsonProperty("connection_string")]

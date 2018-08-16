@@ -28,10 +28,6 @@ namespace Miki
 {
 	public static class Utils
 	{
-		static char[] hexDigits = {
-		 '0', '1', '2', '3', '4', '5', '6', '7',
-		 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
 		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
 		{
 			if (Enum.TryParse(argument.Argument, true, out T result))
@@ -163,7 +159,7 @@ namespace Miki
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
 			{
-				return (guild.GetUserAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
+				return (guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
 			}, RegexOptions.None);
 		}
 
@@ -179,24 +175,6 @@ namespace Miki
 				embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
 			}
 			return embed;
-		}
-
-		public static string ToHexString(this Color color)
-		{
-			byte[] bytes = new byte[3];
-			bytes[0] = color.R;
-			bytes[1] = color.G;
-			bytes[2] = color.B;
-
-			char[] chars = new char[bytes.Length * 2];
-
-			for (int i = 0; i < bytes.Length; i++)
-			{
-				int b = bytes[i];
-				chars[i * 2] = hexDigits[b >> 4];
-				chars[i * 2 + 1] = hexDigits[b & 0xF];
-			}
-			return new string(chars);
 		}
 
 		public static async Task SyncAvatarAsync(IDiscordUser user)

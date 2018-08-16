@@ -43,7 +43,7 @@ namespace Miki.Modules
             if (e.message.MentionedUserIds.Count() > 0)
             {
                 userId = e.message.MentionedUserIds.First().ToDbLong();
-                userName = (await e.Guild.GetUserAsync(userId.FromDbLong())).Username;
+                userName = (await e.Guild.GetMemberAsync(userId.FromDbLong())).Username;
             }
             else
             {
@@ -424,11 +424,7 @@ namespace Miki.Modules
 
 		private async Task VotePasta(EventContext e, bool vote)
 		{
-			string pastaName = e.Arguments.ToString();
-
-			// TODO: add resource friendly exception for arguments
-			if (string.IsNullOrEmpty(pastaName))
-				throw new ArgumentNullException("pasta name");
+			string pastaName = e.Arguments.First().Argument;
 
 			using (var context = new MikiContext())
 			{
@@ -442,8 +438,9 @@ namespace Miki.Modules
 
 				long authorId = e.Author.Id.ToDbLong();
 
-				var voteObject = context.Votes.Where(q => q.Id == pastaName && q.UserId == authorId)
-											  .FirstOrDefault();
+				var voteObject = context.Votes
+					.Where(q => q.Id == pastaName && q.UserId == authorId)
+					.FirstOrDefault();
 
 				if (voteObject == null)
 				{

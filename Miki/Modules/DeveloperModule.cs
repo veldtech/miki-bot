@@ -16,6 +16,7 @@ using Miki.Discord.Rest.Entities;
 using Miki.Discord.Common;
 using Miki.Discord;
 using Newtonsoft.Json;
+using Miki.Discord.Common.Packets;
 
 namespace Miki.Modules
 {
@@ -118,7 +119,7 @@ namespace Miki.Modules
 			if (arg == null)
 				return;
 
-			ActivityType type = arg.FromEnum<ActivityType>(ActivityType.Playing);
+			ActivityType type = arg.FromEnum(ActivityType.Playing);
 
 			arg = arg.Next();
 
@@ -128,10 +129,16 @@ namespace Miki.Modules
 			if (type == ActivityType.Streaming)
 				url = "https://twitch.tv/velddev";
 
-			//foreach (var x in Bot.Instance.Client.Shards)
-			//{
-			//	await x.SetGameAsync(text, url, type);
-			//}
+			await Global.Client.Client.SetGameAsync(0, new DiscordStatus{
+				Game = new Activity
+				{
+					Name = text,
+					Url = url,
+					Type = type
+				},
+				Status = "online",
+				IsAFK = false
+			});
 		}
 
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]

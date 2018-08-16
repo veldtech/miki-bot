@@ -40,7 +40,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetUserAsync(e.Author.Id);
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{
@@ -185,7 +185,7 @@ namespace Miki.Modules
 
 			int amount = _amount;
 			string[] argsSplit = e.Arguments.ToString().Split(' ');
-			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id : _target;
+			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
 
 			if (!string.IsNullOrEmpty(argsSplit[0]))
 			{
@@ -405,7 +405,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetUserAsync(e.Author.Id);
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{

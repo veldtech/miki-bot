@@ -75,7 +75,7 @@ namespace Miki.Modules.AccountsModule
 					}
 				}
 
-				IDiscordUser discordUser = await e.Guild.GetUserAsync(id.FromDbLong());
+				IDiscordUser discordUser = await e.Guild.GetMemberAsync(id.FromDbLong());
 				User u = await User.GetAsync(context, discordUser);
 
 				List<Achievement> achievements = await context.Achievements
@@ -253,7 +253,7 @@ namespace Miki.Modules.AccountsModule
 					id = uid.ToDbLong();
 				}
 
-				IDiscordGuildUser discordUser = await e.Guild.GetUserAsync(uid);
+				IDiscordGuildUser discordUser = await e.Guild.GetMemberAsync(uid);
 				User account = await User.GetAsync(context, discordUser);
 
 				string icon = "";
@@ -497,6 +497,34 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "setbackcolor")]
 		public async Task SetProfileBackColorAsync(EventContext e)
 		{
+			using (var context = new MikiContext())
+			{
+				User user = await User.GetAsync(context, e.Author);
+
+				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
+
+				if (x.Count > 0)
+				{
+					ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
+					var hex = x.First().Groups.Last().Value;
+
+					visuals.BackgroundColor = hex;
+					await user.AddCurrencyAsync(-250, e.Channel);
+					await context.SaveChangesAsync();
+
+					e.SuccessEmbed($"Your background color has been successfully changed to `{hex}`")
+						.QueueToChannel(e.Channel);
+				}
+				else
+				{
+
+					new EmbedBuilder()
+						.SetTitle("Setting a background color!")
+						.SetDescription("Changing your background color costs 250 mekos. use `>setbackcolor (e.g. #00FF00)` to purchase")
+						.ToEmbed().QueueToChannel(e.Channel);
+				}
+			}
+
 			using (var context = new MikiContext())
 			{
 				User user = await User.GetAsync(context, e.Author);
@@ -763,7 +791,7 @@ namespace Miki.Modules.AccountsModule
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
-				IDiscordUser userCheck = await e.Guild.GetUserAsync(targetId);
+				IDiscordUser userCheck = await e.Guild.GetMemberAsync(targetId);
 				if (userCheck.IsBot)
 				{
 					e.ErrorEmbedResource("miki_module_accounts_mekos_bot")
@@ -774,7 +802,7 @@ namespace Miki.Modules.AccountsModule
 
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, await e.Guild.GetUserAsync(targetId != 0 ? targetId : e.Author.Id));
+				User user = await User.GetAsync(context, await e.Guild.GetMemberAsync(targetId != 0 ? targetId : e.Author.Id));
 
 				new EmbedBuilder()
 				{
