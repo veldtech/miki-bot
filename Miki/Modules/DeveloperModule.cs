@@ -12,7 +12,6 @@ using Miki.Framework.Extension;
 using Miki.API.EmbedMenus;
 using System.Text.RegularExpressions;
 using Miki.Framework.Events.Filters;
-using Miki.Discord.Rest.Entities;
 using Miki.Discord.Common;
 using Miki.Discord;
 using Newtonsoft.Json;
