@@ -914,7 +914,6 @@ namespace Miki.Modules.AccountsModule
 					var time = (u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Locale);
 
 					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.")
-					.AddInlineField("Need more mekos?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) for a bonus daily!")
 					.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
