@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Discord.Common;
 using Miki.Modules;
 
 namespace Miki.Models
@@ -49,7 +49,7 @@ namespace Miki.Models
 						Value = 0
 					})).Entity;
 				}
-				await Global.RedisClient.AddAsync(GetKey(id, settingId), s.Value);
+				await Global.RedisClient.UpsertAsync(GetKey(id, settingId), s.Value);
 				return s.Value;
 			}
 		}
@@ -78,17 +78,16 @@ namespace Miki.Models
 					s.Value = value;
 				}
 
-				await Global.RedisClient.AddAsync(GetKey(id, settingId), value);
+				await Global.RedisClient.UpsertAsync(GetKey(id, settingId), value);
 				await context.SaveChangesAsync();
 			}
 		}
 		public static async Task UpdateAsync(ulong id, DatabaseSettingId settingId, int value)
 			=> await UpdateAsync((long)id, settingId, value);
 
-		public static async Task UpdateGuildAsync(IGuild guild, DatabaseSettingId settingId, int newSetting)
+		public static async Task UpdateGuildAsync(IDiscordGuild guild, DatabaseSettingId settingId, int newSetting)
 		{
-			var channels = await guild.GetChannelsAsync();
-			foreach (var channel in channels)
+			foreach (var channel in guild.Channels)
 			{
 				await UpdateAsync((long)channel.Id, settingId, newSetting);
 			}

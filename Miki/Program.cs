@@ -1,70 +1,71 @@
-﻿using Discord;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.API;
+using Miki.Cache;
+using Miki.Cache.Serializers.Protobuf;
+using Miki.Cache.StackExchange;
+using Miki.Common;
+using Miki.Configuration;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Gateway.Distributed;
+using Miki.Discord.Internal;
+using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.FileHandling;
-using Miki.Languages;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Commands;
+using Miki.Framework.Events.Filters;
+using Miki.Framework.Exceptions;
+using Miki.Framework.Languages;
+using Miki.Logging;
 using Miki.Models;
-using Newtonsoft.Json;
+using SharpRaven.Data;
+using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Common;
-using Miki.Framework.Events;
-using System.Threading;
-using Discord.WebSocket;
-using Miki.Framework.Extension;
-using Amazon.S3.Model;
-using Miki.Framework.Languages;
 using System.Reflection;
 using System.Resources;
-using Microsoft.Extensions.Logging;
-using Miki.Framework.Events.Filters;
-using Miki.Framework.Events.Commands;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Miki
 {
 	public class Program
     {
-        private static void Main(string[] args)
-        {
-			new Program().Start().GetAwaiter().GetResult();
-		}
-
-		public static Bot bot;
 		public static DateTime timeSinceStartup;
 
-		public async Task Start()
+		static async Task Main()
 		{
+			Program p = new Program();
+
 			timeSinceStartup = DateTime.Now;
 
-			Log.OnLog += (msg, e) => Console.WriteLine(msg);
+			p.InitLogging();
 
-			LogColor color = new LogColor();
-			color.Foreground = ConsoleColor.Red;
-			Log.Theme.SetColor(LogLevel.Error, color);
+			p.LoadLocales();
 
-			LoadLocales();
+			await p.LoadDiscord();
 
-			LoadDiscord();
+			if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+			{
+				Global.MikiApi = new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey);
+			}
 
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
+			{
 				MessageBucket.AddWorker();
+			}
 
 			using (var c = new MikiContext())
 			{			
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach(var u in bannedUsers)
 				{
-					bot.GetAttachedObject<EventSystem>().MessageFilter
+					Global.Client.GetAttachedObject<EventSystem>().MessageFilter
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
-			}	
-
-			await bot.ConnectAsync(Global.Config.Token);
+			}
+			await Task.Delay(-1);
 		}
 
 		private void LoadLocales()
@@ -92,35 +93,63 @@ namespace Miki
 			});
 		}
 
-		public void LoadDiscord()
-        {
-			WebhookManager.Listen("webhooks");
-			WebhookManager.OnEvent += (eventArgs) => new Task(() => Console.WriteLine("[webhook] " + eventArgs.auth_code));
+		public async Task LoadDiscord()
+		{
+			StackExchangeCachePool pool = new StackExchangeCachePool(
+				new ProtobufSerializer(),
+				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
+			);
 
-			bot = new Bot(Global.Config.AmountShards, new DiscordSocketConfig()
+			var client = new DistributedGateway(new MessageClientConfiguration
 			{
-				ShardId = Global.Config.ShardId,
-				TotalShards = Global.Config.ShardCount,
-				ConnectionTimeout = 100000,
-				LargeThreshold = 250,
-			}, new ClientInformation()
+				ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+				QueueName = "gateway",
+				ExchangeName = "consumer"
+			});
+		
+			Global.Client = new Bot(client, pool, new ClientInformation()
             {
                 Name = "Miki",
-                Version = "0.6.2",
+                Version = "0.7",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
+				Token = Global.Config.Token
 			});
             
             EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
-				ErrorEmbedBuilder = new EmbedBuilder().WithTitle($"🚫 Something went wrong!").WithColor(new Color(1.0f, 0.0f, 0.0f))
 			});
 
-			bot.Attach(eventSystem);
+			eventSystem.OnError += async (ex, context) =>
+			{
+				if(ex is BotException botEx)
+				{
+					Utils.ErrorEmbedResource(context, botEx.Resource)
+						.ToEmbed().QueueToChannel(context.Channel);
+				}
+				else
+				{
+					Log.Error(ex);
+					await Global.ravenClient.CaptureAsync(new SentryEvent(ex));
+				}
+			};
 
-			var handler = new SimpleCommandHandler(Framework.Events.CommandMap.CreateFromAssembly());
-			handler.AddPrefix(">", true);
+			eventSystem.MessageFilter.AddFilter(new BotFilter());
+			eventSystem.MessageFilter.AddFilter(new UserFilter());
+
+			Global.Client.Attach(eventSystem);
+			ConfigurationManager mg = new ConfigurationManager();
+
+			var commandMap = new Framework.Events.CommandMap();
+			commandMap.OnModuleLoaded += (module) =>
+			{
+				mg.RegisterType(module.GetReflectedInstance());
+			};
+
+			var handler = new SimpleCommandHandler(commandMap);
+
+			handler.AddPrefix(">", true, true);
 			handler.AddPrefix("miki.");
 
 			var sessionHandler = new SessionBasedCommandHandler();
@@ -130,58 +159,44 @@ namespace Miki
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
 
-            if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+			commandMap.RegisterAttributeCommands();
+			commandMap.Install(eventSystem, Global.Client);
+
+			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
             {
                 Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
             }
 
-			if(!string.IsNullOrWhiteSpace(Global.Config.DatadogKey))
+			handler.OnMessageProcessed += async (cmd, msg, time) =>
 			{
-				var dogstatsdConfig = new StatsdConfig
-				{
-					StatsdServerName = Global.Config.DatadogHost,
-					StatsdPort = 8125,
-					Prefix = "miki"
-				};
-				DogStatsd.Configure(dogstatsdConfig);
-			}
-
-			eventSystem.OnCommandDone += async (exception, command, message, time) =>
-			{
-				if (exception != null)
-				{
-					DogStatsd.Counter("commands.error.rate", 1);
-				}
-
-				if (command.Module == null)
-				{
-					return;
-				}
-
-				DogStatsd.Histogram("commands.time", time, 0.1, new[]
-				{
-					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-					$"commandname:{command.Name.ToLowerInvariant()}"
-				});
-
-				DogStatsd.Counter("commands.count", 1, 1, new[]
-				{
-					$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-					$"commandname:{command.Name.ToLowerInvariant()}"
-				});
+				await Task.Yield();
+				Log.Message($"{cmd.Name} processed in {time}ms");
 			};
 
-			bot.Client.MessageReceived += Bot_MessageReceived;
+			Global.Client.Client.MessageCreate += Bot_MessageReceived;;
 
-			bot.Client.JoinedGuild += Client_JoinedGuild;
-			bot.Client.LeftGuild += Client_LeftGuild;
-			bot.Client.UserUpdated += Client_UserUpdated;
+			Global.Client.Client.GuildJoin += Client_JoinedGuild;
+			Global.Client.Client.GuildLeave += Client_LeftGuild;
+			Global.Client.Client.UserUpdate += Client_UserUpdated;
 
-			bot.Client.ShardConnected += Bot_OnShardConnect;
-			bot.Client.ShardDisconnected += Bot_OnShardDisconnect;
+			await Global.Client.StartAsync();
 		}
 
-		private async Task Client_UserUpdated(SocketUser oldUser, SocketUser newUser)
+		private void InitLogging()
+		{
+			Log.OnLog += (msg, e) =>
+			{
+				if (e >= LogLevel.Information)
+				{
+					Console.WriteLine(msg);
+				}
+			};
+
+			Log.Theme.SetColor(LogLevel.Error, new LogColor { Foreground = ConsoleColor.Red });
+			Log.Theme.SetColor(LogLevel.Warning, new LogColor { Foreground = ConsoleColor.Yellow });
+		}
+
+		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
 			if (oldUser.AvatarId != newUser.AvatarId)
 			{
@@ -189,23 +204,26 @@ namespace Miki
 			}
 		}
 
-		private Task Bot_MessageReceived(IMessage arg)
+		private Task Bot_MessageReceived(IDiscordMessage arg)
 		{
 			DogStatsd.Increment("messages.received");
 			return Task.CompletedTask;
 		}
 
-		private async Task Client_LeftGuild(SocketGuild arg)
+		private Task Client_LeftGuild(ulong guildId)
 		{
 			DogStatsd.Increment("guilds.left");
-			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
-			await Task.Yield();
+			return Task.CompletedTask;
 		}
 
-		private async Task Client_JoinedGuild(IGuild arg)
+		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
-			ITextChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
+			//IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
+
+			//if (defaultChannel != null)
+			//{
+			//	defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
+			//}
 
 			List<string> allArgs = new List<string>();
 			List<object> allParams = new List<object>();
@@ -213,50 +231,34 @@ namespace Miki
 
 			try
 			{
-				var users = await arg.GetUsersAsync();
-				for (int i = 0; i < users.Count; i++)
+				for (int i = 0; i < arg.Members.Count; i++)
 				{
 					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-					allParams.Add(users.ElementAt(i).Id.ToDbLong());
-					allParams.Add(users.ElementAt(i).Username);
+					allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
+					allParams.Add(arg.Members.ElementAt(i).Username);
 
-					allExpParams.Add(users.ElementAt(i).GuildId.ToDbLong());
-					allExpParams.Add(users.ElementAt(i).Id.ToDbLong());
+					allExpParams.Add((await arg.Members.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
+					allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
 				}
 
 				using (var context = new MikiContext())
 				{
 					await context.Database.ExecuteSqlCommandAsync(
 						$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+
 					await context.Database.ExecuteSqlCommandAsync(
 						$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+
 					await context.SaveChangesAsync();
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Log.Error(e.ToString());
 			}
 
 			DogStatsd.Increment("guilds.joined");
-			DogStatsd.Set("guilds", Bot.Instance.Client.Guilds.Count, Bot.Instance.Client.Guilds.Count);
-		}
-
-		private async Task Bot_OnShardConnect(DiscordSocketClient client)
-		{
-			Log.Message($"shard {client.ShardId} has connected as {client.CurrentUser.ToString()}!");
-			DogStatsd.Event("shard.connect", $"shard {client.ShardId} has connected!");
-			DogStatsd.ServiceCheck($"shard.up", Status.OK, null, $"miki.shard.{client.ShardId}");
-			await Task.Yield();
-		}
-
-		private async Task Bot_OnShardDisconnect(Exception e, DiscordSocketClient client)
-		{
-			Log.Error($"Shard {client.ShardId} has disconnected!");
-			DogStatsd.Event("shard.disconnect", $"shard {client.ShardId} has disconnected!\n" + e.ToString());
-			DogStatsd.ServiceCheck($"shard.up", Status.CRITICAL, null, $"miki.shard.{client.ShardId}", null, e.Message);
-			await Task.Yield();
 		}
 	}
 }

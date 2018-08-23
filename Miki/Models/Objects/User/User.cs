@@ -11,10 +11,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
 using Miki.Common;
-using Discord;
 using StatsdClient;
 using Miki.Exceptions;
 using Miki.Framework.Events.Filters;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -46,7 +46,7 @@ namespace Miki.Models
 
 		public int Level => CalculateLevel(Total_Experience);
 
-        public async Task AddCurrencyAsync(int amount, IMessageChannel channel = null, User fromUser = null)
+        public async Task AddCurrencyAsync(int amount, IDiscordChannel channel = null, User fromUser = null)
         {
 			if (Banned) return;
 
@@ -54,7 +54,7 @@ namespace Miki.Models
 			{
 				if (Currency < Math.Abs(amount))
 				{
-					throw new InsufficientCurrencyException(this, Math.Abs(amount));
+					throw new InsufficientCurrencyException(Currency, Math.Abs(amount));
 				}
 			}
 
@@ -64,15 +64,15 @@ namespace Miki.Models
 
             if (channel != null)
             {
-                await AchievementManager.Instance.CallTransactionMadeEventAsync(channel, this, fromUser, Currency);
+                await AchievementManager.Instance.CallTransactionMadeEventAsync((IDiscordGuildChannel)channel, this, fromUser, Currency);
             }
         }
 
-        public static async Task<User> CreateAsync(IMessage e)
+        public static async Task<User> CreateAsync(IDiscordMessage e)
         {
 			return await CreateAsync(e.Author.Id.ToDbLong(), e.Author.Username);
         }
-		public static async Task<User> CreateAsync(IUser u)
+		public static async Task<User> CreateAsync(IDiscordUser u)
 		{
 			return await CreateAsync(u.Id.ToDbLong(), u.Username);
 		}
@@ -102,7 +102,7 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<User> GetAsync(MikiContext context, IUser u)
+		public static async Task<User> GetAsync(MikiContext context, IDiscordUser u)
 		{
 			long id = u.Id.ToDbLong();
 
@@ -120,44 +120,31 @@ namespace Miki.Models
 		public static async Task<string> GetNameAsync(MikiContext context, long u)
 		{
 			string key = $"user:name:{u}";
-			if(await Global.RedisClient.ExistsAsync(key))
+
+			if (await Global.RedisClient.ExistsAsync(key))
 			{
-				return Global.RedisClient.Get<string>(key);
+				return await Global.RedisClient.GetAsync<string>(key);
 			}
 
 			User user = await context.Users.FindAsync(u);
-			await Global.RedisClient.AddAsync(key, user.Name);
+			await Global.RedisClient.UpsertAsync(key, user.Name);
 			return user.Name;
 		}
 
 		public static async Task<List<User>> SearchUserAsync(MikiContext context, string name)
 		{
-			return await context.Users.Where(x => x.Name.ToLower() == name.ToLower()).ToListAsync();
+			return await context.Users
+				.Where(x => x.Name.ToLower() == name.ToLower())
+				.ToListAsync();
 		}
 
         public static int CalculateLevel(int exp)
         {
-            int experience = exp;
-            int Level = 0;
-            int output = 0;
-            while (experience >= output)
-            {
-                output = CalculateNextLevelIteration(output, Level);
-                Level++;
-            }
-            return Level;
-        }
+			return (int)Math.Sqrt(exp / 10) + 1;
+		}
 		public static int CalculateLevelExperience(int level)
 		{
-			int Level = 0;
-			int output = 0;
-			do
-			{
-				output = CalculateNextLevelIteration(output, Level);
-				Level++;
-			} while (Level < level);
-
-			return output;
+			return (level * level * 10);
 		}
 
 		public async Task<int> GetGlobalReputationRankAsync()

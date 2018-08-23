@@ -1,5 +1,4 @@
-﻿using Discord;
-using Miki.Framework;
+﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Common;
@@ -9,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Extension;
-using Discord.WebSocket;
+using Miki.Discord.Common;
+using Miki.Discord;
+using Miki.Discord.Rest;
 
 namespace Miki.Modules
 {
@@ -19,8 +20,8 @@ namespace Miki.Modules
 		[Command(Name = "ban", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task BanAsync(EventContext e)
 		{
-			IGuildUser currentUser = await e.Guild.GetCurrentUserAsync();
-			if (currentUser.GuildPermissions.Has(GuildPermission.BanMembers))
+			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
+			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
 			{
 				var argObject = e.Arguments.FirstOrDefault();
 
@@ -29,26 +30,28 @@ namespace Miki.Modules
 					return;
 				}
 
-				IGuildUser user = await argObject.GetUserAsync(e.Guild);
+				IDiscordGuildUser user = await argObject.GetUserAsync(e.Guild);
 				argObject?.Next();
 
 				if (user == null)
 				{
-					e.ErrorEmbed(e.GetResource("ban_error_user_null"))
-						.Build().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("ban_error_user_null"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((user as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+
+				if (user.Hierarchy >= author.Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "ban")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "ban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((user as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				if (user.Hierarchy >= currentUser.Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "ban")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "ban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
@@ -65,30 +68,30 @@ namespace Miki.Modules
 
 				EmbedBuilder embed = Utils.Embed;
 				embed.Title = "🛑 BAN";
-				embed.Description = e.GetResource("ban_header", $"**{e.Guild.Name}**");
+				embed.Description = e.Locale.GetString("ban_header", $"**{e.Guild.Name}**");
 
 				if (!string.IsNullOrWhiteSpace(reason))
 				{
-					embed.AddInlineField($"💬 {e.GetResource("miki_module_admin_kick_reason")}", reason);
+					embed.AddInlineField($"💬 {e.Locale.GetString("miki_module_admin_kick_reason")}", reason);
 				}
 
-				embed.AddInlineField($"💁 {e.GetResource("miki_module_admin_kick_by")}", e.Author.Username + "#" + e.Author.Discriminator);
+				embed.AddInlineField($"💁 {e.Locale.GetString("miki_module_admin_kick_by")}", e.Author.Username + "#" + e.Author.Discriminator);
 
-				await embed.Build().SendToUser(user);
+				await embed.ToEmbed().SendToUser(user);
 
-				await user.Guild.AddBanAsync(user, pruneDays, reason);
+				await e.Guild.AddBanAsync(user, 1, reason);
 			}
 			else
 			{
-				e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_ban_members")}`"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("permission_needed_error", $"`{e.Locale.GetString("permission_ban_members")}`"))
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task CleanAsync(EventContext e)
 		{
-			await PruneAsync(e, 100, Bot.Instance.Client.CurrentUser.Id);
+			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id);
 		}
 
 		[Command(Name = "editexp", Accessibility = EventAccessibility.ADMINONLY)]
@@ -99,65 +102,70 @@ namespace Miki.Modules
 			if (arg == null)
 				throw new ArgumentException();
 
-			IUser target = await arg.GetUserAsync(e.Guild);
+			IDiscordUser target = await arg.GetUserAsync(e.Guild);
 		}
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task KickAsync(EventContext e)
 		{
-			IGuildUser currentUser = await e.Guild.GetCurrentUserAsync();
+			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
-			if (currentUser.GuildPermissions.Has(GuildPermission.KickMembers))
+			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
 			{
-				IGuildUser bannedUser = null;
+				IDiscordGuildUser bannedUser = null;
 				bannedUser = await arg?.GetUserAsync(e.Guild) ?? null;
 
 				if (bannedUser == null)
 				{
-					e.ErrorEmbed(e.GetResource("ban_error_user_null"))
-						.Build().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("ban_error_user_null"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((bannedUser as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				if ((bannedUser as IDiscordGuildUser).Hierarchy >= (e.Author as IDiscordGuildUser).Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "kick")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((bannedUser as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				if ((bannedUser as IDiscordGuildUser).Hierarchy >= (currentUser as IDiscordGuildUser).Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "kick")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				arg = arg.Next();
+				string reason = "";
 
-				string reason = arg.TakeUntilEnd().Argument;
+				if (!arg.IsLast)
+				{
+					arg = arg.Next();
+
+					reason = arg.TakeUntilEnd().Argument;
+				}
 
 				EmbedBuilder embed = new EmbedBuilder();
-				embed.Title = e.GetResource("miki_module_admin_kick_header");
-				embed.Description = e.GetResource("miki_module_admin_kick_description", new object[] { e.Guild.Name });
+				embed.Title = e.Locale.GetString("miki_module_admin_kick_header");
+				embed.Description = e.Locale.GetString("miki_module_admin_kick_description", new object[] { e.Guild.Name });
 
 				if (!string.IsNullOrWhiteSpace(reason))
 				{
-					embed.AddInlineField(e.GetResource("miki_module_admin_kick_reason"), reason);
+					embed.AddField(e.Locale.GetString("miki_module_admin_kick_reason"), reason, true);
 				}
 
-				embed.AddInlineField(e.GetResource("miki_module_admin_kick_by"), e.Author.Username + "#" + e.Author.Discriminator);
+				embed.AddField(e.Locale.GetString("miki_module_admin_kick_by"), e.Author.Username + "#" + e.Author.Discriminator, true);
 
 				embed.Color = new Color(1, 1, 0);
 
-				await embed.Build().SendToUser(bannedUser);
+				await embed.ToEmbed().SendToUser(bannedUser);
 				await bannedUser.KickAsync(reason);
 			}
 			else
 			{
-				e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_kick_members")}`"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("permission_needed_error", $"`{e.Locale.GetString("permission_kick_members")}`"))
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -168,16 +176,16 @@ namespace Miki.Modules
 		}
 		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
 		{
-			IGuildUser invoker = await e.Guild.GetCurrentUserAsync();
-			if (!invoker.GuildPermissions.Has(GuildPermission.ManageMessages))
+			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
+			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
 			{
-				e.Channel.QueueMessageAsync(e.GetResource("miki_module_admin_prune_error_no_access"));
+				e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_admin_prune_error_no_access"));
 				return;
 			}
 
 			int amount = _amount;
 			string[] argsSplit = e.Arguments.ToString().Split(' ');
-			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetUserAsync(e.message.MentionedUserIds.First())).Id : _target;
+			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
 
 			if (!string.IsNullOrEmpty(argsSplit[0]))
 			{
@@ -185,57 +193,57 @@ namespace Miki.Modules
 				{
 					if (amount < 0)
 					{
-						Utils.ErrorEmbed(e, e.GetResource("miki_module_admin_prune_error_negative"))
-							.Build().QueueToChannel(e.Channel);
+						Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_negative"))
+							.ToEmbed().QueueToChannel(e.Channel);
 						return;
 					}
 					if (amount > 100)
 					{
-						Utils.ErrorEmbed(e, e.GetResource("miki_module_admin_prune_error_max"))
-							.Build().QueueToChannel(e.Channel);
+						Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_max"))
+							.ToEmbed().QueueToChannel(e.Channel);
 						return;
 					}
 				}
 				else
 				{
-					Utils.ErrorEmbed(e, e.GetResource("miki_module_admin_prune_error_parse"))
-						.Build().QueueToChannel(e.Channel);
+					Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_parse"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
 
 			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
 
-			IEnumerable<IMessage> messages = await e.Channel.GetMessagesAsync(amount).FlattenAsync();
-			List<IMessage> deleteMessages = new List<IMessage>();
+			//IEnumerable<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount).FlattenAsync();
+			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
-			amount = messages.Count(); // Checks if the amount of messages to delete is more than the amount of messages availiable.
+			//amount = messages.Count(); // Checks if the amount of messages to delete is more than the amount of messages availiable.
 
-			if (amount < 1)
-			{
-				string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
-				await e.message.DeleteAsync();
+			//if (amount < 1)
+			//{
+			//	string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
+			//	await e.message.DeleteAsync();
 
-				e.ErrorEmbed(e.GetResource("miki_module_admin_prune_no_messages", prefix))
-					.Build().QueueToChannel(e.Channel);
-				return;
-			}
+			//	e.ErrorEmbed(e.GetResource("miki_module_admin_prune_no_messages", prefix))
+			//		.ToEmbed().QueueToChannel(e.Channel);
+			//	return;
+			//}
 
-			for (int i = 0; i < amount; i++)
-			{
-				if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
-					continue;
+			//for (int i = 0; i < amount; i++)
+			//{
+			//	if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
+			//		continue;
 
-				if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
-				{
-					deleteMessages.Add(messages.ElementAt(i));
-				}
-			}
+			//	if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
+			//	{
+			//		deleteMessages.Add(messages.ElementAt(i));
+			//	}
+			//}
 
-			if (deleteMessages.Count > 0)
-			{
-				await (e.Channel as ITextChannel).DeleteMessagesAsync(deleteMessages);
-			}
+			//if (deleteMessages.Count > 0)
+			//{
+			//	await e.Channel.DeleteMessagesAsync(deleteMessages);
+			//}
 
 			Task.WaitAll();
 
@@ -254,11 +262,11 @@ namespace Miki.Modules
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.Title = titles[MikiRandom.Next(titles.Length - 1)];
-			embed.Description = e.GetResource("miki_module_admin_prune_success", deleteMessages.Count);
+			embed.Description = e.Locale.GetString("miki_module_admin_prune_success", deleteMessages.Count);
 
 			embed.Color = new Color(1, 1, 0.5f);
 
-			IMessage _dMessage = await embed.Build().SendToChannel(e.Channel);
+			IDiscordMessage _dMessage = await embed.ToEmbed().SendToChannel(e.Channel);
 
 			Task.Run(async () =>
 			{
@@ -284,7 +292,7 @@ namespace Miki.Modules
 			if (command == null)
 			{
 				e.ErrorEmbed($"{commandId} is not a valid command")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -296,8 +304,8 @@ namespace Miki.Modules
 
 			if (!command.CanBeDisabled)
 			{
-				e.ErrorEmbed(e.GetResource("miki_admin_cannot_disable", $"`{commandId}`"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("miki_admin_cannot_disable", $"`{commandId}`"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -311,8 +319,8 @@ namespace Miki.Modules
 				}
 			}
 
-			await command.SetEnabled(e.Channel.Id, setValue ?? false);
-			Utils.SuccessEmbed(e.Channel.Id, ((setValue ?? false) ? e.GetResource("miki_generic_enabled") : e.GetResource("miki_generic_disabled")) + $" {command.Name}")
+			await command.SetEnabled(Global.RedisClient, e.Channel.Id, setValue ?? false);
+			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {command.Name}")
 				.QueueToChannel(e.Channel);
 		}
 
@@ -334,7 +342,7 @@ namespace Miki.Modules
 			if (m == null)
 			{
 				e.ErrorEmbed($"{arg.Argument} is not a valid module.")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -346,8 +354,8 @@ namespace Miki.Modules
 
 			if (!m.CanBeDisabled && !setValue.Value)
 			{
-				e.ErrorEmbed(e.GetResource("miki_admin_cannot_disable", $"`{moduleName}`"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("miki_admin_cannot_disable", $"`{moduleName}`"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -361,17 +369,17 @@ namespace Miki.Modules
 				}
 			}
 
-			await m.SetEnabled(e.Channel.Id, (setValue ?? false));
+			await m.SetEnabled(Global.RedisClient, e.Channel.Id, (setValue ?? false));
 
-			Utils.SuccessEmbed(e.Channel.Id, ((setValue ?? false) ? e.GetResource("miki_generic_enabled") : e.GetResource("miki_generic_disabled")) + $" {m.Name}")
+			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}")
 				.QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SoftbanAsync(EventContext e)
 		{
-			IGuildUser currentUser = await e.Guild.GetCurrentUserAsync();
-			if (currentUser.GuildPermissions.Has(GuildPermission.BanMembers))
+			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
+			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
 			{
 				var argObject = e.Arguments.FirstOrDefault();
 
@@ -380,32 +388,38 @@ namespace Miki.Modules
 					return;
 				}
 
-				IGuildUser user = await argObject.GetUserAsync(e.Guild);
-				argObject?.Next();
+				IDiscordGuildUser user = await argObject.GetUserAsync(e.Guild);
+
+				string reason = null;
+
+				if (!argObject.IsLast)
+				{
+					argObject?.Next();
+					reason = argObject.TakeUntilEnd().Argument;
+				}
 
 				if (user == null)
 				{
-					e.ErrorEmbed(e.GetResource("ban_error_user_null"))
-						.Build().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("ban_error_user_null"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((user as SocketGuildUser).Hierarchy >= (e.Author as SocketGuildUser).Hierarchy)
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+
+				if (user.Hierarchy >= author.Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "softban")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "softban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((user as SocketGuildUser).Hierarchy >= (currentUser as SocketGuildUser).Hierarchy)
+				if (user.Hierarchy >= currentUser.Hierarchy)
 				{
-					e.ErrorEmbed(e.GetResource("permission_error_low", "softban")).Build()
+					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "softban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
-
-
-				string reason = argObject.TakeUntilEnd().Argument;
 
 				EmbedBuilder embed = Utils.Embed;
 				embed.Title = "⚠ SOFTBAN";
@@ -418,14 +432,15 @@ namespace Miki.Modules
 
 				embed.AddInlineField("💁 Banned by", e.Author.Username + "#" + e.Author.Discriminator);
 
-				await embed.Build().SendToUser(user);
-				await user.Guild.AddBanAsync(user, 1, reason);
-				await user.Guild.RemoveBanAsync(user);
+				await embed.ToEmbed().SendToUser(user);
+
+				await e.Guild.AddBanAsync(user, 1, reason);
+				await e.Guild.RemoveBanAsync(user);
 			}
 			else
 			{
-				e.ErrorEmbed(e.GetResource("permission_needed_error", $"`{e.GetResource("permission_ban_members")}`"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("permission_needed_error", $"`{e.Locale.GetString("permission_ban_members")}`"))
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 	}

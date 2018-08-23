@@ -12,6 +12,13 @@
 //{
 //    internal class RocketLeagueModule
 //    {
+
+/// <summary>
+/// Rocket League Stats API Key
+/// </summary>
+//[JsonProperty("rocket_league_key")]
+//public string RocketLeagueKey { get; set; } = "";
+
 //		private RocketLeagueApi api = new RocketLeagueApi(new RocketLeagueOptions()
 //		{
 //			ApiKey = Global.Config.RocketLeagueKey

@@ -9,11 +9,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Miki.Framework.Events;
-using Discord;
+using Miki.Logging;
+using Miki.Discord.Common;
 
 namespace Miki.Accounts.Achievements
 {
-	public delegate Task<bool> CheckUserUpdateAchievement(IUser ub, IUser ua);
+	public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
 
 	public delegate Task<bool> CheckCommandAchievement(User u, CommandEvent e);
 
@@ -52,11 +53,11 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnGlobalLevelUp += async (u, c, l) =>
 			{
-				if (await provider.IsEnabled(c.Id))
+				if (await provider.IsEnabled(Global.RedisClient, c.Id))
 				{
 					LevelPacket p = new LevelPacket()
 					{
-						discordUser = await (c as IGuildChannel).GetUserAsync(u.Id),
+						discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
 						discordChannel = c,
 						level = l,
 					};
@@ -66,12 +67,12 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
 			{
-				if (await provider.IsEnabled(msg.Channel.Id))
+				if (await provider.IsEnabled(Global.RedisClient, msg.ChannelId))
 				{
 					TransactionPacket p = new TransactionPacket()
 					{
 						discordUser = msg.Author,
-						discordChannel = msg.Channel,
+						discordChannel = await msg.GetChannelAsync(),
 						giver = u1,
 						receiver = u2,
 						amount = amount
@@ -81,15 +82,15 @@ namespace Miki.Accounts.Achievements
 				}
 			};
 
-			bot.GetAttachedObject<EventSystem>().OnCommandDone += async (ex, e, m, t) =>
+			bot.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
 			{
 				CommandPacket p = new CommandPacket()
 				{
 					discordUser = m.Author,
-					discordChannel = m.Channel,
+					discordChannel = await m.GetChannelAsync(),
 					message = m,
 					command = e,
-					success = ex == null
+					success = true
 				};
 				await OnCommandUsed?.Invoke(p);
 			};
@@ -133,7 +134,7 @@ namespace Miki.Accounts.Achievements
 			return output;
 		}
 
-		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IUser user, IMessageChannel channel)
+		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordChannel channel)
 		{
 			DogStatsd.Counter("achievements.gained", 1);
 
@@ -160,13 +161,13 @@ namespace Miki.Accounts.Achievements
 			}
 		}
 
-		public async Task CallTransactionMadeEventAsync(IMessageChannel m, User receiver, User giver, int amount)
+		public async Task CallTransactionMadeEventAsync(IDiscordGuildChannel m, User receiver, User giver, int amount)
 		{
 			try
 			{
 				TransactionPacket p = new TransactionPacket();
 				p.discordChannel = m;
-				p.discordUser = Bot.Instance.Client.GetUser(receiver.Id.FromDbLong());
+				p.discordUser = await m.GetUserAsync(receiver.Id.FromDbLong());
 
 				if (giver != null)
 				{

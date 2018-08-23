@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Discord;
+using Miki.Discord.Common;
 
 // TODO: build this into it's own library(?)
 namespace Miki.API.EmbedMenus
@@ -43,9 +44,9 @@ namespace Miki.API.EmbedMenus
 			}
 		}
 
-		public virtual Embed Build()
+		public virtual DiscordEmbed Build()
 		{
-			return new EmbedBuilder().WithTitle($"{name} | {MenuInstance.Owner.Username}").Build();
+			return new EmbedBuilder().SetTitle($"{name} | {MenuInstance.Owner.Username}").ToEmbed();
 		}
 
 		public virtual Task SelectAsync()

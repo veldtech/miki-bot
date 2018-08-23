@@ -7,8 +7,9 @@ using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
-using Discord;
 using System;
+using Miki.Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
@@ -20,22 +21,46 @@ namespace Miki.Modules
 		{
 			try
 			{ 
-			ILinkable s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+			ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 			if (!IsValid(s))
 			{
 				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
 			CreateEmbed(s)
 				.QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
+			}
+		}
+
+		[Command(Name = "danbooru", Aliases = new[] { "dan" })]
+		public async Task DanbooruAsync(EventContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+
+				if (!IsValid(s))
+				{
+					e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannel(e.Channel);
+					return;
+				}
+
+				CreateEmbed(s)
+					.QueueToChannel(e.Channel);
+			}
+			catch
+			{
+				e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -44,22 +69,22 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = ImageboardProviderPool.GetProvider<Rule34Post>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				CreateEmbed(s)
 					.QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -68,22 +93,22 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				CreateEmbed(s)
 					.QueueToChannel(e.Channel);
 			}
-			catch(Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -92,25 +117,25 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = ImageboardProviderPool.GetProvider<YanderePost>().GetPost(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
 					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.Build().QueueToChannel(e.Channel);
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				CreateEmbed(s).QueueToChannel(e.Channel);
 			}
-			catch (Exception ex)
+			catch
 			{
 				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
-		private Embed CreateEmbed(ILinkable s)
+		private DiscordEmbed CreateEmbed(ILinkable s)
 		{
 			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
 
@@ -118,7 +143,7 @@ namespace Miki.Modules
 				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
 				.AddInlineField("Tags", FormatTags(s.Tags))
 				.AddInlineField("Score", s.Score)
-				.WithImageUrl(s.Url).Build();
+				.SetImage(s.Url).ToEmbed();
 		}
 
 		private string FormatTags(string Tags)

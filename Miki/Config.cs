@@ -1,5 +1,6 @@
 ﻿using Amazon;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,64 +36,10 @@ namespace Miki
 		public int ShardId { get; set; } = 0;
 
 		/// <summary>
-		/// Carbon Server Statistics
-		/// </summary>
-		[JsonProperty("carbon_api_key")]
-		public string CarbonKey { get; set; } = "";
-
-		/// <summary>
-		/// Discord.PW Server Statistics
-		/// </summary>
-		[JsonProperty("discord_pw_api_key")]
-		public string DiscordPwKey { get; set; } = "";
-
-		/// <summary>
-		/// Discordbots.org Server Statistics
-		/// </summary>
-		[JsonProperty("discord_bots_api_key")]
-		public string DiscordBotsOrgKey { get; set; } = "";
-
-		/// <summary>
-		/// Urban API Key (RapidAPI)
-		/// </summary>
-		[JsonProperty("urban_api_key")]
-		public string UrbanKey { get; set; } = "";
-
-		/// <summary>
-		/// IMGUR API Key (RapidAPI)
-		/// </summary>
-		[JsonProperty("imgur_api_key")]
-		public string ImgurKey { get; set; } = "";
-
-		/// <summary>
-		/// IMGUR Client ID (RapidAPI)
-		/// </summary>
-		[JsonProperty("imgur_client_id")]
-		public string ImgurClientId { get; set; } = "";
-
-		/// <summary>
-		/// Rocket League Stats API Key
-		/// </summary>
-		[JsonProperty("rocket_league_key")]
-		public string RocketLeagueKey { get; set; } = "";
-
-		/// <summary>
-		/// Steam API Key
-		/// </summary>
-		[JsonProperty("steam_api_key")]
-		public string SteamAPIKey { get; set; } = "";
-
-		/// <summary>
 		/// Sentry Error Tracking
 		/// </summary>
 		[JsonProperty("sentry_io_key")]
 		public string SharpRavenKey { get; set; } = "";
-
-		/// <summary>
-		/// Datadog API Key
-		/// </summary>
-		[JsonProperty("datadog_key")]
-		public string DatadogKey { get; set; } = "";
 
 		/// <summary>
 		/// Datadog Agent host
@@ -128,36 +75,39 @@ namespace Miki
 		/// Image API route
 		/// </summary>
 		[JsonProperty("image_api_url")]
-		public string ImageApiUrl { get; internal set; }
+		public string ImageApiUrl { get; internal set; } = "";
 
 		/// <summary>
 		/// Check if this is the patreon
 		/// </summary>
 		[JsonProperty("is_patreon_bot")]
-		public bool IsMainBot { get; internal set; }
-
-		/// <summary>
-		/// Channel id for pasta reports
-		/// </summary>
-		[JsonProperty("pasta_report_channel_id")]
-		public ulong PastaReportChannel { get; internal set; }
+		public bool IsMainBot { get; internal set; } = true;
 
 		[JsonProperty("message_worker_count")]
 		public int MessageWorkerCount { get; internal set; } = 4;
 
 		[JsonProperty("cdn_region_endpoint")]
-		public string CdnRegionEndpoint { get; internal set; }
+		public string CdnRegionEndpoint { get; internal set; } = "";
 
 		[JsonProperty("cdn_access_key")]
-		public string CdnAccessKey { get; internal set; }
+		public string CdnAccessKey { get; internal set; } = "";
 
 		[JsonProperty("cdn_secret_key")]
-		public string CdnSecretKey { get; internal set; }
+		public string CdnSecretKey { get; internal set; } = "";
 
 		[JsonProperty("amount_shards")]
-		public int AmountShards { get; internal set; }
+		public int AmountShards { get; internal set; } = 1;
 
 		[JsonProperty("rabbit_url")]
-		public Uri RabbitUrl { get; internal set; }
+		public Uri RabbitUrl { get; internal set; } = new Uri("amqp://localhost");
+
+		[JsonProperty("danbooru_credentials")]
+		public string DanbooruCredentials { get; internal set; } = "";
+
+		[JsonProperty("redis_endpoints")]
+		public string[] RedisEndPoints { get; internal set; }
+
+		[JsonProperty("redis_password")]
+		public string RedisPassword { get; internal set; }
 	}
 }

@@ -32,7 +32,7 @@ namespace Miki.Models
 			}			
 
 			Achievement achievement = await context.Achievements.FindAsync(userId, name);
-			await Global.RedisClient.AddAsync(key, achievement);
+			await Global.RedisClient.UpsertAsync(key, achievement);
 			return achievement;
 		}
 
@@ -40,7 +40,7 @@ namespace Miki.Models
 		{
 			string key = $"achievement:{userId}:{name}";
 
-			await Global.RedisClient.AddAsync(key, achievement);
+			await Global.RedisClient.UpsertAsync(key, achievement);
 		}
 	}
 }

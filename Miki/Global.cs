@@ -1,14 +1,17 @@
 ﻿using SharpRaven;
 using System;
 using StatsdClient;
-using StackExchange.Redis.Extensions.Core;
 using Newtonsoft.Json;
 using Miki.Framework.FileHandling;
 using Miki.API;
-using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis;
 using Amazon.S3;
 using Miki.Models.Objects.Backgrounds;
+using Miki.Framework;
+using Miki.Discord.Caching;
+using Miki.Cache;
+using Miki.Cache.Serializers.Protobuf;
+using Miki.Cache.StackExchange;
 
 namespace Miki
 {
@@ -19,14 +22,16 @@ namespace Miki
     {
         public static RavenClient ravenClient;
 
-		private static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
+		internal static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
 		{
-			return new StackExchangeRedisCacheClient(new ProtobufSerializer(), Config.RedisConnectionString);
+			return new StackExchangeCacheClient(new ProtobufSerializer(), ConnectionMultiplexer.Connect(Config.RedisConnectionString));
 		});
 
 		public static ICacheClient RedisClient => redisClientPool.Value;
 
 		public static BackgroundStore Backgrounds => backgrounds;
+
+		public static Bot Client { get; set; }
 
 		public static Config Config
 		{
@@ -64,11 +69,10 @@ namespace Miki
 			}
 		}
 
-		public static MikiApi MikiApi => mikiApi;
+		public static MikiApi MikiApi { get; set; }
 
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
-		private static MikiApi mikiApi = new MikiApi(Config.MikiApiBaseUrl, Config.MikiApiKey);
 		static BackgroundStore backgrounds = new BackgroundStore();
 	}
 

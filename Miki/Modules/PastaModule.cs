@@ -11,16 +11,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
-using Discord;
 using System.Text.RegularExpressions;
 using Miki.Framework.Languages;
+using Miki.Exceptions;
+using Miki.Configuration;
+using Miki.Discord;
+using Miki.Discord.Rest;
+using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
     [Module("pasta")]
     public class PastaModule
     {
-        [Command(Name = "mypasta")]
+		[Configurable]
+		public ulong PastaReportsChannelId { get; set; } = 0;
+
+		[Command(Name = "mypasta")]
         public async Task MyPasta(EventContext e)
         {
             int page = 0;
@@ -36,7 +43,7 @@ namespace Miki.Modules
             if (e.message.MentionedUserIds.Count() > 0)
             {
                 userId = e.message.MentionedUserIds.First().ToDbLong();
-                userName = (await e.Guild.GetUserAsync(userId.FromDbLong())).Username;
+                userName = (await e.Guild.GetMemberAsync(userId.FromDbLong())).Username;
             }
             else
             {
@@ -57,8 +64,8 @@ namespace Miki.Modules
 
                 if (page * 25 > totalCount)
                 {
-                    e.ErrorEmbed(e.GetResource("pasta_error_out_of_index"))
-						.Build().QueueToChannel(e.Channel);
+                    e.ErrorEmbed(e.Locale.GetString("pasta_error_out_of_index"))
+						.ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
 
@@ -69,15 +76,15 @@ namespace Miki.Modules
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     Utils.Embed
-                        .WithTitle(e.GetResource("mypasta_title", userName))
-                        .WithDescription(resultString)
-                        .WithFooter(e.GetResource("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
-                        .Build().QueueToChannel(e.Channel);
+                        .SetTitle(e.Locale.GetString("mypasta_title", userName))
+                        .SetDescription(resultString)
+                        .SetFooter(e.Locale.GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
+                        .ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
 
-                e.ErrorEmbed(e.GetResource("mypasta_error_no_pastas"))
-					.Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("mypasta_error_no_pastas"))
+					.ToEmbed().QueueToChannel(e.Channel);
             }
         }
 
@@ -86,7 +93,8 @@ namespace Miki.Modules
         {
 			if (e.Arguments.Count < 2)
             {
-                e.ErrorEmbed(e.GetResource("createpasta_error_no_content")).Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("createpasta_error_no_content"))
+					.ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -96,7 +104,14 @@ namespace Miki.Modules
 			arg = arg.Next();
 			string text = arg.TakeUntilEnd().Argument;
 
+			using (var context = new MikiContext())
+			{
+				await GlobalPasta.AddAsync(context, id, text, (long)e.Author.Id);
+				await context.SaveChangesAsync();
+			}
 
+			e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_create_success", id))
+				.QueueToChannel(e.Channel);
         }
 
         [Command(Name = "deletepasta")]
@@ -104,8 +119,8 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.ErrorEmbed(e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify")))
-                    .Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_specify", e.Locale.GetString("miki_module_pasta_error_specify")))
+                    .ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -115,7 +130,7 @@ namespace Miki.Modules
 
                 if (pasta == null)
                 {
-                    e.ErrorEmbed(e.GetResource("miki_module_pasta_error_null")).Build().QueueToChannel(e.Channel);
+                    e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_null")).ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
 
@@ -128,11 +143,11 @@ namespace Miki.Modules
 
                     await context.SaveChangesAsync();
 
-                    Utils.SuccessEmbed(e.Channel.Id, e.GetResource("miki_module_pasta_delete_success", e.Arguments.ToString())).QueueToChannel(e.Channel);
+                    e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_delete_success", e.Arguments.ToString())).QueueToChannel(e.Channel);
                     return;
                 }
-                e.ErrorEmbed(e.GetResource("miki_module_pasta_error_no_permissions", e.GetResource("miki_module_pasta_error_specify_delete")))
-					.Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_no_permissions", e.Locale.GetString("miki_module_pasta_error_specify_delete")))
+					.ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
         }
@@ -142,8 +157,8 @@ namespace Miki.Modules
         {
             if (e.Arguments.Count < 2)
             {
-                e.ErrorEmbed(e.GetResource("miki_module_pasta_error_specify", e.GetResource("miki_module_pasta_error_specify_edit")))
-					.Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_specify", e.Locale.GetString("miki_module_pasta_error_specify_edit")))
+					.ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -174,7 +189,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.ErrorEmbed(e.GetResource("pasta_error_no_arg")).Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("pasta_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -184,8 +199,8 @@ namespace Miki.Modules
                 GlobalPasta pasta = await context.Pastas.FindAsync(e.Arguments.ToString());
                 if (pasta == null)
                 {
-                    e.ErrorEmbed(e.GetResource("miki_module_pasta_search_error_no_results", e.Arguments.ToString()))
-						.Build().QueueToChannel(e.Channel);
+                    e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_search_error_no_results", e.Arguments.ToString()))
+						.ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
                 pasta.TimesUsed++;
@@ -199,8 +214,8 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.ErrorEmbed(e.GetResource("infopasta_error_no_arg"))
-					.Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("infopasta_error_no_arg"))
+					.ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -210,7 +225,7 @@ namespace Miki.Modules
 
                 if (pasta == null)
                 {
-                    e.ErrorEmbed(e.GetResource("miki_module_pasta_error_null")).Build().QueueToChannel(e.Channel);
+                    e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_null")).ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
 
@@ -223,18 +238,18 @@ namespace Miki.Modules
 
                 if (creator != null)
                 {
-                    b.AddInlineField(e.GetResource("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
+                    b.AddInlineField(e.Locale.GetString("miki_module_pasta_identify_created_by"), $"{ creator.Name} [{creator.Id}]");
                 }
 
-                b.AddInlineField(e.GetResource("miki_module_pasta_identify_date_created"), pasta.CreatedAt.ToShortDateString());
+                b.AddInlineField(e.Locale.GetString("miki_module_pasta_identify_date_created"), pasta.CreatedAt.ToShortDateString());
 
-                b.AddInlineField(e.GetResource("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
+                b.AddInlineField(e.Locale.GetString("miki_module_pasta_identify_times_used"), pasta.TimesUsed.ToString());
 
                 VoteCount v = await pasta.GetVotesAsync(context);
 
-                b.AddInlineField(e.GetResource("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
+                b.AddInlineField(e.Locale.GetString("infopasta_rating"), $"⬆️ { v.Upvotes} ⬇️ {v.Downvotes}");
 
-                b.Build().QueueToChannel(e.Channel);
+                b.ToEmbed().QueueToChannel(e.Channel);
             }
         }
 
@@ -245,8 +260,8 @@ namespace Miki.Modules
 
 			if(arg == null)
 			{
-				e.ErrorEmbed(e.GetResource("searchpasta_error_no_arg"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("searchpasta_error_no_arg"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -275,17 +290,17 @@ namespace Miki.Modules
                     pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
                     EmbedBuilder embed = Utils.Embed;
-                    embed.Title = e.GetResource("miki_module_pasta_search_header");
+                    embed.Title = e.Locale.GetString("miki_module_pasta_search_header");
                     embed.Description = resultString;
 
-					embed.WithFooter(e.GetResource("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()));
+					embed.SetFooter(e.Locale.GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()));
 
-                    embed.Build().QueueToChannel(e.Channel);
+                    embed.ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
 
-                e.ErrorEmbed(e.GetResource("miki_module_pasta_search_error_no_results", query))
-					.Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_search_error_no_results", query))
+					.ToEmbed().QueueToChannel(e.Channel);
             }
         }
 
@@ -301,40 +316,40 @@ namespace Miki.Modules
 			await FavouritePastaList(e, false);
 		}
 
-		[Command(Name = "reportpasta")]
-		public async Task ReportPastaAsync(EventContext e)
-		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
+		//[Command(Name = "reportpasta")]
+		//public async Task ReportPastaAsync(EventContext e)
+		//{
+		//	ArgObject arg = e.Arguments.FirstOrDefault();
 
-			if(arg == null)
-			{
-				// TODO: error message
-				return;
-			}
+		//	if(arg == null)
+		//	{
+		//		// TODO: error message
+		//		return;
+		//	}
 
-			string pastaId = arg.Argument;
-			arg = arg.Next();
+		//	string pastaId = arg.Argument;
+		//	arg = arg.Next();
 
-			string reason = arg?.TakeUntilEnd()?.Argument ?? "";
+		//	string reason = arg?.TakeUntilEnd()?.Argument ?? "";
 
-			if(string.IsNullOrEmpty(reason))
-			{
-				// TODO: reason empty error
-				return;
-			}
+		//	if(string.IsNullOrEmpty(reason))
+		//	{
+		//		// TODO: reason empty error
+		//		return;
+		//	}
 
-			Utils.SuccessEmbed(e.Channel.Id, "Your report has been received!").QueueToChannel(e.Channel);
+		//	Utils.SuccessEmbed(e.Channel.Id, "Your report has been received!").QueueToChannel(e.Channel);
 
-			Utils.Embed.SetAuthor(e.Author.Username, e.Author.GetAvatarUrl(), "")
-				.WithDescription($"Reported pasta `{pastaId}`.```{reason}```")
-				.WithColor(255, 0 , 0)
-				.WithFooter(DateTime.Now.ToString(), "")
-				.Build().QueueToChannel(Bot.Instance.Client.GetChannel(Global.Config.PastaReportChannel) as IMessageChannel);
-		}
+		//	Utils.Embed.SetAuthor(e.Author.Username, e.Author.GetAvatarUrl(), "")
+		//		.SetDescription($"Reported pasta `{pastaId}`.```{reason}```")
+		//		.SetColor(255, 0 , 0)
+		//		.SetFooter(DateTime.Now.ToString(), "")
+		//		.ToEmbed().QueueToChannel(Bot.Instance.Client.GetChannel(PastaReportsChannelId) as IMessageChannel);
+		//}
 
 		public async Task FavouritePastaList(EventContext e, bool lovedPastas = true)
 		{
-			IUser targetUser = e.Author;
+			IDiscordUser targetUser = e.Author;
 			float totalPerPage = 25f;
 			int page = 0;
 
@@ -346,7 +361,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			IUser user = await arg.GetUserAsync(e.Guild);
+			IDiscordUser user = await arg.GetUserAsync(e.Guild);
 			
 			if(user != null)
 			{
@@ -371,13 +386,13 @@ namespace Miki.Modules
 
 				if (pastaVotes.Count() <= 0)
 				{
-					string loveString = (lovedPastas ? e.GetResource("miki_module_pasta_loved") : e.GetResource("miki_module_pasta_hated"));
-					string errorString = e.GetResource("miki_module_pasta_favlist_self_none", loveString);
+					string loveString = (lovedPastas ? e.Locale.GetString("miki_module_pasta_loved") : e.Locale.GetString("miki_module_pasta_hated"));
+					string errorString = e.Locale.GetString("miki_module_pasta_favlist_self_none", loveString);
 					if (e.message.MentionedUserIds.Count() >= 1)
 					{
-						errorString = e.GetResource("miki_module_pasta_favlist_mention_none", loveString);
+						errorString = e.Locale.GetString("miki_module_pasta_favlist_mention_none", loveString);
 					}
-					Utils.ErrorEmbed(e, errorString).Build().QueueToChannel(e.Channel);
+					Utils.ErrorEmbed(e, errorString).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -387,11 +402,11 @@ namespace Miki.Modules
 				string resultString = string.Join(" ", neededPastas.Select(x => $"`{x.Id}`"));
 
 				string useName = string.IsNullOrEmpty(targetUser.Username) ? targetUser.Username : targetUser.Username;
-				embed.WithTitle($"{(lovedPastas ? e.GetResource("miki_module_pasta_loved_header") : e.GetResource("miki_module_pasta_hated_header"))} - {useName}");
-				embed.WithDescription(resultString);
-				embed.WithFooter(e.GetResource("page_index", page + 1, Math.Ceiling(pastaVotes.Count() / totalPerPage)), "");
+				embed.SetTitle($"{(lovedPastas ? e.Locale.GetString("miki_module_pasta_loved_header") : e.Locale.GetString("miki_module_pasta_hated_header"))} - {useName}");
+				embed.SetDescription(resultString);
+				embed.SetFooter(e.Locale.GetString("page_index", page + 1, Math.Ceiling(pastaVotes.Count() / totalPerPage)), "");
 
-				embed.Build().QueueToChannel(e.Channel);
+				embed.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -409,7 +424,7 @@ namespace Miki.Modules
 
 		private async Task VotePasta(EventContext e, bool vote)
 		{
-			string pastaName = e.Arguments.ToString(); 
+			string pastaName = e.Arguments.First().Argument;
 
 			using (var context = new MikiContext())
 			{
@@ -417,14 +432,15 @@ namespace Miki.Modules
 
 				if (pasta == null)
 				{
-					e.ErrorEmbed(e.GetResource("miki_module_pasta_error_null")).Build().QueueToChannel(e.Channel);
+					e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_null")).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
 				long authorId = e.Author.Id.ToDbLong();
 
-				var voteObject = context.Votes.Where(q => q.Id == pastaName && q.UserId == authorId)
-											  .FirstOrDefault();
+				var voteObject = context.Votes
+					.Where(q => q.Id == pastaName && q.UserId == authorId)
+					.FirstOrDefault();
 
 				if (voteObject == null)
 				{
@@ -447,7 +463,7 @@ namespace Miki.Modules
 
 				await context.SaveChangesAsync();
 
-				Utils.SuccessEmbed(e.Channel.Id, e.GetResource("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).QueueToChannel(e.Channel);
+				e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).QueueToChannel(e.Channel);
 			}
         }
     }

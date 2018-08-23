@@ -7,57 +7,106 @@ using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
 using Miki.Framework.Events;
-using Discord;
+using Miki.Discord.Common;
+using Miki.Discord;
+using ProtoBuf;
+using Miki.Cache;
 
 namespace Miki.Modules.Gambling.Managers
 {
-    public class BlackjackManager : CardManager
+	[ProtoContract]
+	public class BlackjackContext
+	{
+		[ProtoMember(1)]
+		public int Bet;
+
+		[ProtoMember(2)]
+		public ulong MessageId;
+
+		[ProtoMember(3)]
+		public Dictionary<ulong, CardHand> Hands = new Dictionary<ulong, CardHand>();
+
+		[ProtoMember(4)]
+		public CardSet Deck = new CardSet();
+	}
+
+	public class BlackjackManager : CardManager
     {
-        public CardHand player = new CardHand();
-        public CardHand dealer = new CardHand();
+		public int Bet;
+		public ulong MessageId;
 
-        public CardSet deck = new CardSet();
+		private static readonly Dictionary<CardValue, int> CardWorth = new Dictionary<CardValue, int>
+		{
+			{ CardValue.ACES,	11 },
+			{ CardValue.TWOS,	2 },
+			{ CardValue.THREES, 3 },
+			{ CardValue.FOURS,	4 },
+			{ CardValue.FIVES,	5 },
+			{ CardValue.SIXES,	6 },
+			{ CardValue.SEVENS, 7 },
+			{ CardValue.EIGHTS, 8 },
+			{ CardValue.NINES,	9 },
+			{ CardValue.TENS,	10 },
+			{ CardValue.JACKS,	10 },
+			{ CardValue.QUEENS, 10 },
+			{ CardValue.KINGS,	10 },
+		};
 
-        public Dictionary<CardValue, GetCardValue> CardWorth = new Dictionary<CardValue, GetCardValue>();
+		public BlackjackManager()
+		{
 
-        public BlackjackManager()
+		}
+        public BlackjackManager(int bet)
         {
-            CardWorth.Add(CardValue.ACES,   (x, hand) => 11);
-            CardWorth.Add(CardValue.TWOS,   (x, hand) => 2);
-            CardWorth.Add(CardValue.THREES, (x, hand) => 3);
-            CardWorth.Add(CardValue.FOURS,  (x, hand) => 4);
-            CardWorth.Add(CardValue.FIVES,  (x, hand) => 5);
-            CardWorth.Add(CardValue.SIXES,  (x, hand) => 6);
-            CardWorth.Add(CardValue.SEVENS, (x, hand) => 7);
-            CardWorth.Add(CardValue.EIGHTS, (x, hand) => 8);
-            CardWorth.Add(CardValue.NINES,  (x, hand) => 9);
-            CardWorth.Add(CardValue.TENS,   (x, hand) => 10);
-            CardWorth.Add(CardValue.JACKS,  (x, hand) => 10);
-            CardWorth.Add(CardValue.QUEENS, (x, hand) => 10);
-            CardWorth.Add(CardValue.KINGS,  (x, hand) => 10);
-
-            player.AddToHand(deck.DrawRandom());
-            player.AddToHand(deck.DrawRandom());
-
-            dealer.AddToHand(deck.DrawRandom());
-            dealer.AddToHand(deck.DrawRandom(false));
+			Bet = bet;
+			_deck = CardSet.CreateStandard();
         }
 
-		public Embed CreateEmbed(EventContext e)
+		public static BlackjackManager FromContext(BlackjackContext context)
 		{
-			string explanation = e.GetResource("miki_blackjack_explanation");
+			BlackjackManager manager = new BlackjackManager();
+			manager.Bet = context.Bet;
+			manager.MessageId = context.MessageId;
+			manager._deck = context.Deck;
+			manager._hands = context.Hands;
+			return manager;
+		}
+		public static async Task<BlackjackManager> FromCacheClientAsync(ICacheClient client, ulong channelId, ulong userId)
+		{
+			return FromContext(
+				await client.GetAsync<BlackjackContext>($"miki:blackjack:{channelId}:{userId}")
+			);
+		}
+
+		public EmbedBuilder CreateEmbed(EventContext e)
+		{
+			string explanation = e.Locale.GetString("miki_blackjack_explanation");
+
+			CardHand Player = GetPlayer(e.Author.Id);
+			CardHand Dealer = GetPlayer(0);
 
 			return new EmbedBuilder()
 			{
-				Author = new EmbedAuthorBuilder()
+				Author = new EmbedAuthor()
 				{
-					Name = e.GetResource("miki_blackjack") + " | " + e.Author.Username,
+					Name = e.Locale.GetString("miki_blackjack") + " | " + e.Author.Username,
 					IconUrl = e.Author.GetAvatarUrl(),
 					Url = "https://patreon.com/mikibot"
 				},
-				Description = $"{explanation}\n{e.GetResource("miki_blackjack_hit")}\n{e.GetResource("miki_blackjack_stay")}"
-			}.AddField(e.GetResource("miki_blackjack_cards_you", Worth(player)), player.Print(), true)
-			.AddField(e.GetResource("miki_blackjack_cards_miki", Worth(dealer)), dealer.Print(), true).Build();
+				Description = $"{explanation}\n{e.Locale.GetString("miki_blackjack_hit")}\n{e.Locale.GetString("miki_blackjack_stay")}"
+			}.AddField(e.Locale.GetString("miki_blackjack_cards_you", Worth(Player)), Player.Print(), true)
+			.AddField(e.Locale.GetString("miki_blackjack_cards_miki", Worth(Dealer)), Dealer.Print(), true);
+		}
+
+		public BlackjackContext ToContext()
+		{
+			return new BlackjackContext()
+			{
+				Bet = Bet,
+				MessageId = MessageId,
+				Deck = _deck,
+				Hands = _hands
+			};
 		}
 
         public int Worth(CardHand hand)
@@ -69,7 +118,7 @@ namespace Miki.Modules.Gambling.Managers
             {
                 if (card.isPublic)
                 {
-                    x += CardWorth[card.value](x, hand);
+                    x += CardWorth[card.value];
                 }
             });
 

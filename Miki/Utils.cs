@@ -1,5 +1,4 @@
-﻿using Discord;
-using Miki.Common;
+﻿using Miki.Common;
 using Miki;
 using Miki.Accounts;
 using Miki.API.Leaderboards;
@@ -15,20 +14,20 @@ using Miki.Framework.Extension;
 using Microsoft.EntityFrameworkCore;
 using Miki.Models;
 using StackExchange.Redis;
-using StackExchange.Redis.Extensions.Core;
 using Miki.Framework.Languages;
 using Amazon.S3.Model;
 using Miki.Exceptions;
 using Amazon.S3;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Cache.StackExchange;
+using Miki.Framework.Language;
 
 namespace Miki
 {
 	public static class Utils
 	{
-		static char[] hexDigits = {
-		 '0', '1', '2', '3', '4', '5', '6', '7',
-		 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
 		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
 		{
 			if (Enum.TryParse(argument.Argument, true, out T result))
@@ -45,69 +44,55 @@ namespace Miki
             return time;
         }
 
-        public static string ToTimeString(this int seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-        public static string ToTimeString(this float seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-        public static string ToTimeString(this long seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-		public static string ToTimeString(this TimeSpan time, ulong channelId,  bool minified = false)
+		public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if (Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
             if (time.Hours > 0)
             {
                 if (time.Hours > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hours"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hour"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
                 }
             }
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minutes"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minute"), time.Minutes, minified));
-                }
-            }
-            if (time.Seconds > 0)
-            {
-                if (time.Seconds > 1)
-                {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_seconds"), time.Seconds, minified));
-                }
-                else
-                {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_second"), time.Seconds, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
                 }
             }
 
+			if (t.Count == 0 || time.Seconds > 0)
+			{
+				if (time.Seconds > 1)
+				{
+					t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
+				}
+				else
+				{
+					t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
+				}
+			}
+            
             if (t.Count != 0)
             {
                 List<string> s = new List<string>();
@@ -128,7 +113,7 @@ namespace Miki
 
                     if (!minified)
                     {
-                        text += $", {Locale.GetString(channelId, "time_and")} " + s[s.Count - 1].ToString();
+                        text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
                     }
                 }
                 else if (t.Count == 1)
@@ -141,11 +126,6 @@ namespace Miki
             return "";
         }
 
-        public static float FromHoursToSeconds(this float value)
-        {
-            return (float)Math.Round(value * 60 * 60);
-        }
-
 		public static bool IsAll(this ArgObject input)
 		{
 			if (input == null) return false;
@@ -154,37 +134,32 @@ namespace Miki
 
 		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
 			=> new EmbedBuilder()
-			{
-				Title = $"🚫 {e.GetResource(LocaleTags.ErrorMessageGeneric)}",
-				Description = message,
-				Color = new Color(255, 0, 0),
-			};
-
-		public static string GetResource(this EventContext e, string resource, params object[] args)
-			=> Locale.GetString(e.Channel.Id, resource, args);
+				.SetTitle($"🚫 {e.Locale.GetString(LocaleTags.ErrorMessageGeneric)}")
+				.SetDescription(message)
+				.SetColor(1.0f, 0.0f, 0.0f);
 
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
-			=> ErrorEmbed(e, e.GetResource(resourceId, args));
+			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
 
 		public static EmbedBuilder Embed => new EmbedBuilder();
 
         public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static Embed SuccessEmbed(ulong id, string message)
+        public static DiscordEmbed SuccessEmbed(this EventContext e, string message)
         {
             return new EmbedBuilder()
             {
-                Title = "✅ " + Locale.GetString(id, LocaleTags.SuccessMessageGeneric),
+                Title = "✅ " + e.Locale.GetString(LocaleTags.SuccessMessageGeneric),
 				Description = message,
                 Color = new Color(119, 178, 85)
-            }.Build();
+            }.ToEmbed();
         }
 
-		public static string RemoveMentions(this ArgObject arg, IGuild guild)
+		public static string RemoveMentions(this ArgObject arg, IDiscordGuild guild)
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
 			{
-				return (guild.GetUserAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
+				return (guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
 			}, RegexOptions.None);
 		}
 
@@ -202,25 +177,7 @@ namespace Miki
 			return embed;
 		}
 
-		public static string ToHexString(this Color color)
-		{
-			byte[] bytes = new byte[3];
-			bytes[0] = color.R;
-			bytes[1] = color.G;
-			bytes[2] = color.B;
-
-			char[] chars = new char[bytes.Length * 2];
-
-			for (int i = 0; i < bytes.Length; i++)
-			{
-				int b = bytes[i];
-				chars[i * 2] = hexDigits[b >> 4];
-				chars[i * 2 + 1] = hexDigits[b & 0xF];
-			}
-			return new string(chars);
-		}
-
-		public static async Task SyncAvatarAsync(IUser user)
+		public static async Task SyncAvatarAsync(IDiscordUser user)
 		{
 			PutObjectRequest request = new PutObjectRequest();
 			request.BucketName = "miki-cdn";
@@ -228,9 +185,11 @@ namespace Miki
 			request.ContentType = "image/png";
 			request.CannedACL = new S3CannedACL("public-read");
 
-			using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
+			string avatarUrl = user.GetAvatarUrl();
+
+			using (var client = new Rest.RestClient(avatarUrl, true))
 			{
-				request.InputStream = await client.GetStreamAsync("");
+				request.InputStream = await client.GetStreamAsync();
 			}
 
 			var response = await Global.CdnClient.PutObjectAsync(request);
@@ -247,7 +206,7 @@ namespace Miki
 				await context.SaveChangesAsync();
 			}
 
-			await Global.RedisClient.AddAsync($"user:{user.Id}:avatar:synced", true);
+			await Global.RedisClient.UpsertAsync($"avatar:{user.Id}:synced", true);
 		}
 	}
 
@@ -342,27 +301,29 @@ namespace Miki
 
 	public class RedisDictionary
 	{
-		ICacheClient client;
+		Cache.ICacheClient client;
 		string name;
 
 		public async Task<IEnumerable<string>> GetKeysAsync() 
-			=> (await client.HashKeysAsync(name));
+			=> (await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashKeysAsync(name))
+				.Cast<string>()
+				.ToList();
 
-		public RedisDictionary(string name, ICacheClient client)
+		public RedisDictionary(string name, Miki.Cache.ICacheClient client)
 		{
 			this.name = name;
 			this.client = client;
 		}
 		~RedisDictionary()
 		{
-			client.Remove(name);
+			client.RemoveAsync(name);
 		}
 
 		public async Task AddAsync(object key, object value)
 			=> await AddAsync(key.ToString(), value.ToString());
 		public async Task AddAsync(string key, object value)
 		{
-			await client.HashSetAsync(name, key, value);
+			await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashSetAsync(name, key, value.ToString());
 		}
 
 		public async Task<string> GetAsync(object key)
@@ -371,7 +332,7 @@ namespace Miki
 		{
 			if(await ContainsAsync(key))
 			{
-				return client.HashGet<string>(name, key);
+				return (client as StackExchangeCacheClient).Client.GetDatabase(0).HashGet(name, key);
 			}
 			throw new IndexOutOfRangeException($"No member found with key `{key}`");
 		}
@@ -384,6 +345,6 @@ namespace Miki
 		public async Task<bool> ContainsAsync(object key)
 			=> await ContainsAsync(key.ToString());
 		public async Task<bool> ContainsAsync(string key)
-			=> await client.Database.HashExistsAsync(name, key);
+			=> await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashExistsAsync(name, key);
 	}
 }

@@ -1,30 +1,38 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.18.2" />
     <PackageReference Include="CountLib" Version="1.0.1" />
-    <PackageReference Include="Discord.Net" Version="2.0.0-beta" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Include="Miki.Anilist" Version="0.5.0" />
+    <PackageReference Include="Miki.Anilist" Version="0.5.1" />
+    <PackageReference Include="Miki.Cache" Version="0.3.0" />
+    <PackageReference Include="Miki.Cache.Serializer.Protobuf" Version="1.0.2" />
+    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="1.3.0" />
+    <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
+    <PackageReference Include="Miki.Logging" Version="1.1.2" />
     <PackageReference Include="Miki.Patreon" Version="0.1.0" />
-    <PackageReference Include="Miki.Rest" Version="1.3.3" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql" Version="3.2.7" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
-    <PackageReference Include="SharpRaven" Version="2.3.2" />
-    <PackageReference Include="StackExchange.Redis.Extensions.Protobuf" Version="3.3.0" />
+    <PackageReference Include="SharpRaven" Version="2.4.0" />
     <PackageReference Include="SteamKit2" Version="2.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,8 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
-    <ProjectReference Include="D:\Projects\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

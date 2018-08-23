@@ -7,9 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
 using Miki.Framework.Extension;
 using Microsoft.EntityFrameworkCore;
+using Miki.Discord.Common;
+using Miki.Discord;
 
 namespace Miki.Modules
 {
@@ -30,7 +31,7 @@ namespace Miki.Modules
         {
             m.UserJoinGuild = async (user) =>
             {
-				IGuild guild = (user as IGuildUser).Guild;
+				IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
 
                 List<EventMessageObject> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
 
@@ -44,7 +45,7 @@ namespace Miki.Modules
 
             m.UserLeaveGuild = async (user) =>
             {
-				IGuild guild = (user as IGuildUser).Guild;
+				IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
 
 				List<EventMessageObject> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
 
@@ -153,16 +154,16 @@ namespace Miki.Modules
             return true;
         }
 
-        public async Task<List<EventMessageObject>> GetMessage(IGuild guild, EventMessageType type, IUser user)
+        public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
             long guildId = guild.Id.ToDbLong();
 
-			var channels = await guild.GetTextChannelsAsync();
+			var channels = guild.Channels;
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
-			var guildCount = (await guild.GetUsersAsync()).Count;
+			var guildCount = guild.Members.Count;
 
-			IGuildUser owner = await guild.GetOwnerAsync();
+			IDiscordGuildUser owner = guild.GetOwner();
 
 			var ownerMention = owner.Mention;
 			var ownerName = owner.Username;
@@ -171,9 +172,11 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-				var messageObjects = await context.EventMessages.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType).ToListAsync();
+				var messageObjects = await context.EventMessages
+					.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType)
+					.ToListAsync();
 
-				var allUsers = await guild.GetUsersAsync();
+				var allUsers = guild.Members;
 
 				foreach (var c in messageObjects)
                 {
@@ -187,24 +190,28 @@ namespace Miki.Modules
                         continue;
                     }
 
-                    string modifiedMessage = c.Message;
+					IDiscordGuild g = await (user as IDiscordGuildUser).GetGuildAsync();
+
+
+					string modifiedMessage = c.Message;
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", (await (user as IGuildUser).Guild.GetUsersAsync()).Count.ToString());
+					modifiedMessage = modifiedMessage.Replace("-uc", g.Members.Count.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
-                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count)).Username);   
+                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
                     modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-s", (user as IGuildUser).Guild.Name);
+                    modifiedMessage = modifiedMessage.Replace("-s", 
+						g.Name);
 
 
 	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", (await (user as IGuildUser).Guild.GetChannelsAsync()).Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", (await (user as IGuildUser).Guild.GetVoiceChannelsAsync()).Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", g.Channels.Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", g.Channels.Count().ToString());
 					
                     output.Add(new EventMessageObject()
 					{
@@ -219,7 +226,7 @@ namespace Miki.Modules
 
 	public struct EventMessageObject
 	{
-		public IMessageChannel destinationChannel;
+		public IDiscordChannel destinationChannel;
 		public string message;
 	}
 }

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -19,10 +19,8 @@ namespace Miki.Models
 		public long RequiredRole { get; set; }
 		public int Price { get; set; }
 
-        [NotMapped]
-        public IRole Role => Bot.Instance.Client.GetGuild((ulong)GuildId)
-			.GetRole((ulong)RoleId);
-
+		[NotMapped]
+		public IDiscordRole Role => Bot.Instance.Client.GetRoleAsync((ulong)GuildId, (ulong)RoleId).Result;
 		public static async Task<LevelRole> CreateAsync(long guildId, long roleId)
 		{
 			using (MikiContext context = new MikiContext())

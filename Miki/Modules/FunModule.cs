@@ -1,17 +1,22 @@
-using Miki.Framework;
-using Miki.Framework.Events.Attributes;
-using Miki.Framework.Extension;
-using Miki.Common;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
-using Miki.API;
 using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
-using Miki.Languages;
+using Miki.API.Imageboards.Objects;
+using Miki.Common.Builders;
+using Miki.Configuration;
+using Miki.Core.API.Reminder;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.Framework.Extension;
+using Miki.Framework.Languages;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -22,21 +27,25 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Miki.Framework.Events;
-using Miki.API.Imageboards.Objects;
-using Miki.Core.API.Reminder;
-using Miki.Common.Builders;
-using Discord;
-using Miki.Framework.Languages;
-using Miki.Framework.Exceptions;
-using Miki.Exceptions;
 
 namespace Miki.Modules
 {
-    [Module(Name = "Fun")]
+	[Module(Name = "Fun")]
     public class FunModule
     {
-        private string[] puns =
+		/// <summary>
+		/// IMGUR API Key (RapidAPI)
+		/// </summary>
+		[Configurable]
+		public string ImgurKey { get; set; } = "";
+
+		/// <summary>
+		/// IMGUR Client ID (RapidAPI)
+		/// </summary>
+		[Configurable]
+		public string ImgurClientId { get; set; } = "";
+
+		private string[] puns =
         {
                 "miki_module_fun_pun_1",
                 "miki_module_fun_pun_2",
@@ -113,87 +122,47 @@ namespace Miki.Modules
                 "miki_module_fun_8ball_answer_positive_8",
                 "miki_module_fun_8ball_answer_positive_9"
         };
-        private string[] lunchposts =
-{
-            "https://soundcloud.com/ghostcoffee-342990942/woof-woof-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchpost-1969?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/meian-alien?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/falcon-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/eternal-bark-engine-shall-we-feast?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/wuff-wuff-whats-for-lunch?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/in-this-woof-monochrome-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/dogtone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/ufo-romance-in-the-nut-sky-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/necromastiff?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/the-dumbest-one-on-the-album?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/reach-fur-the-lunch-immurrtal-goat-from-psydo?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/pure-furries-whereabouts-of-the-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/pawdemic-picnic-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/moon-pup-homunculus-lunch-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/ancient-pups-song-firepsy-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/tummy-rumbling?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/fantasy-nation-lunchbreak-pupper-prayer-1?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/feast-of-the-crysanthemum-canine?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/yin-yang-shiba-serpent-standalone?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/present-world-oppahaul-lunch-mix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/food-circulating-melody-native-lunch-owo-remix?in=ghostcoffee-342990942/sets/lunchposting-the-banquet-final-mix",
-            "https://soundcloud.com/ghostcoffee-342990942/a-lunch-sample",
-            "https://soundcloud.com/ghostcoffee-342990942/something-neato-my-dood",
-            "https://soundcloud.com/ghostcoffee-342990942/the-best-one",
-            "https://soundcloud.com/ghostcoffee-342990942/pure-gentlemen-whereabouts-of-the-style",
-            "https://soundcloud.com/ghostcoffee-342990942/scooby-goo",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchstep",
-            "https://soundcloud.com/ghostcoffee-342990942/antique-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/take-on-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/bonus-chief-keef-lunchus",
-            "https://soundcloud.com/ghostcoffee-342990942/lunch-signal",
-            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-2",
-            "https://soundcloud.com/ghostcoffee-342990942/wild-lunch",
-            "https://soundcloud.com/ghostcoffee-342990942/equivilant-1",
-            "https://soundcloud.com/ghostcoffee-342990942/exchange-1",
-            "https://soundcloud.com/ghostcoffee-342990942/gangnam-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/hourai-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/lord-of-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/lunchvril-14th-1",
-            "https://soundcloud.com/ghostcoffee-342990942/making-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/megalunchovania",
-            "https://soundcloud.com/ghostcoffee-342990942/midnight-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/say-whats-for-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/silent-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/stop-lunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/supah-woof-bros-3",
-            "https://soundcloud.com/ghostcoffee-342990942/the-worst-one-1",
-            "https://soundcloud.com/ghostcoffee-342990942/tnlunch-1",
-            "https://soundcloud.com/ghostcoffee-342990942/w-o-o-f-w-a-v-e-1",
-            "https://soundcloud.com/ghostcoffee-342990942/whats-for-woof-1",
-            "https://soundcloud.com/ghostcoffee-342990942/woofing-in-the-90s-1",
-            "https://soundcloud.com/ghostcoffee-342990942/woofline-bling-1"
-};
 
 		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
 		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
 
-        public FunModule(Module m)
+        public FunModule(Module m, Bot b)
         {
             ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
             {
-				QueryKey = "http://e621.net/post/index.json?tags=",
+				QueryKey = new Uri("http://e621.net/post/index.json?tags="),
 				ExplicitTag = "rating:e",
 				QuestionableTag = "rating:q",
 				SafeTag = "rating:s",
 				NetUseCredentials = true,
-				NetHeaders = new List<string>() { "User-Agent: Other" },
+				NetHeaders = new List<Tuple<string, string>>() {
+					new Tuple<string, string>("User-Agent", "Other"),
+				},
 				BlacklistedTags =
 				{
 					"loli",
 					"shota",
 				}
 			}));
+			ImageboardProviderPool.AddProvider(new ImageboardProvider<DanbooruPost>(new ImageboardConfigurations
+			{
+				QueryKey = new Uri("https://danbooru.donmai.us/posts.json?tags="),
+				ExplicitTag = "rating:e",
+				QuestionableTag = "rating:q",
+				SafeTag = "rating:s",
+				NetUseCredentials = true,
+				NetHeaders = {
+					new Tuple<string, string>("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(Global.Config.DanbooruCredentials))}"),
+				},
+				BlacklistedTags =
+				{
+					"loli",
+					"shota"
+				}
+			}));
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>(new ImageboardConfigurations
 			{
-				QueryKey = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -202,7 +171,7 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -211,7 +180,7 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>(new ImageboardConfigurations
 			{
-				QueryKey = "http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags=",
+				QueryKey = new Uri("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -220,17 +189,17 @@ namespace Miki.Modules
 			}));
             ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://konachan.com/post.json?tags=",
+				QueryKey = new Uri("https://konachan.com/post.json?tags="),
 				BlacklistedTags =
 				{
 					"loli",
 					"shota",
 				}
 			}));
-			
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
+
+			ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
 			{
-				QueryKey = "https://yande.re/post.json?tags=",
+				QueryKey = new Uri("https://yande.re/post.json?tags="),
 				BlacklistedTags =
 				{
 					"loli",
@@ -242,16 +211,15 @@ namespace Miki.Modules
         [Command(Name = "8ball")]
         public async Task EightBallAsync(EventContext e)
         {
-			string output = e.GetResource("miki_module_fun_8ball_result", 
-				e.Author.Username, e.GetResource(reactions[MikiRandom.Next(0, reactions.Length)]));
+			string output = e.Locale.GetString("miki_module_fun_8ball_result", 
+				e.Author.Username, e.Locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
             e.Channel.QueueMessageAsync(output);
         }
 
 		[Command(Name = "bird", Aliases = new string[] { "birb" })]	
         public async Task BirdAsync(EventContext e)
         {
-            string[] bird =
-            {
+            string[] bird = {
                 "http://i.imgur.com/aN948tq.jpg",
                 "http://i.imgur.com/cYPsbR5.jpg",
                 "http://i.imgur.com/18sRay4.jpg",
@@ -275,11 +243,12 @@ namespace Miki.Modules
                 "http://i.imgur.com/2nukcqZ.jpg",
                 "http://i.imgur.com/BxwgwHh.jpg"
             };
+
 			Utils.Embed
-				.WithTitle("🐦 Birbs!")
-				.WithColor(0.8f, 0.4f, 0.4f)
-				.WithImageUrl(bird[MikiRandom.Next(0, bird.Length)])
-				.Build().QueueToChannel(e.Channel);
+				.SetTitle("🐦 Birbs!")
+				.SetColor(0.8f, 0.4f, 0.4f)
+				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
+				.ToEmbed().QueueToChannel(e.Channel);
         }
 
 		[Command(Name = "cat")]
@@ -291,10 +260,10 @@ namespace Miki.Modules
 			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
 
 			Utils.Embed
-				.WithTitle("🐱 Kitties!")
-				.WithColor(0.8f, 0.6f, 0.4f)
-				.WithImageUrl(cat.File)
-				.Build()
+				.SetTitle("🐱 Kitties!")
+				.SetColor(0.8f, 0.6f, 0.4f)
+				.SetImage(cat.File)
+				.ToEmbed()
 				.QueueToChannel(e.Channel);
 		}
 
@@ -355,10 +324,10 @@ namespace Miki.Modules
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			Utils.Embed
-				.WithTitle("🐶 Doggo!")
-				.WithColor(0.8f, 0.8f, 0.8f)
-				.WithImageUrl("https://random.dog/" + url)
-				.Build().QueueToChannel(e.Channel);
+				.SetTitle("🐶 Doggo!")
+				.SetColor(0.8f, 0.8f, 0.8f)
+				.SetImage("https://random.dog/" + url)
+				.ToEmbed().QueueToChannel(e.Channel);
         }
 
         [Command(Name = "gif")]
@@ -366,11 +335,11 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
-			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
+			var client = new MashapeClient(ImgurClientId, ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()} ext:gif");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -390,7 +359,7 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
             }
         }
 
@@ -399,11 +368,11 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
 				return;
 			}
 
-			var client = new MashapeClient(Global.Config.ImgurClientId, Global.Config.ImgurKey);
+			var client = new MashapeClient(ImgurClientId, ImgurKey);
             var endpoint = new GalleryEndpoint(client);
             var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()}");
             List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -423,14 +392,8 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ImageNotFound));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
             }
-        }
-
-        [Command(Name = "lunch")]
-        public async Task LunchAsync(EventContext e)
-        {
-            e.Channel.QueueMessageAsync(e.GetResource("lunch_line") + "\n" + lunchposts[MikiRandom.Next(0, lunchposts.Length)]);
         }
 
         [Command(Name = "pick")]
@@ -438,18 +401,18 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.ErrorPickNoArgs));
+                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ErrorPickNoArgs));
                 return;
             }
             string[] choices = e.Arguments.ToString().Split(',');
 
-            e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+            e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
         }
 
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
         {
-            e.Channel.QueueMessageAsync(e.GetResource(puns[MikiRandom.Next(0, puns.Length)]));
+            e.Channel.QueueMessageAsync(e.Locale.GetString(puns[MikiRandom.Next(0, puns.Length)]));
         }
 
 		[Command(Name = "roll")]
@@ -511,19 +474,19 @@ namespace Miki.Modules
 			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
 			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
-			e.Channel.QueueMessageAsync(e.GetResource(LocaleTags.RollResult, e.Author.Username, rollResult));
+			e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.RollResult, e.Author.Username, rollResult));
 		}
 
 		[Command(Name = "roulette")]
 		public async Task RouletteAsync(EventContext e)
 		{
-			IEnumerable<IUser> users = await e.Channel.GetUsersAsync().FlattenAsync();
-			List<IUser> realUsers = users.Where(user => !user.IsBot).ToList();
+			IEnumerable<IDiscordUser> users = e.Guild.Members;
+			List<IDiscordUser> realUsers = users.Where(user => !user.IsBot).ToList();
 
 			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";
 			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
-				e.GetResource(LocaleTags.RouletteMessageNoArg, mention) :
-				e.GetResource(LocaleTags.RouletteMessage, e.Arguments.ToString(), mention);
+				e.Locale.GetString(LocaleTags.RouletteMessageNoArg, mention) :
+				e.Locale.GetString(LocaleTags.RouletteMessage, e.Arguments.ToString(), mention);
 
 			e.Channel.QueueMessageAsync(send);
 		}
@@ -541,7 +504,7 @@ namespace Miki.Modules
 				} break;
 				case "-list":
 				{
-					ListReminders(e);
+					await ListRemindersAsync(e);
 				} break;
 				default:
 				{
@@ -551,13 +514,13 @@ namespace Miki.Modules
 					}
 					else
 					{
-						PlaceReminder(e);
+						await PlaceReminderAsync(e);
 					}
 				} break;
 			}
 	    }
 
-		private void PlaceReminder(EventContext e)
+		private async Task PlaceReminderAsync(EventContext e)
 		{
 			string args = e.Arguments.Join().Argument;
 
@@ -572,8 +535,8 @@ namespace Miki.Modules
 
 			if (splitIndex == -1)
 			{
-				e.ErrorEmbed(e.GetResource("error_argument_null", "time"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "time"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -593,22 +556,22 @@ namespace Miki.Modules
 			{
 				int id = reminders.AddTask(e.Author.Id, (context) =>
 				{
-					Utils.Embed.WithTitle("⏰ Reminder")
-						.WithDescription(new MessageBuilder()
+					Utils.Embed.SetTitle("⏰ Reminder")
+						.SetDescription(new MessageBuilder()
 							.AppendText(context)
 							.BuildWithBlockCode())
-						.Build().QueueToUser(e.Author);
+						.ToEmbed().QueueToChannel(e.Author.GetDMChannelAsync().Result);
 				}, reminderText, timeUntilReminder, repeated);
 
-				Utils.Embed.WithTitle($"👌 {e.GetResource("term_ok")}")
-					.WithDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Channel.Id)}**\nYour reminder code is `{id}`")
-					.WithColor(255, 220, 93)
-					.Build().QueueToChannel(e.Channel);
+				Utils.Embed.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
+					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
+					.SetColor(255, 220, 93)
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 			else
 			{
 				e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
-					.Build().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -619,8 +582,8 @@ namespace Miki.Modules
 
 			if (arg == null)
 			{
-				e.ErrorEmbed(e.GetResource("error_argument_null", "id"))
-					.Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "id"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
@@ -632,10 +595,10 @@ namespace Miki.Modules
 				}
 
 				Utils.Embed
-					.WithTitle($"⏰ {e.GetResource("reminders")}")
-					.WithColor(0.86f, 0.18f, 0.26f)
-					.WithDescription(e.GetResource("reminder_cancelled_all"))
-					.Build().QueueToChannel(e.Channel);
+					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f)
+					.SetDescription(e.Locale.GetString("reminder_cancelled_all"))
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 			else if (int.TryParse(arg.Argument, out int id))
@@ -643,18 +606,18 @@ namespace Miki.Modules
 				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
 				{
 					Utils.Embed
-						.WithTitle($"⏰ {e.GetResource("reminders")}")
-						.WithColor(0.86f, 0.18f, 0.26f)
-						.WithDescription(e.GetResource("reminder_cancelled", $"`{i.Context}`"))
-						.Build().QueueToChannel(e.Channel);
+						.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+						.SetColor(0.86f, 0.18f, 0.26f)
+						.SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
-			e.ErrorEmbed(e.GetResource("error_reminder_null"))
-				.Build().QueueToChannel(e.Channel);
+			e.ErrorEmbed(e.Locale.GetString("error_reminder_null"))
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		private void ListReminders(EventContext e)
+		private async Task ListRemindersAsync(EventContext e)
 		{
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if(instances?.Count > 0)
@@ -662,10 +625,8 @@ namespace Miki.Modules
 				instances = instances.OrderBy(x => x.Id).ToList();
 
 				EmbedBuilder embed = new EmbedBuilder()
-				{
-					Title = $"⏰ {e.GetResource("reminders")}",
-					Color = new Color(0.86f, 0.18f, 0.26f)
-				};
+					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+					.SetColor(0.86f, 0.18f, 0.26f);
 
 				foreach (var x in instances)
 				{
@@ -683,29 +644,29 @@ namespace Miki.Modules
 					}
 
 					embed.Description += 
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Channel.Id, true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Locale, true)}`\n";
 				}
-				embed.Build().QueueToChannel(e.Channel);
+				embed.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
-			e.ErrorEmbed(e.GetResource("error_no_reminders"))
-				.Build().QueueToChannel(e.Channel);
+			e.ErrorEmbed(e.Locale.GetString("error_no_reminders"))
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		private async Task HelpReminderAsync(EventContext e)
 		{
 			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
 
-			new EmbedBuilder() { 
-				Title = $"⏰ {e.GetResource("reminders")}",
-				Color = new Color(0.86f, 0.18f, 0.26f),
-				Description = e.GetResource("reminder_help_description")
-			}.AddInlineField(e.GetResource("term_commands"), 
-				$"`{prefix}{e.GetResource("reminder_help_add")}` - {e.GetResource("reminder_desc_add")}\n" +
-				$"`{prefix}{e.GetResource("reminder_help_clear")}` - {e.GetResource("reminder_desc_clear")}\n" +
-				$"`{prefix}{e.GetResource("reminder_help_list")}` - {e.GetResource("reminder_desc_list")}\n")
-			.Build().QueueToChannel(e.Channel);
+			new EmbedBuilder()
+				.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+				.SetColor(0.86f, 0.18f, 0.26f)
+				.SetDescription(e.Locale.GetString("reminder_help_description"))
+				.AddInlineField(e.Locale.GetString("term_commands"), 
+				$"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
+				$"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
+				$"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
+			.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "safe")]
@@ -727,25 +688,25 @@ namespace Miki.Modules
 					{
 						case "safebooru":
 						{
-							s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = ImageboardProviderPool.GetProvider<GelbooruPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = ImageboardProviderPool.GetProvider<KonachanPost>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = ImageboardProviderPool.GetProvider<E621Post>().GetPost(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
 						}
 						break;
 
@@ -758,17 +719,17 @@ namespace Miki.Modules
 				}
 				else
 				{
-					s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
 				}
 			}
 			else
 			{
-				s = ImageboardProviderPool.GetProvider<SafebooruPost>().GetPost(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
 			}
 
             if (s == null)
             {
-                e.ErrorEmbed("We couldn't find an image with these tags!").Build().QueueToChannel(e.Channel);
+                e.ErrorEmbed("We couldn't find an image with these tags!").ToEmbed().QueueToChannel(e.Channel);
                 return;
             }
 
@@ -780,7 +741,7 @@ namespace Miki.Modules
 		{
 			ArgObject o = e.Arguments.First().TakeUntilEnd();
 
-			IGuildUser user = await o.GetUserAsync(e.Guild);
+			IDiscordGuildUser user = await o.GetUserAsync(e.Guild);
 
 			// TODO: implement UserNullException
 			if (user == null)
@@ -853,9 +814,8 @@ namespace Miki.Modules
             };
 
 			new EmbedBuilder()
-			{
-				ImageUrl = images[MikiRandom.Next(0, images.Length)]
-			}.Build().QueueToChannel(e.Channel);
+				.SetImage(images[MikiRandom.Next(0, images.Length)])
+				.ToEmbed().QueueToChannel(e.Channel);
         }
     }
 }

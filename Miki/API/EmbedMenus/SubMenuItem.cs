@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Miki.Discord;
+using Miki.Discord.Common;
 using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
@@ -22,22 +23,22 @@ namespace Miki.API.EmbedMenus
 			if (arg != null)
 			{
 				int? pageId = arg.AsInt();
-				if(pageId != null)
+				if (pageId != null)
 				{
 					pageId = Math.Clamp(pageId.Value, 1, Children.Count + 1);
-					await (MenuInstance.Message as IUserMessage).ModifyAsync(x =>
-					{	
-						x.Embed = Children[pageId.Value - 1].Build();
+					await MenuInstance.Message.EditAsync(new EditMessageArgs()
+					{
+						embed = Children[pageId.Value - 1].Build()
 					});
 					await Children[pageId.Value - 1].SelectAsync();
 				}
 			}
 		}
 
-		public override Embed Build()
+		public override DiscordEmbed Build()
 		{
 			EmbedBuilder builder = new EmbedBuilder()
-				.WithTitle($"{Name} | {MenuInstance.Owner}");
+				.SetTitle($"{Name} | {MenuInstance.Owner}");
 
 			for(int i = 0; i < Children.Count; i++)
 			{
@@ -47,7 +48,7 @@ namespace Miki.API.EmbedMenus
 			if (canGoBack && Parent != null)
 				builder.Description += $"`{Children.Count + 1}` - Back";
 
-			return builder.Build();
+			return builder.ToEmbed();
 		}
 	}
 
@@ -55,22 +56,22 @@ namespace Miki.API.EmbedMenus
 	{
 		public string imageUrl = "";
 
-		public override Embed Build()
+		public override DiscordEmbed Build()
 		{
 			return new EmbedBuilder()
 			{
 				Title = $"{name} | {MenuInstance.Owner.Username}",
 				ImageUrl = imageUrl,
 				Description = "do you want to buy this background for 1500 mekos? type `yes`"
-			}.Build();
+			}.ToEmbed();
 		}
 
 		public override async Task SelectAsync()
 		{
 			await MenuInstance.ListenMessageAsync();
-			await MenuInstance.Message.ModifyAsync(x =>
+			await MenuInstance.Message.EditAsync(new EditMessageArgs
 			{
-				x.Embed = Parent.Build();
+				embed = Parent.Build()
 			});
 			await Parent.SelectAsync();
 		}

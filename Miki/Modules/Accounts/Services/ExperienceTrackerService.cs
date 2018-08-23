@@ -2,32 +2,33 @@
 using Miki.Common;
 using Miki.Accounts;
 using System.Threading.Tasks;
-using Discord.WebSocket;
+using Miki.Framework;
+using Miki.Discord.Common;
 
 namespace Miki.Modules.Accounts.Services
 {
-    internal class ExperienceTrackerService : BaseService
+    public class ExperienceTrackerService : BaseService
     {
         public ExperienceTrackerService()
         {
             Name = "Experience";
         }
 
-        public override void Install(Module m)
+        public override void Install(Module m, Bot b)
         {
-            base.Install(m);
+            base.Install(m, b);
             m.MessageRecieved += Service_MessageReceived;
         }
 
-        public override void Uninstall(Module m)
+        public override void Uninstall(Module m, Bot b)
         {
-            base.Uninstall(m);
+            base.Uninstall(m, b);
             m.MessageRecieved -= Service_MessageReceived;
         }
 
-        public async Task Service_MessageReceived(SocketMessage m)
+        public async Task Service_MessageReceived(IDiscordMessage m)
         {
-            if (await IsEnabled(m.Channel.Id))
+            if (await IsEnabled(Global.RedisClient, m.GetChannelAsync().Result.Id))
             {
                 await AccountManager.Instance.CheckAsync(m);
             }

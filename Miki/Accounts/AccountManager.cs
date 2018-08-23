@@ -1,5 +1,4 @@
-﻿using Discord;
-using Miki.Framework;
+﻿using Miki.Framework;
 using Miki.Common;
 using Microsoft.EntityFrameworkCore;
 using Miki.Languages;
@@ -16,10 +15,15 @@ using Miki.Modules;
 using System.Collections.Concurrent;
 using Miki.Framework.Extension;
 using Miki.Framework.Languages;
+using Miki.Logging;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Discord;
+using Miki.Framework.Language;
 
 namespace Miki.Accounts
 {
-    public delegate Task LevelUpDelegate(IUser a, IMessageChannel g, int level);
+    public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordChannel g, int level);
 
     public class AccountManager
     {
@@ -29,7 +33,7 @@ namespace Miki.Accounts
         public event LevelUpDelegate OnLocalLevelUp;
         public event LevelUpDelegate OnGlobalLevelUp;
 
-        public event Func<IMessage, User, User, int, Task> OnTransactionMade;
+        public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 		private ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
@@ -43,15 +47,16 @@ namespace Miki.Accounts
 
 		public AccountManager(Bot bot)
         {
-			OnGlobalLevelUp += async (a, e, l) =>
+			OnGlobalLevelUp += (a, e, l) =>
 			{
 				DogStatsd.Counter("levels.global", l);
+				return Task.CompletedTask;
 			};
 			OnLocalLevelUp += async (a, e, l) =>
 		   {
 			   DogStatsd.Counter("levels.local", l);
 
-			   long guildId = (e as IGuildChannel).GuildId.ToDbLong();
+			   long guildId = (e as IDiscordGuildChannel).GuildId.ToDbLong();
 
 			   List<LevelRole> rolesObtained = new List<LevelRole>();
 
@@ -62,7 +67,7 @@ namespace Miki.Accounts
 					  .ToListAsync();
 			   }
 
-			   await (a as IGuildUser).AddRolesAsync(rolesObtained.Select(x => x.Role).ToArray());
+			  // await (a as IDiscordGuildUser).AddRolesAsync(rolesObtained.Select(x => x.Role).ToArray());
 
 			   var setting = await Setting.GetAsync<LevelNotificationsSetting>(e.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS);
 
@@ -72,10 +77,12 @@ namespace Miki.Accounts
 			   if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
 				   return;
 
+			   LocaleInstance instance = await Locale.GetLanguageInstanceAsync(e.Id);
+
 			   EmbedBuilder embed = new EmbedBuilder()
 			   {
-				   Title = Locale.GetString(e.Id, "miki_accounts_level_up_header"),
-				   Description = Locale.GetString(e.Id, "miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
+				   Title = instance.GetString("miki_accounts_level_up_header"),
+				   Description = instance.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
 				   Color = new Color(1, 0.7f, 0.2f)
 			   };
 
@@ -84,77 +91,90 @@ namespace Miki.Accounts
 				   embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.Role.Name}**")));
 			   }
 
-			   embed.Build().QueueToChannel(e);
+			   embed.ToEmbed().QueueToChannel(e);
 		   };
 
-			bot.Client.GuildUpdated += Client_GuildUpdated;
-			bot.Client.JoinedGuild   += Client_UserJoined;
-			bot.Client.LeftGuild  += Client_UserLeft;
+			//	bot.Client.GuildUpdated += Client_GuildUpdated;
+			//	bot.Client.JoinedGuild   += Client_UserJoined;\
+			//	bot.Client.LeftGuild  += Client_UserLeft;
+			bot.Client.MessageCreate += CheckAsync;
 		}
 
-		public async Task CheckAsync(IMessage e)
+		public async Task CheckAsync(IDiscordMessage e)
 		{
 			if (e.Author.IsBot)
+			{
 				return;
+			}
 
 			if (isSyncing)
+			{
 				return;
+			}
 
 			try
 			{
-				string key = GetContextKey((e.Channel as IGuildChannel).GuildId, e.Author.Id);
-
-				if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+				if (await e.GetChannelAsync() is IDiscordGuildChannel channel)
 				{
-					int currentExp = 0;
-					if (!await Global.RedisClient.ExistsAsync(key))
+					string key = GetContextKey(channel.GuildId, e.Author.Id);
+
+					if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
 					{
-						using (var context = new MikiContext())
+						int currentExp = 0;
+						if (!await Global.RedisClient.ExistsAsync(key))
 						{
-							LocalExperience user = await LocalExperience.GetAsync(context, (e.Channel as IGuildChannel).Guild.Id.ToDbLong(), e.Author);
-							await Global.RedisClient.AddAsync(key, user.Experience);
-							currentExp = user.Experience;
+							using (var context = new MikiContext())
+							{
+								LocalExperience user = await LocalExperience.GetAsync(
+									context,
+									(long)channel.GuildId,
+									e.Author
+								);
+
+								await Global.RedisClient.UpsertAsync(key, user.Experience);
+								currentExp = user.Experience;
+							}
 						}
-					}
-					else
-					{
-						currentExp = await Global.RedisClient.GetAsync<int>(key);
-					}
-
-					var bonusExp = MikiRandom.Next(1, 4);
-					currentExp += bonusExp;
-
-					if (!experienceQueue.ContainsKey(e.Author.Id))
-					{
-						var expObject = new ExperienceAdded()
+						else
 						{
-							UserId = e.Author.Id.ToDbLong(),
-							GuildId = (e.Channel as IGuildChannel).Guild.Id.ToDbLong(),
-							Experience = bonusExp,
-							Name = e.Author.Username,
-						};
+							currentExp = await Global.RedisClient.GetAsync<int>(key);
+						}
 
-						experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+						var bonusExp = MikiRandom.Next(1, 4);
+						currentExp += bonusExp;
+
+						if (!experienceQueue.ContainsKey(e.Author.Id))
 						{
-							eo.Experience += expObject.Experience;
-							return eo;
-						});
+							var expObject = new ExperienceAdded()
+							{
+								UserId = e.Author.Id.ToDbLong(),
+								GuildId = channel.GuildId.ToDbLong(),
+								Experience = bonusExp,
+								Name = e.Author.Username,
+							};
+
+							experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+							{
+								eo.Experience += expObject.Experience;
+								return eo;
+							});
+						}
+						else
+						{
+							experienceQueue[e.Author.Id].Experience += bonusExp;
+						}
+
+						int level = User.CalculateLevel(currentExp);
+
+						if (User.CalculateLevel(currentExp - bonusExp) != level)
+						{
+							await LevelUpLocalAsync(e, level);
+						}
+
+						lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
+
+						await Global.RedisClient.UpsertAsync(key, currentExp);
 					}
-					else
-					{
-						experienceQueue[e.Author.Id].Experience += bonusExp;
-					}
-
-					int level = User.CalculateLevel(currentExp);
-
-					if (User.CalculateLevel(currentExp - bonusExp) != level)
-					{
-						await LevelUpLocalAsync(e, level);
-					}
-
-					lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
-
-					await Global.RedisClient.AddAsync(key, currentExp);
 				}
 
 				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
@@ -214,6 +234,7 @@ namespace Miki.Accounts
 				await context.SaveChangesAsync();
 			}
 		}
+
 		public async Task UpdateLocalDatabase()
 		{
 			if (experienceQueue.Count == 0)
@@ -237,6 +258,7 @@ namespace Miki.Accounts
 				await context.SaveChangesAsync();
 			}
 		}
+
 		public async Task UpdateGuildDatabase()
 		{
 			if (experienceQueue.Count == 0)
@@ -262,23 +284,22 @@ namespace Miki.Accounts
 		}
 
 		#region Events
-
-		public async Task LevelUpLocalAsync(IMessage e, int l)
+		public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
         {
-            await OnLocalLevelUp.Invoke(e.Author, e.Channel, l);
+            await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
         }
 
-        public async Task LevelUpGlobalAsync(IMessage e, int l)
+        public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
         {
-            await OnGlobalLevelUp.Invoke(e.Author, e.Channel, l);
+            await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
         }
 
-        public async Task LogTransactionAsync(IMessage msg, User receiver, User fromUser, int amount)
+        public async Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
         {
             await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
         }
 
-        private async Task Client_GuildUpdated(IGuild arg1, IGuild arg2)
+        private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
         {
             if (arg1.Name != arg2.Name)
             {
@@ -291,27 +312,26 @@ namespace Miki.Accounts
             }
         }
 
-        private async Task Client_UserLeft(IGuild arg)
+        private async Task Client_UserLeft(IDiscordGuild arg)
         {
             await UpdateGuildUserCountAsync(arg);
         }
 
-        private async Task Client_UserJoined(IGuild arg)
+        private async Task Client_UserJoined(IDiscordGuild arg)
         {
             await UpdateGuildUserCountAsync(arg);
         }
 
-        private async Task UpdateGuildUserCountAsync(IGuild guild)
+        private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
         {
             using (MikiContext context = new MikiContext())
             {
 				GuildUser g = await GuildUser.GetAsync(context, guild);
 
-                g.UserCount = (await guild.GetUsersAsync()).Count;
+				g.UserCount = guild.Members.Count;
                 await context.SaveChangesAsync();
             }
         }
-
         #endregion Events
     }
 

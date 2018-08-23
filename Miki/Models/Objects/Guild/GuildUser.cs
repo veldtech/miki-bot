@@ -5,7 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
+using Miki.Exceptions;
+using StatsdClient;
+using Miki.Discord.Common;
 
 namespace Miki.Models
 {
@@ -17,6 +19,8 @@ namespace Miki.Models
 		public long Id { get; set; }
 
 		public string Name { get; set; }
+
+		public long Currency { get; set; } = 0;
 
 		public int Experience { get; set; }
 
@@ -37,7 +41,26 @@ namespace Miki.Models
 
 		#endregion Config
 
-		// TODO: rework this
+		public void AddCurrency(int amount, User FromUser)
+		{
+			if (Banned)
+			{
+				throw new UserBannedException(FromUser);
+			}
+
+			if (amount < 0)
+			{
+				if (Currency < Math.Abs(amount))
+				{
+					throw new InsufficientCurrencyException(Currency, Math.Abs(amount));
+				}
+			}
+
+			DogStatsd.Counter("currency.change", amount);
+
+			Currency += amount;
+		}
+
 		public int CalculateLevel(int exp)
 		{
 			int experience = exp;
@@ -93,10 +116,10 @@ namespace Miki.Models
 			}
 		}
 
-		public static async Task<GuildUser> CreateAsync(MikiContext context, IGuild guild)
+		public static async Task<GuildUser> CreateAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
-			int userCount = (await guild.GetUsersAsync()).Count;
+			int userCount = guild.Members.Count;
 			int value = await context.LocalExperience
 								.Where(x => x.ServerId == id)
 								.SumAsync(x => x.Experience);
@@ -113,7 +136,7 @@ namespace Miki.Models
 			return outputGuildUser;
 		}
 
-		public static async Task<GuildUser> GetAsync(MikiContext context, IGuild guild)
+		public static async Task<GuildUser> GetAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
 			return await context.GuildUsers.FindAsync(id)

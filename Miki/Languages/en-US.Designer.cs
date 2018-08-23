@@ -214,6 +214,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command is only allowed in a NSFW channel..
+        /// </summary>
+        internal static string error_channel_not_nsfw {
+            get {
+                return ResourceManager.GetString("error_channel_not_nsfw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unknown error..
         /// </summary>
         internal static string error_default {
@@ -246,6 +255,15 @@ namespace Miki.Languages {
         internal static string error_no_reminders {
             get {
                 return ResourceManager.GetString("error_no_reminders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You do not have any proposals..
+        /// </summary>
+        internal static string error_proposals_empty {
+            get {
+                return ResourceManager.GetString("error_proposals_empty", resourceCulture);
             }
         }
         
@@ -426,6 +444,79 @@ namespace Miki.Languages {
         internal static string guild_error_null {
             get {
                 return ResourceManager.GetString("guild_error_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} mekos are currently stored in the guild bank..
+        /// </summary>
+        internal static string guildbank_balance {
+            get {
+                return ResourceManager.GetString("guildbank_balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mekos.
+        /// </summary>
+        internal static string guildbank_balance_title {
+            get {
+                return ResourceManager.GetString("guildbank_balance_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve successfully deposited {0} mekos!.
+        /// </summary>
+        internal static string guildbank_deposit_success {
+            get {
+                return ResourceManager.GetString("guildbank_deposit_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} deposited {1} mekos into the guild bank!.
+        /// </summary>
+        internal static string guildbank_deposit_title {
+            get {
+                return ResourceManager.GetString("guildbank_deposit_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is your guild&apos;s bank, use it to store mekos to save up for guild upgrades!.
+        /// </summary>
+        internal static string guildbank_info_description {
+            get {
+                return ResourceManager.GetString("guildbank_info_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commands.
+        /// </summary>
+        internal static string guildbank_info_help {
+            get {
+                return ResourceManager.GetString("guildbank_info_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}guildbank deposit &lt;mekos&gt; - to deposit the mekos to the bank
+        ///{0}guildbank balance - to check the total money.
+        /// </summary>
+        internal static string guildbank_info_help_description {
+            get {
+                return ResourceManager.GetString("guildbank_info_help_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}&apos;s savings.
+        /// </summary>
+        internal static string guildbank_title {
+            get {
+                return ResourceManager.GetString("guildbank_title", resourceCulture);
             }
         }
         
@@ -628,7 +719,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `hit` to draw a new card..
+        ///   Looks up a localized string similar to Use `&gt;bj hit` to draw a new card..
         /// </summary>
         internal static string miki_blackjack_hit {
             get {
@@ -673,7 +764,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use `stay` to finalize your points..
+        ///   Looks up a localized string similar to Use `&gt;bj stay` to finalize your points..
         /// </summary>
         internal static string miki_blackjack_stay {
             get {
@@ -4585,7 +4676,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This pasta already exists! Try a different name..
+        ///   Looks up a localized string similar to Pasta with name {0} already exists! Try a different name..
         /// </summary>
         internal static string miki_module_pasta_create_error_already_exist {
             get {
@@ -5436,6 +5527,15 @@ namespace Miki.Languages {
         internal static string warning_mention_self {
             get {
                 return ResourceManager.GetString("warning_mention_self", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Who is {0}!?.
+        /// </summary>
+        internal static string whois_title {
+            get {
+                return ResourceManager.GetString("whois_title", resourceCulture);
             }
         }
     }

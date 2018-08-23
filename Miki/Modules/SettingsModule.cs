@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Miki.Dsl;
 using System;
-using Discord;
 using Miki.Framework.Extension;
 using Amazon.S3.Model;
 using Miki.Framework.Languages;
 using Miki.Exceptions;
 using Miki.Framework.Events.Commands;
+using Miki.Discord.Common;
+using Miki.Discord;
+using Miki.Discord.Rest;
 
 namespace Miki.Modules
 {
@@ -31,19 +33,14 @@ namespace Miki.Modules
 		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
-				Task.Run(async () => await SetupNotificationsInteractive<LevelNotificationsSetting>(e, DatabaseSettingId.LEVEL_NOTIFICATIONS));
-			else
-			{
-				MMLParser mml = new MMLParser(e.Arguments.ToString());
-				MSLResponse response = mml.Parse();
+			MMLParser mml = new MMLParser(e.Arguments.ToString());
+			MSLResponse response = mml.Parse();
 
-				bool global = response.GetBool("g");
-				LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
+			bool global = response.GetBool("g");
+			LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
 
-				await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
-			}
-		}
+			await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
+		}	
 
 		public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
 		{
@@ -57,11 +54,11 @@ namespace Miki.Modules
 			var sEmbed= SettingsBaseEmbed;
 			sEmbed.Description = ($"What kind of {settingName} do you want");
 			sEmbed.AddInlineField("Options", string.Join("\n", options));
-			var sMsg = await sEmbed.Build().SendToChannel(e.Channel);
+			var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
 
 			int newSetting;
 
-			IMessage msg = null;
+			IDiscordMessage msg = null;
 
 			while (true)
 			{
@@ -73,24 +70,24 @@ namespace Miki.Modules
 					break;
 				}
 
-				await sMsg.ModifyAsync(x =>
+				await sMsg.EditAsync(new EditMessageArgs()
 				{
-					x.Embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
+					embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
 						.AddInlineField("Options", string.Join("\n", options))
-						.Build();
+						.ToEmbed()
 				});
 			}
 
 			sMsg = await SettingsBaseEmbed
-				.WithDescription("Do you want this to apply for every channel? say `yes` if you do.")
-				.Build().SendToChannel(e.Channel);
+				.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
+				.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
 			msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 			bool global = (msg.Content.ToLower()[0] == 'y');
 
 			await SettingsBaseEmbed
-				.WithDescription($"Setting `{settingName}` Updated!")
-				.Build().SendToChannel(e.Channel);
+				.SetDescription($"Setting `{settingName}` Updated!")
+				.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
 			if (!global)
 			{
@@ -117,7 +114,7 @@ namespace Miki.Modules
 
 				foreach (CommandEvent ev in module.Events.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				embed.AddInlineField("Events", content);
@@ -126,13 +123,13 @@ namespace Miki.Modules
 
 				foreach (BaseService ev in module.Services.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				if (!string.IsNullOrEmpty(content))
 					embed.AddInlineField("Services", content);
 
-				embed.Build().QueueToChannel(e.Channel);
+				embed.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 
@@ -141,7 +138,7 @@ namespace Miki.Modules
 		{
 			List<string> modules = new List<string>();
 			SimpleCommandHandler commandHandler = e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
-			EventAccessibility userEventAccessibility = commandHandler.GetUserAccessibility(e.message);
+			EventAccessibility userEventAccessibility = await commandHandler.GetUserAccessibility(e);
 
 			foreach (CommandEvent ev in commandHandler.Commands)
 			{
@@ -160,7 +157,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < modules.Count(); i++)
 			{
-				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
+				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
 				if (i < modules.Count() / 2 + 1)
 				{
 					firstColumn += output;
@@ -172,27 +169,28 @@ namespace Miki.Modules
 			}
 
 			new EmbedBuilder()
-			{
-				Title = ($"Module Status for '{e.Channel.Name}'")
-			}.AddInlineField("Column 1", firstColumn)
+			.SetTitle($"Module Status for '{e.Channel.Name}'")
+			.AddInlineField("Column 1", firstColumn)
 			.AddInlineField("Column 2", secondColumn)
-			.Build().QueueToChannel(e.Channel);
+			.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetLocale(EventContext e)
 		{
-			string localeName = e.Arguments.FirstOrDefault()?.Argument ?? "";
+			string localeName = e.Arguments.ToString() ?? "";
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
-				await Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
-				Utils.SuccessEmbed(e.Channel.Id, e.GetResource("localization_set", $"`{localeName}`"))
+				await e.Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
+
+				e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
+
 				return;
 			}
 			e.ErrorEmbed($"{localeName} is not a valid language. use `>listlocale` to check all languages available.")
-				.Build().QueueToChannel(e.Channel);
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
@@ -200,24 +198,24 @@ namespace Miki.Modules
 		{
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.ErrorEmbed(e.GetResource("miki_module_general_prefix_error_no_arg")).Build().QueueToChannel(e.Channel);
+				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
+			await e.Prefix.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
+
 			EmbedBuilder embed = Utils.Embed;
-			embed.Title = e.GetResource("miki_module_general_prefix_success_header");
-			embed.Description = e.GetResource("miki_module_general_prefix_success_message", e.Arguments.ToString());
+			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
+			embed.SetDescription(e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()));
 
-			embed.AddField(e.GetResource("miki_module_general_prefix_example_command_header"), $"{e.Arguments.ToString()}profile");
-
-			embed.Build().QueueToChannel(e.Channel);
+			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "syncavatar")]
 		public async Task SyncAvatarAsync(EventContext e)
 		{
 			await Utils.SyncAvatarAsync(e.Author);
-			Utils.SuccessEmbed(e.Channel.Id, "We've updated your avatar!")
+			e.SuccessEmbed("We've updated your avatar!")
 				.QueueToChannel(e.Channel);
 		}
 
@@ -227,7 +225,10 @@ namespace Miki.Modules
 			new EmbedBuilder() {
 				Title = ("Available locales"),
 				Description = ("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
-			}.Build().QueueToChannel(e.Channel);
+			}.AddField(
+				"Your language not here?", 
+				"Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)!"
+			).ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		private EmbedBuilder SettingsBaseEmbed =>

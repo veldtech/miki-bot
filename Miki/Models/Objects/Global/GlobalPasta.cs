@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Miki.Framework.Events;
 using System.Text.RegularExpressions;
+using Miki.Exceptions;
 
 namespace Miki.Models
 {
@@ -19,32 +20,27 @@ namespace Miki.Models
 
 		public User User { get; set; }
 
-		public async Task AddAsync(string id, string text, long creator)
+		public static async Task AddAsync(MikiContext context, string id, string text, long creator)
 		{
 			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
 			{
-				throw new Exception("You can't add ");
+				throw new Exception("You can't add discord invites!");
 			}
 
-			using (var context = new MikiContext())
+			GlobalPasta pasta = await context.Pastas.FindAsync(id);
+
+			if (pasta != null)
 			{
-				GlobalPasta pasta = await context.Pastas.FindAsync(id);
-
-				if (pasta != null)
-				{
-					//e.ErrorEmbed(e.GetResource("miki_module_pasta_create_error_already_exist")).Build().QueueToChannel(e.Channel);
-					return;
-				}
-
-				context.Pastas.Add(new GlobalPasta()
-				{
-					Id = id,
-					Text = text,
-					CreatorId = creator,
-					CreatedAt = DateTime.Now
-				});
-				await context.SaveChangesAsync();
+				throw new DuplicatePastaException(pasta);
 			}
+
+			await context.Pastas.AddAsync(new GlobalPasta()
+			{
+				Id = id,
+				Text = text,
+				CreatorId = creator,
+				CreatedAt = DateTime.Now
+			});
 		}
 
 		public async Task<int> GetScoreAsync()

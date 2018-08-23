@@ -4,7 +4,7 @@ using Miki.Models;
 using System;
 using System.Threading.Tasks;
 using Miki.Common;
-using Discord;
+using Miki.Discord.Common;
 
 namespace Miki.Accounts.Achievements
 {
@@ -26,7 +26,8 @@ namespace Miki.Accounts.Achievements
 
         public virtual async Task<bool> CheckAsync(BasePacket packet)
         {
-            return true;
+			await Task.Yield();
+			return false;
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace Miki.Accounts.Achievements
         /// <param name="id">user id</param>
         /// <param name="r">rank set to (optional)</param>
         /// <returns></returns>
-        internal async Task UnlockAsync(IMessageChannel channel, IUser user, int r = 0)
+        internal async Task UnlockAsync(IDiscordChannel channel, IDiscordUser user, int r = 0)
         {
             long userid = user.Id.ToDbLong();
        
@@ -46,7 +47,7 @@ namespace Miki.Accounts.Achievements
 				Notification.SendAchievement(this, channel, user);
 			}
 		}
-		internal async Task UnlockAsync(IUser user, int r = 0)
+		internal async Task UnlockAsync(IDiscordUser user, int r = 0)
 		{
 			long userid = user.Id.ToDbLong();
 

@@ -537,7 +537,7 @@ Fuzzy</comment>
     <value>No images found on your search :(</value>
   </data>
   <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
-    <value>This pasta already exists! Try a different name.</value>
+    <value>Pasta with name {0} already exists! Try a different name.</value>
   </data>
   <data name="miki_module_pasta_create_success" xml:space="preserve">
     <value>Created pasta `{0}`!</value>
@@ -1353,7 +1353,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>The one who's closest to 21 wins. All cards count their own number up to 10. Ties go to the house.</value>
   </data>
   <data name="miki_blackjack_hit" xml:space="preserve">
-    <value>Use `hit` to draw a new card.</value>
+    <value>Use `&gt;bj hit` to draw a new card.</value>
   </data>
   <data name="miki_blackjack_lose_description" xml:space="preserve">
     <value>You lose your bet to Miki.</value>
@@ -1365,7 +1365,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>You didn't include the amount bet! Correct usage: &gt;blackjack &lt;amount&gt;</value>
   </data>
   <data name="miki_blackjack_stay" xml:space="preserve">
-    <value>Use `stay` to finalize your points.</value>
+    <value>Use `&gt;bj stay` to finalize your points.</value>
   </data>
   <data name="miki_blackjack_win_description" xml:space="preserve">
     <value>Miki has not been able to beat your score and this means you get the jackpot. You gained {0} mekos!</value>
@@ -2032,5 +2032,39 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="error_session_in_use" xml:space="preserve">
     <value>I'm already waiting for a response from you in this channel. Please finish your previous actions first!</value>
+  </data>
+  <data name="whois_title" xml:space="preserve">
+    <value>Who is {0}!?</value>
+  </data>
+  <data name="guildbank_balance" xml:space="preserve">
+    <value>{0} mekos are currently stored in the guild bank.</value>
+  </data>
+  <data name="guildbank_balance_title" xml:space="preserve">
+    <value>Mekos</value>
+  </data>
+  <data name="guildbank_deposit_success" xml:space="preserve">
+    <value>You've successfully deposited {0} mekos!</value>
+  </data>
+  <data name="guildbank_deposit_title" xml:space="preserve">
+    <value>{0} deposited {1} mekos into the guild bank!</value>
+  </data>
+  <data name="guildbank_info_description" xml:space="preserve">
+    <value>This is your guild's bank, use it to store mekos to save up for guild upgrades!</value>
+  </data>
+  <data name="guildbank_info_help" xml:space="preserve">
+    <value>Commands</value>
+  </data>
+  <data name="guildbank_info_help_description" xml:space="preserve">
+    <value>{0}guildbank deposit &lt;mekos&gt; - to deposit the mekos to the bank
+{0}guildbank balance - to check the total money</value>
+  </data>
+  <data name="guildbank_title" xml:space="preserve">
+    <value>{0}'s savings</value>
+  </data>
+  <data name="error_channel_not_nsfw" xml:space="preserve">
+    <value>This command is only allowed in a NSFW channel.</value>
+  </data>
+  <data name="error_proposals_empty" xml:space="preserve">
+    <value>You do not have any proposals.</value>
   </data>
 </root>

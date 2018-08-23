@@ -42,14 +42,14 @@ namespace Miki.Models
 				await context.SaveChangesAsync();
 			}
 
-			await Global.RedisClient.AddAsync(key, achievement);
+			await Global.RedisClient.UpsertAsync(key, achievement);
 			return achievement;
 		}
 
 		public static async Task UpdateCacheAsync(long userId, string name, CommandUsage usage)
 		{
 			string key = $"commandusage:{userId}:{name}";
-			await Global.RedisClient.AddAsync(key, usage);
+			await Global.RedisClient.UpsertAsync(key, usage);
 		}
     }
 }
