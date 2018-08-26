@@ -11,6 +11,8 @@ using Miki.Framework.Extension;
 using Miki.Discord.Common;
 using Miki.Discord;
 using Miki.Discord.Rest;
+using Miki.Discord.Common.Gateway.Packets;
+using Miki.Discord.Common.Gateway;
 
 namespace Miki.Modules
 {
@@ -40,7 +42,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{
@@ -114,6 +116,8 @@ namespace Miki.Modules
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
 			{
 				IDiscordGuildUser bannedUser = null;
+				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
+
 				bannedUser = await arg?.GetUserAsync(e.Guild) ?? null;
 
 				if (bannedUser == null)
@@ -123,14 +127,14 @@ namespace Miki.Modules
 					return;
 				}
 
-				if ((bannedUser as IDiscordGuildUser).Hierarchy >= (e.Author as IDiscordGuildUser).Hierarchy)
+				if ((bannedUser as IDiscordGuildUser).Hierarchy >= author.Hierarchy)
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((bannedUser as IDiscordGuildUser).Hierarchy >= (currentUser as IDiscordGuildUser).Hierarchy)
+				if ((bannedUser as IDiscordGuildUser).Hierarchy >= author.Hierarchy)
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
@@ -185,7 +189,7 @@ namespace Miki.Modules
 
 			int amount = _amount;
 			string[] argsSplit = e.Arguments.ToString().Split(' ');
-			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
+			ulong target = e.message.MentionedUserIds.Count > 0 ? e.Guild.GetMember(e.message.MentionedUserIds.First()).Id : _target;
 
 			if (!string.IsNullOrEmpty(argsSplit[0]))
 			{
@@ -405,7 +409,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{

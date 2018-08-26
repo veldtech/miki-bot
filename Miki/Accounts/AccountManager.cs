@@ -27,7 +27,7 @@ namespace Miki.Accounts
 
     public class AccountManager
     {
-        private static AccountManager _instance = new AccountManager(Bot.Instance);
+        private static readonly AccountManager _instance = new AccountManager(Bot.Instance);
         public static AccountManager Instance => _instance;
 
         public event LevelUpDelegate OnLocalLevelUp;

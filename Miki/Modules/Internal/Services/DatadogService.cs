@@ -15,7 +15,7 @@ namespace Miki.Modules.Internal.Services
 		[Configurable]
 		public string DatadogHost { get; set; } = "";
 
-		public override void Install(Module m, Bot b)
+		public override void Install(Module m)
 		{
 			var dogstatsdConfig = new StatsdConfig
 			{
@@ -26,9 +26,9 @@ namespace Miki.Modules.Internal.Services
 
 			DogStatsd.Configure(dogstatsdConfig);
 
-			base.Install(m, b);
+			base.Install(m);
 
-			var eventSystem = b.GetAttachedObject<EventSystem>();
+			var eventSystem = m.EventSystem;
 
 			// TODO (Veld): reimplement this
 			//b.HttpClient.RestClient.OnRequestComplete += (method, uri) =>
@@ -69,9 +69,9 @@ namespace Miki.Modules.Internal.Services
 
 			Log.Message("Datadog set up!");
 		}
-		public override void Uninstall(Module m, Bot b)
+		public override void Uninstall(Module m)
 		{
-			base.Uninstall(m, b);
+			base.Uninstall(m);
 		}
 	}
 }

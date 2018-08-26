@@ -10,8 +10,8 @@ using Miki.Models.Objects.Backgrounds;
 using Miki.Framework;
 using Miki.Discord.Caching;
 using Miki.Cache;
-using Miki.Cache.Serializers.Protobuf;
 using Miki.Cache.StackExchange;
+using Miki.Serialization.Protobuf;
 
 namespace Miki
 {
@@ -29,7 +29,7 @@ namespace Miki
 
 		public static ICacheClient RedisClient => redisClientPool.Value;
 
-		public static BackgroundStore Backgrounds => backgrounds;
+		public static BackgroundStore Backgrounds => null;
 
 		public static Bot Client { get; set; }
 
@@ -73,7 +73,7 @@ namespace Miki
 
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
-		static BackgroundStore backgrounds = new BackgroundStore();
+		//static readonly BackgroundStore backgrounds = new BackgroundStore();
 	}
 
 	public class Constants

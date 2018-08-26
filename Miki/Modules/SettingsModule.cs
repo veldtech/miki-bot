@@ -196,13 +196,16 @@ namespace Miki.Modules
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PrefixAsync(EventContext e)
 		{
+
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
 				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 
-			await e.Prefix.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
+			PrefixInstance defaultInstance = e.commandHandler.GetDefaultPrefix();
+
+			await defaultInstance.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));

@@ -159,7 +159,7 @@ namespace Miki
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
 			{
-				return (guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
+				return guild.GetMember(ulong.Parse(m.Groups[1].Value)).Username;
 			}, RegexOptions.None);
 		}
 
@@ -276,7 +276,7 @@ namespace Miki
         public int Value { get; set; }
         public string Identifier { get; set; }
 
-        private bool minified;
+        private readonly bool minified;
 
         public TimeValue(string i, int v, bool minified = false)
         {
@@ -302,7 +302,7 @@ namespace Miki
 	public class RedisDictionary
 	{
 		Cache.ICacheClient client;
-		string name;
+		readonly string name;
 
 		public async Task<IEnumerable<string>> GetKeysAsync() 
 			=> (await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashKeysAsync(name))

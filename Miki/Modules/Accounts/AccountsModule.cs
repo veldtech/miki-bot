@@ -40,17 +40,15 @@ namespace Miki.Modules.AccountsModule
 		[Service("achievements")]
 		public AchievementsService AchievementsService { get; set; }
 
-		BackgroundStore store = new BackgroundStore();
+		readonly BackgroundStore store = new BackgroundStore();
 
 		RestClient client = new RestClient(Global.Config.ImageApiUrl)
 			.AddHeader("Authorization", Global.Config.MikiApiKey);
-
-		EmojiBarSet onBarSet = new EmojiBarSet(
+		readonly EmojiBarSet onBarSet = new EmojiBarSet(
 			"<:mbarlefton:391971424442646534>",
 			"<:mbarmidon:391971424920797185>",
 			"<:mbarrighton:391971424488783875>");
-
-		EmojiBarSet offBarSet = new EmojiBarSet(
+		readonly EmojiBarSet offBarSet = new EmojiBarSet(
 			"<:mbarleftoff:391971424824459265>",
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
@@ -75,7 +73,7 @@ namespace Miki.Modules.AccountsModule
 					}
 				}
 
-				IDiscordUser discordUser = await e.Guild.GetMemberAsync(id.FromDbLong());
+				IDiscordUser discordUser = e.Guild.GetMember(id.FromDbLong());
 				User u = await User.GetAsync(context, discordUser);
 
 				List<Achievement> achievements = await context.Achievements
@@ -253,7 +251,7 @@ namespace Miki.Modules.AccountsModule
 					id = uid.ToDbLong();
 				}
 
-				IDiscordGuildUser discordUser = await e.Guild.GetMemberAsync(uid);
+				IDiscordGuildUser discordUser = e.Guild.GetMember(uid);
 				User account = await User.GetAsync(context, discordUser);
 
 				string icon = "";
@@ -791,7 +789,7 @@ namespace Miki.Modules.AccountsModule
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
-				IDiscordUser userCheck = await e.Guild.GetMemberAsync(targetId);
+				IDiscordUser userCheck = e.Guild.GetMember(targetId);
 				if (userCheck.IsBot)
 				{
 					e.ErrorEmbedResource("miki_module_accounts_mekos_bot")
@@ -802,7 +800,7 @@ namespace Miki.Modules.AccountsModule
 
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, await e.Guild.GetMemberAsync(targetId != 0 ? targetId : e.Author.Id));
+				User user = await User.GetAsync(context, e.Guild.GetMember(targetId != 0 ? targetId : e.Author.Id));
 
 				new EmbedBuilder()
 				{

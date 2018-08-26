@@ -37,7 +37,7 @@ namespace Miki.Modules
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 		string lotteryKey = "lottery:tickets";
 		RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.RedisClient);
-		int lotteryId = 0;
+		readonly int lotteryId = 0;
 
 		public GamblingModule()
 		{

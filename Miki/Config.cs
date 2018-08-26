@@ -11,6 +11,13 @@ namespace Miki
 {
 	public class Config
 	{
+		public const string MikiSettingsFile = "/miki/settings.json";
+
+		/// <summary>
+		/// This is the new Miki.Configuration file. Over time it will take over everything completely.
+		/// </summary>
+		public const string MikiConfigurationFile = "/miki/configuration.json";
+
 		/// <summary>
 		/// Discord API Token
 		/// </summary>

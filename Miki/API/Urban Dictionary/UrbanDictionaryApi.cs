@@ -2,6 +2,7 @@
 using Miki.Rest;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace Miki.API.UrbanDictionary
 {
@@ -13,6 +14,11 @@ namespace Miki.API.UrbanDictionary
 
 		public UrbanDictionaryApi(string key)
 		{
+			if(string.IsNullOrWhiteSpace(key))
+			{
+				throw new ArgumentNullException(nameof(key));
+			}
+
 			this.key = key;
 
 			client = new RestClient("https://mashape-community-urban-dictionary.p.mashape.com/")

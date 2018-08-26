@@ -59,7 +59,7 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
 
 				if (author.RoleIds.Contains(role.Id))
 				{
@@ -71,7 +71,7 @@ namespace Miki.Modules.Roles
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
 				User user = (await context.Users.FindAsync(e.Author.Id.ToDbLong()));
 
-				IDiscordGuildUser discordUser = await e.Guild.GetMemberAsync(user.Id.FromDbLong());
+				IDiscordGuildUser discordUser = e.Guild.GetMember(user.Id.FromDbLong());
 				LocalExperience localUser = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
 
 				if (!newRole?.Optable ?? false)
@@ -171,7 +171,7 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
 
 				if (!author.RoleIds.Contains(role.Id))
 				{

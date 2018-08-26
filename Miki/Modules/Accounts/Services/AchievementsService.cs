@@ -20,16 +20,16 @@ namespace Miki.Modules.Accounts.Services
             Name = "Achievements";
         }
 
-        public override void Install(Module m, Bot bot)
+        public override void Install(Module m)
         {
-            base.Install(m, bot);
+            base.Install(m);
             AchievementManager.Instance.provider = this;
             LoadAchievements();
         }
 
-        public override void Uninstall(Module m, Bot bot)
+        public override void Uninstall(Module m)
         {
-            base.Uninstall(m, bot);
+            base.Uninstall(m);
         }
 
         public void LoadAchievements()

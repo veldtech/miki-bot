@@ -14,15 +14,15 @@ namespace Miki.Modules.Accounts.Services
             Name = "Experience";
         }
 
-        public override void Install(Module m, Bot b)
+        public override void Install(Module m)
         {
-            base.Install(m, b);
+            base.Install(m);
             m.MessageRecieved += Service_MessageReceived;
         }
 
-        public override void Uninstall(Module m, Bot b)
+        public override void Uninstall(Module m)
         {
-            base.Uninstall(m, b);
+            base.Uninstall(m);
             m.MessageRecieved -= Service_MessageReceived;
         }
 

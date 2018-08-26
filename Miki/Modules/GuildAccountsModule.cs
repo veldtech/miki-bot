@@ -198,7 +198,7 @@ namespace Miki.Modules
 
 		public async Task GuildBankInfoAsync(EventContext e, GuildUser c)
 		{
-			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
+			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id);
 
 			e.CreateEmbedBuilder()
 				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))

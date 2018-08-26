@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.API;
 using Miki.Cache;
-using Miki.Cache.Serializers.Protobuf;
 using Miki.Cache.StackExchange;
 using Miki.Common;
 using Miki.Configuration;
 using Miki.Discord;
+using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Internal;
 using Miki.Discord.Rest;
@@ -15,14 +16,17 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Commands;
 using Miki.Framework.Events.Filters;
 using Miki.Framework.Exceptions;
+using Miki.Framework.Language;
 using Miki.Framework.Languages;
 using Miki.Logging;
 using Miki.Models;
+using Miki.Serialization.Protobuf;
 using SharpRaven.Data;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
@@ -31,7 +35,7 @@ using System.Threading.Tasks;
 namespace Miki
 {
 	public class Program
-    {
+	{
 		public static DateTime timeSinceStartup;
 
 		static async Task Main()
@@ -57,9 +61,9 @@ namespace Miki
 			}
 
 			using (var c = new MikiContext())
-			{			
+			{
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
-				foreach(var u in bannedUsers)
+				foreach (var u in bannedUsers)
 				{
 					Global.Client.GetAttachedObject<EventSystem>().MessageFilter
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
@@ -106,24 +110,26 @@ namespace Miki
 				QueueName = "gateway",
 				ExchangeName = "consumer"
 			});
-		
+
 			Global.Client = new Bot(client, pool, new ClientInformation()
-            {
-                Name = "Miki",
-                Version = "0.7",
+			{
+				Name = "Miki",
+				Version = "0.7",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
 				Token = Global.Config.Token
 			});
-            
-            EventSystem eventSystem = new EventSystem(new EventSystemConfig()
+
+			new BasicCacheStage().Initialize(Global.Client.CacheClient);
+			
+			EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
 			});
 
 			eventSystem.OnError += async (ex, context) =>
 			{
-				if(ex is BotException botEx)
+				if (ex is BotException botEx)
 				{
 					Utils.ErrorEmbedResource(context, botEx.Resource)
 						.ToEmbed().QueueToChannel(context.Channel);
@@ -144,28 +150,43 @@ namespace Miki
 			var commandMap = new Framework.Events.CommandMap();
 			commandMap.OnModuleLoaded += (module) =>
 			{
-				mg.RegisterType(module.GetReflectedInstance());
+				mg.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
 			};
 
-			var handler = new SimpleCommandHandler(commandMap);
+			var handler = new SimpleCommandHandler(pool, commandMap);
 
 			handler.AddPrefix(">", true, true);
 			handler.AddPrefix("miki.");
 
-			var sessionHandler = new SessionBasedCommandHandler();
-			var messageHandler = new MessageListener();
+			var sessionHandler = new SessionBasedCommandHandler(pool);
+			var messageHandler = new MessageListener(pool);
 
 			eventSystem.AddCommandHandler(sessionHandler);
 			eventSystem.AddCommandHandler(messageHandler);
 			eventSystem.AddCommandHandler(handler);
 
 			commandMap.RegisterAttributeCommands();
-			commandMap.Install(eventSystem, Global.Client);
+			commandMap.Install(eventSystem);
+
+			string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
+
+			if (File.Exists(configFile))
+			{
+				await mg.ImportAsync(
+					new JsonSerializationProvider(),
+					configFile
+				);
+			}
+
+			await mg.ExportAsync(
+				new JsonSerializationProvider(),
+				configFile
+			);
 
 			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
-            {
-                Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
-            }
+			{
+				Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
+			}
 
 			handler.OnMessageProcessed += async (cmd, msg, time) =>
 			{
@@ -173,7 +194,7 @@ namespace Miki
 				Log.Message($"{cmd.Name} processed in {time}ms");
 			};
 
-			Global.Client.Client.MessageCreate += Bot_MessageReceived;;
+			Global.Client.Client.MessageCreate += Bot_MessageReceived;
 
 			Global.Client.Client.GuildJoin += Client_JoinedGuild;
 			Global.Client.Client.GuildLeave += Client_LeftGuild;
@@ -218,11 +239,12 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
-			//IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
+			IDiscordChannel defaultChannel = arg.GetDefaultChannel();
 
 			//if (defaultChannel != null)
 			//{
-			//	defaultChannel.QueueMessageAsync(Locale.GetString(defaultChannel.Id, "miki_join_message"));
+			//	LocaleInstance i = await Locale.GetLanguageInstanceAsync(defaultChannel.Id);
+			//	defaultChannel.QueueMessageAsync(i.GetString("miki_join_message"));
 			//}
 
 			List<string> allArgs = new List<string>();

@@ -5,16 +5,12 @@ using Miki.Models.Objects.Guild;
 using Newtonsoft.Json;
 using System;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Miki.Models.Objects.User;
 
 namespace Miki.Models
 {
     public class MikiContext : DbContext
     {
-		public static readonly LoggerFactory logger
-			= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => __ > LogLevel.Debug, false) });
-
 		public DbSet<Achievement> Achievements { get; set; }
 		public DbSet<BackgroundsOwned> BackgroundsOwned { get; set; }
 		public DbSet<BankAccount> BankAccounts { get; set; }

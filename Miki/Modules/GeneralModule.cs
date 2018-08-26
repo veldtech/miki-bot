@@ -242,7 +242,7 @@ namespace Miki.Modules
 			//	emojiOutput = string.Join(",", emojiNames);
 			//}
 
-			string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
+			string prefix = await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id);
 
 			new EmbedBuilder()
 			{
@@ -278,7 +278,7 @@ namespace Miki.Modules
 					EmbedBuilder helpListEmbed = Utils.Embed;
 					helpListEmbed.Title = e.Locale.GetString("miki_module_help_error_null_header");
 
-					helpListEmbed.Description = e.Locale.GetString("miki_module_help_error_null_message", await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id));
+					helpListEmbed.Description = e.Locale.GetString("miki_module_help_error_null_message", await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id));
 					helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 					API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(x => x.Name));
@@ -426,7 +426,7 @@ namespace Miki.Modules
 		{
 			e.CreateEmbedBuilder()
 				.WithTitle("miki_module_general_prefix_help_header")
-				.WithDescription(e.Locale.GetString("miki_module_general_prefix_help", await e.commandHandler.GetPrefixAsync(e.Guild.Id)))
+				.WithDescription(e.Locale.GetString("miki_module_general_prefix_help", await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id)))
 				.Build().QueueToChannel(e.Channel);
 		}
 

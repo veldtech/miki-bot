@@ -656,7 +656,7 @@ namespace Miki.Modules
 
 		private async Task HelpReminderAsync(EventContext e)
 		{
-			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetPrefixAsync(e.Guild.Id);
+			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id);
 
 			new EmbedBuilder()
 				.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
