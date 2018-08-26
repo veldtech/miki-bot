@@ -40,6 +40,8 @@ namespace Miki
 
 		static async Task Main()
 		{
+			
+
 			Program p = new Program();
 
 			timeSinceStartup = DateTime.Now;
@@ -103,6 +105,7 @@ namespace Miki
 				new ProtobufSerializer(),
 				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
 			);
+
 
 			var client = new DistributedGateway(new MessageClientConfiguration
 			{
@@ -208,7 +211,7 @@ namespace Miki
 		{
 			Log.OnLog += (msg, e) =>
 			{
-				if (e >= LogLevel.Information)
+				if (e >= Global.Config.LogLevel)
 				{
 					Console.WriteLine(msg);
 				}

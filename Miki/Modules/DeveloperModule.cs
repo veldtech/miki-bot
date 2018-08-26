@@ -16,6 +16,7 @@ using Miki.Discord.Common;
 using Miki.Discord;
 using Newtonsoft.Json;
 using Miki.Discord.Common.Packets;
+using System.Diagnostics;
 
 namespace Miki.Modules
 {
@@ -129,7 +130,7 @@ namespace Miki.Modules
 				url = "https://twitch.tv/velddev";
 
 			await Global.Client.Client.SetGameAsync(0, new DiscordStatus{
-				Game = new Activity
+				Game = new Discord.Common.Packets.Activity
 				{
 					Name = text,
 					Url = url,
@@ -301,6 +302,14 @@ namespace Miki.Modules
 			}
 
 			embed.ToEmbed().QueueToChannel(e.Channel);
+		}
+
+		[Command(Name = "mockedit", Accessibility = EventAccessibility.DEVELOPERONLY)]
+		public async Task EditAsync(EventContext e)
+		{
+			Stopwatch sw = Stopwatch.StartNew();
+			await Global.Client.Client._gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordUserPacket>(e.Arguments.ToString()));
+			Console.WriteLine(sw.ElapsedMilliseconds);
 		}
 
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]

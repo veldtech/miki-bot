@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Miki.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
@@ -116,5 +117,8 @@ namespace Miki
 
 		[JsonProperty("redis_password")]
 		public string RedisPassword { get; internal set; }
+
+		[JsonProperty("loglevel")]
+		public LogLevel LogLevel { get; internal set; } = LogLevel.Information;
 	}
 }
