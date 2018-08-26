@@ -202,7 +202,7 @@ namespace Miki
 
 			Global.Client.Client.GuildJoin += Client_JoinedGuild;
 			Global.Client.Client.GuildLeave += Client_LeftGuild;
-			Global.Client.Client.UserUpdate += Client_UserUpdated;
+			//Global.Client.Client.UserUpdate += Client_UserUpdated;
 
 			await Global.Client.StartAsync();
 		}
