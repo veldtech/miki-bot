@@ -62,9 +62,9 @@ namespace Miki.Models
 
             Currency += amount;
 
-            if (channel != null)
+            if (channel is IDiscordGuildChannel guildchannel)
             {
-                await AchievementManager.Instance.CallTransactionMadeEventAsync((IDiscordGuildChannel)channel, this, fromUser, Currency);
+                await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, this, fromUser, Currency);
             }
         }
 
