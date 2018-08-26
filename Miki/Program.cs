@@ -264,7 +264,7 @@ namespace Miki
 					allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
 					allParams.Add(arg.Members.ElementAt(i).Username);
 
-					allExpParams.Add((await arg.Members.ElementAt(i).GetGuildAsync()).Id.ToDbLong());
+					allExpParams.Add(arg.Id.ToDbLong());
 					allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
 				}
 
