@@ -328,7 +328,7 @@ namespace Miki.Accounts
             {
 				GuildUser g = await GuildUser.GetAsync(context, guild);
 
-				g.UserCount = guild.Members.Count;
+				g.UserCount = guild.MemberCount;
                 await context.SaveChangesAsync();
             }
         }

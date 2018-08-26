@@ -73,7 +73,7 @@ namespace Miki.Modules.AccountsModule
 					}
 				}
 
-				IDiscordUser discordUser = e.Guild.GetMember(id.FromDbLong());
+				IDiscordUser discordUser = await e.Guild.GetMemberAsync(id.FromDbLong());
 				User u = await User.GetAsync(context, discordUser);
 
 				List<Achievement> achievements = await context.Achievements
@@ -239,19 +239,28 @@ namespace Miki.Modules.AccountsModule
 				ulong uid = 0;
 
 				var arg = e.Arguments.FirstOrDefault();
+				IDiscordGuildUser discordUser = null;
 
 				if (arg != null)
 				{
-					uid = (await arg.GetUserAsync(e.Guild)).Id;
+					discordUser = await arg.GetUserAsync(e.Guild);
+
+					if(discordUser == null)
+					{
+						throw new UserException(new User());
+					}
+
+					uid = discordUser.Id;
 					id = uid.ToDbLong();
 				}
 				else
 				{
 					uid = e.message.Author.Id;
+					discordUser = await e.Guild.GetMemberAsync(uid);
+
 					id = uid.ToDbLong();
 				}
 
-				IDiscordGuildUser discordUser = e.Guild.GetMember(uid);
 				User account = await User.GetAsync(context, discordUser);
 
 				string icon = "";
@@ -789,7 +798,7 @@ namespace Miki.Modules.AccountsModule
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
-				IDiscordUser userCheck = e.Guild.GetMember(targetId);
+				IDiscordUser userCheck = await e.Guild.GetMemberAsync(targetId);
 				if (userCheck.IsBot)
 				{
 					e.ErrorEmbedResource("miki_module_accounts_mekos_bot")
@@ -800,7 +809,7 @@ namespace Miki.Modules.AccountsModule
 
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, e.Guild.GetMember(targetId != 0 ? targetId : e.Author.Id));
+				User user = await User.GetAsync(context, await e.Guild.GetMemberAsync(targetId != 0 ? targetId : e.Author.Id));
 
 				new EmbedBuilder()
 				{

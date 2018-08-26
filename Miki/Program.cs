@@ -251,38 +251,38 @@ namespace Miki
 			//	defaultChannel.QueueMessageAsync(i.GetString("miki_join_message"));
 			//}
 
-			List<string> allArgs = new List<string>();
-			List<object> allParams = new List<object>();
-			List<object> allExpParams = new List<object>();
+			//List<string> allArgs = new List<string>();
+			//List<object> allParams = new List<object>();
+			//List<object> allExpParams = new List<object>();
 
-			try
-			{
-				for (int i = 0; i < arg.Members.Count; i++)
-				{
-					allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+			//try
+			//{
+			//	for (int i = 0; i < arg.Members.Count; i++)
+			//	{
+			//		allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-					allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-					allParams.Add(arg.Members.ElementAt(i).Username);
+			//		allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
+			//		allParams.Add(arg.Members.ElementAt(i).Username);
 
-					allExpParams.Add(arg.Id.ToDbLong());
-					allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-				}
+			//		allExpParams.Add(arg.Id.ToDbLong());
+			//		allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
+			//	}
 
-				using (var context = new MikiContext())
-				{
-					await context.Database.ExecuteSqlCommandAsync(
-						$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+			//	using (var context = new MikiContext())
+			//	{
+			//		await context.Database.ExecuteSqlCommandAsync(
+			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
 
-					await context.Database.ExecuteSqlCommandAsync(
-						$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+			//		await context.Database.ExecuteSqlCommandAsync(
+			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
 
-					await context.SaveChangesAsync();
-				}
-			}
-			catch (Exception e)
-			{
-				Log.Error(e.ToString());
-			}
+			//		await context.SaveChangesAsync();
+			//	}
+			//}
+			//catch (Exception e)
+			//{
+			//	Log.Error(e.ToString());
+			//}
 
 			DogStatsd.Increment("guilds.joined");
 		}

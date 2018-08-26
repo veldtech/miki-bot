@@ -75,7 +75,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenUserAsync(EventContext e)
 		{
-			var user = await Global.Client.Client._apiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+			var user = await Global.Client.Client.ApiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
 
 			if (user == null)
 			{
@@ -88,7 +88,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildUserAsync(EventContext e)
 		{
-			var user = await Global.Client.Client._apiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
+			var user = await Global.Client.Client.ApiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
 
 			if (user == null)
 			{
@@ -101,7 +101,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildChannelAsync(EventContext e)
 		{
-			var user = await Global.Client.Client._apiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
+			var user = await Global.Client.Client.ApiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
 		
 			if (user == null)
 			{
@@ -308,7 +308,7 @@ namespace Miki.Modules
 		public async Task EditAsync(EventContext e)
 		{
 			Stopwatch sw = Stopwatch.StartNew();
-			await Global.Client.Client._gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordUserPacket>(e.Arguments.ToString()));
+			await Global.Client.Client.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordUserPacket>(e.Arguments.ToString()));
 			Console.WriteLine(sw.ElapsedMilliseconds);
 		}
 

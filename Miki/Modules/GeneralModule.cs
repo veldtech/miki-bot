@@ -232,7 +232,7 @@ namespace Miki.Modules
 		[Command(Name = "guildinfo")]
 		public async Task GuildInfoAsync(EventContext e)
 		{
-			IDiscordGuildUser owner = e.Guild.GetOwner();
+			IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
 
 			//var emojiNames = e.Guild.Emotes.Select(x => x.ToString());
 			string emojiOutput = "none (yet!)";

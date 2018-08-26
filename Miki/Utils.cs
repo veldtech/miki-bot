@@ -159,7 +159,7 @@ namespace Miki
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
 			{
-				return guild.GetMember(ulong.Parse(m.Groups[1].Value)).Username;
+				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
 			}, RegexOptions.None);
 		}
 

@@ -161,9 +161,9 @@ namespace Miki.Modules
 			var channels = guild.Channels;
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
-			var guildCount = guild.Members.Count;
+			var guildCount = guild.MemberCount;
 
-			IDiscordGuildUser owner = guild.GetOwner();
+			IDiscordGuildUser owner = await guild.GetOwnerAsync();
 
 			var ownerMention = owner.Mention;
 			var ownerName = owner.Username;
@@ -176,7 +176,7 @@ namespace Miki.Modules
 					.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType)
 					.ToListAsync();
 
-				var allUsers = guild.Members;
+				var allUsers = await guild.GetMembersAsync();
 
 				foreach (var c in messageObjects)
                 {
@@ -196,7 +196,7 @@ namespace Miki.Modules
 					string modifiedMessage = c.Message;
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", g.Members.Count.ToString());
+					modifiedMessage = modifiedMessage.Replace("-uc", g.MemberCount.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
                     modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   

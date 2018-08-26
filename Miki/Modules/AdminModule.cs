@@ -42,7 +42,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{
@@ -116,7 +116,7 @@ namespace Miki.Modules
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
 			{
 				IDiscordGuildUser bannedUser = null;
-				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				bannedUser = await arg?.GetUserAsync(e.Guild) ?? null;
 
@@ -189,7 +189,7 @@ namespace Miki.Modules
 
 			int amount = _amount;
 			string[] argsSplit = e.Arguments.ToString().Split(' ');
-			ulong target = e.message.MentionedUserIds.Count > 0 ? e.Guild.GetMember(e.message.MentionedUserIds.First()).Id : _target;
+			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
 
 			if (!string.IsNullOrEmpty(argsSplit[0]))
 			{
@@ -409,7 +409,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = e.Guild.GetMember(e.Author.Id);
+				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (user.Hierarchy >= author.Hierarchy)
 				{

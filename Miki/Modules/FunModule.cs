@@ -480,7 +480,7 @@ namespace Miki.Modules
 		[Command(Name = "roulette")]
 		public async Task RouletteAsync(EventContext e)
 		{
-			IEnumerable<IDiscordUser> users = e.Guild.Members;
+			IEnumerable<IDiscordUser> users = await e.Guild.GetMembersAsync();
 			List<IDiscordUser> realUsers = users.Where(user => !user.IsBot).ToList();
 
 			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";

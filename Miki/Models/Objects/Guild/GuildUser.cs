@@ -119,7 +119,7 @@ namespace Miki.Models
 		public static async Task<GuildUser> CreateAsync(MikiContext context, IDiscordGuild guild)
 		{
 			long id = guild.Id.ToDbLong();
-			int userCount = guild.Members.Count;
+			int userCount = (await guild.GetMembersAsync()).Length;
 			int value = await context.LocalExperience
 								.Where(x => x.ServerId == id)
 								.SumAsync(x => x.Experience);

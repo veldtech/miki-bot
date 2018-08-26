@@ -303,7 +303,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				await Global.Client.Client._apiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
+				await Global.Client.Client.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e).ToEmbed()
 				});
@@ -373,7 +373,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await Global.Client.Client._apiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, 
+			await Global.Client.Client.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, 
 				new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e)
@@ -399,7 +399,7 @@ namespace Miki.Modules
 			{
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 			}
-			await Global.Client.Client._apiClient.EditMessageAsync(e.Channel.Id, bm.MessageId,
+			await Global.Client.Client.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId,
 				new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e)
@@ -427,7 +427,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await Global.Client.Client._apiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
+			await Global.Client.Client.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
 			{
 				embed = bm.CreateEmbed(e)
 					.SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")

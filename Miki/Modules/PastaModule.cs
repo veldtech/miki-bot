@@ -43,7 +43,7 @@ namespace Miki.Modules
             if (e.message.MentionedUserIds.Count() > 0)
             {
                 userId = e.message.MentionedUserIds.First().ToDbLong();
-                userName = e.Guild.GetMember(userId.FromDbLong()).Username;
+                userName = (await e.Guild.GetMemberAsync(userId.FromDbLong())).Username;
             }
             else
             {
