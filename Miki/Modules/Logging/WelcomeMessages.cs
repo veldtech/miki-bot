@@ -156,15 +156,10 @@ namespace Miki.Modules
 
         public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-            long guildId = guild.Id.ToDbLong();
-
 			var channels = guild.Channels;
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
-			var guildCount = guild.MemberCount;
-
 			IDiscordGuildUser owner = await guild.GetOwnerAsync();
-
 			var ownerMention = owner.Mention;
 			var ownerName = owner.Username;
 
@@ -190,28 +185,22 @@ namespace Miki.Modules
                         continue;
                     }
 
-					IDiscordGuild g = await (user as IDiscordGuildUser).GetGuildAsync();
-
-
 					string modifiedMessage = c.Message;
 
                     modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", g.MemberCount.ToString());
+					modifiedMessage = modifiedMessage.Replace("-uc", guild.MemberCount.ToString());
                     modifiedMessage = modifiedMessage.Replace("-u", user.Username);
 
                     modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
 
                     modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
-                    modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-s", 
-						g.Name);
-
+                    modifiedMessage = modifiedMessage.Replace("-s", guild.Name);
 
 	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", g.Channels.Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", g.Channels.Count().ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", guild.Channels.Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", guild.Channels.Count().ToString());
 					
                     output.Add(new EventMessageObject()
 					{
