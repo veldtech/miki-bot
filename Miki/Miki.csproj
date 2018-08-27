@@ -28,7 +28,7 @@
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.0.0" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.0" />
-    <PackageReference Include="Miki.Discord.Gateway.Distributed" Version="1.2.7" />
+    <PackageReference Include="Miki.Discord.Gateway.Distributed" Version="1.2.8" />
     <PackageReference Include="Miki.Dsl" Version="1.0.0" />
     <PackageReference Include="Miki.Logging" Version="1.1.2" />
     <PackageReference Include="Miki.Patreon" Version="0.1.0" />
