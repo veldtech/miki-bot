@@ -112,7 +112,8 @@ namespace Miki
 				ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
 				QueueName = "gateway",
 				ExchangeName = "consumer",
-				ConsumerAutoAck = false
+				ConsumerAutoAck = false,
+				PrefetchCount = 25
 			});
 
 			Global.Client = new Bot(client, pool, new ClientInformation()
