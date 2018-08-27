@@ -124,6 +124,11 @@ namespace Miki
 				Token = Global.Config.Token
 			});
 
+			(Global.Client.Client.ApiClient as DiscordApiClient).HttpClient.OnRequestComplete += (method, uri) =>
+			{
+				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
+			};
+
 			new BasicCacheStage().Initialize(Global.Client.CacheClient);
 			
 			EventSystem eventSystem = new EventSystem(new EventSystemConfig()
