@@ -249,7 +249,7 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
-			IDiscordChannel defaultChannel = arg.GetDefaultChannel();
+			//IDiscordChannel defaultChannel = arg.GetDefaultChannel();
 
 			//if (defaultChannel != null)
 			//{

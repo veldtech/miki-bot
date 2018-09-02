@@ -479,18 +479,6 @@ namespace Miki.Modules.Accounts.Services
 
                         CheckUserUpdate = async (p) =>
 						{
-							if(p.userNew is IDiscordGuildUser guildUser)
-							{
-								if (guildUser.GuildId == 160067691783127041)
-								{
-									IDiscordRole role = (await guildUser.GetGuildAsync()).Roles.Where(r => r.Name == "Contributors").FirstOrDefault();
-
-									if (guildUser.RoleIds.Contains(role.Id))
-									{
-										return true;
-									}
-								}
-							}
 							return false;
 						}
                     }
@@ -507,18 +495,6 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "🌟",
                         CheckUserUpdate = async (p) =>
                         {
-						if(p.userNew is IDiscordGuildUser guildUser)
-							{
-								if (guildUser.GuildId == 160067691783127041)
-								{
-									IDiscordRole role = (await guildUser.GetGuildAsync()).Roles.Where(r => r.Name == "Developer").FirstOrDefault();
-
-									if (guildUser.RoleIds.Contains(role.Id))
-									{
-										return true;
-									}
-								}
-							}
 							return false;
 						}
                     }

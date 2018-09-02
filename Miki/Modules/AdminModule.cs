@@ -44,14 +44,14 @@ namespace Miki.Modules
 
 				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
-				if (user.Hierarchy >= author.Hierarchy)
+				if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "ban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if (user.Hierarchy >= currentUser.Hierarchy)
+				if (await user.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "ban")).ToEmbed()
 						.QueueToChannel(e.Channel);
@@ -127,14 +127,14 @@ namespace Miki.Modules
 					return;
 				}
 
-				if ((bannedUser as IDiscordGuildUser).Hierarchy >= author.Hierarchy)
+				if (await bannedUser.GetHierarchyAsync() >= await author.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if ((bannedUser as IDiscordGuildUser).Hierarchy >= author.Hierarchy)
+				if (await bannedUser.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "kick")).ToEmbed()
 						.QueueToChannel(e.Channel);
@@ -411,14 +411,14 @@ namespace Miki.Modules
 
 				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
-				if (user.Hierarchy >= author.Hierarchy)
+				if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "softban")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				if (user.Hierarchy >= currentUser.Hierarchy)
+				if (await user.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "softban")).ToEmbed()
 						.QueueToChannel(e.Channel);

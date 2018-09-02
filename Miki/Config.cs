@@ -59,7 +59,7 @@ namespace Miki
 		/// Database connection string
 		/// </summary>
 		[JsonProperty("connection_string")]
-		public string ConnString { get; set; } = "";
+		public string ConnString { get; set; } = "Server=127.0.0.1;Database=miki;";
 
 		/// <summary>
 		/// Cache connection string

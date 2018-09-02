@@ -519,47 +519,16 @@ namespace Miki.Modules.AccountsModule
 					await user.AddCurrencyAsync(-250, e.Channel);
 					await context.SaveChangesAsync();
 
-					e.SuccessEmbed($"Your background color has been successfully changed to `{hex}`")
+					e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
 						.QueueToChannel(e.Channel);
 				}
 				else
 				{
 
 					new EmbedBuilder()
-						.SetTitle("Setting a background color!")
+						.SetTitle("🖌 Setting a background color!")
 						.SetDescription("Changing your background color costs 250 mekos. use `>setbackcolor (e.g. #00FF00)` to purchase")
 						.ToEmbed().QueueToChannel(e.Channel);
-				}
-			}
-
-			using (var context = new MikiContext())
-			{
-				User user = await User.GetAsync(context, e.Author);
-
-				new EmbedBuilder()
-					.SetTitle("Hold on!")
-					.SetDescription("Changing your background color costs 250 mekos. type a hex to purchase")
-					.ToEmbed().QueueToChannel(e.Channel);
-
-				IDiscordMessage msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-
-				var x = Regex.Matches(msg.Content.ToUpper(), "(#)?([A-F0-9]{6})");
-
-				if (x.Count > 0)
-				{
-					ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.Author.Id, context);
-					var hex = x.First().Groups.Last().Value;
-
-					visuals.BackgroundColor = hex;
-					await user.AddCurrencyAsync(-250, e.Channel);
-					await context.SaveChangesAsync();
-
-					e.SuccessEmbed($"Your background color has been successfully changed to `{hex}`")
-						.QueueToChannel(e.Channel);
-				}
-				else
-				{
-					throw new ArgumentException("Argument was not a hex color");
 				}
 			}
 		}
@@ -589,7 +558,7 @@ namespace Miki.Modules.AccountsModule
 				{
 
 					new EmbedBuilder()
-						.SetTitle("Setting a foreground color!")
+						.SetTitle("🖌 Setting a foreground color!")
 						.SetDescription("Changing your foreground(text) color costs 250 mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
 						.ToEmbed().QueueToChannel(e.Channel);
 				}

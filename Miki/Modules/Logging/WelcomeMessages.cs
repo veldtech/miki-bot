@@ -156,7 +156,7 @@ namespace Miki.Modules
 
         public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-			var channels = guild.Channels;
+			var channels = await guild.GetChannelsAsync();
 			var channelIds = channels.Select(x => x.Id.ToDbLong());
 
 			IDiscordGuildUser owner = await guild.GetOwnerAsync();
@@ -199,8 +199,8 @@ namespace Miki.Modules
 	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", guild.Channels.Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", guild.Channels.Count().ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", channels.Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", channels.Count.ToString());
 					
                     output.Add(new EventMessageObject()
 					{

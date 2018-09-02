@@ -244,6 +244,9 @@ namespace Miki.Modules
 
 			string prefix = await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id);
 
+			var roles = await e.Guild.GetRolesAsync();
+			var channels = await e.Guild.GetChannelsAsync();
+
 			new EmbedBuilder()
 			{
 				Author = new EmbedAuthor()
@@ -254,12 +257,12 @@ namespace Miki.Modules
 				},
 			}.AddInlineField("👑 " + e.Locale.GetString("miki_module_general_guildinfo_owned_by"), $"{owner.Username}#{owner.Discriminator}")
 			.AddInlineField("👉 " +  e.Locale.GetString("miki_label_prefix"), prefix)
-			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), e.Guild.Channels.Count.ToString())
-			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), e.Guild.Channels.Count.ToString())
-			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), e.Guild.Roles.Count.ToString())
-			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), e.Guild.Roles.Count.ToString())
+			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count.ToString())
+			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count.ToString())
+			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count.ToString())
+			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count.ToString())
 			.AddField("📜 " +  e.Locale.GetString("miki_module_general_guildinfo_roles"), 
-				string.Join(",", e.Guild.Roles.Select(x => $"`{x.Name}`")))
+				string.Join(",", roles.Select(x => $"`{x.Name}`")))
 			.AddField("😃 " + e.Locale.GetString("term_emoji"), emojiOutput)
 			.ToEmbed().QueueToChannel(e.Channel);
 		}
@@ -505,7 +508,7 @@ namespace Miki.Modules
 
 			embed.EmbedBuilder.ImageUrl = user.GetAvatarUrl();
 
-			var roles = e.Guild.Roles.Where(x => user.RoleIds?.Contains(x.Id) ?? false && x.Color.Value != 0).OrderByDescending(x => x.Position);
+			var roles = (await e.Guild.GetRolesAsync()).Where(x => user.RoleIds?.Contains(x.Id) ?? false && x.Color.Value != 0).OrderByDescending(x => x.Position);
 
 			Color c = roles.FirstOrDefault()?.Color ?? new Color(0);
 
