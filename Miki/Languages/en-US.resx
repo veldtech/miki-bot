@@ -2067,4 +2067,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_proposals_empty" xml:space="preserve">
     <value>You do not have any proposals.</value>
   </data>
+  <data name="prefix_info" xml:space="preserve">
+    <value>Your current prefix is {0}.</value>
+  </data>
 </root>

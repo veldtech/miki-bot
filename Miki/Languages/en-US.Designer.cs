@@ -5198,6 +5198,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your current prefix is {0}..
+        /// </summary>
+        internal static string prefix_info {
+            get {
+                return ResourceManager.GetString("prefix_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully cancelled {0}.
         /// </summary>
         internal static string reminder_cancel {

@@ -21,6 +21,7 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Cache;
 
 namespace Miki.Modules
 {
@@ -416,8 +417,9 @@ namespace Miki.Modules
 					.SetTitle("Pong - " + Environment.MachineName)
 					.SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
 					.AddInlineField("Miki", ping + "ms").ToEmbed();
-				
-				await message.EditAsync(new EditMessageArgs{
+
+				await message.EditAsync(new EditMessageArgs
+				{
 					content = "",
 					embed = embed
 				});
@@ -429,7 +431,7 @@ namespace Miki.Modules
 		{
 			e.CreateEmbedBuilder()
 				.WithTitle("miki_module_general_prefix_help_header")
-				.WithDescription(e.Locale.GetString("miki_module_general_prefix_help", await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id)))
+				.WithDescription("prefix_info", await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id))
 				.Build().QueueToChannel(e.Channel);
 		}
 
@@ -440,13 +442,14 @@ namespace Miki.Modules
 
 			TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
+			var cache = await Bot.Instance.CachePool.GetAsync() as IExtendedCacheClient;
+
 			new EmbedBuilder()
 			{
 				Title = "⚙️ Miki stats",
 				Description = e.Locale.GetString("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
-			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}",/* Bot.Instance.Client.Guilds.Count.ToString()*/0)
-			 .AddField("💬 " + e.Locale.GetString("term_commands"), e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Sum(x => x.TimesUsed))
+			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}", await cache.HashLengthAsync(CacheUtils.GuildsCacheKey()))
 			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Locale))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .ToEmbed().QueueToChannel(e.Channel);

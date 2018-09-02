@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Rest", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway.Centralized", "..\..\Miki.Discord\Miki.Discord.Gateway.Centralized\Miki.Discord.Gateway.Centralized.csproj", "{A60574B8-5801-4A53-AB56-037E5CD33C05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Net.Websockets", "..\..\Miki.Net.WebSockets\Miki.Net.Websockets\Miki.Net.Websockets.csproj", "{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,12 +74,6 @@ Global
 		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Prod|Any CPU.Build.0 = Debug|Any CPU
 		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E74A9BCA-4153-4A40-850C-71E0A87DAC3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
