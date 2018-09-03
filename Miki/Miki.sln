@@ -9,16 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Api", "..\Miki.Api\Mik
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "..\..\Miki.Framework\Miki.Framework\Miki.Framework.csproj", "{4EB5FFA4-2335-4F10-ABAE-3CE6B455DE51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord", "..\..\Miki.Discord\Miki.Discord\Miki.Discord.csproj", "{06F9F81C-CC25-41AF-A382-F28306248C2C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Caching", "..\..\Miki.Discord\Miki.Discord.Caching\Miki.Discord.Caching.csproj", "{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Common", "..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj", "{649FBD69-A441-4E10-B161-2322CE4A48D2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Rest", "..\..\Miki.Discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj", "{8D9405AD-F960-440C-B782-CE3D118E3C0C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway.Centralized", "..\..\Miki.Discord\Miki.Discord.Gateway.Centralized\Miki.Discord.Gateway.Centralized.csproj", "{A60574B8-5801-4A53-AB56-037E5CD33C05}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,36 +34,6 @@ Global
 		{4EB5FFA4-2335-4F10-ABAE-3CE6B455DE51}.Prod|Any CPU.Build.0 = Prod|Any CPU
 		{4EB5FFA4-2335-4F10-ABAE-3CE6B455DE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EB5FFA4-2335-4F10-ABAE-3CE6B455DE51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06F9F81C-CC25-41AF-A382-F28306248C2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C73DF1C-28EA-4FDF-BC64-0125775A0AFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{649FBD69-A441-4E10-B161-2322CE4A48D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D9405AD-F960-440C-B782-CE3D118E3C0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A60574B8-5801-4A53-AB56-037E5CD33C05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

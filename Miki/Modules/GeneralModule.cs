@@ -258,8 +258,8 @@ namespace Miki.Modules
 				},
 			}.AddInlineField("👑 " + e.Locale.GetString("miki_module_general_guildinfo_owned_by"), $"{owner.Username}#{owner.Discriminator}")
 			.AddInlineField("👉 " +  e.Locale.GetString("miki_label_prefix"), prefix)
-			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count.ToString())
-			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count.ToString())
+			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString())
+			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString())
 			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count.ToString())
 			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count.ToString())
 			.AddField("📜 " +  e.Locale.GetString("miki_module_general_guildinfo_roles"), 

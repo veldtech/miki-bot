@@ -40,8 +40,6 @@ namespace Miki
 
 		static async Task Main()
 		{
-			
-
 			Program p = new Program();
 
 			timeSinceStartup = DateTime.Now;
@@ -127,6 +125,7 @@ namespace Miki
 
 			(Global.Client.Client.ApiClient as DiscordApiClient).HttpClient.OnRequestComplete += (method, uri) =>
 			{
+				Log.Debug(method + " " + uri);
 				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
 			};
 
