@@ -27,7 +27,7 @@ namespace Miki
 			return new StackExchangeCacheClient(new ProtobufSerializer(), ConnectionMultiplexer.Connect(Config.RedisConnectionString));
 		});
 
-		public static ICacheClient RedisClient => redisClientPool.Value;
+		public static IExtendedCacheClient RedisClient => redisClientPool.Value as IExtendedCacheClient;
 
 		public static BackgroundStore Backgrounds => null;
 

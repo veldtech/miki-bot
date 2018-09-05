@@ -21,7 +21,6 @@ namespace Miki.Models
         public DbSet<EventMessage> EventMessages { get; set; }
         public DbSet<LocalExperience> LocalExperience { get; set; }
         public DbSet<GuildUser> GuildUsers { get; set; }
-        public DbSet<ChannelLanguage> Languages { get; set; }
         public DbSet<LevelRole> LevelRoles { get; set; }
         public DbSet<Marriage> Marriages { get; set; }
         public DbSet<GlobalPasta> Pastas { get; set; }
@@ -131,11 +130,6 @@ namespace Miki.Models
 
 			guildUser.Property(x => x.UserCount)
 				.HasDefaultValue(0);
-			#endregion
-
-			#region Channel Language
-			modelBuilder.Entity<ChannelLanguage>()
-				.HasKey(c => c.EntityId);
 			#endregion
 
 			#region Level Role

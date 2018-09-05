@@ -1,0 +1,4 @@
+
+[submodule "Miki.Bot.Models"]
+	path = Miki.Bot.Models
+	url = https://github.com/mikibot/miki.bot.models

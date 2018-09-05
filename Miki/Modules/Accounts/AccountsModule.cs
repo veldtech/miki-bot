@@ -274,7 +274,7 @@ namespace Miki.Modules.AccountsModule
 				{
 					EmbedBuilder embed = Utils.Embed
 						.SetDescription(account.Title)
-						.SetAuthor(e.Locale.GetString("miki_global_profile_user_header", account.Name), icon, "https://patreon.com/mikibot")
+						.SetAuthor(e.Locale.GetString("miki_global_profile_user_header", discordUser.Username), icon, "https://patreon.com/mikibot")
 						.SetThumbnail(discordUser.GetAvatarUrl());
 
 					long serverid = e.Guild.Id.ToDbLong();
@@ -330,7 +330,7 @@ namespace Miki.Modules.AccountsModule
 
 					for (int i = 0; i < maxCount; i++)
 					{
-						users.Add(await User.GetNameAsync(context, Marriages[i].GetOther(id)));
+						users.Add((await Global.Client.Client.GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
 					}
 
 					if (Marriages?.Count > 0)

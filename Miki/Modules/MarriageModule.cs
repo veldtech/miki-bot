@@ -152,11 +152,11 @@ namespace Miki.Modules
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+					var otherUser = await Global.Client.Client.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
 					EmbedBuilder embed = Utils.Embed;
 					embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
-					embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherName);
+					embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherUser.Username);
 					embed.Color = new Color(0.6f, 0.4f, 0.1f);
 					embed.ToEmbed().QueueToChannel(e.Channel);
 
@@ -280,7 +280,7 @@ namespace Miki.Modules
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					string otherName = await User.GetNameAsync(context, m.GetOther(e.Author.Id.ToDbLong()));
+					string otherName = (await Global.Client.Client.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
 
 					new EmbedBuilder()
 					{
@@ -325,7 +325,7 @@ namespace Miki.Modules
                 foreach (UserMarriedTo p in proposals)
                 {
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = await User.GetNameAsync(context, id);
+					string u = (await Global.Client.Client.GetUserAsync(id.FromDbLong())).Username;
                     proposalNames.Add($"{u} [{id}]");
                 }
 
@@ -349,8 +349,8 @@ namespace Miki.Modules
                 foreach (UserMarriedTo p in proposals)
                 {
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = await User.GetNameAsync(context, id);
-                    proposalNames.Add($"{u} [{id}]");
+					string u = (await Global.Client.Client.GetUserAsync(id.FromDbLong())).Username;
+					proposalNames.Add($"{u} [{id}]");
                 }
 
 				pageCount = Math.Max(pageCount, (int)Math.Ceiling((float)proposalNames.Count / 35));
@@ -417,7 +417,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < marriages.Count; i++)
 			{
-				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {await User.GetNameAsync(context, marriages[i].GetOther(userId))}");
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {(await Global.Client.Client.GetUserAsync(marriages[i].GetOther(userId).FromDbLong())).Username}");
 			}
 
 			embed.Description += "\n\n" + builder.ToString();

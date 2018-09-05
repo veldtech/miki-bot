@@ -117,20 +117,6 @@ namespace Miki.Models
 			return user;
 		}
 
-		public static async Task<string> GetNameAsync(MikiContext context, long u)
-		{
-			string key = $"user:name:{u}";
-
-			if (await Global.RedisClient.ExistsAsync(key))
-			{
-				return await Global.RedisClient.GetAsync<string>(key);
-			}
-
-			User user = await context.Users.FindAsync(u);
-			await Global.RedisClient.UpsertAsync(key, user.Name);
-			return user.Name;
-		}
-
 		public static async Task<List<User>> SearchUserAsync(MikiContext context, string name)
 		{
 			return await context.Users
