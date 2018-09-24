@@ -104,6 +104,11 @@ namespace Miki.Modules
 			arg = arg.Next();
 			string text = arg.TakeUntilEnd().Argument;
 
+			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
+			{
+				throw new Exception("You can't add discord invites!");
+			}
+
 			using (var context = new MikiContext())
 			{
 				await GlobalPasta.AddAsync(context, id, text, (long)e.Author.Id);

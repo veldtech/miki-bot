@@ -10,7 +10,7 @@ namespace Miki.API.UrbanDictionary
 	{
 		RestClient client;
 
-		private string key = "";
+		private readonly string key = "";
 
 		public UrbanDictionaryApi(string key)
 		{

@@ -22,6 +22,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Cache;
+using Miki.Helpers;
 
 namespace Miki.Modules
 {
@@ -33,7 +34,7 @@ namespace Miki.Modules
 
 		TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		public GeneralModule(Module m, Bot b)
+		public GeneralModule(Module m, Framework.Bot b)
 		{
 			//EventSystem.Instance.AddCommandDoneEvent(x =>
 			//{
@@ -370,7 +371,7 @@ namespace Miki.Modules
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.SetAuthor("Miki " + Bot.Instance.Information.Version, "" ,"");
+			embed.SetAuthor("Miki " + Framework.Bot.Instance.Information.Version, "" ,"");
 			embed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(e.Locale.GetString("miki_module_general_info_made_by_header"),
@@ -402,7 +403,7 @@ namespace Miki.Modules
 		public async Task PingAsync(EventContext e)
 		{
 			IDiscordMessage message = await e.CreateEmbedBuilder()
-				.WithTitle(new StringResource("Ping"))
+				.WithTitle(new RawResource("Ping"))
 				.WithDescription("ping_placeholder")
 				.Build()
 				.SendToChannel(e.Channel);
@@ -442,7 +443,7 @@ namespace Miki.Modules
 
 			TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
 
-			var cache = await Bot.Instance.CachePool.GetAsync() as IExtendedCacheClient;
+			var cache = await Framework.Bot.Instance.CachePool.GetAsync() as IExtendedCacheClient;
 
 			new EmbedBuilder()
 			{
@@ -524,8 +525,8 @@ namespace Miki.Modules
 			builder.AppendLine($"Color Hex : **{c.ToString()}**");
 
 			embed.AddField(
-				e.CreateResource("miki_module_whois_tag_personal"), 
-				new StringResource(builder.ToString())
+				e.CreateResource("miki_module_whois_tag_personal"),
+				new RawResource(builder.ToString())
 			);
 
 			string r = string.Join(" ", roles.Select(x => x.Name));
@@ -539,7 +540,7 @@ namespace Miki.Modules
 			{
 				embed.AddField(
 					e.CreateResource("miki_module_general_guildinfo_roles"), 
-					new StringResource(r)
+					new RawResource(r)
 				);
 			}
 

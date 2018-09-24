@@ -15,7 +15,7 @@ namespace Miki.Modules
 		[Service("datadog")]
 		public DatadogService DatadogService { get; set; }
 
-		public InternalModule(Module module, Bot bot)
+		public InternalModule(Module module, Framework.Bot bot)
 		{
 
 		}

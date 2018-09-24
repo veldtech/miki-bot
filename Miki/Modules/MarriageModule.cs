@@ -17,6 +17,8 @@ using Miki.Framework.Languages;
 using Miki.Discord.Rest;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Bot.Models.Repositories;
+using Miki.Helpers;
 
 namespace Miki.Modules
 {
@@ -50,8 +52,10 @@ namespace Miki.Modules
 
 			using (MikiContext context = new MikiContext())
 			{
-				User mentionedPerson = await User.GetAsync(context, user);
-				User currentUser = await User.GetAsync(context, e.Author);
+				MarriageRepository repository = new MarriageRepository(context);
+
+				User mentionedPerson = await User.GetAsync(context, user.Id.ToDbLong(), user.Username);
+				User currentUser = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
 				askerId = currentUser.Id;
 				receiverId = mentionedPerson.Id;
@@ -74,14 +78,16 @@ namespace Miki.Modules
 					return;
 				}
 
-				if (await Marriage.ExistsAsync(context, mentionedPerson.Id, currentUser.Id))
+				if (await repository.ExistsAsync(mentionedPerson.Id, currentUser.Id))
 				{
 					e.ErrorEmbed(e.Locale.GetString("miki_module_accounts_marry_error_exists")).ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
-			}
 
-			await Marriage.ProposeAsync(askerId, receiverId);
+				await repository.ProposeAsync(askerId, receiverId);
+
+				await context.SaveChangesAsync();
+			}
 
 			Utils.Embed
 				.SetTitle("💍" + e.Locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
@@ -98,7 +104,7 @@ namespace Miki.Modules
         {
             using (var context = new MikiContext())
             {
-                User user = await User.GetAsync(context, cont.Author);
+                User user = await DatabaseHelpers.GetUserAsync(context, cont.Author);
 
 				if (user.Currency >= costForUpgrade)
 				{
@@ -132,6 +138,8 @@ namespace Miki.Modules
 		{
 			using (MikiContext context = new MikiContext())
 			{
+				MarriageRepository repository = new MarriageRepository(context);
+
 				ArgObject selection = e.Arguments.FirstOrDefault();
 				int? selectionId = null;
 
@@ -140,7 +148,7 @@ namespace Miki.Modules
 					selectionId = selection.AsInt();
 				}
 
-				var marriages = await Marriage.GetMarriagesAsync(context, e.Author.Id.ToDbLong());
+				var marriages = await repository.GetMarriagesAsync((long)e.Author.Id);
 
 				if (marriages.Count == 0)
 				{
@@ -203,20 +211,22 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-				User accepter = await User.GetAsync(context, e.Author);
-				User asker = await User.GetAsync(context, user);
+				MarriageRepository repository = new MarriageRepository(context);
 
-				UserMarriedTo marriage = await Marriage.GetEntryAsync(context, accepter.Id, asker.Id);
+				User accepter = await DatabaseHelpers.GetUserAsync(context, e.Author);
+				User asker = await DatabaseHelpers.GetUserAsync(context, user);
+
+				UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
 
                 if (marriage != null)
                 {
-                    if (accepter.MarriageSlots < (await Marriage.GetMarriagesAsync(context, accepter.Id)).Count)
+                    if (accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
                     {
                         e.Channel.QueueMessageAsync($"{e.Author.Username} do not have enough Marriage slots, sorry :(");
                         return;
                     }
 
-                    if (asker.MarriageSlots < (await Marriage.GetMarriagesAsync(context, asker.Id)).Count)
+                    if (asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
                     {
                         e.Channel.QueueMessageAsync($"{asker.Name} does not have enough Marriage slots, sorry :(");
                         return;
@@ -260,6 +270,8 @@ namespace Miki.Modules
         {
 			using (MikiContext context = new MikiContext())
 			{
+				MarriageRepository repository = new MarriageRepository(context);
+
 				ArgObject selection = e.Arguments.FirstOrDefault();
 				int? selectionId = null;
 
@@ -268,7 +280,7 @@ namespace Miki.Modules
 					selectionId = selection.AsInt();
 				}
 
-				var marriages = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
+				var marriages = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
 
 				if (marriages.Count == 0)
 				{
@@ -319,7 +331,9 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                List<UserMarriedTo> proposals = await Marriage.GetProposalsReceived(context, e.Author.Id.ToDbLong());
+				MarriageRepository repository = new MarriageRepository(context);
+
+                List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
                 List<string> proposalNames = new List<string>();
 
                 foreach (UserMarriedTo p in proposals)
@@ -343,7 +357,7 @@ namespace Miki.Modules
 
                 embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                proposals = await Marriage.GetProposalsSent(context, e.Author.Id.ToDbLong());
+                proposals = await repository.GetProposalsSent(e.Author.Id.ToDbLong());
                 proposalNames = new List<string>();
 
                 foreach (UserMarriedTo p in proposals)
@@ -378,7 +392,7 @@ namespace Miki.Modules
         {
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, e.Author);
+				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
 				int limit = 10;
 				bool isDonator = await user.IsDonatorAsync(context);

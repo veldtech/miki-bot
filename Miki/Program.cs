@@ -26,6 +26,7 @@ using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -78,17 +79,14 @@ namespace Miki
 
 			var q = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.Namespace == nspace);
 
-			// en_US -> en-us
 			q.ToList().ForEach(t =>
 			{
 				try
 				{
-					string[] l = t.Name.Split('_');
-					l[1] = l[1].ToUpper();
+					string l = t.Name.ToLowerInvariant();
 
-					ResourceManager resources = new ResourceManager($"Miki.Languages.{string.Join("-", l)}", t.Assembly);
-					string languageName = resources.GetString("current_language_name");
-					Locale.LoadLanguage(t.Name.ToLower().Replace("_", "-"), languageName, resources);
+					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
+					Locale.LoadLanguage(l, resources);
 				}
 				catch
 				{
@@ -114,7 +112,7 @@ namespace Miki
 				PrefetchCount = 25
 			});
 
-			Global.Client = new Bot(client, pool, new ClientInformation()
+			Global.Client = new Framework.Bot(client, pool, new ClientInformation()
 			{
 				Name = "Miki",
 				Version = "0.7",

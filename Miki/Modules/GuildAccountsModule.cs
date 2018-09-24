@@ -17,6 +17,8 @@ using Miki.Framework.Language;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Localization;
+using Miki.Helpers;
 
 namespace Miki.Modules
 {
@@ -174,8 +176,8 @@ namespace Miki.Modules
 		{
 			using (var context = new MikiContext())
 			{
-				GuildUser user = await GuildUser.GetAsync(context, e.Guild);
-			
+				GuildUser user = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+
 				switch (e.Arguments.FirstOrDefault()?.Argument.ToLower() ?? "")
 				{
 					case "bal":
@@ -214,7 +216,7 @@ namespace Miki.Modules
 
 		public async Task GuildBankBalance(EventContext e, MikiContext context, GuildUser c)
 		{
-			var account = await BankAccount.GetAsync(context, e.Author, e.Guild);
+			var account = await BankAccount.GetAsync(context, e.Author.Id, e.Guild.Id);
 
 			e.CreateEmbedBuilder()
 				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
@@ -234,10 +236,13 @@ namespace Miki.Modules
 		{
 			int? totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
 
-			User user = await User.GetAsync(context, e.Author);
+			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
 			await user.AddCurrencyAsync(-totalDeposited.Value);
-			c.AddCurrency(totalDeposited.Value, user);
+			c.Currency += totalDeposited.Value;
+
+			BankAccount account = await BankAccount.GetAsync(context, e.Author.Id, e.Guild.Id);
+			account.Currency += totalDeposited.Value;
 
 			e.CreateEmbedBuilder()
 				.WithTitle("guildbank_deposit_title", e.Author.Username, totalDeposited)
@@ -253,7 +258,7 @@ namespace Miki.Modules
         {
             using (MikiContext context = new MikiContext())
             {
-                GuildUser g = await GuildUser.GetAsync(context, e.Guild);
+                GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
                 int rank = g.GetGlobalRank();
                 int level = g.CalculateLevel(g.Experience);

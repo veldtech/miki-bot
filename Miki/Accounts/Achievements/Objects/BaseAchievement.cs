@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Miki.Common;
 using Miki.Discord.Common;
+using Miki.Helpers;
 
 namespace Miki.Accounts.Achievements
 {
@@ -61,7 +62,7 @@ namespace Miki.Accounts.Achievements
 		{
 			using (var context = new MikiContext())
 			{
-				var achievement = await Achievement.GetAsync(context, userId, ParentName);
+				var achievement = await DatabaseHelpers.GetAchievementAsync(context, userId, ParentName);
 
 				// If no achievement has been found and want to unlock first
 				if (achievement == null && newRank == 0)
@@ -73,7 +74,7 @@ namespace Miki.Accounts.Achievements
 						Rank = 0
 					}).Entity;
 
-					await Achievement.UpdateCacheAsync(userId, Name, achievement);
+					await DatabaseHelpers.UpdateCacheAchievementAsync(userId, Name, achievement);
 					await context.SaveChangesAsync();
 					return true;
 				}
@@ -89,7 +90,7 @@ namespace Miki.Accounts.Achievements
 						return false;
 					}
 
-					await Achievement.UpdateCacheAsync(userId, ParentName, achievement);
+					await DatabaseHelpers.UpdateCacheAchievementAsync(userId, ParentName, achievement);
 					await context.SaveChangesAsync();
 					return true;
 				}

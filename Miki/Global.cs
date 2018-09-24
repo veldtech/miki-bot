@@ -31,7 +31,7 @@ namespace Miki
 
 		public static BackgroundStore Backgrounds => null;
 
-		public static Bot Client { get; set; }
+		public static Framework.Bot Client { get; set; }
 
 		public static Config Config
 		{

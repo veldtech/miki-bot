@@ -181,7 +181,7 @@ namespace Miki.Modules.Accounts.Services
                         Icon = "😱",
                         CheckCommand = async (p) =>
                         {
-							return await Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
+							return await Framework.Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
                         },
 						Points = 5
                     }

@@ -1,32 +1,22 @@
 ﻿using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using Miki.Languages;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Miki.API.Cards;
-using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
 using Miki.Modules.Gambling.Managers;
-using Miki.Framework.Extension;
 using Miki.API;
-using System.Collections.Concurrent;
 using Miki.Accounts.Achievements;
 using Miki.Framework.Languages;
 using Miki.Accounts.Achievements.Objects;
-using Miki.Framework.Events.Commands;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Cache.StackExchange;
 using StackExchange.Redis;
-using Miki.API.Gambling;
+using Miki.Helpers;
 
 namespace Miki.Modules
 {
@@ -732,7 +722,7 @@ namespace Miki.Modules
 
 					using (var context = new MikiContext())
 					{
-						User u = await User.GetAsync(context, e.Author);
+						User u = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
 						if (amount * 100 > u.Currency)
 						{

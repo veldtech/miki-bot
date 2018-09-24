@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.API.Leaderboards;
+using Miki.Bot.Models.Repositories;
 using Miki.Common.Builders;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -15,6 +16,7 @@ using Miki.Framework.Events.Attributes;
 using Miki.Framework.Events.Commands;
 using Miki.Framework.Extension;
 using Miki.Framework.Languages;
+using Miki.Helpers;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Models.Objects.User;
@@ -74,7 +76,7 @@ namespace Miki.Modules.AccountsModule
 				}
 
 				IDiscordUser discordUser = await e.Guild.GetMemberAsync(id.FromDbLong());
-				User u = await User.GetAsync(context, discordUser);
+				User u = await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
 				List<Achievement> achievements = await context.Achievements
 					.Where(x => x.Id == id)
@@ -241,6 +243,8 @@ namespace Miki.Modules.AccountsModule
 				var arg = e.Arguments.FirstOrDefault();
 				IDiscordGuildUser discordUser = null;
 
+				MarriageRepository repository = new MarriageRepository(context);
+
 				if (arg != null)
 				{
 					discordUser = await arg.GetUserAsync(e.Guild);
@@ -261,7 +265,7 @@ namespace Miki.Modules.AccountsModule
 					id = uid.ToDbLong();
 				}
 
-				User account = await User.GetAsync(context, discordUser);
+				User account = await User.GetAsync(context, discordUser.Id.ToDbLong(), discordUser.Username);
 
 				string icon = "";
 
@@ -279,13 +283,9 @@ namespace Miki.Modules.AccountsModule
 
 					long serverid = e.Guild.Id.ToDbLong();
 
-					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
-					if(localExp == null)
-					{
-						localExp = await LocalExperience.CreateAsync(context, serverid, discordUser);
-					}
+					LocalExperience localExp = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), (long)discordUser.Id, discordUser.Username);
 
-					int rank = await localExp.GetRank(context);
+					int rank = await localExp.GetRankAsync(context);
 					int localLevel = User.CalculateLevel(localExp.Experience);
 					int maxLocalExp = User.CalculateLevelExperience(localLevel);
 					int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
@@ -320,7 +320,7 @@ namespace Miki.Modules.AccountsModule
 					embed.AddInlineField(e.Locale.GetString("miki_generic_global_information"), globalInfoValue);
 					embed.AddInlineField(e.Locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
 
-					List<UserMarriedTo> Marriages = await Marriage.GetMarriagesAsync(context, id);
+					List<UserMarriedTo> Marriages = await repository.GetMarriagesAsync(id);
 
 					Marriages.RemoveAll(x => x.Marriage.IsProposing);
 
@@ -467,7 +467,7 @@ namespace Miki.Modules.AccountsModule
 					{
 						using (var context = new MikiContext())
 						{
-							User user = await User.GetAsync(context, e.Author);
+							User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 							long userId = (long)e.Author.Id;
 
 							BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
@@ -506,7 +506,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, e.Author);
+				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
 				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
 
@@ -538,7 +538,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, e.Author);
+				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
 	
 				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
 
@@ -706,7 +706,7 @@ namespace Miki.Modules.AccountsModule
 
 					foreach (var user in usersMentioned)
 					{
-						User receiver = await User.GetAsync(context, user.Key);
+						User receiver = await DatabaseHelpers.GetUserAsync(context, user.Key);
 
 						receiver.Reputation += user.Value;
 
@@ -757,28 +757,21 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "mekos", Aliases = new string[] { "bal", "meko" })]
 		public async Task ShowMekosAsync(EventContext e)
 		{
-			ulong targetId = e.message.MentionedUserIds.Count > 0 ? e.message.MentionedUserIds.First() : 0;
+			var arg = e.Arguments.FirstOrDefault();
+			IDiscordGuildUser member;
 
-			if (e.message.MentionedUserIds.Count > 0)
+			if(arg == null)
 			{
-				if (targetId == 0)
-				{
-					e.ErrorEmbedResource("miki_module_accounts_mekos_no_user")
-						.ToEmbed().QueueToChannel(e.Channel);
-					return;
-				}
-				IDiscordUser userCheck = await e.Guild.GetMemberAsync(targetId);
-				if (userCheck.IsBot)
-				{
-					e.ErrorEmbedResource("miki_module_accounts_mekos_bot")
-						.ToEmbed().QueueToChannel(e.Channel);
-					return;
-				}
+				member = await e.Guild.GetMemberAsync(e.Author.Id);
+			}
+			else
+			{
+				member = await arg.GetUserAsync(e.Guild);
 			}
 
 			using (var context = new MikiContext())
 			{
-				User user = await User.GetAsync(context, await e.Guild.GetMemberAsync(targetId != 0 ? targetId : e.Author.Id));
+				User user = await User.GetAsync(context, member.Id.ToDbLong(), member.Username);
 
 				new EmbedBuilder()
 				{
@@ -837,13 +830,13 @@ namespace Miki.Modules.AccountsModule
 
 			using (MikiContext context = new MikiContext())
 			{
-				User sender = await User.GetAsync(context, e.Author);
-				User receiver = await User.GetAsync(context, user);
+				User sender = await DatabaseHelpers.GetUserAsync(context, e.Author);
+				User receiver = await DatabaseHelpers.GetUserAsync(context, user);
 
 				if (amount.Value <= sender.Currency)
 				{
-					await sender.AddCurrencyAsync(-amount.Value, e.Channel, sender);
-					await receiver.AddCurrencyAsync(amount.Value, e.Channel, sender);
+					await sender.AddCurrencyAsync(-amount.Value);
+					await receiver.AddCurrencyAsync(amount.Value);
 
 					new EmbedBuilder()
 					{
@@ -867,7 +860,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			using (var context = new MikiContext())
 			{
-				User u = await User.GetAsync(context, e.Author);
+				User u = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
 				if (u == null)
 				{
@@ -906,7 +899,7 @@ namespace Miki.Modules.AccountsModule
 
 				int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
 
-				await u.AddCurrencyAsync(amount, e.Channel);
+				await u.AddCurrencyAsync(amount);
 				u.LastDailyTime = DateTime.Now;
 
 				var embed = Utils.Embed.SetTitle("💰 Daily")

@@ -26,7 +26,7 @@ namespace Miki.Accounts.Achievements
 			get
 			{
 				if (_instance == null)
-					_instance = new AchievementManager(Bot.Instance);
+					_instance = new AchievementManager(Framework.Bot.Instance);
 
 				return _instance;
 			}
@@ -34,7 +34,7 @@ namespace Miki.Accounts.Achievements
 
 		internal BaseService provider = null;
 
-		private Bot bot;
+		private Framework.Bot bot;
 		private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -47,7 +47,7 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementManager(Bot bot)
+		public AchievementManager(Framework.Bot bot)
 		{
 			this.bot = bot;
 

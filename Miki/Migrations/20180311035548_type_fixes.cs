@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Miki.Core.Migrations
 {
-    public partial class fuck_this : Migration
+    public partial class type_fixes : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

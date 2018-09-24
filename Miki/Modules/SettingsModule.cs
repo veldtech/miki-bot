@@ -95,7 +95,7 @@ namespace Miki.Modules
 			}
 			else
 			{
-				await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
+				//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
 			}
 		}
 

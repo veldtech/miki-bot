@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Miki.Helpers;
 
 namespace Miki.Accounts.Achievements
 {
@@ -47,7 +48,7 @@ namespace Miki.Accounts.Achievements
 
 			using (var context = new MikiContext())
 			{
-				Achievement a = await Achievement.GetAsync(context, userId, Name);
+				Achievement a = await DatabaseHelpers.GetAchievementAsync(context, userId, Name);
 
 				if (a == null)
 				{

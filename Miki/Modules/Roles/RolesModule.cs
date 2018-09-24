@@ -16,6 +16,7 @@ using Miki.Exceptions;
 using Miki.Framework.Events.Commands;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Helpers;
 
 namespace Miki.Modules.Roles
 {
@@ -36,7 +37,8 @@ namespace Miki.Modules.Roles
 				if (roles.Count > 1)
 				{
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
-					if(levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
+
+					if (levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
 							.ToEmbed().QueueToChannel(e.Channel);
@@ -44,7 +46,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						role = levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).FirstOrDefault().Role;
+						role = levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).FirstOrDefault().GetRoleAsync().Result;
 					}
 				}
 				else
@@ -72,7 +74,7 @@ namespace Miki.Modules.Roles
 				User user = (await context.Users.FindAsync(e.Author.Id.ToDbLong()));
 
 				IDiscordGuildUser discordUser = await e.Guild.GetMemberAsync(user.Id.FromDbLong());
-				LocalExperience localUser = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser);
+				LocalExperience localUser = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), discordUser.Id.ToDbLong(), discordUser.Username);
 
 				if (!newRole?.Optable ?? false)
 				{
@@ -137,14 +139,14 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if (newRole.Role.Position >= await me.GetHierarchyAsync())
+				if (newRole.GetRoleAsync().Result.Position >= await me.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				await author.AddRoleAsync(newRole.Role);
+				await author.AddRoleAsync(newRole.GetRoleAsync().Result);
 
 				Utils.Embed.SetTitle("I AM")
 					.SetColor(128, 255, 128)
@@ -166,7 +168,7 @@ namespace Miki.Modules.Roles
 				if (roles.Count > 1)
 				{
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
-					if (levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).Count() > 1)
+					if (levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
 						e.ErrorEmbed("two roles configured have the same name.")
 							.ToEmbed().QueueToChannel(e.Channel);
@@ -174,7 +176,7 @@ namespace Miki.Modules.Roles
 					}
 					else
 					{
-						role = levelRoles.Where(x => x.Role.Name.ToLower() == roleName.ToLower()).FirstOrDefault().Role;
+						role = levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).FirstOrDefault().GetRoleAsync().Result;
 					}
 				}
 				else
@@ -209,7 +211,7 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if (newRole.Role.Position >= await me.GetHierarchyAsync())
+				if ((await newRole.GetRoleAsync()).Position >= await me.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannel(e.Channel);
@@ -217,7 +219,7 @@ namespace Miki.Modules.Roles
 				}
 
 
-				await author.RemoveRoleAsync(newRole.Role);
+				await author.RemoveRoleAsync(newRole.GetRoleAsync().Result);
 
 				Utils.Embed.SetTitle("I AM NOT")
 					.SetColor(255, 128, 128)
@@ -245,19 +247,19 @@ namespace Miki.Modules.Roles
 
 				StringBuilder stringBuilder = new StringBuilder();
 
-				roles = roles.OrderBy(x => x.Role?.Name ?? "").ToList();
+				roles = roles.OrderBy(x => x.GetRoleAsync().Result?.Name ?? "").ToList();
 
 				foreach(var role in roles)
 				{
 					if(role.Optable)
 					{
-						if(role.Role == null)
+						if(role.GetRoleAsync().Result == null)
 						{
 							context.LevelRoles.Remove(role);
 							continue;
 						}
 
-						stringBuilder.Append($"`{role.Role.Name.PadRight(20)}|`");
+						stringBuilder.Append($"`{role.GetRoleAsync().Result.Name.PadRight(20)}|`");
 
 						if (role.RequiredLevel > 0)
 						{

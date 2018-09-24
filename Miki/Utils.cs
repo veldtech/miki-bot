@@ -201,7 +201,7 @@ namespace Miki
 
 			using (var context = new MikiContext())
 			{
-				User u = await User.GetAsync(context, user);
+				User u = await User.GetAsync(context, user.Id, user.Username);
 				u.HeaderUrl = u.Id.ToString();
 				await context.SaveChangesAsync();
 			}

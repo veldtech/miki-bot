@@ -27,10 +27,9 @@ namespace Miki.Accounts
 
     public class AccountManager
     {
-        private static readonly AccountManager _instance = new AccountManager(Bot.Instance);
-        public static AccountManager Instance => _instance;
+		public static AccountManager Instance { get; } = new AccountManager(Framework.Bot.Instance);
 
-        public event LevelUpDelegate OnLocalLevelUp;
+		public event LevelUpDelegate OnLocalLevelUp;
         public event LevelUpDelegate OnGlobalLevelUp;
 
         public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
@@ -45,7 +44,7 @@ namespace Miki.Accounts
 			=> $"user:{guildid}:{userid}:exp";
 
 
-		public AccountManager(Bot bot)
+		public AccountManager(Framework.Bot bot)
         {
 			OnGlobalLevelUp += (a, e, l) =>
 			{
@@ -88,15 +87,15 @@ namespace Miki.Accounts
 
 			   if (rolesObtained.Count > 0)
 			   {
-				   embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.Role.Name}**")));
+				   embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.GetRoleAsync().Result.Name}**")));
 			   }
 
 			   embed.ToEmbed().QueueToChannel(e);
 		   };
 
 			//	bot.Client.GuildUpdated += Client_GuildUpdated;
-			//	bot.Client.JoinedGuild   += Client_UserJoined;\
-			//	bot.Client.LeftGuild  += Client_UserLeft;
+			//bot.Client.JoinedGuild   += Client_UserJoined;
+			//bot.Client.LeftGuild  += Client_UserLeft;
 			bot.Client.MessageCreate += CheckAsync;
 		}
 
@@ -127,8 +126,9 @@ namespace Miki.Accounts
 							{
 								LocalExperience user = await LocalExperience.GetAsync(
 									context,
-									(long)channel.GuildId,
-									e.Author
+									channel.GuildId,
+									e.Author.Id,
+									e.Author.Username
 								);
 
 								await Global.RedisClient.UpsertAsync(key, user.Experience);
@@ -326,7 +326,7 @@ namespace Miki.Accounts
         {
             using (MikiContext context = new MikiContext())
             {
-				GuildUser g = await GuildUser.GetAsync(context, guild);
+				GuildUser g = await context.GuildUsers.FindAsync(guild.Id.ToDbLong());
 
 				g.UserCount = guild.MemberCount;
                 await context.SaveChangesAsync();

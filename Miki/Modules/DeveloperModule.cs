@@ -372,7 +372,7 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user);
+				LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong(), user.Username);
 				if (u == null)
 				{
 					return;
@@ -387,7 +387,12 @@ namespace Miki.Modules
 		[Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task BanUserAsync(EventContext e)
 		{
-			await User.BanAsync(long.Parse(e.Arguments.ToString()));
+			IDiscordUser u = await e.Arguments.First().GetUserAsync(e.Guild);
+
+			using (var context = new MikiContext())
+			{
+				await (await User.GetAsync(context, u.Id.ToDbLong(), u.Username)).BanAsync();
+			}
 		}
 	}
 }
