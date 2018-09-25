@@ -34,7 +34,7 @@ namespace Miki.Accounts.Achievements
 
 		internal BaseService provider = null;
 
-		private Framework.Bot bot;
+		private readonly Framework.Bot bot;
 		private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;

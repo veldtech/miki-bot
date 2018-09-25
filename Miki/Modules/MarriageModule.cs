@@ -240,7 +240,7 @@ namespace Miki.Modules
 
 					if (marriage.Marriage.IsProposing)
 					{
-						marriage.Marriage.AcceptProposal(context);
+						marriage.Marriage.AcceptProposal();
 
 						await context.SaveChangesAsync();
 

@@ -88,9 +88,10 @@ namespace Miki
 					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
 					Locale.LoadLanguage(l, resources);
 				}
-				catch
+				catch(Exception ex)
 				{
 					Log.Error($"Language {t.Name} did not load correctly");
+					Log.Debug(ex.ToString());
 				}
 			});
 		}
@@ -118,7 +119,8 @@ namespace Miki
 				Version = "0.7",
 				ShardCount = Global.Config.ShardCount,
 				DatabaseConnectionString = Global.Config.ConnString,
-				Token = Global.Config.Token
+				Token = Global.Config.Token,
+				DatabaseContextFactory = () => new MikiContext()
 			});
 
 			(Global.Client.Client.ApiClient as DiscordApiClient).HttpClient.OnRequestComplete += (method, uri) =>

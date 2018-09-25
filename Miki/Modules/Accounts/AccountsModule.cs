@@ -305,7 +305,7 @@ namespace Miki.Modules.AccountsModule
 					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
 					int minGlobalExp = User.CalculateLevelExperience(globalLevel -1);
 
-					int globalRank = await account.GetGlobalRankAsync();
+					int globalRank = await account.GetGlobalRankAsync(context);
 
 					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 

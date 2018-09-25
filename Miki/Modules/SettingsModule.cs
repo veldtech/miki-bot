@@ -39,8 +39,12 @@ namespace Miki.Modules
 			bool global = response.GetBool("g");
 			LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
 
-			await Setting.UpdateAsync(e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
-		}	
+			using (MikiContext context = new MikiContext())
+			{
+				await Setting.UpdateAsync(context, e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
+				await context.SaveChangesAsync();
+			}
+		}
 
 		public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
 		{
@@ -91,7 +95,11 @@ namespace Miki.Modules
 
 			if (!global)
 			{
-				await Setting.UpdateAsync(e.Channel.Id, settingId, newSetting);
+				using (var context = new MikiContext())
+				{
+					await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
+					await context.SaveChangesAsync();
+				}
 			}
 			else
 			{
@@ -182,7 +190,8 @@ namespace Miki.Modules
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
-				await e.Locale.SetLanguageAsync(e.Channel.Id.ToDbLong(), langId);
+				using(var context = new MikiContext())
+				await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
 
 				e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
@@ -196,7 +205,6 @@ namespace Miki.Modules
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PrefixAsync(EventContext e)
 		{
-
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
 				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
@@ -205,7 +213,10 @@ namespace Miki.Modules
 
 			PrefixInstance defaultInstance = e.commandHandler.GetDefaultPrefix();
 
-			await defaultInstance.ChangeForGuildAsync(Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
+			using (var context = new MikiContext())
+			{
+				await defaultInstance.ChangeForGuildAsync(context, Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
+			}
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));

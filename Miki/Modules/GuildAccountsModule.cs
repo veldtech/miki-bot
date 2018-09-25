@@ -61,7 +61,7 @@ namespace Miki.Modules
                     {
                         //IDiscordGuild guild = Bot.Instance.Client.GetGuild(thisGuild.Id.FromDbLong());
 
-                        GuildUser rival = await thisGuild.GetRival();
+                        GuildUser rival = await thisGuild.GetRival(database);
 
                         if (rival == null)
                         {
@@ -260,7 +260,7 @@ namespace Miki.Modules
             {
                 GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-                int rank = g.GetGlobalRank();
+                int rank = g.GetGlobalRank(context);
                 int level = g.CalculateLevel(g.Experience);
 
 				EmojiBarSet onBarSet = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
@@ -290,7 +290,7 @@ namespace Miki.Modules
 
                 if (g.RivalId != 0)
                 {
-                    GuildUser rival = await g.GetRival();
+                    GuildUser rival = await g.GetRival(context);
                     embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
                 }
 

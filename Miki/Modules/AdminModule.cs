@@ -13,6 +13,7 @@ using Miki.Discord;
 using Miki.Discord.Rest;
 using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Gateway;
+using Miki.Models;
 
 namespace Miki.Modules
 {
@@ -323,7 +324,10 @@ namespace Miki.Modules
 				}
 			}
 
-			await command.SetEnabled(Global.RedisClient, e.Channel.Id, setValue ?? false);
+			using (var context = new MikiContext())
+			{
+				await command.SetEnabled(context, Global.RedisClient, e.Channel.Id, setValue ?? false);
+			}
 			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {command.Name}")
 				.QueueToChannel(e.Channel);
 		}

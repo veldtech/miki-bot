@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.22" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.24" />
     <PackageReference Include="CountLib" Version="1.0.2" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Miki.Anilist" Version="0.5.1" />
@@ -33,8 +33,8 @@
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.1.1" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="SharpRaven" Version="2.4.0" />
   </ItemGroup>
@@ -51,250 +51,241 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Languages\ar-AE.Designer.cs">
-      <DependentUpon>ar-AE.resx</DependentUpon>
+    <Compile Update="Languages\ara.Designer.cs">
+      <DependentUpon>ara.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\bg-BG.Designer.cs">
-      <DependentUpon>bg-BG.resx</DependentUpon>
+    <Compile Update="Languages\bul.Designer.cs">
+      <DependentUpon>bul.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\cz-CZ.Designer.cs">
-      <DependentUpon>cz-CZ.resx</DependentUpon>
+    <Compile Update="Languages\ces.Designer.cs">
+      <DependentUpon>ces.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\da-DK.Designer.cs">
-      <DependentUpon>da-DK.resx</DependentUpon>
+    <Compile Update="Languages\dan.Designer.cs">
+      <DependentUpon>dan.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\de-DE.Designer.cs">
-      <DependentUpon>de-DE.resx</DependentUpon>
+    <Compile Update="Languages\ger.Designer.cs">
+      <DependentUpon>ger.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\en-US.Designer.cs">
-      <DependentUpon>en-US.resx</DependentUpon>
+    <Compile Update="Languages\eng.Designer.cs">
+      <DependentUpon>eng.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\es-ES.Designer.cs">
-      <DependentUpon>es-ES.resx</DependentUpon>
+    <Compile Update="Languages\spa.Designer.cs">
+      <DependentUpon>spa.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\fi-FI.Designer.cs">
-      <DependentUpon>fi-FI.resx</DependentUpon>
+    <Compile Update="Languages\fin.Designer.cs">
+      <DependentUpon>fin.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\fr-FR.Designer.cs">
-      <DependentUpon>fr-FR.resx</DependentUpon>
+    <Compile Update="Languages\fra.Designer.cs">
+      <DependentUpon>fra.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\he-HE.Designer.cs">
-      <DependentUpon>he-HE.resx</DependentUpon>
+    <Compile Update="Languages\heb.Designer.cs">
+      <DependentUpon>heb.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\hi-HI.Designer.cs">
-      <DependentUpon>hi-HI.resx</DependentUpon>
+    <Compile Update="Languages\hin.Designer.cs">
+      <DependentUpon>hin.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\hu-HU.Designer.cs">
-      <DependentUpon>hu-HU.resx</DependentUpon>
+    <Compile Update="Languages\hun.Designer.cs">
+      <DependentUpon>hun.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\it-IT.Designer.cs">
-      <DependentUpon>it-IT.resx</DependentUpon>
+    <Compile Update="Languages\ita.Designer.cs">
+      <DependentUpon>ita.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\ja-JA.Designer.cs">
-      <DependentUpon>ja-JA.resx</DependentUpon>
+    <Compile Update="Languages\jpn.Designer.cs">
+      <DependentUpon>jpn.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\lt-LT.Designer.cs">
-      <DependentUpon>lt-LT.resx</DependentUpon>
+    <Compile Update="Languages\lit.Designer.cs">
+      <DependentUpon>lit.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\ms-MS.Designer.cs">
-      <DependentUpon>ms-MS.resx</DependentUpon>
+    <Compile Update="Languages\may.Designer.cs">
+      <DependentUpon>may.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\nl-NL.Designer.cs">
-      <DependentUpon>nl-NL.resx</DependentUpon>
+    <Compile Update="Languages\dut.Designer.cs">
+      <DependentUpon>dut.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\no-NO.Designer.cs">
-      <DependentUpon>no-NO.resx</DependentUpon>
+    <Compile Update="Languages\nor.Designer.cs">
+      <DependentUpon>nor.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\pl-PL.Designer.cs">
-      <DependentUpon>pl-PL.resx</DependentUpon>
+    <Compile Update="Languages\pol.Designer.cs">
+      <DependentUpon>pol.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\pt-BR.Designer.cs">
-      <DependentUpon>pt-BR.resx</DependentUpon>
+    <Compile Update="Languages\por.Designer.cs">
+      <DependentUpon>por.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\pt-PT.Designer.cs">
-      <DependentUpon>pt-PT.resx</DependentUpon>
+    <Compile Update="Languages\rus.Designer.cs">
+      <DependentUpon>rus.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\ru-RU.Designer.cs">
-      <DependentUpon>ru-RU.resx</DependentUpon>
+    <Compile Update="Languages\swe.Designer.cs">
+      <DependentUpon>swe.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\sv-SE.Designer.cs">
-      <DependentUpon>sv-SE.resx</DependentUpon>
+    <Compile Update="Languages\tgl.Designer.cs">
+      <DependentUpon>tgl.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\tl-PH.Designer.cs">
-      <DependentUpon>tl-PH.resx</DependentUpon>
+    <Compile Update="Languages\ukr.Designer.cs">
+      <DependentUpon>ukr.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\uk-UA.Designer.cs">
-      <DependentUpon>uk-UA.resx</DependentUpon>
+    <Compile Update="Languages\zhs.Designer.cs">
+      <DependentUpon>zhs.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Languages\zh-CHS.Designer.cs">
-      <DependentUpon>zh-CHS.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\zh-CHT.Designer.cs">
-      <DependentUpon>zh-CHT.resx</DependentUpon>
+    <Compile Update="Languages\zht.Designer.cs">
+      <DependentUpon>zht.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Languages\ar-AE.resx">
-      <LastGenOutput>ar-AE.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\ara.resx">
+      <LastGenOutput>ara.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\bg-BG.resx">
-      <LastGenOutput>bg-BG.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\bul.resx">
+      <LastGenOutput>bul.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\cz-CZ.resx">
-      <LastGenOutput>cz-CZ.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\ces.resx">
+      <LastGenOutput>ces.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\da-DK.resx">
-      <LastGenOutput>da-DK.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\dan.resx">
+      <LastGenOutput>dan.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\de-DE.resx">
-      <LastGenOutput>de-DE.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\ger.resx">
+      <LastGenOutput>ger.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\en-US.resx">
-      <LastGenOutput>en-US.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\eng.resx">
+      <LastGenOutput>eng.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\es-ES.resx">
-      <LastGenOutput>es-ES.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\spa.resx">
+      <LastGenOutput>spa.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\fi-FI.resx">
-      <LastGenOutput>fi-FI.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\fin.resx">
+      <LastGenOutput>fin.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\fr-FR.resx">
-      <LastGenOutput>fr-FR.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\fra.resx">
+      <LastGenOutput>fra.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\he-HE.resx">
-      <LastGenOutput>he-HE.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\heb.resx">
+      <LastGenOutput>heb.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\hi-HI.resx">
-      <LastGenOutput>hi-HI.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\hin.resx">
+      <LastGenOutput>hin.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\hu-HU.resx">
-      <LastGenOutput>hu-HU.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\hun.resx">
+      <LastGenOutput>hun.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\it-IT.resx">
-      <LastGenOutput>it-IT.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\ita.resx">
+      <LastGenOutput>ita.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ja-JA.resx">
-      <LastGenOutput>ja-JA.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\jpn.resx">
+      <LastGenOutput>jpn.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\lt-LT.resx">
-      <LastGenOutput>lt-LT.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\lit.resx">
+      <LastGenOutput>lit.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ms-MS.resx">
-      <LastGenOutput>ms-MS.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\may.resx">
+      <LastGenOutput>may.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\nl-NL.resx">
-      <LastGenOutput>nl-NL.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\dut.resx">
+      <LastGenOutput>dut.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\no-NO.resx">
-      <LastGenOutput>no-NO.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\nor.resx">
+      <LastGenOutput>nor.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\pl-PL.resx">
-      <LastGenOutput>pl-PL.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\pol.resx">
+      <LastGenOutput>pol.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\pt-BR.resx">
-      <LastGenOutput>pt-BR.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\por.resx">
+      <LastGenOutput>por.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\pt-PT.resx">
-      <LastGenOutput>pt-PT.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\rus.resx">
+      <LastGenOutput>rus.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ru-RU.resx">
-      <LastGenOutput>ru-RU.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\swe.resx">
+      <LastGenOutput>swe.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\sv-SE.resx">
-      <LastGenOutput>sv-SE.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\tgl.resx">
+      <LastGenOutput>tgl.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\tl-PH.resx">
-      <LastGenOutput>tl-PH.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\ukr.resx">
+      <LastGenOutput>ukr.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\uk-UA.resx">
-      <LastGenOutput>uk-UA.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\zhs.resx">
+      <LastGenOutput>zhs.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\zh-CHS.resx">
-      <LastGenOutput>zh-CHS.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Languages\zh-CHT.resx">
-      <LastGenOutput>zh-CHT.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Languages\zht.resx">
+      <LastGenOutput>zht.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>

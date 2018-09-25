@@ -64,33 +64,33 @@ namespace Miki.Accounts
 				   rolesObtained = await context.LevelRoles
 					  .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
 					  .ToListAsync();
+
+				   // await (a as IDiscordGuildUser).AddRolesAsync(rolesObtained.Select(x => x.Role).ToArray());
+
+				   var setting = (LevelNotificationsSetting)await Setting.GetAsync(context, e.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS);
+
+				   if (setting == LevelNotificationsSetting.NONE)
+					   return;
+
+				   if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
+					   return;
+
+				   LocaleInstance instance = await Locale.GetLanguageInstanceAsync(e.Id);
+
+				   EmbedBuilder embed = new EmbedBuilder()
+				   {
+					   Title = instance.GetString("miki_accounts_level_up_header"),
+					   Description = instance.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
+					   Color = new Color(1, 0.7f, 0.2f)
+				   };
+
+				   if (rolesObtained.Count > 0)
+				   {
+					   embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.GetRoleAsync().Result.Name}**")));
+				   }
+
+				   embed.ToEmbed().QueueToChannel(e);
 			   }
-
-			  // await (a as IDiscordGuildUser).AddRolesAsync(rolesObtained.Select(x => x.Role).ToArray());
-
-			   var setting = await Setting.GetAsync<LevelNotificationsSetting>(e.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS);
-
-			   if (setting == LevelNotificationsSetting.NONE)
-				   return;
-
-			   if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
-				   return;
-
-			   LocaleInstance instance = await Locale.GetLanguageInstanceAsync(e.Id);
-
-			   EmbedBuilder embed = new EmbedBuilder()
-			   {
-				   Title = instance.GetString("miki_accounts_level_up_header"),
-				   Description = instance.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
-				   Color = new Color(1, 0.7f, 0.2f)
-			   };
-
-			   if (rolesObtained.Count > 0)
-			   {
-				   embed.AddInlineField("Rewards", string.Join("\n", rolesObtained.Select(x => $"New Role: **{x.GetRoleAsync().Result.Name}**")));
-			   }
-
-			   embed.ToEmbed().QueueToChannel(e);
 		   };
 
 			//	bot.Client.GuildUpdated += Client_GuildUpdated;
