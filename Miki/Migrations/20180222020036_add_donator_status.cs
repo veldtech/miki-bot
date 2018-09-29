@@ -28,8 +28,7 @@ namespace Miki.Core.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    UserId = table.Column<long>(nullable: false),
                     DaysDonated = table.Column<int>(nullable: false, defaultValue: 0),
                     ValidUntil = table.Column<DateTime>(nullable: false, defaultValue: new DateTime(2018, 2, 21, 3, 0, 36, 54, DateTimeKind.Local))
                 },

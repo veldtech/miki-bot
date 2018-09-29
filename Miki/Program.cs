@@ -7,6 +7,7 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
+using Miki.Discord.Common.Gateway.Packets;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Internal;
@@ -51,11 +52,6 @@ namespace Miki
 
 			await p.LoadDiscord();
 
-			if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
-			{
-				Global.MikiApi = new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey);
-			}
-
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
 			{
 				MessageBucket.AddWorker();
@@ -86,7 +82,7 @@ namespace Miki
 					string l = t.Name.ToLowerInvariant();
 
 					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
-					Locale.LoadLanguage(l, resources);
+					Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
 				}
 				catch(Exception ex)
 				{

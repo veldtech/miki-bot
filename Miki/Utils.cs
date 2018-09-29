@@ -134,7 +134,7 @@ namespace Miki
 
 		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
 			=> new EmbedBuilder()
-				.SetTitle($"🚫 {e.Locale.GetString(LocaleTags.ErrorMessageGeneric)}")
+				.SetTitle($"🚫 {e.Locale.GetString("miki_error_message_generic")}")
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
@@ -149,7 +149,7 @@ namespace Miki
         {
             return new EmbedBuilder()
             {
-                Title = "✅ " + e.Locale.GetString(LocaleTags.SuccessMessageGeneric),
+                Title = "✅ " + e.Locale.GetString("miki_success_message_generic"),
 				Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();

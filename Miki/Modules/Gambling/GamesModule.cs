@@ -551,7 +551,7 @@ namespace Miki.Modules
 				};
 
 				EmbedBuilder embed = new EmbedBuilder()
-					.SetAuthor(e.Locale.GetString(LocaleTags.SlotsHeader) + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
+					.SetAuthor(e.Locale.GetString("miki_module_fun_slots_header") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot");
 
 				string[] objectsChosen =
 				{
@@ -664,8 +664,8 @@ namespace Miki.Modules
 				}
 				else
 				{
-					embed.AddField(e.Locale.GetString(LocaleTags.SlotsWinHeader),
-						e.Locale.GetString(LocaleTags.SlotsWinMessage, moneyReturned, u.Currency + moneyReturned));
+					embed.AddField(e.Locale.GetString("miki_module_fun_slots_win_header"),
+						e.Locale.GetString("miki_module_fun_slots_win_amount", moneyReturned, u.Currency + moneyReturned));
 				}
 
 				embed.Description = string.Join(" ", objectsChosen);

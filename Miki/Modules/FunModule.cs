@@ -335,7 +335,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -359,8 +359,9 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
-            }
+                e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+
+			}
         }
 
         [Command(Name = "img")]
@@ -368,7 +369,7 @@ namespace Miki.Modules
         {
 			if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
+				e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -392,8 +393,9 @@ namespace Miki.Modules
             }
             else
             {
-                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ImageNotFound));
-            }
+                e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+
+			}
         }
 
         [Command(Name = "pick")]
@@ -401,13 +403,15 @@ namespace Miki.Modules
         {
             if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
             {
-                e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.ErrorPickNoArgs));
-                return;
+                e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_pick_no_arg"));
+
+				return;
             }
             string[] choices = e.Arguments.ToString().Split(',');
 
-            e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.PickMessage, new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
-        }
+            e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_pick", new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+
+		}
 
         [Command(Name = "pun")]
         public async Task PunAsync(EventContext e)
@@ -474,7 +478,7 @@ namespace Miki.Modules
 			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
 			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
-			e.Channel.QueueMessageAsync(e.Locale.GetString(LocaleTags.RollResult, e.Author.Username, rollResult));
+			e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_roll_result", e.Author.Username, rollResult));
 		}
 
 		[Command(Name = "roulette")]
@@ -485,8 +489,8 @@ namespace Miki.Modules
 
 			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";
 			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
-				e.Locale.GetString(LocaleTags.RouletteMessageNoArg, mention) :
-				e.Locale.GetString(LocaleTags.RouletteMessage, e.Arguments.ToString(), mention);
+				e.Locale.GetString("miki_module_fun_roulette_winner_no_arg", mention) :
+				e.Locale.GetString("miki_module_fun_roulette_winner", e.Arguments.ToString(), mention);
 
 			e.Channel.QueueMessageAsync(send);
 		}

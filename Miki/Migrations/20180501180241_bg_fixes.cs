@@ -29,13 +29,12 @@ namespace Miki.Core.Migrations
                 oldClrType: typeof(DateTime),
                 oldDefaultValue: new DateTime(2018, 4, 16, 16, 43, 10, 204, DateTimeKind.Local));
 
-            migrationBuilder.AlterColumn<long>(
-                name: "UserId",
-                schema: "dbo",
-                table: "BackgroundsOwned",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+			migrationBuilder.AlterColumn<long>(
+				name: "UserId",
+				schema: "dbo",
+				table: "BackgroundsOwned",
+				nullable: false,
+				oldClrType: typeof(long));
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_BackgroundsOwned",
@@ -60,13 +59,12 @@ namespace Miki.Core.Migrations
                 oldClrType: typeof(DateTime),
                 oldDefaultValue: new DateTime(2018, 4, 30, 20, 2, 41, 34, DateTimeKind.Local));
 
-            migrationBuilder.AlterColumn<long>(
-                name: "UserId",
-                schema: "dbo",
-                table: "BackgroundsOwned",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+			migrationBuilder.AlterColumn<long>(
+				name: "UserId",
+				schema: "dbo",
+				table: "BackgroundsOwned",
+				nullable: false,
+				oldClrType: typeof(long));
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_BackgroundsOwned",

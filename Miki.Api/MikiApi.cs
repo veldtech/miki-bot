@@ -8,37 +8,34 @@ using System.Threading.Tasks;
 
 namespace Miki.API
 {
-	public class MikiApi
+	public class MikiApi : IDisposable
 	{
-		public static MikiApi Instance => _instance;
-		static MikiApi _instance = null;
+		public static MikiApi Instance { get; private set; } = null;
 
-		RestClient client;
+		private RestClient _client;
 
-		string token = "";
-		string baseUrl = "";
-
-		public const int API_VERSION = 1;
+		private string _token = "";
+		private string _baseUrl = "";
 
 		public MikiApi(string base_url, string token)
 		{
-			if(_instance == null)
+			if(Instance == null)
 			{
-				_instance = this;	
+				Instance = this;	
 			}
 
-			this.token = token;
-			baseUrl = base_url;
+			this._token = token;
+			_baseUrl = base_url;
 
-			client = new RestClient(baseUrl + $"/{API_VERSION}/" );
-			client.SetAuthorization(token);
+			_client = new RestClient(_baseUrl);
+			_client.SetAuthorization(token);
 		}
 
 		/// <summary>
 		/// Builds the url to the leaderboards page on the miki website
 		/// </summary>
 		/// <param name="options">Leaderboards Options Object</param>
-		/// <returns>https://miki.ai/leaderboards/{guild_id?}/{type}/{page}</returns>
+		/// <returns>https://miki.ai/leaderboards/{type}/{guild_id?}</returns>
 		public string BuildLeaderboardsUrl(LeaderboardsOptions options)
 			=> "https://miki.ai" + BuildLeaderboardsRoute(options);
 
@@ -47,22 +44,30 @@ namespace Miki.API
 		/// </summary>
 		/// <param name="options">Leaderboards Options Object</param>
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
-			=> (await client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
+			=> (await _client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
 
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
 				.Append("/leaderboards")
-				.Append((options.guildId == 0) ? "" : $"/{options.guildId}")
-				.Append($"/{options.type.ToString().ToLower()}");
+				.Append($"/{options.Type.ToString().ToLower()}");
 
-			if (options.type == LeaderboardsType.COMMANDS && !string.IsNullOrEmpty(options.commandSpecified))
+			if (options.GuildId.HasValue)
 			{
-				sb.Append($"/{options.commandSpecified.ToLower()}");
+				sb.Append($"/{options.GuildId}");
 			}
 
-			sb.Append($"/{options.pageNumber}");
-			return sb.ToString();
+			QueryString qs = new QueryString();
+
+			qs.Add("amount", options.Amount);
+			qs.Add("offset", options.Offset);
+
+			return sb.ToString() + qs.Query;
+		}
+
+		public void Dispose()
+		{
+			_client.Dispose();
 		}
 	}
 }

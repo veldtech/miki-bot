@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
+using Miki.API;
 using Miki.API.Leaderboards;
 using Miki.Bot.Models.Repositories;
 using Miki.Common.Builders;
@@ -140,7 +141,7 @@ namespace Miki.Modules.AccountsModule
 				case "commands":
 				case "cmds":
 				{
-					options.type = LeaderboardsType.COMMANDS;
+					options.Type = LeaderboardsType.COMMANDS;
 					argument = argument?.Next();
 				}
 				break;
@@ -150,7 +151,7 @@ namespace Miki.Modules.AccountsModule
 				case "money":
 				case "bal":
 				{
-					options.type = LeaderboardsType.CURRENCY;
+					options.Type = LeaderboardsType.CURRENCY;
 					argument = argument?.Next();
 				}
 				break;
@@ -158,7 +159,7 @@ namespace Miki.Modules.AccountsModule
 				case "rep":
 				case "reputation":
 				{
-					options.type = LeaderboardsType.REPUTATION;
+					options.Type = LeaderboardsType.REPUTATION;
 					argument = argument?.Next();
 				}
 				break;
@@ -166,7 +167,7 @@ namespace Miki.Modules.AccountsModule
 				case "pasta":
 				case "pastas":
 				{
-					options.type = LeaderboardsType.PASTA;
+					options.Type = LeaderboardsType.PASTA;
 					argument = argument?.Next();
 				}
 				break;
@@ -174,7 +175,7 @@ namespace Miki.Modules.AccountsModule
 				case "experience":
 				case "exp":
 				{
-					options.type = LeaderboardsType.EXPERIENCE;
+					options.Type = LeaderboardsType.EXPERIENCE;
 					argument = argument?.Next();
 				}
 				break;
@@ -182,7 +183,7 @@ namespace Miki.Modules.AccountsModule
 				case "guild":
 				case "guilds":
 				{
-					options.type = LeaderboardsType.GUILDS;
+					options.Type = LeaderboardsType.GUILDS;
 					argument = argument?.Next();
 				}
 				break;
@@ -190,41 +191,49 @@ namespace Miki.Modules.AccountsModule
 
 				default:
 				{
-					options.type = LeaderboardsType.EXPERIENCE;
+					options.Type = LeaderboardsType.EXPERIENCE;
 				}
 				break;
 			}
 
 			if (argument?.Argument.ToLower() == "local")
 			{
-				if (options.type != LeaderboardsType.PASTA)
+				if (options.Type != LeaderboardsType.PASTA)
 				{
-					options.guildId = e.Guild.Id;
+					options.GuildId = e.Guild.Id;
 				}
 				argument = argument.Next();
 			}
 
 			if ((argument?.AsInt() ?? 0) != 0)
 			{
-				options.pageNumber = argument.AsInt().Value - 1;
+				options.Offset = (int)Math.Floor((double)(argument.AsInt().Value) / 12);
 				argument = argument?.Next();
 			}
 
+			options.Amount = 12;
+
 			using (var context = new MikiContext())
 			{
-				int p = Math.Max(options.pageNumber - 1, 0);
+				int p = Math.Max(options.Offset - 1, 0);
 
-				LeaderboardsObject obj = await Global.MikiApi.GetPagedLeaderboardsAsync(options);
+				using (var api = new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey))
+				{
+					LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
 
-				Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
-					.SetFooter(e.Locale.GetString("page_index", 
-						obj.currentPage + 1, Math.Ceiling((double)obj.totalItems / 10)), "")
-					.SetAuthor(
-						"Leaderboards: " + options.type + " (click me!)",
-						null,
-						Global.MikiApi.BuildLeaderboardsUrl(options)
-					)
-					.ToEmbed().QueueToChannel(e.Channel);
+					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
+						.SetFooter(
+							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)), 
+							""
+						)
+						.SetAuthor(
+							"Leaderboards: " + options.Type + " (click me!)",
+							null,
+							api.BuildLeaderboardsUrl(options)
+						)
+						.ToEmbed()
+						.QueueToChannel(e.Channel);
+				}
 			}
 		}
 

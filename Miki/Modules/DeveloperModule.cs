@@ -129,16 +129,20 @@ namespace Miki.Modules
 			if (type == ActivityType.Streaming)
 				url = "https://twitch.tv/velddev";
 
-			await Global.Client.Client.SetGameAsync(0, new DiscordStatus{
-				Game = new Discord.Common.Packets.Activity
+			for (int i = 0; i < Global.Config.ShardCount; i++)
+			{
+				await Global.Client.Client.SetGameAsync(i, new DiscordStatus
 				{
-					Name = text,
-					Url = url,
-					Type = type
-				},
-				Status = "online",
-				IsAFK = false
-			});
+					Game = new Discord.Common.Packets.Activity
+					{
+						Name = text,
+						Url = url,
+						Type = type
+					},
+					Status = "online",
+					IsAFK = false
+				});
+			}
 		}
 
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]

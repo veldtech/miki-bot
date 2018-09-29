@@ -9,13 +9,13 @@ namespace Miki.API.Leaderboards
 {
 	public class LeaderboardsObject
 	{
-		[JsonProperty("total_page")]
-		public int totalItems;
+		[JsonProperty("totalPages")]
+		public int totalPages;
 
-		[JsonProperty("current_page")]
+		[JsonProperty("currentPage")]
 		public int currentPage;
 
-		[JsonProperty("data")]
+		[JsonProperty("items")]
 		public List<LeaderboardsItem> items = new List<LeaderboardsItem>();
 	}
 }
