@@ -55,8 +55,7 @@ Support server: https://discord.gg/39Xpj7K<br>
 
 
 ## Feature requests
-[![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
-
+[Go to Suggestions.Miki.ai](https://suggestions.miki.ai)
 
 ## Getting Started 
 Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
@@ -95,19 +94,17 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
     * Tools -> NuGet Package Manager -> Package Manager Console
 
-10) Navigate to `Miki.Framework` and run `Update-Database` to apply the migrations there as well. 
+10) Clone the [gateway repository](https://github.com/Mikibot/sharder/tree/js) in a separate location.
 
-11) Clone the [gateway repository](https://github.com/Mikibot/sharder/tree/js) in a separate location.
+11) Download [Node.js](https://nodejs.org/en/) if you don't have it installed already.
 
-12) Download [Node.js](https://nodejs.org/en/) if you don't have it installed already.
+12) Run `npm install` in the sharder download location to setup the dependencies.
 
-13) Run `npm install` in the sharder download location to setup the dependencies.
+13) Create a `config.js` by copy pasting the format from `config.js.example` and filling in your bot token.
 
-14) Create a `config.js` by copy pasting the format from `config.js.example` and filling in your bot token.
+14) Run `node gateway.js`.
 
-15) Run `node gateway.js`.
-
-16) Run Miki. 🎉
+15) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
