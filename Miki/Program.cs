@@ -19,6 +19,7 @@ using Miki.Framework.Events.Filters;
 using Miki.Framework.Exceptions;
 using Miki.Framework.Language;
 using Miki.Framework.Languages;
+using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Serialization.Protobuf;
@@ -136,9 +137,9 @@ namespace Miki
 
 			eventSystem.OnError += async (ex, context) =>
 			{
-				if (ex is BotException botEx)
+				if (ex is LocalizedException botEx)
 				{
-					Utils.ErrorEmbedResource(context, botEx.Resource)
+					Utils.ErrorEmbedResource(context, botEx.LocaleResource)
 						.ToEmbed().QueueToChannel(context.Channel);
 				}
 				else

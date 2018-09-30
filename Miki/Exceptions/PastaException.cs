@@ -1,4 +1,5 @@
 ﻿using Miki.Framework.Exceptions;
+using Miki.Localization.Exceptions;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
@@ -6,16 +7,13 @@ using System.Text;
 
 namespace Miki.Exceptions
 {
-    public class PastaException : BotException
+    public abstract class PastaException : LocalizedException
     {
-		public override string Resource => "";
-		public override object[] Parameters => new object[] { };
-
-		protected GlobalPasta pasta;
+		protected readonly GlobalPasta _pasta;
 
 		public PastaException(GlobalPasta pasta) : base()
 		{
-			this.pasta = pasta;
+			_pasta = pasta;
 		}
 	}
 }

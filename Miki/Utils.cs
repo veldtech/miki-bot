@@ -23,6 +23,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Cache.StackExchange;
 using Miki.Framework.Language;
+using Miki.Localization;
 
 namespace Miki
 {
@@ -140,6 +141,8 @@ namespace Miki
 
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
 			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
+		public static EmbedBuilder ErrorEmbedResource(this EventContext e, IResource resource)
+			=> ErrorEmbed(e, resource.Get(e.Locale));
 
 		public static EmbedBuilder Embed => new EmbedBuilder();
 
