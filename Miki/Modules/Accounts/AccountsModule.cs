@@ -207,7 +207,7 @@ namespace Miki.Modules.AccountsModule
 
 			if ((argument?.AsInt() ?? 0) != 0)
 			{
-				options.Offset = (int)Math.Floor((double)(argument.AsInt().Value) / 12);
+				options.Offset = Math.Max(0, argument.AsInt().Value - 1) * 12;
 				argument = argument?.Next();
 			}
 
@@ -221,7 +221,7 @@ namespace Miki.Modules.AccountsModule
 				{
 					LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
 
-					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 10)
+					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 12)
 						.SetFooter(
 							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)), 
 							""

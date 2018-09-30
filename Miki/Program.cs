@@ -90,6 +90,8 @@ namespace Miki
 					Log.Debug(ex.ToString());
 				}
 			});
+
+			Locale.SetDefaultLanguage("eng");
 		}
 
 		public async Task LoadDiscord()
