@@ -55,13 +55,12 @@ namespace Miki.Core.Migrations
                 defaultValue: 0,
                 oldClrType: typeof(long));
 
-            migrationBuilder.AlterColumn<long>(
-                name: "DiscordUserId",
-                schema: "dbo",
-                table: "Connections",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+			migrationBuilder.AlterColumn<long>(
+				name: "DiscordUserId",
+				schema: "dbo",
+				table: "Connections",
+				nullable: false,
+				oldClrType: typeof(long));
 
             migrationBuilder.AddColumn<decimal>(
                 name: "UserId",
@@ -228,13 +227,12 @@ namespace Miki.Core.Migrations
                 table: "Users",
                 nullable: true);
 
-            migrationBuilder.AlterColumn<long>(
-                name: "DiscordUserId",
-                schema: "dbo",
-                table: "Connections",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+			migrationBuilder.AlterColumn<long>(
+				name: "DiscordUserId",
+				schema: "dbo",
+				table: "Connections",
+				nullable: false,
+				oldClrType: typeof(long));
 
             migrationBuilder.AddColumn<long>(
                 name: "UserId",
