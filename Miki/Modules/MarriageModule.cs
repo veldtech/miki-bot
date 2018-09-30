@@ -19,6 +19,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Bot.Models.Repositories;
 using Miki.Helpers;
+using Miki.Localization.Exceptions;
 
 namespace Miki.Modules
 {
@@ -152,7 +153,9 @@ namespace Miki.Modules
 
 				if (marriages.Count == 0)
 				{
-					throw BotException.CreateCustom("error_proposals_empty");
+					// TODO: no proposals exception
+					//throw BotException.CreateCustom("error_proposals_empty");
+					return;
 				}
 
 				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
@@ -284,7 +287,9 @@ namespace Miki.Modules
 
 				if (marriages.Count == 0)
 				{
-					throw BotException.CreateCustom("error_proposals_empty");
+					// TODO: add no propsoals
+					//throw new LocalizedException("error_proposals_empty");
+					return;
 				}
 
 				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();

@@ -260,7 +260,8 @@ namespace Miki.Modules.AccountsModule
 
 					if(discordUser == null)
 					{
-						throw new UserException(new User());
+						// TODO: usernullexception
+						//throw new UserException(new User());
 					}
 
 					uid = discordUser.Id;
