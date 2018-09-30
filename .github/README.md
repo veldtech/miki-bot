@@ -55,8 +55,7 @@ Support server: https://discord.gg/39Xpj7K<br>
 
 
 ## Feature requests
-[![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
-
+[Go to Suggestions.Miki.ai](https://suggestions.miki.ai)
 
 ## Getting Started 
 Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
