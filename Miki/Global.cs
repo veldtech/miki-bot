@@ -12,6 +12,7 @@ using Miki.Discord.Caching;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
 using Miki.Serialization.Protobuf;
+using Miki.Discord.Common;
 
 namespace Miki
 {
@@ -28,6 +29,8 @@ namespace Miki
 		});
 
 		public static IExtendedCacheClient RedisClient => redisClientPool.Value as IExtendedCacheClient;
+
+		public static IDiscordUser CurrentUser { get; set; }
 
 		public static BackgroundStore Backgrounds { get; set; }
 

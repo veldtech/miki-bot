@@ -105,7 +105,6 @@ namespace Miki
 				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
 			);
 
-
 			var client = new DistributedGateway(new MessageClientConfiguration
 			{
 				ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
@@ -130,6 +129,8 @@ namespace Miki
 				Log.Debug(method + " " + uri);
 				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
 			};
+
+			Global.CurrentUser = await Global.Client.Client.GetCurrentUserAsync();
 
 			new BasicCacheStage().Initialize(Global.Client.CacheClient);
 			
@@ -236,10 +237,15 @@ namespace Miki
 			//}
 		}
 
-		private Task Bot_MessageReceived(IDiscordMessage arg)
+		private async Task Bot_MessageReceived(IDiscordMessage arg)
 		{
 			DogStatsd.Increment("messages.received");
-			return Task.CompletedTask;
+
+			if(arg.Content.StartsWith($"<@!{Global.CurrentUser.Id}>") || arg.Content.StartsWith($"<@{Global.CurrentUser.Id}>"))
+			{
+				string msg = (await Locale.GetLanguageInstanceAsync(arg.ChannelId)).GetString("miki_join_message");
+				(await arg.GetChannelAsync()).QueueMessageAsync(msg);
+			}
 		}
 
 		private Task Client_LeftGuild(ulong guildId)
