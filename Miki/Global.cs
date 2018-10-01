@@ -29,7 +29,7 @@ namespace Miki
 
 		public static IExtendedCacheClient RedisClient => redisClientPool.Value as IExtendedCacheClient;
 
-		public static BackgroundStore Backgrounds => null;
+		public static BackgroundStore Backgrounds { get; set; }
 
 		public static Framework.Bot Client { get; set; }
 
@@ -71,7 +71,6 @@ namespace Miki
 
 		private static Config config = null;
 		private static AmazonS3Client cdnClient;
-		//static readonly BackgroundStore backgrounds = new BackgroundStore();
 	}
 
 	public class Constants

@@ -22,6 +22,7 @@ using Miki.Framework.Languages;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
+using Miki.Models.Objects.Backgrounds;
 using Miki.Serialization.Protobuf;
 using SharpRaven.Data;
 using StackExchange.Redis;
@@ -52,6 +53,8 @@ namespace Miki
 			p.LoadLocales();
 
 			await p.LoadDiscord();
+
+			Global.Backgrounds = new BackgroundStore();
 
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
 			{

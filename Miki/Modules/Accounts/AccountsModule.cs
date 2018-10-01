@@ -444,69 +444,77 @@ namespace Miki.Modules.AccountsModule
 		public async Task BuyProfileBackgroundAsync(EventContext e)
 		{
 			ArgObject arguments = e.Arguments.FirstOrDefault();
-			if (arguments.TryParseInt(out int id))
+
+			if (arguments == null)
 			{
-				if (id >= Global.Backgrounds.Backgrounds.Count || id < 0)
+				e.Channel.QueueMessageAsync("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
+			}
+			else
+			{
+				if (arguments.TryParseInt(out int id))
 				{
-					e.ErrorEmbed("This background does not exist!")
-						.ToEmbed()
-						.QueueToChannel(e.Channel);
-					return;
-				}
+					if (id >= Global.Backgrounds.Backgrounds.Count || id < 0)
+					{
+						e.ErrorEmbed("This background does not exist!")
+							.ToEmbed()
+							.QueueToChannel(e.Channel);
+						return;
+					}
 
-				Background background = Global.Backgrounds.Backgrounds[id];
+					Background background = Global.Backgrounds.Backgrounds[id];
 
-				var embed = new EmbedBuilder()
-					.SetTitle("Buy Background")
-					.SetImage(background.ImageUrl);
+					var embed = new EmbedBuilder()
+						.SetTitle("Buy Background")
+						.SetImage(background.ImageUrl);
 
-				if (background.Price > 0)
-				{
-					embed.SetDescription($"This background for your profile will cost {background.Price} mekos, Type `>buybackground {id} yes` to buy.");
-				}
-				else
-				{
-					embed.SetDescription($"This background is not for sale.");
-				}
-
-				arguments = arguments.Next();
-
-				if (arguments?.Argument.ToLower() == "yes")
-				{
 					if (background.Price > 0)
 					{
-						using (var context = new MikiContext())
+						embed.SetDescription($"This background for your profile will cost {background.Price} mekos, Type `>buybackground {id} yes` to buy.");
+					}
+					else
+					{
+						embed.SetDescription($"This background is not for sale.");
+					}
+
+					arguments = arguments.Next();
+
+					if (arguments?.Argument.ToLower() == "yes")
+					{
+						if (background.Price > 0)
 						{
-							User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
-							long userId = (long)e.Author.Id;
-
-							BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
-
-							if (bo == null)
+							using (var context = new MikiContext())
 							{
-								await user.AddCurrencyAsync(-background.Price, e.Channel);
-								await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+								User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
+								long userId = (long)e.Author.Id;
+
+								BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
+
+								if (bo == null)
 								{
-									UserId = e.Author.Id.ToDbLong(),
-									BackgroundId = background.Id,
-								});
+									await user.AddCurrencyAsync(-background.Price, e.Channel);
+									await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+									{
+										UserId = e.Author.Id.ToDbLong(),
+										BackgroundId = background.Id,
+									});
 
-								await context.SaveChangesAsync();
+									await context.SaveChangesAsync();
 
-								e.SuccessEmbed("Background purchased!")
-									.QueueToChannel(e.Channel);
-							}
-							else
-							{
-								throw new BackgroundOwnedException();
+									e.SuccessEmbed("Background purchased!")
+										.QueueToChannel(e.Channel);
+								}
+								else
+								{
+									throw new BackgroundOwnedException();
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					embed.ToEmbed()
-						.QueueToChannel(e.Channel);
+					else
+					{
+						embed.ToEmbed()
+							.QueueToChannel(e.Channel);
+					}
 				}
 			}
 		}

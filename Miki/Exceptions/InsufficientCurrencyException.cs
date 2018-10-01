@@ -15,9 +15,9 @@ namespace Miki.Exceptions
 
 		private readonly long _mekos = 0;
 
-		public InsufficientCurrencyException(object currencyOwned, int mekosRequired) : base()
+		public InsufficientCurrencyException(long currencyOwned, int mekosRequired) : base()
 		{
-			_mekos = mekosRequired - (long)currencyOwned;
+			_mekos = (long)mekosRequired - currencyOwned;
 		}
 	}
 }
