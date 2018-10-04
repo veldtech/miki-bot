@@ -179,6 +179,7 @@ namespace Miki.Modules
 		{
 			await PruneAsync(e, 100, 0);
 		}
+
 		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
@@ -219,38 +220,36 @@ namespace Miki.Modules
 
 			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
 
-			//IEnumerable<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount).FlattenAsync();
+			IEnumerable<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount);
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
-			//amount = messages.Count(); // Checks if the amount of messages to delete is more than the amount of messages availiable.
+			amount = messages.Count();
 
-			//if (amount < 1)
-			//{
-			//	string prefix = await e.commandHandler.GetPrefixAsync(e.Guild.Id);
-			//	await e.message.DeleteAsync();
+			if (amount < 1)
+			{
+				string prefix = await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id);
+				await e.message.DeleteAsync();
 
-			//	e.ErrorEmbed(e.GetResource("miki_module_admin_prune_no_messages", prefix))
-			//		.ToEmbed().QueueToChannel(e.Channel);
-			//	return;
-			//}
+				e.ErrorEmbed(e.Locale.GetString("miki_module_admin_prune_no_messages", prefix))
+					.ToEmbed().QueueToChannel(e.Channel);
+				return;
+			}
 
-			//for (int i = 0; i < amount; i++)
-			//{
-			//	if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
-			//		continue;
+			for (int i = 0; i < amount; i++)
+			{
+				if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
+					continue;
 
-			//	if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
-			//	{
-			//		deleteMessages.Add(messages.ElementAt(i));
-			//	}
-			//}
+				if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
+				{
+					deleteMessages.Add(messages.ElementAt(i));
+				}
+			}
 
-			//if (deleteMessages.Count > 0)
-			//{
-			//	await e.Channel.DeleteMessagesAsync(deleteMessages);
-			//}
-
-			Task.WaitAll();
+			if (deleteMessages.Count > 0)
+			{
+				await e.Channel.DeleteMessagesAsync(deleteMessages.ToArray());
+			}
 
 			string[] titles = new string[]
 			{
@@ -271,13 +270,7 @@ namespace Miki.Modules
 
 			embed.Color = new Color(1, 1, 0.5f);
 
-			IDiscordMessage _dMessage = await embed.ToEmbed().SendToChannel(e.Channel);
-
-			Task.Run(async () =>
-			{
-				await Task.Delay(5000);
-				await _dMessage.DeleteAsync();
-			});
+			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]

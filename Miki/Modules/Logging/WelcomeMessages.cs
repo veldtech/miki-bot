@@ -199,13 +199,13 @@ namespace Miki.Modules
 	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
                     modifiedMessage = modifiedMessage.Replace("-o", ownerName);
 
-                    modifiedMessage = modifiedMessage.Replace("-cc", channels.Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", channels.Count.ToString());
+                    modifiedMessage = modifiedMessage.Replace("-cc", channels.Count().ToString());
+                    modifiedMessage = modifiedMessage.Replace("-vc", channels.Count().ToString());
 					
                     output.Add(new EventMessageObject()
 					{
 						message = modifiedMessage,
-						destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId)
+						destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId) as IDiscordTextChannel
 					});
                 }
                 return output;
@@ -215,7 +215,7 @@ namespace Miki.Modules
 
 	public struct EventMessageObject
 	{
-		public IDiscordChannel destinationChannel;
+		public IDiscordTextChannel destinationChannel;
 		public string message;
 	}
 }

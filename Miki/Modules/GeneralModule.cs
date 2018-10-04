@@ -261,8 +261,8 @@ namespace Miki.Modules
 			.AddInlineField("👉 " +  e.Locale.GetString("miki_label_prefix"), prefix)
 			.AddInlineField("📺 " +  e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString())
 			.AddInlineField("🔊 " +  e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString())
-			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count.ToString())
-			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count.ToString())
+			.AddInlineField("🙎 " +  e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count().ToString())
+			.AddInlineField("#⃣ " +  e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count().ToString())
 			.AddField("📜 " +  e.Locale.GetString("miki_module_general_guildinfo_roles"), 
 				string.Join(",", roles.Select(x => $"`{x.Name}`")))
 			.AddField("😃 " + e.Locale.GetString("term_emoji"), emojiOutput)
@@ -519,7 +519,7 @@ namespace Miki.Modules
 			builder.AppendLine($"User Id      : **{user.Id}**");
 			builder.AppendLine(
 				$"Username: **{user.Username}#{user.Discriminator} {(string.IsNullOrEmpty((user as IDiscordGuildUser).Nickname) ? "" : $"({(user as IDiscordGuildUser).Nickname})")}**");
-			//builder.AppendLine($"Created at: **{user.CreatedAt.ToString()}**");
+			builder.AppendLine($"Created at: **{user.CreatedAt.ToString()}**");
 			builder.AppendLine($"Joined at   : **{user.JoinedAt.ToString()}**");
 			builder.AppendLine($"Color Hex : **{c.ToString()}**");
 

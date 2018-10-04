@@ -762,7 +762,7 @@ namespace Miki.Modules
 			int value = r.Next(0, 100);
 
 			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.Author.Id}&other={user.Id}&value={value}");
-			await e.Channel.SendFileAsync(s, "meme.png");
+			await (e.Channel as IDiscordTextChannel).SendFileAsync(s, "meme.png");
 		}
 
         [Command( Name = "greentext", Aliases = new string[] { "green", "gt" } )]

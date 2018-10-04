@@ -59,8 +59,6 @@ namespace Miki.Modules
 
                     if (timer.Value.AddDays(7) <= DateTime.Now)
                     {
-                        //IDiscordGuild guild = Bot.Instance.Client.GetGuild(thisGuild.Id.FromDbLong());
-
                         GuildUser rival = await thisGuild.GetRival(database);
 
                         if (rival == null)
@@ -122,9 +120,9 @@ namespace Miki.Modules
         [Command(Name = "guildnewrival", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task GuildNewRival(EventContext e)
         {
-            using (MikiContext db = new MikiContext())
+            using (MikiContext context = new MikiContext())
             {
-                GuildUser thisGuild = await db.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+                GuildUser thisGuild = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
                 if (thisGuild == null)
                 {
@@ -132,6 +130,11 @@ namespace Miki.Modules
 						.ToEmbed().QueueToChannel(e.Channel);
                     return;
                 }
+
+				if(thisGuild.UserCount == 0)
+				{
+					thisGuild.UserCount = e.Guild.MemberCount;
+				}
 
                 if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
                 {
@@ -142,8 +145,8 @@ namespace Miki.Modules
                     return;
                 }
 
-                List<GuildUser> rivalGuilds = await db.GuildUsers
-                    .Where((g) => Math.Abs(g.UserCount - thisGuild.UserCount) < (g.UserCount / 4) && g.RivalId == 0 && g.Id != thisGuild.Id)
+                List<GuildUser> rivalGuilds = await context.GuildUsers
+                    .Where((g) => Math.Abs(g.UserCount - e.Guild.MemberCount) < (g.UserCount * 0.25) && g.RivalId == 0 && g.Id != thisGuild.Id)
                     .ToListAsync();
 
                 if (rivalGuilds.Count == 0)
@@ -155,14 +158,14 @@ namespace Miki.Modules
 
                 int random = MikiRandom.Next(0, rivalGuilds.Count);
 
-                GuildUser rivalGuild = await db.GuildUsers.FindAsync(rivalGuilds[random].Id);
+                GuildUser rivalGuild = await context.GuildUsers.FindAsync(rivalGuilds[random].Id);
 
                 thisGuild.RivalId = rivalGuild.Id;
                 rivalGuild.RivalId = thisGuild.Id;
 
                 thisGuild.LastRivalRenewed = DateTime.Now;
 
-                await db.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 Utils.Embed
                     .SetTitle(e.Locale.GetString("miki_terms_rival"))
@@ -234,15 +237,15 @@ namespace Miki.Modules
 
 		public async Task GuildBankDepositAsync(EventContext e, MikiContext context, GuildUser c)
 		{
-			int? totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
+			int totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
 
 			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
-			await user.AddCurrencyAsync(-totalDeposited.Value);
-			c.Currency += totalDeposited.Value;
+			await user.AddCurrencyAsync(-totalDeposited);
+			c.Currency += totalDeposited;
 
 			BankAccount account = await BankAccount.GetAsync(context, e.Author.Id, e.Guild.Id);
-			account.Currency += totalDeposited.Value;
+			account.Deposit(totalDeposited);
 
 			e.CreateEmbedBuilder()
 				.WithTitle("guildbank_deposit_title", e.Author.Username, totalDeposited)

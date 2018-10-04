@@ -108,7 +108,7 @@ namespace Miki.Modules.Roles
 				{
 					if (user.Currency >= newRole.Price)
 					{
-						await e.Channel.SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
+						await (e.Channel as IDiscordTextChannel).SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
 						IDiscordMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 						if (m.Content.ToLower()[0] == 'y')
 						{

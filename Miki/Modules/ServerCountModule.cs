@@ -14,7 +14,7 @@ namespace Miki.Modules
 		[Configurable]
 		private string ConnectionString { get; set; } = "default";
 
-		private CountLib _countLib;
+		private readonly CountLib _countLib;
 
 		public ServerCountModule(Module m, Framework.Bot b)
 		{

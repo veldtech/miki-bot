@@ -79,10 +79,10 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await e.Channel.SendMessageAsync($"none.");
+				await (e.Channel as IDiscordTextChannel).SendMessageAsync($"none.");
 			}
 
-			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await (e.Channel as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
 		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -92,10 +92,10 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await e.Channel.SendMessageAsync($"none.");
+				await (e.Channel as IDiscordTextChannel).SendMessageAsync($"none.");
 			}
 
-			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await (e.Channel as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
 		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -105,10 +105,10 @@ namespace Miki.Modules
 		
 			if (user == null)
 			{
-				await e.Channel.SendMessageAsync($"none.");
+				await (e.Channel as IDiscordTextChannel).SendMessageAsync($"none.");
 			}
 
-			await e.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await (e.Channel as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -312,7 +312,7 @@ namespace Miki.Modules
 		public async Task EditAsync(EventContext e)
 		{
 			Stopwatch sw = Stopwatch.StartNew();
-			await Global.Client.Client.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordUserPacket>(e.Arguments.ToString()));
+			await Global.Client.Client.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordPresencePacket>(e.Arguments.ToString()));
 			Console.WriteLine(sw.ElapsedMilliseconds);
 		}
 

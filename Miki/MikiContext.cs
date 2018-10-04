@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Models.Objects.Guild;
 using System;
 using Microsoft.Extensions.Logging;
-using Miki.Models.Objects.User;
 using Miki.Framework.Models;
 
 namespace Miki.Models

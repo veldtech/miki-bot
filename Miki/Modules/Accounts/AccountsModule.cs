@@ -20,7 +20,6 @@ using Miki.Framework.Languages;
 using Miki.Helpers;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Models.Objects.User;
 using Miki.Modules.Accounts.Services;
 using Miki.Rest;
 using System;
@@ -126,7 +125,7 @@ namespace Miki.Modules.AccountsModule
 				return;
 			}
 
-			await e.Channel.SendFileAsync(s, "exp.png", "");
+			await (e.Channel as IDiscordTextChannel).SendFileAsync(s, "exp.png", "");
 		}
 
 		[Command(Name = "leaderboards", Aliases = new[] { "lb", "leaderboard", "top" })]

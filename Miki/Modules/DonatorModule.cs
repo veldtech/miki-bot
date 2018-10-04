@@ -355,7 +355,7 @@ namespace Miki.Modules
 				if (await u.IsDonatorAsync(context))
 				{
 					Stream s = await client.GetStreamAsync(url);
-					await e.Channel.SendFileAsync(s, "meme.png");
+					await (e.Channel as IDiscordTextChannel).SendFileAsync(s, "meme.png");
 				}
 				else
 				{

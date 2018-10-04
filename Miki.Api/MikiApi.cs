@@ -14,8 +14,8 @@ namespace Miki.API
 
 		private RestClient _client;
 
-		private string _token = "";
-		private string _baseUrl = "";
+		private readonly string _token = "";
+		private readonly string _baseUrl = "";
 
 		public MikiApi(string base_url, string token)
 		{
