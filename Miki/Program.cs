@@ -115,7 +115,7 @@ namespace Miki
 			else
 			{
 				// For distributed systems
-				var client = new DistributedGateway(new MessageClientConfiguration
+				Global.Gateway = new DistributedGateway(new MessageClientConfiguration
 				{
 					ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
 					QueueName = "gateway",
