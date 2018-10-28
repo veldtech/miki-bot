@@ -1,51 +1,45 @@
-﻿using Miki.Framework;
-using Miki.Common;
-using Microsoft.EntityFrameworkCore;
-using Miki.Languages;
-using Miki.Models;
-using StatsdClient;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.Modules;
-using System.Collections.Concurrent;
-using Miki.Framework.Extension;
-using Miki.Framework.Languages;
-using Miki.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
-using Miki.Discord;
-using Miki.Framework.Language;
+using Miki.Framework;
+using Miki.Framework.Languages;
+using Miki.Logging;
+using Miki.Models;
+using Miki.Modules;
+using StatsdClient;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Miki.Accounts
 {
-    public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordChannel g, int level);
+	public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordChannel g, int level);
 
-    public class AccountManager
-    {
-		public static AccountManager Instance { get; } = new AccountManager(Framework.Bot.Instance);
+	public class AccountManager
+	{
+		public static AccountManager Instance { get; } = new AccountManager(Framework.DiscordBot.Instance);
 
 		public event LevelUpDelegate OnLocalLevelUp;
-        public event LevelUpDelegate OnGlobalLevelUp;
 
-        public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
+		public event LevelUpDelegate OnGlobalLevelUp;
+
+		public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
+
 		private ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
-        private ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
+		private ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
 
 		private bool isSyncing = false;
 
-		string GetContextKey(ulong guildid, ulong userid)
+		private string GetContextKey(ulong guildid, ulong userid)
 			=> $"user:{guildid}:{userid}:exp";
 
-
-		public AccountManager(Framework.Bot bot)
-        {
+		public AccountManager(Framework.DiscordBot bot)
+		{
 			OnGlobalLevelUp += (a, e, l) =>
 			{
 				DogStatsd.Counter("levels.global", l);
@@ -96,7 +90,7 @@ namespace Miki.Accounts
 			//	bot.Client.GuildUpdated += Client_GuildUpdated;
 			//bot.Client.JoinedGuild   += Client_UserJoined;
 			//bot.Client.LeftGuild  += Client_UserLeft;
-			bot.Client.MessageCreate += CheckAsync;
+			bot.Discord.MessageCreate += CheckAsync;
 		}
 
 		public async Task CheckAsync(IDiscordMessage e)
@@ -212,7 +206,6 @@ namespace Miki.Accounts
 			if (experienceQueue.Count == 0)
 				return;
 
-
 			List<string> userQuery = new List<string>();
 			string x = "WITH new_values (id, name, experience) as (values";
 
@@ -284,56 +277,58 @@ namespace Miki.Accounts
 		}
 
 		#region Events
+
 		public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
-        {
-            await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
-        }
+		{
+			await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+		}
 
-        public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
-        {
-            await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
-        }
+		public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
+		{
+			await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+		}
 
-        public async Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
-        {
-            await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
-        }
+		public async Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
+		{
+			await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
+		}
 
-        private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
-        {
-            if (arg1.Name != arg2.Name)
-            {
-                using (MikiContext context = new MikiContext())
-                {
-                    GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong());
-                    g.Name = arg2.Name;
-                    await context.SaveChangesAsync();
-                }
-            }
-        }
+		private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
+		{
+			if (arg1.Name != arg2.Name)
+			{
+				using (MikiContext context = new MikiContext())
+				{
+					GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong());
+					g.Name = arg2.Name;
+					await context.SaveChangesAsync();
+				}
+			}
+		}
 
-        private async Task Client_UserLeft(IDiscordGuild arg)
-        {
-            await UpdateGuildUserCountAsync(arg);
-        }
+		private async Task Client_UserLeft(IDiscordGuild arg)
+		{
+			await UpdateGuildUserCountAsync(arg);
+		}
 
-        private async Task Client_UserJoined(IDiscordGuild arg)
-        {
-            await UpdateGuildUserCountAsync(arg);
-        }
+		private async Task Client_UserJoined(IDiscordGuild arg)
+		{
+			await UpdateGuildUserCountAsync(arg);
+		}
 
-        private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
-        {
-            using (MikiContext context = new MikiContext())
-            {
+		private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
+		{
+			using (MikiContext context = new MikiContext())
+			{
 				GuildUser g = await context.GuildUsers.FindAsync(guild.Id.ToDbLong());
 
 				g.UserCount = guild.MemberCount;
-                await context.SaveChangesAsync();
-            }
-        }
-        #endregion Events
-    }
+				await context.SaveChangesAsync();
+			}
+		}
+
+		#endregion Events
+	}
 
 	public class ExperienceAdded
 	{

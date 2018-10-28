@@ -1,25 +1,19 @@
-﻿using Miki.Framework.Events.Attributes;
-using System;
+﻿using Miki.Anilist;
+using Miki.Discord;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.GraphQL;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Miki.Rest;
-using Newtonsoft.Json;
-using System.Linq;
-using Miki.Anilist;
-using Miki.GraphQL;
-using Miki.Common;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using Miki.Configuration;
-using Miki.Discord;
 
 namespace Miki.Core.Modules.Anime
 {
 	[Module("Anime")]
 	public class AnimeModule
 	{
-		AnilistClient anilistClient = new AnilistClient();
+		private AnilistClient anilistClient = new AnilistClient();
 
 		[Command(Name = "getanime")]
 		public async Task GetAnimeAsync(EventContext e)
@@ -93,7 +87,7 @@ namespace Miki.Core.Modules.Anime
 
 			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(searchQuery, page));
 
-			if(result.Items.Count == 0)
+			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
@@ -180,12 +174,11 @@ namespace Miki.Core.Modules.Anime
 			int page = 0;
 
 			page = e.Arguments.LastOrDefault().AsInt() ?? 0;
-		
+
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
 			string searchQuery = arg.Argument;
 
 			arg = arg.Next();
-
 
 			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
 
@@ -265,13 +258,13 @@ namespace Miki.Core.Modules.Anime
 					embed.AddInlineField("Volumes", (media.Volumes ?? 0).ToString())
 						.AddInlineField("Chapters", (media.Chapters ?? 0).ToString());
 
-					embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
-					.AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
-				.AddInlineField("Description", description ?? "None")
-					.SetColor(0, 170, 255)
-					.SetThumbnail(media.CoverImage)
-					.SetFooter("Powered by anilist.co", "")
-					.ToEmbed().QueueToChannel(e.Channel);
+				embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
+				.AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
+			.AddInlineField("Description", description ?? "None")
+				.SetColor(0, 170, 255)
+				.SetThumbnail(media.CoverImage)
+				.SetFooter("Powered by anilist.co", "")
+				.ToEmbed().QueueToChannel(e.Channel);
 			}
 			else
 			{

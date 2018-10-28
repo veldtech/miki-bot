@@ -1,9 +1,7 @@
 ﻿using Miki.Logging;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Miki.Models.Objects.Backgrounds
 {
@@ -19,13 +17,13 @@ namespace Miki.Models.Objects.Backgrounds
 			}
 			else
 			{
-				Log.Warning("No resources for backgrounds were loaded!");	
+				Log.Warning("No resources for backgrounds were loaded!");
 			}
 		}
 	}
 
-    public class Background
-    {
+	public class Background
+	{
 		[JsonProperty("id")]
 		public int Id { get; set; }
 
@@ -39,5 +37,5 @@ namespace Miki.Models.Objects.Backgrounds
 		public List<string> Tags { get; set; }
 
 		public string ImageUrl => $"https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-{ Id }.png";
-    }
+	}
 }

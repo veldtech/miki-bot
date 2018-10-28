@@ -1,53 +1,54 @@
-﻿using Miki.Framework;
-using Miki.Accounts.Achievements.Objects;
+﻿using Miki.Accounts.Achievements.Objects;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Helpers;
 using Miki.Models;
 using System;
 using System.Threading.Tasks;
-using Miki.Common;
-using Miki.Discord.Common;
-using Miki.Helpers;
 
 namespace Miki.Accounts.Achievements
 {
-    public class BaseAchievement
-    {
-        public string Name { get; set; } = Constants.NotDefined;
-        public string ParentName { get; set; } = Constants.NotDefined;
+	public class BaseAchievement
+	{
+		public string Name { get; set; } = Constants.NotDefined;
+		public string ParentName { get; set; } = Constants.NotDefined;
 
-        public string Icon { get; set; } = Constants.NotDefined;
+		public string Icon { get; set; } = Constants.NotDefined;
 		public int Points { get; set; } = 5;
 
-        public BaseAchievement()
-        {
-        }
-        public BaseAchievement(Action<BaseAchievement> act)
-        {
-            act.Invoke(this);
-        }
+		public BaseAchievement()
+		{
+		}
 
-        public virtual async Task<bool> CheckAsync(BasePacket packet)
-        {
+		public BaseAchievement(Action<BaseAchievement> act)
+		{
+			act.Invoke(this);
+		}
+
+		public virtual async Task<bool> CheckAsync(BasePacket packet)
+		{
 			await Task.Yield();
 			return false;
-        }
+		}
 
-        /// <summary>
-        /// Unlocks the achievement and if not yet added to the database, It'll add it to the database.
-        /// </summary>
-        /// <param name="context">sql context</param>
-        /// <param name="id">user id</param>
-        /// <param name="r">rank set to (optional)</param>
-        /// <returns></returns>
-        internal async Task UnlockAsync(IDiscordChannel channel, IDiscordUser user, int r = 0)
-        {
-            long userid = user.Id.ToDbLong();
-       
+		/// <summary>
+		/// Unlocks the achievement and if not yet added to the database, It'll add it to the database.
+		/// </summary>
+		/// <param name="context">sql context</param>
+		/// <param name="id">user id</param>
+		/// <param name="r">rank set to (optional)</param>
+		/// <returns></returns>
+		internal async Task UnlockAsync(IDiscordChannel channel, IDiscordUser user, int r = 0)
+		{
+			long userid = user.Id.ToDbLong();
+
 			if (await UnlockIsValid(userid, r))
 			{
 				await AchievementManager.Instance.CallAchievementUnlockEventAsync(this, user, channel);
 				Notification.SendAchievement(this, channel, user);
 			}
 		}
+
 		internal async Task UnlockAsync(IDiscordUser user, int r = 0)
 		{
 			long userid = user.Id.ToDbLong();

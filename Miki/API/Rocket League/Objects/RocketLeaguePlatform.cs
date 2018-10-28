@@ -1,73 +1,72 @@
-﻿using Miki.Common;
+﻿using Miki.Rest;
 using Newtonsoft.Json;
-using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
 {
-    public class RocketLeaguePlatform
-    {
-        [JsonProperty("id")]
-        public int Id = 0;
+	public class RocketLeaguePlatform
+	{
+		[JsonProperty("id")]
+		public int Id = 0;
 
-        [JsonProperty("name")]
-        public string Name = "";
-    }
+		[JsonProperty("name")]
+		public string Name = "";
+	}
 
-    internal class RocketLeaguePlatformCache
-    {
-        private string key = "";
+	internal class RocketLeaguePlatformCache
+	{
+		private string key = "";
 
-        private List<RocketLeaguePlatform> internalData = new List<RocketLeaguePlatform>();
+		private List<RocketLeaguePlatform> internalData = new List<RocketLeaguePlatform>();
 
-        public List<RocketLeaguePlatform> Data
-        {
-            get
-            {
-                if (LastUpdatedAt + UpdateSpan < DateTime.Now)
-                {
-                    UpdateCache().Wait();
-                }
-                return internalData;
-            }
-            private set
-            {
-                internalData = value;
-            }
-        }
+		public List<RocketLeaguePlatform> Data
+		{
+			get
+			{
+				if (LastUpdatedAt + UpdateSpan < DateTime.Now)
+				{
+					UpdateCache().Wait();
+				}
+				return internalData;
+			}
+			private set
+			{
+				internalData = value;
+			}
+		}
 
-        public DateTime LastUpdatedAt
-        {
-            get;
-            set;
-        }
+		public DateTime LastUpdatedAt
+		{
+			get;
+			set;
+		}
 
-        public TimeSpan UpdateSpan
-        {
-            get;
-            set;
-        }
+		public TimeSpan UpdateSpan
+		{
+			get;
+			set;
+		}
 
-        public RocketLeaguePlatformCache(string k)
-        {
-            key = k;
-            UpdateCache().Wait();
-        }
+		public RocketLeaguePlatformCache(string k)
+		{
+			key = k;
+			UpdateCache().Wait();
+		}
 
-        public async Task UpdateCache()
-        {
-            Data = new List<RocketLeaguePlatform>();
-            RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/platforms")
-                 .SetAuthorization("Bearer", key);
+		public async Task UpdateCache()
+		{
+			Data = new List<RocketLeaguePlatform>();
+			RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/platforms")
+				 .SetAuthorization("Bearer", key);
 
-            RestResponse<List<RocketLeaguePlatform>> cachedValues = await rc.GetAsync<List<RocketLeaguePlatform>>("");
-            LastUpdatedAt = DateTime.Now;
-            foreach (RocketLeaguePlatform p in cachedValues.Data)
-            {
-                Data.Add(p);
-            }
-        }
-    }
+			RestResponse<List<RocketLeaguePlatform>> cachedValues = await rc.GetAsync<List<RocketLeaguePlatform>>("");
+			LastUpdatedAt = DateTime.Now;
+			foreach (RocketLeaguePlatform p in cachedValues.Data)
+			{
+				Data.Add(p);
+			}
+		}
+	}
 }

@@ -1,19 +1,14 @@
-﻿using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.Framework;
-using Miki.Framework.Events.Commands;
+﻿using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Commands;
+using System;
+using System.Threading.Tasks;
 
 namespace Miki.API.EmbedMenus
 {
-    public class Menu
-    {
+	public class Menu
+	{
 		public IDiscordMessage Message => message;
 		public IMenuItem Root;
 		public IDiscordUser Owner;
@@ -26,16 +21,16 @@ namespace Miki.API.EmbedMenus
 			Root.MenuInstance = this;
 			Root.Parent = null;
 		}
-		
+
 		public async Task<Args> ListenMessageAsync()
 		{
 			if (Owner == null)
 				throw new ArgumentNullException("Owner");
 
-			if(Message == null)
+			if (Message == null)
 				throw new ArgumentNullException("Message");
-            
-			var msg = await Framework.Bot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>()
+
+			var msg = await Framework.DiscordBot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>()
 				.WaitForNextMessage(Owner.Id, (await Message.GetChannelAsync()).Id);
 			Args a = new Args(msg.Content);
 			return a;

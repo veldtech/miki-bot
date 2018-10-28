@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Miki.API;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
 using Miki.Common;
@@ -7,29 +6,25 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Packets;
+using Miki.Discord.Gateway.Centralized;
 using Miki.Discord.Gateway.Distributed;
-using Miki.Discord.Internal;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Commands;
 using Miki.Framework.Events.Filters;
-using Miki.Framework.Exceptions;
-using Miki.Framework.Language;
 using Miki.Framework.Languages;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
+using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using SharpRaven.Data;
 using StackExchange.Redis;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -42,7 +37,7 @@ namespace Miki
 	{
 		public static DateTime timeSinceStartup;
 
-		static async Task Main()
+		private static async Task Main()
 		{
 			Program p = new Program();
 
@@ -88,7 +83,7 @@ namespace Miki
 					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
 					Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.Error($"Language {t.Name} did not load correctly");
 					Log.Debug(ex.ToString());
@@ -105,35 +100,53 @@ namespace Miki
 				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
 			);
 
-			var client = new DistributedGateway(new MessageClientConfiguration
-			{
-				ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
-				QueueName = "gateway",
-				ExchangeName = "consumer",
-				ConsumerAutoAck = false,
-				PrefetchCount = 25
-			});
+			Global.ApiClient = new DiscordApiClient(Global.Config.Token, await pool.GetAsync());
 
-			Global.Client = new Framework.Bot(client, pool, new ClientInformation()
+			if (Global.Config.SelfHosted)
 			{
-				Name = "Miki",
+				var gatewayConfig = GatewayConfiguration.Default();
+				gatewayConfig.ShardCount = 1;
+				gatewayConfig.ShardId = 0;
+				gatewayConfig.Token = Global.Config.Token;
+				gatewayConfig.ApiClient = Global.ApiClient;
+				gatewayConfig.WebSocketClient = new BasicWebSocketClient();
+				Global.Gateway = new CentralizedGatewayShard(gatewayConfig);
+			}
+			else
+			{
+				// For distributed systems
+				var client = new DistributedGateway(new MessageClientConfiguration
+				{
+					ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+					QueueName = "gateway",
+					ExchangeName = "consumer",
+					ConsumerAutoAck = false,
+					PrefetchCount = 25
+				});
+			}
+
+			Global.Client = new DiscordBot(new ClientInformation()
+			{
 				Version = "0.7",
-				ShardCount = Global.Config.ShardCount,
-				DatabaseConnectionString = Global.Config.ConnString,
-				Token = Global.Config.Token,
+				ClientConfiguration = new DiscordClientConfigurations
+				{
+					ApiClient = Global.ApiClient,
+					CacheClient = await pool.GetAsync() as IExtendedCacheClient,
+					Gateway = Global.Gateway
+				},
 				DatabaseContextFactory = () => new MikiContext()
 			});
 
-			(Global.Client.Client.ApiClient as DiscordApiClient).HttpClient.OnRequestComplete += (method, uri) =>
+			new BasicCacheStage().Initialize(Global.Gateway, (await pool.GetAsync() as IExtendedCacheClient));
+
+			Global.ApiClient.HttpClient.OnRequestComplete += (method, uri) =>
 			{
 				Log.Debug(method + " " + uri);
 				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
 			};
 
-			Global.CurrentUser = await Global.Client.Client.GetCurrentUserAsync();
+			Global.CurrentUser = await Global.Client.Discord.GetCurrentUserAsync();
 
-			new BasicCacheStage().Initialize(Global.Client.CacheClient);
-			
 			EventSystem eventSystem = new EventSystem(new EventSystemConfig()
 			{
 				Developers = Global.Config.DeveloperIds,
@@ -206,13 +219,13 @@ namespace Miki
 				Log.Message($"{cmd.Name} processed in {time}ms");
 			};
 
-			Global.Client.Client.MessageCreate += Bot_MessageReceived;
+			Global.Client.Discord.MessageCreate += Bot_MessageReceived;
 
-			Global.Client.Client.GuildJoin += Client_JoinedGuild;
-			Global.Client.Client.GuildLeave += Client_LeftGuild;
-			Global.Client.Client.UserUpdate += Client_UserUpdated;
+			Global.Client.Discord.GuildJoin += Client_JoinedGuild;
+			Global.Client.Discord.GuildLeave += Client_LeftGuild;
+			Global.Client.Discord.UserUpdate += Client_UserUpdated;
 
-			await Global.Client.StartAsync();
+			await Global.Gateway.StartAsync();
 		}
 
 		private void InitLogging()
@@ -241,7 +254,7 @@ namespace Miki
 		{
 			DogStatsd.Increment("messages.received");
 
-			if(arg.Content.StartsWith($"<@!{Global.CurrentUser.Id}>") || arg.Content.StartsWith($"<@{Global.CurrentUser.Id}>"))
+			if (arg.Content.StartsWith($"<@!{Global.CurrentUser.Id}>") || arg.Content.StartsWith($"<@{Global.CurrentUser.Id}>"))
 			{
 				string msg = (await Locale.GetLanguageInstanceAsync(arg.ChannelId)).GetString("miki_join_message");
 				(await arg.GetChannelAsync()).QueueMessageAsync(msg);
@@ -256,13 +269,13 @@ namespace Miki
 
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
-			//IDiscordChannel defaultChannel = arg.GetDefaultChannel();
+			IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
 
-			//if (defaultChannel != null)
-			//{
-			//	LocaleInstance i = await Locale.GetLanguageInstanceAsync(defaultChannel.Id);
-			//	defaultChannel.QueueMessageAsync(i.GetString("miki_join_message"));
-			//}
+			if (defaultChannel != null)
+			{
+				LocaleInstance i = await Locale.GetLanguageInstanceAsync(defaultChannel.Id);
+				(defaultChannel as IDiscordTextChannel).QueueMessageAsync(i.GetString("miki_join_message"));
+			}
 
 			//List<string> allArgs = new List<string>();
 			//List<object> allParams = new List<object>();

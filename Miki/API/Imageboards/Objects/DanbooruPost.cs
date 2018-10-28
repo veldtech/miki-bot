@@ -1,13 +1,11 @@
 ﻿using Miki.API.Imageboards.Interfaces;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Miki.API.Imageboards.Objects
 {
-    public class DanbooruPost : BooruPost, ILinkable
-    {
+	public class DanbooruPost : BooruPost, ILinkable
+	{
 		[JsonProperty("id")]
 		public uint Id { get; set; }
 
@@ -169,7 +167,6 @@ namespace Miki.API.Imageboards.Objects
 
 		[JsonProperty("preview_file_url")]
 		public string PreviewFileUrl { get; set; }
-
 	}
 
 	public class DanbooruKeeperSettings
@@ -177,5 +174,4 @@ namespace Miki.API.Imageboards.Objects
 		[JsonProperty("uid")]
 		public long Uid { get; set; }
 	}
-	
 }

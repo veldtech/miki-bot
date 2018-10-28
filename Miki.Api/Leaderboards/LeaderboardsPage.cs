@@ -1,21 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Miki.API.Leaderboards
 {
-	class LeaderboardsPage
+	internal class LeaderboardsPage
 	{
 		[JsonProperty("currentPage")]
-		int CurrentPage { get; set; }
-		
+		private int CurrentPage { get; set; }
+
 		[JsonProperty("totalPages")]
-		int PageCount { get; set; }
+		private int PageCount { get; set; }
 
 		[JsonProperty("items")]
-		List<LeaderboardsItem> Data { get; set; } = new List<LeaderboardsItem>();
+		private List<LeaderboardsItem> Data { get; set; } = new List<LeaderboardsItem>();
 	}
 }

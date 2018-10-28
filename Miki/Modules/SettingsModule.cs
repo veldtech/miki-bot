@@ -1,21 +1,14 @@
-﻿using Miki.Framework;
+﻿using Miki.Discord;
+using Miki.Discord.Rest;
+using Miki.Dsl;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
+using Miki.Framework.Languages;
 using Miki.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Miki.Dsl;
-using System;
-using Miki.Framework.Extension;
-using Amazon.S3.Model;
-using Miki.Framework.Languages;
-using Miki.Exceptions;
-using Miki.Framework.Events.Commands;
-using Miki.Discord.Common;
-using Miki.Discord;
-using Miki.Discord.Rest;
 
 namespace Miki.Modules
 {
@@ -46,66 +39,66 @@ namespace Miki.Modules
 			}
 		}
 
-		public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
-		{
-			List<string> options = Enum.GetNames(typeof(T))
-				.Select(x => x.ToLower()
-					.Replace('_', ' '))
-				.ToList();
+		//public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
+		//{
+		//	List<string> options = Enum.GetNames(typeof(T))
+		//		.Select(x => x.ToLower()
+		//			.Replace('_', ' '))
+		//		.ToList();
 
-			string settingName = settingId.ToString().ToLower().Replace('_', ' ');
+		//	string settingName = settingId.ToString().ToLower().Replace('_', ' ');
 
-			var sEmbed= SettingsBaseEmbed;
-			sEmbed.Description = ($"What kind of {settingName} do you want");
-			sEmbed.AddInlineField("Options", string.Join("\n", options));
-			var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
+		//	var sEmbed= SettingsBaseEmbed;
+		//	sEmbed.Description = ($"What kind of {settingName} do you want");
+		//	sEmbed.AddInlineField("Options", string.Join("\n", options));
+		//	var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
 
-			int newSetting;
+		//	int newSetting;
 
-			IDiscordMessage msg = null;
+		//	IDiscordMessage msg = null;
 
-			while (true)
-			{
-				msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+		//	while (true)
+		//	{
+		//		msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
-				if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
-				{
-					newSetting = (int)setting;
-					break;
-				}
+		//		if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
+		//		{
+		//			newSetting = (int)setting;
+		//			break;
+		//		}
 
-				await sMsg.EditAsync(new EditMessageArgs()
-				{
-					embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
-						.AddInlineField("Options", string.Join("\n", options))
-						.ToEmbed()
-				});
-			}
+		//		await sMsg.EditAsync(new EditMessageArgs()
+		//		{
+		//			embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
+		//				.AddInlineField("Options", string.Join("\n", options))
+		//				.ToEmbed()
+		//		});
+		//	}
 
-			sMsg = await SettingsBaseEmbed
-				.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
-				.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
+		//	sMsg = await SettingsBaseEmbed
+		//		.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
+		//		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
-			msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-			bool global = (msg.Content.ToLower()[0] == 'y');
+		//	msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+		//	bool global = (msg.Content.ToLower()[0] == 'y');
 
-			await SettingsBaseEmbed
-				.SetDescription($"Setting `{settingName}` Updated!")
-				.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
+		//	await SettingsBaseEmbed
+		//		.SetDescription($"Setting `{settingName}` Updated!")
+		//		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
-			if (!global)
-			{
-				using (var context = new MikiContext())
-				{
-					await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
-					await context.SaveChangesAsync();
-				}
-			}
-			else
-			{
-				//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
-			}
-		}
+		//	if (!global)
+		//	{
+		//		using (var context = new MikiContext())
+		//		{
+		//			await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
+		//			await context.SaveChangesAsync();
+		//		}
+		//	}
+		//	else
+		//	{
+		//		//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
+		//	}
+		//}
 
 		[Command(Name = "showmodule")]
 		public async Task ConfigAsync(EventContext e)
@@ -190,8 +183,8 @@ namespace Miki.Modules
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
 			{
-				using(var context = new MikiContext())
-				await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
+				using (var context = new MikiContext())
+					await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
 
 				e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
 					.QueueToChannel(e.Channel);
@@ -236,11 +229,12 @@ namespace Miki.Modules
 		[Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task ListLocaleAsync(EventContext e)
 		{
-			new EmbedBuilder() {
+			new EmbedBuilder()
+			{
 				Title = ("Available locales"),
 				Description = ("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
 			}.AddField(
-				"Your language not here?", 
+				"Your language not here?",
 				"Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)!"
 			).ToEmbed().QueueToChannel(e.Channel);
 		}

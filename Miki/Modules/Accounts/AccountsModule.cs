@@ -14,9 +14,6 @@ using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Framework.Events.Commands;
-using Miki.Framework.Extension;
-using Miki.Framework.Languages;
 using Miki.Helpers;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
@@ -42,15 +39,17 @@ namespace Miki.Modules.AccountsModule
 		[Service("achievements")]
 		public AchievementsService AchievementsService { get; set; }
 
-		readonly BackgroundStore store = new BackgroundStore();
+		private readonly BackgroundStore store = new BackgroundStore();
 
-		RestClient client = new RestClient(Global.Config.ImageApiUrl)
+		private RestClient client = new RestClient(Global.Config.ImageApiUrl)
 			.AddHeader("Authorization", Global.Config.MikiApiKey);
-		readonly EmojiBarSet onBarSet = new EmojiBarSet(
+
+		private readonly EmojiBarSet onBarSet = new EmojiBarSet(
 			"<:mbarlefton:391971424442646534>",
 			"<:mbarmidon:391971424920797185>",
 			"<:mbarrighton:391971424488783875>");
-		readonly EmojiBarSet offBarSet = new EmojiBarSet(
+
+		private readonly EmojiBarSet offBarSet = new EmojiBarSet(
 			"<:mbarleftoff:391971424824459265>",
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
@@ -187,7 +186,6 @@ namespace Miki.Modules.AccountsModule
 				}
 				break;
 
-
 				default:
 				{
 					options.Type = LeaderboardsType.EXPERIENCE;
@@ -222,7 +220,7 @@ namespace Miki.Modules.AccountsModule
 
 					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 12)
 						.SetFooter(
-							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)), 
+							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
 							""
 						)
 						.SetAuthor(
@@ -257,7 +255,7 @@ namespace Miki.Modules.AccountsModule
 				{
 					discordUser = await arg.GetUserAsync(e.Guild);
 
-					if(discordUser == null)
+					if (discordUser == null)
 					{
 						// TODO: usernullexception
 						//throw new UserException(new User());
@@ -278,7 +276,7 @@ namespace Miki.Modules.AccountsModule
 
 				string icon = "";
 
-				if(await account.IsDonatorAsync(context))
+				if (await account.IsDonatorAsync(context))
 				{
 					icon = "https://cdn.discordapp.com/emojis/421969679561785354.png";
 				}
@@ -312,7 +310,7 @@ namespace Miki.Modules.AccountsModule
 
 					int globalLevel = User.CalculateLevel(account.Total_Experience);
 					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
-					int minGlobalExp = User.CalculateLevelExperience(globalLevel -1);
+					int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
 					int globalRank = await account.GetGlobalRankAsync(context);
 
@@ -339,7 +337,7 @@ namespace Miki.Modules.AccountsModule
 
 					for (int i = 0; i < maxCount; i++)
 					{
-						users.Add((await Global.Client.Client.GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
+						users.Add((await Global.Client.Discord.GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
 					}
 
 					if (Marriages?.Count > 0)
@@ -355,7 +353,7 @@ namespace Miki.Modules.AccountsModule
 						}
 
 						string marriageText = string.Join("\n", MarriageStrings);
-						if(string.IsNullOrEmpty(marriageText))
+						if (string.IsNullOrEmpty(marriageText))
 						{
 							marriageText = e.Locale.GetString("miki_placeholder_null");
 						}
@@ -541,7 +539,6 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-
 					new EmbedBuilder()
 						.SetTitle("🖌 Setting a background color!")
 						.SetDescription("Changing your background color costs 250 mekos. use `>setbackcolor (e.g. #00FF00)` to purchase")
@@ -556,7 +553,7 @@ namespace Miki.Modules.AccountsModule
 			using (var context = new MikiContext())
 			{
 				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
-	
+
 				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
 
 				if (x.Count > 0)
@@ -573,7 +570,6 @@ namespace Miki.Modules.AccountsModule
 				}
 				else
 				{
-
 					new EmbedBuilder()
 						.SetTitle("🖌 Setting a foreground color!")
 						.SetDescription("Changing your foreground(text) color costs 250 mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
@@ -592,7 +588,7 @@ namespace Miki.Modules.AccountsModule
 
 				new EmbedBuilder()
 					.SetTitle($"{e.Author.Username}'s backgrounds")
-					.SetDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`" )))
+					.SetDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`")))
 					.ToEmbed()
 					.QueueToChannel(e.Channel);
 			}
@@ -616,8 +612,8 @@ namespace Miki.Modules.AccountsModule
 					};
 
 					await Global.RedisClient.UpsertAsync(
-						$"user:{giver.Id}:rep", 
-						repObject, 
+						$"user:{giver.Id}:rep",
+						repObject,
 						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
 					);
 				}
@@ -658,35 +654,35 @@ namespace Miki.Modules.AccountsModule
 						if (u == null)
 							break;
 
-							arg = arg?.Next();
+						arg = arg?.Next();
 
-							if ((arg?.AsInt() ?? -1) != -1)
-							{
-								amount = (short)arg.AsInt().Value;
-								arg = arg.Next();
-							}
-							else if (Utils.IsAll(arg))
-							{
-								amount = repObject.ReputationPointsLeft;
-								arg = arg.Next();
-							}
+						if ((arg?.AsInt() ?? -1) != -1)
+						{
+							amount = (short)arg.AsInt().Value;
+							arg = arg.Next();
+						}
+						else if (Utils.IsAll(arg))
+						{
+							amount = repObject.ReputationPointsLeft;
+							arg = arg.Next();
+						}
 
-							if (u.Id == e.Author.Id)
-							{
-								mentionedSelf = true;
-								continue;
-							}
+						if (u.Id == e.Author.Id)
+						{
+							mentionedSelf = true;
+							continue;
+						}
 
-							totalAmountGiven += amount;
+						totalAmountGiven += amount;
 
-							if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
-							{
-								usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
-							}
-							else
-							{
-								usersMentioned.Add(u, amount);
-							}
+						if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+						{
+							usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
+						}
+						else
+						{
+							usersMentioned.Add(u, amount);
+						}
 					}
 
 					if (mentionedSelf)
@@ -728,7 +724,7 @@ namespace Miki.Modules.AccountsModule
 						receiver.Reputation += user.Value;
 
 						embed.AddInlineField(
-							receiver.Name, 
+							receiver.Name,
 							string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value)
 						);
 					}
@@ -736,7 +732,7 @@ namespace Miki.Modules.AccountsModule
 					repObject.ReputationPointsLeft -= (short)usersMentioned.Sum(x => x.Value);
 
 					await Global.RedisClient.UpsertAsync(
-						$"user:{giver.Id}:rep", 
+						$"user:{giver.Id}:rep",
 						repObject,
 						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
 					);
@@ -767,7 +763,7 @@ namespace Miki.Modules.AccountsModule
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.Title = "👌 OKAY";
-			embed.Description = e.Locale.GetString("sync_success", "name");	
+			embed.Description = e.Locale.GetString("sync_success", "name");
 			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
 
@@ -777,7 +773,7 @@ namespace Miki.Modules.AccountsModule
 			var arg = e.Arguments.FirstOrDefault();
 			IDiscordGuildUser member;
 
-			if(arg == null)
+			if (arg == null)
 			{
 				member = await e.Guild.GetMemberAsync(e.Author.Id);
 			}

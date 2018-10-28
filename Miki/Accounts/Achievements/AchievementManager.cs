@@ -1,16 +1,15 @@
-﻿using Miki.Framework;
-using Miki.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Logging;
 using Miki.Models;
 using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Framework.Events;
-using Miki.Logging;
-using Miki.Discord.Common;
 
 namespace Miki.Accounts.Achievements
 {
@@ -21,12 +20,13 @@ namespace Miki.Accounts.Achievements
 	public class AchievementManager
 	{
 		private static AchievementManager _instance;
+
 		public static AchievementManager Instance
 		{
 			get
 			{
 				if (_instance == null)
-					_instance = new AchievementManager(Framework.Bot.Instance);
+					_instance = new AchievementManager(Framework.DiscordBot.Instance);
 
 				return _instance;
 			}
@@ -34,7 +34,7 @@ namespace Miki.Accounts.Achievements
 
 		internal BaseService provider = null;
 
-		private readonly Framework.Bot bot;
+		private readonly DiscordBot bot;
 		private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -47,7 +47,7 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementManager(Framework.Bot bot)
+		public AchievementManager(Framework.DiscordBot bot)
 		{
 			this.bot = bot;
 
@@ -121,13 +121,13 @@ namespace Miki.Accounts.Achievements
 		public string PrintAchievements(List<Achievement> achievementNames)
 		{
 			string output = "";
-			foreach(var a in achievementNames)
+			foreach (var a in achievementNames)
 			{
 				if (containers.TryGetValue(a.Name, out var value))
 				{
-					if(a.Rank < value.Achievements.Count)
+					if (a.Rank < value.Achievements.Count)
 					{
-						output += value.Achievements[a.Rank].Icon + " "; 
+						output += value.Achievements[a.Rank].Icon + " ";
 					}
 				}
 			}

@@ -1,15 +1,12 @@
-﻿using Miki.Common;
-using Miki.Common.Builders;
-using Miki.Core.API.Reminder;
+﻿using Miki.Core.API.Reminder;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Miki.API
 {
 	public class TaskScheduler<T>
 	{
-		Dictionary<ulong, TaskContainer<T>> scheduledTasks = new Dictionary<ulong, TaskContainer<T>>();
+		private Dictionary<ulong, TaskContainer<T>> scheduledTasks = new Dictionary<ulong, TaskContainer<T>>();
 
 		public int AddTask(ulong sessionId, Action<T> fn, T context, TimeSpan atTime, bool repeated = false)
 		{

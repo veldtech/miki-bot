@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Modules.Gambling.Managers
+﻿namespace Miki.Modules.Gambling.Managers
 {
-	class RPSWeapon
+	internal class RPSWeapon
 	{
 		public string Name;
 		public string Emoji;

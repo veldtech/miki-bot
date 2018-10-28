@@ -1,7 +1,5 @@
 ﻿using Miki.Discord.Common;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API.EmbedMenus
@@ -15,6 +13,7 @@ namespace Miki.API.EmbedMenus
 		Menu MenuInstance { get; set; }
 
 		Task SelectAsync();
+
 		DiscordEmbed Build();
 	}
 }

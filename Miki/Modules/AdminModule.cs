@@ -1,19 +1,13 @@
-﻿using Miki.Framework;
+﻿using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using Miki.Languages;
+using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Framework.Extension;
-using Miki.Discord.Common;
-using Miki.Discord;
-using Miki.Discord.Rest;
-using Miki.Discord.Common.Gateway.Packets;
-using Miki.Discord.Common.Gateway;
-using Miki.Models;
 
 namespace Miki.Modules
 {
@@ -338,7 +332,6 @@ namespace Miki.Modules
 			string moduleName = arg.Argument;
 
 			Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
-
 
 			if (m == null)
 			{

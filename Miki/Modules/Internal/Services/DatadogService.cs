@@ -1,17 +1,13 @@
 ﻿using Miki.Configuration;
-using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Logging;
 using StatsdClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Internal.Services
 {
-    public class DatadogService : BaseService
-    {
+	public class DatadogService : BaseService
+	{
 		[Configurable]
 		public string DatadogHost { get; set; } = "";
 
@@ -39,7 +35,7 @@ namespace Miki.Modules.Internal.Services
 			//	});
 			//};
 
-			if(eventSystem != null)
+			if (eventSystem != null)
 			{
 				var defaultHandler = eventSystem.GetCommandHandler<SimpleCommandHandler>();
 
@@ -69,6 +65,7 @@ namespace Miki.Modules.Internal.Services
 
 			Log.Message("Datadog set up!");
 		}
+
 		public override void Uninstall(Module m)
 		{
 			base.Uninstall(m);

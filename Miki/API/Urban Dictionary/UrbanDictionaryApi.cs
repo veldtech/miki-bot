@@ -1,20 +1,19 @@
-﻿using Newtonsoft.Json;
-using Miki.Rest;
+﻿using Miki.Rest;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace Miki.API.UrbanDictionary
 {
 	internal class UrbanDictionaryApi
 	{
-		RestClient client;
+		private RestClient client;
 
 		private readonly string key = "";
 
 		public UrbanDictionaryApi(string key)
 		{
-			if(string.IsNullOrWhiteSpace(key))
+			if (string.IsNullOrWhiteSpace(key))
 			{
 				throw new ArgumentNullException(nameof(key));
 			}

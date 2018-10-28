@@ -3,19 +3,18 @@ using Miki.Discord.Common;
 using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API.EmbedMenus
 {
-	class SubMenuItem : BaseItem
+	internal class SubMenuItem : BaseItem
 	{
 		public override IReadOnlyList<IMenuItem> Children => children;
 
 		public List<IMenuItem> children = new List<IMenuItem>();
 
 		public bool canGoBack = false;
-	
+
 		public override async Task SelectAsync()
 		{
 			Args a = await MenuInstance.ListenMessageAsync();
@@ -40,7 +39,7 @@ namespace Miki.API.EmbedMenus
 			EmbedBuilder builder = new EmbedBuilder()
 				.SetTitle($"{Name} | {MenuInstance.Owner}");
 
-			for(int i = 0; i < Children.Count; i++)
+			for (int i = 0; i < Children.Count; i++)
 			{
 				builder.Description += $"`{i + 1}` - {Children[i].Name}\n";
 			}
@@ -52,7 +51,7 @@ namespace Miki.API.EmbedMenus
 		}
 	}
 
-	class PreviewItem : BaseItem
+	internal class PreviewItem : BaseItem
 	{
 		public string imageUrl = "";
 

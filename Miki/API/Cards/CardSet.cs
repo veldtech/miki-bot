@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.API.Cards.Enums;
+﻿using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
 using ProtoBuf;
+using System;
+using System.Collections.Generic;
 
 namespace Miki.API.Cards
 {
@@ -21,7 +18,7 @@ namespace Miki.API.Cards
 
 			foreach (CardType type in Enum.GetValues(typeof(CardType)))
 			{
-				foreach(CardValue value in Enum.GetValues(typeof(CardValue)))
+				foreach (CardValue value in Enum.GetValues(typeof(CardValue)))
 				{
 					set.Deck.Add(new Card(type, value));
 				}

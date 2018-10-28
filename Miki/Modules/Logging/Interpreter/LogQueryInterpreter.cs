@@ -1,161 +1,159 @@
 ﻿using Miki.Framework.Events;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Miki.Modules.Logging.Interpreter
 {
-    public class LogQueryInterpreter
-    {
-        static List<RegexToken> tokens = new List<RegexToken>();
+	public class LogQueryInterpreter
+	{
+		private static List<RegexToken> tokens = new List<RegexToken>();
 
-        static LogQueryInterpreter instance = new LogQueryInterpreter();
+		private static LogQueryInterpreter instance = new LogQueryInterpreter();
 
-        public enum QueryTokenType
-        {
-            // command
-            ADD,
-            REMOVE,
-            
-            // types
-            WELCOME,
-            LEAVE,
+		public enum QueryTokenType
+		{
+			// command
+			ADD,
 
-            // Data
-            STRING,
-            NUMBER
-        };
+			REMOVE,
 
-        public class TokenMatch
-        {
-            public string remainingText;
-            public QueryTokenType type;
-            public string value;
-        }
+			// types
+			WELCOME,
 
-        public class Token
-        {
-            public QueryTokenType type;
-            public string value;
-        }
+			LEAVE,
 
-        class RegexToken
-        {
-            string query = "";
-            QueryTokenType type;
+			// Data
+			STRING,
 
-            public RegexToken(string query, QueryTokenType type)
-            {
-                this.query = query;
-                this.type = type;
+			NUMBER
+		};
 
-                tokens.Add(this);
-            }
+		public class TokenMatch
+		{
+			public string remainingText;
+			public QueryTokenType type;
+			public string value;
+		}
 
-            public TokenMatch Match(string text)
-            {
-                Match m = Regex.Match(text, query);
-                if(m.Success)
-                {
-                    return new TokenMatch()
-                    {
-                        remainingText = text.Substring(m.Length),
-                        type = this.type,
-                        value = m.Value
-                    };
-                }
-                return null;
-            }
-        }
+		public class Token
+		{
+			public QueryTokenType type;
+			public string value;
+		}
 
-        public LogQueryInterpreter()
-        {
-            new RegexToken("^(new|add)", QueryTokenType.ADD);
-            new RegexToken("^(remove|delete|del)", QueryTokenType.REMOVE);
-            new RegexToken("^(welcome|join)", QueryTokenType.WELCOME);
-            new RegexToken("^(leave)", QueryTokenType.LEAVE);
-            new RegexToken("^\".*\"", QueryTokenType.STRING);
-        }
+		private class RegexToken
+		{
+			private string query = "";
+			private QueryTokenType type;
 
-        public static void Run(EventContext x)
-        {
-            List<Token> allTokens = instance.Tokenize(x.Arguments.Join().Argument);
-        }
+			public RegexToken(string query, QueryTokenType type)
+			{
+				this.query = query;
+				this.type = type;
 
-        public class Executor
-        {
-            List<Token> currentTokens = new List<Token>();
+				tokens.Add(this);
+			}
 
-            int currentIndex = 0;
+			public TokenMatch Match(string text)
+			{
+				Match m = Regex.Match(text, query);
+				if (m.Success)
+				{
+					return new TokenMatch()
+					{
+						remainingText = text.Substring(m.Length),
+						type = this.type,
+						value = m.Value
+					};
+				}
+				return null;
+			}
+		}
 
-            Token Current => currentTokens[currentIndex];
+		public LogQueryInterpreter()
+		{
+			new RegexToken("^(new|add)", QueryTokenType.ADD);
+			new RegexToken("^(remove|delete|del)", QueryTokenType.REMOVE);
+			new RegexToken("^(welcome|join)", QueryTokenType.WELCOME);
+			new RegexToken("^(leave)", QueryTokenType.LEAVE);
+			new RegexToken("^\".*\"", QueryTokenType.STRING);
+		}
 
-            public Executor(List<Token> t)
-            {
-                currentTokens = t;
-            }
+		public static void Run(EventContext x)
+		{
+			List<Token> allTokens = instance.Tokenize(x.Arguments.Join().Argument);
+		}
 
-            public void Parse()
-            {
-                
-            }
+		public class Executor
+		{
+			private List<Token> currentTokens = new List<Token>();
 
-            public bool Accept(QueryTokenType t)
-            {
-                if(Current.type == t)
-                {
-                    Next();
-                    return true;
-                }
-                return false;
-            }
+			private int currentIndex = 0;
 
-            public void Next()
-            {
-                currentIndex++;
-            }
-        }
+			private Token Current => currentTokens[currentIndex];
 
-        public List<Token> Tokenize(string text)
-        {
-            string currentText = text;
-            List<Token> allTokens = new List<Token>();
+			public Executor(List<Token> t)
+			{
+				currentTokens = t;
+			}
 
-            while (!string.IsNullOrWhiteSpace(currentText))
-            {
-                TokenMatch m = GetMatch(currentText);
-                if(m != null)
-                {
-                    currentText = m.remainingText;
+			public void Parse()
+			{
+			}
 
-                    allTokens.Add(new Token()
-                    {
-                        type = m.type,
-                        value = m.value
-                    });
-                }
-                else
-                {
-                    currentText = currentText.TrimStart(' ', '\n', '\r');
-                }
-            }
-            return allTokens;
-        }
+			public bool Accept(QueryTokenType t)
+			{
+				if (Current.type == t)
+				{
+					Next();
+					return true;
+				}
+				return false;
+			}
 
-        public TokenMatch GetMatch(string text)
-        {
-            foreach (RegexToken t in tokens)
-            {
-                TokenMatch m = t.Match(text);
-                if (m != null)
-                {
-                    return m;
-                }
-            }
-            return null;
-        }
-    }
+			public void Next()
+			{
+				currentIndex++;
+			}
+		}
+
+		public List<Token> Tokenize(string text)
+		{
+			string currentText = text;
+			List<Token> allTokens = new List<Token>();
+
+			while (!string.IsNullOrWhiteSpace(currentText))
+			{
+				TokenMatch m = GetMatch(currentText);
+				if (m != null)
+				{
+					currentText = m.remainingText;
+
+					allTokens.Add(new Token()
+					{
+						type = m.type,
+						value = m.value
+					});
+				}
+				else
+				{
+					currentText = currentText.TrimStart(' ', '\n', '\r');
+				}
+			}
+			return allTokens;
+		}
+
+		public TokenMatch GetMatch(string text)
+		{
+			foreach (RegexToken t in tokens)
+			{
+				TokenMatch m = t.Match(text);
+				if (m != null)
+				{
+					return m;
+				}
+			}
+			return null;
+		}
+	}
 }

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.API.Cards;
+﻿using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
-using Miki.Framework.Events;
-using Miki.Discord.Common;
-using Miki.Discord;
-using ProtoBuf;
 using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework.Events;
+using ProtoBuf;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Miki.Modules.Gambling.Managers
 {
@@ -31,36 +29,36 @@ namespace Miki.Modules.Gambling.Managers
 	}
 
 	public class BlackjackManager : CardManager
-    {
+	{
 		public int Bet;
 		public ulong MessageId;
 
 		private static readonly Dictionary<CardValue, int> CardWorth = new Dictionary<CardValue, int>
 		{
-			{ CardValue.ACES,	11 },
-			{ CardValue.TWOS,	2 },
+			{ CardValue.ACES,   11 },
+			{ CardValue.TWOS,   2 },
 			{ CardValue.THREES, 3 },
-			{ CardValue.FOURS,	4 },
-			{ CardValue.FIVES,	5 },
-			{ CardValue.SIXES,	6 },
+			{ CardValue.FOURS,  4 },
+			{ CardValue.FIVES,  5 },
+			{ CardValue.SIXES,  6 },
 			{ CardValue.SEVENS, 7 },
 			{ CardValue.EIGHTS, 8 },
-			{ CardValue.NINES,	9 },
-			{ CardValue.TENS,	10 },
-			{ CardValue.JACKS,	10 },
+			{ CardValue.NINES,  9 },
+			{ CardValue.TENS,   10 },
+			{ CardValue.JACKS,  10 },
 			{ CardValue.QUEENS, 10 },
-			{ CardValue.KINGS,	10 },
+			{ CardValue.KINGS,  10 },
 		};
 
 		public BlackjackManager()
 		{
-
 		}
-        public BlackjackManager(int bet)
-        {
+
+		public BlackjackManager(int bet)
+		{
 			Bet = bet;
 			_deck = CardSet.CreateStandard();
-        }
+		}
 
 		public static BlackjackManager FromContext(BlackjackContext context)
 		{
@@ -71,6 +69,7 @@ namespace Miki.Modules.Gambling.Managers
 			manager._hands = context.Hands;
 			return manager;
 		}
+
 		public static async Task<BlackjackManager> FromCacheClientAsync(ICacheClient client, ulong channelId, ulong userId)
 		{
 			return FromContext(
@@ -109,26 +108,26 @@ namespace Miki.Modules.Gambling.Managers
 			};
 		}
 
-        public int Worth(CardHand hand)
-        {
-            int x = 0;
-            int aces = hand.Hand.Count(c => c.value == CardValue.ACES);
+		public int Worth(CardHand hand)
+		{
+			int x = 0;
+			int aces = hand.Hand.Count(c => c.value == CardValue.ACES);
 
-            hand.Hand.ForEach(card =>
-            {
-                if (card.isPublic)
-                {
-                    x += CardWorth[card.value];
-                }
-            });
+			hand.Hand.ForEach(card =>
+			{
+				if (card.isPublic)
+				{
+					x += CardWorth[card.value];
+				}
+			});
 
-            while (x > 21 && aces > 0)
-            {
-                x -= 10;
-                aces--;
-            }
+			while (x > 21 && aces > 0)
+			{
+				x -= 10;
+				aces--;
+			}
 
-            return x;
-        }
-    }
+			return x;
+		}
+	}
 }

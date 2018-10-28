@@ -1,20 +1,16 @@
-﻿using Miki.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Miki.Core.API.Reminder
 {
-    public class TaskContainer<T>
-    {
+	public class TaskContainer<T>
+	{
 		public ulong Id { get; set; }
 
-		Dictionary<int, TaskInstance<T>> instances = new Dictionary<int, TaskInstance<T>>();
+		private Dictionary<int, TaskInstance<T>> instances = new Dictionary<int, TaskInstance<T>>();
 
-		Random random = new Random();
+		private Random random = new Random();
 
 		/// <summary>
 		/// Creates a new reminder
@@ -27,14 +23,14 @@ namespace Miki.Core.API.Reminder
 		public int CreateNewReminder(Action<T> fn, T context, TimeSpan at, bool repeated)
 		{
 			int? id = GetRandomKey();
-			if(id == null)
+			if (id == null)
 			{
 				return -1;
 			}
 
 			TaskInstance<T> reminder = new TaskInstance<T>(id.GetValueOrDefault(), this, fn, context);
 
-			if(repeated)
+			if (repeated)
 			{
 				reminder.RepeatReminder = true;
 			}
@@ -54,7 +50,7 @@ namespace Miki.Core.API.Reminder
 
 		public TaskInstance<T> GetReminder(int id)
 		{
-			if(instances.TryGetValue(id, out TaskInstance<T> value))
+			if (instances.TryGetValue(id, out TaskInstance<T> value))
 			{
 				return value;
 			}

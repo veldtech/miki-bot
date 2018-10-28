@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.Discord;
+﻿using Miki.Discord;
 using Miki.Discord.Common;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // TODO: build this into it's own library(?)
 namespace Miki.API.EmbedMenus
 {
-	class BaseItem : IMenuItem
+	internal class BaseItem : IMenuItem
 	{
 		public virtual IReadOnlyList<IMenuItem> Children => null;
 
@@ -31,6 +30,7 @@ namespace Miki.API.EmbedMenus
 				}
 			}
 		}
+
 		public void SetMenu(Menu menu)
 		{
 			MenuInstance = menu;

@@ -7,16 +7,14 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Filters;
 using Miki.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Miki
 {
-    public static class ModelExtensions
-    {
+	public static class ModelExtensions
+	{
 		public static async Task BanAsync(this User user)
 		{
 			using (var context = new MikiContext())
@@ -40,7 +38,7 @@ namespace Miki
 					await context.LocalExperience.Where(x => x.UserId == user.Id).ToListAsync()
 				);
 
-				Miki.Framework.Bot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
+				Miki.Framework.DiscordBot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
 
 				u.Banned = true;
 				u.Total_Commands = 0;
@@ -55,7 +53,7 @@ namespace Miki
 
 		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
 		{
-			return await Global.Client.Client.GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
+			return await Global.Client.Discord.GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
 		}
 
 		public static async Task AddAsync(MikiContext context, string id, string text, long creator)

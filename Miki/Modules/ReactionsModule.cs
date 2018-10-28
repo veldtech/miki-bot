@@ -1,58 +1,54 @@
-﻿using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using System.Threading.Tasks;
+﻿using Miki.Discord;
 using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using Miki.Discord.Common;
-using Miki.Discord;
+using Miki.Framework.Events.Attributes;
+using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module(Name = "reactions")]
-    public class ReactionsModule
-    {
-        [Command(Name = "confused")]
-        public async Task ConfusedAsync(EventContext e)
-        {
-            string[] images = new string[]
-            {
-                "http://i.imgur.com/RCotXAK.png",
-                "http://i.imgur.com/yN5cwQq.jpg",
-                "http://i.imgur.com/5TkmRWv.png",
-                "http://i.imgur.com/QBFQzCQ.png",
-                "http://i.imgur.com/KjSp1W4.png",
-                "http://i.imgur.com/mX6D68m.jpg",
-                "http://i.imgur.com/ogA5GeN.jpg",
-                "http://i.imgur.com/eCHsHQZ.jpg",
-                "http://i.imgur.com/r0u2dBx.jpg",
-                "http://i.imgur.com/d8oMJUg.jpg",
-                "http://i.imgur.com/dkV331J.jpg",
-                "http://i.imgur.com/U9N4oGR.jpg",
-                "http://i.imgur.com/GA0ZtvR.jpg",
-                "http://i.imgur.com/NQ2e3Dq.gif",
-                "http://i.imgur.com/5HTugJ6.jpg",
-                "http://i.imgur.com/MJrBLij.png",
-                "http://i.imgur.com/JgjCHPd.jpg",
-                "http://i.imgur.com/KIDXXHw.gif",
-                "http://i.imgur.com/Eu0Yyqq.jpg",
-                "http://i.imgur.com/P5V369I.png",
-                "http://i.imgur.com/DtVEGde.gif",
-                "http://i.imgur.com/xxNH850.jpg",
-                "http://i.imgur.com/gytATzW.jpg",
-                "http://i.imgur.com/UrDJVC0.jpg",
-                "http://i.imgur.com/3GkAnYo.png",
-                "http://i.imgur.com/qTXPgyI.jpg",
-                "http://i.imgur.com/GmIXuso.png",
-                "http://i.imgur.com/UM8XpgR.gif",
-                "http://i.imgur.com/GhoKM0u.gif",
+	[Module(Name = "reactions")]
+	public class ReactionsModule
+	{
+		[Command(Name = "confused")]
+		public async Task ConfusedAsync(EventContext e)
+		{
+			string[] images = new string[]
+			{
+				"http://i.imgur.com/RCotXAK.png",
+				"http://i.imgur.com/yN5cwQq.jpg",
+				"http://i.imgur.com/5TkmRWv.png",
+				"http://i.imgur.com/QBFQzCQ.png",
+				"http://i.imgur.com/KjSp1W4.png",
+				"http://i.imgur.com/mX6D68m.jpg",
+				"http://i.imgur.com/ogA5GeN.jpg",
+				"http://i.imgur.com/eCHsHQZ.jpg",
+				"http://i.imgur.com/r0u2dBx.jpg",
+				"http://i.imgur.com/d8oMJUg.jpg",
+				"http://i.imgur.com/dkV331J.jpg",
+				"http://i.imgur.com/U9N4oGR.jpg",
+				"http://i.imgur.com/GA0ZtvR.jpg",
+				"http://i.imgur.com/NQ2e3Dq.gif",
+				"http://i.imgur.com/5HTugJ6.jpg",
+				"http://i.imgur.com/MJrBLij.png",
+				"http://i.imgur.com/JgjCHPd.jpg",
+				"http://i.imgur.com/KIDXXHw.gif",
+				"http://i.imgur.com/Eu0Yyqq.jpg",
+				"http://i.imgur.com/P5V369I.png",
+				"http://i.imgur.com/DtVEGde.gif",
+				"http://i.imgur.com/xxNH850.jpg",
+				"http://i.imgur.com/gytATzW.jpg",
+				"http://i.imgur.com/UrDJVC0.jpg",
+				"http://i.imgur.com/3GkAnYo.png",
+				"http://i.imgur.com/qTXPgyI.jpg",
+				"http://i.imgur.com/GmIXuso.png",
+				"http://i.imgur.com/UM8XpgR.gif",
+				"http://i.imgur.com/GhoKM0u.gif",
 		"http://i.imgur.com/ehskzgF.gif",
 		"http://i.imgur.com/2biawgF.gif",
 		"http://i.imgur.com/D2WXDbd.gif",
 		"http://i.imgur.com/1ogeK3A.gif",
 		"http://i.imgur.com/djNBrtj.jpg",
 		"http://i.imgur.com/VyabzAv.jpg"
-            };
-
+			};
 
 			new EmbedBuilder()
 			{
@@ -60,34 +56,33 @@ namespace Miki.Modules
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-        [Command(Name = "lewd")]
-        public async Task LewdAsync(EventContext e)
-        {
-            string[] lewd = new string[]
-            {
-                "http://i.imgur.com/eG42EVs.png",
-                "http://i.imgur.com/8shK3jh.png",
-                "http://i.imgur.com/uLKC84x.jpg",
-                "http://i.imgur.com/PZCwyyE.png",
-                "http://i.imgur.com/KWklw30.png",
-                "http://i.imgur.com/aoLsNgx.jpg",
-                "http://i.imgur.com/wyJAMVt.jpg",
-                "http://i.imgur.com/2Y5ZgHH.png",
-                "http://i.imgur.com/OIZyqxL.jpg",
-                "http://i.imgur.com/cejd1c0.gif",
-                "http://i.imgur.com/Obl7JvE.png",
-                "http://i.imgur.com/PFFmM1q.png",
-                "http://i.imgur.com/2vopeCM.jpg",
-                "http://i.imgur.com/U4Nk0e5.jpg",
-                "http://i.imgur.com/Llf61b1.jpg",
-                "http://i.imgur.com/3vYPbuO.jpg",
-                "http://i.imgur.com/p1twVD4.png",
-                "http://i.imgur.com/kRaopT0.gif",
-                "http://i.imgur.com/On8Axls.gif",
-                "http://i.imgur.com/yCqJlFc.gif",
+		[Command(Name = "lewd")]
+		public async Task LewdAsync(EventContext e)
+		{
+			string[] lewd = new string[]
+			{
+				"http://i.imgur.com/eG42EVs.png",
+				"http://i.imgur.com/8shK3jh.png",
+				"http://i.imgur.com/uLKC84x.jpg",
+				"http://i.imgur.com/PZCwyyE.png",
+				"http://i.imgur.com/KWklw30.png",
+				"http://i.imgur.com/aoLsNgx.jpg",
+				"http://i.imgur.com/wyJAMVt.jpg",
+				"http://i.imgur.com/2Y5ZgHH.png",
+				"http://i.imgur.com/OIZyqxL.jpg",
+				"http://i.imgur.com/cejd1c0.gif",
+				"http://i.imgur.com/Obl7JvE.png",
+				"http://i.imgur.com/PFFmM1q.png",
+				"http://i.imgur.com/2vopeCM.jpg",
+				"http://i.imgur.com/U4Nk0e5.jpg",
+				"http://i.imgur.com/Llf61b1.jpg",
+				"http://i.imgur.com/3vYPbuO.jpg",
+				"http://i.imgur.com/p1twVD4.png",
+				"http://i.imgur.com/kRaopT0.gif",
+				"http://i.imgur.com/On8Axls.gif",
+				"http://i.imgur.com/yCqJlFc.gif",
 		"http://i.imgur.com/jlTqATG.gif"
-            };
-
+			};
 
 			new EmbedBuilder()
 			{
@@ -95,25 +90,24 @@ namespace Miki.Modules
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-        [Command(Name = "pout")]
-        public async Task PoutAsync(EventContext e)
-        {
-            string[] images = new string[]
-            {
-                "http://i.imgur.com/hsjBcz1.jpg",
-                "http://i.imgur.com/oJSVNzT.jpg",
-                "http://i.imgur.com/gWtmHoN.jpg",
-                "http://i.imgur.com/VFG9zKV.png",
-                "http://i.imgur.com/BUBiL0f.jpg",
-                "http://i.imgur.com/UdlZ69E.gif",
-                "http://i.imgur.com/yhryAf9.png",
-                "http://i.imgur.com/d9DG2sJ.png",
-                "http://i.imgur.com/uTB2HIY.png",
-                "http://i.imgur.com/dVtR9vI.png",
-                "http://i.imgur.com/rt7Vgn3.jpg",
-                "http://i.imgur.com/uTB2HIY.png"
-            };
-
+		[Command(Name = "pout")]
+		public async Task PoutAsync(EventContext e)
+		{
+			string[] images = new string[]
+			{
+				"http://i.imgur.com/hsjBcz1.jpg",
+				"http://i.imgur.com/oJSVNzT.jpg",
+				"http://i.imgur.com/gWtmHoN.jpg",
+				"http://i.imgur.com/VFG9zKV.png",
+				"http://i.imgur.com/BUBiL0f.jpg",
+				"http://i.imgur.com/UdlZ69E.gif",
+				"http://i.imgur.com/yhryAf9.png",
+				"http://i.imgur.com/d9DG2sJ.png",
+				"http://i.imgur.com/uTB2HIY.png",
+				"http://i.imgur.com/dVtR9vI.png",
+				"http://i.imgur.com/rt7Vgn3.jpg",
+				"http://i.imgur.com/uTB2HIY.png"
+			};
 
 			new EmbedBuilder()
 			{
@@ -121,8 +115,8 @@ namespace Miki.Modules
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		[Command( Name = "smug" )]
-		public async Task SmugAsync( EventContext e )
+		[Command(Name = "smug")]
+		public async Task SmugAsync(EventContext e)
 		{
 			string[] images = new string[]
 			{
@@ -165,8 +159,8 @@ namespace Miki.Modules
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		[Command( Name = "cry" )]
-		public async Task CryAsync( EventContext e )
+		[Command(Name = "cry")]
+		public async Task CryAsync(EventContext e)
 		{
 			string[] images = new string[]
 			{
@@ -260,22 +254,21 @@ namespace Miki.Modules
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
-	        
+
 		[Command(Name = "stare")]
-        public async Task StareAsync(EventContext e)
-        {
-        	string[] images = new string[]
-           	{
-                "http://i.imgur.com/Bp9vfcf.gif",
-                "http://i.imgur.com/7nFd5ve.gif",
-                "http://i.imgur.com/rmfWuM0.gif"
-           	};
+		public async Task StareAsync(EventContext e)
+		{
+			string[] images = new string[]
+			   {
+				"http://i.imgur.com/Bp9vfcf.gif",
+				"http://i.imgur.com/7nFd5ve.gif",
+				"http://i.imgur.com/rmfWuM0.gif"
+			   };
 
 			new EmbedBuilder()
 			{
 				ImageUrl = images[MikiRandom.Next(0, images.Length)]
 			}.ToEmbed().QueueToChannel(e.Channel);
 		}
-
 	}
 }

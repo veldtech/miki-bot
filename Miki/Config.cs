@@ -1,12 +1,6 @@
-﻿using Amazon;
-using Miki.Logging;
+﻿using Miki.Logging;
 using Newtonsoft.Json;
-using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki
 {
@@ -85,12 +79,6 @@ namespace Miki
 		[JsonProperty("image_api_url")]
 		public string ImageApiUrl { get; internal set; } = "";
 
-		/// <summary>
-		/// Check if this is the patreon
-		/// </summary>
-		[JsonProperty("is_patreon_bot")]
-		public bool IsMainBot { get; internal set; } = true;
-
 		[JsonProperty("message_worker_count")]
 		public int MessageWorkerCount { get; internal set; } = 4;
 
@@ -117,6 +105,9 @@ namespace Miki
 
 		[JsonProperty("redis_password")]
 		public string RedisPassword { get; internal set; }
+
+		[JsonProperty("self_hosted")]
+		public bool SelfHosted { get; internal set; }
 
 		[JsonProperty("loglevel")]
 		public LogLevel LogLevel { get; internal set; } = LogLevel.Information;

@@ -1,12 +1,7 @@
-﻿using Miki.Framework;
-using Miki.Common;
-using Miki.Accounts.Achievements;
-using Miki.Models;
-using System.Threading.Tasks;
-using System;
-using Miki.Framework.Extension;
-using Miki.Discord.Common;
+﻿using Miki.Accounts.Achievements;
 using Miki.Discord;
+using Miki.Discord.Common;
+using System.Threading.Tasks;
 
 namespace Miki
 {
@@ -16,10 +11,12 @@ namespace Miki
 		{
 			SendAchievement(d.Achievements[rank], channel, user);
 		}
+
 		public static void SendAchievement(BaseAchievement d, IDiscordChannel channel, IDiscordUser user)
 		{
-			CreateAchievementEmbed(d, user).QueueToChannel(channel);	
+			CreateAchievementEmbed(d, user).QueueToChannel(channel);
 		}
+
 		public static async Task SendAchievementAsync(BaseAchievement baseAchievement, IDiscordUser user)
 		{
 			SendAchievement(baseAchievement, await user.GetDMChannelAsync(), user);

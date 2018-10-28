@@ -1,85 +1,84 @@
-﻿using Miki.Common;
+﻿using Miki.Rest;
 using Newtonsoft.Json;
-using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Miki.API.RocketLeague
 {
-    public class RocketLeaguePlaylist
-    {
-        [JsonProperty("id")]
-        public int Id { get; set; } = -1;
-
-        [JsonProperty("platformId")]
-        public int PlatformId { get; set; } = -1;
-
-        [JsonProperty("name")]
-        public string Name { get; set; } = "";
-
-        [JsonProperty("population")]
-        public RocketLeaguePopulation Population { get; set; } = null;
-    }
-
-    public class RocketLeaguePopulation
-    {
-        [JsonProperty("players")]
-        public int Players { get; set; } = 0;
-
-        [JsonProperty("updatedAt")]
-        internal ulong? UpdatedAt { get; set; }
-    }
-
-    internal class RocketLeaguePlaylistCache
+	public class RocketLeaguePlaylist
 	{
-        private string key = "";
+		[JsonProperty("id")]
+		public int Id { get; set; } = -1;
 
-        private List<RocketLeaguePlaylist> internalData = new List<RocketLeaguePlaylist>();
+		[JsonProperty("platformId")]
+		public int PlatformId { get; set; } = -1;
 
-        public List<RocketLeaguePlaylist> Data
-        {
-            get
-            {
-                if (LastUpdatedAt + UpdateSpan < DateTime.Now)
-                {
-                    UpdateCache().Wait();
-                }
-                return internalData;
-            }
-            private set
-            {
-                internalData = value;
-            }
-        }
+		[JsonProperty("name")]
+		public string Name { get; set; } = "";
 
-        public DateTime LastUpdatedAt
-        {
-            get;
-            set;
-        }
+		[JsonProperty("population")]
+		public RocketLeaguePopulation Population { get; set; } = null;
+	}
 
-        public TimeSpan UpdateSpan
-        {
-            get;
-            set;
-        }
+	public class RocketLeaguePopulation
+	{
+		[JsonProperty("players")]
+		public int Players { get; set; } = 0;
 
-        public RocketLeaguePlaylistCache(string k)
-        {
-            key = k;
-            UpdateCache().Wait();
-        }
+		[JsonProperty("updatedAt")]
+		internal ulong? UpdatedAt { get; set; }
+	}
 
-        public async Task UpdateCache()
-        {
-            RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/playlists")
-                 .SetAuthorization("Bearer", key);
+	internal class RocketLeaguePlaylistCache
+	{
+		private string key = "";
 
-            RestResponse<List<RocketLeaguePlaylist>> cachedValues = await rc.GetAsync<List<RocketLeaguePlaylist>>("");
-            LastUpdatedAt = DateTime.Now;
+		private List<RocketLeaguePlaylist> internalData = new List<RocketLeaguePlaylist>();
 
-            internalData = cachedValues.Data;
-        }
-    }
+		public List<RocketLeaguePlaylist> Data
+		{
+			get
+			{
+				if (LastUpdatedAt + UpdateSpan < DateTime.Now)
+				{
+					UpdateCache().Wait();
+				}
+				return internalData;
+			}
+			private set
+			{
+				internalData = value;
+			}
+		}
+
+		public DateTime LastUpdatedAt
+		{
+			get;
+			set;
+		}
+
+		public TimeSpan UpdateSpan
+		{
+			get;
+			set;
+		}
+
+		public RocketLeaguePlaylistCache(string k)
+		{
+			key = k;
+			UpdateCache().Wait();
+		}
+
+		public async Task UpdateCache()
+		{
+			RestClient rc = new RestClient("https://api.rocketleaguestats.com/v1/data/playlists")
+				 .SetAuthorization("Bearer", key);
+
+			RestResponse<List<RocketLeaguePlaylist>> cachedValues = await rc.GetAsync<List<RocketLeaguePlaylist>>("");
+			LastUpdatedAt = DateTime.Now;
+
+			internalData = cachedValues.Data;
+		}
+	}
 }

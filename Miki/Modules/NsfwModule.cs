@@ -1,15 +1,12 @@
-﻿using Miki.Framework.Events.Attributes;
-using Miki.Languages;
-using System.Threading.Tasks;
-using Miki.API.Imageboards;
+﻿using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using System;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
@@ -20,18 +17,18 @@ namespace Miki.Modules
 		public async Task RunGelbooru(EventContext e)
 		{
 			try
-			{ 
-			ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
-
-			if (!IsValid(s))
 			{
-				e.ErrorEmbed("Couldn't find anything with these tags!")
-					.ToEmbed().QueueToChannel(e.Channel);
-				return;
-			}
+				ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
 
-			CreateEmbed(s)
-				.QueueToChannel(e.Channel);
+				if (!IsValid(s))
+				{
+					e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannel(e.Channel);
+					return;
+				}
+
+				CreateEmbed(s)
+					.QueueToChannel(e.Channel);
 			}
 			catch
 			{

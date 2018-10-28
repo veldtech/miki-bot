@@ -1,29 +1,25 @@
-﻿using Miki.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Dsl;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using Microsoft.EntityFrameworkCore;
-using Miki.Dsl;
+using Miki.Helpers;
 using Miki.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Miki.Framework.Extension;
-using Miki.Exceptions;
-using Miki.Framework.Events.Commands;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Helpers;
 
 namespace Miki.Modules.Roles
 {
 	[Module(Name = "Role Management")]
-	class RolesModule
+	internal class RolesModule
 	{
 		#region commands
+
 		[Command(Name = "iam")]
 		public async Task IAmAsync(EventContext e)
 		{
@@ -108,19 +104,8 @@ namespace Miki.Modules.Roles
 				{
 					if (user.Currency >= newRole.Price)
 					{
-						await (e.Channel as IDiscordTextChannel).SendMessageAsync($"Getting this role costs you {newRole.Price} mekos! type `yes` to proceed.");
-						IDiscordMessage m = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-						if (m.Content.ToLower()[0] == 'y')
-						{
-							await user.AddCurrencyAsync(-newRole.Price);
-							await context.SaveChangesAsync();
-						}
-						else
-						{
-							await e.ErrorEmbed("Purchase Cancelled")
-								.ToEmbed().SendToChannel(e.Channel);
-							return;
-						}
+						await user.AddCurrencyAsync(-newRole.Price);
+						await context.SaveChangesAsync();
 					}
 					else
 					{
@@ -132,7 +117,7 @@ namespace Miki.Modules.Roles
 
 				var me = await e.Guild.GetSelfAsync();
 
-				if(!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
+				if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannel(e.Channel);
@@ -218,7 +203,6 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-
 				await author.RemoveRoleAsync(newRole.GetRoleAsync().Result);
 
 				Utils.Embed.SetTitle("I AM NOT")
@@ -237,7 +221,6 @@ namespace Miki.Modules.Roles
 
 				long guildId = e.Guild.Id.ToDbLong();
 
-				// TODO: consider adding a name of the role in the database.
 				List<LevelRole> roles = await context.LevelRoles
 					.Where(x => x.GuildId == guildId)
 					.OrderBy(x => x.RoleId)
@@ -247,53 +230,59 @@ namespace Miki.Modules.Roles
 
 				StringBuilder stringBuilder = new StringBuilder();
 
-				roles = roles.OrderBy(x => x.GetRoleAsync().Result?.Name ?? "").ToList();
+				var guildRoles = await e.Guild.GetRolesAsync();
 
-				foreach(var role in roles)
+				List<Tuple<IDiscordRole, LevelRole>> availableRoles = roles
+					.Where(x => guildRoles.Any(y => x.RoleId == (long)y.Id))
+					.Select(x => new Tuple<IDiscordRole, LevelRole>(guildRoles
+						.Single(y => x.RoleId == (long)y.Id), x)
+					).ToList();
+
+				foreach (var role in availableRoles)
 				{
-					if(role.Optable)
+					if (role.Item2.Optable)
 					{
-						if(role.GetRoleAsync().Result == null)
+						if (role.Item1 == null)
 						{
-							context.LevelRoles.Remove(role);
+							context.LevelRoles.Remove(role.Item2);
 							continue;
 						}
 
-						stringBuilder.Append($"`{role.GetRoleAsync().Result.Name.PadRight(20)}|`");
+						stringBuilder.Append($"`{role.Item1.Name.PadRight(20)}|`");
 
-						if (role.RequiredLevel > 0)
+						if (role.Item2.RequiredLevel > 0)
 						{
-							stringBuilder.Append($"⭐{role.RequiredLevel} ");
+							stringBuilder.Append($"⭐{role.Item2.RequiredLevel} ");
 						}
 
-						if (role.Automatic)
+						if (role.Item2.Automatic)
 						{
 							stringBuilder.Append($"⚙️");
 						}
 
-						if (role.RequiredRole != 0)
+						if (role.Item2.RequiredRole != 0)
 						{
-							var roleRequired = await e.Guild.GetRoleAsync(role.RequiredRole.FromDbLong());
+							var roleRequired = await e.Guild.GetRoleAsync(role.Item2.RequiredRole.FromDbLong());
 
 							stringBuilder.Append($"🔨`{roleRequired?.Name ?? "non-existing role"}`");
 						}
 
-						if (role.Price != 0)
+						if (role.Item2.Price != 0)
 						{
-							stringBuilder.Append($"🔸{role.Price} ");
+							stringBuilder.Append($"🔸{role.Item2.Price} ");
 						}
 
 						stringBuilder.AppendLine();
 					}
 				}
 
-				if(stringBuilder.Length == 0)
+				if (stringBuilder.Length == 0)
 				{
 					stringBuilder.Append(e.Locale.GetString("miki_placeholder_null"));
 				}
 
 				await context.SaveChangesAsync();
-					
+
 				Utils.Embed.SetTitle("📄 Available Roles")
 					.SetDescription(stringBuilder.ToString())
 					.SetColor(204, 214, 221)
@@ -305,18 +294,15 @@ namespace Miki.Modules.Roles
 		[Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task ConfigRoleAsync(EventContext e)
 		{
-			if(string.IsNullOrWhiteSpace(e.Arguments.ToString()))
-			{
-				Task.Run(async () => await ConfigRoleInteractiveAsync(e));
-			}
-			else
+			if (!string.IsNullOrWhiteSpace(e.Arguments.ToString()))
 			{
 				await ConfigRoleQuickAsync(e);
 			}
 		}
-		#endregion
 
-		public async Task ConfigRoleInteractiveAsync(EventContext e)
+		#endregion commands
+
+		/*public async Task ConfigRoleInteractiveAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
 			{
@@ -344,7 +330,7 @@ namespace Miki.Modules.Roles
 					}
 				}
 
-				string roleName = msg.Content;	
+				string roleName = msg.Content;
 
 				List<IDiscordRole> rolesFound = await GetRolesByName(e.Guild, roleName.ToLower());
 				IDiscordRole role = null;
@@ -611,7 +597,7 @@ namespace Miki.Modules.Roles
 					.SetDescription($"Updated {role.Name}!")
 					.ToEmbed().QueueToChannel(e.Channel);
 			}
-		}
+		}*/
 
 		public async Task ConfigRoleQuickAsync(EventContext e)
 		{
@@ -700,6 +686,5 @@ namespace Miki.Modules.Roles
 
 		public async Task<List<IDiscordRole>> GetRolesByName(IDiscordGuild guild, string roleName)
 			=> (await guild.GetRolesAsync()).Where(x => x.Name.ToLower() == roleName.ToLower()).ToList();
-		
 	}
 }

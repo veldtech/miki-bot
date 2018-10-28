@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.API.Cards.Enums;
+﻿using Miki.API.Cards.Enums;
 using ProtoBuf;
 
 namespace Miki.API.Cards.Objects
@@ -22,8 +17,8 @@ namespace Miki.API.Cards.Objects
 
 		public Card()
 		{
-
 		}
+
 		public Card(CardType t, CardValue v)
 		{
 			type = t;
@@ -46,39 +41,51 @@ namespace Miki.API.Cards.Objects
 				case CardValue.ACES:
 					output += "A";
 					break;
+
 				case CardValue.TWOS:
 					output += "2";
 					break;
+
 				case CardValue.THREES:
 					output += "3";
 					break;
+
 				case CardValue.FOURS:
 					output += "4";
 					break;
+
 				case CardValue.FIVES:
 					output += "5";
 					break;
+
 				case CardValue.SIXES:
 					output += "6";
 					break;
+
 				case CardValue.SEVENS:
 					output += "7";
 					break;
+
 				case CardValue.EIGHTS:
 					output += "8";
 					break;
+
 				case CardValue.NINES:
 					output += "9";
 					break;
+
 				case CardValue.TENS:
 					output += "10";
 					break;
+
 				case CardValue.JACKS:
 					output += "J";
 					break;
+
 				case CardValue.QUEENS:
 					output += "Q";
 					break;
+
 				case CardValue.KINGS:
 					output += "K";
 					break;

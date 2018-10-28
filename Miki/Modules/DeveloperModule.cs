@@ -1,22 +1,18 @@
-﻿using Miki.Framework;
+﻿using Miki.API.EmbedMenus;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
+using Miki.Framework.Events.Filters;
 using Miki.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Framework.Extension;
-using Miki.API.EmbedMenus;
-using System.Text.RegularExpressions;
-using Miki.Framework.Events.Filters;
-using Miki.Discord.Common;
-using Miki.Discord;
-using Newtonsoft.Json;
-using Miki.Discord.Common.Packets;
-using System.Diagnostics;
 
 namespace Miki.Modules
 {
@@ -26,7 +22,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdentifyEmojiAsync(EventContext e)
 		{
-		//	Emote emote = Emote.Parse(e.Arguments.ToString());
+			//	Emote emote = Emote.Parse(e.Arguments.ToString());
 
 			Utils.Embed.SetTitle("Emoji Identified!")
 				//.AddInlineField("Name", emote.Name)
@@ -75,7 +71,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenUserAsync(EventContext e)
 		{
-			var user = await Global.Client.Client.ApiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+			var user = await Global.ApiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
 
 			if (user == null)
 			{
@@ -88,7 +84,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildUserAsync(EventContext e)
 		{
-			var user = await Global.Client.Client.ApiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
+			var user = await Global.ApiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
 
 			if (user == null)
 			{
@@ -101,8 +97,8 @@ namespace Miki.Modules
 		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildChannelAsync(EventContext e)
 		{
-			var user = await Global.Client.Client.ApiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
-		
+			var user = await Global.ApiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
+
 			if (user == null)
 			{
 				await (e.Channel as IDiscordTextChannel).SendMessageAsync($"none.");
@@ -131,7 +127,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < Global.Config.ShardCount; i++)
 			{
-				await Global.Client.Client.SetGameAsync(i, new DiscordStatus
+				await Global.Client.Discord.SetGameAsync(i, new DiscordStatus
 				{
 					Game = new Discord.Common.Packets.Activity
 					{
@@ -300,7 +296,7 @@ namespace Miki.Modules
 				.SetTitle($"{e.Author.Username} - {presence.Status}")
 				.SetThumbnail(e.Author.GetAvatarUrl());
 
-			if(presence.Activity != null)
+			if (presence.Activity != null)
 			{
 				embed.SetDescription($"{presence.Activity.Name} - {presence.Activity.Details ?? ""}\n{presence.Activity.State ?? ""}");
 			}
@@ -312,7 +308,7 @@ namespace Miki.Modules
 		public async Task EditAsync(EventContext e)
 		{
 			Stopwatch sw = Stopwatch.StartNew();
-			await Global.Client.Client.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordPresencePacket>(e.Arguments.ToString()));
+			await Global.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordPresencePacket>(e.Arguments.ToString()));
 			Console.WriteLine(sw.ElapsedMilliseconds);
 		}
 

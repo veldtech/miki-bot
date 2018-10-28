@@ -1,8 +1,6 @@
 ﻿using Miki.API.Leaderboards;
 using Miki.Rest;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,9 +17,9 @@ namespace Miki.API
 
 		public MikiApi(string base_url, string token)
 		{
-			if(Instance == null)
+			if (Instance == null)
 			{
-				Instance = this;	
+				Instance = this;
 			}
 
 			this._token = token;

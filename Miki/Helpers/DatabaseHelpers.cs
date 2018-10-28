@@ -4,14 +4,12 @@ using Miki.Exceptions;
 using Miki.Models;
 using StatsdClient;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Helpers
 {
-    public static class DatabaseHelpers
-    {
+	public static class DatabaseHelpers
+	{
 		public static async Task<User> GetUserAsync(MikiContext context, IDiscordUser discordUser)
 			=> await User.GetAsync(context, (long)discordUser.Id, discordUser.Username);
 

@@ -1,19 +1,14 @@
-﻿using Miki.Common;
-using Miki.Common.Builders;
-using Miki.Framework;
-using Miki.Logging;
+﻿using Miki.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Miki.Core.API.Reminder
 {
-    public class TaskInstance<T>
-    {
-		TaskContainer<T> parent;
-		CancellationTokenSource cancellationToken;
+	public class TaskInstance<T>
+	{
+		private TaskContainer<T> parent;
+		private CancellationTokenSource cancellationToken;
 
 		public readonly T Context;
 
@@ -53,7 +48,7 @@ namespace Miki.Core.API.Reminder
 				} while (RepeatReminder && !cancellationToken.IsCancellationRequested);
 				parent.RemoveReminder(Id);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Log.Error(e);
 			}

@@ -3,32 +3,32 @@ using System.Collections.Generic;
 
 namespace Miki.API.RocketLeague
 {
-    public class RocketLeagueUser
-    {
-        [JsonProperty("uniqueId")]
-        public string UniqueId { get; set; }
+	public class RocketLeagueUser
+	{
+		[JsonProperty("uniqueId")]
+		public string UniqueId { get; set; }
 
-        [JsonProperty("displayName")]
-        public string DisplayName { get; set; }
+		[JsonProperty("displayName")]
+		public string DisplayName { get; set; }
 
-        [JsonProperty("platform")]
-        public RocketLeaguePlatform Platform { get; set; }
+		[JsonProperty("platform")]
+		public RocketLeaguePlatform Platform { get; set; }
 
-        [JsonProperty("avatarUrl")]
-        public string AvatarUrl { get; set; }
+		[JsonProperty("avatarUrl")]
+		public string AvatarUrl { get; set; }
 
-        [JsonProperty("profileUrl")]
-        public string ProfileUrl { get; set; }
+		[JsonProperty("profileUrl")]
+		public string ProfileUrl { get; set; }
 
-        [JsonProperty("signatureUrl")]
-        public string SignatureUrl { get; set; }
+		[JsonProperty("signatureUrl")]
+		public string SignatureUrl { get; set; }
 
-        public Dictionary<int, Dictionary<int, RocketLeagueRankedStats>> RankedSeasons { get; set; }
+		public Dictionary<int, Dictionary<int, RocketLeagueRankedStats>> RankedSeasons { get; set; }
 
-        internal ulong? LastRequested { get; set; }
-        internal ulong? CreatedAt { get; set; }
-        internal ulong? UpdatedAt { get; set; }
-        internal ulong? NextUpdateAt { get; set; }
-        internal ulong? UpdatedInfoAt { get; set; }
-    }
+		internal ulong? LastRequested { get; set; }
+		internal ulong? CreatedAt { get; set; }
+		internal ulong? UpdatedAt { get; set; }
+		internal ulong? NextUpdateAt { get; set; }
+		internal ulong? UpdatedInfoAt { get; set; }
+	}
 }

@@ -1,26 +1,17 @@
-﻿using Miki.Framework;
-using Miki.Framework.Events.Attributes;
-using Miki.Models;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Miki.Rest;
-using System;
-using Newtonsoft.Json;
-using Miki.Common;
-using Miki.Patreon.Types;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Miki.Accounts.Achievements;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using StatsdClient;
-using Miki.Exceptions;
-using System.Diagnostics;
+﻿using Miki.Accounts.Achievements;
+using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
-using Miki.Discord;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.Models;
+using Miki.Rest;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
@@ -60,7 +51,7 @@ namespace Miki.Modules
 	[Module(Name = "Donator")]
 	internal class DonatorModule
 	{
-		RestClient client = new RestClient(Global.Config.ImageApiUrl)
+		private RestClient client = new RestClient(Global.Config.ImageApiUrl)
 			.AddHeader("Authorization", Global.Config.MikiApiKey);
 
 		public DonatorModule()

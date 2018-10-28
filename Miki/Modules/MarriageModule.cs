@@ -1,31 +1,24 @@
+using Miki.Bot.Models.Repositories;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
-using Miki.Languages;
+using Miki.Framework.Events.Commands;
+using Miki.Helpers;
 using Miki.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Framework.Extension;
 using System.Text;
-using Miki.Framework.Exceptions;
-using System;
-using Miki.Framework.Events.Commands;
-using Miki.Framework.Languages;
-using Miki.Discord.Rest;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Bot.Models.Repositories;
-using Miki.Helpers;
-using Miki.Localization.Exceptions;
+using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
 	[Module(Name = "Marriage")]
-    public class MarriageModule
-    {
+	public class MarriageModule
+	{
 		[Command(Name = "marry")]
 		public async Task MarryAsync(EventContext e)
 		{
@@ -101,11 +94,11 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-        private async Task ConfirmBuyMarriageSlot(EventContext cont, int costForUpgrade)
-        {
-            using (var context = new MikiContext())
-            {
-                User user = await DatabaseHelpers.GetUserAsync(context, cont.Author);
+		private async Task ConfirmBuyMarriageSlot(EventContext cont, int costForUpgrade)
+		{
+			using (var context = new MikiContext())
+			{
+				User user = await DatabaseHelpers.GetUserAsync(context, cont.Author);
 
 				if (user.Currency >= costForUpgrade)
 				{
@@ -132,7 +125,7 @@ namespace Miki.Modules
 					await cont.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(cont.Author.Id, cont.Channel.Id);
 				}
 			}
-        }
+		}
 
 		[Command(Name = "divorce")]
 		public async Task DivorceAsync(EventContext e)
@@ -159,11 +152,11 @@ namespace Miki.Modules
 				}
 
 				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
-				
+
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					var otherUser = await Global.Client.Client.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
+					var otherUser = await Global.Client.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
 					EmbedBuilder embed = Utils.Embed;
 					embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
@@ -184,7 +177,6 @@ namespace Miki.Modules
 							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}divorce <number> to decline",
 						},
 						Color = new Color(154, 170, 180)
-
 					};
 
 					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
@@ -195,11 +187,11 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "acceptmarriage")]
-        public async Task AcceptMarriageAsync(EventContext e)
-        {
+		public async Task AcceptMarriageAsync(EventContext e)
+		{
 			IDiscordUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
 
-			if(user == null)
+			if (user == null)
 			{
 				e.ErrorEmbed("I couldn't find this user!")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -212,8 +204,8 @@ namespace Miki.Modules
 				return;
 			}
 
-            using (var context = new MikiContext())
-            {
+			using (var context = new MikiContext())
+			{
 				MarriageRepository repository = new MarriageRepository(context);
 
 				User accepter = await DatabaseHelpers.GetUserAsync(context, e.Author);
@@ -221,21 +213,21 @@ namespace Miki.Modules
 
 				UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
 
-                if (marriage != null)
-                {
-                    if (accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
-                    {
-                        e.Channel.QueueMessageAsync($"{e.Author.Username} do not have enough Marriage slots, sorry :(");
-                        return;
-                    }
+				if (marriage != null)
+				{
+					if (accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
+					{
+						e.Channel.QueueMessageAsync($"{e.Author.Username} do not have enough Marriage slots, sorry :(");
+						return;
+					}
 
-                    if (asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
-                    {
-                        e.Channel.QueueMessageAsync($"{asker.Name} does not have enough Marriage slots, sorry :(");
-                        return;
-                    }
+					if (asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
+					{
+						e.Channel.QueueMessageAsync($"{asker.Name} does not have enough Marriage slots, sorry :(");
+						return;
+					}
 
-					if(marriage.ReceiverId != e.Author.Id.ToDbLong())
+					if (marriage.ReceiverId != e.Author.Id.ToDbLong())
 					{
 						e.Channel.QueueMessageAsync($"You can not accept your own responses!");
 						return;
@@ -248,7 +240,7 @@ namespace Miki.Modules
 						await context.SaveChangesAsync();
 
 						new EmbedBuilder()
-						{ 
+						{
 							Title = ("❤️ Happily married"),
 							Color = new Color(190, 25, 49),
 							Description = ($"Much love to { e.Author.Username } and { user.Username } in their future adventures together!")
@@ -260,17 +252,17 @@ namespace Miki.Modules
 							.ToEmbed().QueueToChannel(e.Channel);
 					}
 				}
-                else
-                {
-                    e.Channel.QueueMessageAsync("This user hasn't proposed to you!");
-                    return;
-                }
-            }
-        }
+				else
+				{
+					e.Channel.QueueMessageAsync("This user hasn't proposed to you!");
+					return;
+				}
+			}
+		}
 
-        [Command(Name = "declinemarriage")]
-        public async Task DeclineMarriageAsync(EventContext e)
-        {
+		[Command(Name = "declinemarriage")]
+		public async Task DeclineMarriageAsync(EventContext e)
+		{
 			using (MikiContext context = new MikiContext())
 			{
 				MarriageRepository repository = new MarriageRepository(context);
@@ -278,7 +270,7 @@ namespace Miki.Modules
 				ArgObject selection = e.Arguments.FirstOrDefault();
 				int? selectionId = null;
 
-				if(selection != null)
+				if (selection != null)
 				{
 					selectionId = selection.AsInt();
 				}
@@ -297,7 +289,7 @@ namespace Miki.Modules
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					string otherName = (await Global.Client.Client.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
+					string otherName = (await Global.Client.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
 
 					new EmbedBuilder()
 					{
@@ -319,7 +311,6 @@ namespace Miki.Modules
 							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}declinemarriage <number> to decline",
 						},
 						Color = new Color(154, 170, 180)
-
 					};
 
 					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
@@ -327,26 +318,26 @@ namespace Miki.Modules
 					embed.ToEmbed().QueueToChannel(e.Channel);
 				}
 			}
-        }
+		}
 
-        [Command(Name = "showproposals")]
-        public async Task ShowProposalsAsync(EventContext e)
-        {
+		[Command(Name = "showproposals")]
+		public async Task ShowProposalsAsync(EventContext e)
+		{
 			int page = e.Arguments.FirstOrDefault()?.AsInt() - 1 ?? 0;
 
-            using (var context = new MikiContext())
-            {
+			using (var context = new MikiContext())
+			{
 				MarriageRepository repository = new MarriageRepository(context);
 
-                List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
-                List<string> proposalNames = new List<string>();
+				List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
+				List<string> proposalNames = new List<string>();
 
-                foreach (UserMarriedTo p in proposals)
-                {
+				foreach (UserMarriedTo p in proposals)
+				{
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = (await Global.Client.Client.GetUserAsync(id.FromDbLong())).Username;
-                    proposalNames.Add($"{u} [{id}]");
-                }
+					string u = (await Global.Client.Discord.GetUserAsync(id.FromDbLong())).Username;
+					proposalNames.Add($"{u} [{id}]");
+				}
 
 				int pageCount = (int)Math.Ceiling((float)proposalNames.Count / 35);
 
@@ -358,19 +349,19 @@ namespace Miki.Modules
 					.SetTitle(e.Author.Username)
 					.SetDescription("Here it shows both the people who you've proposed to and who have proposed to you.");
 
-                string output = string.Join("\n", proposalNames);
+				string output = string.Join("\n", proposalNames);
 
-                embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
+				embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                proposals = await repository.GetProposalsSent(e.Author.Id.ToDbLong());
-                proposalNames = new List<string>();
+				proposals = await repository.GetProposalsSent(e.Author.Id.ToDbLong());
+				proposalNames = new List<string>();
 
-                foreach (UserMarriedTo p in proposals)
-                {
+				foreach (UserMarriedTo p in proposals)
+				{
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = (await Global.Client.Client.GetUserAsync(id.FromDbLong())).Username;
+					string u = (await Global.Client.Discord.GetUserAsync(id.FromDbLong())).Username;
 					proposalNames.Add($"{u} [{id}]");
-                }
+				}
 
 				pageCount = Math.Max(pageCount, (int)Math.Ceiling((float)proposalNames.Count / 35));
 
@@ -380,21 +371,21 @@ namespace Miki.Modules
 
 				output = string.Join("\n", proposalNames);
 
-                embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
+				embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-                embed.Color = new Color(1, 0.5f, 0);
-                embed.ThumbnailUrl = (await e.Guild.GetMemberAsync(e.Author.Id)).GetAvatarUrl();
+				embed.Color = new Color(1, 0.5f, 0);
+				embed.ThumbnailUrl = (await e.Guild.GetMemberAsync(e.Author.Id)).GetAvatarUrl();
 				if (pageCount > 1)
 				{
 					embed.SetFooter(e.Locale.GetString("page_footer", page + 1, pageCount));
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
-            }
-        }
+			}
+		}
 
-        [Command(Name = "buymarriageslot")]
-        public async Task BuyMarriageSlotAsync(EventContext e)
-        {
+		[Command(Name = "buymarriageslot")]
+		public async Task BuyMarriageSlotAsync(EventContext e)
+		{
 			using (var context = new MikiContext())
 			{
 				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
@@ -428,7 +419,7 @@ namespace Miki.Modules
 
 				await ConfirmBuyMarriageSlot(e, costForUpgrade);
 			}
-        }
+		}
 
 		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, MikiContext context, List<UserMarriedTo> marriages)
 		{
@@ -436,12 +427,12 @@ namespace Miki.Modules
 
 			for (int i = 0; i < marriages.Count; i++)
 			{
-				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {(await Global.Client.Client.GetUserAsync(marriages[i].GetOther(userId).FromDbLong())).Username}");
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {(await Global.Client.Discord.GetUserAsync(marriages[i].GetOther(userId).FromDbLong())).Username}");
 			}
 
 			embed.Description += "\n\n" + builder.ToString();
 
 			return embed;
 		}
-    }
+	}
 }

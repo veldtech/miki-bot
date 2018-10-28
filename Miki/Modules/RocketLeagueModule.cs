@@ -12,7 +12,6 @@
 //{
 //    internal class RocketLeagueModule
 //    {
-
 /// <summary>
 /// Rocket League Stats API Key
 /// </summary>

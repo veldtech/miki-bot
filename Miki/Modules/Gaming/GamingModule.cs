@@ -1,22 +1,19 @@
-﻿using Miki.Framework.Events.Attributes;
+﻿using Miki.Discord.Common;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
 using Miki.Modules.Overwatch.API;
 using Miki.Modules.Overwatch.Objects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Net;
 using System.IO;
-using Miki.Common;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using Miki.Discord.Common;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch
 {
-    [Module("Gaming")]
-    internal class GamingModule
-    {
+	[Module("Gaming")]
+	internal class GamingModule
+	{
 		[Command(Name = "osu")]
 		public async Task SendOsuSignatureAsync(EventContext e)
 		{
@@ -82,46 +79,46 @@ namespace Miki.Modules.Overwatch
 		}
 
 		public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
-        {
-            List<OverwatchRegion> regions = new List<OverwatchRegion>
-            {
-                u.America,
-                u.Europe,
-                u.Korea
-            };
+		{
+			List<OverwatchRegion> regions = new List<OverwatchRegion>
+			{
+				u.America,
+				u.Europe,
+				u.Korea
+			};
 
-            return regions.OrderByDescending(x =>
-            {
-                float? value;
-                if (compo)
-                {
-                    value = x?.heroes?.playtime?.competitive?.Sum(y => y.Value);
-                }
-                else
-                {
-                    value = x?.heroes?.playtime?.quickplay?.Sum(y => y.Value);
-                }
-                return value ?? 0;
-            }).FirstOrDefault();
-        }
+			return regions.OrderByDescending(x =>
+			{
+				float? value;
+				if (compo)
+				{
+					value = x?.heroes?.playtime?.competitive?.Sum(y => y.Value);
+				}
+				else
+				{
+					value = x?.heroes?.playtime?.quickplay?.Sum(y => y.Value);
+				}
+				return value ?? 0;
+			}).FirstOrDefault();
+		}
 
-        public async Task<OverwatchUserResponse> InternalGetUser(EventContext e, string[] username)
-        {
-            if (username.Length <= 1)
-            {
-                return null;
-            }
+		public async Task<OverwatchUserResponse> InternalGetUser(EventContext e, string[] username)
+		{
+			if (username.Length <= 1)
+			{
+				return null;
+			}
 
-            if (int.TryParse(username[1], out int descriminator))
-            {
-                string name = username[0];
-                OverwatchUserResponse user = await OverwatchAPI.GetUser(name, descriminator);
-                return user;
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
+			if (int.TryParse(username[1], out int descriminator))
+			{
+				string name = username[0];
+				OverwatchUserResponse user = await OverwatchAPI.GetUser(name, descriminator);
+				return user;
+			}
+			else
+			{
+				return null;
+			}
+		}
+	}
 }

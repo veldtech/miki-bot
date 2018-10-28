@@ -1,10 +1,9 @@
-﻿using Miki.Framework;
+﻿using CountAPI;
+using Miki.Configuration;
+using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
-using CountAPI;
-using Miki.Configuration;
-using Miki.Discord.Common;
 
 namespace Miki.Modules
 {
@@ -16,16 +15,16 @@ namespace Miki.Modules
 
 		private readonly CountLib _countLib;
 
-		public ServerCountModule(Module m, Framework.Bot b)
+		public ServerCountModule(Module m, Framework.DiscordBot b)
 		{
 			m.JoinedGuild = OnUpdateGuilds;
 			m.LeftGuild = OnUpdateGuilds;
-		//	countLib = new CountLib(ConnectionString);
+			//	countLib = new CountLib(ConnectionString);
 		}
 
 		private async Task OnUpdateGuilds(IDiscordGuild g)
 		{
-			Framework.Bot bot = Framework.Bot.Instance;
+			Framework.DiscordBot bot = Framework.DiscordBot.Instance;
 
 			//DiscordSocketClient client = bot.Client.GetShardFor(g);
 			//await countLib.PostStats(client.ShardId, client.Guilds.Count);

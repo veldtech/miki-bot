@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Miki.Framework;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Miki.Modules.Gambling.Managers
 {
-	class RPSManager
+	internal class RPSManager
 	{
 		// safe pattern for singletons
 		private static RPSManager _instance = new RPSManager();
+
 		public static RPSManager Instance => _instance;
 
 		public enum VictoryStatus
@@ -22,7 +18,7 @@ namespace Miki.Modules.Gambling.Managers
 			LOSE = 2,
 		}
 
-		List<RPSWeapon> weapons = new List<RPSWeapon>();
+		private List<RPSWeapon> weapons = new List<RPSWeapon>();
 
 		public RPSManager()
 		{
@@ -77,6 +73,7 @@ namespace Miki.Modules.Gambling.Managers
 			int cpuIndex = weapons.IndexOf(cpu);
 			return CalculateVictory(playerIndex, cpuIndex);
 		}
+
 		public VictoryStatus CalculateVictory(int player, int cpu)
 		{
 			return (VictoryStatus)((cpu - player + 3) % weapons.Count);

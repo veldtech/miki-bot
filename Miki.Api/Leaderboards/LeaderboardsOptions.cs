@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.API.Leaderboards
+﻿namespace Miki.API.Leaderboards
 {
 	// TODO: restructure
 	public struct LeaderboardsOptions

@@ -1,39 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace Miki.Core.Migrations
 {
-    public partial class GuildCurrency : Migration
-    {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<int>(
-                name: "CurrentBalance",
-                schema: "dbo",
-                table: "IsDonator",
-                nullable: false,
-                defaultValue: 0);
+	public partial class GuildCurrency : Migration
+	{
+		protected override void Up(MigrationBuilder migrationBuilder)
+		{
+			migrationBuilder.AddColumn<int>(
+				name: "CurrentBalance",
+				schema: "dbo",
+				table: "IsDonator",
+				nullable: false,
+				defaultValue: 0);
 
-            migrationBuilder.AddColumn<long>(
-                name: "Currency",
-                schema: "dbo",
-                table: "GuildUsers",
-                nullable: false,
-                defaultValue: 0L);
-        }
+			migrationBuilder.AddColumn<long>(
+				name: "Currency",
+				schema: "dbo",
+				table: "GuildUsers",
+				nullable: false,
+				defaultValue: 0L);
+		}
 
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "CurrentBalance",
-                schema: "dbo",
-                table: "IsDonator");
+		protected override void Down(MigrationBuilder migrationBuilder)
+		{
+			migrationBuilder.DropColumn(
+				name: "CurrentBalance",
+				schema: "dbo",
+				table: "IsDonator");
 
-            migrationBuilder.DropColumn(
-                name: "Currency",
-                schema: "dbo",
-                table: "GuildUsers");
-        }
-    }
+			migrationBuilder.DropColumn(
+				name: "Currency",
+				schema: "dbo",
+				table: "GuildUsers");
+		}
+	}
 }

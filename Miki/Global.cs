@@ -1,27 +1,25 @@
-﻿using SharpRaven;
-using System;
-using StatsdClient;
-using Newtonsoft.Json;
-using Miki.Framework.FileHandling;
-using Miki.API;
-using StackExchange.Redis;
-using Amazon.S3;
-using Miki.Models.Objects.Backgrounds;
-using Miki.Framework;
-using Miki.Discord.Caching;
+﻿using Amazon.S3;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
-using Miki.Serialization.Protobuf;
 using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Framework;
+using Miki.Framework.FileHandling;
+using Miki.Models.Objects.Backgrounds;
+using Miki.Serialization.Protobuf;
+using Newtonsoft.Json;
+using SharpRaven;
+using StackExchange.Redis;
+using System;
 
 namespace Miki
 {
-    /// <summary>
-    /// Global data for constant folder structures and versioning.
-    /// </summary>
-    public class Global
-    {
-        public static RavenClient ravenClient;
+	/// <summary>
+	/// Global data for constant folder structures and versioning.
+	/// </summary>
+	public class Global
+	{
+		public static RavenClient ravenClient;
 
 		internal static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
 		{
@@ -30,11 +28,15 @@ namespace Miki
 
 		public static IExtendedCacheClient RedisClient => redisClientPool.Value as IExtendedCacheClient;
 
+		public static DiscordApiClient ApiClient { get; set; }
+
 		public static IDiscordUser CurrentUser { get; set; }
 
 		public static BackgroundStore Backgrounds { get; set; }
 
-		public static Framework.Bot Client { get; set; }
+		public static DiscordBot Client { get; set; }
+
+		public static IGateway Gateway { get; set; }
 
 		public static Config Config
 		{
@@ -59,6 +61,7 @@ namespace Miki
 				return config;
 			}
 		}
+
 		public static AmazonS3Client CdnClient
 		{
 			get

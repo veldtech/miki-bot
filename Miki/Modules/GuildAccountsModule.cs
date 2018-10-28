@@ -1,178 +1,174 @@
-﻿using Miki.Framework;
-using Miki.Framework.Events.Attributes;
-using Miki.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
-using Miki.Languages;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Framework;
+using Miki.Framework.Events;
+using Miki.Framework.Events.Attributes;
+using Miki.Framework.Language;
+using Miki.Helpers;
+using Miki.Localization;
 using Miki.Models;
 using Miki.Models.Objects.Guild;
-using Miki.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using Miki.Framework.Language;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Localization;
-using Miki.Helpers;
 
 namespace Miki.Modules
 {
-    [Module("Guild_Accounts")]
-    internal class GuildAccountsModule
-    {
-        [Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
-        public async Task GuildWeekly(EventContext e)
-        {
-            using (MikiContext database = new MikiContext())
-            {
+	[Module("Guild_Accounts")]
+	internal class GuildAccountsModule
+	{
+		[Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
+		public async Task GuildWeekly(EventContext e)
+		{
+			using (MikiContext database = new MikiContext())
+			{
 				LocalExperience thisUser = await database.LocalExperience.FindAsync(e.Guild.Id.ToDbLong(), e.Author.Id.ToDbLong());
-                GuildUser thisGuild = await database.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
-                Timer timer = await database.Timers.FindAsync(e.Guild.Id.ToDbLong(), e.Author.Id.ToDbLong());
+				GuildUser thisGuild = await database.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+				Timer timer = await database.Timers.FindAsync(e.Guild.Id.ToDbLong(), e.Author.Id.ToDbLong());
 
-                if (thisUser == null)
-                {
-                    return;
-                }
+				if (thisUser == null)
+				{
+					return;
+				}
 
-                if (thisGuild == null)
-                {
-                    return;
-                }
+				if (thisGuild == null)
+				{
+					return;
+				}
 
-                if (thisUser.Experience >= thisGuild.MinimalExperienceToGetRewards)
-                {
-                    if (timer == null)
-                    {
-                        timer = (await database.Timers.AddAsync(new Timer()
-                        {
-                            GuildId = e.Guild.Id.ToDbLong(),
-                            UserId = e.Author.Id.ToDbLong(),
-                            Value = DateTime.Now.AddDays(-30)
-                        })).Entity;
-                        await database.SaveChangesAsync();
-                    }
+				if (thisUser.Experience >= thisGuild.MinimalExperienceToGetRewards)
+				{
+					if (timer == null)
+					{
+						timer = (await database.Timers.AddAsync(new Timer()
+						{
+							GuildId = e.Guild.Id.ToDbLong(),
+							UserId = e.Author.Id.ToDbLong(),
+							Value = DateTime.Now.AddDays(-30)
+						})).Entity;
+						await database.SaveChangesAsync();
+					}
 
-                    if (timer.Value.AddDays(7) <= DateTime.Now)
-                    {
-                        GuildUser rival = await thisGuild.GetRival(database);
+					if (timer.Value.AddDays(7) <= DateTime.Now)
+					{
+						GuildUser rival = await thisGuild.GetRival(database);
 
-                        if (rival == null)
-                        {
-                            Utils.Embed
-                                .SetTitle(e.Locale.GetString("miki_terms_weekly"))
-                                .SetDescription(e.Locale.GetString("guildweekly_error_no_rival"))
+						if (rival == null)
+						{
+							Utils.Embed
+								.SetTitle(e.Locale.GetString("miki_terms_weekly"))
+								.SetDescription(e.Locale.GetString("guildweekly_error_no_rival"))
 								.ToEmbed().QueueToChannel(e.Channel);
-                            return;
-                        }
+							return;
+						}
 
-                        if (rival.Experience > thisGuild.Experience)
-                        {
-                            Utils.Embed
-                                .SetTitle(e.Locale.GetString("miki_terms_weekly"))
-                                .SetDescription(e.Locale.GetString("guildweekly_error_low_level"))
+						if (rival.Experience > thisGuild.Experience)
+						{
+							Utils.Embed
+								.SetTitle(e.Locale.GetString("miki_terms_weekly"))
+								.SetDescription(e.Locale.GetString("guildweekly_error_low_level"))
 								.ToEmbed().QueueToChannel(e.Channel);
-                            return;
-                        }
+							return;
+						}
 
-                        int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
+						int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
-                        User user = await database.Users.FindAsync(e.Author.Id.ToDbLong());
+						User user = await database.Users.FindAsync(e.Author.Id.ToDbLong());
 
-                        if (user == null)
-                        {
-                            // TODO: Add response
-                            return;
-                        }
+						if (user == null)
+						{
+							// TODO: Add response
+							return;
+						}
 
-                        await user.AddCurrencyAsync(mekosGained, e.Channel);
+						await user.AddCurrencyAsync(mekosGained, e.Channel);
 
-                        Utils.Embed
-                            .SetTitle(e.Locale.GetString("miki_terms_weekly"))
-                            .AddInlineField("Mekos", mekosGained.ToString())
+						Utils.Embed
+							.SetTitle(e.Locale.GetString("miki_terms_weekly"))
+							.AddInlineField("Mekos", mekosGained.ToString())
 							.ToEmbed().QueueToChannel(e.Channel);
 
-                        timer.Value = DateTime.Now;
-                        await database.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        Utils.Embed
-                            .SetTitle(e.Locale.GetString("miki_terms_weekly"))
-                            .SetDescription(e.Locale.GetString("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(e.Locale)))
+						timer.Value = DateTime.Now;
+						await database.SaveChangesAsync();
+					}
+					else
+					{
+						Utils.Embed
+							.SetTitle(e.Locale.GetString("miki_terms_weekly"))
+							.SetDescription(e.Locale.GetString("guildweekly_error_timer_running", (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(e.Locale)))
 							.ToEmbed().QueueToChannel(e.Channel);
-                    }
-                }
-                else
-                {
-                    Utils.Embed
-                        .SetTitle(e.Locale.GetString("miki_terms_weekly"))
-                        .SetDescription(e.Locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
+					}
+				}
+				else
+				{
+					Utils.Embed
+						.SetTitle(e.Locale.GetString("miki_terms_weekly"))
+						.SetDescription(e.Locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
 						.ToEmbed().QueueToChannel(e.Channel);
-                }
-            }
-        }
+				}
+			}
+		}
 
-        [Command(Name = "guildnewrival", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task GuildNewRival(EventContext e)
-        {
-            using (MikiContext context = new MikiContext())
-            {
-                GuildUser thisGuild = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+		[Command(Name = "guildnewrival", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task GuildNewRival(EventContext e)
+		{
+			using (MikiContext context = new MikiContext())
+			{
+				GuildUser thisGuild = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-                if (thisGuild == null)
-                {
-                    e.ErrorEmbed(e.Locale.GetString("guild_error_null"))
+				if (thisGuild == null)
+				{
+					e.ErrorEmbed(e.Locale.GetString("guild_error_null"))
 						.ToEmbed().QueueToChannel(e.Channel);
-                    return;
-                }
+					return;
+				}
 
-				if(thisGuild.UserCount == 0)
+				if (thisGuild.UserCount == 0)
 				{
 					thisGuild.UserCount = e.Guild.MemberCount;
 				}
 
-                if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
-                {
-                    Utils.Embed
-                       .SetTitle(e.Locale.GetString("miki_terms_rival"))
-                       .SetDescription(e.Locale.GetString("guildnewrival_error_timer_running"))
+				if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
+				{
+					Utils.Embed
+					   .SetTitle(e.Locale.GetString("miki_terms_rival"))
+					   .SetDescription(e.Locale.GetString("guildnewrival_error_timer_running"))
 					   .ToEmbed().QueueToChannel(e.Channel);
-                    return;
-                }
+					return;
+				}
 
-                List<GuildUser> rivalGuilds = await context.GuildUsers
-                    .Where((g) => Math.Abs(g.UserCount - e.Guild.MemberCount) < (g.UserCount * 0.25) && g.RivalId == 0 && g.Id != thisGuild.Id)
-                    .ToListAsync();
+				List<GuildUser> rivalGuilds = await context.GuildUsers
+					.Where((g) => Math.Abs(g.UserCount - e.Guild.MemberCount) < (g.UserCount * 0.25) && g.RivalId == 0 && g.Id != thisGuild.Id)
+					.ToListAsync();
 
-                if (rivalGuilds.Count == 0)
-                {
-                    e.ErrorEmbed(e.Locale.GetString("guildnewrival_error_matchmaking_failed"))
+				if (rivalGuilds.Count == 0)
+				{
+					e.ErrorEmbed(e.Locale.GetString("guildnewrival_error_matchmaking_failed"))
 						.ToEmbed().QueueToChannel(e.Channel);
-                    return;
-                }
+					return;
+				}
 
-                int random = MikiRandom.Next(0, rivalGuilds.Count);
+				int random = MikiRandom.Next(0, rivalGuilds.Count);
 
-                GuildUser rivalGuild = await context.GuildUsers.FindAsync(rivalGuilds[random].Id);
+				GuildUser rivalGuild = await context.GuildUsers.FindAsync(rivalGuilds[random].Id);
 
-                thisGuild.RivalId = rivalGuild.Id;
-                rivalGuild.RivalId = thisGuild.Id;
+				thisGuild.RivalId = rivalGuild.Id;
+				rivalGuild.RivalId = thisGuild.Id;
 
-                thisGuild.LastRivalRenewed = DateTime.Now;
+				thisGuild.LastRivalRenewed = DateTime.Now;
 
-                await context.SaveChangesAsync();
+				await context.SaveChangesAsync();
 
-                Utils.Embed
-                    .SetTitle(e.Locale.GetString("miki_terms_rival"))
-                    .SetDescription(e.Locale.GetString("guildnewrival_success", rivalGuild.Name))
+				Utils.Embed
+					.SetTitle(e.Locale.GetString("miki_terms_rival"))
+					.SetDescription(e.Locale.GetString("guildnewrival_success", rivalGuild.Name))
 					.ToEmbed().QueueToChannel(e.Channel);
-            }
-        }
+			}
+		}
 
 		[Command(Name = "guildbank")]
 		public async Task GuildBankAsync(EventContext e)
@@ -187,16 +183,20 @@ namespace Miki.Modules
 					case "balance":
 					{
 						await GuildBankBalance(e, context, user);
-					} break;
+					}
+					break;
+
 					case "deposit":
 					{
 						await GuildBankDepositAsync(e, context, user);
 					}
 					break;
+
 					default:
 					{
 						await GuildBankInfoAsync(e, user);
-					} break;
+					}
+					break;
 				}
 			}
 		}
@@ -223,7 +223,7 @@ namespace Miki.Modules
 
 			e.CreateEmbedBuilder()
 				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
-				.WithColor(new Color(255,255,255))
+				.WithColor(new Color(255, 255, 255))
 				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
 				.AddField(
 					new LanguageResource("guildbank_balance_title"),
@@ -257,56 +257,56 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "guildprofile")]
-        public async Task GuildProfile(EventContext e)
-        {
-            using (MikiContext context = new MikiContext())
-            {
-                GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+		public async Task GuildProfile(EventContext e)
+		{
+			using (MikiContext context = new MikiContext())
+			{
+				GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-                int rank = g.GetGlobalRank(context);
-                int level = g.CalculateLevel(g.Experience);
+				int rank = g.GetGlobalRank(context);
+				int level = g.CalculateLevel(g.Experience);
 
 				EmojiBarSet onBarSet = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
 				EmojiBarSet offBarSet = new EmojiBarSet("<:mbarleftoff:391971424824459265>", "<:mbarmidoff:391971424824197123>", "<:mbarrightoff:391971424862208000>");
 
 				EmojiBar expBar = new EmojiBar(g.CalculateMaxExperience(g.Experience), onBarSet, offBarSet, 6);
 
-                EmbedBuilder embed = Utils.Embed
-                    .SetAuthor(g.Name, e.Guild.IconUrl, "https://miki.veld.one")
-                    .SetColor(0.1f, 0.6f, 1)
-                    .SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png")
-                    .AddInlineField(e.Locale.GetString("miki_terms_level"), level.ToString());
+				EmbedBuilder embed = Utils.Embed
+					.SetAuthor(g.Name, e.Guild.IconUrl, "https://miki.veld.one")
+					.SetColor(0.1f, 0.6f, 1)
+					.SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png")
+					.AddInlineField(e.Locale.GetString("miki_terms_level"), level.ToString());
 
-                string expBarString = await expBar.Print(g.Experience, e.Guild, e.Channel as IDiscordGuildChannel);
+				string expBarString = await expBar.Print(g.Experience, e.Guild, e.Channel as IDiscordGuildChannel);
 
-                if (string.IsNullOrWhiteSpace(expBarString))
-                { 
-                    embed.AddInlineField(e.Locale.GetString("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
-                }
-                else
-                {
-                    embed.AddInlineField(e.Locale.GetString("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
-                }
+				if (string.IsNullOrWhiteSpace(expBarString))
+				{
+					embed.AddInlineField(e.Locale.GetString("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
+				}
+				else
+				{
+					embed.AddInlineField(e.Locale.GetString("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
+				}
 
-                embed.AddInlineField(e.Locale.GetString("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
-                    .AddInlineField(e.Locale.GetString("miki_module_general_guildinfo_users"), g.UserCount.ToString());
+				embed.AddInlineField(e.Locale.GetString("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
+					.AddInlineField(e.Locale.GetString("miki_module_general_guildinfo_users"), g.UserCount.ToString());
 
-                if (g.RivalId != 0)
-                {
-                    GuildUser rival = await g.GetRival(context);
-                    embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
-                }
+				if (g.RivalId != 0)
+				{
+					GuildUser rival = await g.GetRival(context);
+					embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
+				}
 
-                embed.ToEmbed().QueueToChannel(e.Channel);
-            }
-        }
+				embed.ToEmbed().QueueToChannel(e.Channel);
+			}
+		}
 
-        [Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetGuildConfig(EventContext e)
-        {
-            using (MikiContext context = new MikiContext())
-            {
-                GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
+		[Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task SetGuildConfig(EventContext e)
+		{
+			using (MikiContext context = new MikiContext())
+			{
+				GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
 				ArgObject arg = e.Arguments.First();
 
@@ -356,8 +356,8 @@ namespace Miki.Modules
 					}
 					break;
 				}
-                await context.SaveChangesAsync();
-            }
-        }
-    }
+				await context.SaveChangesAsync();
+			}
+		}
+	}
 }
