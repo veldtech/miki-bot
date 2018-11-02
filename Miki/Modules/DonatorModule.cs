@@ -15,39 +15,6 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	public class KofiObject
-	{
-		[JsonProperty("message_id")]
-		public Guid MessageId;
-
-		[JsonProperty("timestamp")]
-		public DateTimeOffset Timestamp;
-
-		[JsonProperty("type")]
-		public string Type;
-
-		[JsonProperty("from_name")]
-		public string FromName;
-
-		[JsonProperty("message")]
-		public string Message;
-
-		[JsonProperty("amount")]
-		public double Amount;
-
-		[JsonProperty("url")]
-		public string Url;
-	}
-
-	public class PatreonPledgeObject
-	{
-		[JsonProperty("user_id")]
-		public ulong UserId;
-
-		[JsonProperty("keys_rewarded")]
-		public int KeysRewarded;
-	}
-
 	[Module(Name = "Donator")]
 	internal class DonatorModule
 	{
@@ -56,160 +23,6 @@ namespace Miki.Modules
 
 		public DonatorModule()
 		{
-			//WebhookManager.OnEvent += async (value) =>
-			//{
-			//	if (value.auth_code == "DBL_VOTE")
-			//	{
-			//		using (var context = new MikiContext())
-			//		{
-			//			DblVoteObject voteObject = value.data.ToObject<DblVoteObject>();
-
-			//			if (voteObject.Type == "upvote")
-			//			{
-			//				IUser user = Bot.Instance.Client.GetUser(voteObject.UserId);
-
-			//				if (user == null)
-			//					throw new RabbitException();
-
-			//				User u = await User.GetAsync(context, user);
-
-			//				if (!await Global.RedisClient.ExistsAsync($"dbl:vote:{voteObject.UserId}"))
-			//				{
-			//					u.DblVotes++;
-			//					await Global.RedisClient.AddAsync($"dbl:vote:{voteObject.UserId}", 1, new TimeSpan(1, 0, 0, 0));
-
-			//					int addedCurrency = 100 * ((await u.IsDonatorAsync(context)) ? 2 : 1);
-
-			//					u.Currency += addedCurrency;
-
-			//					await context.SaveChangesAsync();
-
-			//					DogStatsd.Increment("votes.dbl");
-
-			//					new EmbedBuilder()
-			//					{
-			//						Title = "Thanks for voting!",
-			//						Description = ($"We've given you {addedCurrency} mekos to your profile"),
-			//						Color = new Color(64, 255, 64)
-			//					}.Build().QueueToUser(user);
-			//				}
-
-			//				var achievements = AchievementManager.Instance.GetContainerById("voter");
-
-			//				switch (u.DblVotes)
-			//				{
-			//					case 1:
-			//					{
-			//						await achievements.Achievements[0].UnlockAsync(user);
-			//					}
-			//					break;
-			//					case 25:
-			//					{
-			//						await achievements.Achievements[1].UnlockAsync(user, 1);
-			//					}
-			//					break;
-			//					case 200:
-			//					{
-			//						await achievements.Achievements[2].UnlockAsync(user, 2);
-			//					}
-			//					break;
-			//				}
-			//			}
-			//		}
-			//	}
-
-			//	if (value.auth_code == "KOFI_DONATE")
-			//	{
-			//		KofiObject kofi = value.data.ToObject<KofiObject>();
-
-			//		if (ulong.TryParse(kofi.Message.Split(' ').Last(), out ulong uid))
-			//		{
-			//			IUser user = Bot.Instance.Client.GetUser(uid);
-
-			//			List<string> allKeys = new List<string>();
-
-			//			for (int i = 0; i < kofi.Amount / 3; i++)
-			//			{
-			//				allKeys.Add(DonatorKey.GenerateNew().Key.ToString());
-			//			}
-
-			//			new EmbedBuilder()
-			//			{
-			//				Title = "You donated through ko-fi!",
-			//				Description = "I work hard for miki's quality, thank you for helping me keep the bot running!"
-			//			}.AddField("- Veld#0001", "Here are your key(s)!\n\n`" + string.Join("\n", allKeys) + "`")
-			//			.AddField("How to redeem this key?", $"use this command `>redeemkey`")
-			//			.Build().QueueToUser(user);
-			//		}
-			//	}
-
-			//	if (value.auth_code == "PATREON_PLEDGES")
-			//	{
-			//		List<PatreonPledgeObject> pledgeObjects = value.data.ToObject<List<PatreonPledgeObject>>();
-
-			//		foreach (PatreonPledgeObject pledge in pledgeObjects)
-			//		{
-			//			IUser user = Bot.Instance.Client.GetUser(pledge.UserId);
-
-			//			EmbedBuilder embed = new EmbedBuilder()
-			//			{
-			//				Title = "You donation came through patreon!",
-			//				Description = "I work hard for miki's quality, thank you for helping me keep the bot running! - Veld#0001"
-			//			};
-
-			//			int max_per_embed = 20;
-
-			//			for (int i = 0; i < Math.Ceiling((double)pledge.KeysRewarded / max_per_embed); i++)
-			//			{
-			//				List<string> allKeys = new List<string>();
-
-			//				for (int j = i * max_per_embed; j < Math.Min(i * max_per_embed + max_per_embed, pledge.KeysRewarded); j++)
-			//				{
-			//					allKeys.Add(DonatorKey.GenerateNew().Key.ToString());
-			//				}
-
-			//				embed.AddInlineField("Here are your key(s)!", $"`{string.Join("\n", allKeys)}`");
-			//			}
-
-			//			embed.AddField("How to redeem this key?", $"use this command `>redeemkey`", false)
-			//				.Build().QueueToUser(user);
-			//		}
-			//	}
-
-			//	if (value.auth_code == "PATREON_DELETE")
-			//	{
-			//		PatreonPledge p = value.data.ToObject<PatreonPledge>();
-			//		if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
-			//		{
-			//			new EmbedBuilder()
-			//			{
-			//				Title = "Sad to see you leave!",
-			//				Description = "However, I won't hold it against you, thank you for your timely support and I hope you'll happily continue using Miki"
-			//			}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
-			//		}
-			//		else
-			//		{
-			//			throw new RabbitException();
-			//		}
-			//	}
-
-			//	if (value.auth_code == "PATREON_CREATE")
-			//	{
-			//		PatreonPledge p = value.data.ToObject<PatreonPledge>();
-			//		if (ulong.TryParse(p.Included[0].attributes.ToObject<UserAttribute>().DiscordUserId, out ulong s))
-			//		{
-			//			new EmbedBuilder()
-			//			{
-			//				Title = "Welcome to the family",
-			//				Description = ("In maximal 24 hours you will receive another DM with key(s) depending on your patron amount. (5$/key). Thank you for your support!")
-			//			}.Build().QueueToUser(Bot.Instance.Client.GetUser(s));
-			//		}
-			//		else
-			//		{
-			//			throw new RabbitException();
-			//		}
-			//	}
-			//};
 		}
 
 		[Command(Name = "changetitle")]
@@ -289,7 +102,8 @@ namespace Miki.Modules
 				}
 				else
 				{
-					e.ErrorEmbed("Your donation key is invalid!");
+					e.ErrorEmbed("Your donation key is invalid!")
+						.ToEmbed().QueueToChannel(e.Channel);
 				}
 			}
 		}
