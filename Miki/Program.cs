@@ -6,7 +6,6 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
-using Miki.Discord.Gateway.Centralized;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
@@ -18,7 +17,6 @@ using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using SharpRaven.Data;
 using StackExchange.Redis;
@@ -104,13 +102,13 @@ namespace Miki
 
 			if (Global.Config.SelfHosted)
 			{
-				var gatewayConfig = GatewayConfiguration.Default();
-				gatewayConfig.ShardCount = 1;
-				gatewayConfig.ShardId = 0;
-				gatewayConfig.Token = Global.Config.Token;
-				gatewayConfig.ApiClient = Global.ApiClient;
-				gatewayConfig.WebSocketClient = new BasicWebSocketClient();
-				Global.Gateway = new CentralizedGatewayShard(gatewayConfig);
+				//var gatewayConfig = GatewayConfiguration.Default();
+				//gatewayConfig.ShardCount = 1;
+				//gatewayConfig.ShardId = 0;
+				//gatewayConfig.Token = Global.Config.Token;
+				//gatewayConfig.ApiClient = Global.ApiClient;
+				//gatewayConfig.WebSocketClient = new BasicWebSocketClient();
+				//Global.Gateway = new CentralizedGatewayShard(gatewayConfig);
 			}
 			else
 			{

@@ -223,20 +223,20 @@ namespace Miki.Core.Modules.Anime
 			}
 			else
 			{
-				string filter = "search: $p0, format_not_in: $p1";
-				List<GraphQLParameter> parameters = new List<GraphQLParameter>
-				{
-					new GraphQLParameter(arg.Argument),
-					new GraphQLParameter(format, "[MediaFormat]")
-				};
+				//string filter = "search: $p0, format_not_in: $p1";
+				//List<GraphQLParameter> parameters = new List<GraphQLParameter>
+				//{
+				//	new GraphQLParameter(arg.Argument),
+				//	new GraphQLParameter(format, "[MediaFormat]")
+				//};
 
-				if (!e.Channel.IsNsfw)
-				{
-					filter += ", isAdult: $p2";
-					parameters.Add(new GraphQLParameter(false, "Boolean"));
-				}
+				//if (!e.Channel.IsNsfw)
+				//{
+				//	filter += ", isAdult: $p2";
+				//	parameters.Add(new GraphQLParameter(false, "Boolean"));
+				//}
 
-				media = await anilistClient.GetMediaAsync(filter, parameters.ToArray());
+				//media = await anilistClient.GetMediaAsync(filter, parameters.ToArray());
 			}
 
 			if (media != null)
