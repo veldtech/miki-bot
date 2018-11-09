@@ -139,7 +139,7 @@ namespace Miki.Modules
 					{
 						ChannelId = channelid.ToDbLong(),
 						Message = message,
-						EventType = (int)v
+						EventType = (short)v
 					});
 				}
 				else
@@ -162,7 +162,7 @@ namespace Miki.Modules
 			var ownerName = owner.Username;
 
 			List<EventMessageObject> output = new List<EventMessageObject>();
-			int t = (int)type;
+			short t = (short)type;
 
 			using (var context = new MikiContext())
 			{
