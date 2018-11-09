@@ -139,7 +139,7 @@ namespace Miki.Modules
 					{
 						ChannelId = channelid.ToDbLong(),
 						Message = message,
-						EventType = v
+						EventType = (int)v
 					});
 				}
 				else
@@ -162,11 +162,12 @@ namespace Miki.Modules
 			var ownerName = owner.Username;
 
 			List<EventMessageObject> output = new List<EventMessageObject>();
+			int t = (int)type;
 
 			using (var context = new MikiContext())
 			{
 				var messageObjects = await context.EventMessages
-					.Where(x => channelIds.Contains(x.ChannelId) && type == x.EventType)
+					.Where(x => channelIds.Contains(x.ChannelId) && t == x.EventType)
 					.ToListAsync();
 
 				var allUsers = await guild.GetMembersAsync();
