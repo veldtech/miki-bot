@@ -250,6 +250,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is not a valid language. use &apos;{1}listlocale&apos; to check all languages available..
+        /// </summary>
+        internal static string error_language_invalid {
+            get {
+                return ResourceManager.GetString("error_language_invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have no reminders active!.
         /// </summary>
         internal static string error_no_reminders {
@@ -448,6 +457,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Guild settings.
+        /// </summary>
+        internal static string guild_settings {
+            get {
+                return ResourceManager.GetString("guild_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} mekos are currently stored in the guild bank..
         /// </summary>
         internal static string guildbank_balance {
@@ -462,6 +480,15 @@ namespace Miki.Languages {
         internal static string guildbank_balance_title {
             get {
                 return ResourceManager.GetString("guildbank_balance_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total contributed.
+        /// </summary>
+        internal static string guildbank_contributed {
+            get {
+                return ResourceManager.GetString("guildbank_contributed", resourceCulture);
             }
         }
         
@@ -625,6 +652,33 @@ namespace Miki.Languages {
         internal static string infopasta_rating {
             get {
                 return ResourceManager.GetString("infopasta_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Languages available.
+        /// </summary>
+        internal static string locales_available {
+            get {
+                return ResourceManager.GetString("locales_available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider contributing to our {0}!.
+        /// </summary>
+        internal static string locales_contribute {
+            get {
+                return ResourceManager.GetString("locales_contribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to translation page.
+        /// </summary>
+        internal static string locales_translations {
+            get {
+                return ResourceManager.GetString("locales_translations", resourceCulture);
             }
         }
         
@@ -2048,7 +2102,7 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to &gt;guildconfig expneeded &lt;amount&gt;
-        ///&gt;guildconfig visible &lt;yes:no&gt;.
+        ///&gt;guildconfig visible &lt;yes|no&gt;.
         /// </summary>
         internal static string miki_command_usage_guildconfig {
             get {
@@ -4595,7 +4649,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⚙️ Changed prefix!.
+        ///   Looks up a localized string similar to Changed prefix!.
         /// </summary>
         internal static string miki_module_general_prefix_success_header {
             get {
@@ -5329,6 +5383,15 @@ namespace Miki.Languages {
         internal static string setrolelevel_error_no_permissions {
             get {
                 return ResourceManager.GetString("setrolelevel_error_no_permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We&apos;ve updated your avatar!.
+        /// </summary>
+        internal static string setting_avatar_updated {
+            get {
+                return ResourceManager.GetString("setting_avatar_updated", resourceCulture);
             }
         }
         

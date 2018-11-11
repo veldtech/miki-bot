@@ -727,7 +727,7 @@ Fuzzy</comment>
     <value>Example Command</value>
   </data>
   <data name="miki_module_general_prefix_success_header" xml:space="preserve">
-    <value>⚙️ Changed prefix!</value>
+    <value>Changed prefix!</value>
   </data>
   <data name="miki_module_general_prefix_success_message" xml:space="preserve">
     <value>Changed your prefix to **{0}**!</value>
@@ -1288,7 +1288,7 @@ All tags can be found here: &lt;https://safebooru.org/index.php?page=tags&amp;s=
   </data>
   <data name="miki_command_usage_guildconfig" xml:space="preserve">
     <value>&gt;guildconfig expneeded &lt;amount&gt;
-&gt;guildconfig visible &lt;yes:no&gt;</value>
+&gt;guildconfig visible &lt;yes|no&gt;</value>
   </data>
   <data name="miki_command_usage_guildnewrival" xml:space="preserve">
     <value>&gt;guildnewrival</value>
@@ -2069,5 +2069,26 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="prefix_info" xml:space="preserve">
     <value>Your current prefix is {0}.</value>
+  </data>
+  <data name="error_language_invalid" xml:space="preserve">
+    <value>{0} is not a valid language. use '{1}listlocale' to check all languages available.</value>
+  </data>
+  <data name="guild_settings" xml:space="preserve">
+    <value>Guild settings</value>
+  </data>
+  <data name="locales_available" xml:space="preserve">
+    <value>Languages available</value>
+  </data>
+  <data name="locales_contribute" xml:space="preserve">
+    <value>Consider contributing to our {0}!</value>
+  </data>
+  <data name="locales_translations" xml:space="preserve">
+    <value>translation page</value>
+  </data>
+  <data name="setting_avatar_updated" xml:space="preserve">
+    <value>We've updated your avatar!</value>
+  </data>
+  <data name="guildbank_contributed" xml:space="preserve">
+    <value>Total contributed</value>
   </data>
 </root>

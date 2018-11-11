@@ -2,6 +2,7 @@ using Miki.Bot.Models.Repositories;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
@@ -217,14 +218,12 @@ namespace Miki.Modules
 				{
 					if (accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
 					{
-						e.Channel.QueueMessageAsync($"{e.Author.Username} do not have enough Marriage slots, sorry :(");
-						return;
+						throw new InsufficientMarriageSlotsException(accepter);
 					}
 
 					if (asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
 					{
-						e.Channel.QueueMessageAsync($"{asker.Name} does not have enough Marriage slots, sorry :(");
-						return;
+						throw new InsufficientMarriageSlotsException(asker);
 					}
 
 					if (marriage.ReceiverId != e.Author.Id.ToDbLong())
