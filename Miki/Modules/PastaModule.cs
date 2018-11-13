@@ -69,7 +69,7 @@ namespace Miki.Modules
 
 					pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
-					Utils.Embed
+					new EmbedBuilder()
 						.SetTitle(e.Locale.GetString("mypasta_title", userName))
 						.SetDescription(resultString)
 						.SetFooter(e.Locale.GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
@@ -229,7 +229,7 @@ namespace Miki.Modules
 
 				User creator = await context.Users.FindAsync(pasta.CreatorId);
 
-				EmbedBuilder b = Utils.Embed;
+				EmbedBuilder b = new EmbedBuilder();
 
 				b.SetAuthor(pasta.Id.ToUpper(), "", "");
 				b.Color = new Color(47, 208, 192);
@@ -286,13 +286,12 @@ namespace Miki.Modules
 
 					pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
 
-					EmbedBuilder embed = Utils.Embed;
-					embed.Title = e.Locale.GetString("miki_module_pasta_search_header");
-					embed.Description = resultString;
-
-					embed.SetFooter(e.Locale.GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()));
-
-					embed.ToEmbed().QueueToChannel(e.Channel);
+					new EmbedBuilder
+					{
+						Title = e.Locale.GetString("miki_module_pasta_search_header"),
+						Description = resultString
+					}.SetFooter(e.Locale.GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()))
+						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 
@@ -392,7 +391,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				EmbedBuilder embed = Utils.Embed;
+				EmbedBuilder embed = new EmbedBuilder();
 				List<PastaVote> neededPastas = pastaVotes.Skip((int)totalPerPage * page).Take((int)totalPerPage).ToList();
 
 				string resultString = string.Join(" ", neededPastas.Select(x => $"`{x.Id}`"));

@@ -136,7 +136,7 @@ namespace Miki.Modules
 		{
 			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
 
-			return Utils.Embed
+			return new EmbedBuilder()
 				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
 				.AddInlineField("Tags", FormatTags(s.Tags))
 				.AddInlineField("Score", s.Score)

@@ -24,7 +24,8 @@ namespace Miki
 
 		private static DiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)
 		{
-			return Utils.Embed.SetTitle("Achievement Unlocked")
+			return new EmbedBuilder()
+				.SetTitle("Achievement Unlocked")
 				.SetDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{baseAchievement.Name}**! {baseAchievement.Icon}").ToEmbed();
 		}
 	}

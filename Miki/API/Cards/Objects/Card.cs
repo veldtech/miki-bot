@@ -13,7 +13,7 @@ namespace Miki.API.Cards.Objects
 		public CardValue value;
 
 		[ProtoMember(3)]
-		public bool isPublic = true;
+		public bool isPublic;
 
 		public Card()
 		{
