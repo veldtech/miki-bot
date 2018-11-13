@@ -81,7 +81,7 @@ namespace Miki.Modules.AccountsModule
 					.Where(x => x.Id == id)
 					.ToListAsync();
 
-				EmbedBuilder embed = Utils.Embed
+				EmbedBuilder embed = new EmbedBuilder()
 					.SetAuthor($"{u.Name} | " + "Achievements", discordUser.GetAvatarUrl(), "https://miki.ai/profiles/ID/achievements");
 
 				embed.SetColor(255, 255, 255);
@@ -218,7 +218,7 @@ namespace Miki.Modules.AccountsModule
 				{
 					LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
 
-					Utils.RenderLeaderboards(Utils.Embed, obj.items, obj.currentPage * 12)
+					Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
 						.SetFooter(
 							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
 							""
@@ -283,7 +283,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (account != null)
 				{
-					EmbedBuilder embed = Utils.Embed
+					EmbedBuilder embed = new EmbedBuilder()
 						.SetDescription(account.Title)
 						.SetAuthor(e.Locale.GetString("miki_global_profile_user_header", discordUser.Username), icon, "https://patreon.com/mikibot")
 						.SetThumbnail(discordUser.GetAvatarUrl());
@@ -761,7 +761,7 @@ namespace Miki.Modules.AccountsModule
 				await context.SaveChangesAsync();
 			}
 
-			EmbedBuilder embed = Utils.Embed;
+			EmbedBuilder embed = new EmbedBuilder();
 			embed.Title = "👌 OKAY";
 			embed.Description = e.Locale.GetString("sync_success", "name");
 			embed.ToEmbed().QueueToChannel(e.Channel);
@@ -915,7 +915,8 @@ namespace Miki.Modules.AccountsModule
 				await u.AddCurrencyAsync(amount);
 				u.LastDailyTime = DateTime.Now;
 
-				var embed = Utils.Embed.SetTitle("💰 Daily")
+				var embed = new EmbedBuilder()
+					.SetTitle("💰 Daily")
 					.SetDescription($"Received **{amount}** Mekos! You now have `{u.Currency}` Mekos")
 					.SetColor(253, 216, 136);
 

@@ -242,10 +242,10 @@ namespace Miki
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
-			//if (oldUser.AvatarId != newUser.AvatarId)
-			//{
-			//	await Utils.SyncAvatarAsync(newUser);
-			//}
+			if (oldUser.AvatarId != newUser.AvatarId)
+			{
+				await Utils.SyncAvatarAsync(newUser);
+			}
 		}
 
 		private async Task Bot_MessageReceived(IDiscordMessage arg)

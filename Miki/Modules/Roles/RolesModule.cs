@@ -133,7 +133,8 @@ namespace Miki.Modules.Roles
 
 				await author.AddRoleAsync(newRole.GetRoleAsync().Result);
 
-				Utils.Embed.SetTitle("I AM")
+				new EmbedBuilder()
+					.SetTitle("I AM")
 					.SetColor(128, 255, 128)
 					.SetDescription($"You're a(n) {role.Name} now!")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -205,7 +206,8 @@ namespace Miki.Modules.Roles
 
 				await author.RemoveRoleAsync(newRole.GetRoleAsync().Result);
 
-				Utils.Embed.SetTitle("I AM NOT")
+				new EmbedBuilder()
+					.SetTitle("I AM NOT")
 					.SetColor(255, 128, 128)
 					.SetDescription($"You're no longer a(n) {role.Name}!")
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -283,7 +285,7 @@ namespace Miki.Modules.Roles
 
 				await context.SaveChangesAsync();
 
-				Utils.Embed.SetTitle("📄 Available Roles")
+				new EmbedBuilder().SetTitle("📄 Available Roles")
 					.SetDescription(stringBuilder.ToString())
 					.SetColor(204, 214, 221)
 					.SetFooter("page " + (page + 1))
@@ -682,7 +684,8 @@ namespace Miki.Modules.Roles
 				}
 
 				await context.SaveChangesAsync();
-				Utils.Embed.SetTitle("⚙ Role Config")
+				new EmbedBuilder()
+					.SetTitle("⚙ Role Config")
 					.SetColor(102, 117, 127)
 					.SetDescription($"Updated {role.Name}!")
 					.ToEmbed().QueueToChannel(e.Channel);

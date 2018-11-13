@@ -208,15 +208,16 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "8ball")]
-		public async Task EightBallAsync(EventContext e)
+		public Task EightBallAsync(EventContext e)
 		{
 			string output = e.Locale.GetString("miki_module_fun_8ball_result",
 				e.Author.Username, e.Locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
 			e.Channel.QueueMessageAsync(output);
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "bird", Aliases = new string[] { "birb" })]
-		public async Task BirdAsync(EventContext e)
+		public Task BirdAsync(EventContext e)
 		{
 			string[] bird = {
 				"http://i.imgur.com/aN948tq.jpg",
@@ -243,31 +244,33 @@ namespace Miki.Modules
 				"http://i.imgur.com/BxwgwHh.jpg"
 			};
 
-			Utils.Embed
+			new EmbedBuilder()
 				.SetTitle("🐦 Birbs!")
 				.SetColor(0.8f, 0.4f, 0.4f)
 				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
 				.ToEmbed().QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "cat")]
-		public async Task CatAsync(EventContext e)
+		public Task CatAsync(EventContext e)
 		{
 			WebClient c = new WebClient();
 			byte[] b = c.DownloadData("http://aws.random.cat/meow");
 			string str = Encoding.Default.GetString(b);
 			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
 
-			Utils.Embed
+			new EmbedBuilder()
 				.SetTitle("🐱 Kitties!")
 				.SetColor(0.8f, 0.6f, 0.4f)
 				.SetImage(cat.File)
 				.ToEmbed()
 				.QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "compliment")]
-		public async Task ComplimentAsync(EventContext e)
+		public Task ComplimentAsync(EventContext e)
 		{
 			string[] I_LIKE =
 			{
@@ -304,12 +307,14 @@ namespace Miki.Modules
 			};
 
 			e.Channel.QueueMessageAsync(I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "cage")]
-		public async Task CageAsync(EventContext e)
+		public Task CageAsync(EventContext e)
 		{
 			e.Channel.QueueMessageAsync("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "dog")]
@@ -322,7 +327,7 @@ namespace Miki.Modules
 				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Body;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
-			Utils.Embed
+			new EmbedBuilder()
 				.SetTitle("🐶 Doggo!")
 				.SetColor(0.8f, 0.8f, 0.8f)
 				.SetImage("https://random.dog/" + url)
@@ -526,7 +531,7 @@ namespace Miki.Modules
 			}
 		}
 
-		private async Task PlaceReminderAsync(EventContext e)
+		private Task PlaceReminderAsync(EventContext e)
 		{
 			string args = e.Arguments.Join().Argument;
 
@@ -543,7 +548,7 @@ namespace Miki.Modules
 			{
 				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "time"))
 					.ToEmbed().QueueToChannel(e.Channel);
-				return;
+				return Task.CompletedTask;
 			}
 
 			if (!isIn)
@@ -562,14 +567,16 @@ namespace Miki.Modules
 			{
 				int id = reminders.AddTask(e.Author.Id, (context) =>
 				{
-					Utils.Embed.SetTitle("⏰ Reminder")
+					new EmbedBuilder()
+						.SetTitle("⏰ Reminder")
 						.SetDescription(new MessageBuilder()
 							.AppendText(context)
 							.BuildWithBlockCode())
 						.ToEmbed().QueueToChannel(e.Author.GetDMChannelAsync().Result);
 				}, reminderText, timeUntilReminder, repeated);
 
-				Utils.Embed.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
+				new EmbedBuilder()
+					.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
 					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
 					.SetColor(255, 220, 93)
 					.ToEmbed().QueueToChannel(e.Channel);
@@ -579,9 +586,10 @@ namespace Miki.Modules
 				e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
 					.ToEmbed().QueueToChannel(e.Channel);
 			}
+			return Task.CompletedTask;
 		}
 
-		private async Task CancelReminderAsync(EventContext e)
+		private Task CancelReminderAsync(EventContext e)
 		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
 			arg = arg?.Next();
@@ -590,7 +598,7 @@ namespace Miki.Modules
 			{
 				e.ErrorEmbed(e.Locale.GetString("error_argument_null", "id"))
 					.ToEmbed().QueueToChannel(e.Channel);
-				return;
+				return Task.CompletedTask;
 			}
 
 			if (Utils.IsAll(arg))
@@ -600,30 +608,31 @@ namespace Miki.Modules
 					instances.ForEach(i => i.Cancel());
 				}
 
-				Utils.Embed
+				new EmbedBuilder()
 					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 					.SetColor(0.86f, 0.18f, 0.26f)
 					.SetDescription(e.Locale.GetString("reminder_cancelled_all"))
 					.ToEmbed().QueueToChannel(e.Channel);
-				return;
+				return Task.CompletedTask;
 			}
 			else if (int.TryParse(arg.Argument, out int id))
 			{
 				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
 				{
-					Utils.Embed
+					new EmbedBuilder()
 						.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
 						.SetColor(0.86f, 0.18f, 0.26f)
 						.SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
 						.ToEmbed().QueueToChannel(e.Channel);
-					return;
+					return Task.CompletedTask;
 				}
 			}
 			e.ErrorEmbed(e.Locale.GetString("error_reminder_null"))
 				.ToEmbed().QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
 
-		private async Task ListRemindersAsync(EventContext e)
+		private Task ListRemindersAsync(EventContext e)
 		{
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if (instances?.Count > 0)
@@ -653,11 +662,12 @@ namespace Miki.Modules
 						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Locale, true)}`\n";
 				}
 				embed.ToEmbed().QueueToChannel(e.Channel);
-				return;
+				return Task.CompletedTask;
 			}
 
 			e.ErrorEmbed(e.Locale.GetString("error_no_reminders"))
 				.ToEmbed().QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
 
 		private async Task HelpReminderAsync(EventContext e)
@@ -768,7 +778,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "greentext", Aliases = new string[] { "green", "gt" })]
-		public async Task GreentextAsync(EventContext e)
+		public Task GreentextAsync(EventContext e)
 		{
 			string[] images = new string[]
 			{
@@ -822,6 +832,8 @@ namespace Miki.Modules
 			new EmbedBuilder()
 				.SetImage(images[MikiRandom.Next(0, images.Length)])
 				.ToEmbed().QueueToChannel(e.Channel);
+
+			return Task.CompletedTask;
 		}
 	}
 }

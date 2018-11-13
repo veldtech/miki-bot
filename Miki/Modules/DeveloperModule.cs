@@ -20,31 +20,33 @@ namespace Miki.Modules
 	internal class DeveloperModule
 	{
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdentifyEmojiAsync(EventContext e)
+		public Task IdentifyEmojiAsync(EventContext e)
 		{
-			//	Emote emote = Emote.Parse(e.Arguments.ToString());
-
-			Utils.Embed.SetTitle("Emoji Identified!")
-				//.AddInlineField("Name", emote.Name)
-				//.AddInlineField("Id", emote.Id.ToString())
-				//.AddInlineField("Created At", emote.CreatedAt.ToString())
-				//.AddInlineField("Code", "`" + emote.ToString() + "`")
-				//.SetThumbnail(emote.Url)
-				.ToEmbed().QueueToChannel(e.Channel);
-
-			await Task.Yield();
+			if (DiscordEmoji.TryParse(e.Arguments.ToString(), out var emote))
+			{
+				new EmbedBuilder()
+					.SetTitle("Emoji Identified!")
+					.AddInlineField("Name", emote.Name)
+					.AddInlineField("Id", emote.Id.ToString())
+					//.AddInlineField("Created At", emote.ToString())
+					.AddInlineField("Code", "`" + emote.ToString() + "`")
+					//.SetThumbnail(emote.Url)
+					.ToEmbed().QueueToChannel(e.Channel);
+			}
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SayAsync(EventContext e)
+		public Task SayAsync(EventContext e)
 		{
 			e.Channel.QueueMessageAsync(e.Arguments.ToString());
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SayEmbedAsync(EventContext e)
+		public Task SayEmbedAsync(EventContext e)
 		{
-			EmbedBuilder b = Utils.Embed;
+			EmbedBuilder b = new EmbedBuilder();
 			string text = e.Arguments.ToString();
 
 			//if (e.message.Attachments.Count == 0)
@@ -65,7 +67,7 @@ namespace Miki.Modules
 
 			b.ToEmbed().QueueToChannel(e.Channel);
 
-			await Task.Yield();
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -237,9 +239,10 @@ namespace Miki.Modules
 		[Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SpellCheckAsync(EventContext context)
 		{
-			EmbedBuilder embed = Utils.Embed;
-
-			embed.Title = "Spellcheck - top results";
+			EmbedBuilder embed = new EmbedBuilder
+			{
+				Title = "Spellcheck - top results"
+			};
 
 			API.StringComparison.StringComparer sc = new API.StringComparison.StringComparer(context.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(z => z.Name));
 			List<API.StringComparison.StringComparison> best = sc.CompareToAll(context.Arguments.ToString())
@@ -334,14 +337,6 @@ namespace Miki.Modules
 				await context.SaveChangesAsync();
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
-		}
-
-		[Command(Name = "finduserbyid", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task FindUserById(EventContext e)
-		{
-			IDiscordUser u = null;// Bot.Instance.Client.GetUser(ulong.Parse(e.Arguments.ToString()));
-
-			e.Channel.QueueMessageAsync(u.Username + "#" + u.Discriminator);
 		}
 
 		[Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]

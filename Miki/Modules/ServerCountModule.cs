@@ -22,12 +22,13 @@ namespace Miki.Modules
 			//	countLib = new CountLib(ConnectionString);
 		}
 
-		private async Task OnUpdateGuilds(IDiscordGuild g)
+		private Task OnUpdateGuilds(IDiscordGuild g)
 		{
 			Framework.DiscordBot bot = Framework.DiscordBot.Instance;
 
 			//DiscordSocketClient client = bot.Client.GetShardFor(g);
 			//await countLib.PostStats(client.ShardId, client.Guilds.Count);
+			return Task.CompletedTask;
 		}
 	}
 }

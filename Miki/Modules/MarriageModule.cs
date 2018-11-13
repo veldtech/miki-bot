@@ -84,7 +84,7 @@ namespace Miki.Modules
 				await context.SaveChangesAsync();
 			}
 
-			Utils.Embed
+			new EmbedBuilder()
 				.SetTitle("💍" + e.Locale.GetString("miki_module_accounts_marry_text", $"**{e.Author.Username}**", $"**{user.Username}**"))
 				.SetDescription(e.Locale.GetString("miki_module_accounts_marry_text2", user.Username, e.Author.Username))
 				.SetColor(0.4f, 0.4f, 0.8f)
@@ -159,11 +159,12 @@ namespace Miki.Modules
 					var m = marriages[selectionId.Value - 1];
 					var otherUser = await Global.Client.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
-					EmbedBuilder embed = Utils.Embed;
-					embed.Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}";
-					embed.Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherUser.Username);
-					embed.Color = new Color(0.6f, 0.4f, 0.1f);
-					embed.ToEmbed().QueueToChannel(e.Channel);
+					new EmbedBuilder
+					{
+						Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}",
+						Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherUser.Username),
+						Color = new Color(0.6f, 0.4f, 0.1f)
+					}.ToEmbed().QueueToChannel(e.Channel);
 
 					m.Remove(context);
 					await context.SaveChangesAsync();

@@ -212,7 +212,7 @@ namespace Miki.Modules
 				await defaultInstance.ChangeForGuildAsync(context, Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
 			}
 
-			EmbedBuilder embed = Utils.Embed;
+			EmbedBuilder embed = new EmbedBuilder();
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
 			embed.SetDescription(
 				e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()

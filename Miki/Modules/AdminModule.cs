@@ -63,9 +63,11 @@ namespace Miki.Modules
 
 				string reason = argObject.TakeUntilEnd().Argument;
 
-				EmbedBuilder embed = Utils.Embed;
-				embed.Title = "🛑 BAN";
-				embed.Description = e.Locale.GetString("ban_header", $"**{e.Guild.Name}**");
+				EmbedBuilder embed = new EmbedBuilder
+				{
+					Title = "🛑 BAN",
+					Description = e.Locale.GetString("ban_header", $"**{e.Guild.Name}**")
+				};
 
 				if (!string.IsNullOrWhiteSpace(reason))
 				{
@@ -258,13 +260,12 @@ namespace Miki.Modules
 				"POP!"
 			};
 
-			EmbedBuilder embed = Utils.Embed;
-			embed.Title = titles[MikiRandom.Next(titles.Length - 1)];
-			embed.Description = e.Locale.GetString("miki_module_admin_prune_success", deleteMessages.Count);
-
-			embed.Color = new Color(1, 1, 0.5f);
-
-			embed.ToEmbed().QueueToChannel(e.Channel);
+			new EmbedBuilder
+			{
+				Title = titles[MikiRandom.Next(titles.Length - 1)],
+				Description = e.Locale.GetString("miki_module_admin_prune_success", deleteMessages.Count),
+				Color = new Color(1, 1, 0.5f)
+			}.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
@@ -415,9 +416,11 @@ namespace Miki.Modules
 					return;
 				}
 
-				EmbedBuilder embed = Utils.Embed;
-				embed.Title = "⚠ SOFTBAN";
-				embed.Description = $"You've been banned from **{e.Guild.Name}**!";
+				EmbedBuilder embed = new EmbedBuilder
+				{
+					Title = "⚠ SOFTBAN",
+					Description = $"You've been banned from **{e.Guild.Name}**!"
+				};
 
 				if (!string.IsNullOrWhiteSpace(reason))
 				{

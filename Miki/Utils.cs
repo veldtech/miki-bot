@@ -136,8 +136,6 @@ namespace Miki
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, IResource resource)
 			=> ErrorEmbed(e, resource.Get(e.Locale));
 
-		public static EmbedBuilder Embed => new EmbedBuilder();
-
 		public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
 
 		public static DiscordEmbed SuccessEmbed(this EventContext e, string message)

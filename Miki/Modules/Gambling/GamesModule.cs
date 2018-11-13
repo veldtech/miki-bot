@@ -117,7 +117,7 @@ namespace Miki.Modules
 			{
 				User user;
 				RPSManager rps = RPSManager.Instance;
-				EmbedBuilder resultMessage = Utils.Embed
+				EmbedBuilder resultMessage = new EmbedBuilder()
 					.SetTitle("Rock, Paper, Scissors!");
 
 				if (rps.TryParse(e.Arguments.Get(1).Argument, out RPSWeapon playerWeapon))
@@ -508,7 +508,7 @@ namespace Miki.Modules
 
 			output += "\n" + e.Locale.GetString("miki_blackjack_new_balance", currencyNow);
 
-			DiscordEmbed embed = Utils.Embed
+			DiscordEmbed embed = new EmbedBuilder()
 				.SetAuthor(e.Locale.GetString("flip_header") + " | " + e.Author.Username, e.Author.GetAvatarUrl(),
 					"https://patreon.com/mikibot")
 				.SetDescription(output)
@@ -823,11 +823,12 @@ namespace Miki.Modules
 						}
 						else
 						{
-							EmbedBuilder embed = Utils.Embed;
-							embed.Description =
-								$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.";
-							embed.Color = new Color(0.4f, 0.6f, 1f);
-							embed.ToEmbed().QueueToChannel(e.Channel);
+							new EmbedBuilder
+							{
+								Description =
+								$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.",
+								Color = new Color(0.4f, 0.6f, 1f)
+							}.ToEmbed().QueueToChannel(e.Channel);
 							return null;
 						}
 					}

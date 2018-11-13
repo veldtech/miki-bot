@@ -46,7 +46,8 @@ namespace Miki.Core.Modules.Anime
 					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
 				}
 
-				Utils.Embed.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
+				new EmbedBuilder()
+					.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
 					.SetDescription(character.NativeName)
 					.AddInlineField("Description", description)
 					.SetColor(0, 170, 255)
@@ -107,7 +108,8 @@ namespace Miki.Core.Modules.Anime
 			for (int i = 0; i < result.Items.Count; i++)
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
 
-			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+			new EmbedBuilder()
+				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -156,7 +158,8 @@ namespace Miki.Core.Modules.Anime
 			for (int i = 0; i < result.Items.Count; i++)
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
-			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+			new EmbedBuilder()
+				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -202,7 +205,8 @@ namespace Miki.Core.Modules.Anime
 			for (int i = 0; i < result.Items.Count; i++)
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
-			Utils.Embed.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+			new EmbedBuilder()
+				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -248,7 +252,8 @@ namespace Miki.Core.Modules.Anime
 					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
 				}
 
-				EmbedBuilder embed = Utils.Embed.SetAuthor(media.DefaultTitle, "https://anilist.co/img/logo_al.png", media.Url)
+				EmbedBuilder embed = new EmbedBuilder()
+					.SetAuthor(media.DefaultTitle, "https://anilist.co/img/logo_al.png", media.Url)
 					.SetDescription(media.NativeTitle);
 
 				if (!manga)

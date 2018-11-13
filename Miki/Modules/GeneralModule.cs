@@ -81,7 +81,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "calc", Aliases = new string[] { "calculate" })]
-		public async Task CalculateAsync(EventContext e)
+		public Task CalculateAsync(EventContext e)
 		{
 			try
 			{
@@ -108,6 +108,7 @@ namespace Miki.Modules
 			{
 				e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
 			}
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "changelog")]
@@ -182,7 +183,9 @@ namespace Miki.Modules
 					for (int i = 0; i < amount; i++)
 					{
 						if (reactions.Length == 0)
+						{
 							break;
+						}
 
 						int index = MikiRandom.Next(reactions.Length);
 
@@ -274,7 +277,7 @@ namespace Miki.Modules
 
 				if (ev == null)
 				{
-					EmbedBuilder helpListEmbed = Utils.Embed;
+					EmbedBuilder helpListEmbed = new EmbedBuilder();
 					helpListEmbed.Title = e.Locale.GetString("miki_module_help_error_null_header");
 
 					helpListEmbed.Description = e.Locale.GetString("miki_module_help_error_null_message", await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id));
@@ -345,7 +348,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
-		public async Task DonateAsync(EventContext e)
+		public Task DonateAsync(EventContext e)
 		{
 			new EmbedBuilder()
 			{
@@ -356,6 +359,7 @@ namespace Miki.Modules
 			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
 			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
 			.ToEmbed().QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "info", Aliases = new string[] { "about" })]
