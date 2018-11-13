@@ -651,6 +651,11 @@ namespace Miki.Modules.Roles
 					newRole.RequiredLevel = arguments.GetInt("level-required");
 				}
 
+				if(arguments.HasKey("price"))
+				{
+					newRole.Price = arguments.GetInt("price");
+				}
+
 				if (arguments.HasKey("role-required"))
 				{
 					long id = 0;

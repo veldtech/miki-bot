@@ -259,6 +259,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}, you do not have enough marriage slots to marry another person!.
+        /// </summary>
+        internal static string error_marriageslots_insufficient {
+            get {
+                return ResourceManager.GetString("error_marriageslots_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have no reminders active!.
         /// </summary>
         internal static string error_no_reminders {

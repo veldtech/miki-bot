@@ -170,8 +170,6 @@ namespace Miki.Modules
 					.Where(x => channelIds.Contains(x.ChannelId) && t == x.EventType)
 					.ToListAsync();
 
-				var allUsers = await guild.GetMembersAsync();
-
 				foreach (var c in messageObjects)
 				{
 					if (c == null)
@@ -189,8 +187,6 @@ namespace Miki.Modules
 					modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
 					modifiedMessage = modifiedMessage.Replace("-uc", guild.MemberCount.ToString());
 					modifiedMessage = modifiedMessage.Replace("-u", user.Username);
-
-					modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);
 
 					modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
 					modifiedMessage = modifiedMessage.Replace("-s", guild.Name);

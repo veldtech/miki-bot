@@ -396,23 +396,24 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "pick")]
-		public async Task PickAsync(EventContext e)
+		public Task PickAsync(EventContext e)
 		{
 			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
 			{
 				e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_pick_no_arg"));
-
-				return;
+				return Task.CompletedTask;
 			}
 			string[] choices = e.Arguments.ToString().Split(',');
 
 			e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_pick", new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "pun")]
-		public async Task PunAsync(EventContext e)
+		public Task PunAsync(EventContext e)
 		{
 			e.Channel.QueueMessageAsync(e.Locale.GetString(puns[MikiRandom.Next(0, puns.Length)]));
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "roll")]

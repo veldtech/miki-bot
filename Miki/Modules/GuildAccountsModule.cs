@@ -231,7 +231,7 @@ namespace Miki.Modules
 					true
 				)
 				.AddField(
-					new LanguageResource("guildbank_balance_total_deposited", "{}"), new StringResource(account.TotalDeposited.ToString())
+					new LanguageResource("guildbank_contributed", "{0}"), new StringResource(account.TotalDeposited.ToString())
 				).Build().QueueToChannel(e.Channel);
 		}
 
@@ -288,8 +288,13 @@ namespace Miki.Modules
 					embed.AddInlineField(e.Locale.GetString("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
 				}
 
-				embed.AddInlineField(e.Locale.GetString("miki_terms_rank"), "#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString()))
-					.AddInlineField(e.Locale.GetString("miki_module_general_guildinfo_users"), g.UserCount.ToString());
+				embed.AddInlineField(
+					e.Locale.GetString("miki_terms_rank"), 
+					"#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString())
+				).AddInlineField(
+					e.Locale.GetString("miki_module_general_guildinfo_users"),
+					g.UserCount.ToString()
+				);
 
 				if (g.RivalId != 0)
 				{
@@ -308,55 +313,66 @@ namespace Miki.Modules
 			{
 				GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-				ArgObject arg = e.Arguments.First();
+				ArgObject arg = e.Arguments.FirstOrDefault();
 
-				switch (arg.Argument)
+				if (arg != null)
 				{
-					case "expneeded":
+					switch (arg.Argument)
 					{
-						arg = arg.Next();
-
-						if (arg != null)
+						case "expneeded":
 						{
-							if (int.TryParse(arg.Argument, out int value))
+							arg = arg.Next();
+
+							if (arg != null)
 							{
-								g.MinimalExperienceToGetRewards = value;
+								if (int.TryParse(arg.Argument, out int value))
+								{
+									g.MinimalExperienceToGetRewards = value;
+
+									Utils.Embed
+										.SetTitle(e.Locale.GetString("miki_terms_config"))
+										.SetDescription(e.Locale.GetString("guildconfig_expneeded", value))
+										.ToEmbed().QueueToChannel(e.Channel);
+								}
+							}
+						}
+						break;
+
+						case "visible":
+						{
+							arg = arg.Next();
+
+							if (arg != null)
+							{
+								bool? result = arg.AsBoolean();
+
+								if (!result.HasValue)
+								{
+									return;
+								}
+
+								string resourceString = result.Value
+									? "guildconfig_visibility_true" 
+									: "guildconfig_visibility_false";
 
 								Utils.Embed
 									.SetTitle(e.Locale.GetString("miki_terms_config"))
-									.SetDescription(e.Locale.GetString("guildconfig_expneeded", value))
+									.SetDescription(resourceString)
 									.ToEmbed().QueueToChannel(e.Channel);
 							}
 						}
+						break;
 					}
-					break;
-
-					case "visible":
-					{
-						arg = arg.Next();
-
-						if (arg != null)
-						{
-							bool? result = arg.AsBoolean();
-
-							if (!result.HasValue)
-							{
-								return;
-							}
-
-							g.VisibleOnLeaderboards = result.Value;
-
-							string resourceString = g.VisibleOnLeaderboards ? "guildconfig_visibility_true" : "guildconfig_visibility_false";
-
-							Utils.Embed
-								.SetTitle(e.Locale.GetString("miki_terms_config"))
-								.SetDescription(resourceString)
-								.ToEmbed().QueueToChannel(e.Channel);
-						}
-					}
-					break;
+					await context.SaveChangesAsync();
 				}
-				await context.SaveChangesAsync();
+				else
+				{
+					new EmbedBuilder()
+					{
+						Title = e.Locale.GetString("guild_settings"),
+						Description = e.Locale.GetString("miki_command_description_guildconfig")
+					}.ToEmbed().QueueToChannel(e.Channel);
+				}
 			}
 		}
 	}

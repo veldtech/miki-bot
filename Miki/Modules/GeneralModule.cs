@@ -124,7 +124,8 @@ namespace Miki.Modules
 		[Command(Name = "giveaway")]
 		public async Task GiveawayAsync(EventContext e)
 		{
-			//Emoji emoji = new Emoji("🎁");
+			DiscordEmoji emoji = new DiscordEmoji();
+			emoji.Name = "🎁";
 
 			var arg = e.Arguments.FirstOrDefault();
 			string giveAwayText = arg?.Argument ?? "";
@@ -138,7 +139,6 @@ namespace Miki.Modules
 
 			var mml = new MMLParser(arg?.TakeUntilEnd()?.Argument ?? "").Parse();
 
-			bool isUnique = mml.Get("unique", false);
 			int amount = mml.Get("amount", 1);
 			TimeSpan timeLeft = mml.Get("time", "1h").GetTimeFromString();
 
@@ -154,44 +154,42 @@ namespace Miki.Modules
 			List<IDiscordUser> winners = new List<IDiscordUser>();
 
 			IDiscordMessage msg = await CreateGiveawayEmbed(e, giveAwayText)
-			.AddField("Time", (DateTime.Now + timeLeft).ToShortTimeString(), true)
+			.AddField("Time", timeLeft.ToTimeString(e.Locale), true)
 			.AddField("React to participate", "good luck", true)
 			.ToEmbed().SendToChannel(e.Channel);
 
-			//await (msg as IUserMessage).AddReactionAsync(emoji);
+			await msg.CreateReactionAsync(emoji);
 
 			int updateTask = -1;
 
 			int task = taskScheduler.AddTask(e.Author.Id, async (desc) =>
 			{
-				//msg = await e.Channel.GetMessageAsync(msg.Id);
+				msg = await e.Channel.GetMessageAsync(msg.Id);
 
 				if (msg != null)
 				{
-					//await msg.RemoveReactionAsync(emoji, await e.Guild.GetCurrentUserAsync());
+					await msg.DeleteReactionAsync(emoji);
 
-					List<IDiscordUser> reactions = new List<IDiscordUser>();
+					var reactions = await msg.GetReactionsAsync(emoji);
 
-					int reactionsGained = 0;
-
-					do
-					{
-						//reactions.AddRange(await (msg as  IUserMessage).GetReactionUsersAsync(emoji, 100, reactions.LastOrDefault()?.Id ?? null));
-						reactionsGained += 100;
-					} while (reactions.Count == reactionsGained);
+					//do
+					//{
+					//	reactions.AddRange();
+					//	reactionsGained += 100;
+					//} while (reactions.Count == reactionsGained);
 
 					// Select random winners
 					for (int i = 0; i < amount; i++)
 					{
-						if (reactions.Count == 0)
+						if (reactions.Length == 0)
 							break;
 
-						int index = MikiRandom.Next(reactions.Count);
+						int index = MikiRandom.Next(reactions.Length);
 
 						winners.Add(reactions[index]);
 
-						if (isUnique)
-							reactions.RemoveAt(index);
+						//if (isUnique)
+						//	reactions.RemoveAt(index);
 					}
 
 					if (updateTask != -1)
@@ -231,10 +229,10 @@ namespace Miki.Modules
 		{
 			IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
 
-			//var emojiNames = e.Guild.Emotes.Select(x => x.ToString());
+			//var emojiNames = e.Guild..Select(x => x.ToString());
 			string emojiOutput = "none (yet!)";
 
-			//if(emojiNames.Count() > 0)
+			//if (emojiNames.Count() > 0)
 			//{
 			//	emojiOutput = string.Join(",", emojiNames);
 			//}
@@ -418,24 +416,6 @@ namespace Miki.Modules
 					embed = embed
 				});
 			}
-		}
-
-		[Command(Name = "testemojis")]
-		public async Task TestEmojiAsync(EventContext e)
-		{
-			if (DiscordEmoji.TryParse("<:GitHubMark:499342349126860800>", out var emoji))
-			{
-				await e.message.CreateReactionAsync(emoji);
-			}
-
-			if (DiscordEmoji.TryParse("😂", out var fun))
-			{
-				await e.message.CreateReactionAsync(fun);
-			}
-
-			var x = await e.message.GetReactionsAsync(emoji);
-
-			await e.message.DeleteAllReactionsAsync();
 		}
 
 		[Command(Name = "prefix")]

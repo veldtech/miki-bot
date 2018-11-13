@@ -2091,4 +2091,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="guildbank_contributed" xml:space="preserve">
     <value>Total contributed</value>
   </data>
+  <data name="error_marriageslots_insufficient" xml:space="preserve">
+    <value>{0}, you do not have enough marriage slots to marry another person!</value>
+  </data>
 </root>

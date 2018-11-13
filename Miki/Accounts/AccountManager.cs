@@ -38,7 +38,7 @@ namespace Miki.Accounts
 		private string GetContextKey(ulong guildid, ulong userid)
 			=> $"user:{guildid}:{userid}:exp";
 
-		public AccountManager(Framework.DiscordBot bot)
+		public AccountManager(DiscordBot bot)
 		{
 			OnGlobalLevelUp += (a, e, l) =>
 			{
@@ -87,7 +87,7 @@ namespace Miki.Accounts
 			   }
 		   };
 
-			//	bot.Client.GuildUpdated += Client_GuildUpdated;
+			//bot.Client.GuildUpdated += Client_GuildUpdated;
 			//bot.Client.JoinedGuild   += Client_UserJoined;
 			//bot.Client.LeftGuild  += Client_UserLeft;
 			bot.Discord.MessageCreate += CheckAsync;

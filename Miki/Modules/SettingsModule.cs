@@ -22,7 +22,6 @@ namespace Miki.Modules
 	[Module(Name = "settings")]
 	internal class SettingsModule
 	{
-		// TODO: turn into fancy generic function
 		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
@@ -170,10 +169,10 @@ namespace Miki.Modules
 			}
 
 			new EmbedBuilder()
-			.SetTitle($"Module Status for '{e.Channel.Name}'")
-			.AddInlineField("Column 1", firstColumn)
-			.AddInlineField("Column 2", secondColumn)
-			.ToEmbed().QueueToChannel(e.Channel);
+				.SetTitle($"Module Status for '{e.Channel.Name}'")
+				.AddInlineField("Column 1", firstColumn)
+				.AddInlineField("Column 2", secondColumn)
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
@@ -191,8 +190,10 @@ namespace Miki.Modules
 
 				return;
 			}
-			e.ErrorEmbed($"{localeName} is not a valid language. use `>listlocale` to check all languages available.")
-				.ToEmbed().QueueToChannel(e.Channel);
+			e.ErrorEmbedResource("error_language_invalid", 
+				localeName, 
+				await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)
+			).ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
@@ -213,7 +214,9 @@ namespace Miki.Modules
 
 			EmbedBuilder embed = Utils.Embed;
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
-			embed.SetDescription(e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()));
+			embed.SetDescription(
+				e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()
+			));
 
 			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
@@ -222,28 +225,26 @@ namespace Miki.Modules
 		public async Task SyncAvatarAsync(EventContext e)
 		{
 			await Utils.SyncAvatarAsync(e.Author);
-			e.SuccessEmbed("We've updated your avatar!")
-				.QueueToChannel(e.Channel);
+
+			e.SuccessEmbed(
+				e.Locale.GetString("setting_avatar_updated")	
+			).QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task ListLocaleAsync(EventContext e)
+		public Task ListLocaleAsync(EventContext e)
 		{
 			new EmbedBuilder()
 			{
-				Title = ("Available locales"),
+				Title = e.Locale.GetString("locales_available"),
 				Description = ("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
 			}.AddField(
 				"Your language not here?",
-				"Consider contributing to our open [translation page](https://poeditor.com/join/project/FIv7NBIReD)!"
+				e.Locale.GetString("locales_contribute",
+					$"[{e.Locale.GetString("locales_tranlations")}](https://poeditor.com/join/project/FIv7NBIReD)"
+				)
 			).ToEmbed().QueueToChannel(e.Channel);
+			return Task.CompletedTask;
 		}
-
-		private EmbedBuilder SettingsBaseEmbed =>
-			new EmbedBuilder()
-			{
-				Title = ("⚙ Settings"),
-				Color = new Color(138, 182, 239)
-			};
 	}
 }
