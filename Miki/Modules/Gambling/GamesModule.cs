@@ -679,6 +679,8 @@ namespace Miki.Modules
 			}
 		}
 
+		
+
 		//[Command(Name = "lottery")]
 		//public async Task LotteryAsync(EventContext e)
 		//{

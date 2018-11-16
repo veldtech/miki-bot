@@ -312,7 +312,7 @@ namespace Miki.Modules.AccountsModule
 					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
 					int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
-					int globalRank = await account.GetGlobalRankAsync(context);
+					int globalRank = await account.GetGlobalRankAsync(new MikiContext());
 
 					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
@@ -367,15 +367,6 @@ namespace Miki.Modules.AccountsModule
 					Color c = new Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
 
 					embed.SetColor(c);
-
-					CommandUsage favouriteCommand = await context.CommandUsages
-						.OrderByDescending(x => x.Amount)
-						.FirstOrDefaultAsync(x => x.UserId == id);
-
-					string favCommand = $"{favouriteCommand?.Name ?? e.Locale.GetString("miki_placeholder_null")} ({ favouriteCommand?.Amount ?? 0 })";
-
-					embed.AddInlineField(e.Locale.GetString("miki_module_accounts_profile_favourite_command"),
-						favCommand);
 
 					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
 

@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Bot.Models", "..\Miki.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework", "..\Miki.Framework\Miki.Framework\Miki.Framework.csproj", "{0AF6AF93-AFCF-411C-87E2-16E0338C22B9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord", "..\..\Miki.Discord\Miki.Discord\Miki.Discord.csproj", "{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Common", "..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj", "{78CB6E98-84E9-4965-826F-BF5301D3C27E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Production|Any CPU = Debug Production|Any CPU
@@ -51,6 +55,22 @@ Global
 		{0AF6AF93-AFCF-411C-87E2-16E0338C22B9}.Prod|Any CPU.Build.0 = Prod|Any CPU
 		{0AF6AF93-AFCF-411C-87E2-16E0338C22B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF6AF93-AFCF-411C-87E2-16E0338C22B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9684F39-F64A-4A97-AE48-CB7CFC87A6CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78CB6E98-84E9-4965-826F-BF5301D3C27E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -483,20 +483,6 @@ namespace Miki.Modules
 			e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_roll_result", e.Author.Username, rollResult));
 		}
 
-		[Command(Name = "roulette")]
-		public async Task RouletteAsync(EventContext e)
-		{
-			IEnumerable<IDiscordUser> users = await e.Guild.GetMembersAsync();
-			List<IDiscordUser> realUsers = users.Where(user => !user.IsBot).ToList();
-
-			string mention = "<@" + realUsers[MikiRandom.Next(0, realUsers.Count)].Id + ">";
-			string send = string.IsNullOrEmpty(e.Arguments.ToString()) ?
-				e.Locale.GetString("miki_module_fun_roulette_winner_no_arg", mention) :
-				e.Locale.GetString("miki_module_fun_roulette_winner", e.Arguments.ToString(), mention);
-
-			e.Channel.QueueMessageAsync(send);
-		}
-
 		[Command(Name = "reminder", Aliases = new[] { "remind" })]
 		public async Task RemindAsync(EventContext e)
 		{
@@ -735,17 +721,18 @@ namespace Miki.Modules
 				}
 				else
 				{
-					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.SAFE);
 				}
 			}
 			else
 			{
-				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Join()?.Argument ?? "", ImageboardRating.SAFE);
+				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync("", ImageboardRating.SAFE);
 			}
 
 			if (s == null)
 			{
-				e.ErrorEmbed("We couldn't find an image with these tags!").ToEmbed().QueueToChannel(e.Channel);
+				e.ErrorEmbed("We couldn't find an image with these tags!")
+					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
 

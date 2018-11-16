@@ -272,6 +272,23 @@ namespace Miki.Modules
 			await QueueAction(e, "kisses", images[MikiRandom.Next(images.Length)]);
 		}
 
+		[Command(Name = "lick")]
+		public async Task LickAsync(EventContext e)
+		{
+			string[] images = new string[]
+			{
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/2187d457-703a-43a0-93de-3304774f972f.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/82b45d73-4b6a-4886-b79f-d43282193843.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/c397769d-7563-43e1-a21e-e89498371bff.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f56b349d-507d-46df-849a-584b718c345c.gif",
+				"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
+			};
+
+			await QueueAction(e, "licks", images[MikiRandom.Next(images.Length)]);
+		}
+
 		[Command(Name = "pat", Aliases = new string[] { "pet" })]
 		public async Task PetAsync(EventContext e)
 		{

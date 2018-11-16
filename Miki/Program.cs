@@ -125,7 +125,7 @@ namespace Miki
 
 			Global.Client = new DiscordBot(new ClientInformation()
 			{
-				Version = "0.7",
+				Version = "0.7.1",
 				ClientConfiguration = new DiscordClientConfigurations
 				{
 					ApiClient = Global.ApiClient,

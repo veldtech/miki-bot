@@ -182,17 +182,13 @@ namespace Miki.Modules
 					// Select random winners
 					for (int i = 0; i < amount; i++)
 					{
-						if (reactions.Length == 0)
+						if (reactions.Count == 0)
 						{
 							break;
 						}
 
-						int index = MikiRandom.Next(reactions.Length);
-
+						int index = MikiRandom.Next(reactions.Count);
 						winners.Add(reactions[index]);
-
-						//if (isUnique)
-						//	reactions.RemoveAt(index);
 					}
 
 					if (updateTask != -1)
