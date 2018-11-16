@@ -49,8 +49,6 @@ namespace Miki.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Query<RankObject>().ToView("mview_glob_rank_exp");
-
 			#region Achievements
 
 			var achievement = modelBuilder.Entity<Achievement>();
@@ -312,13 +310,13 @@ namespace Miki.Models
 			#endregion Pasta Vote
 
 			modelBuilder.Entity<CommandState>()
-				.HasKey(c => new { c.CommandName, c.ChannelId });
+				.HasKey(c => new { c.Name, c.ChannelId });
 
 			modelBuilder.Entity<Identifier>()
 				.HasKey(c => new { c.GuildId, c.DefaultValue });
 
 			modelBuilder.Entity<ModuleState>()
-				.HasKey(c => new { c.ModuleName, c.ChannelId });
+				.HasKey(c => new { c.Name, c.GuildId });
 
 			modelBuilder.HasDefaultSchema("dbo");
 		}
