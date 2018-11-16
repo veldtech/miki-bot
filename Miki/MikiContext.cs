@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models.Queries;
 using Miki.Framework.Models;
 using Miki.Models.Objects.Guild;
 
@@ -48,6 +49,8 @@ namespace Miki.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Query<RankObject>().ToView("mview_glob_rank_exp");
+
 			#region Achievements
 
 			var achievement = modelBuilder.Entity<Achievement>();
