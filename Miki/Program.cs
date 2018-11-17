@@ -54,15 +54,15 @@ namespace Miki
 				MessageBucket.AddWorker();
 			}
 
-			//using (var c = new MikiContext())
-			//{
-			//	List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
-			//	foreach (var u in bannedUsers)
-			//	{
-			//		Global.Client.GetAttachedObject<EventSystem>().MessageFilter
-			//			.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
-			//	}
-			//}
+			using (var c = new MikiContext())
+			{
+				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
+				foreach (var u in bannedUsers)
+				{
+					Global.Client.GetAttachedObject<EventSystem>().MessageFilter
+						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
+				}
+			}
 			await Task.Delay(-1);
 		}
 

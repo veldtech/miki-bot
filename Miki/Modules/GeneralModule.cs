@@ -340,7 +340,7 @@ namespace Miki.Modules
 				}
 			}
 
-			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannelAsync());
+			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]
