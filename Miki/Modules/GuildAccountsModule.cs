@@ -189,6 +189,7 @@ namespace Miki.Modules
 					case "deposit":
 					{
 						await GuildBankDepositAsync(e, context, user);
+						await context.SaveChangesAsync();
 					}
 					break;
 
@@ -252,8 +253,6 @@ namespace Miki.Modules
 				.WithColor(new Color(255, 255, 255))
 				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
 				.Build().QueueToChannel(e.Channel);
-
-			await context.SaveChangesAsync();
 		}
 
 		[Command(Name = "guildprofile")]
