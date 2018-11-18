@@ -55,9 +55,9 @@ namespace Miki.Modules
 
 				int pruneDays = 1;
 
-				if (argObject.AsInt() != null)
+				if (argObject.TakeInt() != null)
 				{
-					pruneDays = argObject.AsInt().Value;
+					pruneDays = argObject.TakeInt().Value;
 					argObject?.Next();
 				}
 
@@ -374,7 +374,7 @@ namespace Miki.Modules
 
 			arg = arg?.Next();
 
-			bool? setValue = arg.AsBoolean();
+			bool? setValue = arg.TakeBoolean();
 			if (!setValue.HasValue)
 			{
 				setValue = arg.Argument.ToLower() == "yes" || arg.Argument == "1";

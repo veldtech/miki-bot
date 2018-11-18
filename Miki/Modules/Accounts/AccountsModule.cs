@@ -202,9 +202,9 @@ namespace Miki.Modules.AccountsModule
 				argument = argument.Next();
 			}
 
-			if ((argument?.AsInt() ?? 0) != 0)
+			if ((argument?.TakeInt() ?? 0) != 0)
 			{
-				options.Offset = Math.Max(0, argument.AsInt().Value - 1) * 12;
+				options.Offset = Math.Max(0, argument.TakeInt().Value - 1) * 12;
 				argument = argument?.Next();
 			}
 
@@ -403,7 +403,7 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "setbackground")]
 		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
-			int? backgroundId = e.Arguments.First().AsInt();
+			int? backgroundId = e.Arguments.First().TakeInt();
 
 			if (backgroundId == null)
 				throw new ArgumentNullException("background");
@@ -647,9 +647,9 @@ namespace Miki.Modules.AccountsModule
 
 						arg = arg?.Next();
 
-						if ((arg?.AsInt() ?? -1) != -1)
+						if ((arg?.TakeInt() ?? -1) != -1)
 						{
-							amount = (short)arg.AsInt().Value;
+							amount = (short)arg.TakeInt().Value;
 							arg = arg.Next();
 						}
 						else if (Utils.IsAll(arg))
@@ -816,7 +816,7 @@ namespace Miki.Modules.AccountsModule
 
 			arg = arg.Next();
 
-			int? amount = arg?.AsInt() ?? null;
+			int? amount = arg?.TakeInt() ?? null;
 
 			if (amount == null)
 			{

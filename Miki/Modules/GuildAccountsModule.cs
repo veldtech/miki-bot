@@ -237,7 +237,7 @@ namespace Miki.Modules
 
 		public async Task GuildBankDepositAsync(EventContext e, MikiContext context, GuildUser c)
 		{
-			int totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
+			int totalDeposited = e.Arguments.Get(1).TakeInt() ?? 0;
 
 			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
@@ -344,7 +344,7 @@ namespace Miki.Modules
 
 							if (arg != null)
 							{
-								bool? result = arg.AsBoolean();
+								bool? result = arg.TakeBoolean();
 
 								if (!result.HasValue)
 								{

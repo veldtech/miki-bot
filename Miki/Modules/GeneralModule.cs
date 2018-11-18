@@ -228,11 +228,11 @@ namespace Miki.Modules
 		{
 			IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
 
-			//var emojiNames = e.Guild..Select(x => x.ToString());
+			//var emojiNames = e.Guild.R.Select(x => x.ToString());
 			string emojiOutput = "none (yet!)";
 
 			//if (emojiNames.Count() > 0)
-			//{
+			//{	
 			//	emojiOutput = string.Join(",", emojiNames);
 			//}
 

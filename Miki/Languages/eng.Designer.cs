@@ -277,6 +277,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can not add Discord invites to a pasta!.
+        /// </summary>
+        internal static string error_pasta_invite {
+            get {
+                return ResourceManager.GetString("error_pasta_invite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have any proposals..
         /// </summary>
         internal static string error_proposals_empty {
@@ -372,6 +381,15 @@ namespace Miki.Languages {
         internal static string error_term_invalid {
             get {
                 return ResourceManager.GetString("error_term_invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a &apos;{0}&apos; to close &apos;{1}&apos; with!.
+        /// </summary>
+        internal static string error_unclosed_delimiter {
+            get {
+                return ResourceManager.GetString("error_unclosed_delimiter", resourceCulture);
             }
         }
         

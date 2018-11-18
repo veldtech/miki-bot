@@ -2094,4 +2094,10 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_marriageslots_insufficient" xml:space="preserve">
     <value>{0}, you do not have enough marriage slots to marry another person!</value>
   </data>
+  <data name="error_unclosed_delimiter" xml:space="preserve">
+    <value>Could not find a '{0}' to close '{1}' with!</value>
+  </data>
+  <data name="error_pasta_invite" xml:space="preserve">
+    <value>You can not add Discord invites to a pasta!</value>
+  </data>
 </root>

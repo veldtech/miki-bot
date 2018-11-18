@@ -324,7 +324,7 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			int amount = arg?.AsInt() ?? 0;
+			int amount = arg?.TakeInt() ?? 0;
 
 			using (var context = new MikiContext())
 			{
@@ -363,7 +363,7 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			int amount = arg?.AsInt() ?? 0;
+			int amount = arg?.TakeInt() ?? 0;
 
 			using (var context = new MikiContext())
 			{
