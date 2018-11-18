@@ -312,7 +312,7 @@ namespace Miki.Modules.AccountsModule
 					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
 					int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
-					int globalRank = await account.GetGlobalRankAsync(new MikiContext());
+					int? globalRank = await account.GetGlobalRankAsync(context);
 
 					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
@@ -321,7 +321,7 @@ namespace Miki.Modules.AccountsModule
 						.AppendText(
 							await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Guild, e.Channel as IDiscordGuildChannel)
 						)
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank), MessageFormatting.Plain, false)
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank?.ToString() ?? "We haven't calculated your rank yet!"), MessageFormatting.Plain, false)
 						.Build();
 
 					embed.AddInlineField(e.Locale.GetString("miki_generic_global_information"), globalInfoValue);
