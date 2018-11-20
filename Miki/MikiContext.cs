@@ -49,6 +49,8 @@ namespace Miki.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Query<RankObject>().ToView("mview_glob_rank_exp");
+
 			#region Achievements
 
 			var achievement = modelBuilder.Entity<Achievement>();

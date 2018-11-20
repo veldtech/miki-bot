@@ -2094,4 +2094,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_marriageslots_insufficient" xml:space="preserve">
     <value>{0}, you do not have enough marriage slots to marry another person!</value>
   </data>
+  <data name="error_command_null" xml:space="preserve">
+    <value>The command '{0}' does not exist!</value>
+  </data>
 </root>

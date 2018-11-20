@@ -391,31 +391,30 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "ping", Aliases = new string[] { "lag" })]
-		public async Task PingAsync(EventContext e)
+		public Task PingAsync(EventContext e)
 		{
-			IDiscordMessage message = await e.CreateEmbedBuilder()
-				.WithTitle(new RawResource("Ping"))
-				.WithDescription("ping_placeholder")
-				.Build()
-				.SendToChannel(e.Channel);
+			e.CreateEmbedBuilder()
+				  .WithTitle(new RawResource("Ping"))
+				  .WithDescription("ping_placeholder")
+				  .Build()
+				  .QueueToChannel(e.Channel)
+				  .ThenWait(200)
+				  .Then(async x =>
+				  {
+					  float ping = (float)(x.Timestamp - e.message.Timestamp).TotalMilliseconds;
 
-			await Task.Delay(100);
+					  DiscordEmbed embed = new EmbedBuilder()
+						  .SetTitle("Pong - " + Environment.MachineName)
+						  .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
+						  .AddInlineField("Miki", ping + "ms").ToEmbed();
 
-			if (message != null)
-			{
-				float ping = (float)(message.Timestamp - e.message.Timestamp).TotalMilliseconds;
-
-				DiscordEmbed embed = new EmbedBuilder()
-					.SetTitle("Pong - " + Environment.MachineName)
-					.SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
-					.AddInlineField("Miki", ping + "ms").ToEmbed();
-
-				await message.EditAsync(new EditMessageArgs
-				{
-					content = "",
-					embed = embed
-				});
-			}
+					  await x.EditAsync(new EditMessageArgs
+					  {
+						  content = "",
+						  embed = embed
+					  });
+				  });
+			return Task.CompletedTask;
 		}
 
 		[Command(Name = "prefix")]

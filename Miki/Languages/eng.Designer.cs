@@ -223,6 +223,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The command &apos;{0}&apos; does not exist!.
+        /// </summary>
+        internal static string error_command_null {
+            get {
+                return ResourceManager.GetString("error_command_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unknown error..
         /// </summary>
         internal static string error_default {

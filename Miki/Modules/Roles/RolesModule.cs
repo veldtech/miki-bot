@@ -30,6 +30,7 @@ namespace Miki.Modules.Roles
 				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
 
+				// checking if the role has a duplicate name.
 				if (roles.Count > 1)
 				{
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
@@ -50,6 +51,7 @@ namespace Miki.Modules.Roles
 					role = roles.FirstOrDefault();
 				}
 
+				// checking if the role is null
 				if (role == null)
 				{
 					e.ErrorEmbedResource("error_role_null")
@@ -67,6 +69,8 @@ namespace Miki.Modules.Roles
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
+				IDiscordRole discordRole = await newRole.GetRoleAsync();
+
 				User user = (await context.Users.FindAsync(e.Author.Id.ToDbLong()));
 
 				IDiscordGuildUser discordUser = await e.Guild.GetMemberAsync(user.Id.FromDbLong());
@@ -124,14 +128,14 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if (newRole.GetRoleAsync().Result.Position >= await me.GetHierarchyAsync())
+				if (discordRole.Position >= await me.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				await author.AddRoleAsync(newRole.GetRoleAsync().Result);
+				await author.AddRoleAsync(discordRole);
 
 				new EmbedBuilder()
 					.SetTitle("I AM")
@@ -197,14 +201,14 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if ((await newRole.GetRoleAsync()).Position >= await me.GetHierarchyAsync())
+				if (role.Position >= await me.GetHierarchyAsync())
 				{
 					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannel(e.Channel);
 					return;
 				}
 
-				await author.RemoveRoleAsync(newRole.GetRoleAsync().Result);
+				await author.RemoveRoleAsync(role);
 
 				new EmbedBuilder()
 					.SetTitle("I AM NOT")
