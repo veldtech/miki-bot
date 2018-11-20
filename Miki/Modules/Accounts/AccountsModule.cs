@@ -202,9 +202,9 @@ namespace Miki.Modules.AccountsModule
 				argument = argument.Next();
 			}
 
-			if ((argument?.AsInt() ?? 0) != 0)
+			if ((argument?.TakeInt() ?? 0) != 0)
 			{
-				options.Offset = Math.Max(0, argument.AsInt().Value - 1) * 12;
+				options.Offset = Math.Max(0, argument.TakeInt().Value - 1) * 12;
 				argument = argument?.Next();
 			}
 
@@ -312,7 +312,7 @@ namespace Miki.Modules.AccountsModule
 					int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
 					int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
-					int globalRank = await account.GetGlobalRankAsync(new MikiContext());
+					int? globalRank = await account.GetGlobalRankAsync(context);
 
 					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
@@ -321,7 +321,7 @@ namespace Miki.Modules.AccountsModule
 						.AppendText(
 							await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Guild, e.Channel as IDiscordGuildChannel)
 						)
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank), MessageFormatting.Plain, false)
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank?.ToString() ?? "We haven't calculated your rank yet!"), MessageFormatting.Plain, false)
 						.Build();
 
 					embed.AddInlineField(e.Locale.GetString("miki_generic_global_information"), globalInfoValue);
@@ -403,7 +403,7 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "setbackground")]
 		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
-			int? backgroundId = e.Arguments.First().AsInt();
+			int? backgroundId = e.Arguments.First().TakeInt();
 
 			if (backgroundId == null)
 				throw new ArgumentNullException("background");
@@ -647,9 +647,9 @@ namespace Miki.Modules.AccountsModule
 
 						arg = arg?.Next();
 
-						if ((arg?.AsInt() ?? -1) != -1)
+						if ((arg?.TakeInt() ?? -1) != -1)
 						{
-							amount = (short)arg.AsInt().Value;
+							amount = (short)arg.TakeInt().Value;
 							arg = arg.Next();
 						}
 						else if (Utils.IsAll(arg))
@@ -816,7 +816,7 @@ namespace Miki.Modules.AccountsModule
 
 			arg = arg.Next();
 
-			int? amount = arg?.AsInt() ?? null;
+			int? amount = arg?.TakeInt() ?? null;
 
 			if (amount == null)
 			{

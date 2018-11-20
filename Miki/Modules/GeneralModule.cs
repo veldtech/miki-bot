@@ -228,11 +228,11 @@ namespace Miki.Modules
 		{
 			IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
 
-			//var emojiNames = e.Guild..Select(x => x.ToString());
+			//var emojiNames = e.Guild.R.Select(x => x.ToString());
 			string emojiOutput = "none (yet!)";
 
 			//if (emojiNames.Count() > 0)
-			//{
+			//{	
 			//	emojiOutput = string.Join(",", emojiNames);
 			//}
 
@@ -340,7 +340,7 @@ namespace Miki.Modules
 				}
 			}
 
-			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannelAsync());
+			embedBuilder.ToEmbed().QueueToChannel(await e.Author.GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
 		}
 
 		[Command(Name = "donate", Aliases = new string[] { "patreon" })]

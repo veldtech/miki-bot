@@ -140,7 +140,7 @@ namespace Miki.Modules
 
 				if (selection != null)
 				{
-					selectionId = selection.AsInt();
+					selectionId = selection.TakeInt();
 				}
 
 				var marriages = await repository.GetMarriagesAsync((long)e.Author.Id);
@@ -272,7 +272,7 @@ namespace Miki.Modules
 
 				if (selection != null)
 				{
-					selectionId = selection.AsInt();
+					selectionId = selection.TakeInt();
 				}
 
 				var marriages = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
@@ -323,7 +323,7 @@ namespace Miki.Modules
 		[Command(Name = "showproposals")]
 		public async Task ShowProposalsAsync(EventContext e)
 		{
-			int page = e.Arguments.FirstOrDefault()?.AsInt() - 1 ?? 0;
+			int page = e.Arguments.FirstOrDefault()?.TakeInt() - 1 ?? 0;
 
 			using (var context = new MikiContext())
 			{

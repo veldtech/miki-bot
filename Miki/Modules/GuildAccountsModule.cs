@@ -189,6 +189,7 @@ namespace Miki.Modules
 					case "deposit":
 					{
 						await GuildBankDepositAsync(e, context, user);
+						await context.SaveChangesAsync();
 					}
 					break;
 
@@ -237,7 +238,7 @@ namespace Miki.Modules
 
 		public async Task GuildBankDepositAsync(EventContext e, MikiContext context, GuildUser c)
 		{
-			int totalDeposited = e.Arguments.Get(1).AsInt() ?? 0;
+			int totalDeposited = e.Arguments.Get(1).TakeInt() ?? 0;
 
 			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
@@ -252,8 +253,6 @@ namespace Miki.Modules
 				.WithColor(new Color(255, 255, 255))
 				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
 				.Build().QueueToChannel(e.Channel);
-
-			await context.SaveChangesAsync();
 		}
 
 		[Command(Name = "guildprofile")]
@@ -344,7 +343,7 @@ namespace Miki.Modules
 
 							if (arg != null)
 							{
-								bool? result = arg.AsBoolean();
+								bool? result = arg.TakeBoolean();
 
 								if (!result.HasValue)
 								{

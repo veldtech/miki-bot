@@ -21,7 +21,7 @@ namespace Miki.API.EmbedMenus
 			ArgObject arg = a.FirstOrDefault();
 			if (arg != null)
 			{
-				int? pageId = arg.AsInt();
+				int? pageId = arg.TakeInt();
 				if (pageId != null)
 				{
 					pageId = Math.Clamp(pageId.Value, 1, Children.Count + 1);

@@ -26,7 +26,7 @@ namespace Miki.Core.Modules.Anime
 
 			ArgObject arg = e.Arguments.Join();
 
-			int? characterId = arg.AsInt();
+			int? characterId = arg.TakeInt();
 
 			if (characterId != null)
 			{
@@ -76,9 +76,9 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			if (e.Arguments.LastOrDefault()?.AsInt() != null)
+			if (e.Arguments.LastOrDefault()?.TakeInt() != null)
 			{
-				page = e.Arguments.LastOrDefault().AsInt().Value;
+				page = e.Arguments.LastOrDefault().TakeInt().Value;
 			}
 
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
@@ -126,9 +126,9 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			if (e.Arguments.LastOrDefault()?.AsInt() != null)
+			if (e.Arguments.LastOrDefault()?.TakeInt() != null)
 			{
-				page = e.Arguments.LastOrDefault().AsInt().Value;
+				page = e.Arguments.LastOrDefault().TakeInt().Value;
 			}
 
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
@@ -176,7 +176,7 @@ namespace Miki.Core.Modules.Anime
 
 			int page = 0;
 
-			page = e.Arguments.LastOrDefault().AsInt() ?? 0;
+			page = e.Arguments.LastOrDefault().TakeInt() ?? 0;
 
 			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
 			string searchQuery = arg.Argument;
@@ -219,7 +219,7 @@ namespace Miki.Core.Modules.Anime
 
 			ArgObject arg = e.Arguments.Join();
 
-			int? mediaId = arg.AsInt();
+			int? mediaId = arg.TakeInt();
 
 			if (mediaId != null)
 			{

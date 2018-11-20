@@ -223,7 +223,7 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				int page = Math.Max((e.Arguments.Join()?.AsInt() ?? 0) - 1, 0);
+				int page = Math.Max((e.Arguments.Join()?.TakeInt() ?? 0) - 1, 0);
 
 				long guildId = e.Guild.Id.ToDbLong();
 

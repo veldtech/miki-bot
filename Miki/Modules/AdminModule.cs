@@ -55,9 +55,9 @@ namespace Miki.Modules
 
 				int pruneDays = 1;
 
-				if (argObject.AsInt() != null)
+				if (argObject.TakeInt() != null)
 				{
-					pruneDays = argObject.AsInt().Value;
+					pruneDays = argObject.TakeInt().Value;
 					argObject?.Next();
 				}
 
@@ -93,6 +93,7 @@ namespace Miki.Modules
 			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id);
 		}
 
+		/*
 		[Command(Name = "editexp", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task EditExpAsync(EventContext e)
 		{
@@ -103,6 +104,7 @@ namespace Miki.Modules
 
 			IDiscordUser target = await arg.GetUserAsync(e.Guild);
 		}
+		*/
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task KickAsync(EventContext e)
@@ -284,7 +286,11 @@ namespace Miki.Modules
 				});
 		}
 
-		[Command(Name = "setevent", Accessibility = EventAccessibility.ADMINONLY, Aliases = new string[] { "setcommand" }, CanBeDisabled = false)]
+		// >setevent -s x 0
+		[Command(Name = "setevent", 
+			Accessibility = EventAccessibility.ADMINONLY, 
+			Aliases = new string[] { "setcommand" }, 
+			CanBeDisabled = false)]
 		public async Task SetCommandAsync(EventContext e)
 		{
 			ArgObject arg = e.Arguments.FirstOrDefault();
@@ -305,12 +311,6 @@ namespace Miki.Modules
 				return;
 			}
 
-			arg = arg.Next();
-
-			bool? setValue = arg.AsBoolean();
-			if (!setValue.HasValue)
-				setValue = arg.Argument.ToLower() == "yes" || arg.Argument == "1";
-
 			if (!command.CanBeDisabled)
 			{
 				e.ErrorEmbed(e.Locale.GetString("miki_admin_cannot_disable", $"`{commandId}`"))
@@ -318,21 +318,51 @@ namespace Miki.Modules
 				return;
 			}
 
+			arg = arg.Next();
+
+			if(arg == null)
+			{
+				return;
+			}
+
+			bool setValue = arg.Argument == "1" || arg.Argument.ToLower().StartsWith("y");
+			string localeState = (setValue) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled");
+
 			arg = arg?.Next();
 
-			if (arg != null)
-			{
-				if (arg.Argument == "-s")
-				{
-					// TODO: serverwide disable/enable
-				}
-			}
+			bool global = false;
 
 			using (var context = new MikiContext())
 			{
-				await command.SetEnabled(context, Global.RedisClient, e.Channel.Id, setValue ?? false);
+				if (arg?.Argument == "-g")
+				{
+					global = true;
+					var channels = await e.Guild.GetChannelsAsync();
+					foreach(var c in channels)
+					{
+						await command.SetEnabled(context, Global.RedisClient, c.Id, setValue);
+					}
+				}
+				else
+				{
+					await command.SetEnabled(context, Global.RedisClient, e.Channel.Id, setValue);
+				}
+
+				await context.SaveChangesAsync();
 			}
-			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {command.Name}")
+
+			string outputDesc = localeState + " " + commandId;
+
+			if (global)
+			{
+				outputDesc += " in every channel.";
+			}
+			else
+			{
+				outputDesc += ".";
+			}
+
+			Utils.SuccessEmbed(e, outputDesc)
 				.QueueToChannel(e.Channel);
 		}
 
@@ -359,9 +389,11 @@ namespace Miki.Modules
 
 			arg = arg?.Next();
 
-			bool? setValue = arg.AsBoolean();
+			bool? setValue = arg.TakeBoolean();
 			if (!setValue.HasValue)
+			{
 				setValue = arg.Argument.ToLower() == "yes" || arg.Argument == "1";
+			}
 
 			if (!m.CanBeDisabled && !setValue.Value)
 			{
@@ -372,15 +404,7 @@ namespace Miki.Modules
 
 			arg = arg?.Next();
 
-			if (arg != null)
-			{
-				if (arg.Argument == "-s")
-				{
-					// TODO: serverwide disable/enable
-				}
-			}
-
-			await m.SetEnabled(Global.RedisClient, e.Channel.Id, (setValue ?? false));
+			await m.SetEnabled(Global.RedisClient, e.Guild.Id, (setValue ?? false));
 
 			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}")
 				.QueueToChannel(e.Channel);

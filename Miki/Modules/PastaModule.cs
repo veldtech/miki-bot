@@ -3,6 +3,7 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
+using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
@@ -47,14 +48,14 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				var pastasFound = context.Pastas.Where(x => x.CreatorId == userId)
-												.OrderByDescending(x => x.Id)
-												.Skip(page * 25)
-												.Take(25)
-												.ToList();
+				var pastasFound = await context.Pastas.Where(x => x.CreatorId == userId)
+					.OrderByDescending(x => x.Id)
+					.Skip(page * 25)
+					.Take(25)
+					.ToListAsync();
 
-				var totalCount = context.Pastas.Where(x => x.CreatorId == userId)
-											   .Count();
+				var totalCount = await context.Pastas.Where(x => x.CreatorId == userId)
+					.CountAsync();
 
 				if (page * 25 > totalCount)
 				{
@@ -94,13 +95,15 @@ namespace Miki.Modules
 
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
+			arg = arg.TakeString();
 			string id = arg.Argument;
+
 			arg = arg.Next();
 			string text = arg.TakeUntilEnd().Argument;
 
 			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
 			{
-				throw new Exception("You can't add discord invites!");
+				throw new PastaInviteException();
 			}
 
 			using (var context = new MikiContext())
@@ -267,7 +270,7 @@ namespace Miki.Modules
 
 			arg = arg.Next();
 
-			int page = (arg?.AsInt() ?? 0);
+			int page = (arg?.TakeInt() ?? 0);
 
 			using (var context = new MikiContext())
 			{
@@ -351,29 +354,12 @@ namespace Miki.Modules
 
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
-			if (arg == null)
-			{
-				// TODO: error no user found
-				return;
-			}
-
-			IDiscordUser user = await arg.GetUserAsync(e.Guild);
-
-			if (user != null)
-			{
-				arg = arg.Next();
-			}
-			else
-			{
-				user = e.Author;
-			}
-
-			page = arg.AsInt() ?? 0;
+			page = arg?.TakeInt() ?? 0;
 
 			using (MikiContext context = new MikiContext())
 			{
 				long authorId = targetUser.Id.ToDbLong();
-				IEnumerable<PastaVote> pastaVotes = context.Votes.Where(x => x.UserId == authorId && x.PositiveVote == lovedPastas);
+				List<PastaVote> pastaVotes = await context.Votes.Where(x => x.UserId == authorId && x.PositiveVote == lovedPastas).ToListAsync();
 
 				int maxPage = (int)Math.Floor(pastaVotes.Count() / totalPerPage);
 				page = page > maxPage ? maxPage : page;

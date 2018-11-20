@@ -30,6 +30,9 @@ namespace Miki.Core.Migrations
                 table: "CommandStates",
                 nullable: false,
                 defaultValue: 0L);
+
+			migrationBuilder.Sql("CREATE MATERIALIZED VIEW dbo.mview_glob_rank_exp TABLESPACE pg_default AS SELECT rank() OVER(ORDER BY \"Users\".\"Total_Experience\") AS \"Rank\", \"Users\".\"Id\" FROM dbo.\"Users\" WITH DATA;");
+			migrationBuilder.Sql("ALTER TABLE dbo.mview_glob_rank_exp OWNER TO postgres; CREATE UNIQUE INDEX idx_id ON dbo.mview_glob_rank_exp USING btree	(\"Id\") TABLESPACE pg_default;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -56,6 +59,8 @@ namespace Miki.Core.Migrations
                 schema: "dbo",
                 table: "CommandStates",
                 newName: "CommandName");
-        }
+
+			migrationBuilder.Sql("DROP MATERIALIZED VIEW dbo.mview_glob_rank_exp;");
+		}
     }
 }
