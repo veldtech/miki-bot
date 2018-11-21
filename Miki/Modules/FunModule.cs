@@ -445,23 +445,21 @@ namespace Miki.Modules
 					foreach (Match match in regex.Matches(e.Arguments.ToString()))
 					{
 						GroupCollection groupCollection = match.Groups;
-						int dieCount = int.Parse(groupCollection["dieCount"].Value);
+						int dieCount = groupCollection["dieCount"].Success ? int.Parse(groupCollection["dieCount"].Value) : 1;
 						int dieSides = int.Parse(groupCollection["dieSides"].Value);
-						string partialExpression = "";
+						List<string> partialExpression = new List<string>();
 
 						for (int i = 0; i < dieCount; i++)
 						{
-							partialExpression += MikiRandom.Roll(dieSides).ToString();
-							if (i + 1 < dieCount)
-								partialExpression += " + ";
+							partialExpression.Add(MikiRandom.Roll(dieSides).ToString());
 						}
 
-						fullExpression = regex.Replace(fullExpression, $"( {partialExpression} )", 1);
+						fullExpression = regex.Replace(fullExpression, $"({string.Join(" + ", partialExpression)})", 1);
 						expressionCount++;
 					}
 
 					if (expressionCount > 1)
-						fullExpression = $"( {fullExpression} )";
+						fullExpression = $"({fullExpression})";
 
 					Expression evaluation = new Expression(fullExpression);
 					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`";
@@ -476,9 +474,6 @@ namespace Miki.Modules
 					discordChannel = e.Channel
 				});
 			}
-
-			rollResult = Regex.Replace(rollResult, @"(\s)\s+", "$1");
-			rollResult = Regex.Replace(rollResult, @"(\S)([^\d\s])", "$1 $2");
 
 			e.Channel.QueueMessageAsync(e.Locale.GetString("miki_module_fun_roll_result", e.Author.Username, rollResult));
 		}
