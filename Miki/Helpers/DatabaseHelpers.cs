@@ -43,7 +43,7 @@ namespace Miki.Helpers
 
 			if (amount < 0)
 			{
-				await RemoveCurrencyAsync(user, -amount);
+				RemoveCurrency(user, -amount);
 				return;
 			}
 
@@ -57,16 +57,16 @@ namespace Miki.Helpers
 			}
 		}
 
-		public static Task RemoveCurrencyAsync(this User user, int amount)
+		public static void RemoveCurrency(this User user, int amount)
 		{
 			if(user.Currency < amount)
 			{
 				throw new InsufficientCurrencyException(user.Currency, amount);
 			}
 
-			user.Currency -= amount;
+			DogStatsd.Counter("currency.change", -amount);
 
-			return Task.CompletedTask;
+			user.Currency -= amount;
 		}
 	}
 }

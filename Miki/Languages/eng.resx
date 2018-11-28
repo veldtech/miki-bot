@@ -2103,4 +2103,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_pasta_invite" xml:space="preserve">
     <value>You can not add Discord invites to a pasta!</value>
   </data>
+  <data name="blackjack_session_exists" xml:space="preserve">
+    <value>You still have a blackjack game running here, please either stop it by using `&gt;blackjack stay` or finish playing it. This game will expire in 24 hours.</value>
+  </data>
 </root>

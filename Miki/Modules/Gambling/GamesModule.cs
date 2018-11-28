@@ -8,6 +8,7 @@ using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
+using Miki.Localization;
 using Miki.Models;
 using Miki.Modules.Gambling.Managers;
 using System;
@@ -226,6 +227,13 @@ namespace Miki.Modules
 
 			if (bet.HasValue)
 			{
+				if (await Global.RedisClient.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
+				{
+					e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
+						.ToEmbed().QueueToChannel(e.Channel);
+					return;
+				}
+
 				using (var context = new MikiContext())
 				{
 					var user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -233,16 +241,9 @@ namespace Miki.Modules
 					if (user == null)
 						return;
 
-					user.Currency -= bet.Value;
+					user.RemoveCurrency(bet.Value);
 
 					await context.SaveChangesAsync();
-				}
-
-				if (await Global.RedisClient.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
-				{
-					e.ErrorEmbed("You still have a blackjack game running here, please either stop it by using `>blackjack stay` or finish playing it. This game will expire in 24 hours.")
-						.ToEmbed().QueueToChannel(e.Channel);
-					return;
 				}
 
 				BlackjackManager manager = new BlackjackManager(bet.Value);
@@ -256,8 +257,7 @@ namespace Miki.Modules
 				dealer.Hand[1].isPublic = false;
 
 				IDiscordMessage message = await manager.CreateEmbed(e)
-					.ToEmbed()
-					.SendToChannel(e.Channel);
+					.ToEmbed().SendToChannel(e.Channel);
 
 				manager.MessageId = message.Id;
 
@@ -801,12 +801,6 @@ namespace Miki.Modules
 					if (bet < 1)
 					{
 						e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_zero_or_less"))
-							.ToEmbed().QueueToChannel(e.Channel);
-						return null;
-					}
-					else if (bet > user.Currency)
-					{
-						e.ErrorEmbed(e.Locale.GetString("miki_mekos_insufficient"))
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}

@@ -454,7 +454,8 @@ namespace Miki.Modules
 							partialExpression.Add(MikiRandom.Roll(dieSides).ToString());
 						}
 
-						fullExpression = regex.Replace(fullExpression, $"({string.Join(" + ", partialExpression)})", 1);
+						fullExpression = regex.Replace(fullExpression, 
+							$"({string.Join(" + ", partialExpression)})", 1);
 						expressionCount++;
 					}
 

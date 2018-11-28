@@ -115,6 +115,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You still have a blackjack game running here, please either stop it by using `&gt;blackjack stay` or finish playing it. This game will expire in 24 hours..
+        /// </summary>
+        internal static string blackjack_session_exists {
+            get {
+                return ResourceManager.GetString("blackjack_session_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have enough mekos! You need {0} more mekos!.
         /// </summary>
         internal static string buymarriageslot_insufficient_mekos {
