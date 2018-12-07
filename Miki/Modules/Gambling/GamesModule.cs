@@ -489,9 +489,16 @@ namespace Miki.Modules
 			{
 				User u = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 				if (!win)
-					bet = -bet;
-				u.Currency += bet;
+				{
+					u.RemoveCurrency(bet);
+				}
+				else
+				{
+					await u.AddCurrencyAsync(bet);
+				}
+
 				currencyNow = u.Currency;
+
 				await context.SaveChangesAsync();
 			}
 
@@ -661,18 +668,18 @@ namespace Miki.Modules
 
 				if (moneyReturned == 0)
 				{
-					moneyReturned = -bet;
 					embed.AddField(e.Locale.GetString("miki_module_fun_slots_lose_header"),
 						e.Locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
+					u.RemoveCurrency(bet);
 				}
 				else
 				{
 					embed.AddField(e.Locale.GetString("miki_module_fun_slots_win_header"),
 						e.Locale.GetString("miki_module_fun_slots_win_amount", moneyReturned, u.Currency + moneyReturned));
+					await u.AddCurrencyAsync(moneyReturned, e.Channel);
 				}
 
 				embed.Description = string.Join(" ", objectsChosen);
-				await u.AddCurrencyAsync(moneyReturned, e.Channel);
 				await context.SaveChangesAsync();
 
 				embed.ToEmbed().QueueToChannel(e.Channel);

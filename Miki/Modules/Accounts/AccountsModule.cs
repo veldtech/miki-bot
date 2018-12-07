@@ -780,7 +780,7 @@ namespace Miki.Modules.AccountsModule
 				new EmbedBuilder()
 				{
 					Title = "🔸 Mekos",
-					Description = e.Locale.GetString("miki_user_mekos", user.Name, user.Currency),
+					Description = e.Locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("g")),
 					Color = new Color(1f, 0.5f, 0.7f)
 				}.ToEmbed().QueueToChannel(e.Channel);
 
