@@ -99,11 +99,11 @@ namespace Miki.Modules.AccountsModule
 
 				if (string.IsNullOrEmpty(leftBuilder.ToString()))
 				{
-					embed.AddInlineField("Total Pts: " + totalScore, "None, yet.");
+					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
 				}
 				else
 				{
-					embed.AddInlineField("Total Pts: " + totalScore, leftBuilder.ToString());
+					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
 				}
 
 				embed.ToEmbed().QueueToChannel(e.Channel);
@@ -300,10 +300,10 @@ namespace Miki.Modules.AccountsModule
 					EmojiBar expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
 
 					string infoValue = new MessageBuilder()
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_level", localLevel, localExp.Experience, maxLocalExp))
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_level", localLevel, localExp.Experience.ToFormattedString(), maxLocalExp.ToFormattedString()))
 						.AppendText(await expBar.Print(localExp.Experience - minLocalExp, e.Guild, (IDiscordGuildChannel)e.Channel))
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", rank))
-						.AppendText("Reputation: " + account.Reputation, MessageFormatting.Plain, false)
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", rank.ToFormattedString()))
+						.AppendText("Reputation: " + account.Reputation.ToFormattedString(), MessageFormatting.Plain, false)
 						.Build();
 
 					embed.AddInlineField(e.Locale.GetString("miki_generic_information"), infoValue);
@@ -317,15 +317,15 @@ namespace Miki.Modules.AccountsModule
 					EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
 					string globalInfoValue = new MessageBuilder()
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_level", globalLevel, account.Total_Experience, maxGlobalExp))
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_level", globalLevel.ToFormattedString(), account.Total_Experience.ToFormattedString(), maxGlobalExp.ToFormattedString()))
 						.AppendText(
 							await globalExpBar.Print(account.Total_Experience - minGlobalExp, e.Guild, e.Channel as IDiscordGuildChannel)
 						)
-						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank?.ToString() ?? "We haven't calculated your rank yet!"), MessageFormatting.Plain, false)
+						.AppendText(e.Locale.GetString("miki_module_accounts_information_rank", globalRank?.ToFormattedString() ?? "We haven't calculated your rank yet!"), MessageFormatting.Plain, false)
 						.Build();
 
 					embed.AddInlineField(e.Locale.GetString("miki_generic_global_information"), globalInfoValue);
-					embed.AddInlineField(e.Locale.GetString("miki_generic_mekos"), account.Currency + "<:mekos:421972155484471296>");
+					embed.AddInlineField(e.Locale.GetString("miki_generic_mekos"), account.Currency.ToFormattedString() + "<:mekos:421972155484471296>");
 
 					List<UserMarriedTo> Marriages = await repository.GetMarriagesAsync(id);
 
@@ -368,7 +368,8 @@ namespace Miki.Modules.AccountsModule
 
 					embed.SetColor(c);
 
-					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id).ToListAsync();
+					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id)
+						.ToListAsync();
 
 					string achievements = e.Locale.GetString("miki_placeholder_null");
 
@@ -409,6 +410,7 @@ namespace Miki.Modules.AccountsModule
 				throw new ArgumentNullException("background");
 
 			long userId = e.Author.Id.ToDbLong();
+
 			using (var context = new MikiContext())
 			{
 				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId ?? 0);
@@ -420,7 +422,6 @@ namespace Miki.Modules.AccountsModule
 
 				ProfileVisuals v = await ProfileVisuals.GetAsync(userId, context);
 				v.BackgroundId = bo.BackgroundId;
-
 				await context.SaveChangesAsync();
 			}
 
@@ -457,7 +458,7 @@ namespace Miki.Modules.AccountsModule
 
 					if (background.Price > 0)
 					{
-						embed.SetDescription($"This background for your profile will cost {background.Price} mekos, Type `>buybackground {id} yes` to buy.");
+						embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
 					}
 					else
 					{
@@ -617,9 +618,9 @@ namespace Miki.Modules.AccountsModule
 
 					new EmbedBuilder()
 					{
-						Title = (e.Locale.GetString("miki_module_accounts_rep_header")),
-						Description = (e.Locale.GetString("miki_module_accounts_rep_description"))
-					}.AddInlineField(e.Locale.GetString("miki_module_accounts_rep_total_received"), giver.Reputation.ToString())
+						Title = e.Locale.GetString("miki_module_accounts_rep_header"),
+						Description = e.Locale.GetString("miki_module_accounts_rep_description")
+					}.AddInlineField(e.Locale.GetString("miki_module_accounts_rep_total_received"), giver.Reputation.ToFormattedString())
 						.AddInlineField(e.Locale.GetString("miki_module_accounts_rep_reset"), pointReset.ToTimeString(e.Locale).ToString())
 						.AddInlineField(e.Locale.GetString("miki_module_accounts_rep_remaining"), repObject.ReputationPointsLeft.ToString())
 						.ToEmbed().QueueToChannel(e.Channel);
@@ -716,7 +717,7 @@ namespace Miki.Modules.AccountsModule
 
 						embed.AddInlineField(
 							receiver.Name,
-							string.Format("{0} => {1} (+{2})", receiver.Reputation - user.Value, receiver.Reputation, user.Value)
+							string.Format("{0} => {1} (+{2})", (receiver.Reputation - user.Value).ToFormattedString(), receiver.Reputation.ToFormattedString(), user.Value)
 						);
 					}
 
@@ -780,7 +781,7 @@ namespace Miki.Modules.AccountsModule
 				new EmbedBuilder()
 				{
 					Title = "🔸 Mekos",
-					Description = e.Locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("g")),
+					Description = e.Locale.GetString("miki_user_mekos", user.Name, user.Currency.ToFormattedString()),
 					Color = new Color(1f, 0.5f, 0.7f)
 				}.ToEmbed().QueueToChannel(e.Channel);
 
@@ -838,7 +839,7 @@ namespace Miki.Modules.AccountsModule
 					new EmbedBuilder()
 					{
 						Title = "🔸 transaction",
-						Description = e.Locale.GetString("give_description", sender.Name, receiver.Name, amount.Value),
+						Description = e.Locale.GetString("give_description", sender.Name, receiver.Name, amount.Value.ToFormattedString()),
 						Color = new Color(255, 140, 0),
 					}.ToEmbed().QueueToChannel(e.Channel);
 
@@ -901,12 +902,12 @@ namespace Miki.Modules.AccountsModule
 
 				var embed = new EmbedBuilder()
 					.SetTitle("💰 Daily")
-					.SetDescription(e.Locale.GetString("daily_received", $"**{amount:g}**", $"`{u.Currency:g}`"))
+					.SetDescription(e.Locale.GetString("daily_received", $"**{amount.ToFormattedString()}**", $"`{u.Currency.ToFormattedString()}`"))
 					.SetColor(253, 216, 136);
 
 				if (streak > 0)
 				{
-					embed.AddInlineField("Streak!", $"You're on a {streak} day daily streak!");
+					embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
 				}
 
 				embed.ToEmbed().QueueToChannel(e.Channel);

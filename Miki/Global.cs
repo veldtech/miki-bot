@@ -67,10 +67,12 @@ namespace Miki
 			get
 			{
 				if (cdnClient == null)
+				{
 					cdnClient = new AmazonS3Client(Config.CdnAccessKey, Config.CdnSecretKey, new AmazonS3Config()
 					{
 						ServiceURL = Config.CdnRegionEndpoint
 					});
+				}
 				return cdnClient;
 			}
 		}

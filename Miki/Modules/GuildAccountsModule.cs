@@ -89,7 +89,7 @@ namespace Miki.Modules
 
 						new EmbedBuilder()
 							.SetTitle(e.Locale.GetString("miki_terms_weekly"))
-							.AddInlineField("Mekos", mekosGained.ToString())
+							.AddInlineField("Mekos", mekosGained.ToFormattedString())
 							.ToEmbed().QueueToChannel(e.Channel);
 
 						timer.Value = DateTime.Now;
@@ -107,7 +107,7 @@ namespace Miki.Modules
 				{
 					new EmbedBuilder()
 						.SetTitle(e.Locale.GetString("miki_terms_weekly"))
-						.SetDescription(e.Locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards))
+						.SetDescription(e.Locale.GetString("miki_guildweekly_insufficient_exp", thisGuild.MinimalExperienceToGetRewards.ToFormattedString()))
 						.ToEmbed().QueueToChannel(e.Channel);
 				}
 			}
@@ -228,11 +228,11 @@ namespace Miki.Modules
 				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
 				.AddField(
 					new LanguageResource("guildbank_balance_title"),
-					new LanguageResource("guildbank_balance", c.Currency),
+					new LanguageResource("guildbank_balance", c.Currency.ToFormattedString()),
 					true
 				)
 				.AddField(
-					new LanguageResource("guildbank_contributed", "{0}"), new StringResource(account.TotalDeposited.ToString())
+					new LanguageResource("guildbank_contributed", "{0}"), new StringResource(account.TotalDeposited.ToFormattedString())
 				).Build().QueueToChannel(e.Channel);
 		}
 
@@ -249,7 +249,7 @@ namespace Miki.Modules
 			account.Deposit(totalDeposited);
 
 			e.CreateEmbedBuilder()
-				.WithTitle("guildbank_deposit_title", e.Author.Username, totalDeposited)
+				.WithTitle("guildbank_deposit_title", e.Author.Username, totalDeposited.ToFormattedString())
 				.WithColor(new Color(255, 255, 255))
 				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
 				.Build().QueueToChannel(e.Channel);
@@ -274,22 +274,22 @@ namespace Miki.Modules
 					.SetAuthor(g.Name, e.Guild.IconUrl, "https://miki.veld.one")
 					.SetColor(0.1f, 0.6f, 1)
 					.SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png")
-					.AddInlineField(e.Locale.GetString("miki_terms_level"), level.ToString());
+					.AddInlineField(e.Locale.GetString("miki_terms_level"), level.ToFormattedString());
 
 				string expBarString = await expBar.Print(g.Experience, e.Guild, e.Channel as IDiscordGuildChannel);
 
 				if (string.IsNullOrWhiteSpace(expBarString))
 				{
-					embed.AddInlineField(e.Locale.GetString("miki_terms_experience"), "[" + g.Experience + " / " + g.CalculateMaxExperience(g.Experience) + "]");
+					embed.AddInlineField(e.Locale.GetString("miki_terms_experience"), "[" + g.Experience.ToFormattedString() + " / " + g.CalculateMaxExperience(g.Experience).ToFormattedString() + "]");
 				}
 				else
 				{
-					embed.AddInlineField(e.Locale.GetString("miki_terms_experience") + $" [{g.Experience} / {g.CalculateMaxExperience(g.Experience)}]", expBarString);
+					embed.AddInlineField(e.Locale.GetString("miki_terms_experience") + $" [{g.Experience.ToFormattedString()} / {g.CalculateMaxExperience(g.Experience).ToFormattedString()}]", expBarString);
 				}
 
 				embed.AddInlineField(
 					e.Locale.GetString("miki_terms_rank"), 
-					"#" + ((rank <= 10) ? $"**{rank}**" : rank.ToString())
+					"#" + ((rank <= 10) ? $"**{rank.ToFormattedString()}**" : rank.ToFormattedString())
 				).AddInlineField(
 					e.Locale.GetString("miki_module_general_guildinfo_users"),
 					g.UserCount.ToString()
@@ -298,7 +298,7 @@ namespace Miki.Modules
 				if (g.RivalId != 0)
 				{
 					GuildUser rival = await g.GetRival(context);
-					embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience}]");
+					embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience.ToFormattedString()}]");
 				}
 
 				embed.ToEmbed().QueueToChannel(e.Channel);
@@ -330,7 +330,7 @@ namespace Miki.Modules
 
 									new EmbedBuilder()
 										.SetTitle(e.Locale.GetString("miki_terms_config"))
-										.SetDescription(e.Locale.GetString("guildconfig_expneeded", value))
+										.SetDescription(e.Locale.GetString("guildconfig_expneeded", value.ToFormattedString()))
 										.ToEmbed().QueueToChannel(e.Channel);
 								}
 							}
