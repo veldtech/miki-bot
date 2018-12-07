@@ -438,15 +438,15 @@ namespace Miki.Modules
 				}
 				else // Assume the user has entered an advanced expression.
 				{
-					Regex regex = new Regex(@"(?<dieCount>\d+)d(?<dieSides>\d+)");
+					Regex regex = new Regex(@"(\d+)?d(\d+)");
 					string fullExpression = e.Arguments.ToString();
 					int expressionCount = 0;
 
 					foreach (Match match in regex.Matches(e.Arguments.ToString()))
 					{
 						GroupCollection groupCollection = match.Groups;
-						int dieCount = groupCollection["dieCount"].Success ? int.Parse(groupCollection["dieCount"].Value) : 1;
-						int dieSides = int.Parse(groupCollection["dieSides"].Value);
+						int dieCount = groupCollection[1].Success ? int.Parse(groupCollection[1].Value) : 1;
+						int dieSides = int.Parse(groupCollection[2].Value);
 						List<string> partialExpression = new List<string>();
 
 						for (int i = 0; i < dieCount; i++)
@@ -460,7 +460,9 @@ namespace Miki.Modules
 					}
 
 					if (expressionCount > 1)
+					{
 						fullExpression = $"({fullExpression})";
+					}
 
 					Expression evaluation = new Expression(fullExpression);
 					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`";
