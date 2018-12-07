@@ -108,7 +108,7 @@ namespace Miki.Modules.Roles
 				{
 					if (user.Currency >= newRole.Price)
 					{
-						await user.AddCurrencyAsync(-newRole.Price);
+						user.RemoveCurrency(newRole.Price);
 						await context.SaveChangesAsync();
 					}
 					else

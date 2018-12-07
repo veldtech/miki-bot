@@ -175,18 +175,7 @@ namespace Miki.Modules
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PruneAsync(EventContext e)
 		{
-			new EmbedBuilder
-			{
-				//Title = titles[MikiRandom.Next(titles.Length - 1)],
-				Description = e.Locale.GetString("miki_module_admin_prune_success", 0),
-				Color = new Color(1, 1, 0.5f)
-			}.ToEmbed().QueueToChannel(e.Channel)
-				.ThenWait(10000)
-				.Then(async x =>
-				{
-					await x.DeleteAsync();
-				});
-			//await PruneAsync(e, 100, 0);
+			await PruneAsync(e, 100, 0);
 		}
 
 		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
@@ -279,14 +268,10 @@ namespace Miki.Modules
 				Description = e.Locale.GetString("miki_module_admin_prune_success", deleteMessages.Count),
 				Color = new Color(1, 1, 0.5f)
 			}.ToEmbed().QueueToChannel(e.Channel)
-				.Then(async x =>
-				{
-					await Task.Delay(5000);
-					await x.DeleteAsync();
-				});
+				.ThenWait(5000)
+				.ThenDelete();
 		}
 
-		// >setevent -s x 0
 		[Command(Name = "setevent", 
 			Accessibility = EventAccessibility.ADMINONLY, 
 			Aliases = new string[] { "setcommand" }, 

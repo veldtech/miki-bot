@@ -1,4 +1,5 @@
 ﻿using Miki.Configuration;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Logging;
 using StatsdClient;
@@ -27,13 +28,13 @@ namespace Miki.Modules.Internal.Services
 			var eventSystem = m.EventSystem;
 
 			// TODO (Veld): reimplement this
-			//b.HttpClient.RestClient.OnRequestComplete += (method, uri) =>
-			//{
-			//	DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
-			//	{
-			//		$"http_method:{method}", $"http_uri:{uri}"
-			//	});
-			//};
+			Global.ApiClient.HttpClient.OnRequestComplete += (method, uri) =>
+			{
+				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
+				{
+					$"http_method:{method}", $"http_uri:{uri}"
+				});
+			};
 
 			if (eventSystem != null)
 			{
@@ -49,13 +50,13 @@ namespace Miki.Modules.Internal.Services
 						}
 
 						DogStatsd.Histogram("commands.time", time, 0.1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
+							$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+							$"commandname:{command.Name.ToLowerInvariant()}"
 						});
 
 						DogStatsd.Counter("commands.count", 1, 1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
+							$"commandtype:{command.Module.Name.ToLowerInvariant()}",
+							$"commandname:{command.Name.ToLowerInvariant()}"
 						});
 
 						return Task.CompletedTask;

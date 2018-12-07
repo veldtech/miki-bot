@@ -2106,4 +2106,10 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="blackjack_session_exists" xml:space="preserve">
     <value>You still have a blackjack game running here, please either stop it by using `&gt;blackjack stay` or finish playing it. This game will expire in 24 hours.</value>
   </data>
+  <data name="error_argument_less_than_zero" xml:space="preserve">
+    <value>You can not use an amount less than zero!</value>
+  </data>
+  <data name="daily_received" xml:space="preserve">
+    <value>Received {0} Mekos! You now have {1} Mekos</value>
+  </data>
 </root>

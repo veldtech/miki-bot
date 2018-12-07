@@ -169,6 +169,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Received {0} Mekos! You now have {1} Mekos.
+        /// </summary>
+        internal static string daily_received {
+            get {
+                return ResourceManager.GetString("daily_received", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Servers.
         /// </summary>
         internal static string discord_servers {
@@ -183,6 +192,15 @@ namespace Miki.Languages {
         internal static string error_account_null {
             get {
                 return ResourceManager.GetString("error_account_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can not use an amount less than zero!.
+        /// </summary>
+        internal static string error_argument_less_than_zero {
+            get {
+                return ResourceManager.GetString("error_argument_less_than_zero", resourceCulture);
             }
         }
         

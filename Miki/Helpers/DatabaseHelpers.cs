@@ -43,8 +43,7 @@ namespace Miki.Helpers
 
 			if (amount < 0)
 			{
-				RemoveCurrency(user, -amount);
-				return;
+				throw new ArgumentLessThanZeroException();
 			}
 
 			DogStatsd.Counter("currency.change", amount);
@@ -59,6 +58,11 @@ namespace Miki.Helpers
 
 		public static void RemoveCurrency(this User user, int amount)
 		{
+			if(amount < 0)
+			{
+				throw new ArgumentLessThanZeroException(); 
+			}
+
 			if(user.Currency < amount)
 			{
 				throw new InsufficientCurrencyException(user.Currency, amount);

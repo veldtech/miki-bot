@@ -479,7 +479,7 @@ namespace Miki.Modules.AccountsModule
 
 								if (bo == null)
 								{
-									await user.AddCurrencyAsync(-background.Price, e.Channel);
+									user.RemoveCurrency(background.Price);
 									await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
 									{
 										UserId = e.Author.Id.ToDbLong(),
@@ -522,7 +522,7 @@ namespace Miki.Modules.AccountsModule
 					var hex = x.First().Groups.Last().Value;
 
 					visuals.BackgroundColor = hex;
-					await user.AddCurrencyAsync(-250, e.Channel);
+					user.RemoveCurrency(250);
 					await context.SaveChangesAsync();
 
 					e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
@@ -553,7 +553,7 @@ namespace Miki.Modules.AccountsModule
 					var hex = x.First().Groups.Last().Value;
 
 					visuals.ForegroundColor = hex;
-					await user.AddCurrencyAsync(-250, e.Channel);
+					user.RemoveCurrency(250);
 					await context.SaveChangesAsync();
 
 					e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
@@ -825,13 +825,6 @@ namespace Miki.Modules.AccountsModule
 				return;
 			}
 
-			if (amount <= 0)
-			{
-				e.ErrorEmbedResource("give_error_min_mekos")
-					.ToEmbed().QueueToChannel(e.Channel);
-				return;
-			}
-
 			using (MikiContext context = new MikiContext())
 			{
 				User sender = await DatabaseHelpers.GetUserAsync(context, e.Author);
@@ -839,7 +832,7 @@ namespace Miki.Modules.AccountsModule
 
 				if (amount.Value <= sender.Currency)
 				{
-					await sender.AddCurrencyAsync(-amount.Value);
+					sender.RemoveCurrency(amount.Value);
 					await receiver.AddCurrencyAsync(amount.Value);
 
 					new EmbedBuilder()
@@ -908,7 +901,7 @@ namespace Miki.Modules.AccountsModule
 
 				var embed = new EmbedBuilder()
 					.SetTitle("💰 Daily")
-					.SetDescription($"Received **{amount}** Mekos! You now have `{u.Currency}` Mekos")
+					.SetDescription(e.Locale.GetString("daily_received", $"**{amount:g}**", $"`{u.Currency:g}`"))
 					.SetColor(253, 216, 136);
 
 				if (streak > 0)

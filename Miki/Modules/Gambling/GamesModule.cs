@@ -151,7 +151,7 @@ namespace Miki.Modules
 								user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 								if (user != null)
 								{
-									await user.AddCurrencyAsync(-bet, e.Channel, null);
+									user.RemoveCurrency(bet);
 									await context.SaveChangesAsync();
 								}
 							}
@@ -806,7 +806,7 @@ namespace Miki.Modules
 					}
 					else if (bet > maxBet)
 					{
-						e.ErrorEmbed($"you cannot bet more than {maxBet} mekos!")
+						e.ErrorEmbed($"you cannot bet more than {maxBet:g} mekos!")
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}
@@ -822,7 +822,7 @@ namespace Miki.Modules
 							new EmbedBuilder
 							{
 								Description =
-								$"Are you sure you want to bet **{bet}**? You currently have `{user.Currency}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.",
+								$"Are you sure you want to bet **{bet:g}**? You currently have `{user.Currency:g}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.",
 								Color = new Color(0.4f, 0.6f, 1f)
 							}.ToEmbed().QueueToChannel(e.Channel);
 							return null;

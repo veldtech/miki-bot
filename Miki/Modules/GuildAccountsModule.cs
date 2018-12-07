@@ -242,7 +242,7 @@ namespace Miki.Modules
 
 			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
-			await user.AddCurrencyAsync(-totalDeposited);
+			user.RemoveCurrency(totalDeposited);
 			c.Currency += totalDeposited;
 
 			BankAccount account = await BankAccount.GetAsync(context, e.Author.Id, e.Guild.Id);
