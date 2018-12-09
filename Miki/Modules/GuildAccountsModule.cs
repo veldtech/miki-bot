@@ -239,11 +239,11 @@ namespace Miki.Modules
 			BankAccount account = await BankAccount.GetAsync(context, e.Author.Id, e.Guild.Id);
 			account.Deposit(totalDeposited);
 
-			e.CreateEmbedBuilder()
-				.WithTitle("guildbank_deposit_title", e.Author.Username, totalDeposited.ToFormattedString())
-				.WithColor(new Color(255, 255, 255))
-				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
-				.Build().QueueToChannel(e.Channel);
+			new EmbedBuilder()
+				.SetAuthor("Guild bank", "https://imgur.com/KXtwIWs.png")
+				.SetDescription(e.Locale.GetString("guildbank_deposit_title", e.Author.Username, totalDeposited.ToFormattedString()))
+				.SetColor(new Color(255, 255, 255))
+				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "guildprofile")]
@@ -394,7 +394,7 @@ namespace Miki.Modules
 							.SetTitle("Guild Upgrades")
 							.SetDescription("Guild upgrades are a list of things you can upgrade for your guild to get more rewards! To purchase one of the upgrades, use `>guildupgrade <upgrade name>` an example would be `>guildupgrade house`")
 							.AddField("Upgrades",
-								$"`house` - Upgrades weekly rewards (costs: {guildUser.GuildHouseUpgradePrice})")
+								$"`house` - Upgrades weekly rewards (costs: {guildUser.GuildHouseUpgradePrice.ToFormattedString()})")
 							.ToEmbed().QueueToChannel(e.Channel);
 					} break;
 				}
@@ -414,7 +414,7 @@ namespace Miki.Modules
 				new EmbedBuilder()
 					.SetTitle("🏠 Guild house")
 					.SetColor(255, 232, 182)
-					.SetDescription(e.Locale.GetString("guildhouse_buy", guildUser.GuildHouseUpgradePrice))
+					.SetDescription(e.Locale.GetString("guildhouse_buy", guildUser.GuildHouseUpgradePrice.ToFormattedString()))
 					.AddInlineField("Current weekly bonus", $"x{guildUser.GuildHouseMultiplier}")
 					.AddInlineField("Current house level", e.Locale.GetString($"guildhouse_rank_{guildUser.GuildHouseLevel}"))
 					.ToEmbed().QueueToChannel(e.Channel);

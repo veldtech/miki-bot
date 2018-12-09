@@ -638,7 +638,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildbuy house` to purchase it..
+        ///   Looks up a localized string similar to For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildupgrade house` to purchase it..
         /// </summary>
         internal static string guildhouse_buy {
             get {

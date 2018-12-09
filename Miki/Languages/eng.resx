@@ -2196,6 +2196,6 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
     <value>&gt;setnotifications [-type:(rewards only|all|none)] [-g:true]</value>
   </data>
   <data name="guildhouse_buy" xml:space="preserve">
-    <value>For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildbuy house` to purchase it.</value>
+    <value>For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildupgrade house` to purchase it.</value>
   </data>
 </root>
