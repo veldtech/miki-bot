@@ -155,7 +155,7 @@ namespace Miki.Modules
 				"http://i.imgur.com/dNYBTp8.gif",
 				"http://i.imgur.com/xgb3wk2.gif",
 				"http://i.imgur.com/qzPYYsK.gif"
-}
+};
 		string[] highFiveImages = new string[]
 			{
 				"http://i.imgur.com/LOoXzd9.gif",
