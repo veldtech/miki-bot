@@ -22,7 +22,7 @@ namespace Miki.API
 				Instance = this;
 			}
 
-			this._token = token;
+			_token = token;
 			_baseUrl = base_url;
 
 			_client = new RestClient(_baseUrl);
@@ -33,7 +33,7 @@ namespace Miki.API
 		/// Builds the url to the leaderboards page on the miki website
 		/// </summary>
 		/// <param name="options">Leaderboards Options Object</param>
-		/// <returns>https://miki.ai/leaderboards/{type}/{guild_id?}</returns>
+		/// <returns>https://miki.ai/leaderboards/{guild_id?}/{type}</returns>
 		public string BuildLeaderboardsUrl(LeaderboardsOptions options)
 			=> "https://miki.ai" + BuildLeaderboardsRoute(options);
 
@@ -47,13 +47,15 @@ namespace Miki.API
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
-				.Append("/leaderboards")
-				.Append($"/{options.Type.ToString().ToLower()}");
+				.Append("/leaderboards");
 
 			if (options.GuildId.HasValue)
 			{
 				sb.Append($"/{options.GuildId}");
 			}
+
+			sb.Append($"/{options.Type.ToString().ToLower()}");
+
 
 			QueryString qs = new QueryString();
 
