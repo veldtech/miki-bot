@@ -55,7 +55,7 @@ namespace Miki.Modules
 
 					if (timer.Value.AddDays(7) <= DateTime.Now)
 					{
-						GuildUser rival = await thisGuild.GetRival(database);
+						GuildUser rival = await thisGuild.GetRivalOrDefaultAsync(database);
 
 						if (rival.Experience > thisGuild.Experience)
 						{
@@ -290,9 +290,10 @@ namespace Miki.Modules
 					g.UserCount.ToString()
 				);
 
-				if (g.RivalId != 0)
+				GuildUser rival = await g.GetRivalOrDefaultAsync(context);
+
+				if(rival != null)
 				{
-					GuildUser rival = await g.GetRival(context);
 					embed.AddInlineField(e.Locale.GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience.ToFormattedString()}]");
 				}
 
