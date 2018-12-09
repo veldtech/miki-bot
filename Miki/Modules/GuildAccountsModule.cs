@@ -57,15 +57,6 @@ namespace Miki.Modules
 					{
 						GuildUser rival = await thisGuild.GetRival(database);
 
-						if (rival == null)
-						{
-							new EmbedBuilder()
-								.SetTitle(e.Locale.GetString("miki_terms_weekly"))
-								.SetDescription(e.Locale.GetString("guildweekly_error_no_rival"))
-								.ToEmbed().QueueToChannel(e.Channel);
-							return;
-						}
-
 						if (rival.Experience > thisGuild.Experience)
 						{
 							new EmbedBuilder()
@@ -75,7 +66,7 @@ namespace Miki.Modules
 							return;
 						}
 
-						int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + 1.25) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
+						int mekosGained = (int)Math.Round((((MikiRandom.NextDouble() + thisGuild.GuildHouseMultiplier) * 0.5) * 10) * thisGuild.CalculateLevel(thisGuild.Experience));
 
 						User user = await database.Users.FindAsync(e.Author.Id.ToDbLong());
 
@@ -262,7 +253,7 @@ namespace Miki.Modules
 			{
 				GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-				int rank = g.GetGlobalRank(context);
+				int rank = await g.GetGlobalRankAsync(context);
 				int level = g.CalculateLevel(g.Experience);
 
 				EmojiBarSet onBarSet = new EmojiBarSet("<:mbarlefton:391971424442646534>", "<:mbarmidon:391971424920797185>", "<:mbarrighton:391971424488783875>");
@@ -372,6 +363,61 @@ namespace Miki.Modules
 						Description = e.Locale.GetString("miki_command_description_guildconfig")
 					}.ToEmbed().QueueToChannel(e.Channel);
 				}
+			}
+		}
+
+		[Command(Name = "guildupgrade", Accessibility = EventAccessibility.ADMINONLY)]
+		public async Task GuildUpgradeAsync(EventContext e)
+		{
+			var arg = e.Arguments.FirstOrDefault();
+			using (var context = new MikiContext())
+			{
+				var guildUser = await context.GuildUsers
+					.FindAsync(e.Guild.Id.ToDbLong());
+
+				switch (arg?.Argument ?? "")
+				{
+					case "house":
+					{
+						guildUser.RemoveCurrency(guildUser.GuildHouseUpgradePrice);
+						guildUser.GuildHouseLevel++;
+
+						await context.SaveChangesAsync();
+
+						e.SuccessEmbed("Upgraded your guild house!")
+							.QueueToChannel(e.Channel);
+					} break;
+
+					default:
+					{
+						new EmbedBuilder()
+							.SetTitle("Guild Upgrades")
+							.SetDescription("Guild upgrades are a list of things you can upgrade for your guild to get more rewards! To purchase one of the upgrades, use `>guildupgrade <upgrade name>` an example would be `>guildupgrade house`")
+							.AddField("Upgrades",
+								$"`house` - Upgrades weekly rewards (costs: {guildUser.GuildHouseUpgradePrice})")
+							.ToEmbed().QueueToChannel(e.Channel);
+					} break;
+				}
+
+			}
+		}
+
+		[Command(Name = "guildhouse")]
+		public async Task GuildHouseAsync(EventContext e)
+		{
+			var arg = e.Arguments.FirstOrDefault();
+			using (var context = new MikiContext())
+			{
+				var guildUser = await context.GuildUsers
+					.FindAsync(e.Guild.Id.ToDbLong());
+
+				new EmbedBuilder()
+					.SetTitle("🏠 Guild house")
+					.SetColor(255, 232, 182)
+					.SetDescription(e.Locale.GetString("guildhouse_buy", guildUser.GuildHouseUpgradePrice))
+					.AddInlineField("Current weekly bonus", $"x{guildUser.GuildHouseMultiplier}")
+					.AddInlineField("Current house level", e.Locale.GetString($"guildhouse_rank_{guildUser.GuildHouseLevel}"))
+					.ToEmbed().QueueToChannel(e.Channel);
 			}
 		}
 	}

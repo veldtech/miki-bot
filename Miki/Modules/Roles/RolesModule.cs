@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Dsl;
@@ -622,7 +623,6 @@ namespace Miki.Modules.Roles
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-
 				MSLResponse arguments = new MMLParser(e.Arguments.ToString().Substring(roleName.Length + 3))
 					.Parse();
 
@@ -660,6 +660,10 @@ namespace Miki.Modules.Roles
 				if(arguments.HasKey("price"))
 				{
 					newRole.Price = arguments.GetInt("price");
+					if(newRole.Price < 0)
+					{
+						throw new ArgumentLessThanZeroException();
+					}
 				}
 
 				if (arguments.HasKey("role-required"))

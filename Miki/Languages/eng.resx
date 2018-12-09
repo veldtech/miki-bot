@@ -1377,7 +1377,7 @@ You need at least **{0}** experience before you can use this command in this gui
     <value>Gamble away your mekos in a totally fair game of blackjack against Miki!</value>
   </data>
   <data name="miki_command_usage_blackjack" xml:space="preserve">
-    <value>&gt;blackjack &lt;amount&gt;</value>
+    <value>&gt;blackjack new &lt;amount&gt;</value>
   </data>
   <data name="mypasta_error_no_pastas" xml:space="preserve">
     <value>Sorry, but you don't have any pastas yet...</value>
@@ -2111,5 +2111,91 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="daily_received" xml:space="preserve">
     <value>Received {0} Mekos! You now have {1} Mekos</value>
+  </data>
+  <data name="guildhouse_rank" xml:space="preserve">
+    <value>Your guild house level:</value>
+  </data>
+  <data name="guildhouse_rank_0" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="guildhouse_rank_1" xml:space="preserve">
+    <value>Tent</value>
+  </data>
+  <data name="guildhouse_rank_10" xml:space="preserve">
+    <value>Castle</value>
+  </data>
+  <data name="guildhouse_rank_11" xml:space="preserve">
+    <value>Palace</value>
+  </data>
+  <data name="guildhouse_rank_2" xml:space="preserve">
+    <value>Hut</value>
+  </data>
+  <data name="guildhouse_rank_3" xml:space="preserve">
+    <value>Shack</value>
+  </data>
+  <data name="guildhouse_rank_4" xml:space="preserve">
+    <value>Cabin</value>
+  </data>
+  <data name="guildhouse_rank_5" xml:space="preserve">
+    <value>Lodge</value>
+  </data>
+  <data name="guildhouse_rank_6" xml:space="preserve">
+    <value>House</value>
+  </data>
+  <data name="guildhouse_rank_7" xml:space="preserve">
+    <value>Cottage</value>
+  </data>
+  <data name="guildhouse_rank_8" xml:space="preserve">
+    <value>Manor</value>
+  </data>
+  <data name="guildhouse_rank_9" xml:space="preserve">
+    <value>Mansion</value>
+  </data>
+  <data name="miki_command_description_configrole" xml:space="preserve">
+    <value>Set up roles for your server. For more information read the wiki</value>
+  </data>
+  <data name="miki_command_description_cry" xml:space="preserve">
+    <value>I want to be sad, so let me &gt;cry it out :'(</value>
+  </data>
+  <data name="miki_command_description_iam" xml:space="preserve">
+    <value>Use this command to give yourself roles from &gt;iamlist!</value>
+  </data>
+  <data name="miki_command_description_iamlist" xml:space="preserve">
+    <value>All roles set by the server that are obtainable!</value>
+  </data>
+  <data name="miki_command_description_iamnot" xml:space="preserve">
+    <value>Use this command to remove roles from yourself that you gained &gt;iamlist!</value>
+  </data>
+  <data name="miki_command_description_lick" xml:space="preserve">
+    <value>UWU peroperoperoperoperoperopero</value>
+  </data>
+  <data name="miki_command_description_setnotifications" xml:space="preserve">
+    <value>Set up miki level up notifications.</value>
+  </data>
+  <data name="miki_command_usage_configrole" xml:space="preserve">
+    <value>&gt;configrole "&lt;role name&gt;" -optable:true
+&gt;configrole "&lt;role name&gt;" -automatic:true -level-required:5</value>
+  </data>
+  <data name="miki_command_usage_cry" xml:space="preserve">
+    <value>&gt;cry</value>
+  </data>
+  <data name="miki_command_usage_iam" xml:space="preserve">
+    <value>&gt;iam &lt;role&gt;</value>
+  </data>
+  <data name="miki_command_usage_iamlist" xml:space="preserve">
+    <value>&gt;iamlist</value>
+  </data>
+  <data name="miki_command_usage_iamnot" xml:space="preserve">
+    <value>&gt;iamnot &lt;role&gt;</value>
+  </data>
+  <data name="miki_command_usage_lick" xml:space="preserve">
+    <value>&gt;lick
+&gt;lick [user]</value>
+  </data>
+  <data name="miki_command_usage_setnotifications" xml:space="preserve">
+    <value>&gt;setnotifications [-type:(rewards only|all|none)] [-g:true]</value>
+  </data>
+  <data name="guildhouse_buy" xml:space="preserve">
+    <value>For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildbuy house` to purchase it.</value>
   </data>
 </root>

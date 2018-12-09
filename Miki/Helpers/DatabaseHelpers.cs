@@ -1,4 +1,5 @@
 ﻿using Miki.Accounts.Achievements;
+using Miki.Bot.Models.Exceptions;
 using Miki.Discord.Common;
 using Miki.Exceptions;
 using Miki.Models;
@@ -65,7 +66,7 @@ namespace Miki.Helpers
 
 			if(user.Currency < amount)
 			{
-				throw new InsufficientCurrencyException(user.Currency, amount);
+				throw new InsufficientCurrencyException(user.Currency, (long)amount);
 			}
 
 			DogStatsd.Counter("currency.change", -amount);
