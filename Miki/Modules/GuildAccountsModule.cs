@@ -264,8 +264,12 @@ namespace Miki.Modules
 				EmbedBuilder embed = new EmbedBuilder()
 					.SetAuthor(g.Name, e.Guild.IconUrl, "https://miki.veld.one")
 					.SetColor(0.1f, 0.6f, 1)
-					.SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png")
 					.AddInlineField(e.Locale.GetString("miki_terms_level"), level.ToFormattedString());
+
+				if((e.Guild.IconUrl ?? "") != "")
+				{
+					embed.SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png");
+				}
 
 				string expBarString = await expBar.Print(g.Experience, e.Guild, e.Channel as IDiscordGuildChannel);
 
