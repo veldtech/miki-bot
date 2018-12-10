@@ -825,7 +825,7 @@ namespace Miki.Modules
 
 					if(bet >= noAskLimit)
 					{
-						arg = arg?.Next();
+						arg = e.Arguments.Last();
 						if (arg?.Argument.ToLower() == "ok")
 						{
 							return bet;
