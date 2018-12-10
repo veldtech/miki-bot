@@ -2117,7 +2117,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="guildhouse_rank" xml:space="preserve">
     <value>Your guild house level:</value>
-  
+  </data>
   <data name="guildhouse_rank_0" xml:space="preserve">
     <value>None</value>
   </data>
