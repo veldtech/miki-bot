@@ -2112,4 +2112,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="daily_received" xml:space="preserve">
     <value>Received {0} Mekos! You now have {1} Mekos</value>
   </data>
+  <data name="error_blackjack_null" xml:space="preserve">
+    <value>You do not have a game running in this channel at the moment! use `&gt;blackjack new` to start a game!</value>
+  </data>
 </root>

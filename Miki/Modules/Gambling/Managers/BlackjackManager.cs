@@ -1,11 +1,13 @@
 ﻿using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
+using Miki.Bot.Exceptions;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework.Events;
 using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,6 +64,11 @@ namespace Miki.Modules.Gambling.Managers
 
 		public static BlackjackManager FromContext(BlackjackContext context)
 		{
+			if(context == null)
+			{
+				throw new ArgumentNullException();
+			}
+
 			BlackjackManager manager = new BlackjackManager();
 			manager.Bet = context.Bet;
 			manager.MessageId = context.MessageId;
@@ -72,9 +79,15 @@ namespace Miki.Modules.Gambling.Managers
 
 		public static async Task<BlackjackManager> FromCacheClientAsync(ICacheClient client, ulong channelId, ulong userId)
 		{
-			return FromContext(
-				await client.GetAsync<BlackjackContext>($"miki:blackjack:{channelId}:{userId}")
-			);
+			var context = await client.GetAsync<BlackjackContext>($"miki:blackjack:{channelId}:{userId}");
+
+			if (context == null)
+			{
+				throw new BlackjackSessionNullException();
+			}
+
+			return FromContext(context);
+
 		}
 
 		public EmbedBuilder CreateEmbed(EventContext e)

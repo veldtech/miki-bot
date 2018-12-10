@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Miki.Languages {
+namespace Miki.Bot.Languages {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Miki.Languages {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Miki.Languages.eng", typeof(eng).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Miki.Bot.Languages.eng", typeof(eng).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -237,6 +237,15 @@ namespace Miki.Languages {
         internal static string error_background_owned {
             get {
                 return ResourceManager.GetString("error_background_owned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You do not have a game running in this channel at the moment! use `&gt;blackjack new` to start a game!.
+        /// </summary>
+        internal static string error_blackjack_null {
+            get {
+                return ResourceManager.GetString("error_blackjack_null", resourceCulture);
             }
         }
         
