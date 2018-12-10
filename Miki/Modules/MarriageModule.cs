@@ -197,6 +197,7 @@ namespace Miki.Modules
 			{
 				e.ErrorEmbed("I couldn't find this user!")
 					.ToEmbed().QueueToChannel(e.Channel);
+				return;
 			}
 
 			if (user.Id == e.Author.Id)
