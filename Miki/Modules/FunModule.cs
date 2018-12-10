@@ -15,6 +15,7 @@ using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Extension;
+using Miki.Modules.Accounts.Services;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -471,7 +472,11 @@ namespace Miki.Modules
 
 			if (rollResult == "1" || rollResult.StartsWith("1 "))
 			{
-				await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket()
+				var x = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules
+					.FirstOrDefault(z => z.Name == "Accounts")
+					.Services.FirstOrDefault(z => z.Name == "Achievements");
+
+				await (x as AchievementsService).Manager.GetContainerById("badluck").CheckAsync(new BasePacket()
 				{
 					discordUser = e.Author,
 					discordChannel = e.Channel

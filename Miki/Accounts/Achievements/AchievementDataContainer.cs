@@ -16,8 +16,6 @@ namespace Miki.Accounts.Achievements
 
 		public AchievementDataContainer()
 		{
-			AchievementManager.Instance.AddContainer(this);
-
 			foreach (BaseAchievement d in Achievements)
 			{
 				d.ParentName = Name;
@@ -28,20 +26,16 @@ namespace Miki.Accounts.Achievements
 		{
 			instance.Invoke(this);
 
-			AchievementManager.Instance.AddContainer(this);
-
 			foreach (BaseAchievement d in Achievements)
 			{
 				d.ParentName = Name;
 			}
 		}
 
-		public async Task CheckAsync(BasePacket packet)
-		{
-			await InternalCheckAsync(packet);
-		}
+		public async Task<bool> CheckAsync(BasePacket packet)
+			=> await InternalCheckAsync(packet);
 
-		private async Task InternalCheckAsync(BasePacket packet)
+		private async Task<bool> InternalCheckAsync(BasePacket packet)
 		{
 			long userId = packet.discordUser.Id.ToDbLong();
 
@@ -54,22 +48,23 @@ namespace Miki.Accounts.Achievements
 					if (await Achievements[0].CheckAsync(packet))
 					{
 						await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
-						await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
+						return true;
 					}
-					return;
+					return false;
 				}
 
 				if (a.Rank >= Achievements.Count - 1)
 				{
-					return;
+					return false;
 				}
 
 				if (await Achievements[a.Rank + 1].CheckAsync(packet))
 				{
 					await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
-					await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
+					return true;
 				}
 			}
+			return false;
 		}
 
 		public AchievementDataContainer ToBase()

@@ -19,19 +19,6 @@ namespace Miki.Accounts.Achievements
 
 	public class AchievementManager
 	{
-		private static AchievementManager _instance;
-
-		public static AchievementManager Instance
-		{
-			get
-			{
-				if (_instance == null)
-					_instance = new AchievementManager(Framework.DiscordBot.Instance);
-
-				return _instance;
-			}
-		}
-
 		internal BaseService provider = null;
 
 		private readonly DiscordBot bot;
@@ -47,7 +34,7 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementManager(Framework.DiscordBot bot)
+		public AchievementManager(DiscordBot bot)
 		{
 			this.bot = bot;
 

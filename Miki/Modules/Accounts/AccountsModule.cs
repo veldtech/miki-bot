@@ -92,7 +92,7 @@ namespace Miki.Modules.AccountsModule
 
 				foreach (var a in achievements)
 				{
-					BaseAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
+					BaseAchievement metadata = AchievementsService.Manager.GetContainerById(a.Name).Achievements[a.Rank];
 					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
 					totalScore += metadata.Points;
 				}
@@ -376,7 +376,7 @@ namespace Miki.Modules.AccountsModule
 					{
 						if (allAchievements.Count > 0)
 						{
-							achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+							achievements = AchievementsService.Manager.PrintAchievements(allAchievements);
 						}
 					}
 

@@ -50,10 +50,12 @@ namespace Miki.Helpers
 
 			user.Currency += amount;
 
-			if (channel is IDiscordGuildChannel guildchannel)
-			{
-				await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
-			}
+
+			// TODO (Veld): Move to event
+			//if (channel is IDiscordGuildChannel guildchannel)
+			//{
+			//	await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
+			//}
 		}
 
 		public static void RemoveCurrency(this User user, int amount)

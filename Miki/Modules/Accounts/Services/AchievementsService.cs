@@ -1,6 +1,7 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,18 @@ namespace Miki.Modules.Accounts.Services
 {
 	public class AchievementsService : BaseService
 	{
-		public AchievementsService()
+		public AchievementManager Manager { get; private set; }
+
+		public AchievementsService(DiscordBot bot) : base()
 		{
 			Name = "Achievements";
+			Manager = new AchievementManager(bot);
 		}
 
 		public override void Install(Module m)
 		{
 			base.Install(m);
-			AchievementManager.Instance.provider = this;
+			Manager.provider = this;
 			LoadAchievements();
 		}
 
@@ -418,7 +422,7 @@ namespace Miki.Modules.Accounts.Services
 
 			#region Achievement Achievements
 
-			AchievementManager.Instance.OnAchievementUnlocked += async (pa) =>
+			Manager.OnAchievementUnlocked += async (pa) =>
 			{
 				await AchievementAchievements.CheckAsync(pa);
 			};
@@ -427,23 +431,23 @@ namespace Miki.Modules.Accounts.Services
 
 			#region Command Achievements
 
-			AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
+			Manager.OnCommandUsed += InfoAchievement.CheckAsync;
+			Manager.OnCommandUsed += LonelyAchievement.CheckAsync;
+			Manager.OnCommandUsed += ChefAchievement.CheckAsync;
+			Manager.OnCommandUsed += NoPermissionAchievement.CheckAsync;
 
 			#endregion Command Achievements
 
 			#region Level Achievements
 
-			AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
+			Manager.OnLevelGained += LevelAchievement.CheckAsync;
 
 			#endregion Level Achievements
 
-			AchievementManager.Instance.OnMessage += LennyAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += PoiAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += LuckyAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += FrogAchievement.CheckAsync;
+			Manager.OnMessage += LennyAchievement.CheckAsync;
+			Manager.OnMessage += PoiAchievement.CheckAsync;
+			Manager.OnMessage += LuckyAchievement.CheckAsync;
+			Manager.OnMessage += FrogAchievement.CheckAsync;
 
 			#region Misc Achievements
 
@@ -544,7 +548,7 @@ namespace Miki.Modules.Accounts.Services
 
 			#region Transaction Achievements
 
-			AchievementManager.Instance.OnTransaction += MekosAchievement.CheckAsync;
+			Manager.OnTransaction += MekosAchievement.CheckAsync;
 
 			#endregion Transaction Achievements
 		}
