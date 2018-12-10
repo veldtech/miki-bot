@@ -93,19 +93,6 @@ namespace Miki.Modules
 			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id);
 		}
 
-		/*
-		[Command(Name = "editexp", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task EditExpAsync(EventContext e)
-		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			if (arg == null)
-				throw new ArgumentException();
-
-			IDiscordUser target = await arg.GetUserAsync(e.Guild);
-		}
-		*/
-
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task KickAsync(EventContext e)
 		{
@@ -177,7 +164,6 @@ namespace Miki.Modules
 		{
 			await PruneAsync(e, 100, 0);
 		}
-
 		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();

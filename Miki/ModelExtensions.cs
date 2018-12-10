@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Repositories;
 using Miki.Discord.Common;
 using Miki.Exceptions;
@@ -38,7 +39,7 @@ namespace Miki
 					await context.LocalExperience.Where(x => x.UserId == user.Id).ToListAsync()
 				);
 
-				Miki.Framework.DiscordBot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
+				DiscordBot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
 
 				u.Banned = true;
 				u.Total_Commands = 0;

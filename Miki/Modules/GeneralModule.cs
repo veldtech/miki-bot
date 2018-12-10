@@ -251,10 +251,10 @@ namespace Miki.Modules
 				},
 			}.AddInlineField("👑 " + e.Locale.GetString("miki_module_general_guildinfo_owned_by"), $"{owner.Username}#{owner.Discriminator}")
 			.AddInlineField("👉 " + e.Locale.GetString("miki_label_prefix"), prefix)
-			.AddInlineField("📺 " + e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString())
-			.AddInlineField("🔊 " + e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString())
-			.AddInlineField("🙎 " + e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count().ToString())
-			.AddInlineField("#⃣ " + e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count().ToString())
+			.AddInlineField("📺 " + e.Locale.GetString("miki_module_general_guildinfo_channels"), channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString())
+			.AddInlineField("🔊 " + e.Locale.GetString("miki_module_general_guildinfo_voicechannels"), channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToFormattedString())
+			.AddInlineField("🙎 " + e.Locale.GetString("miki_module_general_guildinfo_users"), roles.Count().ToFormattedString())
+			.AddInlineField("#⃣ " + e.Locale.GetString("miki_module_general_guildinfo_roles_count"), roles.Count().ToFormattedString())
 			.AddField("📜 " + e.Locale.GetString("miki_module_general_guildinfo_roles"),
 				string.Join(",", roles.Select(x => $"`{x.Name}`")))
 			.AddField("😃 " + e.Locale.GetString("term_emoji"), emojiOutput)
@@ -406,7 +406,7 @@ namespace Miki.Modules
 					  DiscordEmbed embed = new EmbedBuilder()
 						  .SetTitle("Pong - " + Environment.MachineName)
 						  .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
-						  .AddInlineField("Miki", ping + "ms").ToEmbed();
+						  .AddInlineField("Miki", ((int)ping).ToFormattedString() + "ms").ToEmbed();
 
 					  await x.EditAsync(new EditMessageArgs
 					  {
@@ -440,7 +440,7 @@ namespace Miki.Modules
 				Title = "⚙️ Miki stats",
 				Description = e.Locale.GetString("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
-			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}", await cache.HashLengthAsync(CacheUtils.GuildsCacheKey))
+			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}", (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToFormattedString())
 			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Locale))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .ToEmbed().QueueToChannel(e.Channel);
@@ -468,7 +468,7 @@ namespace Miki.Modules
 					Description = e.Locale.GetString("miki_module_general_urban_author", entry.Author)
 				}.AddField(e.Locale.GetString("miki_module_general_urban_definition"), entry.Definition, true)
 				 .AddField(e.Locale.GetString("miki_module_general_urban_example"), entry.Example, true)
-				 .AddField(e.Locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp + "  👎 " + entry.ThumbsDown, true)
+				 .AddField(e.Locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
 				 .ToEmbed().QueueToChannel(e.Channel);
 			}
 			else

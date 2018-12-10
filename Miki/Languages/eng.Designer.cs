@@ -647,6 +647,132 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildupgrade house` to purchase it..
+        /// </summary>
+        internal static string guildhouse_buy {
+            get {
+                return ResourceManager.GetString("guildhouse_buy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your guild house level:.
+        /// </summary>
+        internal static string guildhouse_rank {
+            get {
+                return ResourceManager.GetString("guildhouse_rank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string guildhouse_rank_0 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tent.
+        /// </summary>
+        internal static string guildhouse_rank_1 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle.
+        /// </summary>
+        internal static string guildhouse_rank_10 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_10", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Palace.
+        /// </summary>
+        internal static string guildhouse_rank_11 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hut.
+        /// </summary>
+        internal static string guildhouse_rank_2 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shack.
+        /// </summary>
+        internal static string guildhouse_rank_3 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cabin.
+        /// </summary>
+        internal static string guildhouse_rank_4 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lodge.
+        /// </summary>
+        internal static string guildhouse_rank_5 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to House.
+        /// </summary>
+        internal static string guildhouse_rank_6 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cottage.
+        /// </summary>
+        internal static string guildhouse_rank_7 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manor.
+        /// </summary>
+        internal static string guildhouse_rank_8 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mansion.
+        /// </summary>
+        internal static string guildhouse_rank_9 {
+            get {
+                return ResourceManager.GetString("guildhouse_rank_9", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to We couldn&apos;t matchmake you right now. Try again later!.
         /// </summary>
         internal static string guildnewrival_error_matchmaking_failed {
@@ -1053,6 +1179,15 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set up roles for your server. For more information read the wiki.
+        /// </summary>
+        internal static string miki_command_description_configrole {
+            get {
+                return ResourceManager.GetString("miki_command_description_configrole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show how confused you are by your friend&apos;s shitposting with the power of cute anime girls!.
         /// </summary>
         internal static string miki_command_description_confused {
@@ -1067,6 +1202,15 @@ namespace Miki.Bot.Languages {
         internal static string miki_command_description_createpasta {
             get {
                 return ResourceManager.GetString("miki_command_description_createpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I want to be sad, so let me &gt;cry it out :&apos;(.
+        /// </summary>
+        internal static string miki_command_description_cry {
+            get {
+                return ResourceManager.GetString("miki_command_description_cry", resourceCulture);
             }
         }
         
@@ -1314,6 +1458,33 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this command to give yourself roles from &gt;iamlist!.
+        /// </summary>
+        internal static string miki_command_description_iam {
+            get {
+                return ResourceManager.GetString("miki_command_description_iam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All roles set by the server that are obtainable!.
+        /// </summary>
+        internal static string miki_command_description_iamlist {
+            get {
+                return ResourceManager.GetString("miki_command_description_iamlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this command to remove roles from yourself that you gained &gt;iamlist!.
+        /// </summary>
+        internal static string miki_command_description_iamnot {
+            get {
+                return ResourceManager.GetString("miki_command_description_iamnot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Get yourself an image with any tag!.
         /// </summary>
         internal static string miki_command_description_img {
@@ -1382,6 +1553,15 @@ namespace Miki.Bot.Languages {
         internal static string miki_command_description_lewd {
             get {
                 return ResourceManager.GetString("miki_command_description_lewd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UWU peroperoperoperoperoperopero.
+        /// </summary>
+        internal static string miki_command_description_lick {
+            get {
+                return ResourceManager.GetString("miki_command_description_lick", resourceCulture);
             }
         }
         
@@ -1684,6 +1864,15 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set up miki level up notifications..
+        /// </summary>
+        internal static string miki_command_description_setnotifications {
+            get {
+                return ResourceManager.GetString("miki_command_description_setnotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change your &gt;profile to !profile with this cool command!.
         /// </summary>
         internal static string miki_command_description_setprefix {
@@ -1946,7 +2135,7 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;blackjack &lt;amount&gt;.
+        ///   Looks up a localized string similar to &gt;blackjack new &lt;amount&gt;.
         /// </summary>
         internal static string miki_command_usage_blackjack {
             get {
@@ -2009,6 +2198,16 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;configrole &quot;&lt;role name&gt;&quot; -optable:true
+        ///&gt;configrole &quot;&lt;role name&gt;&quot; -automatic:true -level-required:5.
+        /// </summary>
+        internal static string miki_command_usage_configrole {
+            get {
+                return ResourceManager.GetString("miki_command_usage_configrole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;confused.
         /// </summary>
         internal static string miki_command_usage_confused {
@@ -2023,6 +2222,15 @@ namespace Miki.Bot.Languages {
         internal static string miki_command_usage_createpasta {
             get {
                 return ResourceManager.GetString("miki_command_usage_createpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;cry.
+        /// </summary>
+        internal static string miki_command_usage_cry {
+            get {
+                return ResourceManager.GetString("miki_command_usage_cry", resourceCulture);
             }
         }
         
@@ -2274,6 +2482,33 @@ namespace Miki.Bot.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;iam &lt;role&gt;.
+        /// </summary>
+        internal static string miki_command_usage_iam {
+            get {
+                return ResourceManager.GetString("miki_command_usage_iam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;iamlist.
+        /// </summary>
+        internal static string miki_command_usage_iamlist {
+            get {
+                return ResourceManager.GetString("miki_command_usage_iamlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;iamnot &lt;role&gt;.
+        /// </summary>
+        internal static string miki_command_usage_iamnot {
+            get {
+                return ResourceManager.GetString("miki_command_usage_iamnot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;img [tags].
         /// </summary>
         internal static string miki_command_usage_img {
@@ -2347,6 +2582,16 @@ namespace Miki.Bot.Languages {
         internal static string miki_command_usage_lewd {
             get {
                 return ResourceManager.GetString("miki_command_usage_lewd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;lick
+        ///&gt;lick [user].
+        /// </summary>
+        internal static string miki_command_usage_lick {
+            get {
+                return ResourceManager.GetString("miki_command_usage_lick", resourceCulture);
             }
         }
         
@@ -2658,6 +2903,15 @@ namespace Miki.Bot.Languages {
         internal static string miki_command_usage_setmodule {
             get {
                 return ResourceManager.GetString("miki_command_usage_setmodule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;setnotifications [-type:(rewards only|all|none)] [-g:true].
+        /// </summary>
+        internal static string miki_command_usage_setnotifications {
+            get {
+                return ResourceManager.GetString("miki_command_usage_setnotifications", resourceCulture);
             }
         }
         

@@ -1,6 +1,7 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.API.Cards.Objects;
+using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -796,7 +797,7 @@ namespace Miki.Modules
 					}
 					else if (checkArg.ToLower() == "all" || checkArg == "*")
 					{
-						bet = user.Currency > maxBet ? maxBet : user.Currency;
+						bet = Math.Min(user.Currency, maxBet);
 					}
 					else
 					{
@@ -807,19 +808,24 @@ namespace Miki.Modules
 
 					if (bet < 1)
 					{
-						e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_zero_or_less"))
+						throw new ArgumentLessThanZeroException();
+					}
+
+					if(bet > user.Currency)
+					{
+						throw new InsufficientCurrencyException(user.Currency, bet);
+					}
+
+					if (bet > maxBet)
+					{
+						e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
 							.ToEmbed().QueueToChannel(e.Channel);
 						return null;
 					}
-					else if (bet > maxBet)
+
+					if(bet >= noAskLimit)
 					{
-						e.ErrorEmbed($"you cannot bet more than {maxBet:g} mekos!")
-							.ToEmbed().QueueToChannel(e.Channel);
-						return null;
-					}
-					else if (bet > noAskLimit)
-					{
-						arg = arg?.Next();
+						arg = e.Arguments.Last();
 						if (arg?.Argument.ToLower() == "ok")
 						{
 							return bet;

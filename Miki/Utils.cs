@@ -148,6 +148,15 @@ namespace Miki
 			}.ToEmbed();
 		}
 
+		public static string ToFormattedString(this int val)
+		{
+			return val.ToString("N0");
+		}
+		public static string ToFormattedString(this long val)
+		{
+			return val.ToString("N0");
+		}
+
 		public static string RemoveMentions(this ArgObject arg, IDiscordGuild guild)
 		{
 			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
