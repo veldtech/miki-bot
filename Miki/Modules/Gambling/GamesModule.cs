@@ -797,7 +797,7 @@ namespace Miki.Modules
 					}
 					else if (checkArg.ToLower() == "all" || checkArg == "*")
 					{
-						bet = Math.Min(bet, maxBet);
+						bet = Math.Min(user.Currency, maxBet);
 					}
 					else
 					{
