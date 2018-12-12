@@ -75,7 +75,6 @@ namespace Miki.Core.Modules.Anime
 				return;
 
 			int page = 0;
-
 			if (e.Arguments.LastOrDefault()?.TakeInt() != null)
 			{
 				page = e.Arguments.LastOrDefault().TakeInt().Value;

@@ -307,14 +307,6 @@ namespace Miki.Modules
 			embed.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		[Command(Name = "mockedit", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task EditAsync(EventContext e)
-		{
-			Stopwatch sw = Stopwatch.StartNew();
-			await Global.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordPresencePacket>(e.Arguments.ToString()));
-			Console.WriteLine(sw.ElapsedMilliseconds);
-		}
-
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetMekos(EventContext e)
 		{
