@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Miki.Bot.Exceptions
+namespace Miki.Services.Blackjack.Exceptions
 {
 	public class BlackjackSessionNullException : LocalizedException
 	{

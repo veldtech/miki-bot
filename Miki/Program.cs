@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Miki.Cache;
 using Miki.Cache.StackExchange;
 using Miki.Common;
 using Miki.Configuration;
@@ -13,6 +12,7 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Commands;
 using Miki.Framework.Events.Filters;
 using Miki.Framework.Languages;
+using Miki.Framework.Services;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
@@ -31,21 +31,22 @@ using System.Threading.Tasks;
 
 namespace Miki
 {
-	public class Program
+    public class Program
 	{
-		public static DateTime timeSinceStartup;
+		private IGateway _gateway;
 
 		private static async Task Main()
 		{
 			Program p = new Program();
 
-			timeSinceStartup = DateTime.Now;
-
-			p.InitLogging();
-
-			p.LoadLocales();
+			Global.RedisClient = new StackExchangeCacheClient(
+				new ProtobufSerializer(),
+				await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
+			);
 
 			await p.LoadDiscord();
+
+			p.LoadLocales();
 
 			Global.Backgrounds = new BackgroundStore();
 
@@ -63,16 +64,20 @@ namespace Miki
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
 			}
+
 			await Task.Delay(-1);
 		}
 
 		private void LoadLocales()
 		{
-			string nspace = "Miki.Languages";
+			string nameSpace = "Miki.Languages";
 
-			var q = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass && t.Namespace == nspace);
+			var typeList = Assembly.GetExecutingAssembly()
+				.GetTypes()
+				.Where(t => t.IsClass && t.Namespace == nameSpace);
 
-			q.ToList().ForEach(t =>
+			typeList.ToList()
+				.ForEach(t =>
 			{
 				try
 				{
@@ -93,12 +98,7 @@ namespace Miki
 
 		public async Task LoadDiscord()
 		{
-			StackExchangeCachePool pool = new StackExchangeCachePool(
-				new ProtobufSerializer(),
-				ConfigurationOptions.Parse(Global.Config.RedisConnectionString)
-			);
-
-			Global.ApiClient = new DiscordApiClient(Global.Config.Token, await pool.GetAsync());
+			Global.ApiClient = new DiscordApiClient(Global.Config.Token, Global.RedisClient);
 
 			if (Global.Config.SelfHosted)
 			{
@@ -113,7 +113,7 @@ namespace Miki
 			else
 			{
 				// For distributed systems
-				Global.Gateway = new DistributedGateway(new MessageClientConfiguration
+				_gateway = new DistributedGateway(new MessageClientConfiguration
 				{
 					ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
 					QueueName = "gateway",
@@ -123,21 +123,23 @@ namespace Miki
 				});
 			}
 
-			Global.Client = new DiscordBot(new ClientInformation()
+			Global.Client = new MikiApplication(new ClientInformation()
 			{
-				Version = "0.7.1",
 				ClientConfiguration = new DiscordClientConfigurations
 				{
 					ApiClient = Global.ApiClient,
-					CacheClient = await pool.GetAsync() as IExtendedCacheClient,
-					Gateway = Global.Gateway
+					CacheClient = Global.RedisClient,
+					Gateway = _gateway
 				},
 				DatabaseContextFactory = () => new MikiContext()
 			});
 
-			new BasicCacheStage().Initialize(Global.Gateway, (await pool.GetAsync() as IExtendedCacheClient));
+			var logging = new LoggingService();
+			Global.Client.AddService(logging);
 
-			Global.ApiClient.HttpClient.OnRequestComplete += (method, uri) =>
+			new BasicCacheStage().Initialize(_gateway, Global.RedisClient);
+
+			Global.ApiClient.RestClient.OnRequestComplete += (method, uri) =>
 			{
 				Log.Debug(method + " " + uri);
 				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
@@ -176,13 +178,13 @@ namespace Miki
 				mg.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
 			};
 
-			var handler = new SimpleCommandHandler(pool, commandMap);
+			var handler = new SimpleCommandHandler(Global.RedisClient, commandMap);
 
 			handler.AddPrefix(">", true, true);
 			handler.AddPrefix("miki.");
 
-			var sessionHandler = new SessionBasedCommandHandler(pool);
-			var messageHandler = new MessageListener(pool);
+			var sessionHandler = new SessionBasedCommandHandler(Global.RedisClient);
+			var messageHandler = new MessageListener(Global.RedisClient);
 
 			eventSystem.AddCommandHandler(sessionHandler);
 			eventSystem.AddCommandHandler(messageHandler);
@@ -223,21 +225,7 @@ namespace Miki
 			Global.Client.Discord.GuildLeave += Client_LeftGuild;
 			Global.Client.Discord.UserUpdate += Client_UserUpdated;
 
-			await Global.Gateway.StartAsync();
-		}
-
-		private void InitLogging()
-		{
-			Log.OnLog += (msg, e) =>
-			{
-				if (e >= Global.Config.LogLevel)
-				{
-					Console.WriteLine(msg);
-				}
-			};
-
-			Log.Theme.SetColor(LogLevel.Error, new LogColor { Foreground = ConsoleColor.Red });
-			Log.Theme.SetColor(LogLevel.Warning, new LogColor { Foreground = ConsoleColor.Yellow });
+			await _gateway.StartAsync();
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)

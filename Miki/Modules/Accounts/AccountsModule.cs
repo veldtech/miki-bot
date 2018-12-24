@@ -78,7 +78,7 @@ namespace Miki.Modules.AccountsModule
 				User u = await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
 				List<Achievement> achievements = await context.Achievements
-					.Where(x => x.Id == id)
+					.Where(x => x.UserId == id)
 					.ToListAsync();
 
 				EmbedBuilder embed = new EmbedBuilder()
@@ -368,7 +368,7 @@ namespace Miki.Modules.AccountsModule
 
 					embed.SetColor(c);
 
-					List<Achievement> allAchievements = await context.Achievements.Where(x => x.Id == id)
+					List<Achievement> allAchievements = await context.Achievements.Where(x => x.UserId == id)
 						.ToListAsync();
 
 					string achievements = e.Locale.GetString("miki_placeholder_null");
@@ -386,8 +386,11 @@ namespace Miki.Modules.AccountsModule
 						achievements);
 
 					embed.SetFooter(
-						e.Locale.GetString("miki_module_accounts_profile_footer", account.DateCreated.ToShortDateString(),
-							sw.ElapsedMilliseconds), "");
+						e.Locale.GetString(
+                            "miki_module_accounts_profile_footer", 
+                            account.DateCreated.ToShortDateString(),
+							sw.ElapsedMilliseconds), 
+                        "");
 
 					sw.Stop();
 

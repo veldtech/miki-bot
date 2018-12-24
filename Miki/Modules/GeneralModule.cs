@@ -27,9 +27,9 @@ namespace Miki.Modules
 		[Configurable]
 		public string UrbanKey { get; set; } = "";
 
-		private TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
+		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		public GeneralModule(Module m, Framework.DiscordBot b)
+		public GeneralModule(Module m, Framework.MikiApplication b)
 		{
 			//EventSystem.Instance.AddCommandDoneEvent(x =>
 			//{
@@ -171,6 +171,8 @@ namespace Miki.Modules
 				{
 					await msg.DeleteReactionAsync(emoji);
 
+                    await Task.Delay(1000);
+
 					var reactions = await msg.GetReactionsAsync(emoji);
 
 					//do
@@ -182,12 +184,12 @@ namespace Miki.Modules
 					// Select random winners
 					for (int i = 0; i < amount; i++)
 					{
-						if (reactions.Length == 0)
+						if (reactions.Count == 0)
 						{
 							break;
 						}
 
-						int index = MikiRandom.Next(reactions.Length);
+						int index = MikiRandom.Next(reactions.Count);
 						winners.Add(reactions[index]);
 					}
 
@@ -363,7 +365,7 @@ namespace Miki.Modules
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.SetAuthor("Miki " + Framework.DiscordBot.Instance.Information.Version, "", "");
+			embed.SetAuthor("Miki " + typeof(Program).Assembly.GetName().Version, "", "");
 			embed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(e.Locale.GetString("miki_module_general_info_made_by_header"),
@@ -431,9 +433,7 @@ namespace Miki.Modules
 		{
 			await Task.Yield();
 
-			TimeSpan timeSinceStart = DateTime.Now.Subtract(Program.timeSinceStartup);
-
-			var cache = DiscordBot.Instance.Discord.CacheClient;
+			var cache = MikiApplication.Instance.Discord.CacheClient;
 
 			new EmbedBuilder()
 			{
@@ -441,7 +441,6 @@ namespace Miki.Modules
 				Description = e.Locale.GetString("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}", (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToFormattedString())
-			 .AddField("⏰ Uptime", timeSinceStart.ToTimeString(e.Locale))
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .ToEmbed().QueueToChannel(e.Channel);
 		}

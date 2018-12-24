@@ -122,10 +122,10 @@ namespace Miki.Modules
 				"miki_module_fun_8ball_answer_positive_9"
 		};
 
-		private API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
+		private readonly API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
 		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
 
-		public FunModule(Module m, Framework.DiscordBot b)
+		public FunModule(Module m, Framework.MikiApplication b)
 		{
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
 			{

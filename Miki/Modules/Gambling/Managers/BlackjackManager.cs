@@ -1,11 +1,11 @@
 ﻿using Miki.API.Cards;
 using Miki.API.Cards.Enums;
 using Miki.API.Cards.Objects;
-using Miki.Bot.Exceptions;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework.Events;
+using Miki.Services.Blackjack.Exceptions;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -87,7 +87,6 @@ namespace Miki.Modules.Gambling.Managers
 			}
 
 			return FromContext(context);
-
 		}
 
 		public EmbedBuilder CreateEmbed(EventContext e)

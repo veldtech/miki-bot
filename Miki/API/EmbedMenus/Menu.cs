@@ -30,7 +30,7 @@ namespace Miki.API.EmbedMenus
 			if (Message == null)
 				throw new ArgumentNullException("Message");
 
-			var msg = await Framework.DiscordBot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>()
+			var msg = await Framework.MikiApplication.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<MessageListener>()
 				.WaitForNextMessage(Owner.Id, (await Message.GetChannelAsync()).Id);
 			Args a = new Args(msg.Content);
 			return a;

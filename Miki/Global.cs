@@ -4,13 +4,13 @@ using Miki.Cache.StackExchange;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.FileHandling;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Serialization.Protobuf;
 using Newtonsoft.Json;
 using SharpRaven;
 using StackExchange.Redis;
 using System;
+using System.IO;
 
 namespace Miki
 {
@@ -21,12 +21,7 @@ namespace Miki
 	{
 		public static RavenClient ravenClient;
 
-		internal static Lazy<ICacheClient> redisClientPool = new Lazy<ICacheClient>(() =>
-		{
-			return new StackExchangeCacheClient(new ProtobufSerializer(), ConnectionMultiplexer.Connect(Config.RedisConnectionString));
-		});
-
-		public static IExtendedCacheClient RedisClient => redisClientPool.Value as IExtendedCacheClient;
+		public static IExtendedCacheClient RedisClient { get; set; }
 
 		public static DiscordApiClient ApiClient { get; set; }
 
@@ -34,9 +29,7 @@ namespace Miki
 
 		public static BackgroundStore Backgrounds { get; set; }
 
-		public static DiscordBot Client { get; set; }
-
-		public static IGateway Gateway { get; set; }
+		public static MikiApplication Client { get; set; }
 
 		public static Config Config
 		{
@@ -44,18 +37,14 @@ namespace Miki
 			{
 				if (config == null)
 				{
-					if (FileReader.FileExist("settings.json", "miki"))
+					if (File.Exists("./miki/settings.json"))
 					{
-						FileReader reader = new FileReader("settings.json", "miki");
-						config = JsonConvert.DeserializeObject<Config>(reader.ReadAll());
-						reader.Finish();
+						config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./miki/settings.json"));
 					}
 					else
 					{
-						FileWriter writer = new FileWriter("settings.json", "miki");
-						writer.Write(JsonConvert.SerializeObject(new Config(), Formatting.Indented));
-						writer.Finish();
 						config = new Config();
+						File.WriteAllText("./miki/settings.json", JsonConvert.SerializeObject(config, Formatting.Indented));
 					}
 				}
 				return config;
