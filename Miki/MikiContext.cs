@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models.Queries;
 using Miki.Framework.Models;
 using Miki.Models.Objects.Guild;
+using System.Reflection;
 
 namespace Miki.Models
 {
@@ -34,7 +35,6 @@ namespace Miki.Models
 		public MikiContext()
 			: base()
 		{ }
-
 		public MikiContext(DbContextOptions options)
 			: base(options)
 		{ }
@@ -55,7 +55,7 @@ namespace Miki.Models
 
 			var achievement = modelBuilder.Entity<Achievement>();
 
-			achievement.HasKey(c => new { c.Id, c.Name });
+			achievement.HasKey(c => new { c.UserId, c.Name });
 			achievement.Property(x => x.UnlockedAt).HasDefaultValueSql("now()");
 
 			#endregion Achievements

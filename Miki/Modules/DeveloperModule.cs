@@ -273,7 +273,7 @@ namespace Miki.Modules
 					Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
 					if (a == null)
 					{
-						database.Achievements.Add(new Achievement() { Id = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
+						database.Achievements.Add(new Achievement() { UserId = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
 						await database.SaveChangesAsync();
 					}
 				}
@@ -282,7 +282,7 @@ namespace Miki.Modules
 					ulong.TryParse(context.message.Content, out ulong x);
 					if (x != 0)
 					{
-						database.Achievements.Add(new Achievement() { Id = x.ToDbLong(), Name = "donator", Rank = 0 });
+						database.Achievements.Add(new Achievement() { UserId = x.ToDbLong(), Name = "donator", Rank = 0 });
 						await database.SaveChangesAsync();
 					}
 				}
@@ -305,14 +305,6 @@ namespace Miki.Modules
 			}
 
 			embed.ToEmbed().QueueToChannel(e.Channel);
-		}
-
-		[Command(Name = "mockedit", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task EditAsync(EventContext e)
-		{
-			Stopwatch sw = Stopwatch.StartNew();
-			await Global.Gateway.OnUserUpdate(JsonConvert.DeserializeObject<DiscordPresencePacket>(e.Arguments.ToString()));
-			Console.WriteLine(sw.ElapsedMilliseconds);
 		}
 
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]

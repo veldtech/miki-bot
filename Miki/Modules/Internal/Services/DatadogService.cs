@@ -27,8 +27,7 @@ namespace Miki.Modules.Internal.Services
 
 			var eventSystem = m.EventSystem;
 
-			// TODO (Veld): reimplement this
-			Global.ApiClient.HttpClient.OnRequestComplete += (method, uri) =>
+			Global.ApiClient.RestClient.OnRequestComplete += (method, uri) =>
 			{
 				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
 				{

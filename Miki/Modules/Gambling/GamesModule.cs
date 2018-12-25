@@ -21,81 +21,6 @@ namespace Miki.Modules
 	[Module("Gambling")]
 	public class GamblingModule
 	{
-		// TODO: move to api
-		//TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
-		//string lotteryKey = "lottery:tickets";
-		//RedisDictionary lotteryDict = new RedisDictionary("lottery", Global.RedisClient);
-		//readonly int lotteryId = 0;
-
-		public GamblingModule()
-		{
-			//if (!Global.Config.IsMainBot)
-			//{
-			//	lotteryId = taskScheduler.AddTask(0, (s) =>
-			//	{
-			//		long size = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLength(lotteryKey);
-
-			//		if (size == 0)
-			//			return;
-
-			//		string value = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListGetByIndex(lotteryKey, MikiRandom.Next(size));
-
-			//		ulong winnerId = ulong.Parse(value);
-			//		int wonAmount = (int)Math.Round(size * 100 * 0.75);
-
-			//		IDiscordUser user = null; //Bot.Instance.Client.GetUser(winnerId);
-
-			//		using (var context = new MikiContext())
-			//		{
-			//			long id = winnerId.ToDbLong();
-			//			User profileUser = context.Users.Find(id);
-
-			//			if (user != null)
-			//			{
-			//				IDiscordChannel channel = user.GetDMChannelAsync().Result;
-
-			//				EmbedBuilder embed = new EmbedBuilder()
-			//				{
-			//					Author = new EmbedAuthor()
-			//					{
-			//						Name = "Winner winner chicken dinner",
-			//						IconUrl = user.GetAvatarUrl()
-			//					},
-			//					Description = $"Wow! You won the lottery and gained {wonAmount} mekos!"
-			//				};
-
-			//				profileUser.AddCurrencyAsync(wonAmount, channel);
-
-			//				embed.ToEmbed().QueueToChannel(channel);
-
-			//				context.SaveChanges();
-
-			//				Global.RedisClient.RemoveAsync(lotteryKey);
-			//				Global.RedisClient.UpsertAsync("lottery:winner", profileUser.Name ?? "unknown");
-			//				lotteryDict.ClearAsync();
-
-			//				var lotteryAchievement = AchievementManager.Instance.GetContainerById("lottery");
-
-			//				if (wonAmount > 100000)
-			//				{
-			//					lotteryAchievement.Achievements[0].UnlockAsync(channel, user, 0);
-			//				}
-
-			//				if (wonAmount > 10000000)
-			//				{
-			//					lotteryAchievement.Achievements[1].UnlockAsync(channel, user, 1);
-			//				}
-
-			//				if (wonAmount > 250000000)
-			//				{
-			//					lotteryAchievement.Achievements[2].UnlockAsync(channel, user, 1);
-			//				}
-			//			}
-			//		}
-			//	}, "", new TimeSpan(0, 1, 0, 0), true);
-			//}
-		}
-
 		[Command(Name = "rps")]
 		public async Task RPSAsync(EventContext e)
 		{
@@ -393,6 +318,7 @@ namespace Miki.Modules
 			{
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 			}
+
 			await Global.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId,
 				new EditMessageArgs
 				{

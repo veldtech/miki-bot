@@ -10,7 +10,7 @@ namespace Miki.API
 	{
 		public static MikiApi Instance { get; private set; } = null;
 
-		private RestClient _client;
+		private readonly RestClient _client;
 
 		private readonly string _token = "";
 		private readonly string _baseUrl = "";

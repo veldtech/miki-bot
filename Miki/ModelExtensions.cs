@@ -32,14 +32,14 @@ namespace Miki
 				);
 
 				context.Achievements.RemoveRange(
-					await context.Achievements.Where(x => x.Id == user.Id).ToListAsync()
+					await context.Achievements.Where(x => x.UserId == user.Id).ToListAsync()
 				);
 
 				context.LocalExperience.RemoveRange(
 					await context.LocalExperience.Where(x => x.UserId == user.Id).ToListAsync()
 				);
 
-				DiscordBot.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
+				MikiApplication.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
 
 				u.Banned = true;
 				u.Total_Commands = 0;

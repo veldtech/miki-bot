@@ -20,7 +20,7 @@ namespace Miki.Accounts
 
 	public class AccountManager
 	{
-		public static AccountManager Instance { get; } = new AccountManager(Framework.DiscordBot.Instance);
+		public static AccountManager Instance { get; } = new AccountManager(Framework.MikiApplication.Instance);
 
 		public event LevelUpDelegate OnLocalLevelUp;
 
@@ -28,17 +28,17 @@ namespace Miki.Accounts
 
 		public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
-		private ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
+		private readonly ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
 		private DateTime lastDbSync = DateTime.MinValue;
 
-		private ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
+		private readonly ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
 
 		private bool isSyncing = false;
 
 		private string GetContextKey(ulong guildid, ulong userid)
 			=> $"user:{guildid}:{userid}:exp";
 
-		public AccountManager(DiscordBot bot)
+		public AccountManager(MikiApplication bot)
 		{
 			OnGlobalLevelUp += (a, e, l) =>
 			{

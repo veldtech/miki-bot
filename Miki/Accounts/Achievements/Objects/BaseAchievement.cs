@@ -70,7 +70,7 @@ namespace Miki.Accounts.Achievements
 				{
 					achievement = context.Achievements.Add(new Achievement()
 					{
-						Id = userId,
+						UserId = userId,
 						Name = ParentName,
 						Rank = 0
 					}).Entity;

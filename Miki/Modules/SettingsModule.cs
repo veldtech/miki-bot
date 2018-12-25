@@ -241,7 +241,7 @@ namespace Miki.Modules
 			}.AddField(
 				"Your language not here?",
 				e.Locale.GetString("locales_contribute",
-					$"[{e.Locale.GetString("locales_tranlations")}](https://poeditor.com/join/project/FIv7NBIReD)"
+					$"[{e.Locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"
 				)
 			).ToEmbed().QueueToChannel(e.Channel);
 			return Task.CompletedTask;

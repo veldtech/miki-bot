@@ -1,6 +1,7 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
@@ -178,7 +179,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "😱",
 						CheckCommand = async (p) =>
 						{
-							return await Framework.DiscordBot.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
+							return await MikiApplication.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
 						},
 						Points = 5
 					}

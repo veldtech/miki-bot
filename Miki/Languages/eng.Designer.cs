@@ -19,7 +19,7 @@ namespace Miki.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class eng {
@@ -111,15 +111,6 @@ namespace Miki.Languages {
         internal static string blackjack_error_instance_exists {
             get {
                 return ResourceManager.GetString("blackjack_error_instance_exists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You still have a blackjack game running here, please either stop it by using `&gt;blackjack stay` or finish playing it. This game will expire in 24 hours..
-        /// </summary>
-        internal static string blackjack_session_exists {
-            get {
-                return ResourceManager.GetString("blackjack_session_exists", resourceCulture);
             }
         }
         
@@ -246,6 +237,15 @@ namespace Miki.Languages {
         internal static string error_blackjack_null {
             get {
                 return ResourceManager.GetString("error_blackjack_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You still have a blackjack game running here, please either stop it by using `&gt;blackjack stay` or finish playing it. This game will expire in 24 hours..
+        /// </summary>
+        internal static string error_blackjack_session_exists {
+            get {
+                return ResourceManager.GetString("error_blackjack_session_exists", resourceCulture);
             }
         }
         

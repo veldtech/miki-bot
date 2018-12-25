@@ -26,7 +26,7 @@ namespace Miki.Accounts.Achievements
 			get
 			{
 				if (_instance == null)
-					_instance = new AchievementManager(Framework.DiscordBot.Instance);
+					_instance = new AchievementManager(MikiApplication.Instance);
 
 				return _instance;
 			}
@@ -34,8 +34,8 @@ namespace Miki.Accounts.Achievements
 
 		internal BaseService provider = null;
 
-		private readonly DiscordBot bot;
-		private Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
+		private readonly MikiApplication bot;
+		private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
 
@@ -47,7 +47,7 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementManager(Framework.DiscordBot bot)
+        public AchievementManager(MikiApplication bot)
 		{
 			this.bot = bot;
 
@@ -100,7 +100,7 @@ namespace Miki.Accounts.Achievements
 		{
 			if (containers.ContainsKey(container.Name))
 			{
-				Log.WarningAt("AddContainer", "Cannot add duplicate containers");
+				Log.Warning($"AddContainer cannot add duplicate containers");
 				return;
 			}
 
@@ -146,7 +146,7 @@ namespace Miki.Accounts.Achievements
 			using (var context = new MikiContext())
 			{
 				int achievementCount = await context.Achievements
-					.Where(q => q.Id == id)
+					.Where(q => q.UserId == id)
 					.CountAsync();
 
 				AchievementPacket p = new AchievementPacket()
@@ -185,7 +185,7 @@ namespace Miki.Accounts.Achievements
 			}
 			catch (Exception e)
 			{
-				Log.WarningAt("achievement check failed", e.ToString());
+				Log.Warning($"Achievement check failed: {e.ToString()}");
 			}
 		}
 	}
