@@ -6,10 +6,7 @@ namespace Miki.Modules.Gambling.Managers
 {
 	internal class RPSManager
 	{
-		// safe pattern for singletons
-		private static RPSManager _instance = new RPSManager();
-
-		public static RPSManager Instance => _instance;
+		public static RPSManager Instance { get; } = new RPSManager();
 
 		public enum VictoryStatus
 		{
@@ -42,7 +39,6 @@ namespace Miki.Modules.Gambling.Managers
 
 		public RPSWeapon Parse(string name)
 		{
-			// Thanks to fuzen
 			return weapons
 				.Where(w => w.Name[0] == name[0])
 				.FirstOrDefault();
@@ -62,10 +58,7 @@ namespace Miki.Modules.Gambling.Managers
 		}
 
 		public bool TryParse(string name, out RPSWeapon weapon)
-		{
-			weapon = Parse(name);
-			return weapon != null;
-		}
+			=> (weapon = Parse(name)) != null;
 
 		public VictoryStatus CalculateVictory(RPSWeapon player, RPSWeapon cpu)
 		{
