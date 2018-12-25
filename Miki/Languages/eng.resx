@@ -2201,4 +2201,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="guildhouse_buy" xml:space="preserve">
     <value>For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildupgrade house` to purchase it.</value>
   </data>
+  <data name="error_user_null" xml:space="preserve">
+    <value>User was not loaded from database!</value>
+  </data>
 </root>

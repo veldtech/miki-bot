@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Miki.Bot.Languages {
+namespace Miki.Languages {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Miki.Bot.Languages {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Miki.Bot.Languages.eng", typeof(eng).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Miki.Languages.eng", typeof(eng).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -435,6 +435,15 @@ namespace Miki.Bot.Languages {
         internal static string error_unclosed_delimiter {
             get {
                 return ResourceManager.GetString("error_unclosed_delimiter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User was not loaded from database!.
+        /// </summary>
+        internal static string error_user_null {
+            get {
+                return ResourceManager.GetString("error_user_null", resourceCulture);
             }
         }
         
