@@ -5,6 +5,7 @@ using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
+using Miki.Logging;
 using Miki.Models;
 using Miki.Rest;
 using Newtonsoft.Json;
@@ -18,11 +19,21 @@ namespace Miki.Modules
 	[Module(Name = "Donator")]
 	internal class DonatorModule
 	{
-		private RestClient client = new RestClient(Global.Config.ImageApiUrl)
-			.AddHeader("Authorization", Global.Config.MikiApiKey);
+        private RestClient client;
 
-		public DonatorModule()
+		public DonatorModule(Module m, MikiApplication b)
 		{
+            if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl) 
+                || !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+            {
+                client = new RestClient(Global.Config.ImageApiUrl)
+                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+            }
+            else
+            {
+                m.Enabled = false;
+                Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
+            }
 		}
 
 		[Command(Name = "changetitle")]

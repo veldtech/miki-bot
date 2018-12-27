@@ -15,6 +15,7 @@ using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Extension;
+using Miki.Rest;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -123,7 +124,7 @@ namespace Miki.Modules
 		};
 
 		private readonly API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
-		private Rest.RestClient imageClient = new Rest.RestClient(Global.Config.ImageApiUrl);
+        private RestClient imageClient;
 
 		public FunModule(Module m, Framework.MikiApplication b)
 		{
@@ -195,7 +196,6 @@ namespace Miki.Modules
 					"shota",
 				}
 			}));
-
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
 			{
 				QueryKey = new Uri("https://yande.re/post.json?tags="),
@@ -205,6 +205,11 @@ namespace Miki.Modules
 					"shota",
 				}
 			}));
+
+            if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
+            {
+                imageClient = new RestClient(Global.Config.ImageApiUrl);
+            }
 		}
 
 		[Command(Name = "8ball")]
