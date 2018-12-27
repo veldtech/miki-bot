@@ -15,6 +15,7 @@ using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
+using Miki.Logging;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Modules.Accounts.Services;
@@ -41,8 +42,7 @@ namespace Miki.Modules.AccountsModule
 
 		private readonly BackgroundStore store = new BackgroundStore();
 
-		private RestClient client = new RestClient(Global.Config.ImageApiUrl)
-			.AddHeader("Authorization", Global.Config.MikiApiKey);
+        private RestClient client;
 
 		private readonly EmojiBarSet onBarSet = new EmojiBarSet(
 			"<:mbarlefton:391971424442646534>",
@@ -53,6 +53,20 @@ namespace Miki.Modules.AccountsModule
 			"<:mbarleftoff:391971424824459265>",
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
+
+        public AccountsModule(Module m, MikiApplication app)
+        {
+            if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey) 
+                && !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
+            {
+                client = new RestClient(Global.Config.ImageApiUrl)
+                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+            }
+            else
+            {
+                Log.Warning("Image API can not be loaded in AccountsModule");
+            }
+        }
 
 		[Command(Name = "achievements")]
 		public async Task AchievementsAsync(EventContext e)

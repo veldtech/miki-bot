@@ -29,7 +29,7 @@ namespace Miki.Modules
 
 		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		public GeneralModule(Module m, Framework.MikiApplication b)
+		public GeneralModule(Module m, MikiApplication b)
 		{
 			//EventSystem.Instance.AddCommandDoneEvent(x =>
 			//{
