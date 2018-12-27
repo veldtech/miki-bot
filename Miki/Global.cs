@@ -43,6 +43,10 @@ namespace Miki
 					}
 					else
 					{
+						if (!Directory.Exists("./miki"))
+						{
+							Directory.CreateDirectory("./miki");
+						}
 						config = new Config();
 						File.WriteAllText("./miki/settings.json", JsonConvert.SerializeObject(config, Formatting.Indented));
 					}
