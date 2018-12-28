@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Events;
+using Miki.Helpers;
 using Miki.Logging;
 using Miki.Models;
 using StatsdClient;
@@ -26,7 +28,7 @@ namespace Miki.Accounts.Achievements
 			get
 			{
 				if (_instance == null)
-					_instance = new AchievementManager(MikiApplication.Instance);
+					_instance = new AchievementManager(MikiApp.Instance);
 
 				return _instance;
 			}
@@ -34,7 +36,7 @@ namespace Miki.Accounts.Achievements
 
 		internal BaseService provider = null;
 
-		private readonly MikiApplication bot;
+		private readonly MikiApp bot;
 		private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
 		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
@@ -47,13 +49,13 @@ namespace Miki.Accounts.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-        public AchievementManager(MikiApplication bot)
+        public AchievementManager(MikiApp bot)
 		{
 			this.bot = bot;
 
-			AccountManager.Instance.OnGlobalLevelUp += async (u, c, l) =>
+			AccountManager.Instance.OnLocalLevelUp += async (u, c, l) =>
 			{
-				if (await provider.IsEnabled(Global.RedisClient, c.Id))
+				if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), MikiApp.Instance.GetService<DbContext>(), c.Id))
 				{
 					LevelPacket p = new LevelPacket()
 					{
@@ -67,7 +69,7 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
 			{
-				if (await provider.IsEnabled(Global.RedisClient, msg.ChannelId))
+				if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), MikiApp.Instance.GetService<DbContext>(), msg.ChannelId))
 				{
 					TransactionPacket p = new TransactionPacket()
 					{
@@ -82,7 +84,7 @@ namespace Miki.Accounts.Achievements
 				}
 			};
 
-			bot.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
+			bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
 			{
 				CommandPacket p = new CommandPacket()
 				{
@@ -134,7 +136,7 @@ namespace Miki.Accounts.Achievements
 			return output;
 		}
 
-		public async Task CallAchievementUnlockEventAsync(BaseAchievement achievement, IDiscordUser user, IDiscordChannel channel)
+		public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordChannel channel)
 		{
 			DogStatsd.Counter("achievements.gained", 1);
 
@@ -188,5 +190,73 @@ namespace Miki.Accounts.Achievements
 				Log.Warning($"Achievement check failed: {e.ToString()}");
 			}
 		}
-	}
+
+        /// <summary>
+        /// Unlocks the achievement and if not yet added to the database, It'll add it to the database.
+        /// </summary>
+        /// <param name="context">sql context</param>
+        /// <param name="id">user id</param>
+        /// <param name="r">rank set to (optional)</param>
+        /// <returns></returns>
+        public async Task UnlockAsync(IAchievement achievement, IDiscordChannel channel, IDiscordUser user, int r = 0)
+        {
+            long userid = user.Id.ToDbLong();
+
+            if (await UnlockIsValid(achievement, userid, r))
+            {
+                await CallAchievementUnlockEventAsync(achievement, user, channel);
+                Notification.SendAchievement(achievement, channel, user);
+            }
+        }
+
+        public async Task UnlockAsync(IAchievement achievement, IDiscordUser user, int r = 0)
+        {
+            long userid = user.Id.ToDbLong();
+
+            if (await UnlockIsValid(achievement, userid, r))
+            {
+                await Notification.SendAchievementAsync(achievement, user);
+            }
+        }
+
+        public async Task<bool> UnlockIsValid(IAchievement achievement, long userId, int newRank)
+        {
+            using (var context = new MikiContext())
+            {
+                var achievementObject = await DatabaseHelpers.GetAchievementAsync(context, userId, achievement.ParentName);
+
+                // If no achievement has been found and want to unlock first
+                if (achievementObject == null && newRank == 0)
+                {
+                    achievementObject = context.Achievements.Add(new Achievement()
+                    {
+                        UserId = userId,
+                        Name = achievement.ParentName,
+                        Rank = 0
+                    }).Entity;
+
+                    await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.Name, achievementObject);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                // If achievement we want to unlock is the next achievement
+                if (achievementObject != null)
+                {
+                    if (achievementObject.Rank == newRank - 1)
+                    {
+                        achievementObject.Rank++;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.ParentName, achievementObject);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }

@@ -12,17 +12,17 @@ namespace Miki
 			SendAchievement(d.Achievements[rank], channel, user);
 		}
 
-		public static void SendAchievement(BaseAchievement d, IDiscordChannel channel, IDiscordUser user)
+		public static void SendAchievement(IAchievement d, IDiscordChannel channel, IDiscordUser user)
 		{
 			CreateAchievementEmbed(d, user).QueueToChannel(channel);
 		}
 
-		public static async Task SendAchievementAsync(BaseAchievement baseAchievement, IDiscordUser user)
+		public static async Task SendAchievementAsync(IAchievement baseAchievement, IDiscordUser user)
 		{
 			SendAchievement(baseAchievement, await user.GetDMChannelAsync(), user);
 		}
 
-		private static DiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)
+		private static DiscordEmbed CreateAchievementEmbed(IAchievement baseAchievement, IDiscordUser user)
 		{
 			return new EmbedBuilder()
 				.SetTitle("Achievement Unlocked")

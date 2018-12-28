@@ -126,7 +126,7 @@ namespace Miki.Modules
 		private readonly API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
         private RestClient imageClient;
 
-		public FunModule(Module m, Framework.MikiApplication b)
+		public FunModule(Module m, Framework.MikiApp b)
 		{
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
 			{
@@ -752,12 +752,6 @@ namespace Miki.Modules
 			// TODO: implement UserNullException
 			if (user == null)
 				return;
-
-			if (!await Global.RedisClient.ExistsAsync($"user:{e.Author.Id}:avatar:synced"))
-				await Utils.SyncAvatarAsync(e.Author);
-
-			if (!await Global.RedisClient.ExistsAsync($"user:{user.Id}:avatar:synced"))
-				await Utils.SyncAvatarAsync(user);
 
 			Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 

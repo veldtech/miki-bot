@@ -2,6 +2,7 @@
 using Miki.Accounts.Achievements.Objects;
 using Miki.API.Cards.Objects;
 using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -149,11 +150,12 @@ namespace Miki.Modules
 
 		public async Task OnBlackjackNew(EventContext e, ArgObject args)
 		{
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
 			int? bet = await ValidateBetAsync(e, args);
 
 			if (bet.HasValue)
 			{
-				if (await Global.RedisClient.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
+				if (await cache.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
 				{
 					e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
 						.ToEmbed().QueueToChannel(e.Channel);
@@ -187,13 +189,16 @@ namespace Miki.Modules
 
 				manager.MessageId = message.Id;
 
-				await Global.RedisClient.UpsertAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}", manager.ToContext(), TimeSpan.FromHours(24));
+				await cache.UpsertAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}", manager.ToContext(), TimeSpan.FromHours(24));
 			}
 		}
 
 		private async Task OnBlackjackHit(EventContext e)
 		{
-			BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(Global.RedisClient, e.Channel.Id, e.Author.Id);
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+
+            BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(cache, e.Channel.Id, e.Author.Id);
 
 			CardHand Player = bm.GetPlayer(e.Author.Id);
 			CardHand Dealer = bm.GetPlayer(0);
@@ -222,18 +227,19 @@ namespace Miki.Modules
 					return;
 				}
 
-				await Global.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
+				await api.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e).ToEmbed()
 				});
 
-				await Global.RedisClient.UpsertAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}", bm.ToContext(), TimeSpan.FromHours(24));
+				await cache.UpsertAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}", bm.ToContext(), TimeSpan.FromHours(24));
 			}
 		}
 
 		private async Task OnBlackjackHold(EventContext e, bool charlie = false)
-		{
-			BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(Global.RedisClient, e.Channel.Id, e.Author.Id);
+        {
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(cache, e.Channel.Id, e.Author.Id);
 
 			CardHand Player = bm.GetPlayer(e.Author.Id);
 			CardHand Dealer = bm.GetPlayer(0);
@@ -281,7 +287,10 @@ namespace Miki.Modules
 
 		private async Task OnBlackjackDraw(EventContext e, BlackjackManager bm)
 		{
-			User user;
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+
+            User user;
 			using (var context = new MikiContext())
 			{
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -292,7 +301,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await Global.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId,
+			await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
 				new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e)
@@ -308,18 +317,21 @@ namespace Miki.Modules
 				}
 			);
 
-			await Global.RedisClient.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+			await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
 		}
 
 		private async Task OnBlackjackDead(EventContext e, BlackjackManager bm)
 		{
-			User user;
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+
+            User user;
 			using (var context = new MikiContext())
 			{
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 			}
 
-			await Global.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId,
+			await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
 				new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e)
@@ -331,12 +343,15 @@ namespace Miki.Modules
 							).ToEmbed()
 				});
 
-			await Global.RedisClient.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+			await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
 		}
 
 		private async Task OnBlackjackWin(EventContext e, BlackjackManager bm)
 		{
-			User user;
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+
+            User user;
 			using (var context = new MikiContext())
 			{
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
@@ -347,7 +362,7 @@ namespace Miki.Modules
 				}
 			}
 
-			await Global.ApiClient.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
+			await api.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
 			{
 				embed = bm.CreateEmbed(e)
 					.SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
@@ -355,7 +370,7 @@ namespace Miki.Modules
 					.ToEmbed()
 			});
 
-			await Global.RedisClient.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+			await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
 		}
 
 		[Command(Name = "flip")]

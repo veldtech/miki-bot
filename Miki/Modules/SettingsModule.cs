@@ -1,4 +1,6 @@
-﻿using Miki.Discord;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Cache;
+using Miki.Discord;
 using Miki.Discord.Rest;
 using Miki.Dsl;
 using Miki.Framework.Events;
@@ -102,7 +104,10 @@ namespace Miki.Modules
 		[Command(Name = "showmodule")]
 		public async Task ConfigAsync(EventContext e)
 		{
-			Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == e.Arguments.ToString().ToLower());
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var db = (DbContext)e.Services.GetService(typeof(DbContext));
+
+            Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == e.Arguments.ToString().ToLower());
 
 			if (module != null)
 			{
@@ -114,7 +119,7 @@ namespace Miki.Modules
 
 				foreach (CommandEvent ev in module.Events.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(cache, db, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				embed.AddInlineField("Events", content);
@@ -123,7 +128,7 @@ namespace Miki.Modules
 
 				foreach (BaseService ev in module.Services.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabled(cache, db, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				if (!string.IsNullOrEmpty(content))
@@ -136,7 +141,10 @@ namespace Miki.Modules
 		[Command(Name = "showmodules")]
 		public async Task ShowModulesAsync(EventContext e)
 		{
-			List<string> modules = new List<string>();
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var db = (DbContext)e.Services.GetService(typeof(DbContext));
+
+            List<string> modules = new List<string>();
 			SimpleCommandHandler commandHandler = e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
 			EventAccessibility userEventAccessibility = await commandHandler.GetUserAccessibility(e);
 
@@ -157,7 +165,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < modules.Count(); i++)
 			{
-				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(Global.RedisClient, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
+				string output = $"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(cache, db, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
 				if (i < modules.Count() / 2 + 1)
 				{
 					firstColumn += output;
@@ -178,6 +186,8 @@ namespace Miki.Modules
 		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetLocale(EventContext e)
 		{
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
 			string localeName = e.Arguments.ToString() ?? "";
 
 			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
@@ -192,14 +202,16 @@ namespace Miki.Modules
 			}
 			e.ErrorEmbedResource("error_language_invalid", 
 				localeName, 
-				await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)
+				await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)
 			).ToEmbed().QueueToChannel(e.Channel);
 		}
 
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PrefixAsync(EventContext e)
 		{
-			if (string.IsNullOrEmpty(e.Arguments.ToString()))
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
+            if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
 				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
 				return;
@@ -209,7 +221,7 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				await defaultInstance.ChangeForGuildAsync(context, Global.RedisClient, e.Guild.Id, e.Arguments.ToString());
+				await defaultInstance.ChangeForGuildAsync(context, cache, e.Guild.Id, e.Arguments.ToString());
 			}
 
 			EmbedBuilder embed = new EmbedBuilder();

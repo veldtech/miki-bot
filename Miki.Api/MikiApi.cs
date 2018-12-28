@@ -8,25 +8,18 @@ namespace Miki.API
 {
 	public class MikiApi : IDisposable
 	{
-		public static MikiApi Instance { get; private set; } = null;
-
 		private readonly RestClient _client;
 
 		private readonly string _token = "";
 		private readonly string _baseUrl = "";
 
-		public MikiApi(string base_url, string token)
+		public MikiApi(string baseUrl, string token)
 		{
-			if (Instance == null)
-			{
-				Instance = this;
-			}
-
 			_token = token;
-			_baseUrl = base_url;
+			_baseUrl = baseUrl;
 
 			_client = new RestClient(_baseUrl);
-			_client.SetAuthorization(token);
+			_client.SetAuthorization("Bearer " + token);
 		}
 
 		/// <summary>

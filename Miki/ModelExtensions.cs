@@ -39,7 +39,7 @@ namespace Miki
 					await context.LocalExperience.Where(x => x.UserId == user.Id).ToListAsync()
 				);
 
-				MikiApplication.Instance.GetAttachedObject<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
+				MikiApp.Instance.GetService<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
 
 				u.Banned = true;
 				u.Total_Commands = 0;
@@ -54,7 +54,7 @@ namespace Miki
 
 		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
 		{
-			return await Global.Client.Discord.GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
+			return await MikiApp.Instance.Discord.GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
 		}
 
 		public static async Task AddAsync(MikiContext context, string id, string text, long creator)

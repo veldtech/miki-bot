@@ -19,18 +19,6 @@ namespace Miki
 	/// </summary>
 	public class Global
 	{
-		public static RavenClient ravenClient;
-
-		public static IExtendedCacheClient RedisClient { get; set; }
-
-		public static DiscordApiClient ApiClient { get; set; }
-
-		public static IDiscordUser CurrentUser { get; set; }
-
-		public static BackgroundStore Backgrounds { get; set; }
-
-		public static MikiApplication Client { get; set; }
-
 		public static Config Config
 		{
 			get

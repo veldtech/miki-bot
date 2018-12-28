@@ -21,7 +21,7 @@ namespace Miki.Modules
 	{
         private RestClient client;
 
-		public DonatorModule(Module m, MikiApplication b)
+		public DonatorModule(Module m, MikiApp b)
 		{
             if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl) 
                 || !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
@@ -94,21 +94,21 @@ namespace Miki.Modules
 					context.DonatorKey.Remove(key);
 					await context.SaveChangesAsync();
 
-					// cheap hack.
-
-					var achievements = AchievementManager.Instance.GetContainerById("donator");
+                    // cheap hack.        
+                    var achievementManager = AchievementManager.Instance;
+                    var achievements = achievementManager.GetContainerById("donator").Achievements;
 
 					if (donatorStatus.KeysRedeemed == 1)
 					{
-						await achievements.Achievements[0].UnlockAsync(e.Channel, e.Author, 0);
+						await achievementManager.UnlockAsync(achievements[0], e.Channel, e.Author, 0);
 					}
 					else if (donatorStatus.KeysRedeemed == 5)
 					{
-						await achievements.Achievements[1].UnlockAsync(e.Channel, e.Author, 1);
+						await achievementManager.UnlockAsync(achievements[1], e.Channel, e.Author, 1);
 					}
 					else if (donatorStatus.KeysRedeemed == 25)
 					{
-						await achievements.Achievements[2].UnlockAsync(e.Channel, e.Author, 2);
+						await achievementManager.UnlockAsync(achievements[2], e.Channel, e.Author, 2);
 					}
 				}
 				else

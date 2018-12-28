@@ -16,7 +16,7 @@ namespace Miki.Modules
 
 		private readonly CountLib _countLib;
 
-		public ServerCountModule(Module m, MikiApplication b)
+		public ServerCountModule(Module m, MikiApp b)
 		{
 			m.JoinedGuild = OnUpdateGuilds;
 			m.LeftGuild = OnUpdateGuilds;
@@ -25,7 +25,7 @@ namespace Miki.Modules
 
 		private Task OnUpdateGuilds(IDiscordGuild g)
 		{
-			MikiApplication bot = MikiApplication.Instance;
+			MikiApp bot = MikiApp.Instance;
 
 			//DiscordSocketClient client = bot.Client.GetShardFor(g);
 			//await countLib.PostStats(client.ShardId, client.Guilds.Count);

@@ -1,4 +1,5 @@
-﻿using Miki.Discord;
+﻿using Miki.Cache;
+using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework.Events;
@@ -305,18 +306,20 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				if (arg?.Argument == "-g")
+                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
+                if (arg?.Argument == "-g")
 				{
 					global = true;
 					var channels = await e.Guild.GetChannelsAsync();
 					foreach(var c in channels)
 					{
-						await command.SetEnabled(context, Global.RedisClient, c.Id, setValue);
+						await command.SetEnabled(context, cache, c.Id, setValue);
 					}
 				}
 				else
 				{
-					await command.SetEnabled(context, Global.RedisClient, e.Channel.Id, setValue);
+					await command.SetEnabled(context, cache, e.Channel.Id, setValue);
 				}
 
 				await context.SaveChangesAsync();
@@ -340,6 +343,8 @@ namespace Miki.Modules
 		[Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
 		public async Task SetModuleAsync(EventContext e)
 		{
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			if (arg == null)
@@ -375,7 +380,7 @@ namespace Miki.Modules
 
 			arg = arg?.Next();
 
-			await m.SetEnabled(Global.RedisClient, e.Guild.Id, (setValue ?? false));
+			await m.SetEnabled(cache, e.Guild.Id, (setValue ?? false));
 
 			e.SuccessEmbed(((setValue ?? false) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}")
 				.QueueToChannel(e.Channel);

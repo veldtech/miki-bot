@@ -36,7 +36,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer AchievementAchievements = new AchievementDataContainer(x =>
 			{
 				x.Name = "achievements";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new AchievementAchievement()
 					{
@@ -86,24 +86,24 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer LotteryAchievements = new AchievementDataContainer(x =>
 			{
 				x.Name = "lottery";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					// Win a lottery > 100k
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Celebrator",
 						Icon = "🍺",
 						Points = 5,
 					},
 					// Win a lottery > 10m
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Absolute Madman",
 						Icon = "🍸",
 						Points = 10,
 					},
 					// Win a lottery > 250m
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Pop da champagne",
 						Icon = "🍾",
@@ -115,7 +115,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "info";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
@@ -134,7 +134,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer LonelyAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "fa";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
@@ -153,7 +153,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer ChefAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "creator";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
@@ -171,7 +171,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer NoPermissionAchievement = new AchievementDataContainer(x =>
 			 {
 				 x.Name = "noperms";
-				 x.Achievements = new List<BaseAchievement>()
+				 x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
@@ -179,7 +179,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "😱",
 						CheckCommand = async (p) =>
 						{
-							return await MikiApplication.Instance.GetAttachedObject<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
+							return await MikiApp.Instance.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
 						},
 						Points = 5
 					}
@@ -189,7 +189,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer LevelAchievement = new AchievementDataContainer(x =>
 			 {
 				 x.Name = "levelachievements";
-				 x.Achievements = new List<BaseAchievement>()
+				 x.Achievements = new List<IAchievement>()
 				 {
 					new LevelAchievement()
 					{
@@ -253,7 +253,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer FrogAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "frog";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new MessageAchievement()
 					{
@@ -267,7 +267,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer LennyAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "lenny";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new MessageAchievement()
 					{
@@ -284,7 +284,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer PoiAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "poi";
-				x.Achievements = new List<BaseAchievement>
+				x.Achievements = new List<IAchievement>
 				{
 					new MessageAchievement()
 					{
@@ -301,7 +301,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer LuckyAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "goodluck";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new MessageAchievement()
 					{
@@ -319,7 +319,7 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer MekosAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "meko";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new TransactionAchievement()
 					{
@@ -377,24 +377,24 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer DiscordBotsOrgAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "voter";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					// first vote
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Helper",
 						Icon = "✉",
 						Points = 5,
 					},
 					// 10 votes
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Voter",
 						Icon = "🗳",
 						Points = 10,
 					},
 					// 50 votes
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Elector",
 						Icon = "🗃",
@@ -406,9 +406,9 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer SlotsAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "slots";
-				x.Achievements = new List<BaseAchievement>
+				x.Achievements = new List<IAchievement>
 				{
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Jackpot",
 						Icon = "🎰",
@@ -451,9 +451,9 @@ namespace Miki.Modules.Accounts.Services
 			new AchievementDataContainer(x =>
 			{
 				x.Name = "badluck";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Unlucky",
 						Icon = "🎲",
@@ -469,7 +469,7 @@ namespace Miki.Modules.Accounts.Services
 			new AchievementDataContainer(x =>
 			{
 				x.Name = "contributor";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new UserUpdateAchievement()
 					{
@@ -486,7 +486,7 @@ namespace Miki.Modules.Accounts.Services
 			new AchievementDataContainer(x =>
 			{
 				x.Name = "developer";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new UserUpdateAchievement()
 					{
@@ -502,7 +502,7 @@ namespace Miki.Modules.Accounts.Services
 			new AchievementDataContainer(x =>
 			{
 				x.Name = "glitch";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
 					new UserUpdateAchievement()
 					{
@@ -518,21 +518,21 @@ namespace Miki.Modules.Accounts.Services
 			new AchievementDataContainer(x =>
 			{
 				x.Name = "donator";
-				x.Achievements = new List<BaseAchievement>()
+				x.Achievements = new List<IAchievement>()
 				{
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Donator",
 						Icon = "💖",
 						Points = 0,
 					},
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Supporter",
 						Icon = "💘",
 						Points = 0,
 					},
-					new BaseAchievement()
+					new ManualAchievement()
 					{
 						Name = "Sponsor",
 						Icon = "💟",

@@ -207,8 +207,6 @@ namespace Miki
 				u.AvatarUrl = u.Id.ToString();
 				await context.SaveChangesAsync();
 			}
-
-			await Global.RedisClient.UpsertAsync($"avatar:{user.Id}:synced", true);
 		}
 	}
 

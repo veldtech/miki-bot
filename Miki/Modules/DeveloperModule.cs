@@ -1,4 +1,5 @@
 ﻿using Miki.API.EmbedMenus;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
@@ -73,7 +74,8 @@ namespace Miki.Modules
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenUserAsync(EventContext e)
 		{
-			var user = await Global.ApiClient.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var user = await api.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
 
 			if (user == null)
 			{
@@ -86,7 +88,8 @@ namespace Miki.Modules
 		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildUserAsync(EventContext e)
 		{
-			var user = await Global.ApiClient.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var user = await api.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
 
 			if (user == null)
 			{
@@ -99,7 +102,8 @@ namespace Miki.Modules
 		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdenGuildChannelAsync(EventContext e)
 		{
-			var user = await Global.ApiClient.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
+            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var user = await api.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
 
 			if (user == null)
 			{
@@ -129,7 +133,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < Global.Config.ShardCount; i++)
 			{
-				await Global.Client.Discord.SetGameAsync(i, new DiscordStatus
+				await MikiApp.Instance.Discord.SetGameAsync(i, new DiscordStatus
 				{
 					Game = new Discord.Common.Packets.Activity
 					{
@@ -349,6 +353,7 @@ namespace Miki.Modules
 		[Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetExp(EventContext e)
 		{
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
 			ArgObject arg = e.Arguments.FirstOrDefault();
 
 			IDiscordUser user = await arg.GetUserAsync(e.Guild);
@@ -366,12 +371,37 @@ namespace Miki.Modules
 				}
 				u.Experience = amount;
 				await context.SaveChangesAsync();
-				await Global.RedisClient.UpsertAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
+				await cache.UpsertAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
 				e.Channel.QueueMessageAsync(":ok_hand:");
 			}
 		}
 
-		[Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        [Command(Name = "setglobexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SetGlobalExpAsync(EventContext e)
+        {
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            ArgObject arg = e.Arguments.FirstOrDefault();
+
+            IDiscordUser user = await arg.GetUserAsync(e.Guild);
+
+            arg = arg.Next();
+
+            int amount = arg?.TakeInt() ?? 0;
+
+            using (var context = new MikiContext())
+            {
+                User u = await User.GetAsync(context, user.Id.ToDbLong(), user.Username);
+                if (u == null)
+                {
+                    return;
+                }
+                u.Total_Experience = amount;
+                await context.SaveChangesAsync();
+                e.Channel.QueueMessageAsync(":ok_hand:");
+            }
+        }
+
+        [Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task BanUserAsync(EventContext e)
 		{
 			IDiscordUser u = await e.Arguments.First().GetUserAsync(e.Guild);

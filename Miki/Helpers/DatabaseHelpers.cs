@@ -1,7 +1,9 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Exceptions;
+using Miki.Framework;
 using Miki.Models;
 using StatsdClient;
 using System;
@@ -14,28 +16,29 @@ namespace Miki.Helpers
 		public static async Task<User> GetUserAsync(MikiContext context, IDiscordUser discordUser)
 			=> await User.GetAsync(context, (long)discordUser.Id, discordUser.Username);
 
-		public static async Task<Achievement> GetAchievementAsync(MikiContext context, long userId, string name)
-		{
-			string key = $"achievement:{userId}:{name}";
+        public static async Task<Achievement> GetAchievementAsync(MikiContext context, long userId, string name)
+        {
+            string key = $"achievement:{userId}:{name}";
 
-			if (await Global.RedisClient.ExistsAsync(key))
-			{
-				Achievement a = await Global.RedisClient.GetAsync<Achievement>(key);
-				if (a != null)
-				{
-					return context.Attach(a).Entity;
-				}
-			}
+            var cache = MikiApp.Instance.GetService<ICacheClient>();
 
-			Achievement achievement = await context.Achievements.FindAsync(userId, name);
-			await Global.RedisClient.UpsertAsync(key, achievement);
-			return achievement;
-		}
+            Achievement a = await cache.GetAsync<Achievement>(key);
+            if (a != null)
+            {
+                return context.Attach(a).Entity;
+            }
+
+            Achievement achievement = await context.Achievements.FindAsync(userId, name);
+            await cache.UpsertAsync(key, achievement);
+            return achievement;
+        }
 
 		internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
 		{
-			string key = $"achievement:{userId}:{name}";
-			await Global.RedisClient.UpsertAsync(key, achievement);
+            var cache = MikiApp.Instance.GetService<ICacheClient>();
+
+            string key = $"achievement:{userId}:{name}";
+			await cache.UpsertAsync(key, achievement);
 		}
 
 		public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)

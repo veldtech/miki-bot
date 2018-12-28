@@ -12,7 +12,7 @@ namespace Miki.Accounts.Achievements.Objects
 
 	public class AchievementPacket : BasePacket
 	{
-		public BaseAchievement achievement;
+		public IAchievement achievement;
 		public int count;
 	}
 

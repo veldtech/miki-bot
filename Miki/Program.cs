@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.API;
+using Miki.Cache;
 using Miki.Cache.StackExchange;
 using Miki.Common;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
+using Miki.Discord.Gateway.Centralized;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
@@ -17,7 +20,9 @@ using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
+using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
+using SharpRaven;
 using SharpRaven.Data;
 using StackExchange.Redis;
 using StatsdClient;
@@ -28,6 +33,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Miki
 {
@@ -39,16 +45,15 @@ namespace Miki
 		{
 			Program p = new Program();
 
-			Global.RedisClient = new StackExchangeCacheClient(
-				new ProtobufSerializer(),
-				await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
-			);
+            var appBuilder = new MikiAppBuilder();
+     
+            await p.LoadServicesAsync(appBuilder);
 
-			await p.LoadDiscord();
+            MikiApp app = appBuilder.Build();
+
+			await p.LoadDiscord(app);
 
 			p.LoadLocales();
-
-			Global.Backgrounds = new BackgroundStore();
 
 			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
 			{
@@ -60,7 +65,7 @@ namespace Miki
 				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
 				foreach (var u in bannedUsers)
 				{
-					Global.Client.GetAttachedObject<EventSystem>().MessageFilter
+					app.GetService<EventSystem>().MessageFilter
 						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
 				}
 			}
@@ -96,136 +101,144 @@ namespace Miki
 			Locale.SetDefaultLanguage("eng");
 		}
 
-		public async Task LoadDiscord()
+        public async Task LoadServicesAsync(MikiAppBuilder app)
+        {
+            var cache = new StackExchangeCacheClient(
+                new ProtobufSerializer(),
+                await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
+            );
+
+            app.AddSingletonService<ICacheClient>(cache);
+            app.AddSingletonService<IExtendedCacheClient>(cache);
+            app.Services.AddDbContext<DbContext, MikiContext>(x => x.UseNpgsql(Global.Config.ConnString));
+
+            app.AddSingletonService(new LoggingService());
+
+            if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+            {
+                app.AddSingletonService(new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey));
+            }
+            else
+            {
+                Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
+            }
+
+            app.AddSingletonService<IApiClient>(new DiscordApiClient(Global.Config.Token, cache));
+
+            if (Global.Config.SelfHosted)
+            {
+                var gatewayConfig = GatewayConfiguration.Default();
+                gatewayConfig.ShardCount = 1;
+                gatewayConfig.ShardId = 0;
+                gatewayConfig.Token = Global.Config.Token;
+                gatewayConfig.WebSocketClient = new BasicWebSocketClient();
+                _gateway = new CentralizedGatewayShard(gatewayConfig);
+            }
+            else
+            {
+                app.AddSingletonService<IGateway>(new DistributedGateway(new MessageClientConfiguration
+                {
+                    ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+                    QueueName = "gateway",
+                    ExchangeName = "consumer",
+                    ConsumerAutoAck = false,
+                    PrefetchCount = 25
+                }));
+            }
+
+            app.AddSingletonService(new ConfigurationManager());
+            app.AddSingletonService(new EventSystem(new EventSystemConfig()
+            {
+                Developers = Global.Config.DeveloperIds,
+            }));
+
+            app.AddSingletonService(new BackgroundStore());
+
+            if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+            {
+                app.AddSingletonService(new RavenClient(Global.Config.SharpRavenKey));
+            }
+            else
+            {
+                Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
+            }
+        }
+
+        public async Task LoadDiscord(MikiApp app)
 		{
-			Global.ApiClient = new DiscordApiClient(Global.Config.Token, Global.RedisClient);
+            var cache = app.GetService<IExtendedCacheClient>();
+            var gateway = app.GetService<IGateway>();
 
-			if (Global.Config.SelfHosted)
-			{
-				//var gatewayConfig = GatewayConfiguration.Default();
-				//gatewayConfig.ShardCount = 1;
-				//gatewayConfig.ShardId = 0;
-				//gatewayConfig.Token = Global.Config.Token;
-				//gatewayConfig.ApiClient = Global.ApiClient;
-				//gatewayConfig.WebSocketClient = new BasicWebSocketClient();
-				//Global.Gateway = new CentralizedGatewayShard(gatewayConfig);
-			}
-			else
-			{
-				// For distributed systems
-				_gateway = new DistributedGateway(new MessageClientConfiguration
-				{
-					ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
-					QueueName = "gateway",
-					ExchangeName = "consumer",
-					ConsumerAutoAck = false,
-					PrefetchCount = 25
-				});
-			}
+			new BasicCacheStage().Initialize(gateway, cache);
 
-			Global.Client = new MikiApplication(new ClientInformation()
-			{
-				ClientConfiguration = new DiscordClientConfigurations
-				{
-					ApiClient = Global.ApiClient,
-					CacheClient = Global.RedisClient,
-					Gateway = _gateway
-				},
-				DatabaseContextFactory = () => new MikiContext()
-			});
+            var config = app.GetService<ConfigurationManager>();
+            EventSystem eventSystem = app.GetService<EventSystem>();
+            {
+                app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
 
-			var logging = new LoggingService();
-			Global.Client.AddService(logging);
+                eventSystem.OnError += async (ex, context) =>
+                {
+                    if (ex is LocalizedException botEx)
+                    {
+                        Utils.ErrorEmbedResource(context, botEx.LocaleResource)
+                            .ToEmbed().QueueToChannel(context.Channel);
+                    }
+                    else
+                    {
+                        Log.Error(ex);
+                        await app.GetService<RavenClient>().CaptureAsync(new SentryEvent(ex));
+                    }
+                };
 
-			new BasicCacheStage().Initialize(_gateway, Global.RedisClient);
+                eventSystem.MessageFilter.AddFilter(new BotFilter());
+                eventSystem.MessageFilter.AddFilter(new UserFilter());
 
-			Global.ApiClient.RestClient.OnRequestComplete += (method, uri) =>
-			{
-				Log.Debug(method + " " + uri);
-				DogStatsd.Histogram("discord.http.requests", uri, 1, new string[] { $"http_method:{method}" });
-			};
+                var commandMap = new Framework.Events.CommandMap();
 
-			Global.CurrentUser = await Global.Client.Discord.GetCurrentUserAsync();
+                commandMap.OnModuleLoaded += (module) =>
+                {
+                    config.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
+                };
 
-			EventSystem eventSystem = new EventSystem(new EventSystemConfig()
-			{
-				Developers = Global.Config.DeveloperIds,
-			});
+                var handler = new SimpleCommandHandler(cache, commandMap);
 
-			eventSystem.OnError += async (ex, context) =>
-			{
-				if (ex is LocalizedException botEx)
-				{
-					Utils.ErrorEmbedResource(context, botEx.LocaleResource)
-						.ToEmbed().QueueToChannel(context.Channel);
-				}
-				else
-				{
-					Log.Error(ex);
-					await Global.ravenClient.CaptureAsync(new SentryEvent(ex));
-				}
-			};
+                handler.AddPrefix(">", true, true);
+                handler.AddPrefix("miki.");
 
-			eventSystem.MessageFilter.AddFilter(new BotFilter());
-			eventSystem.MessageFilter.AddFilter(new UserFilter());
+                handler.OnMessageProcessed += async (cmd, msg, time) =>
+                {
+                    await Task.Yield();
+                    Log.Message($"{cmd.Name} processed in {time}ms");
+                };
 
-			Global.Client.Attach(eventSystem);
-			ConfigurationManager mg = new ConfigurationManager();
+                eventSystem.AddCommandHandler(handler);
 
-			var commandMap = new Framework.Events.CommandMap();
-			commandMap.OnModuleLoaded += (module) =>
-			{
-				mg.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
-			};
-
-			var handler = new SimpleCommandHandler(Global.RedisClient, commandMap);
-
-			handler.AddPrefix(">", true, true);
-			handler.AddPrefix("miki.");
-
-			var sessionHandler = new SessionBasedCommandHandler(Global.RedisClient);
-			var messageHandler = new MessageListener(Global.RedisClient);
-
-			eventSystem.AddCommandHandler(sessionHandler);
-			eventSystem.AddCommandHandler(messageHandler);
-			eventSystem.AddCommandHandler(handler);
-
-			commandMap.RegisterAttributeCommands();
-			commandMap.Install(eventSystem);
+                commandMap.RegisterAttributeCommands();
+                commandMap.Install(eventSystem);
+            }
 
 			string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
 
 			if (File.Exists(configFile))
 			{
-				await mg.ImportAsync(
+				await config.ImportAsync(
 					new JsonSerializationProvider(),
 					configFile
 				);
 			}
 
-			await mg.ExportAsync(
+			await config.ExportAsync(
 				new JsonSerializationProvider(),
 				configFile
 			);
 
-			if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
-			{
-				Global.ravenClient = new SharpRaven.RavenClient(Global.Config.SharpRavenKey);
-			}
+			app.Discord.MessageCreate += Bot_MessageReceived;
 
-			handler.OnMessageProcessed += async (cmd, msg, time) =>
-			{
-				await Task.Yield();
-				Log.Message($"{cmd.Name} processed in {time}ms");
-			};
+			app.Discord.GuildJoin += Client_JoinedGuild;
+			app.Discord.GuildLeave += Client_LeftGuild;
+            app.Discord.UserUpdate += Client_UserUpdated;
 
-			Global.Client.Discord.MessageCreate += Bot_MessageReceived;
-
-			Global.Client.Discord.GuildJoin += Client_JoinedGuild;
-			Global.Client.Discord.GuildLeave += Client_LeftGuild;
-			Global.Client.Discord.UserUpdate += Client_UserUpdated;
-
-			await _gateway.StartAsync();
+			await gateway.StartAsync();
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
@@ -238,9 +251,11 @@ namespace Miki
 
 		private async Task Bot_MessageReceived(IDiscordMessage arg)
 		{
+            var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
+
 			DogStatsd.Increment("messages.received");
 
-			if (arg.Content.StartsWith($"<@!{Global.CurrentUser.Id}>") || arg.Content.StartsWith($"<@{Global.CurrentUser.Id}>"))
+			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
 			{
 				string msg = (await Locale.GetLanguageInstanceAsync(arg.ChannelId)).GetString("miki_join_message");
 				(await arg.GetChannelAsync()).QueueMessageAsync(msg);

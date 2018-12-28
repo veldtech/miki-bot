@@ -29,7 +29,7 @@ namespace Miki.Modules
 
 		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
-		public GeneralModule(Module m, MikiApplication b)
+		public GeneralModule(Module m, MikiApp b)
 		{
 			//EventSystem.Instance.AddCommandDoneEvent(x =>
 			//{
@@ -433,7 +433,7 @@ namespace Miki.Modules
 		{
 			await Task.Yield();
 
-			var cache = MikiApplication.Instance.Discord.CacheClient;
+			var cache = MikiApp.Instance.Discord.CacheClient;
 
 			new EmbedBuilder()
 			{

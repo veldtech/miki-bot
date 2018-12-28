@@ -6,6 +6,7 @@ using Miki.Accounts.Achievements;
 using Miki.API;
 using Miki.API.Leaderboards;
 using Miki.Bot.Models.Repositories;
+using Miki.Cache;
 using Miki.Common.Builders;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -54,7 +55,7 @@ namespace Miki.Modules.AccountsModule
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
 
-        public AccountsModule(Module m, MikiApplication app)
+        public AccountsModule(Module m, MikiApp app)
         {
             if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey) 
                 && !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
@@ -106,7 +107,7 @@ namespace Miki.Modules.AccountsModule
 
 				foreach (var a in achievements)
 				{
-					BaseAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
+					IAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
 					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
 					totalScore += metadata.Points;
 				}
@@ -127,9 +128,6 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "exp")]
 		public async Task ExpAsync(EventContext e)
 		{
-			//if (!await Global.RedisClient.ExistsAsync($"user:{e.Author.Id}:avatar:synced"))
-			//	await Utils.SyncAvatarAsync(e.Author);
-
 			Stream s = await client.GetStreamAsync("api/user?id=" + e.Author.Id);
 			if (s == null)
 			{
@@ -228,23 +226,22 @@ namespace Miki.Modules.AccountsModule
 			{
 				int p = Math.Max(options.Offset - 1, 0);
 
-				using (var api = new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey))
-				{
-					LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
+                var api = MikiApp.Instance.GetService<MikiApi>();
 
-					Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
-						.SetFooter(
-							e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
-							""
-						)
-						.SetAuthor(
-							"Leaderboards: " + options.Type + " (click me!)",
-							null,
-							api.BuildLeaderboardsUrl(options)
-						)
-						.ToEmbed()
-						.QueueToChannel(e.Channel);
-				}
+                LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
+
+				Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
+					.SetFooter(
+						e.Locale.GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
+						""
+					)
+					.SetAuthor(
+						"Leaderboards: " + options.Type + " (click me!)",
+						null,
+						api.BuildLeaderboardsUrl(options)
+					)
+					.ToEmbed()
+					.QueueToChannel(e.Channel);
 			}
 		}
 
@@ -351,7 +348,7 @@ namespace Miki.Modules.AccountsModule
 
 					for (int i = 0; i < maxCount; i++)
 					{
-						users.Add((await Global.Client.Discord.GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
+						users.Add((await MikiApp.Instance.Discord.GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
 					}
 
 					if (Marriages?.Count > 0)
@@ -449,7 +446,9 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "buybackground")]
 		public async Task BuyProfileBackgroundAsync(EventContext e)
 		{
-			ArgObject arguments = e.Arguments.FirstOrDefault();
+            var backgrounds = (BackgroundStore)e.Services.GetService(typeof(BackgroundStore));
+
+            ArgObject arguments = e.Arguments.FirstOrDefault();
 
 			if (arguments == null)
 			{
@@ -459,7 +458,7 @@ namespace Miki.Modules.AccountsModule
 			{
 				if (arguments.TryParseInt(out int id))
 				{
-					if (id >= Global.Backgrounds.Backgrounds.Count || id < 0)
+					if (id >= backgrounds.Backgrounds.Count || id < 0)
 					{
 						e.ErrorEmbed("This background does not exist!")
 							.ToEmbed()
@@ -467,7 +466,7 @@ namespace Miki.Modules.AccountsModule
 						return;
 					}
 
-					Background background = Global.Backgrounds.Backgrounds[id];
+					Background background = backgrounds.Backgrounds[id];
 
 					var embed = new EmbedBuilder()
 						.SetTitle("Buy Background")
@@ -610,7 +609,11 @@ namespace Miki.Modules.AccountsModule
 			{
 				User giver = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				var repObject = await Global.RedisClient.GetAsync<ReputationObject>($"user:{giver.Id}:rep");
+                var cache = (ICacheClient)e.Services
+                    .GetService(typeof(ICacheClient));
+
+
+                var repObject = await cache.GetAsync<ReputationObject>($"user:{giver.Id}:rep");
 
 				if (repObject == null)
 				{
@@ -620,7 +623,7 @@ namespace Miki.Modules.AccountsModule
 						ReputationPointsLeft = 3
 					};
 
-					await Global.RedisClient.UpsertAsync(
+					await cache.UpsertAsync(
 						$"user:{giver.Id}:rep",
 						repObject,
 						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
@@ -740,7 +743,7 @@ namespace Miki.Modules.AccountsModule
 
 					repObject.ReputationPointsLeft -= (short)usersMentioned.Sum(x => x.Value);
 
-					await Global.RedisClient.UpsertAsync(
+					await cache.UpsertAsync(
 						$"user:{giver.Id}:rep",
 						repObject,
 						DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
@@ -906,9 +909,11 @@ namespace Miki.Modules.AccountsModule
 				int streak = 0;
 				string redisKey = $"user:{e.Author.Id}:daily";
 
-				if (await Global.RedisClient.ExistsAsync(redisKey))
+                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
+                if (await cache.ExistsAsync(redisKey))
 				{
-					streak = await Global.RedisClient.GetAsync<int>(redisKey);
+					streak = await cache.GetAsync<int>(redisKey);
 					streak++;
 				}
 
@@ -929,7 +934,7 @@ namespace Miki.Modules.AccountsModule
 
 				embed.ToEmbed().QueueToChannel(e.Channel);
 
-				await Global.RedisClient.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
+				await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
 				await context.SaveChangesAsync();
 			}
 		}

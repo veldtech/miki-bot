@@ -1,5 +1,7 @@
 ﻿using Miki.Accounts;
+using Miki.Cache;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Events;
 using System.Threading.Tasks;
 
@@ -24,12 +26,9 @@ namespace Miki.Modules.Accounts.Services
 			m.MessageRecieved -= Service_MessageReceived;
 		}
 
-		public async Task Service_MessageReceived(IDiscordMessage m)
-		{
-			if (await IsEnabled(Global.RedisClient, m.GetChannelAsync().Result.Id))
-			{
-				await AccountManager.Instance.CheckAsync(m);
-			}
-		}
+        public async Task Service_MessageReceived(IDiscordMessage m)
+        {
+            await AccountManager.Instance.CheckAsync(m);
+        }
 	}
 }

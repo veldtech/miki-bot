@@ -1,4 +1,6 @@
 ﻿using Miki.Configuration;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Logging;
@@ -27,7 +29,7 @@ namespace Miki.Modules.Internal.Services
 
 			var eventSystem = m.EventSystem;
 
-			Global.ApiClient.RestClient.OnRequestComplete += (method, uri) =>
+			(MikiApp.Instance.GetService<IApiClient>() as DiscordApiClient).RestClient.OnRequestComplete += (method, uri) =>
 			{
 				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
 				{

@@ -1,4 +1,5 @@
 using Miki.Bot.Models.Repositories;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -148,7 +149,6 @@ namespace Miki.Modules
 				if (marriages.Count == 0)
 				{
 					// TODO: no proposals exception
-					//throw BotException.CreateCustom("error_proposals_empty");
 					return;
 				}
 
@@ -157,7 +157,7 @@ namespace Miki.Modules
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					var otherUser = await Global.Client.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
+					var otherUser = await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
 					new EmbedBuilder
 					{
@@ -171,12 +171,14 @@ namespace Miki.Modules
 				}
 				else
 				{
-					var embed = new EmbedBuilder()
+                    var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
+                    var embed = new EmbedBuilder()
 					{
 						Title = "💍 Marriages",
 						Footer = new EmbedFooter()
 						{
-							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}divorce <number> to decline",
+							Text = $"Use {await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)}divorce <number> to decline",
 						},
 						Color = new Color(154, 170, 180)
 					};
@@ -290,7 +292,7 @@ namespace Miki.Modules
 				if (selectionId != null)
 				{
 					var m = marriages[selectionId.Value - 1];
-					string otherName = (await Global.Client.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
+					string otherName = (await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
 
 					new EmbedBuilder()
 					{
@@ -304,12 +306,14 @@ namespace Miki.Modules
 				}
 				else
 				{
+                    var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+
 					var embed = new EmbedBuilder()
 					{
 						Title = "💍 Proposals",
 						Footer = new EmbedFooter()
 						{
-							Text = $"Use {await e.Prefix.GetForGuildAsync(Global.RedisClient, e.Guild.Id)}declinemarriage <number> to decline",
+							Text = $"Use {await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)}declinemarriage <number> to decline",
 						},
 						Color = new Color(154, 170, 180)
 					};
@@ -336,7 +340,7 @@ namespace Miki.Modules
 				foreach (UserMarriedTo p in proposals)
 				{
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = (await Global.Client.Discord.GetUserAsync(id.FromDbLong())).Username;
+					string u = (await MikiApp.Instance.Discord.GetUserAsync(id.FromDbLong())).Username;
 					proposalNames.Add($"{u} [{id}]");
 				}
 
@@ -360,7 +364,7 @@ namespace Miki.Modules
 				foreach (UserMarriedTo p in proposals)
 				{
 					long id = p.GetOther(e.Author.Id.ToDbLong());
-					string u = (await Global.Client.Discord.GetUserAsync(id.FromDbLong())).Username;
+					string u = (await MikiApp.Instance.Discord.GetUserAsync(id.FromDbLong())).Username;
 					proposalNames.Add($"{u} [{id}]");
 				}
 
@@ -428,7 +432,7 @@ namespace Miki.Modules
 
 			for (int i = 0; i < marriages.Count; i++)
 			{
-				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {(await Global.Client.Discord.GetUserAsync(marriages[i].GetOther(userId).FromDbLong())).Username}");
+				builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {(await MikiApp.Instance.Discord.GetUserAsync(marriages[i].GetOther(userId).FromDbLong())).Username}");
 			}
 
 			embed.Description += "\n\n" + builder.ToString();
