@@ -183,28 +183,30 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannel(e.Channel);
 		}
 
-		[Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task SetLocale(EventContext e)
-		{
+        [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task SetLocale(EventContext e)
+        {
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
 
-			string localeName = e.Arguments.ToString() ?? "";
+            using (var context = new MikiContext())
+            {
+                string localeName = e.Arguments.ToString() ?? "";
 
-			if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
-			{
-				using (var context = new MikiContext())
-					await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
+                if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
+                {
+                    await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
 
-				e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
-					.QueueToChannel(e.Channel);
+                    e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
+                        .QueueToChannel(e.Channel);
 
-				return;
-			}
-			e.ErrorEmbedResource("error_language_invalid", 
-				localeName, 
-				await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)
-			).ToEmbed().QueueToChannel(e.Channel);
-		}
+                    return;
+                }
+                e.ErrorEmbedResource("error_language_invalid",
+                    localeName,
+                    await e.Prefix.GetForGuildAsync(context, cache, e.Guild.Id)
+                ).ToEmbed().QueueToChannel(e.Channel);
+            }
+        }
 
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PrefixAsync(EventContext e)

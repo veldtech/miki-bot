@@ -195,18 +195,21 @@ namespace Miki.Modules
 
 		public async Task GuildBankInfoAsync(EventContext e, GuildUser c)
 		{
-			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id);
+            using (var context = new MikiContext())
+            {
+                string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(context, e.Guild.Id);
 
-			e.CreateEmbedBuilder()
-				.WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
-				.WithDescription(new LanguageResource("guildbank_info_description"))
-				.WithColor(new Color(255, 255, 255))
-				.WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
-				.AddField(
-					new LanguageResource("guildbank_info_help"),
-					new LanguageResource("guildbank_info_help_description", prefix),
-					true
-				).Build().QueueToChannel(e.Channel);
+                e.CreateEmbedBuilder()
+                    .WithTitle(new LanguageResource("guildbank_title", e.Guild.Name))
+                    .WithDescription(new LanguageResource("guildbank_info_description"))
+                    .WithColor(new Color(255, 255, 255))
+                    .WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
+                    .AddField(
+                        new LanguageResource("guildbank_info_help"),
+                        new LanguageResource("guildbank_info_help_description", prefix),
+                        true
+                    ).Build().QueueToChannel(e.Channel);
+            }
 		}
 
 		public async Task GuildBankBalance(EventContext e, MikiContext context, GuildUser c)

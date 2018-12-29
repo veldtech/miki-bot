@@ -212,10 +212,9 @@ namespace Miki.Modules
 
 			if (amount < 1)
 			{
-				string prefix = await e.commandHandler.GetDefaultPrefixValueAsync(e.Guild.Id);
 				await e.message.DeleteAsync();
 
-				e.ErrorEmbed(e.Locale.GetString("miki_module_admin_prune_no_messages", prefix))
+				e.ErrorEmbed(e.Locale.GetString("miki_module_admin_prune_no_messages", ">"))
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}

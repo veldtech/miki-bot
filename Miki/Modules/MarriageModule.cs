@@ -129,66 +129,66 @@ namespace Miki.Modules
 			}
 		}
 
-		[Command(Name = "divorce")]
-		public async Task DivorceAsync(EventContext e)
-		{
-			using (MikiContext context = new MikiContext())
-			{
-				MarriageRepository repository = new MarriageRepository(context);
+        [Command(Name = "divorce")]
+        public async Task DivorceAsync(EventContext e)
+        {
+            using (MikiContext context = new MikiContext())
+            {
+                MarriageRepository repository = new MarriageRepository(context);
 
-				ArgObject selection = e.Arguments.FirstOrDefault();
-				int? selectionId = null;
+                ArgObject selection = e.Arguments.FirstOrDefault();
+                int? selectionId = null;
 
-				if (selection != null)
-				{
-					selectionId = selection.TakeInt();
-				}
+                if (selection != null)
+                {
+                    selectionId = selection.TakeInt();
+                }
 
-				var marriages = await repository.GetMarriagesAsync((long)e.Author.Id);
+                var marriages = await repository.GetMarriagesAsync((long)e.Author.Id);
 
-				if (marriages.Count == 0)
-				{
-					// TODO: no proposals exception
-					return;
-				}
+                if (marriages.Count == 0)
+                {
+                    // TODO: no proposals exception
+                    return;
+                }
 
-				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
+                marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-				if (selectionId != null)
-				{
-					var m = marriages[selectionId.Value - 1];
-					var otherUser = await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
+                if (selectionId != null)
+                {
+                    var m = marriages[selectionId.Value - 1];
+                    var otherUser = await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
-					new EmbedBuilder
-					{
-						Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}",
-						Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherUser.Username),
-						Color = new Color(0.6f, 0.4f, 0.1f)
-					}.ToEmbed().QueueToChannel(e.Channel);
+                    new EmbedBuilder
+                    {
+                        Title = $"🔔 {e.Locale.GetString("miki_module_accounts_divorce_header")}",
+                        Description = e.Locale.GetString("miki_module_accounts_divorce_content", e.Author.Username, otherUser.Username),
+                        Color = new Color(0.6f, 0.4f, 0.1f)
+                    }.ToEmbed().QueueToChannel(e.Channel);
 
-					m.Remove(context);
-					await context.SaveChangesAsync();
-				}
-				else
-				{
+                    m.Remove(context);
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
                     var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
 
                     var embed = new EmbedBuilder()
-					{
-						Title = "💍 Marriages",
-						Footer = new EmbedFooter()
-						{
-							Text = $"Use {await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)}divorce <number> to decline",
-						},
-						Color = new Color(154, 170, 180)
-					};
+                    {
+                        Title = "💍 Marriages",
+                        Footer = new EmbedFooter()
+                        {
+                            Text = $"Use {await e.Prefix.GetForGuildAsync(context, cache, e.Guild.Id)}divorce <number> to decline",
+                        },
+                        Color = new Color(154, 170, 180)
+                    };
 
-					await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
+                    await BuildMarriageEmbedAsync(embed, e.Author.Id.ToDbLong(), context, marriages);
 
-					embed.ToEmbed().QueueToChannel(e.Channel);
-				}
-			}
-		}
+                    embed.ToEmbed().QueueToChannel(e.Channel);
+                }
+            }
+        }
 
 		[Command(Name = "acceptmarriage")]
 		public async Task AcceptMarriageAsync(EventContext e)
@@ -313,7 +313,7 @@ namespace Miki.Modules
 						Title = "💍 Proposals",
 						Footer = new EmbedFooter()
 						{
-							Text = $"Use {await e.Prefix.GetForGuildAsync(cache, e.Guild.Id)}declinemarriage <number> to decline",
+							Text = $"Use {await e.Prefix.GetForGuildAsync(context, cache, e.Guild.Id)}declinemarriage <number> to decline",
 						},
 						Color = new Color(154, 170, 180)
 					};
