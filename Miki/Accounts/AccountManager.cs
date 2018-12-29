@@ -75,7 +75,7 @@ namespace Miki.Accounts
 					if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
 						return;
 
-					LocaleInstance instance = await Locale.GetLanguageInstanceAsync(e.Id);
+					LocaleInstance instance = await Locale.GetLanguageInstanceAsync(context, e.Id);
 
 					EmbedBuilder embed = new EmbedBuilder()
 					{

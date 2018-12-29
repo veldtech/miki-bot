@@ -257,8 +257,11 @@ namespace Miki
 
 			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
 			{
-				string msg = (await Locale.GetLanguageInstanceAsync(arg.ChannelId)).GetString("miki_join_message");
-				(await arg.GetChannelAsync()).QueueMessageAsync(msg);
+                using (var context = new MikiContext())
+                {
+                    string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
+                    (await arg.GetChannelAsync()).QueueMessageAsync(msg);
+                }
 			}
 		}
 
@@ -274,8 +277,11 @@ namespace Miki
 
 			if (defaultChannel != null)
 			{
-				LocaleInstance i = await Locale.GetLanguageInstanceAsync(defaultChannel.Id);
-				(defaultChannel as IDiscordTextChannel).QueueMessageAsync(i.GetString("miki_join_message"));
+                using (var context = new MikiContext())
+                {
+                    LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
+                    (defaultChannel as IDiscordTextChannel).QueueMessageAsync(i.GetString("miki_join_message"));
+                }
 			}
 
 			//List<string> allArgs = new List<string>();
