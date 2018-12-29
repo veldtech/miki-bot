@@ -15,6 +15,7 @@ using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Extension;
+using Miki.Models;
 using Miki.Rest;
 using NCalc;
 using Newtonsoft.Json;
@@ -661,17 +662,24 @@ namespace Miki.Modules
 
 		private async Task HelpReminderAsync(EventContext e)
 		{
-			string prefix = await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetDefaultPrefixValueAsync(e.Guild.Id);
+            using (var context = new MikiContext())
+            {
+                string prefix = await e.EventSystem
+                    .GetCommandHandler<SimpleCommandHandler>()
+                    .GetDefaultPrefixValueAsync(
+                    context,
+                    e.Guild.Id);
 
-			new EmbedBuilder()
-				.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
-				.SetColor(0.86f, 0.18f, 0.26f)
-				.SetDescription(e.Locale.GetString("reminder_help_description"))
-				.AddInlineField(e.Locale.GetString("term_commands"),
-				$"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
-				$"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
-				$"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
-			.ToEmbed().QueueToChannel(e.Channel);
+                new EmbedBuilder()
+                    .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                    .SetColor(0.86f, 0.18f, 0.26f)
+                    .SetDescription(e.Locale.GetString("reminder_help_description"))
+                    .AddInlineField(e.Locale.GetString("term_commands"),
+                    $"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
+                    $"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
+                    $"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
+                .ToEmbed().QueueToChannel(e.Channel);
+            }
 		}
 
 		[Command(Name = "safe")]
