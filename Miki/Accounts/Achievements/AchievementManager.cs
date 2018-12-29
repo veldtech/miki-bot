@@ -55,33 +55,39 @@ namespace Miki.Accounts.Achievements
 
 			AccountManager.Instance.OnLocalLevelUp += async (u, c, l) =>
 			{
-				if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), MikiApp.Instance.GetService<DbContext>(), c.Id))
-				{
-					LevelPacket p = new LevelPacket()
-					{
-						discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
-						discordChannel = c,
-						level = l,
-					};
-					await OnLevelGained?.Invoke(p);
-				}
+                using (var db = new MikiContext())
+                {
+                    if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), db, c.Id))
+                    {
+                        LevelPacket p = new LevelPacket()
+                        {
+                            discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
+                            discordChannel = c,
+                            level = l,
+                        };
+                        await OnLevelGained?.Invoke(p);
+                    }
+                }
 			};
 
 			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
 			{
-				if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), MikiApp.Instance.GetService<DbContext>(), msg.ChannelId))
-				{
-					TransactionPacket p = new TransactionPacket()
-					{
-						discordUser = msg.Author,
-						discordChannel = await msg.GetChannelAsync(),
-						giver = u1,
-						receiver = u2,
-						amount = amount
-					};
+                using (var db = new MikiContext())
+                {
+                    if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), db, msg.ChannelId))
+                    {
+                        TransactionPacket p = new TransactionPacket()
+                        {
+                            discordUser = msg.Author,
+                            discordChannel = await msg.GetChannelAsync(),
+                            giver = u1,
+                            receiver = u2,
+                            amount = amount
+                        };
 
-					await OnTransaction?.Invoke(p);
-				}
+                        await OnTransaction?.Invoke(p);
+                    }
+                }
 			};
 
 			bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
