@@ -24,7 +24,7 @@ namespace Miki.Modules
 		public DonatorModule(Module m, MikiApp b)
 		{
             if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl) 
-                || !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+                && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
             {
                 client = new RestClient(Global.Config.ImageApiUrl)
                     .AddHeader("Authorization", Global.Config.MikiApiKey);

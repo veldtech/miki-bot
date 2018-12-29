@@ -19,7 +19,7 @@ namespace Miki.API
 			_baseUrl = baseUrl;
 
 			_client = new RestClient(_baseUrl);
-			_client.SetAuthorization("Bearer " + token);
+            _client.AddHeader("Authorization", "Bearer " + token);
 		}
 
 		/// <summary>
