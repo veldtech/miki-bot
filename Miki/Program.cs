@@ -39,8 +39,6 @@ namespace Miki
 {
     public class Program
 	{
-		private IGateway _gateway;
-
 		private static async Task Main()
 		{
 			Program p = new Program();
@@ -132,7 +130,7 @@ namespace Miki
                 gatewayConfig.ShardId = 0;
                 gatewayConfig.Token = Global.Config.Token;
                 gatewayConfig.WebSocketClient = new BasicWebSocketClient();
-                _gateway = new CentralizedGatewayShard(gatewayConfig);
+                app.AddSingletonService<IGateway>(new CentralizedGatewayShard(gatewayConfig));
             }
             else
             {
