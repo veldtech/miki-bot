@@ -6,6 +6,7 @@ using Miki.Dsl;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Languages;
+using Miki.Localization;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
@@ -16,92 +17,132 @@ namespace Miki.Modules
 {
 	public enum LevelNotificationsSetting
 	{
-		REWARDS_ONLY = 0,
-		ALL = 1,
-		NONE = 2
+		RewardsOnly = 0,
+		All = 1,
+		None = 2
 	}
+
+    public enum AchievementNotificationSetting
+    {
+        All = 0,
+        None = 1
+    }
 
 	[Module(Name = "settings")]
 	internal class SettingsModule
 	{
-		[Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
+        private IDictionary<DatabaseSettingId, Enum> _settingOptions = new Dictionary<DatabaseSettingId, Enum>()
+        {
+            {DatabaseSettingId.LevelUps, (LevelNotificationsSetting)0 },
+            {DatabaseSettingId.Achievements, (AchievementNotificationSetting)0 }
+        };
+
+        [Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
-			MMLParser mml = new MMLParser(e.Arguments.ToString());
-			MSLResponse response = mml.Parse();
+            var arg = e.Arguments.FirstOrDefault();
 
-			bool global = response.GetBool("g");
-			LevelNotificationsSetting type = Enum.Parse<LevelNotificationsSetting>(response.GetString("type"), true);
+            if (!arg.TryFromEnum<DatabaseSettingId>(out var value))
+            {
+                Utils.ErrorEmbedResource(e, new LanguageResource(
+                    "error_notifications_setting_not_found",
+                    string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
+                        .Select(x => $"`{x}`"))))
+                    .ToEmbed().QueueToChannel(e.Channel);
+                return;
+            }
 
-			using (MikiContext context = new MikiContext())
+            if (!_settingOptions.TryGetValue(value, out var @enum))
+            {
+                return;
+            }
+
+            arg = arg.Next();
+
+            if(!Enum.TryParse(@enum.GetType(), arg?.Argument ?? "", true, out var type))
+            {
+                Utils.ErrorEmbedResource(e, new LanguageResource(
+                    "error_notifications_type_not_found", 
+                    arg?.Argument ?? "",
+                    value.ToString(),
+                    string.Join(", ", Enum.GetNames(@enum.GetType())
+                        .Select(x => $"`{x}`"))))
+                    .ToEmbed().QueueToChannel(e.Channel);
+                return;
+            }
+
+            using (MikiContext context = new MikiContext())
 			{
-				await Setting.UpdateAsync(context, e.Channel.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS, (int)type);
+				await Setting.UpdateAsync(context, e.Channel.Id, value, (int)type);
 				await context.SaveChangesAsync();
 			}
-		}
 
-		//public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
-		//{
-		//	List<string> options = Enum.GetNames(typeof(T))
-		//		.Select(x => x.ToLower()
-		//			.Replace('_', ' '))
-		//		.ToList();
+            Utils.SuccessEmbed(e, e.Locale.GetString("notifications_update_success"))
+                .QueueToChannel(e.Channel);
+        }
 
-		//	string settingName = settingId.ToString().ToLower().Replace('_', ' ');
+        //public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
+        //{
+        //	List<string> options = Enum.GetNames(typeof(T))
+        //		.Select(x => x.ToLower()
+        //			.Replace('_', ' '))
+        //		.ToList();
 
-		//	var sEmbed= SettingsBaseEmbed;
-		//	sEmbed.Description = ($"What kind of {settingName} do you want");
-		//	sEmbed.AddInlineField("Options", string.Join("\n", options));
-		//	var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
+        //	string settingName = settingId.ToString().ToLower().Replace('_', ' ');
 
-		//	int newSetting;
+        //	var sEmbed= SettingsBaseEmbed;
+        //	sEmbed.Description = ($"What kind of {settingName} do you want");
+        //	sEmbed.AddInlineField("Options", string.Join("\n", options));
+        //	var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
 
-		//	IDiscordMessage msg = null;
+        //	int newSetting;
 
-		//	while (true)
-		//	{
-		//		msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+        //	IDiscordMessage msg = null;
 
-		//		if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
-		//		{
-		//			newSetting = (int)setting;
-		//			break;
-		//		}
+        //	while (true)
+        //	{
+        //		msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
 
-		//		await sMsg.EditAsync(new EditMessageArgs()
-		//		{
-		//			embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
-		//				.AddInlineField("Options", string.Join("\n", options))
-		//				.ToEmbed()
-		//		});
-		//	}
+        //		if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
+        //		{
+        //			newSetting = (int)setting;
+        //			break;
+        //		}
 
-		//	sMsg = await SettingsBaseEmbed
-		//		.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
-		//		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
+        //		await sMsg.EditAsync(new EditMessageArgs()
+        //		{
+        //			embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
+        //				.AddInlineField("Options", string.Join("\n", options))
+        //				.ToEmbed()
+        //		});
+        //	}
 
-		//	msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-		//	bool global = (msg.Content.ToLower()[0] == 'y');
+        //	sMsg = await SettingsBaseEmbed
+        //		.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
+        //		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
-		//	await SettingsBaseEmbed
-		//		.SetDescription($"Setting `{settingName}` Updated!")
-		//		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
+        //	msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
+        //	bool global = (msg.Content.ToLower()[0] == 'y');
 
-		//	if (!global)
-		//	{
-		//		using (var context = new MikiContext())
-		//		{
-		//			await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
-		//			await context.SaveChangesAsync();
-		//		}
-		//	}
-		//	else
-		//	{
-		//		//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
-		//	}
-		//}
+        //	await SettingsBaseEmbed
+        //		.SetDescription($"Setting `{settingName}` Updated!")
+        //		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
 
-		[Command(Name = "showmodule")]
+        //	if (!global)
+        //	{
+        //		using (var context = new MikiContext())
+        //		{
+        //			await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
+        //			await context.SaveChangesAsync();
+        //		}
+        //	}
+        //	else
+        //	{
+        //		//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
+        //	}
+        //}
+
+        [Command(Name = "showmodule")]
 		public async Task ConfigAsync(EventContext e)
 		{
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));

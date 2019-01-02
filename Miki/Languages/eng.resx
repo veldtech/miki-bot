@@ -2204,4 +2204,13 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_user_null" xml:space="preserve">
     <value>User was not loaded from database!</value>
   </data>
+  <data name="error_notifications_setting_not_found" xml:space="preserve">
+    <value>The setting has not been found in Miki's configurable notifications! The valid options are: {0}</value>
+  </data>
+  <data name="error_notifications_type_not_found" xml:space="preserve">
+    <value>There is no setting called {0} in {1} present. Please pick from these options: {2}</value>
+  </data>
+  <data name="notifications_update_success" xml:space="preserve">
+    <value>Notification setting updated successfully!</value>
+  </data>
 </root>

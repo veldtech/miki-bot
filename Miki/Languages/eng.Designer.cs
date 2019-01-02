@@ -322,6 +322,24 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The setting has not been found in Miki&apos;s configurable notifications! The valid options are: {0}.
+        /// </summary>
+        internal static string error_notifications_setting_not_found {
+            get {
+                return ResourceManager.GetString("error_notifications_setting_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no setting called {0} in {1} present. Please pick from these options: {2}.
+        /// </summary>
+        internal static string error_notifications_type_not_found {
+            get {
+                return ResourceManager.GetString("error_notifications_type_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can not add Discord invites to a pasta!.
         /// </summary>
         internal static string error_pasta_invite {
@@ -5475,6 +5493,15 @@ namespace Miki.Languages {
         internal static string mypasta_title {
             get {
                 return ResourceManager.GetString("mypasta_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notification setting updated successfully!.
+        /// </summary>
+        internal static string notifications_update_success {
+            get {
+                return ResourceManager.GetString("notifications_update_success", resourceCulture);
             }
         }
         

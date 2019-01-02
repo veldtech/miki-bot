@@ -146,8 +146,10 @@ namespace Miki.Accounts.Achievements
 		{
 			DogStatsd.Counter("achievements.gained", 1);
 
-			if (achievement as AchievementAchievement != null)
-				return;
+            if (achievement as AchievementAchievement != null)
+            {
+                return;
+            }
 
 			long id = user.Id.ToDbLong();
 
@@ -210,8 +212,8 @@ namespace Miki.Accounts.Achievements
 
             if (await UnlockIsValid(achievement, userid, r))
             {
-                await CallAchievementUnlockEventAsync(achievement, user, channel);
-                Notification.SendAchievement(achievement, channel, user);
+                await CallAchievementUnlockEventAsync(achievement, user, channel);            
+                await Notification.SendAchievementAsync(achievement, channel, user);
             }
         }
 

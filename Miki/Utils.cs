@@ -29,6 +29,10 @@ namespace Miki
 			return defaultValue;
 		}
 
+        public static bool TryFromEnum<T>(this ArgObject argument, out T value) 
+            where T : struct 
+            => Enum.TryParse(argument?.Argument ?? "", true, out value);
+
 		public static DateTime UnixToDateTime(long unix)
 		{
 			DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

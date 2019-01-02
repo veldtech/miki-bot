@@ -1,26 +1,37 @@
 ﻿	using Miki.Accounts.Achievements;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Models;
 using System.Threading.Tasks;
 
 namespace Miki
 {
 	internal class Notification
 	{
-		public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordChannel channel, IDiscordUser user)
-		{
-			SendAchievement(d.Achievements[rank], channel, user);
-		}
+		public static async ValueTask SendAchievementAsync(AchievementDataContainer d, int rank, IDiscordChannel channel, IDiscordUser user)
+		    => await SendAchievementAsync(d.Achievements[rank], channel, user);
 
-		public static void SendAchievement(IAchievement d, IDiscordChannel channel, IDiscordUser user)
-		{
-			CreateAchievementEmbed(d, user).QueueToChannel(channel);
-		}
+        public static async ValueTask SendAchievementAsync(IAchievement d, IDiscordChannel channel, IDiscordUser user)
+        {
+            if(channel is IDiscordGuildChannel c)
+            {
+                using (var context = new MikiContext())
+                {
+                    var guild = await c.GetGuildAsync();
+                    int achievementSetting = await Setting.GetAsync(context, (long)guild.Id, DatabaseSettingId.Achievements);
+                    if (achievementSetting != 0)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            CreateAchievementEmbed(d, user)
+                .QueueToChannel(channel);
+        }
 
 		public static async Task SendAchievementAsync(IAchievement baseAchievement, IDiscordUser user)
-		{
-			SendAchievement(baseAchievement, await user.GetDMChannelAsync(), user);
-		}
+		    => await SendAchievementAsync(baseAchievement, await user.GetDMChannelAsync(), user);
 
 		private static DiscordEmbed CreateAchievementEmbed(IAchievement baseAchievement, IDiscordUser user)
 		{

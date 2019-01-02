@@ -67,12 +67,12 @@ namespace Miki.Accounts
 						.ToListAsync();
 
 					var setting = (LevelNotificationsSetting)
-						await Setting.GetAsync(context, e.Id, DatabaseSettingId.LEVEL_NOTIFICATIONS);
+						await Setting.GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
 
-					if (setting == LevelNotificationsSetting.NONE)
+					if (setting == LevelNotificationsSetting.None)
 						return;
 
-					if (setting == LevelNotificationsSetting.REWARDS_ONLY && rolesObtained.Count == 0)
+					if (setting == LevelNotificationsSetting.RewardsOnly && rolesObtained.Count == 0)
 						return;
 
 					LocaleInstance instance = await Locale.GetLanguageInstanceAsync(context, e.Id);
