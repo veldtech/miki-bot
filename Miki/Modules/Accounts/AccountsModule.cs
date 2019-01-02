@@ -5,6 +5,7 @@ using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.API;
 using Miki.API.Leaderboards;
+using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Repositories;
 using Miki.Cache;
 using Miki.Common.Builders;
@@ -268,8 +269,7 @@ namespace Miki.Modules.AccountsModule
 
 					if (discordUser == null)
 					{
-						// TODO: usernullexception
-						//throw new UserException(new User());
+                        throw new UserNullException();
 					}
 
 					uid = discordUser.Id;
