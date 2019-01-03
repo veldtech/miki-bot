@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Cache;
 using Miki.Discord;
+using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Dsl;
 using Miki.Framework.Events;
@@ -71,76 +72,35 @@ namespace Miki.Modules
                 return;
             }
 
+
             using (MikiContext context = new MikiContext())
 			{
-				await Setting.UpdateAsync(context, e.Channel.Id, value, (int)type);
-				await context.SaveChangesAsync();
+                IEnumerable<IDiscordTextChannel> channels 
+                    = new List<IDiscordTextChannel> { e.Channel };
+
+                if (!arg.IsLast)
+                {
+                    arg = arg.Next();
+                    if (arg.Argument
+                        .ToLower()
+                        .StartsWith("-g"))
+                    {
+                        channels = (await e.Guild.GetChannelsAsync())
+                            .Where(x => x.Type == ChannelType.GUILDTEXT)
+                            .Select(x => x as IDiscordTextChannel);
+                    }
+                }
+
+                foreach (var c in channels)
+                {
+                    await Setting.UpdateAsync(context, c.Id, value, (int)type);
+                }
+                await context.SaveChangesAsync();
 			}
 
             Utils.SuccessEmbed(e, e.Locale.GetString("notifications_update_success"))
                 .QueueToChannel(e.Channel);
         }
-
-        //public async Task SetupNotificationsInteractive<T>(EventContext e, DatabaseSettingId settingId)
-        //{
-        //	List<string> options = Enum.GetNames(typeof(T))
-        //		.Select(x => x.ToLower()
-        //			.Replace('_', ' '))
-        //		.ToList();
-
-        //	string settingName = settingId.ToString().ToLower().Replace('_', ' ');
-
-        //	var sEmbed= SettingsBaseEmbed;
-        //	sEmbed.Description = ($"What kind of {settingName} do you want");
-        //	sEmbed.AddInlineField("Options", string.Join("\n", options));
-        //	var sMsg = await sEmbed.ToEmbed().SendToChannel(e.Channel);
-
-        //	int newSetting;
-
-        //	IDiscordMessage msg = null;
-
-        //	while (true)
-        //	{
-        //		msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-
-        //		if (Enum.TryParse<LevelNotificationsSetting>(msg.Content.Replace(" ", "_"), true, out var setting))
-        //		{
-        //			newSetting = (int)setting;
-        //			break;
-        //		}
-
-        //		await sMsg.EditAsync(new EditMessageArgs()
-        //		{
-        //			embed = e.ErrorEmbed("Oh, that didn't seem right! Try again")
-        //				.AddInlineField("Options", string.Join("\n", options))
-        //				.ToEmbed()
-        //		});
-        //	}
-
-        //	sMsg = await SettingsBaseEmbed
-        //		.SetDescription("Do you want this to apply for every channel? say `yes` if you do.")
-        //		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
-
-        //	msg = await e.EventSystem.GetCommandHandler<MessageListener>().WaitForNextMessage(e.CreateSession());
-        //	bool global = (msg.Content.ToLower()[0] == 'y');
-
-        //	await SettingsBaseEmbed
-        //		.SetDescription($"Setting `{settingName}` Updated!")
-        //		.ToEmbed().SendToChannel(e.Channel as IDiscordGuildChannel);
-
-        //	if (!global)
-        //	{
-        //		using (var context = new MikiContext())
-        //		{
-        //			await Setting.UpdateAsync(context, e.Channel.Id, settingId, newSetting);
-        //			await context.SaveChangesAsync();
-        //		}
-        //	}
-        //	else
-        //	{
-        //		//await Setting.UpdateGuildAsync(e.Guild, settingId, newSetting);
-        //	}
-        //}
 
         [Command(Name = "showmodule")]
 		public async Task ConfigAsync(EventContext e)
