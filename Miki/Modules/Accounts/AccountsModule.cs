@@ -900,9 +900,21 @@ namespace Miki.Modules.AccountsModule
 				{
 					var time = (u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.Locale);
 
-					e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.")
-					.AddInlineField("Appreciate Miki?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to show your thanks!")
-					.ToEmbed().QueueToChannel(e.Channel);
+                    var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
+
+                    switch(MikiRandom.Next(2))
+                    {
+                        case 0:
+                        {
+                            builder.AddInlineField("Appreciate Miki?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!");
+                        } break;
+                        case 1:
+                        {
+                            builder.AddInlineField("Appreciate Miki?", "Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!");
+                        } break;
+                    }
+                    builder.ToEmbed()
+                        .QueueToChannel(e.Channel);
 					return;
 				}
 

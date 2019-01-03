@@ -727,8 +727,7 @@ namespace Miki.Modules
 
 					if (user == null)
 					{
-						// TODO: add user null error
-						return null;
+                        throw new UserNullException();
 					}
 
 					string checkArg = arg?.Argument;
