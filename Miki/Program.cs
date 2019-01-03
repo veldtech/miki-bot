@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Miki.BunnyCDN;
 
 namespace Miki
 {
@@ -144,6 +145,7 @@ namespace Miki
                 }));
             }
 
+            app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
             app.AddSingletonService(new ConfigurationManager());
             app.AddSingletonService(new EventSystem(new EventSystemConfig()
             {

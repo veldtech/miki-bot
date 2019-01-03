@@ -111,5 +111,8 @@ namespace Miki
 
 		[JsonProperty("loglevel")]
 		public LogLevel LogLevel { get; internal set; } = LogLevel.Information;
-	}
+
+        [JsonProperty("bunny_cdn_key")]
+        public string BunnyCdnKey { get; internal set; }
+    }
 }

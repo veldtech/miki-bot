@@ -1,11 +1,13 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Miki.API.Leaderboards;
+using Miki.BunnyCDN;
 using Miki.Cache.StackExchange;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Exceptions;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Localization;
 using Miki.Models;
@@ -205,7 +207,10 @@ namespace Miki
 				throw new AvatarSyncException();
 			}
 
-			using (var context = new MikiContext())
+            await MikiApp.Instance.GetService<BunnyCDNClient>()
+                .PurgeCacheAsync($"https://cdn.miki.ai/avatars/{user.Id}.png");
+
+            using (var context = new MikiContext())
 			{
 				User u = await User.GetAsync(context, user.Id, user.Username);
 				u.AvatarUrl = u.Id.ToString();
