@@ -2216,4 +2216,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="key_sold_success" xml:space="preserve">
     <value>You successfully traded your key in for {0} mekos!</value>
   </data>
+  <data name="error_donatorkey_null" xml:space="preserve">
+    <value>This key is invalid!</value>
+  </data>
 </root>

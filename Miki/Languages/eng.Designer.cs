@@ -286,6 +286,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This key is invalid!.
+        /// </summary>
+        internal static string error_donatorkey_null {
+            get {
+                return ResourceManager.GetString("error_donatorkey_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have enough mekos! You need {0} more mekos to be able to do this..
         /// </summary>
         internal static string error_insufficient_currency {
