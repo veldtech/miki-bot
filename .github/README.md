@@ -9,26 +9,6 @@ Below you will find a basic workflow of how the branches should work. Please fol
 ### [Dependencies](#dependencies-1)
 ### [Useful links](#useful-links-1)
 ### [Getting Started](#getting-started-1)
-
-## Dependencies
-* AWSSDK.S3
-* Entity Framework 6.0
-* Imgur.API
-* Miki.Anilist
-* Miki.Cache
-* Miki.Configuration
-* Miki.Discord
-* Miki.Dsl
-* Miki.Logging
-* Miki.Rest
-* Newtonsoft.Json
-* Npgsql
-
-### Optional Dependencies
-* CountLib
-* Miki.Patreon
-* SharpRaven
-* SteamKit2
  
 ## Useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
