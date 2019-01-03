@@ -8,7 +8,7 @@ using Miki.Framework.Events.Attributes;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Rest;
-using Newtonsoft.Json;
+using Miki.Helpers;
 using System;
 using System.IO;
 using System.Linq;
@@ -36,22 +36,32 @@ namespace Miki.Modules
             }
 		}
 
-		[Command(Name = "changetitle")]
-		public async Task ChangeTitleAsync(EventContext e)
-		{
-			using (var context = new MikiContext())
-			{
-				IsDonator donator = await context.IsDonator.FindAsync((long)e.Author.Id);
-				User user = await context.Users.FindAsync((long)e.Author.Id);
+        [Command(Name = "sellkey")]
+        public async Task SellKeyAsync(EventContext e)
+        {
+            using (var context = new MikiContext())
+            {
+                long id = (long)e.Author.Id;
+                Guid guid = Guid.Parse(e.Arguments.Join().Argument);
+                DonatorKey key = await context.DonatorKey.FindAsync(guid);
 
-				donator.AddBalance(-10);
-				user.Title = e.Arguments.ToString();
+                if(key == null)
+                {
+                    e.ErrorEmbed("Your donation key is invalid!")
+                        .ToEmbed().QueueToChannel(e.Channel);
+                    return;
+                }
 
-				await context.SaveChangesAsync();
-			}
-		}
+                User u = await User.GetAsync(context, id, e.Author.Username);
+                await u.AddCurrencyAsync(30000, e.Channel);
+                await context.SaveChangesAsync();
 
-		[Command(Name = "redeemkey")]
+                Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
+                    .QueueToChannel(e.Channel);
+            }
+        }
+
+        [Command(Name = "redeemkey")]
 		public async Task RedeemKeyAsync(EventContext e)
 		{
 			using (var context = new MikiContext())

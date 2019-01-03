@@ -25,7 +25,7 @@ namespace Miki.Modules
 
 		private Task OnUpdateGuilds(IDiscordGuild g)
 		{
-			MikiApp bot = MikiApp.Instance;
+			//MikiApp bot = MikiApp.Instance;
 
 			//DiscordSocketClient client = bot.Client.GetShardFor(g);
 			//await countLib.PostStats(client.ShardId, client.Guilds.Count);

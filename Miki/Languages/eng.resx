@@ -2213,4 +2213,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="notifications_update_success" xml:space="preserve">
     <value>Notification setting updated successfully!</value>
   </data>
+  <data name="key_sold_success" xml:space="preserve">
+    <value>You successfully traded your key in for {0} mekos!</value>
+  </data>
 </root>

@@ -881,6 +881,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You successfully traded your key in for {0} mekos!.
+        /// </summary>
+        internal static string key_sold_success {
+            get {
+                return ResourceManager.GetString("key_sold_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Languages available.
         /// </summary>
         internal static string locales_available {
