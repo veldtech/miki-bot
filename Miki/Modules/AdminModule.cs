@@ -1,4 +1,4 @@
-﻿using Miki.Cache;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -234,7 +234,6 @@ namespace Miki.Modules
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
-            Console.WriteLine(filter);
 			for (int i = 0; i < amount; i++)
 			{
 				if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
