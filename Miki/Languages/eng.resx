@@ -720,7 +720,7 @@ Fuzzy</comment>
   <data name="miki_module_general_invite_message" xml:space="preserve">
     <value>I'll send you a private message with an invite URL.</value>
   </data>
-  <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
+  <data name="miki_module_general_prefix_no_arg" xml:space="preserve">
     <value>Cannot set your prefix to nothing. Please consult `&gt;help prefix` to find out what it does.</value>
   </data>
   <data name="miki_module_general_prefix_example_command_header" xml:space="preserve">
@@ -1016,7 +1016,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>&gt;buymarriageslot</value>
   </data>
   <data name="miki_command_usage_clean" xml:space="preserve">
-    <value>&gt;clean</value>
+    <value>&gt;clean &lt;amount&gt;</value>
   </data>
   <data name="miki_command_usage_daily" xml:space="preserve">
     <value>&gt;daily</value>
@@ -1036,7 +1036,7 @@ it's a variable type thing, so we really shouldn't be changing it.</comment>
     <value>&gt;mekos</value>
   </data>
   <data name="miki_command_usage_prune" xml:space="preserve">
-    <value>&gt;prune [amount]</value>
+    <value>&gt;prune &lt;amount&gt; [mention] [phrase]</value>
   </data>
   <data name="miki_command_usage_setcommand" xml:space="preserve">
     <value>&gt;setcommand &lt;command name&gt; 1 to enable
@@ -2218,5 +2218,14 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="error_donatorkey_null" xml:space="preserve">
     <value>This key is invalid!</value>
+  </data>
+  <data name="miki_module_admin_prune_no_arg" xml:space="preserve">
+    <value>Clean up your messages in just a second!
+
+`&gt;prune &lt;amount&gt;` - Prunes previous messages by a specific amount.
+`&gt;prune &lt;amount&gt; [mention] ` - Prunes previous messages of a specific user by an amount. 
+`&gt;prune &lt;amount&gt; [phrase]` - Prunes previous messages that contain a certain phrase by an amount. The phrase must be in quotes. (Ex. `&gt;prune 5 "sad"`)
+`&gt;prune &lt;amount&gt; [mention] [phrase]` - Prunes previous messages of a specific user that contain a certain phrase by an amount.</value>
+    <comment>When translating, do not translate the command; you can translate the arguments. Remember to not remove important syntax like ` and ". </comment>
   </data>
 </root>
