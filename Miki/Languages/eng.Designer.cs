@@ -19,7 +19,7 @@ namespace Miki.Languages {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class eng {
@@ -2225,7 +2225,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;clean.
+        ///   Looks up a localized string similar to &gt;clean &lt;amount&gt;.
         /// </summary>
         internal static string miki_command_usage_clean {
             get {
@@ -2794,7 +2794,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;prune [amount].
+        ///   Looks up a localized string similar to &gt;prune &lt;amount&gt; [mention] [phrase].
         /// </summary>
         internal static string miki_command_usage_prune {
             get {
@@ -3810,6 +3810,20 @@ namespace Miki.Languages {
         internal static string miki_module_admin_prune_error_parse {
             get {
                 return ResourceManager.GetString("miki_module_admin_prune_error_parse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clean up your messages in just a second!
+        ///
+        ///`&gt;prune &lt;amount&gt;` - Prunes previous messages by a specific amount.
+        ///`&gt;prune &lt;amount&gt; [mention] ` - Prunes previous messages of a specific user by an amount. 
+        ///`&gt;prune &lt;amount&gt; [phrase]` - Prunes previous messages that contain a certain phrase by an amount. The phrase must be in quotes. (Ex. `&gt;prune 5 &quot;sad&quot;`)
+        ///`&gt;prune &lt;amount&gt; [mention] [phrase]` - Prunes previous messages of a specific user that contain a certain phrase by an amount..
+        /// </summary>
+        internal static string miki_module_admin_prune_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_admin_prune_no_arg", resourceCulture);
             }
         }
         
@@ -4984,15 +4998,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot set your prefix to nothing. Please consult `&gt;help prefix` to find out what it does..
-        /// </summary>
-        internal static string miki_module_general_prefix_error_no_arg {
-            get {
-                return ResourceManager.GetString("miki_module_general_prefix_error_no_arg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Example Command.
         /// </summary>
         internal static string miki_module_general_prefix_example_command_header {
@@ -5016,6 +5021,15 @@ namespace Miki.Languages {
         internal static string miki_module_general_prefix_help_header {
             get {
                 return ResourceManager.GetString("miki_module_general_prefix_help_header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot set your prefix to nothing. Please consult `&gt;help prefix` to find out what it does..
+        /// </summary>
+        internal static string miki_module_general_prefix_no_arg {
+            get {
+                return ResourceManager.GetString("miki_module_general_prefix_no_arg", resourceCulture);
             }
         }
         

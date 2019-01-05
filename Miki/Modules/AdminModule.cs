@@ -1,4 +1,4 @@
-﻿using Miki.Cache;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -8,6 +8,7 @@ using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -91,7 +92,7 @@ namespace Miki.Modules
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task CleanAsync(EventContext e)
 		{
-			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id);
+			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id, null);
 		}
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
@@ -163,9 +164,9 @@ namespace Miki.Modules
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PruneAsync(EventContext e)
 		{
-			await PruneAsync(e, 100, 0);
+			await PruneAsync(e, 100, 0, null);
 		}
-		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0)
+		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0, string _filter = null)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
 			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
@@ -174,35 +175,50 @@ namespace Miki.Modules
 				return;
 			}
 
-			int amount = _amount;
-			string[] argsSplit = e.Arguments.ToString().Split(' ');
-			ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
+            if (e.Arguments.Count < 1)
+            {
+                new EmbedBuilder()
+                        .SetTitle("♻ Prune")
+                        .SetColor(119, 178, 85)
+                        .SetDescription(e.Locale.GetString("miki_module_admin_prune_no_arg"))
+                        .ToEmbed()
+                        .QueueToChannel(e.Channel);
+                return;
+            }
 
-			if (!string.IsNullOrEmpty(argsSplit[0]))
+            int amount = _amount;
+            string filter = _filter;
+            string[] argsSplit = e.Arguments.ToString().Split(' ');
+            ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
+
+            if (int.TryParse(argsSplit[0], out amount))
 			{
-				if (int.TryParse(argsSplit[0], out amount))
+				if (amount < 0)
 				{
-					if (amount < 0)
-					{
-						Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_negative"))
-							.ToEmbed().QueueToChannel(e.Channel);
-						return;
-					}
-					if (amount > 100)
-					{
-						Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_max"))
-							.ToEmbed().QueueToChannel(e.Channel);
-						return;
-					}
+					Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_negative"))
+						.ToEmbed().QueueToChannel(e.Channel);
+					return;
 				}
-				else
+				if (amount > 100)
 				{
-					Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_parse"))
+					Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_max"))
 						.ToEmbed().QueueToChannel(e.Channel);
 					return;
 				}
 			}
+			else
+			{
+				Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_parse"))
+					.ToEmbed().QueueToChannel(e.Channel);
+				return;
+			}
 
+            if (Regex.IsMatch(e.Arguments.ToString(), "\"(.*?)\""))
+            {
+                Regex regex = new Regex("\"(.*?)\"");
+                filter = regex.Match(e.Arguments.ToString()).ToString().Trim('"', ' ');
+            }
+            
 			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
 
 			IEnumerable<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount);
@@ -218,12 +234,14 @@ namespace Miki.Modules
 					.ToEmbed().QueueToChannel(e.Channel);
 				return;
 			}
-
 			for (int i = 0; i < amount; i++)
 			{
 				if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
 					continue;
 
+                if (filter != null && messages.ElementAt(i)?.Content.IndexOf(filter) < 0)
+                    continue;
+            
 				if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
 				{
 					deleteMessages.Add(messages.ElementAt(i));
