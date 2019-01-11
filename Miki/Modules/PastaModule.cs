@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -205,7 +205,9 @@ namespace Miki.Modules
 					return;
 				}
 				pasta.TimesUsed++;
-				e.Channel.QueueMessageAsync(pasta.Text);
+				
+				var sanitizedText = Utils.EscapeEveryone(pasta.Text);
+				e.Channel.QueueMessageAsync(sanitizedText);
 				await context.SaveChangesAsync();
 			}
 		}

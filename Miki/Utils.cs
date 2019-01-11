@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Miki.API.Leaderboards;
 using Miki.BunnyCDN;
@@ -22,6 +22,10 @@ namespace Miki
 {
 	public static class Utils
 	{
+		public const string EveryonePattern = @"@(everyone|here)";
+		
+		public static string EscapeEveryone(string text) => Regex.Replace(text, Miki.Utils.EveryonePattern, "@\u200b$1");
+		
 		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
 		{
 			if (Enum.TryParse(argument.Argument, true, out T result))
