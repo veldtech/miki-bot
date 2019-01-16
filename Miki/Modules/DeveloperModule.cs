@@ -113,16 +113,14 @@ namespace Miki.Modules
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetGameAsync(EventContext e)
 		{
-			var arg = e.Arguments.FirstOrDefault();
-
-			if (arg == null)
-				return;
+            if (!e.Arguments.Take(out string arg))
+            {
+                return;
+            }
 
 			ActivityType type = arg.FromEnum(ActivityType.Playing);
 
-			arg = arg.Next();
-
-			string text = arg.TakeUntilEnd().Argument;
+            string text = e.Arguments.Pack.TakeAll();
 			string url = null;
 
 			if (type == ActivityType.Streaming)
@@ -311,25 +309,25 @@ namespace Miki.Modules
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetMekos(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
+            if (e.Arguments.Take(out string userArg))
+            {
+                IDiscordUser user = await DiscordExtensions.GetUserAsync(userArg, e.Guild);
 
-			IDiscordUser user = await arg.GetUserAsync(e.Guild);
-
-			arg = arg.Next();
-
-			int amount = arg?.TakeInt() ?? 0;
-
-			using (var context = new MikiContext())
-			{
-				User u = await context.Users.FindAsync((long)user.Id);
-				if (u == null)
-				{
-					return;
-				}
-				u.Currency = amount;
-				await context.SaveChangesAsync();
-				e.Channel.QueueMessage(":ok_hand:");
-			}
+                if (e.Arguments.Take(out int value))
+                {
+                    using (var context = new MikiContext())
+                    {
+                        User u = await context.Users.FindAsync((long)user.Id);
+                        if (u == null)
+                        {
+                            return;
+                        }
+                        u.Currency = value;
+                        await context.SaveChangesAsync();
+                        e.Channel.QueueMessage(":ok_hand:");
+                    }
+                }
+            }
 		}
 
 		[Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -351,15 +349,17 @@ namespace Miki.Modules
 		public async Task SetExp(EventContext e)
 		{
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-			ArgObject arg = e.Arguments.FirstOrDefault();
 
-			IDiscordUser user = await arg.GetUserAsync(e.Guild);
+            if(!e.Arguments.Take(out string userName))
+            {
+                return;
+            }
 
-			arg = arg.Next();
+			IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
-			int amount = arg?.TakeInt() ?? 0;
+            e.Arguments.Take(out int amount);
 
-			using (var context = new MikiContext())
+            using (var context = new MikiContext())
 			{
 				LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong(), user.Username);
 				if (u == null)
@@ -377,13 +377,17 @@ namespace Miki.Modules
         public async Task SetGlobalExpAsync(EventContext e)
         {
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-            ArgObject arg = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out string userName))
+            {
+                return;
+            }
 
-            IDiscordUser user = await arg.GetUserAsync(e.Guild);
+            IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
-            arg = arg.Next();
-
-            int amount = arg?.TakeInt() ?? 0;
+            if(!e.Arguments.Take(out int amount))
+            {
+                return;
+            }
 
             using (var context = new MikiContext())
             {
@@ -401,12 +405,14 @@ namespace Miki.Modules
         [Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task BanUserAsync(EventContext e)
 		{
-			IDiscordUser u = await e.Arguments.First().GetUserAsync(e.Guild);
-
-			using (var context = new MikiContext())
-			{
-				await (await User.GetAsync(context, u.Id.ToDbLong(), u.Username)).BanAsync();
-			}
+            if (e.Arguments.Take(out string user))
+            {
+                IDiscordUser u = await DiscordExtensions.GetUserAsync(user, e.Guild);
+                using (var context = new MikiContext())
+                {
+                    await (await User.GetAsync(context, u.Id.ToDbLong(), u.Username)).BanAsync();
+                }
+            }
 		}
 	}
 }

@@ -25,14 +25,11 @@ namespace Miki.Modules
 		[Command(Name = "mypasta")]
 		public async Task MyPasta(EventContext e)
 		{
-			int page = 0;
-			if (!string.IsNullOrWhiteSpace(e.Arguments.ToString()))
-			{
-				if (int.TryParse(e.Arguments.FirstOrDefault().Argument, out page))
-				{
-					page -= 1;
-				}
-			}
+            if(e.Arguments.Take(out int page))
+            {
+                page--;
+            }
+
 			long userId;
 			string userName;
 			if (e.message.MentionedUserIds.Count() > 0)
@@ -86,20 +83,15 @@ namespace Miki.Modules
 		[Command(Name = "createpasta")]
 		public async Task CreatePasta(EventContext e)
 		{
-			if (e.Arguments.Count < 2)
+			if (e.Arguments.Pack.Length < 2)
 			{
 				await e.ErrorEmbed(e.Locale.GetString("createpasta_error_no_content"))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			arg = arg.TakeString();
-			string id = arg.Argument;
-
-			arg = arg.Next();
-			string text = arg.TakeUntilEnd().Argument;
+            e.Arguments.Take(out string id);
+            string text = e.Arguments.Pack.TakeAll();
 
 			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
 			{
@@ -157,7 +149,7 @@ namespace Miki.Modules
 		[Command(Name = "editpasta")]
 		public async Task EditPasta(EventContext e)
 		{
-			if (e.Arguments.Count < 2)
+			if (e.Arguments.Pack.Length < 2)
 			{
 				await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_specify", e.Locale.GetString("miki_module_pasta_error_specify_edit")))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
@@ -166,22 +158,21 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				string tag = arg.Argument;
-				arg = arg.Next();
+                e.Arguments.Take(out string tag);
 
 				GlobalPasta p = await context.Pastas.FindAsync(tag);
 
 				if (p.CreatorId == e.Author.Id.ToDbLong())
 				{
-					p.Text = arg.TakeUntilEnd().Argument;
+                    p.Text = e.Arguments.Pack.TakeAll();
 					await context.SaveChangesAsync();
-					e.Channel.QueueMessage($"Edited `{tag}`!");
-				}
+                    await e.SuccessEmbed($"Edited `{tag}`!")
+                        .QueueToChannelAsync(e.Channel);
+                }
 				else
 				{
-					e.Channel.QueueMessage($@"You cannot edit pastas you did not create. Baka!");
+                    await e.ErrorEmbed($"You cannot edit pastas you did not create. Baka!")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
 				}
 			}
 		}
@@ -259,20 +250,13 @@ namespace Miki.Modules
 		[Command(Name = "searchpasta")]
 		public async Task SearchPasta(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			if (arg == null)
+			if (!e.Arguments.Take(out string query))
 			{
 				await e.ErrorEmbed(e.Locale.GetString("searchpasta_error_no_arg"))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
-
-			string query = arg.Argument;
-
-			arg = arg.Next();
-
-			int page = (arg?.TakeInt() ?? 0);
+            e.Arguments.Take(out int page);
 
 			using (var context = new MikiContext())
 			{
@@ -317,46 +301,12 @@ namespace Miki.Modules
 			await FavouritePastaList(e, false);
 		}
 
-		//[Command(Name = "reportpasta")]
-		//public async Task ReportPastaAsync(EventContext e)
-		//{
-		//	ArgObject arg = e.Arguments.FirstOrDefault();
-
-		//	if(arg == null)
-		//	{
-		//		// TODO: error message
-		//		return;
-		//	}
-
-		//	string pastaId = arg.Argument;
-		//	arg = arg.Next();
-
-		//	string reason = arg?.TakeUntilEnd()?.Argument ?? "";
-
-		//	if(string.IsNullOrEmpty(reason))
-		//	{
-		//		// TODO: reason empty error
-		//		return;
-		//	}
-
-		//	Utils.SuccessEmbed(e.Channel.Id, "Your report has been received!").QueueToChannelAsync(e.Channel);
-
-		//	Utils.Embed.SetAuthor(e.Author.Username, e.Author.GetAvatarUrl(), "")
-		//		.SetDescription($"Reported pasta `{pastaId}`.```{reason}```")
-		//		.SetColor(255, 0 , 0)
-		//		.SetFooter(DateTime.Now.ToString(), "")
-		//		.ToEmbed().QueueToChannelAsync(Bot.Instance.Client.GetChannel(PastaReportsChannelId) as IMessageChannel);
-		//}
-
 		public async Task FavouritePastaList(EventContext e, bool lovedPastas = true)
 		{
 			IDiscordUser targetUser = e.Author;
 			float totalPerPage = 25f;
-			int page = 0;
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			page = arg?.TakeInt() ?? 0;
+            e.Arguments.Take(out int page);
 
 			using (MikiContext context = new MikiContext())
 			{
@@ -406,51 +356,52 @@ namespace Miki.Modules
 			await VotePasta(e, false);
 		}
 
-		private async Task VotePasta(EventContext e, bool vote)
-		{
-			string pastaName = e.Arguments.First().Argument;
+        private async Task VotePasta(EventContext e, bool vote)
+        {
+            if (e.Arguments.Take(out string pastaName))
+            {
+                using (var context = new MikiContext())
+                {
+                    var pasta = await context.Pastas.FindAsync(pastaName);
 
-			using (var context = new MikiContext())
-			{
-				var pasta = await context.Pastas.FindAsync(pastaName);
+                    if (pasta == null)
+                    {
+                        await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_null")).ToEmbed().QueueToChannelAsync(e.Channel);
+                        return;
+                    }
 
-				if (pasta == null)
-				{
-                    await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_null")).ToEmbed().QueueToChannelAsync(e.Channel);
-					return;
-				}
+                    long authorId = e.Author.Id.ToDbLong();
 
-				long authorId = e.Author.Id.ToDbLong();
+                    var voteObject = context.Votes
+                        .Where(q => q.Id == pastaName && q.UserId == authorId)
+                        .FirstOrDefault();
 
-				var voteObject = context.Votes
-					.Where(q => q.Id == pastaName && q.UserId == authorId)
-					.FirstOrDefault();
+                    if (voteObject == null)
+                    {
+                        voteObject = new PastaVote()
+                        {
+                            Id = pastaName,
+                            UserId = e.Author.Id.ToDbLong(),
+                            PositiveVote = vote
+                        };
 
-				if (voteObject == null)
-				{
-					voteObject = new PastaVote()
-					{
-						Id = pastaName,
-						UserId = e.Author.Id.ToDbLong(),
-						PositiveVote = vote
-					};
+                        context.Votes.Add(voteObject);
+                    }
+                    else
+                    {
+                        voteObject.PositiveVote = vote;
+                    }
 
-					context.Votes.Add(voteObject);
-				}
-				else
-				{
-					voteObject.PositiveVote = vote;
-				}
+                    await context.SaveChangesAsync();
 
-				await context.SaveChangesAsync();
+                    var votecount = await pasta.GetVotesAsync(context);
+                    pasta.Score = votecount.Upvotes - votecount.Downvotes;
 
-				var votecount = await pasta.GetVotesAsync(context);
-				pasta.Score = votecount.Upvotes - votecount.Downvotes;
+                    await context.SaveChangesAsync();
 
-				await context.SaveChangesAsync();
-
-                await e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).QueueToChannelAsync(e.Channel);
-			}
-		}
+                    await e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).QueueToChannelAsync(e.Channel);
+                }
+            }
+        }
 	}
 }

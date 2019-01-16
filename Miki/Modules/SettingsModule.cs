@@ -41,9 +41,12 @@ namespace Miki.Modules
         [Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetupNotifications(EventContext e)
 		{
-            var arg = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out string enumString))
+            {
+                // TODO (Veld) : Handle error.
+            }
 
-            if (!arg.TryFromEnum<DatabaseSettingId>(out var value))
+            if (!enumString.TryFromEnum<DatabaseSettingId>(out var value))
             {
                 await Utils.ErrorEmbedResource(e, new LanguageResource(
                     "error_notifications_setting_not_found",
@@ -58,13 +61,15 @@ namespace Miki.Modules
                 return;
             }
 
-            arg = arg.Next();
+            if (!e.Arguments.Take(out string enumValue))
+            {
+            }
 
-            if(!Enum.TryParse(@enum.GetType(), arg?.Argument ?? "", true, out var type))
+            if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
             {
                 await Utils.ErrorEmbedResource(e, new LanguageResource(
-                    "error_notifications_type_not_found", 
-                    arg?.Argument ?? "",
+                    "error_notifications_type_not_found",
+                    enumValue,
                     value.ToString(),
                     string.Join(", ", Enum.GetNames(@enum.GetType())
                         .Select(x => $"`{x}`"))))
@@ -78,16 +83,17 @@ namespace Miki.Modules
                 IEnumerable<IDiscordTextChannel> channels 
                     = new List<IDiscordTextChannel> { e.Channel };
 
-                if (!arg.IsLast)
+                if (e.Arguments.CanTake)
                 {
-                    arg = arg.Next();
-                    if (arg.Argument
-                        .ToLower()
-                        .StartsWith("-g"))
+                    
+                    if (e.Arguments.Take(out string attr))
                     {
-                        channels = (await e.Guild.GetChannelsAsync())
-                            .Where(x => x.Type == ChannelType.GUILDTEXT)
-                            .Select(x => x as IDiscordTextChannel);
+                        if (attr.StartsWith("-g"))
+                        {
+                            channels = (await e.Guild.GetChannelsAsync())
+                                .Where(x => x.Type == ChannelType.GUILDTEXT)
+                                .Select(x => x as IDiscordTextChannel);
+                        }
                     }
                 }
 

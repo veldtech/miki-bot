@@ -522,7 +522,7 @@ namespace Miki.Modules
 
 		private async Task PlaceReminderAsync(EventContext e)
 		{
-			string args = e.Arguments.Join().Argument;
+            string args = e.Arguments.ToString();
 
 			int inIndex = args.ToLower().LastIndexOf(" in ");
 			int everyIndex = args.ToLower().LastIndexOf(" every ");
@@ -578,34 +578,35 @@ namespace Miki.Modules
 
 		private async Task CancelReminderAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.First();
+            if (e.Arguments.Take(out string arg))
+            {
+                if (Utils.IsAll(arg))
+                {
+                    if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
+                    {
+                        instances.ForEach(i => i.Cancel());
+                    }
 
-			if (Utils.IsAll(arg))
-			{
-				if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
-				{
-					instances.ForEach(i => i.Cancel());
-				}
-
-				await new EmbedBuilder()
-					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
-					.SetColor(0.86f, 0.18f, 0.26f)
-					.SetDescription(e.Locale.GetString("reminder_cancelled_all"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-                return;
-			}
-			else if (int.TryParse(arg.Argument, out int id))
-			{
-				if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
-				{
-					await new EmbedBuilder()
-						.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
-						.SetColor(0.86f, 0.18f, 0.26f)
-						.SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
-						.ToEmbed().QueueToChannelAsync(e.Channel);
-					return;
-				}
-			}
+                    await new EmbedBuilder()
+                        .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                        .SetColor(0.86f, 0.18f, 0.26f)
+                        .SetDescription(e.Locale.GetString("reminder_cancelled_all"))
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
+            }
+            else if (e.Arguments.Take(out int id))
+            {
+                if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
+                {
+                    await new EmbedBuilder()
+                        .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                        .SetColor(0.86f, 0.18f, 0.26f)
+                        .SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
+            }
 			await e.ErrorEmbed(e.Locale.GetString("error_reminder_null"))
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
@@ -673,39 +674,33 @@ namespace Miki.Modules
 		{
 			ILinkable s = null;
 
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			if (arg != null)
+			if (e.Arguments.Take(out string useArg))
 			{
-				string useArg = arg.Argument;
-
 				if (useArg.ToLower().StartsWith("use"))
 				{
-					arg = arg.Next();
-
 					switch (useArg.Split(':')[1].ToLower())
 					{
 						case "safebooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(arg?.TakeUntilEnd().Argument, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
 						}
 						break;
 
@@ -723,7 +718,7 @@ namespace Miki.Modules
 			}
 			else
 			{
-				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync("", ImageboardRating.SAFE);
+				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.SAFE);
 			}
 
 			if (s == null)
@@ -739,9 +734,9 @@ namespace Miki.Modules
 		[Command(Name = "ship")]
 		public async Task ShipAsync(EventContext e)
 		{
-			ArgObject o = e.Arguments.First().TakeUntilEnd();
+            e.Arguments.Take(out string shipPartner);
 
-			IDiscordGuildUser user = await o.GetUserAsync(e.Guild);
+			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.Guild);
 
 			if (user == null)
             {

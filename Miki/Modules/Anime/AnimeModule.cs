@@ -23,18 +23,13 @@ namespace Miki.Core.Modules.Anime
 		public async Task GetCharacterAsync(EventContext e)
 		{
 			ICharacter character = null;
-
-			ArgObject arg = e.Arguments.Join();
-
-			int? characterId = arg.TakeInt();
-
-			if (characterId != null)
+			if (e.Arguments.Take(out int characterId))
 			{
-				character = await anilistClient.GetCharacterAsync(characterId.Value);
+				character = await anilistClient.GetCharacterAsync(characterId);
 			}
-			else
+			else if (e.Arguments.Take(out string arg))
 			{
-				character = await anilistClient.GetCharacterAsync(arg.Argument);
+				character = await anilistClient.GetCharacterAsync(arg);
 			}
 
 			if (character != null)
@@ -69,23 +64,13 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findcharacter")]
 		public async Task FindCharacterAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out string query))
+            {
+                return;
+            }
+            e.Arguments.Take(out int page);
 
-			if (arg == null)
-				return;
-
-			int page = 0;
-			if (e.Arguments.LastOrDefault()?.TakeInt() != null)
-			{
-				page = e.Arguments.LastOrDefault().TakeInt().Value;
-			}
-
-			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
-			string searchQuery = arg.Argument;
-
-			arg = arg.Next();
-
-			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(searchQuery, page));
+			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(query, page));
 
 			if (result.Items.Count == 0)
 			{
@@ -108,7 +93,7 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -118,24 +103,13 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findmanga")]
 		public async Task FindMangaAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out string query))
+            {
+                return;
+            }
+            e.Arguments.Take(out int page);
 
-			if (arg == null)
-				return;
-
-			int page = 0;
-
-			if (e.Arguments.LastOrDefault()?.TakeInt() != null)
-			{
-				page = e.Arguments.LastOrDefault().TakeInt().Value;
-			}
-
-			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
-			string searchQuery = arg.Argument;
-
-			arg = arg.Next();
-
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
 			if (result.Items.Count == 0)
 			{
@@ -158,7 +132,7 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -168,21 +142,13 @@ namespace Miki.Core.Modules.Anime
 		[Command(Name = "findanime")]
 		public async Task FindAnimeAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out string query))
+            {
+                return;
+            }
+            e.Arguments.Take(out int page);
 
-			if (arg == null)
-				return;
-
-			int page = 0;
-
-			page = e.Arguments.LastOrDefault().TakeInt() ?? 0;
-
-			arg = arg.TakeUntilEnd((page != 0) ? 1 : 0);
-			string searchQuery = arg.Argument;
-
-			arg = arg.Next();
-
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(searchQuery, page, e.Channel.IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
 
 			if (result.Items.Count == 0)
 			{
@@ -205,7 +171,7 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{searchQuery}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
@@ -214,61 +180,46 @@ namespace Miki.Core.Modules.Anime
 
 		private async Task GetMediaAsync(EventContext e, bool manga, params MediaFormat[] format)
 		{
-			IMedia media = null;
+            IMedia media = null;
+            if (e.Arguments.Take(out int mediaId))
+            {
+                media = await anilistClient.GetMediaAsync(mediaId);
+            }
+            else if (e.Arguments.Take(out string arg))
+            {
+                media = await anilistClient.GetMediaAsync(arg, format);
+            }
 
-			ArgObject arg = e.Arguments.Join();
-
-			int? mediaId = arg.TakeInt();
-
-			if (mediaId != null)
-			{
-				media = await anilistClient.GetMediaAsync(mediaId.Value);
-			}
-			else
-			{
-				//string filter = "search: $p0, format_not_in: $p1";
-				//List<GraphQLParameter> parameters = new List<GraphQLParameter>
-				//{
-				//	new GraphQLParameter(arg.Argument),
-				//	new GraphQLParameter(format, "[MediaFormat]")
-				//};
-
-				//if (!e.Channel.IsNsfw)
-				//{
-				//	filter += ", isAdult: $p2";
-				//	parameters.Add(new GraphQLParameter(false, "Boolean"));
-				//}
-
-				//media = await anilistClient.GetMediaAsync(filter, parameters.ToArray());
-			}
-
-			if (media != null)
+            if (media != null)
 			{
 				string description = media.Description;
 				if (description.Length > 1024)
 				{
-					description = new string(description.Take(1020).ToArray());
-					description = new string(description.Take(description.LastIndexOf(' ')).ToArray()) + "...";
+					description = new string(description.Take(1020).ToArray()) + "...";
 				}
 
 				EmbedBuilder embed = new EmbedBuilder()
 					.SetAuthor(media.DefaultTitle, "https://anilist.co/img/logo_al.png", media.Url)
 					.SetDescription(media.NativeTitle);
 
-				if (!manga)
-					embed.AddInlineField("Status", media.Status ?? "Unknown")
-					.AddInlineField("Episodes", (media.Episodes ?? 0).ToString());
-				else
-					embed.AddInlineField("Volumes", (media.Volumes ?? 0).ToString())
-						.AddInlineField("Chapters", (media.Chapters ?? 0).ToString());
+                if (!manga)
+                {
+                    embed.AddInlineField("Status", media.Status ?? "Unknown")
+                    .AddInlineField("Episodes", (media.Episodes ?? 0).ToString());
+                }
+                else
+                {
+                    embed.AddInlineField("Volumes", (media.Volumes ?? 0).ToString())
+                        .AddInlineField("Chapters", (media.Chapters ?? 0).ToString());
+                }
 
                 await embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
-				.AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
-			.AddInlineField("Description", description ?? "None")
-				.SetColor(0, 170, 255)
-				.SetThumbnail(media.CoverImage)
-				.SetFooter("Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				    .AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
+			        .AddInlineField("Description", description ?? "None")
+				    .SetColor(0, 170, 255)
+				    .SetThumbnail(media.CoverImage)
+				    .SetFooter("Powered by anilist.co", "")
+				    .ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 			else
 			{

@@ -164,11 +164,12 @@ namespace Miki.Modules
 		[Command(Name = "guildbank")]
 		public async Task GuildBankAsync(EventContext e)
 		{
+            e.Arguments.Take(out string arg);
 			using (var context = new MikiContext())
 			{
 				GuildUser user = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-				switch (e.Arguments.FirstOrDefault()?.Argument.ToLower() ?? "")
+				switch (arg)
 				{
 					case "bal":
 					case "balance":
@@ -232,7 +233,11 @@ namespace Miki.Modules
 
 		public async Task GuildBankDepositAsync(EventContext e, MikiContext context, GuildUser c)
 		{
-			int totalDeposited = e.Arguments.Get(1).TakeInt() ?? 0;
+            if(!e.Arguments.Take(out int totalDeposited))
+            {
+                // TODO: No mekos deposit error
+                return;
+            }
 
 			User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
 
@@ -311,19 +316,15 @@ namespace Miki.Modules
 			{
 				GuildUser g = await context.GuildUsers.FindAsync(e.Guild.Id.ToDbLong());
 
-				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				if (arg != null)
+				if (e.Arguments.Take(out string arg))
 				{
-					switch (arg.Argument)
+					switch (arg)
 					{
 						case "expneeded":
 						{
-							arg = arg.Next();
-
 							if (arg != null)
 							{
-								if (int.TryParse(arg.Argument, out int value))
+								if (e.Arguments.Take(out int value))
 								{
 									g.MinimalExperienceToGetRewards = value;
 
@@ -338,26 +339,17 @@ namespace Miki.Modules
 
 						case "visible":
 						{
-							arg = arg.Next();
-
-							if (arg != null)
-							{
-								bool? result = arg.TakeBoolean();
-
-								if (!result.HasValue)
-								{
-									return;
-								}
-
-								string resourceString = result.Value
-									? "guildconfig_visibility_true" 
-									: "guildconfig_visibility_false";
+                            if (e.Arguments.Take(out bool value))
+                            {
+                                string resourceString = value
+                                    ? "guildconfig_visibility_true"
+                                    : "guildconfig_visibility_false";
 
                                 await new EmbedBuilder()
-									.SetTitle(e.Locale.GetString("miki_terms_config"))
-									.SetDescription(resourceString)
-									.ToEmbed().QueueToChannelAsync(e.Channel);
-							}
+                                    .SetTitle(e.Locale.GetString("miki_terms_config"))
+                                    .SetDescription(resourceString)
+                                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                            }
 						}
 						break;
 					}
@@ -377,13 +369,13 @@ namespace Miki.Modules
 		[Command(Name = "guildupgrade", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task GuildUpgradeAsync(EventContext e)
 		{
-			var arg = e.Arguments.FirstOrDefault();
-			using (var context = new MikiContext())
+            e.Arguments.Take(out string arg);
+            using (var context = new MikiContext())
 			{
 				var guildUser = await context.GuildUsers
 					.FindAsync(e.Guild.Id.ToDbLong());
 
-				switch (arg?.Argument ?? "")
+				switch (arg)
 				{
 					case "house":
 					{
@@ -413,7 +405,6 @@ namespace Miki.Modules
 		[Command(Name = "guildhouse")]
 		public async Task GuildHouseAsync(EventContext e)
 		{
-			var arg = e.Arguments.FirstOrDefault();
 			using (var context = new MikiContext())
 			{
 				var guildUser = await context.GuildUsers

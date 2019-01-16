@@ -17,9 +17,9 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "osu")]
 		public async Task SendOsuSignatureAsync(EventContext e)
 		{
-			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+            e.Arguments.Take(out string username);
 
-			using (WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&countryrank");
 
@@ -33,7 +33,7 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "ctb")]
 		public async Task SendCatchTheBeatSignatureAsync(EventContext e)
 		{
-			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+            e.Arguments.Take(out string username);
 
 			using (WebClient webClient = new WebClient())
 			{
@@ -49,9 +49,9 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "mania")]
 		public async Task SendManiaSignatureAsync(EventContext e)
 		{
-			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+            e.Arguments.Take(out string username);
 
-			using (WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=3&countryrank");
 
@@ -65,9 +65,9 @@ namespace Miki.Modules.Overwatch
 		[Command(Name = "taiko")]
 		public async Task SendTaikoSignatureAsync(EventContext e)
 		{
-			string username = e.Arguments.FirstOrDefault()?.Argument ?? "Veld";
+            e.Arguments.Take(out string username);
 
-			using (WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=1&countryrank");
 

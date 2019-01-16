@@ -75,12 +75,9 @@ namespace Miki.Modules.AccountsModule
 			{
 				long id = (long)e.Author.Id;
 
-				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				if (arg != null)
+                if (e.Arguments.Take(out string arg))
 				{
-					IDiscordUser user = await arg.TakeUntilEnd()
-						.GetUserAsync(e.Guild);
+					IDiscordUser user = await DiscordExtensions.GetUserAsync(arg, e.Guild);
 
 					if (user != null)
 					{
@@ -142,15 +139,15 @@ namespace Miki.Modules.AccountsModule
 		{
 			LeaderboardsOptions options = new LeaderboardsOptions();
 
-			ArgObject argument = e.Arguments.FirstOrDefault();
+			string argument = e.Arguments.Peek<string>();
 
-			switch (argument?.Argument.ToLower() ?? "")
+			switch (argument.ToLower() ?? "")
 			{
 				case "commands":
 				case "cmds":
 				{
 					options.Type = LeaderboardsType.COMMANDS;
-					argument = argument?.Next();
+                    e.Arguments.Skip();
 				}
 				break;
 
@@ -160,41 +157,41 @@ namespace Miki.Modules.AccountsModule
 				case "bal":
 				{
 					options.Type = LeaderboardsType.CURRENCY;
-					argument = argument?.Next();
-				}
-				break;
+                    e.Arguments.Skip();
+                }
+                break;
 
 				case "rep":
 				case "reputation":
 				{
 					options.Type = LeaderboardsType.REPUTATION;
-					argument = argument?.Next();
-				}
-				break;
+                    e.Arguments.Skip();
+                }
+                break;
 
 				case "pasta":
 				case "pastas":
 				{
 					options.Type = LeaderboardsType.PASTA;
-					argument = argument?.Next();
-				}
-				break;
+                    e.Arguments.Skip();
+                }
+                break;
 
 				case "experience":
 				case "exp":
 				{
 					options.Type = LeaderboardsType.EXPERIENCE;
-					argument = argument?.Next();
-				}
-				break;
+                    e.Arguments.Skip();
+                }
+                break;
 
 				case "guild":
 				case "guilds":
 				{
 					options.Type = LeaderboardsType.GUILDS;
-					argument = argument?.Next();
-				}
-				break;
+                    e.Arguments.Skip();
+                }
+                break;
 
 				default:
 				{
@@ -203,22 +200,23 @@ namespace Miki.Modules.AccountsModule
 				break;
 			}
 
-			if (argument?.Argument.ToLower() == "local")
+			if (argument.ToLower() == "local")
 			{
 				if (options.Type != LeaderboardsType.PASTA)
 				{
 					options.GuildId = e.Guild.Id;
 				}
-				argument = argument.Next();
-			}
+                e.Arguments.Skip();
+            }
 
-			if ((argument?.TakeInt() ?? 0) != 0)
+            var index = e.Arguments.Peek<int>();
+            if (index != 0)
 			{
-				options.Offset = Math.Max(0, argument.TakeInt().Value - 1) * 12;
-				argument = argument?.Next();
-			}
+				options.Offset = Math.Max(0, index - 1) * 12;
+                e.Arguments.Skip();
+            }
 
-			options.Amount = 12;
+            options.Amount = 12;
 
 			using (var context = new MikiContext())
 			{
@@ -255,14 +253,13 @@ namespace Miki.Modules.AccountsModule
 				long id = 0;
 				ulong uid = 0;
 
-				var arg = e.Arguments.FirstOrDefault();
 				IDiscordGuildUser discordUser = null;
 
 				MarriageRepository repository = new MarriageRepository(context);
 
-				if (arg != null)
+				if (e.Arguments.Take(out string arg))
 				{
-					discordUser = await arg.GetUserAsync(e.Guild);
+					discordUser = await DiscordExtensions.GetUserAsync(arg, e.Guild);
 
 					if (discordUser == null)
 					{
@@ -415,16 +412,16 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "setbackground")]
 		public async Task SetProfileBackgroundAsync(EventContext e)
 		{
-			int? backgroundId = e.Arguments.First().TakeInt();
-
-			if (backgroundId == null)
-				throw new ArgumentNullException("background");
+            if (!e.Arguments.Take(out int backgroundId))
+            {
+                throw new ArgumentNullException("background");
+            }
 
 			long userId = e.Author.Id.ToDbLong();
 
 			using (var context = new MikiContext())
 			{
-				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId ?? 0);
+				BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
 
 				if (bo == null)
 				{
@@ -440,86 +437,80 @@ namespace Miki.Modules.AccountsModule
 				.QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "buybackground")]
-		public async Task BuyProfileBackgroundAsync(EventContext e)
-		{
+        [Command(Name = "buybackground")]
+        public async Task BuyProfileBackgroundAsync(EventContext e)
+        {
             var backgrounds = (BackgroundStore)e.Services.GetService(typeof(BackgroundStore));
 
-            ArgObject arguments = e.Arguments.FirstOrDefault();
+            if (!e.Arguments.Take(out int id))
+            {
+                e.Channel.QueueMessage("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
+            }
 
-			if (arguments == null)
-			{
-				e.Channel.QueueMessage("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
-			}
-			else
-			{
-				if (arguments.TryParseInt(out int id))
-				{
-					if (id >= backgrounds.Backgrounds.Count || id < 0)
-					{
-                        await e.ErrorEmbed("This background does not exist!")
-							.ToEmbed()
-							.QueueToChannelAsync(e.Channel);
-						return;
-					}
+            if (id >= backgrounds.Backgrounds.Count || id < 0)
+            {
+                await e.ErrorEmbed("This background does not exist!")
+                    .ToEmbed()
+                    .QueueToChannelAsync(e.Channel);
+                return;
+            }
 
-					Background background = backgrounds.Backgrounds[id];
+            Background background = backgrounds.Backgrounds[id];
 
-					var embed = new EmbedBuilder()
-						.SetTitle("Buy Background")
-						.SetImage(background.ImageUrl);
+            var embed = new EmbedBuilder()
+                .SetTitle("Buy Background")
+                .SetImage(background.ImageUrl);
 
-					if (background.Price > 0)
-					{
-						embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
-					}
-					else
-					{
-						embed.SetDescription($"This background is not for sale.");
-					}
+            if (background.Price > 0)
+            {
+                embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
+            }
+            else
+            {
+                embed.SetDescription($"This background is not for sale.");
+            }
 
-					arguments = arguments.Next();
+            if (e.Arguments.Take(out string confirmation))
+            {
+                if (confirmation.ToLower() == "yes")
+                {
+                    if (background.Price > 0)
+                    {
+                        using (var context = new MikiContext())
+                        {
+                            User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
+                            long userId = (long)e.Author.Id;
 
-					if (arguments?.Argument.ToLower() == "yes")
-					{
-						if (background.Price > 0)
-						{
-							using (var context = new MikiContext())
-							{
-								User user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
-								long userId = (long)e.Author.Id;
+                            BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
 
-								BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
+                            if (bo == null)
+                            {
+                                user.RemoveCurrency(background.Price);
+                                await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+                                {
+                                    UserId = e.Author.Id.ToDbLong(),
+                                    BackgroundId = background.Id,
+                                });
 
-								if (bo == null)
-								{
-									user.RemoveCurrency(background.Price);
-									await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
-									{
-										UserId = e.Author.Id.ToDbLong(),
-										BackgroundId = background.Id,
-									});
+                                await context.SaveChangesAsync();
 
-									await context.SaveChangesAsync();
+                                await e.SuccessEmbed("Background purchased!")
+                                    .QueueToChannelAsync(e.Channel);
 
-									await e.SuccessEmbed("Background purchased!")
-										.QueueToChannelAsync(e.Channel);
-								}
-								else
-								{
-									throw new BackgroundOwnedException();
-								}
-							}
-						}
-					}
-					else
-					{
-						await embed.ToEmbed()
-							.QueueToChannelAsync(e.Channel);
-					}
-				}
-			}
-		}
+                            }
+                            else
+                            {
+                                throw new BackgroundOwnedException();
+                            }
+                        }
+                    }
+                    return;
+                }
+            }
+
+            await embed.ToEmbed()
+                .QueueToChannelAsync(e.Channel);
+        }
 
 		[Command(Name = "setbackcolor")]
 		public async Task SetProfileBackColorAsync(EventContext e)
@@ -627,9 +618,7 @@ namespace Miki.Modules.AccountsModule
 					);
 				}
 
-				ArgObject arg = e.Arguments.FirstOrDefault();
-
-				if (arg == null)
+				if (!e.Arguments.CanTake)
 				{
 					TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
 
@@ -652,28 +641,27 @@ namespace Miki.Modules.AccountsModule
 					int totalAmountGiven = 0;
 					bool mentionedSelf = false;
 
-					while (true || totalAmountGiven <= repObject.ReputationPointsLeft)
+					while (e.Arguments.CanTake && totalAmountGiven <= repObject.ReputationPointsLeft)
 					{
-						if (arg == null)
-							break;
-
-						IDiscordUser u = await arg.GetUserAsync(e.Guild);
 						short amount = 1;
 
-						if (u == null)
-							break;
+                        e.Arguments.Take(out string userName);
 
-						arg = arg?.Next();
+                        var u = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
-						if ((arg?.TakeInt() ?? -1) != -1)
+                        if(u == null)
+                        {
+                            throw new UserNullException();
+                        }
+
+                        if (e.Arguments.Take(out int value))
 						{
-							amount = (short)arg.TakeInt().Value;
-							arg = arg.Next();
+                            amount = (short)value;
 						}
-						else if (Utils.IsAll(arg))
+						else if (Utils.IsAll(e.Arguments.Peek<string>()))
 						{
 							amount = repObject.ReputationPointsLeft;
-							arg = arg.Next();
+                            e.Arguments.Skip();
 						}
 
 						if (u.Id == e.Author.Id)
@@ -726,15 +714,15 @@ namespace Miki.Modules.AccountsModule
 					embed.Title = (e.Locale.GetString("miki_module_accounts_rep_header"));
 					embed.Description = (e.Locale.GetString("rep_success"));
 
-					foreach (var user in usersMentioned)
+					foreach (var u in usersMentioned)
 					{
-						User receiver = await DatabaseHelpers.GetUserAsync(context, user.Key);
+						User receiver = await DatabaseHelpers.GetUserAsync(context, u.Key);
 
-						receiver.Reputation += user.Value;
+						receiver.Reputation += u.Value;
 
 						embed.AddInlineField(
 							receiver.Name,
-							string.Format("{0} => {1} (+{2})", (receiver.Reputation - user.Value).ToFormattedString(), receiver.Reputation.ToFormattedString(), user.Value)
+							string.Format("{0} => {1} (+{2})", (receiver.Reputation - u.Value).ToFormattedString(), receiver.Reputation.ToFormattedString(), u.Value)
 						);
 					}
 
@@ -779,16 +767,15 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "mekos", Aliases = new string[] { "bal", "meko" })]
 		public async Task ShowMekosAsync(EventContext e)
 		{
-			var arg = e.Arguments.FirstOrDefault();
 			IDiscordGuildUser member;
 
-			if (arg == null)
+			if (!e.Arguments.Take(out string value))
 			{
 				member = await e.Guild.GetMemberAsync(e.Author.Id);
 			}
 			else
 			{
-				member = await arg.GetUserAsync(e.Guild);
+				member = await DiscordExtensions.GetUserAsync(value, e.Guild);
 			}
 
 			using (var context = new MikiContext())
@@ -809,65 +796,52 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "give")]
 		public async Task GiveMekosAsync(EventContext e)
 		{
-			if (e.Arguments.Count < 2)
-			{
-                await e.ErrorEmbedResource("give_error_no_arg")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
-
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
 			IDiscordUser user = null;
 
-			if (arg != null)
-			{
-				user = await arg.GetUserAsync(e.Guild);
-			}
+            if (e.Arguments.Take(out string userName))
+            {
+                user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
-			if (user == null)
-			{
-                await e.ErrorEmbedResource("give_error_no_mention")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                if (user == null)
+                {
+                    await e.ErrorEmbedResource("give_error_no_mention")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
 
-			arg = arg.Next();
+                if (!e.Arguments.Take(out int amount))
+                {
+                    await e.ErrorEmbedResource("give_error_amount_unparsable")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
 
-			int? amount = arg?.TakeInt() ?? null;
+                using (MikiContext context = new MikiContext())
+                {
+                    User sender = await DatabaseHelpers.GetUserAsync(context, e.Author);
+                    User receiver = await DatabaseHelpers.GetUserAsync(context, user);
 
-			if (amount == null)
-			{
-                await e.ErrorEmbedResource("give_error_amount_unparsable")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    if (amount <= sender.Currency)
+                    {
+                        sender.RemoveCurrency(amount);
+                        await receiver.AddCurrencyAsync(amount);
 
-			using (MikiContext context = new MikiContext())
-			{
-				User sender = await DatabaseHelpers.GetUserAsync(context, e.Author);
-				User receiver = await DatabaseHelpers.GetUserAsync(context, user);
+                        await new EmbedBuilder()
+                        {
+                            Title = "🔸 transaction",
+                            Description = e.Locale.GetString("give_description", sender.Name, receiver.Name, amount.ToFormattedString()),
+                            Color = new Color(255, 140, 0),
+                        }.ToEmbed().QueueToChannelAsync(e.Channel);
 
-				if (amount.Value <= sender.Currency)
-				{
-					sender.RemoveCurrency(amount.Value);
-					await receiver.AddCurrencyAsync(amount.Value);
-
-					await new EmbedBuilder()
-					{
-						Title = "🔸 transaction",
-						Description = e.Locale.GetString("give_description", sender.Name, receiver.Name, amount.Value.ToFormattedString()),
-						Color = new Color(255, 140, 0),
-					}.ToEmbed().QueueToChannelAsync(e.Channel);
-
-					await context.SaveChangesAsync();
-				}
-				else
-				{
-					await e.ErrorEmbedResource("user_error_insufficient_mekos")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
-				}
-			}
+                        await context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        await e.ErrorEmbedResource("user_error_insufficient_mekos")
+                            .ToEmbed().QueueToChannelAsync(e.Channel);
+                    }
+                }
+            }
 		}
 
 		[Command(Name = "daily")]

@@ -8,6 +8,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Exceptions;
 using Miki.Framework;
+using Miki.Framework.Arguments;
 using Miki.Framework.Events;
 using Miki.Localization;
 using Miki.Models;
@@ -26,18 +27,19 @@ namespace Miki
 		
 		public static string EscapeEveryone(string text) => Regex.Replace(text, Miki.Utils.EveryonePattern, "@\u200b$1");
 		
-		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
+		public static T FromEnum<T>(this string argument, T defaultValue) 
+            where T : Enum
 		{
-			if (Enum.TryParse(argument.Argument, true, out T result))
+			if (Enum.TryParse(typeof(T), argument, true, out object result))
 			{
-				return result;
+				return (T)result;
 			}
 			return defaultValue;
 		}
 
-        public static bool TryFromEnum<T>(this ArgObject argument, out T value) 
+        public static bool TryFromEnum<T>(this string argument, out T value) 
             where T : struct 
-            => Enum.TryParse(argument?.Argument ?? "", true, out value);
+            => Enum.TryParse(argument ?? "", true, out value);
 
 		public static DateTime UnixToDateTime(long unix)
 		{
@@ -128,11 +130,8 @@ namespace Miki
 			return "";
 		}
 
-		public static bool IsAll(this ArgObject input)
-		{
-			if (input == null) return false;
-			return (input?.Argument == "all") || (input?.Argument == "*");
-		}
+		public static bool IsAll(string input)
+		    => (input == "all") || (input == "*");
 
 		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
 			=> new EmbedBuilder()
@@ -167,9 +166,9 @@ namespace Miki
 			return val.ToString("N0");
 		}
 
-		public static string RemoveMentions(this ArgObject arg, IDiscordGuild guild)
+		public static string RemoveMentions(this string arg, IDiscordGuild guild)
 		{
-			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
+			return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
 			{
 				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
 			}, RegexOptions.None);
@@ -221,6 +220,16 @@ namespace Miki
 				await context.SaveChangesAsync();
 			}
 		}
+
+        public static string TakeAll(this IArgumentPack pack)
+        {
+            List<string> allItems = new List<string>();
+            while(pack.CanTake)
+            {
+                allItems.Add(pack.Take());
+            }
+            return string.Join(" ", allItems);
+        }
 	}
 
 	public class MikiRandom : RandomNumberGenerator

@@ -364,9 +364,9 @@ namespace Miki.Modules
 
 			EmbedBuilder builder = new EmbedBuilder();
 
-			if (e.Arguments.Count > 0)
+			if (e.Arguments.Pack.Length > 0)
 			{
-				builder.Title = $"{e.Author.Username} {action} {e.Arguments.Join().RemoveMentions(e.Guild)}";
+				builder.Title = $"{e.Author.Username} {action} {e.Arguments.ToString().RemoveMentions(e.Guild)}";
 			}
 			else
 			{

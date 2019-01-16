@@ -42,18 +42,20 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 long id = (long)e.Author.Id;
-                Guid guid = Guid.Parse(e.Arguments.Join().Argument);
 
-                DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-                User u = await User.GetAsync(context, id, e.Author.Username);
+                if (e.Arguments.Take(out Guid guid))
+                {
+                    DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
+                    User u = await User.GetAsync(context, id, e.Author.Username);
 
-                await u.AddCurrencyAsync(30000, e.Channel);
-                context.DonatorKey.Remove(key);
+                    await u.AddCurrencyAsync(30000, e.Channel);
+                    context.DonatorKey.Remove(key);
 
-                await context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
-                    .QueueToChannelAsync(e.Channel);
+                    await Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
+                        .QueueToChannelAsync(e.Channel);
+                }
             }
         }
 
@@ -63,63 +65,65 @@ namespace Miki.Modules
             using (var context = new MikiContext())
             {
                 long id = (long)e.Author.Id;
-                Guid guid = Guid.Parse(e.Arguments.Join().Argument);
-                DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-                IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
-
-                if (donatorStatus == null)
+                if (e.Arguments.Take(out Guid guid))
                 {
-                    donatorStatus = (await context.IsDonator.AddAsync(new IsDonator()
+                    DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
+                    IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
+
+                    if (donatorStatus == null)
                     {
-                        UserId = id
-                    })).Entity;
-                }
+                        donatorStatus = (await context.IsDonator.AddAsync(new IsDonator()
+                        {
+                            UserId = id
+                        })).Entity;
+                    }
 
-                donatorStatus.KeysRedeemed++;
+                    donatorStatus.KeysRedeemed++;
 
-                if (donatorStatus.ValidUntil > DateTime.Now)
-                {
-                    donatorStatus.ValidUntil += key.StatusTime;
-                }
-                else
-                {
-                    donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
-                }
+                    if (donatorStatus.ValidUntil > DateTime.Now)
+                    {
+                        donatorStatus.ValidUntil += key.StatusTime;
+                    }
+                    else
+                    {
+                        donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
+                    }
 
-                await new EmbedBuilder()
-                {
-                    Title = ($"🎉 Congratulations, {e.Author.Username}"),
-                    Color = new Color(226, 46, 68),
-                    Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
-                    ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
-                }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                    await new EmbedBuilder()
+                    {
+                        Title = ($"🎉 Congratulations, {e.Author.Username}"),
+                        Color = new Color(226, 46, 68),
+                        Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
+                        ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
+                    }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
 
-                context.DonatorKey.Remove(key);
-                await context.SaveChangesAsync();
+                    context.DonatorKey.Remove(key);
+                    await context.SaveChangesAsync();
 
-                // cheap hack.        
-                var achievementManager = AchievementManager.Instance;
-                var achievements = achievementManager.GetContainerById("donator").Achievements;
+                    // cheap hack.        
+                    var achievementManager = AchievementManager.Instance;
+                    var achievements = achievementManager.GetContainerById("donator").Achievements;
 
-                if (donatorStatus.KeysRedeemed == 1)
-                {
-                    await achievementManager.UnlockAsync(achievements[0], e.Channel, e.Author, 0);
-                }
-                else if (donatorStatus.KeysRedeemed == 5)
-                {
-                    await achievementManager.UnlockAsync(achievements[1], e.Channel, e.Author, 1);
-                }
-                else if (donatorStatus.KeysRedeemed == 25)
-                {
-                    await achievementManager.UnlockAsync(achievements[2], e.Channel, e.Author, 2);
+                    if (donatorStatus.KeysRedeemed == 1)
+                    {
+                        await achievementManager.UnlockAsync(achievements[0], e.Channel, e.Author, 0);
+                    }
+                    else if (donatorStatus.KeysRedeemed == 5)
+                    {
+                        await achievementManager.UnlockAsync(achievements[1], e.Channel, e.Author, 1);
+                    }
+                    else if (donatorStatus.KeysRedeemed == 25)
+                    {
+                        await achievementManager.UnlockAsync(achievements[2], e.Channel, e.Author, 2);
+                    }
                 }
             }
         }
 
 		[Command(Name = "box")]
 		public async Task BoxAsync(EventContext e)
-			=> await PerformCall(e, $"/api/box?text={e.Arguments.Join().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
+			=> await PerformCall(e, $"/api/box?text={e.Arguments.ToString().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
 
 		[Command(Name = "disability")]
 		public async Task DisabilityAsync(EventContext e)
@@ -127,11 +131,11 @@ namespace Miki.Modules
 
 		[Command(Name = "tohru")]
 		public async Task TohruAsync(EventContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
+			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.ToString().RemoveMentions(e.Guild));
 
 		[Command(Name = "truth")]
 		public async Task TruthAsync(EventContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Join().RemoveMentions(e.Guild));
+			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.ToString().RemoveMentions(e.Guild));
 
 		[Command(Name = "trapcard")]
 		public async Task YugiAsync(EventContext e)
@@ -146,12 +150,12 @@ namespace Miki.Modules
 				url = (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).GetAvatarUrl();
 			}
 
-			//if (e.message.Attachments.Count > 0)
-			//{
-			//	url = e.message.Attachments.First().Url;
-			//}
+            //if (e.message.Attachments.Count > 0)
+            //{
+            //    url = e.message.Attachments.First().Url;
+            //}
 
-			return url;
+            return url;
 		}
 
 		private async Task PerformCall(EventContext e, string url)

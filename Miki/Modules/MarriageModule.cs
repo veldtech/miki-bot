@@ -83,7 +83,7 @@ namespace Miki.Modules
 		[Command(Name = "acceptmarriage")]
 		public async Task AcceptMarriageAsync(EventContext e)
 		{
-			IDiscordUser user = await e.Arguments.Join().GetUserAsync(e.Guild);
+			IDiscordUser user = await DiscordExtensions.GetUserAsync(e.Arguments.ToString(), e.Guild);
 
 			if (user == null)
 			{
@@ -159,15 +159,7 @@ namespace Miki.Modules
             using (MikiContext context = new MikiContext())
             {
                 MarriageRepository repository = new MarriageRepository(context);
-
-                ArgObject selection = e.Arguments.FirstOrDefault();
-                int? selectionId = null;
-
-                if (selection != null)
-                {
-                    selectionId = selection.TakeInt();
-                }
-
+          
                 var marriages = await repository.GetProposalsSent(e.Author.Id.ToDbLong());
 
                 if (marriages.Count == 0)
@@ -179,9 +171,9 @@ namespace Miki.Modules
 
                 marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-                if (selectionId != null)
+                if (e.Arguments.Take(out int selectionId))
                 {
-                    var m = marriages[selectionId.Value - 1];
+                    var m = marriages[selectionId - 1];
                     string otherName = (await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
 
                     await new EmbedBuilder()
@@ -223,14 +215,6 @@ namespace Miki.Modules
 			{
 				MarriageRepository repository = new MarriageRepository(context);
 
-				ArgObject selection = e.Arguments.FirstOrDefault();
-				int? selectionId = null;
-
-				if (selection != null)
-				{
-					selectionId = selection.TakeInt();
-				}
-
 				var marriages = await repository.GetProposalsReceived(e.Author.Id.ToDbLong());
 
 				if (marriages.Count == 0)
@@ -242,9 +226,9 @@ namespace Miki.Modules
 
 				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-				if (selectionId != null)
-				{
-					var m = marriages[selectionId.Value - 1];
+                if (e.Arguments.Take(out int selectionId))
+                {
+                    var m = marriages[selectionId - 1];
 					string otherName = (await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong())).Username;
 
 					await new EmbedBuilder()
@@ -284,14 +268,6 @@ namespace Miki.Modules
             {
                 MarriageRepository repository = new MarriageRepository(context);
 
-                ArgObject selection = e.Arguments.FirstOrDefault();
-                int? selectionId = null;
-
-                if (selection != null)
-                {
-                    selectionId = selection.TakeInt();
-                }
-
                 var marriages = await repository.GetMarriagesAsync((long)e.Author.Id);
 
                 if (marriages.Count == 0)
@@ -302,9 +278,9 @@ namespace Miki.Modules
 
                 marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-                if (selectionId != null)
+                if (e.Arguments.Take(out int selectionId))
                 {
-                    var m = marriages[selectionId.Value - 1];
+                    var m = marriages[selectionId - 1];
                     var otherUser = await MikiApp.Instance.Discord.GetUserAsync(m.GetOther(e.Author.Id.ToDbLong()).FromDbLong());
 
                     await new EmbedBuilder
@@ -343,12 +319,14 @@ namespace Miki.Modules
             long askerId = 0;
             long receiverId = 0;
 
-            ArgObject args = e.Arguments.FirstOrDefault();
 
-            if (args == null)
+
+            if (!e.Arguments.Take(out string args))
+            {
                 return;
+            }
 
-            IDiscordGuildUser user = await args.GetUserAsync(e.Guild);
+            IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(args, e.Guild);
 
             if (user == null)
             {
@@ -415,7 +393,10 @@ namespace Miki.Modules
         [Command(Name = "showproposals")]
 		public async Task ShowProposalsAsync(EventContext e)
 		{
-			int page = e.Arguments.FirstOrDefault()?.TakeInt() - 1 ?? 0;
+            if(e.Arguments.Take(out int page))
+            {
+                page = page - 1;
+            }
 
 			using (var context = new MikiContext())
 			{

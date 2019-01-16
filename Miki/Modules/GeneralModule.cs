@@ -58,22 +58,19 @@ namespace Miki.Modules
 		[Command(Name = "avatar")]
 		public async Task AvatarAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			if (arg == null)
+			if (!e.Arguments.Take(out string arg))
 			{
 				e.Channel.QueueMessage(e.Author.GetAvatarUrl());
 			}
 			else
 			{
-				if (arg.Argument == "-s")
+				if (arg == "-s")
 				{
 					e.Channel.QueueMessage(e.Guild.IconUrl);
 					return;
 				}
 
-				IDiscordGuildUser user = await arg.GetUserAsync(e.Guild);
-
+				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.Guild);
 				if (user != null)
 				{
 					e.Channel.QueueMessage(user.GetAvatarUrl());
@@ -129,17 +126,14 @@ namespace Miki.Modules
 			DiscordEmoji emoji = new DiscordEmoji();
 			emoji.Name = "🎁";
 
-			var arg = e.Arguments.FirstOrDefault();
-			string giveAwayText = arg?.Argument ?? "";
-			arg = arg?.Next();
+            e.Arguments.Take(out string giveawayText);
 
-			while (!(arg?.Argument ?? "-").StartsWith("-"))
+			while (!e.Arguments.Pack.Peek().StartsWith("-"))
 			{
-				giveAwayText += " " + arg.Argument;
-				arg = arg?.Next();
+                giveawayText += " " + e.Arguments.Pack.Take();
 			}
 
-			var mml = new MMLParser(arg?.TakeUntilEnd()?.Argument ?? "").Parse();
+			var mml = new MMLParser(e.Arguments.Pack.TakeAll()).Parse();
 
 			int amount = mml.Get("amount", 1);
 			TimeSpan timeLeft = mml.Get("time", "1h").GetTimeFromString();
@@ -151,11 +145,11 @@ namespace Miki.Modules
 				return;
 			}
 
-			giveAwayText = giveAwayText + ((amount > 1) ? " x " + amount : "");
+			giveawayText = giveawayText + ((amount > 1) ? " x " + amount : "");
 
 			List<IDiscordUser> winners = new List<IDiscordUser>();
 
-			IDiscordMessage msg = await CreateGiveawayEmbed(e, giveAwayText)
+			IDiscordMessage msg = await CreateGiveawayEmbed(e, giveawayText)
 			.AddField("Time", timeLeft.ToTimeString(e.Locale), true)
 			.AddField("React to participate", "good luck", true)
 			.ToEmbed().SendToChannel(e.Channel);
@@ -203,7 +197,7 @@ namespace Miki.Modules
 
 					await msg.EditAsync(new EditMessageArgs
 					{
-						embed = CreateGiveawayEmbed(e, giveAwayText)
+						embed = CreateGiveawayEmbed(e, giveawayText)
 							.AddField("Winners", winnerText)
 							.ToEmbed()
 					});
@@ -270,12 +264,10 @@ namespace Miki.Modules
 		[Command(Name = "help")]
 		public async Task HelpAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.FirstOrDefault();
-
-			if (arg != null)
+			if (e.Arguments.Take(out string arg))
 			{
 				CommandEvent ev = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands
-					.FirstOrDefault(x => x.Name.ToLower() == arg.Argument.ToString().ToLower());
+					.FirstOrDefault(x => x.Name.ToLower() == arg.ToString().ToLower());
 
 				if (ev == null)
 				{
@@ -291,7 +283,7 @@ namespace Miki.Modules
                         helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
                         API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(x => x.Name));
-                        API.StringComparison.StringComparison best = comparer.GetBest(arg.Argument);
+                        API.StringComparison.StringComparison best = comparer.GetBest(arg);
 
                         helpListEmbed.AddField(e.Locale.GetString("miki_module_help_didyoumean"), best.text);
 
@@ -486,14 +478,12 @@ namespace Miki.Modules
 		[Command(Name = "whois")]
 		public async Task WhoIsAsync(EventContext e)
 		{
-			ArgObject arg = e.Arguments.Join();
-
-			if (arg == null)
+			if (!e.Arguments.Take(out string arg))
 			{
 				throw new ArgumentNullException();
 			}
 
-			IDiscordGuildUser user = await arg.GetUserAsync(e.Guild);
+			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.Guild);
 
 			//if (user == null)
 			//{

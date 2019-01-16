@@ -25,7 +25,7 @@ namespace Miki.Modules
 		[Command(Name = "rps")]
 		public async Task RPSAsync(EventContext e)
 		{
-			int? bet = await ValidateBetAsync(e, e.Arguments.FirstOrDefault(), 10000);
+			int? bet = await ValidateBetAsync(e, 10000);
 			if (bet.HasValue)
 			{
 				await StartRPS(e, bet.Value);
@@ -36,7 +36,7 @@ namespace Miki.Modules
 		{
 			float rewardMultiplier = 1f;
 
-			if (e.Arguments.Count < 2)
+			if (e.Arguments.Pack.Length < 2)
 			{
 				await e.ErrorEmbed("You need to choose a weapon!")
 					.ToEmbed().QueueToChannelAsync(e.Channel);
@@ -48,7 +48,9 @@ namespace Miki.Modules
 				EmbedBuilder resultMessage = new EmbedBuilder()
 					.SetTitle("Rock, Paper, Scissors!");
 
-				if (rps.TryParse(e.Arguments.Get(1).Argument, out RPSWeapon playerWeapon))
+                e.Arguments.Take(out string weapon);
+
+				if (rps.TryParse(weapon, out RPSWeapon playerWeapon))
 				{
 					RPSWeapon botWeapon = rps.GetRandomWeapon();
 
@@ -106,15 +108,13 @@ namespace Miki.Modules
 		[Command(Name = "blackjack", Aliases = new[] { "bj" })]
 		public async Task BlackjackAsync(EventContext e)
 		{
-			ArgObject args = e.Arguments.FirstOrDefault();
-			string subCommand = args?.Argument.ToLower() ?? "";
-			args = args?.Next();
+            e.Arguments.Take(out string subCommand);
 
 			switch (subCommand)
 			{
 				case "new":
 				{
-					await OnBlackjackNew(e, args);
+					await OnBlackjackNew(e);
 				}
 				break;
 
@@ -148,10 +148,10 @@ namespace Miki.Modules
 			}
 		}
 
-		public async Task OnBlackjackNew(EventContext e, ArgObject args)
+		public async Task OnBlackjackNew(EventContext e)
 		{
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-			int? bet = await ValidateBetAsync(e, args);
+			int? bet = await ValidateBetAsync(e);
 
 			if (bet.HasValue)
 			{
@@ -376,7 +376,7 @@ namespace Miki.Modules
 		[Command(Name = "flip")]
 		public async Task FlipAsync(EventContext e)
 		{
-			int? bet = await ValidateBetAsync(e, e.Arguments.FirstOrDefault(), 10000);
+			int? bet = await ValidateBetAsync(e, 10000);
 			if (bet.HasValue)
 			{
 				await StartFlip(e, bet.Value);
@@ -385,22 +385,22 @@ namespace Miki.Modules
 
 		private async Task StartFlip(EventContext e, int bet)
 		{
-			if (e.Arguments.Count < 2)
+			if (e.Arguments.Pack.Length < 2)
 			{
                 await e.ErrorEmbed("Please pick either `heads` or `tails`!")
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
 
-			string sideParam = e.Arguments.Get(1).Argument.ToLower();
+            e.Arguments.Take(out string sideParam);
 
 			int pickedSide = -1;
 
-			if (sideParam[0] == 'h')
+			if (char.ToLower(sideParam[0]) == 'h')
 			{
 				pickedSide = 1;
 			}
-			else if (sideParam[0] == 't')
+			else if (char.ToLower(sideParam[0]) == 't')
 			{
 				pickedSide = 0;
 			}
@@ -415,7 +415,7 @@ namespace Miki.Modules
 			string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
 			string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
 
-			if (e.Arguments.Contains("-bonus"))
+			if (e.Arguments.Peek<string>() == "-bonus")
 			{
 				headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-heads.png";
 				tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-tails.png";
@@ -470,8 +470,7 @@ namespace Miki.Modules
 		[Command(Name = "slots", Aliases = new[] { "s" })]
 		public async Task SlotsAsync(EventContext e)
 		{
-			ArgObject argObject = e.Arguments.FirstOrDefault();
-			int? i = await ValidateBetAsync(e, argObject, 99999);
+			int? i = await ValidateBetAsync(e, 99999);
 			if (i.HasValue)
 			{
 				await StartSlots(e, i.Value);
@@ -715,77 +714,52 @@ namespace Miki.Modules
 		//	}
 		//}
 
-		public async Task<int?> ValidateBetAsync(EventContext e, ArgObject arg, int maxBet = 1000000)
+		public async Task<int?> ValidateBetAsync(EventContext e, int maxBet = 1000000)
 		{
-			if (arg != null)
+			if (e.Arguments.Take(out string arg))
 			{
-				const int noAskLimit = 10000;
+                using (MikiContext context = new MikiContext())
+                {
+                    User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 
-				using (MikiContext context = new MikiContext())
-				{
-					User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
-
-					if (user == null)
-					{
+                    if (user == null)
+                    {
                         throw new UserNullException();
-					}
+                    }
 
-					string checkArg = arg?.Argument;
-
-					if (int.TryParse(checkArg, out int bet))
-					{
-					}
-					else if (checkArg.ToLower() == "all" || checkArg == "*")
-					{
-						bet = Math.Min(user.Currency, maxBet);
-					}
-					else
-					{
+                    if (int.TryParse(arg, out int bet))
+                    {
+                    }
+                    else if (arg.ToLower() == "all" || arg == "*")
+                    {
+                        bet = Math.Min(user.Currency, maxBet);
+                    }
+                    else
+                    {
                         await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
-							.ToEmbed().QueueToChannelAsync(e.Channel);
-						return null;
-					}
+                            .ToEmbed().QueueToChannelAsync(e.Channel);
+                        return null;
+                    }
 
-					if (bet < 1)
-					{
-						throw new ArgumentLessThanZeroException();
-					}
+                    if (bet < 1)
+                    {
+                        throw new ArgumentLessThanZeroException();
+                    }
 
-					if(bet > user.Currency)
-					{
-						throw new InsufficientCurrencyException(user.Currency, bet);
-					}
+                    if (bet > user.Currency)
+                    {
+                        throw new InsufficientCurrencyException(user.Currency, bet);
+                    }
 
-					if (bet > maxBet)
-					{
-						await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
-							.ToEmbed().QueueToChannelAsync(e.Channel);
-						return null;
-					}
+                    if (bet > maxBet)
+                    {
+                        await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
+                            .ToEmbed().QueueToChannelAsync(e.Channel);
+                        return null;
+                    }
 
-					if(bet >= noAskLimit)
-					{
-						arg = e.Arguments.Last();
-						if (arg?.Argument.ToLower() == "ok")
-						{
-							return bet;
-						}
-						else
-						{
-                            await new EmbedBuilder
-							{
-								Description =
-								$"Are you sure you want to bet **{bet:g}**? You currently have `{user.Currency:g}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.",
-								Color = new Color(0.4f, 0.6f, 1f)
-							}.ToEmbed().QueueToChannelAsync(e.Channel);
-							return null;
-						}
-					}
-					else
-					{
-						return bet;
-					}
-				}
+                    return bet;
+                }          
 			}
 			else
 			{

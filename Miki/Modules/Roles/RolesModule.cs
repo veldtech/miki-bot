@@ -224,8 +224,10 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				int page = Math.Max((e.Arguments.Join()?.TakeInt() ?? 0) - 1, 0);
-
+                e.Arguments.Take(out int index);
+                
+                int page = Math.Max(index - 1, 0);
+             
 				long guildId = e.Guild.Id.ToDbLong();
 
 				List<LevelRole> roles = await context.LevelRoles
