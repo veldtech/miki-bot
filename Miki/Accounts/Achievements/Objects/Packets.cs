@@ -7,7 +7,7 @@ namespace Miki.Accounts.Achievements.Objects
 	public class BasePacket
 	{
 		public IDiscordUser discordUser;
-		public IDiscordChannel discordChannel;
+		public IDiscordTextChannel discordChannel;
 	}
 
 	public class AchievementPacket : BasePacket

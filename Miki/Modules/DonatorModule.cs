@@ -19,7 +19,7 @@ namespace Miki.Modules
 	[Module(Name = "Donator")]
 	internal class DonatorModule
 	{
-        private RestClient client;
+        private readonly RestClient client;
 
 		public DonatorModule(Module m, MikiApp b)
 		{
@@ -52,8 +52,8 @@ namespace Miki.Modules
 
                 await context.SaveChangesAsync();
 
-                Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
-                    .QueueToChannel(e.Channel);
+                await Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
+                    .QueueToChannelAsync(e.Channel);
             }
         }
 
@@ -86,14 +86,14 @@ namespace Miki.Modules
                     donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
                 }
 
-                new EmbedBuilder()
+                await new EmbedBuilder()
                 {
                     Title = ($"🎉 Congratulations, {e.Author.Username}"),
                     Color = new Color(226, 46, 68),
                     Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
                     ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
                 }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-                .ToEmbed().QueueToChannel(e.Channel);
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
 
                 context.DonatorKey.Remove(key);
                 await context.SaveChangesAsync();
@@ -162,7 +162,7 @@ namespace Miki.Modules
 
 				if (u == null)
 				{
-					SendNotADonatorError(e.Channel);
+					await SendNotADonatorErrorAsync(e.Channel);
 					return;
 				}
 
@@ -173,20 +173,20 @@ namespace Miki.Modules
 				}
 				else
 				{
-					SendNotADonatorError(e.Channel);
+					await SendNotADonatorErrorAsync(e.Channel);
 				}
 			}
 		}
 
-		private void SendNotADonatorError(IDiscordChannel channel)
+		private async Task SendNotADonatorErrorAsync(IDiscordTextChannel channel)
 		{
-			new EmbedBuilder()
+			await new EmbedBuilder()
 			{
 				Title = "Sorry!",
 				Description = "... but you haven't donated yet, please support us with a small donation to unlock these commands!",
 			}.AddField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
 			 .AddField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
-			 .ToEmbed().QueueToChannel(channel);
+			 .ToEmbed().QueueToChannelAsync(channel);
 		}
 	}
 }

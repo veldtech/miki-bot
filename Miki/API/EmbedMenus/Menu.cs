@@ -38,7 +38,7 @@ namespace Miki.API.EmbedMenus
 			return a;
 		}
 
-		public async Task StartAsync(IDiscordChannel channel)
+		public async Task StartAsync(IDiscordTextChannel channel)
 		{
 			message = await Root.Build().SendToChannel(channel);
 			(Root as BaseItem).SetMenu(this);

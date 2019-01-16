@@ -115,7 +115,7 @@ namespace Miki
 
             if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
             {
-                app.AddSingletonService(new MikiApi(Global.Config.MikiApiBaseUrl, Global.Config.MikiApiKey));
+                app.AddSingletonService(new MikiApiClient(Global.Config.MikiApiKey));
             }
             else
             {
@@ -180,8 +180,8 @@ namespace Miki
                 {
                     if (ex is LocalizedException botEx)
                     {
-                        Utils.ErrorEmbedResource(context, botEx.LocaleResource)
-                            .ToEmbed().QueueToChannel(context.Channel);
+                        await Utils.ErrorEmbedResource(context, botEx.LocaleResource)
+                            .ToEmbed().QueueToChannelAsync(context.Channel);
                     }
                     else
                     {
@@ -260,7 +260,7 @@ namespace Miki
                 using (var context = new MikiContext())
                 {
                     string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
-                    (await arg.GetChannelAsync()).QueueMessageAsync(msg);
+                    (await arg.GetChannelAsync()).QueueMessage(msg);
                 }
 			}
 		}
@@ -280,7 +280,7 @@ namespace Miki
                 using (var context = new MikiContext())
                 {
                     LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
-                    (defaultChannel as IDiscordTextChannel).QueueMessageAsync(i.GetString("miki_join_message"));
+                    (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
                 }
 			}
 

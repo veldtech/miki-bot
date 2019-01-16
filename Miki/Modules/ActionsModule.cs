@@ -9,7 +9,7 @@ namespace Miki.Modules
 	public class ActionsModule
 	{
         readonly string askImage = "http://i.imgur.com/AHPnL.gif";
-		string[] biteImages = new string[]
+        readonly string[] biteImages = new string[]
 		{
 			"https://i.imgur.com/FlwJbPh.gif",
 			"https://i.imgur.com/opsXoPC.gif",
@@ -29,7 +29,7 @@ namespace Miki.Modules
 			"https://i.imgur.com/VKgFBJY.gif",
 			"https://i.imgur.com/r9QOkEA.gif"
 		};
-		string[] cakeImages = new string[]
+        readonly string[] cakeImages = new string[]
 		{
 			"http://i.imgur.com/CYyrjRQ.gif",
 			"http://i.imgur.com/3nWbcNT.gif",
@@ -74,7 +74,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/DBAEo1L.gif",
 			"http://i.imgur.com/QSLpOIR.gif"
 		};
-		string[] cuddleImages = new string[]
+        readonly string[] cuddleImages = new string[]
 		{
 			"http://i.imgur.com/xWTyaKY.gif",
 			"http://i.imgur.com/K4lYduH.gif",
@@ -85,7 +85,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/guBWT22.gif",
 			"http://i.imgur.com/Asnv32U.gif"
 		};
-		string[] hugImages = new string[]
+        readonly string[] hugImages = new string[]
         {
 			"http://i.imgur.com/FvSnQs8.gif",
 			"http://i.imgur.com/rXEq7oU.gif",
@@ -112,7 +112,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/MrEMpE6.gif",
 			"http://i.imgur.com/Y9sMTP4.gif"
         };
-		string[] glareImages = new string[]
+        readonly string[] glareImages = new string[]
         {
             "http://i.imgur.com/ba9Skjf.gif",
             "http://i.imgur.com/V6oBWDn.gif",
@@ -156,7 +156,7 @@ namespace Miki.Modules
             "http://i.imgur.com/xgb3wk2.gif",
             "http://i.imgur.com/qzPYYsK.gif"
         };
-		string[] highFiveImages = new string[]
+        readonly string[] highFiveImages = new string[]
 		{
 			"http://i.imgur.com/LOoXzd9.gif",
 			"http://i.imgur.com/Kwe6pAn.gif",
@@ -180,7 +180,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/ebQWKZU.gif",
 			"http://i.imgur.com/XYA8ET8.gif"
 		};
-		string[] kissImages = new string[]
+        readonly string[] kissImages = new string[]
 		{
 			"http://i.imgur.com/QIPaYW3.gif",
 			"http://i.imgur.com/wx3WXZu.gif",
@@ -201,7 +201,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/W9htMol.gif",
 			"http://i.imgur.com/IVOBC8p.gif"
 		};
-		string[] lickImages = new string[]
+        readonly string[] lickImages = new string[]
 		{
 			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
 			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/2187d457-703a-43a0-93de-3304774f972f.gif",
@@ -211,7 +211,7 @@ namespace Miki.Modules
 			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f56b349d-507d-46df-849a-584b718c345c.gif",
 			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
 		};
-		string[] patImages = new string[]
+        readonly string[] patImages = new string[]
 		{
 			"http://i.imgur.com/Y2DrXtT.gif",
 			"http://i.imgur.com/G7b4OnS.gif",
@@ -264,7 +264,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/1mr4NWL.gif",
 			"http://i.imgur.com/wXw7IjY.gif"
 		};
-		string[] pokeImages = new string[]
+        readonly string[] pokeImages = new string[]
         {
 	        "http://i.imgur.com/WG8EKwM.gif",
 	        "http://i.imgur.com/dfoxby7.gif",
@@ -277,7 +277,7 @@ namespace Miki.Modules
 	        "http://i.imgur.com/YDJFoBV.gif",
 	        "http://i.imgur.com/urC9B1H.gif"
         };
-		string[] punchImages = new string[]
+        readonly string[] punchImages = new string[]
 		{
 			"http://imgur.com/jVc3GGv.gif",
 			"http://imgur.com/iekwz4h.gif",
@@ -291,7 +291,7 @@ namespace Miki.Modules
 			"http://imgur.com/q7AmR8n.gif",
 			"http://imgur.com/pDohPrm.gif",
 		};
-		string[] slapImages = new string[]
+        readonly string[] slapImages = new string[]
         {
 	        "http://i.imgur.com/GQtzDsV.gif",
 	        "http://i.imgur.com/rk8eqnt.gif",
@@ -375,7 +375,7 @@ namespace Miki.Modules
 
 			builder.ImageUrl = imageUrl;
 
-			builder.ToEmbed().QueueToChannel(e.Channel);
+            await builder.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 	}
 }

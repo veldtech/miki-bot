@@ -38,7 +38,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				data.ForEach(x => x.destinationChannel.QueueMessageAsync(x.message));
+				data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
 			};
 
 			m.UserLeaveGuild = async (user) =>
@@ -52,7 +52,7 @@ namespace Miki.Modules
 					return;
 				}
 
-				data.ForEach(x => x.destinationChannel.QueueMessageAsync(x.message));
+				data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
 			};
 		}
 
@@ -67,19 +67,19 @@ namespace Miki.Modules
 					if (leaveMessage != null)
 					{
 						context.EventMessages.Remove(leaveMessage);
-						e.Channel.QueueMessageAsync($"✅ deleted your welcome message");
+						e.Channel.QueueMessage($"✅ deleted your welcome message");
 						await context.SaveChangesAsync();
 						return;
 					}
 					else
 					{
-						e.Channel.QueueMessageAsync($"⚠ no welcome message found!");
+						e.Channel.QueueMessage($"⚠ no welcome message found!");
 					}
 				}
 
 				if (await SetMessage(e.Arguments.ToString(), EventMessageType.JOINSERVER, e.Channel.Id))
 				{
-					e.Channel.QueueMessageAsync($"✅ new welcome message is set to: `{ e.Arguments.ToString() }`");
+					e.Channel.QueueMessage($"✅ new welcome message is set to: `{ e.Arguments.ToString() }`");
 				}
 				await context.SaveChangesAsync();
 			}
@@ -96,19 +96,19 @@ namespace Miki.Modules
 					if (leaveMessage != null)
 					{
 						context.EventMessages.Remove(leaveMessage);
-						e.Channel.QueueMessageAsync($"✅ deleted your leave message");
+						e.Channel.QueueMessage($"✅ deleted your leave message");
 						await context.SaveChangesAsync();
 						return;
 					}
 					else
 					{
-						e.Channel.QueueMessageAsync($"⚠ no leave message found!");
+						e.Channel.QueueMessage($"⚠ no leave message found!");
 					}
 				}
 
 				if (await SetMessage(e.Arguments.ToString(), EventMessageType.LEAVESERVER, e.Channel.Id))
 				{
-					e.Channel.QueueMessageAsync($"✅ new leave message is set to: `{ e.Arguments.ToString() }`");
+					e.Channel.QueueMessage($"✅ new leave message is set to: `{ e.Arguments.ToString() }`");
 				}
 				await context.SaveChangesAsync();
 			}
@@ -121,10 +121,10 @@ namespace Miki.Modules
 			{
 				var allmessages = await GetMessage(e.Guild, type, e.Author);
 				EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);
-				e.Channel.QueueMessageAsync(msg.message ?? "No message set in this channel");
+				e.Channel.QueueMessage(msg.message ?? "No message set in this channel");
 				return;
 			}
-			e.Channel.QueueMessageAsync($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+			e.Channel.QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
 		}
 
 		private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)

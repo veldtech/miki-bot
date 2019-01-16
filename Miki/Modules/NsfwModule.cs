@@ -22,18 +22,18 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
-				CreateEmbed(s)
-					.QueueToChannel(e.Channel);
+                await CreateEmbed(s)
+					.QueueToChannelAsync(e.Channel);
 			}
 			catch
 			{
-				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -46,18 +46,18 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
-				CreateEmbed(s)
-					.QueueToChannel(e.Channel);
+                await CreateEmbed(s)
+					.QueueToChannelAsync(e.Channel);
 			}
 			catch
 			{
-				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -70,18 +70,18 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
-				CreateEmbed(s)
-					.QueueToChannel(e.Channel);
+                await CreateEmbed(s)
+					.QueueToChannelAsync(e.Channel);
 			}
 			catch
 			{
-				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -94,18 +94,18 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
-				CreateEmbed(s)
-					.QueueToChannel(e.Channel);
+                await CreateEmbed(s)
+					.QueueToChannelAsync(e.Channel);
 			}
 			catch
 			{
-				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -118,17 +118,17 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-					e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
-				CreateEmbed(s).QueueToChannel(e.Channel);
+                await CreateEmbed(s).QueueToChannelAsync(e.Channel);
 			}
 			catch
 			{
-				e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 

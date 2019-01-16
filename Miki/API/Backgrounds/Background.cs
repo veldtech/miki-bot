@@ -36,6 +36,6 @@ namespace Miki.Models.Objects.Backgrounds
 		[JsonProperty("tags")]
 		public List<string> Tags { get; set; }
 
-		public string ImageUrl => $"https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-{ Id }.png";
+		public string ImageUrl => $"https://cdn.miki.ai/image-profiles/backgrounds/background-{ Id }.png";
 	}
 }

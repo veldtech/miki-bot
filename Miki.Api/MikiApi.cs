@@ -6,18 +6,14 @@ using System.Threading.Tasks;
 
 namespace Miki.API
 {
-	public class MikiApi : IDisposable
+	public class MikiApiClient : IDisposable
 	{
 		private readonly RestClient _client;
 
-		private readonly string _token = "";
-		private readonly string _baseUrl = "";
+		private const string _baseUrl = "https://api.miki.ai/";
 
-		public MikiApi(string baseUrl, string token)
+		public MikiApiClient(string token)
 		{
-			_token = token;
-			_baseUrl = baseUrl;
-
 			_client = new RestClient(_baseUrl);
             _client.AddHeader("Authorization", "Bearer " + token);
 		}

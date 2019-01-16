@@ -32,7 +32,7 @@ namespace Miki.Modules
 	[Module(Name = "settings")]
 	internal class SettingsModule
 	{
-        private IDictionary<DatabaseSettingId, Enum> _settingOptions = new Dictionary<DatabaseSettingId, Enum>()
+        private readonly IDictionary<DatabaseSettingId, Enum> _settingOptions = new Dictionary<DatabaseSettingId, Enum>()
         {
             {DatabaseSettingId.LevelUps, (LevelNotificationsSetting)0 },
             {DatabaseSettingId.Achievements, (AchievementNotificationSetting)0 }
@@ -45,11 +45,11 @@ namespace Miki.Modules
 
             if (!arg.TryFromEnum<DatabaseSettingId>(out var value))
             {
-                Utils.ErrorEmbedResource(e, new LanguageResource(
+                await Utils.ErrorEmbedResource(e, new LanguageResource(
                     "error_notifications_setting_not_found",
                     string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
                         .Select(x => $"`{x}`"))))
-                    .ToEmbed().QueueToChannel(e.Channel);
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
                 return;
             }
 
@@ -62,13 +62,13 @@ namespace Miki.Modules
 
             if(!Enum.TryParse(@enum.GetType(), arg?.Argument ?? "", true, out var type))
             {
-                Utils.ErrorEmbedResource(e, new LanguageResource(
+                await Utils.ErrorEmbedResource(e, new LanguageResource(
                     "error_notifications_type_not_found", 
                     arg?.Argument ?? "",
                     value.ToString(),
                     string.Join(", ", Enum.GetNames(@enum.GetType())
                         .Select(x => $"`{x}`"))))
-                    .ToEmbed().QueueToChannel(e.Channel);
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
                 return;
             }
 
@@ -98,8 +98,8 @@ namespace Miki.Modules
                 await context.SaveChangesAsync();
 			}
 
-            Utils.SuccessEmbed(e, e.Locale.GetString("notifications_update_success"))
-                .QueueToChannel(e.Channel);
+            await Utils.SuccessEmbed(e, e.Locale.GetString("notifications_update_success"))
+                .QueueToChannelAsync(e.Channel);
         }
 
         [Command(Name = "showmodule")]
@@ -135,7 +135,7 @@ namespace Miki.Modules
 				if (!string.IsNullOrEmpty(content))
 					embed.AddInlineField("Services", content);
 
-				embed.ToEmbed().QueueToChannel(e.Channel);
+                await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -177,11 +177,11 @@ namespace Miki.Modules
 				}
 			}
 
-			new EmbedBuilder()
+            await new EmbedBuilder()
 				.SetTitle($"Module Status for '{e.Channel.Name}'")
 				.AddInlineField("Column 1", firstColumn)
 				.AddInlineField("Column 2", secondColumn)
-				.ToEmbed().QueueToChannel(e.Channel);
+				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
@@ -197,15 +197,15 @@ namespace Miki.Modules
                 {
                     await Locale.SetLanguageAsync(context, e.Channel.Id, langId);
 
-                    e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
-                        .QueueToChannel(e.Channel);
+                    await e.SuccessEmbed(e.Locale.GetString("localization_set", $"`{localeName}`"))
+                        .QueueToChannelAsync(e.Channel);
 
                     return;
                 }
-                e.ErrorEmbedResource("error_language_invalid",
+                await e.ErrorEmbedResource("error_language_invalid",
                     localeName,
                     await e.Prefix.GetForGuildAsync(context, cache, e.Guild.Id)
-                ).ToEmbed().QueueToChannel(e.Channel);
+                ).ToEmbed().QueueToChannelAsync(e.Channel);
             }
         }
 
@@ -216,7 +216,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(e.Arguments.ToString()))
 			{
-				e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
 
@@ -233,7 +233,7 @@ namespace Miki.Modules
 				e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()
 			));
 
-			embed.ToEmbed().QueueToChannel(e.Channel);
+			await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "syncavatar")]
@@ -241,15 +241,15 @@ namespace Miki.Modules
 		{
 			await Utils.SyncAvatarAsync(e.Author);
 
-			e.SuccessEmbed(
+			await e.SuccessEmbed(
 				e.Locale.GetString("setting_avatar_updated")	
-			).QueueToChannel(e.Channel);
+			).QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
-		public Task ListLocaleAsync(EventContext e)
+		public async Task ListLocaleAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				Title = e.Locale.GetString("locales_available"),
 				Description = ("`" + string.Join("`, `", Locale.LocaleNames.Keys) + "`")
@@ -258,8 +258,7 @@ namespace Miki.Modules
 				e.Locale.GetString("locales_contribute",
 					$"[{e.Locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"
 				)
-			).ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			).ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 	}
 }

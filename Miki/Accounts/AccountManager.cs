@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts
 {
-	public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordChannel g, int level);
+	public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
 
 	public class AccountManager
 	{
@@ -105,7 +105,10 @@ namespace Miki.Accounts
 							string.Join("\n", rolesObtained.Select(x => $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId).Name}**")));
 					}
 
-					embed.ToEmbed().QueueToChannel(e);
+                    if (e is IDiscordTextChannel tc)
+                    {
+                        await embed.ToEmbed().QueueToChannelAsync(tc);
+                    }
 				}
 		   };
 

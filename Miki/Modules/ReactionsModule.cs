@@ -8,7 +8,7 @@ namespace Miki.Modules
 	[Module(Name = "reactions")]
 	public class ReactionsModule
 	{
-		string[] confusedImages = new string[]
+		readonly string[] confusedImages = new string[]
 		{
 			"http://i.imgur.com/RCotXAK.png",
 			"http://i.imgur.com/yN5cwQq.jpg",
@@ -47,7 +47,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/VyabzAv.jpg"
 		};
 
-		string[] lewd = new string[]
+        readonly string[] lewd = new string[]
 		{
 			"http://i.imgur.com/eG42EVs.png",
 			"http://i.imgur.com/8shK3jh.png",
@@ -72,7 +72,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/jlTqATG.gif"
 		};
 
-		string[] poutImages = new string[]
+        readonly string[] poutImages = new string[]
 		{
 			"http://i.imgur.com/hsjBcz1.jpg",
 			"http://i.imgur.com/oJSVNzT.jpg",
@@ -88,7 +88,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/uTB2HIY.png"
 		};
 
-		string[] smugImages = new string[]
+        readonly string[] smugImages = new string[]
 		{
 			"http://i.imgur.com/zUwqrhM.png",
 			"http://i.imgur.com/TYqPh89.jpg",
@@ -123,7 +123,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/baiMBP6.png"
 		};
 
-		string[] cryImages = new string[]
+        readonly string[] cryImages = new string[]
 		{
 			"http://i.imgur.com/TTUBf2r.gif",
 			"http://i.imgur.com/TP6dYGh.gif",
@@ -210,7 +210,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/31WnXZ7.gif"
 		};
 
-		string[] stareImages = new string[]
+        readonly string[] stareImages = new string[]
 		{
 			"http://i.imgur.com/Bp9vfcf.gif",
 			"http://i.imgur.com/7nFd5ve.gif",
@@ -218,63 +218,57 @@ namespace Miki.Modules
 		};
 
 		[Command(Name = "confused")]
-		public Task ConfusedAsync(EventContext e)
+		public async Task ConfusedAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = confusedImages[MikiRandom.Next(0, confusedImages.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "lewd")]
-		public Task LewdAsync(EventContext e)
+		public async Task LewdAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "pout")]
-		public Task PoutAsync(EventContext e)
+		public async Task PoutAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = poutImages[MikiRandom.Next(0, poutImages.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "smug")]
-		public Task SmugAsync(EventContext e)
+		public async Task SmugAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = smugImages[MikiRandom.Next(0, smugImages.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "cry")]
-		public Task CryAsync(EventContext e)
+		public async Task CryAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = cryImages[MikiRandom.Next(0, cryImages.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "stare")]
-		public Task StareAsync(EventContext e)
+		public async Task StareAsync(EventContext e)
 		{
-			new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = stareImages[MikiRandom.Next(0, stareImages.Length)]
-			}.ToEmbed().QueueToChannel(e.Channel);
-			return Task.CompletedTask;
+			}.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 	}
 }

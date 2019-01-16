@@ -38,8 +38,8 @@ namespace Miki.Modules.Roles
 
 					if (levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
-						e.ErrorEmbed("two roles configured have the same name.")
-							.ToEmbed().QueueToChannel(e.Channel);
+                        await e.ErrorEmbed("two roles configured have the same name.")
+							.ToEmbed().QueueToChannelAsync(e.Channel);
 						return;
 					}
 					else
@@ -55,8 +55,8 @@ namespace Miki.Modules.Roles
 				// checking if the role is null
 				if (role == null)
 				{
-					e.ErrorEmbedResource("error_role_null")
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbedResource("error_role_null")
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
@@ -64,8 +64,8 @@ namespace Miki.Modules.Roles
 
 				if (author.RoleIds.Contains(role.Id))
 				{
-					e.ErrorEmbed(e.Locale.GetString("error_role_already_given"))
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbed(e.Locale.GetString("error_role_already_given"))
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
@@ -97,11 +97,11 @@ namespace Miki.Modules.Roles
 				{
 					var requiredRole = await e.Guild.GetRoleAsync(newRole.RequiredRole.FromDbLong());
 
-					e.ErrorEmbed(
+                    await e.ErrorEmbed(
 						e.Locale.GetString(
 							"error_role_required", $"**{requiredRole.Name}**"
 						)
-					).ToEmbed().QueueToChannel(e.Channel);
+					).ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
@@ -124,25 +124,25 @@ namespace Miki.Modules.Roles
 
 				if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
 				{
-					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
-						.QueueToChannel(e.Channel);
+                    await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
+						.QueueToChannelAsync(e.Channel);
 					return;
 				}
 
 				if (discordRole.Position >= await me.GetHierarchyAsync())
 				{
-					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
-						.QueueToChannel(e.Channel);
+                    await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
+						.QueueToChannelAsync(e.Channel);
 					return;
 				}
 
 				await author.AddRoleAsync(discordRole);
 
-				new EmbedBuilder()
+                await new EmbedBuilder()
 					.SetTitle("I AM")
 					.SetColor(128, 255, 128)
 					.SetDescription($"You're a(n) {role.Name} now!")
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -161,8 +161,8 @@ namespace Miki.Modules.Roles
 					List<LevelRole> levelRoles = await context.LevelRoles.Where(x => x.GuildId == (long)e.Guild.Id).ToListAsync();
 					if (levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower()).Count() > 1)
 					{
-						e.ErrorEmbed("two roles configured have the same name.")
-							.ToEmbed().QueueToChannel(e.Channel);
+                        await e.ErrorEmbed("two roles configured have the same name.")
+							.ToEmbed().QueueToChannelAsync(e.Channel);
 						return;
 					}
 					else
@@ -197,25 +197,25 @@ namespace Miki.Modules.Roles
 
 				if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
 				{
-					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
-						.QueueToChannel(e.Channel);
+                    await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
+						.QueueToChannelAsync(e.Channel);
 					return;
 				}
 
 				if (role.Position >= await me.GetHierarchyAsync())
 				{
-					e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
-						.QueueToChannel(e.Channel);
+                    await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
+						.QueueToChannelAsync(e.Channel);
 					return;
 				}
 
 				await author.RemoveRoleAsync(role);
 
-				new EmbedBuilder()
+                await new EmbedBuilder()
 					.SetTitle("I AM NOT")
 					.SetColor(255, 128, 128)
 					.SetDescription($"You're no longer a(n) {role.Name}!")
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -290,11 +290,11 @@ namespace Miki.Modules.Roles
 
 				await context.SaveChangesAsync();
 
-				new EmbedBuilder().SetTitle("📄 Available Roles")
+                await new EmbedBuilder().SetTitle("📄 Available Roles")
 					.SetDescription(stringBuilder.ToString())
 					.SetColor(204, 214, 221)
 					.SetFooter("page " + (page + 1))
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -602,7 +602,7 @@ namespace Miki.Modules.Roles
 				Utils.Embed.SetTitle("⚙ Role Config")
 					.SetColor(102, 117, 127)
 					.SetDescription($"Updated {role.Name}!")
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}*/
 
@@ -692,11 +692,11 @@ namespace Miki.Modules.Roles
 				}
 
 				await context.SaveChangesAsync();
-				new EmbedBuilder()
+                await new EmbedBuilder()
 					.SetTitle("⚙ Role Config")
 					.SetColor(102, 117, 127)
 					.SetDescription($"Updated {role.Name}!")
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 

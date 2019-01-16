@@ -21,31 +21,30 @@ namespace Miki.Modules
 	internal class DeveloperModule
 	{
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public Task IdentifyEmojiAsync(EventContext e)
+		public async Task IdentifyEmojiAsync(EventContext e)
 		{
 			if (DiscordEmoji.TryParse(e.Arguments.ToString(), out var emote))
 			{
-				new EmbedBuilder()
+				await new EmbedBuilder()
 					.SetTitle("Emoji Identified!")
 					.AddInlineField("Name", emote.Name)
 					.AddInlineField("Id", emote.Id.ToString())
 					//.AddInlineField("Created At", emote.ToString())
 					.AddInlineField("Code", "`" + emote.ToString() + "`")
 					//.SetThumbnail(emote.Url)
-					.ToEmbed().QueueToChannel(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
-			return Task.CompletedTask;
-		}
+        }
 
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public Task SayAsync(EventContext e)
 		{
-			e.Channel.QueueMessageAsync(e.Arguments.ToString());
+			e.Channel.QueueMessage(e.Arguments.ToString());
 			return Task.CompletedTask;
 		}
 
 		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public Task SayEmbedAsync(EventContext e)
+		public async Task SayEmbedAsync(EventContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
 			string text = e.Arguments.ToString();
@@ -66,9 +65,7 @@ namespace Miki.Modules
 
 			b.SetDescription(text);
 
-			b.ToEmbed().QueueToChannel(e.Channel);
-
-			return Task.CompletedTask;
+            await b.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -153,7 +150,7 @@ namespace Miki.Modules
 			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
 			{
 				e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
-				e.Channel.QueueMessageAsync(":ok_hand:");
+				e.Channel.QueueMessage(":ok_hand:");
 			}
 			return Task.CompletedTask;
 		}
@@ -161,7 +158,7 @@ namespace Miki.Modules
 		[Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public Task ShowCacheAsync(EventContext e)
 		{
-			e.Channel.QueueMessageAsync("Yes, this is Veld, my developer.");
+			e.Channel.QueueMessage("Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
 		}
 
@@ -196,7 +193,7 @@ namespace Miki.Modules
 		//		embed.AddInlineField(title, content);
 		//	}
 
-		//	embed.Build().QueueToChannel(e.Channel);
+		//	embed.Build().QueueToChannelAsync(e.Channel);
 
 		//	await Task.Yield();
 		//}
@@ -262,7 +259,7 @@ namespace Miki.Modules
 					break;
 			}
 
-			embed.ToEmbed().QueueToChannel(context.Channel);
+            await embed.ToEmbed().QueueToChannelAsync(context.Channel);
 
 			await Task.Yield();
 		}
@@ -290,7 +287,7 @@ namespace Miki.Modules
 						await database.SaveChangesAsync();
 					}
 				}
-				context.Channel.QueueMessageAsync(":ok_hand:");
+				context.Channel.QueueMessage(":ok_hand:");
 			}
 		}
 
@@ -308,7 +305,7 @@ namespace Miki.Modules
 				embed.SetDescription($"{presence.Activity.Name} - {presence.Activity.Details ?? ""}\n{presence.Activity.State ?? ""}");
 			}
 
-			embed.ToEmbed().QueueToChannel(e.Channel);
+            await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
@@ -331,7 +328,7 @@ namespace Miki.Modules
 				}
 				u.Currency = amount;
 				await context.SaveChangesAsync();
-				e.Channel.QueueMessageAsync(":ok_hand:");
+				e.Channel.QueueMessage(":ok_hand:");
 			}
 		}
 
@@ -346,7 +343,7 @@ namespace Miki.Modules
 				})).Entity;
 
 				await context.SaveChangesAsync();
-				e.Channel.QueueMessageAsync($"key generated for {e.Arguments.ToString()} days `{key.Key}`");
+				e.Channel.QueueMessage($"key generated for {e.Arguments.ToString()} days `{key.Key}`");
 			}
 		}
 
@@ -372,7 +369,7 @@ namespace Miki.Modules
 				u.Experience = amount;
 				await context.SaveChangesAsync();
 				await cache.UpsertAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
-				e.Channel.QueueMessageAsync(":ok_hand:");
+				e.Channel.QueueMessage(":ok_hand:");
 			}
 		}
 
@@ -397,7 +394,7 @@ namespace Miki.Modules
                 }
                 u.Total_Experience = amount;
                 await context.SaveChangesAsync();
-                e.Channel.QueueMessageAsync(":ok_hand:");
+                e.Channel.QueueMessage(":ok_hand:");
             }
         }
 

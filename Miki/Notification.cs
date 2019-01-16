@@ -8,10 +8,10 @@ namespace Miki
 {
 	internal class Notification
 	{
-		public static async ValueTask SendAchievementAsync(AchievementDataContainer d, int rank, IDiscordChannel channel, IDiscordUser user)
+		public static async ValueTask SendAchievementAsync(AchievementDataContainer d, int rank, IDiscordTextChannel channel, IDiscordUser user)
 		    => await SendAchievementAsync(d.Achievements[rank], channel, user);
 
-        public static async ValueTask SendAchievementAsync(IAchievement d, IDiscordChannel channel, IDiscordUser user)
+        public static async Task SendAchievementAsync(IAchievement d, IDiscordTextChannel channel, IDiscordUser user)
         {
             if(channel is IDiscordGuildChannel c)
             {
@@ -26,8 +26,8 @@ namespace Miki
                 }
             }
 
-            CreateAchievementEmbed(d, user)
-                .QueueToChannel(channel);
+            await CreateAchievementEmbed(d, user)
+                .QueueToChannelAsync(channel);
         }
 
 		public static async Task SendAchievementAsync(IAchievement baseAchievement, IDiscordUser user)

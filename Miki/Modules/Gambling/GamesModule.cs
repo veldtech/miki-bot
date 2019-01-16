@@ -38,8 +38,8 @@ namespace Miki.Modules
 
 			if (e.Arguments.Count < 2)
 			{
-				e.ErrorEmbed("You need to choose a weapon!")
-					.ToEmbed().QueueToChannel(e.Channel);
+				await e.ErrorEmbed("You need to choose a weapon!")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 			else
 			{
@@ -95,11 +95,11 @@ namespace Miki.Modules
 				}
 				else
 				{
-					resultMessage.SetDescription("Invalid weapon!").ToEmbed()
-						.QueueToChannel(e.Channel);
+					await resultMessage.SetDescription("Invalid weapon!").ToEmbed()
+						.QueueToChannelAsync(e.Channel);
 					return;
 				}
-				resultMessage.ToEmbed().QueueToChannel(e.Channel);
+                await resultMessage.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace Miki.Modules
 
 				default:
 				{
-					new EmbedBuilder()
+                    await new EmbedBuilder()
 						.SetTitle("🎲 Blackjack")
 						.SetColor(234, 89, 110)
 						.SetDescription("Play a game of blackjack against miki!\n\n" +
@@ -142,7 +142,7 @@ namespace Miki.Modules
 							"`>blackjack hit` to draw a card\n" +
 							"`>blackjack stay` to stand")
 						.ToEmbed()
-						.QueueToChannel(e.Channel);
+						.QueueToChannelAsync(e.Channel);
 				}
 				break;
 			}
@@ -157,8 +157,8 @@ namespace Miki.Modules
 			{
 				if (await cache.ExistsAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}"))
 				{
-					e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
-						.ToEmbed().QueueToChannel(e.Channel);
+                    await e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
+						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
 
@@ -387,8 +387,8 @@ namespace Miki.Modules
 		{
 			if (e.Arguments.Count < 2)
 			{
-				e.ErrorEmbed("Please pick either `heads` or `tails`!")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("Please pick either `heads` or `tails`!")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
 
@@ -407,8 +407,8 @@ namespace Miki.Modules
 
 			if (pickedSide == -1)
 			{
-				e.ErrorEmbed("This is not a valid option!")
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed("This is not a valid option!")
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
 			}
 
@@ -464,7 +464,7 @@ namespace Miki.Modules
 				.SetThumbnail(imageUrl)
 				.ToEmbed();
 
-			embed.QueueToChannel(e.Channel);
+            await embed.QueueToChannelAsync(e.Channel);
 		}
 
 		[Command(Name = "slots", Aliases = new[] { "s" })]
@@ -624,7 +624,7 @@ namespace Miki.Modules
 				embed.Description = string.Join(" ", objectsChosen);
 				await context.SaveChangesAsync();
 
-				embed.ToEmbed().QueueToChannel(e.Channel);
+                await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
 		}
 
@@ -660,7 +660,7 @@ namespace Miki.Modules
 		//		.AddInlineField("Ticket price", $"{100} mekos")
 		//		.AddInlineField("Latest Winner", latestWinner ?? "no name")
 		//		.AddInlineField("How to buy?", ">lottery buy [amount]")
-		//		.ToEmbed().QueueToChannel(e.Channel);
+		//		.ToEmbed().QueueToChannelAsync(e.Channel);
 		//		return;
 		//	}
 
@@ -681,7 +681,7 @@ namespace Miki.Modules
 		//				if (amount * 100 > u.Currency)
 		//				{
 		//					e.ErrorEmbedResource("miki_mekos_insufficient")
-		//						.ToEmbed().QueueToChannel(e.Channel);
+		//						.ToEmbed().QueueToChannelAsync(e.Channel);
 		//					return;
 		//				}
 
@@ -708,7 +708,7 @@ namespace Miki.Modules
 		//				await context.SaveChangesAsync();
 
 		//				e.SuccessEmbed($"Successfully bought {amount} tickets!")
-		//					.QueueToChannel(e.Channel);
+		//					.QueueToChannelAsync(e.Channel);
 		//			}
 		//		}
 		//		break;
@@ -741,8 +741,8 @@ namespace Miki.Modules
 					}
 					else
 					{
-						e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
-							.ToEmbed().QueueToChannel(e.Channel);
+                        await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
+							.ToEmbed().QueueToChannelAsync(e.Channel);
 						return null;
 					}
 
@@ -758,8 +758,8 @@ namespace Miki.Modules
 
 					if (bet > maxBet)
 					{
-						e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
-							.ToEmbed().QueueToChannel(e.Channel);
+						await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
+							.ToEmbed().QueueToChannelAsync(e.Channel);
 						return null;
 					}
 
@@ -772,12 +772,12 @@ namespace Miki.Modules
 						}
 						else
 						{
-							new EmbedBuilder
+                            await new EmbedBuilder
 							{
 								Description =
 								$"Are you sure you want to bet **{bet:g}**? You currently have `{user.Currency:g}` mekos.\n\nAppend your command with `>my_command ... <bet> ok` to confirm.",
 								Color = new Color(0.4f, 0.6f, 1f)
-							}.ToEmbed().QueueToChannel(e.Channel);
+							}.ToEmbed().QueueToChannelAsync(e.Channel);
 							return null;
 						}
 					}
@@ -789,8 +789,8 @@ namespace Miki.Modules
 			}
 			else
 			{
-				e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_no_arg"))
-					.ToEmbed().QueueToChannel(e.Channel);
+                await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_no_arg"))
+					.ToEmbed().QueueToChannelAsync(e.Channel);
 				return null;
 			}
 		}

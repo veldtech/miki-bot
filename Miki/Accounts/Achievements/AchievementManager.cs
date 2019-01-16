@@ -142,7 +142,7 @@ namespace Miki.Accounts.Achievements
 			return output;
 		}
 
-		public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordChannel channel)
+		public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordTextChannel channel)
 		{
 			DogStatsd.Counter("achievements.gained", 1);
 
@@ -176,7 +176,10 @@ namespace Miki.Accounts.Achievements
 			try
 			{
 				TransactionPacket p = new TransactionPacket();
-				p.discordChannel = m;
+                if (m is IDiscordTextChannel tc)
+                {
+                    p.discordChannel = tc;
+                }
 				p.discordUser = await m.GetUserAsync(receiver.Id.FromDbLong());
 
 				if (giver != null)
@@ -206,7 +209,7 @@ namespace Miki.Accounts.Achievements
         /// <param name="id">user id</param>
         /// <param name="r">rank set to (optional)</param>
         /// <returns></returns>
-        public async Task UnlockAsync(IAchievement achievement, IDiscordChannel channel, IDiscordUser user, int r = 0)
+        public async Task UnlockAsync(IAchievement achievement, IDiscordTextChannel channel, IDiscordUser user, int r = 0)
         {
             long userid = user.Id.ToDbLong();
 

@@ -46,7 +46,7 @@
 //                embed.Title = "Uh oh!";
 //                embed.Description = $"We couldn't find a user with the name `{arg.Argument}`. Please look up yourself on https://rlstats.com/ to create your profile!";
 //                embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-//                embed.Build().QueueToChannel(e.Channel);
+//                embed.Build().QueueToChannelAsync(e.Channel);
 //                return;
 //            }
 
@@ -77,7 +77,7 @@
 
 //            embed.ThumbnailUrl = user.AvatarUrl;
 //            embed.ImageUrl = user.SignatureUrl;
-//            embed.Build().QueueToChannel(e.Channel);
+//            embed.Build().QueueToChannelAsync(e.Channel);
 //        }
 
 //        public async Task GetUserSeason(EventContext e)
@@ -108,7 +108,7 @@
 //                embed.Title = "Uh oh!";
 //                embed.Description = $"We couldn't find a user with the name `{u}`. Please look up yourself on https://rlstats.com/ to create your profile!";
 //                embed.ThumbnailUrl = "http://miki.veld.one/assets/img/rlstats-logo.png";
-//                embed.Build().QueueToChannel(e.Channel);
+//                embed.Build().QueueToChannelAsync(e.Channel);
 //                return;
 //            }
 
@@ -140,7 +140,7 @@
 //                }
 //            }
 
-//            embed.Build().QueueToChannel(e.Channel);
+//            embed.Build().QueueToChannelAsync(e.Channel);
 //        }
 
 //        public void GetNowPlaying(EventContext e)
@@ -197,7 +197,7 @@
 //                embed.AddField(api.playlists.Data.Find(z => { return z.Id == p.Id; }).Name, p.Population.Players.ToString());
 //            }
 
-//            embed.Build().QueueToChannel(e.Channel);
+//            embed.Build().QueueToChannelAsync(e.Channel);
 //        }
 
 //        public async Task SearchUser(EventContext e)
@@ -229,7 +229,7 @@
 
 //            embed.Description = string.Join(", ", names);
 
-//            embed.Build().QueueToChannel(e.Channel);
+//            embed.Build().QueueToChannelAsync(e.Channel);
 //        }
 
 //        public async Task<RocketLeagueUser> TryGetUser(string name, int platform)
