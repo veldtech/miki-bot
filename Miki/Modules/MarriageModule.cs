@@ -38,7 +38,7 @@ namespace Miki.Modules
 
                 if (user.MarriageSlots >= limit)
                 {
-                    EmbedBuilder embed = Utils.ErrorEmbed(e, "For now, **{limit} slots** is the max. sorry :(");
+                    EmbedBuilder embed = Utils.ErrorEmbed(e, $"For now, **{limit} slots** is the max. sorry :(");
 
                     if (limit == 10 && !isDonator)
                     {
@@ -53,30 +53,17 @@ namespace Miki.Modules
 
                 int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
-                if (user.Currency >= costForUpgrade)
+                user.MarriageSlots++;
+                user.RemoveCurrency(costForUpgrade);
+
+                await new EmbedBuilder()
                 {
-                    user.MarriageSlots++;
-                    user.Currency -= costForUpgrade;
+                    Color = new Color(0.4f, 1f, 0.6f),
+                    Description = e.Locale.GetString("buymarriageslot_success", user.MarriageSlots),
+                }.ToEmbed().QueueToChannelAsync(e.Channel);
 
-                    await new EmbedBuilder()
-                    {
-                        Color = new Color(0.4f, 1f, 0.6f),
-                        Description = e.Locale.GetString("buymarriageslot_success", user.MarriageSlots),
-                    }.ToEmbed().QueueToChannelAsync(e.Channel);
+                await context.SaveChangesAsync();
 
-                    await context.SaveChangesAsync();
-
-                    await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(e.Author.Id, e.Channel.Id);
-                }
-                else
-                {
-                    await new EmbedBuilder()
-                    {
-                        Color = new Color(1, 0.4f, 0.6f),
-                        Description = e.Locale.GetString("buymarriageslot_insufficient_mekos", (costForUpgrade - user.Currency)),
-                    }.ToEmbed().QueueToChannelAsync(e.Channel);
-                    await e.EventSystem.GetCommandHandler<SessionBasedCommandHandler>().RemoveSessionAsync(e.Author.Id, e.Channel.Id);
-                }
             }
         }
 
