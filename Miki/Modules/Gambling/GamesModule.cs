@@ -492,18 +492,13 @@ namespace Miki.Modules
 
 				string[] objects =
 				{
-					"🍒", "🍒", "🍒", "🍒",
-					"🍊", "🍊", "🍊",
-					"🍓", "🍓",
-					"🍍", "🍍",
-					"🍇", "🍇",
+					"🍒", "🍒", "🍒", "🍒", "🍒", "🍒", "🍒",
+					"🍊", "🍊", "🍊", "🍊", "🍊", "🍊",
+					"🍓", "🍓", "🍓", "🍓", "🍓",
+					"🍍", "🍍", "🍍", "🍍",
+					"🍇", "🍇", "🍇",
 					"🍉", "🍉",
-					"⭐", "⭐",
-					"🍉",
-					"🍍", "🍍",
-					"🍓", "🍓",
-					"🍊", "🍊", "🍊",
-					"🍒", "🍒", "🍒", "🍒",
+					"⭐",
 				};
 
 				EmbedBuilder embed = new EmbedBuilder()
@@ -532,33 +527,33 @@ namespace Miki.Modules
 				{
 					if (score["🍒"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 0.5f);
+						moneyReturned = (int)Math.Ceiling(bet * 0.25f);
 					}
 					else if (score["🍒"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 1f);
+						moneyReturned = (int)Math.Ceiling(bet * 3f);
 					}
 				}
 				if (score.ContainsKey("🍊"))
 				{
 					if (score["🍊"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 0.8f);
+						moneyReturned = (int)Math.Ceiling(bet * 0.5f);
 					}
 					else if (score["🍊"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 1.5f);
+						moneyReturned = (int)Math.Ceiling(bet * 5f);
 					}
 				}
 				if (score.ContainsKey("🍓"))
 				{
 					if (score["🍓"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 1f);
+						moneyReturned = (int)Math.Ceiling(bet * 0.75f);
 					}
 					else if (score["🍓"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 2f);
+						moneyReturned = (int)Math.Ceiling(bet * 7f);
 					}
 				}
 				if (score.ContainsKey("🍍"))
@@ -569,40 +564,40 @@ namespace Miki.Modules
 					}
 					if (score["🍍"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 4f);
+						moneyReturned = (int)Math.Ceiling(bet * 10f);
 					}
 				}
 				if (score.ContainsKey("🍇"))
 				{
 					if (score["🍇"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 1.2f);
+						moneyReturned = (int)Math.Ceiling(bet * 2f);
 					}
 					if (score["🍇"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 6f);
+						moneyReturned = (int)Math.Ceiling(bet * 15f);
 					}
 				}
 				if (score.ContainsKey("🍉"))
 				{
 					if (score["🍉"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 1.5f);
+						moneyReturned = (int)Math.Ceiling(bet * 3f);
 					}
 					if (score["🍉"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 10f);
+						moneyReturned = (int)Math.Ceiling(bet * 25f);
 					}
 				}
 				if (score.ContainsKey("⭐"))
 				{
 					if (score["⭐"] == 2)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 2f);
+						moneyReturned = (int)Math.Ceiling(bet * 7f);
 					}
 					if (score["⭐"] == 3)
 					{
-						moneyReturned = (int)Math.Ceiling(bet * 12f);
+						moneyReturned = (int)Math.Ceiling(bet * 75f);
 
 						await AchievementManager.Instance.GetContainerById("slots").CheckAsync(new BasePacket()
 						{
