@@ -58,7 +58,9 @@ namespace Miki
 			}
 		}
 
-		private static Config config = null;
+        public const string Version = "2019.1";
+
+        private static Config config = null;
 		private static AmazonS3Client cdnClient;
 	}
 

@@ -364,7 +364,7 @@ namespace Miki.Modules
 		{
 			EmbedBuilder embed = new EmbedBuilder();
 
-			embed.SetAuthor("Miki " + typeof(Program).Assembly.GetName().Version, "", "");
+			embed.SetAuthor("Miki " + Global.Version, "", "");
 			embed.Color = new Color(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(e.Locale.GetString("miki_module_general_info_made_by_header"),
