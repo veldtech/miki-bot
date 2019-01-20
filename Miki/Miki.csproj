@@ -49,6 +49,7 @@
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\Miki.Bot.Models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
+    <ProjectReference Include="..\Miki.UrbanDictionary\Miki.UrbanDictionary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

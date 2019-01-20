@@ -23,7 +23,7 @@ namespace Miki.Modules
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task IdentifyEmojiAsync(EventContext e)
 		{
-			if (DiscordEmoji.TryParse(e.Arguments.ToString(), out var emote))
+			if (DiscordEmoji.TryParse(e.Arguments.Pack.TakeAll(), out var emote))
 			{
 				await new EmbedBuilder()
 					.SetTitle("Emoji Identified!")
@@ -39,7 +39,7 @@ namespace Miki.Modules
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public Task SayAsync(EventContext e)
 		{
-			e.Channel.QueueMessage(e.Arguments.ToString());
+			e.Channel.QueueMessage(e.Arguments.Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
@@ -47,7 +47,7 @@ namespace Miki.Modules
 		public async Task SayEmbedAsync(EventContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
-			string text = e.Arguments.ToString();
+			string text = e.Arguments.Pack.TakeAll();
 
 			//if (e.message.Attachments.Count == 0)
 			//{
@@ -72,7 +72,7 @@ namespace Miki.Modules
 		public async Task IdenUserAsync(EventContext e)
 		{
             var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
-            var user = await api.GetUserAsync(ulong.Parse(e.Arguments.ToString()));
+            var user = await api.GetUserAsync(ulong.Parse(e.Arguments.Pack.TakeAll()));
 
 			if (user == null)
 			{
@@ -86,7 +86,7 @@ namespace Miki.Modules
 		public async Task IdenGuildUserAsync(EventContext e)
 		{
             var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
-            var user = await api.GetGuildUserAsync(ulong.Parse(e.Arguments.ToString()), e.Guild.Id);
+            var user = await api.GetGuildUserAsync(ulong.Parse(e.Arguments.Pack.TakeAll()), e.Guild.Id);
 
 			if (user == null)
 			{
@@ -100,7 +100,7 @@ namespace Miki.Modules
 		public async Task IdenGuildChannelAsync(EventContext e)
 		{
             var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
-            var user = await api.GetChannelAsync(ulong.Parse(e.Arguments.ToString()));
+            var user = await api.GetChannelAsync(ulong.Parse(e.Arguments.Pack.TakeAll()));
 
 			if (user == null)
 			{
@@ -145,7 +145,7 @@ namespace Miki.Modules
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public Task IgnoreIdAsync(EventContext e)
 		{
-			if (ulong.TryParse(e.Arguments.ToString(), out ulong id))
+			if (ulong.TryParse(e.Arguments.Pack.TakeAll(), out ulong id))
 			{
 				e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
 				e.Channel.QueueMessage(":ok_hand:");
@@ -160,43 +160,43 @@ namespace Miki.Modules
 			return Task.CompletedTask;
 		}
 
-		//[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		//public async Task ChangeAvatarAsync(EventContext e)
-		//{
-		//	using (Stream s = new FileStream("./" + e.Arguments.ToString(), FileMode.Open))
-		//	{
-		//		await Bot.Instance.Client.GetShardFor(e.Guild).CurrentUser.ModifyAsync(z =>
-		//		{
-		//			z.Avatar = new Image(s);
-		//		});
-		//	}
-		//}
+        //[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        //public async Task ChangeAvatarAsync(EventContext e)
+        //{
+        //	using (Stream s = new FileStream("./" + e.Arguments.Pack.TakeAll(), FileMode.Open))
+        //	{
+        //		await Bot.Instance.Client.GetShardFor(e.Guild).CurrentUser.ModifyAsync(z =>
+        //		{
+        //			z.Avatar = new Image(s);
+        //		});
+        //	}
+        //}
 
-		//[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
-		//public async Task DumpShards(EventContext e)
-		//{
-		//	EmbedBuilder embed = Utils.Embed;
-		//	embed.Title = "Shards";
+        //[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
+        //public async Task DumpShards(EventContext e)
+        //{
+        //	EmbedBuilder embed = Utils.Embed;
+        //	embed.Title = "Shards";
 
-		//	for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
-		//	{
-		//		string title = $"{i * 20} - {(i + 1) * 20}";
-		//		string content = "";
-		//		for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
-		//		{
-		//			DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
+        //	for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
+        //	{
+        //		string title = $"{i * 20} - {(i + 1) * 20}";
+        //		string content = "";
+        //		for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
+        //		{
+        //			DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
 
-		//			content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
-		//		}
-		//		embed.AddInlineField(title, content);
-		//	}
+        //			content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
+        //		}
+        //		embed.AddInlineField(title, content);
+        //	}
 
-		//	embed.Build().QueueToChannelAsync(e.Channel);
+        //	embed.Build().QueueToChannelAsync(e.Channel);
 
-		//	await Task.Yield();
-		//}
+        //	await Task.Yield();
+        //}
 
-		[Command(Name = "menutest", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        [Command(Name = "menutest", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task MenuTestAsync(EventContext context)
 		{
 			await new Menu(m =>
@@ -337,11 +337,11 @@ namespace Miki.Modules
 			{
 				DonatorKey key = (await context.DonatorKey.AddAsync(new DonatorKey()
 				{
-					StatusTime = new TimeSpan(int.Parse(e.Arguments.ToString()), 0, 0, 0, 0)
+					StatusTime = new TimeSpan(int.Parse(e.Arguments.Pack.TakeAll()), 0, 0, 0, 0)
 				})).Entity;
 
 				await context.SaveChangesAsync();
-				e.Channel.QueueMessage($"key generated for {e.Arguments.ToString()} days `{key.Key}`");
+				e.Channel.QueueMessage($"key generated for {e.Arguments.Pack.TakeAll()} days `{key.Key}`");
 			}
 		}
 

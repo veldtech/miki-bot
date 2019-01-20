@@ -121,7 +121,7 @@ namespace Miki.Modules
 				case "hit":
 				case "draw":
 				{
-					await OnBlackjackHit(e);
+					await OnBlackjackHitAsync(e);
 				}
 				break;
 
@@ -193,7 +193,7 @@ namespace Miki.Modules
 			}
 		}
 
-		private async Task OnBlackjackHit(EventContext e)
+		private async Task OnBlackjackHitAsync(EventContext e)
 		{
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
             var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
@@ -331,7 +331,9 @@ namespace Miki.Modules
 				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
 			}
 
-			await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
+            await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+
+            await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
 				new EditMessageArgs
 				{
 					embed = bm.CreateEmbed(e)
@@ -343,7 +345,6 @@ namespace Miki.Modules
 							).ToEmbed()
 				});
 
-			await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
 		}
 
 		private async Task OnBlackjackWin(EventContext e, BlackjackManager bm)
@@ -351,26 +352,27 @@ namespace Miki.Modules
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
             var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
 
+            await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+
             User user;
-			using (var context = new MikiContext())
-			{
-				user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+            using (var context = new MikiContext())
+            {
+                user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+                await api.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
+                {
+                    embed = bm.CreateEmbed(e)
+                        .SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
+                        .SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
+                        .ToEmbed()
+                });
+
 				if (user != null)
 				{
 					await user.AddCurrencyAsync(bm.Bet * 2, e.Channel);
 					await context.SaveChangesAsync();
 				}
 			}
-
-			await api.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
-			{
-				embed = bm.CreateEmbed(e)
-					.SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
-					.SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
-					.ToEmbed()
-			});
-
-			await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
 		}
 
 		[Command(Name = "flip")]
@@ -415,11 +417,14 @@ namespace Miki.Modules
 			string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
 			string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
 
-			if (e.Arguments.Peek<string>() == "-bonus")
-			{
-				headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-heads.png";
-				tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-secret-tails.png";
-			}
+            if (e.Arguments.Peek(out string bonus))
+            {
+                if (bonus == "-bonus")
+                {
+                    headsUrl = "https://cdn.miki.ai/commands/miki-secret-heads.png";
+                    tailsUrl = "https://cdn.miki.ai/commands/miki-secret-tails.png";
+                }
+            }
 
 			int side = MikiRandom.Next(2);
 			string imageUrl = side == 1 ? headsUrl : tailsUrl;

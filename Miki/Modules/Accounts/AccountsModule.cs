@@ -139,7 +139,7 @@ namespace Miki.Modules.AccountsModule
 		{
 			LeaderboardsOptions options = new LeaderboardsOptions();
 
-			string argument = e.Arguments.Peek<string>();
+			e.Arguments.Peek(out string argument);
 
 			switch (argument.ToLower() ?? "")
 			{
@@ -209,8 +209,7 @@ namespace Miki.Modules.AccountsModule
                 e.Arguments.Skip();
             }
 
-            var index = e.Arguments.Peek<int>();
-            if (index != 0)
+            if (e.Arguments.Peek<int>(out int index))
 			{
 				options.Offset = Math.Max(0, index - 1) * 12;
                 e.Arguments.Skip();
@@ -519,7 +518,7 @@ namespace Miki.Modules.AccountsModule
 			{
 				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
-				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
+				var x = Regex.Matches(e.Arguments.Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
 
 				if (x.Count > 0)
 				{
@@ -550,7 +549,7 @@ namespace Miki.Modules.AccountsModule
 			{
 				User user = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
-				var x = Regex.Matches(e.Arguments.ToString().ToUpper(), "(#)?([A-F0-9]{6})");
+				var x = Regex.Matches(e.Arguments.Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
 
 				if (x.Count > 0)
 				{
@@ -658,10 +657,13 @@ namespace Miki.Modules.AccountsModule
 						{
                             amount = (short)value;
 						}
-						else if (Utils.IsAll(e.Arguments.Peek<string>()))
+						else if (e.Arguments.Peek(out string arg))
 						{
-							amount = repObject.ReputationPointsLeft;
-                            e.Arguments.Skip();
+                            if (Utils.IsAll(arg))
+                            {
+                                amount = (short)(repObject.ReputationPointsLeft - ((short)usersMentioned.Sum(x => x.Value)));
+                                e.Arguments.Skip();
+                            }
 						}
 
 						if (u.Id == e.Author.Id)

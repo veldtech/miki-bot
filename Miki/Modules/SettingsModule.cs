@@ -114,13 +114,14 @@ namespace Miki.Modules
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
             var db = (DbContext)e.Services.GetService(typeof(DbContext));
 
-            Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == e.Arguments.ToString().ToLower());
+            string args = e.Arguments.Pack.TakeAll();
+            Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == args.ToLower());
 
 			if (module != null)
 			{
 				EmbedBuilder embed = new EmbedBuilder();
 
-				embed.Title = (e.Arguments.ToString().ToUpper());
+				embed.Title = (args.ToUpper());
 
 				string content = "";
 
@@ -197,7 +198,7 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
             {
-                string localeName = e.Arguments.ToString() ?? "";
+                string localeName = e.Arguments.Pack.TakeAll() ?? "";
 
                 if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
                 {
@@ -219,8 +220,9 @@ namespace Miki.Modules
 		public async Task PrefixAsync(EventContext e)
 		{
             var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            string args = e.Arguments.Pack.TakeAll();
 
-            if (string.IsNullOrEmpty(e.Arguments.ToString()))
+            if (string.IsNullOrEmpty(args))
 			{
                 await e.ErrorEmbed(e.Locale.GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
@@ -230,14 +232,14 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				await defaultInstance.ChangeForGuildAsync(context, cache, e.Guild.Id, e.Arguments.ToString());
+				await defaultInstance.ChangeForGuildAsync(context, cache, e.Guild.Id, args);
 			}
 
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
 			embed.SetDescription(
-				e.Locale.GetString("miki_module_general_prefix_success_message", e.Arguments.ToString()
-			));
+				e.Locale.GetString("miki_module_general_prefix_success_message", args
+            ));
 
 			await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 		}

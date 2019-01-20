@@ -178,7 +178,8 @@ namespace Miki.Modules
 
             int amount = _amount;
             string filter = _filter;
-            string[] argsSplit = e.Arguments.ToString().Split(' ');
+            string args = e.Arguments.Pack.TakeAll();
+            string[] argsSplit = args.Split(' ');
             ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
 
             if (int.TryParse(argsSplit[0], out amount))
@@ -203,10 +204,10 @@ namespace Miki.Modules
 				return;
 			}
 
-            if (Regex.IsMatch(e.Arguments.ToString(), "\"(.*?)\""))
+            if (Regex.IsMatch(args, "\"(.*?)\""))
             {
                 Regex regex = new Regex("\"(.*?)\"");
-                filter = regex.Match(e.Arguments.ToString()).ToString().Trim('"', ' ');
+                filter = regex.Match(args).ToString().Trim('"', ' ');
             }
             
 			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
@@ -306,14 +307,17 @@ namespace Miki.Modules
 			{
                 var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
 
-                if (e.Arguments.Peek<string>() == "-g")
+                if (e.Arguments.Peek(out string g))
 				{
-					global = true;
-					var channels = await e.Guild.GetChannelsAsync();
-					foreach(var c in channels)
-					{
-						await command.SetEnabled(context, cache, c.Id, setValue);
-					}
+                    if (g == "-g")
+                    {
+                        global = true;
+                        var channels = await e.Guild.GetChannelsAsync();
+                        foreach (var c in channels)
+                        {
+                            await command.SetEnabled(context, cache, c.Id, setValue);
+                        }
+                    }
 				}
 				else
 				{

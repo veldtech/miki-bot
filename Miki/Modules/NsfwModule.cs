@@ -18,7 +18,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
@@ -42,7 +42,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
@@ -66,7 +66,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
@@ -90,7 +90,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{
@@ -114,7 +114,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.EXPLICIT);
+				ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.EXPLICIT);
 
 				if (!IsValid(s))
 				{

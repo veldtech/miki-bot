@@ -81,7 +81,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
+                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
 						.ToEmbed().QueueToChannelAsync(e.Channel);
 				}
 				return;
@@ -120,7 +120,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
+                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
 						.ToEmbed().QueueToChannelAsync(e.Channel);
 				}
 				return;
@@ -159,7 +159,7 @@ namespace Miki.Core.Modules.Anime
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.ToString()}`, try something else!")
+                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
 						.ToEmbed().QueueToChannelAsync(e.Channel);
 				}
 				return;

@@ -83,7 +83,7 @@ namespace Miki.Modules
 		[Command(Name = "acceptmarriage")]
 		public async Task AcceptMarriageAsync(EventContext e)
 		{
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(e.Arguments.ToString(), e.Guild);
+			IDiscordUser user = await DiscordExtensions.GetUserAsync(e.Arguments.Pack.TakeAll(), e.Guild);
 
 			if (user == null)
 			{

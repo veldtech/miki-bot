@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.API;
-using Miki.API.UrbanDictionary;
-using Miki.Configuration;
+using Miki.UrbanDictionary;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -18,17 +17,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Miki.Modules
 {
 	[Module("General")]
 	internal class GeneralModule
 	{
-		[Configurable]
-		public string UrbanKey { get; set; } = "";
-
-		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
+   		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
 		public GeneralModule(Module m, MikiApp b)
 		{
@@ -83,7 +81,7 @@ namespace Miki.Modules
 		{
 			try
 			{
-				Expression expression = new Expression(e.Arguments.ToString());
+				Expression expression = new Expression(e.Arguments.Pack.TakeAll());
 
 				expression.Parameters.Add("pi", Math.PI);
 
@@ -446,25 +444,45 @@ namespace Miki.Modules
 		[Command(Name = "urban")]
 		public async Task UrbanAsync(EventContext e)
 		{
-			if (string.IsNullOrEmpty(e.Arguments.ToString()))
-				return;
+            if (!e.Arguments.Pack.CanTake)
+            {
+                return;
+            }
 
-			UrbanDictionaryApi api = new UrbanDictionaryApi(UrbanKey);
-			UrbanDictionaryEntry entry = await api.GetEntryAsync(e.Arguments.ToString());
+            var api = (UrbanDictionaryAPI)e.Services.GetService(typeof(UrbanDictionaryAPI));
+
+            var query = e.Arguments.Pack.TakeAll();
+            var searchResult = await api.SearchTermAsync(query);
+
+            if(searchResult == null)
+            {
+                // TODO (Veld): Something went wrong/No results found.
+                return;
+            }
+
+            UrbanDictionaryEntry entry = searchResult.Entries
+                .FirstOrDefault();
 
 			if (entry != null)
 			{
+                string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]", 
+                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+                    );
+
+                string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
+                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+                    );
+
                 await new EmbedBuilder()
 				{
 					Author = new EmbedAuthor()
 					{
-						Name = entry.Term,
-						IconUrl = "http://cdn9.staztic.com/app/a/291/291148/urban-dictionary-647813-l-140x140.png",
-						Url = "http://www.urbandictionary.com/define.php?term=" + e.Arguments.ToString(),
+						Name = "📚 " + entry.Term,
+						Url = "http://www.urbandictionary.com/define.php?term=" + query,
 					},
 					Description = e.Locale.GetString("miki_module_general_urban_author", entry.Author)
-				}.AddField(e.Locale.GetString("miki_module_general_urban_definition"), entry.Definition, true)
-				 .AddField(e.Locale.GetString("miki_module_general_urban_example"), entry.Example, true)
+				}.AddField(e.Locale.GetString("miki_module_general_urban_definition"), desc, true)
+				 .AddField(e.Locale.GetString("miki_module_general_urban_example"), example, true)
 				 .AddField(e.Locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
 				 .ToEmbed().QueueToChannelAsync(e.Channel);
 			}
@@ -492,9 +510,9 @@ namespace Miki.Modules
 
 			var embed = e.CreateEmbedBuilder();
 			embed.WithTitle("whois_title", user.Username);
-			embed.EmbedBuilder.SetColor(0.5f, 0f, 1.0f);
+			embed.SetColor(0.5f, 0f, 1.0f);
 
-			embed.EmbedBuilder.ImageUrl = user.GetAvatarUrl();
+			embed.SetImage(user.GetAvatarUrl());
 
 			var roles = (await e.Guild.GetRolesAsync()).Where(x => user.RoleIds?.Contains(x.Id) ?? false && x.Color.Value != 0).OrderByDescending(x => x.Position);
 

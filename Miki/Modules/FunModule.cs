@@ -342,7 +342,8 @@ namespace Miki.Modules
 		[Command(Name = "gif")]
 		public async Task ImgurGifAsync(EventContext e)
 		{
-			if (string.IsNullOrEmpty(e.Arguments.ToString()))
+            string title = e.Arguments.Pack.TakeAll();
+			if (string.IsNullOrEmpty(title))
 			{
 				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
@@ -350,7 +351,7 @@ namespace Miki.Modules
 
 			var client = new MashapeClient(ImgurClientId, ImgurKey);
 			var endpoint = new GalleryEndpoint(client);
-			var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()} ext:gif");
+			var images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
@@ -375,7 +376,8 @@ namespace Miki.Modules
 		[Command(Name = "img")]
 		public async Task ImgurImageAsync(EventContext e)
 		{
-			if (string.IsNullOrEmpty(e.Arguments.ToString()))
+            string title = e.Arguments.Pack.TakeAll();
+            if (string.IsNullOrEmpty(title))
 			{
 				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
@@ -383,7 +385,7 @@ namespace Miki.Modules
 
 			var client = new MashapeClient(ImgurClientId, ImgurKey);
 			var endpoint = new GalleryEndpoint(client);
-			var images = await endpoint.SearchGalleryAsync($"title:{e.Arguments.ToString()}");
+			var images = await endpoint.SearchGalleryAsync($"title:{title}");
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
@@ -408,12 +410,14 @@ namespace Miki.Modules
 		[Command(Name = "pick")]
 		public Task PickAsync(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
+            string args = e.Arguments.Pack.TakeAll();
+
+            if (string.IsNullOrWhiteSpace(args))
 			{
 				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_pick_no_arg"));
 				return Task.CompletedTask;
 			}
-			string[] choices = e.Arguments.ToString().Split(',');
+			string[] choices = args.Split(',');
 
 			e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_pick", new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
 			return Task.CompletedTask;
@@ -430,24 +434,25 @@ namespace Miki.Modules
 		public async Task RollAsync(EventContext e)
 		{
 			string rollResult;
+            string args = e.Arguments.Pack.TakeAll();
 
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString())) // No Arguments.
+            if (string.IsNullOrWhiteSpace(args)) // No Arguments.
 			{
 				rollResult = MikiRandom.Roll(100).ToString();
 			}
 			else
 			{
-				if (int.TryParse(e.Arguments.ToString(), out int max)) // Simple number argument.
+				if (int.TryParse(args, out int max)) // Simple number argument.
 				{
 					rollResult = MikiRandom.Roll(max).ToString();
 				}
 				else // Assume the user has entered an advanced expression.
 				{
 					Regex regex = new Regex(@"(\d+)?d(\d+)");
-					string fullExpression = e.Arguments.ToString();
+					string fullExpression = args;
 					int expressionCount = 0;
 
-					foreach (Match match in regex.Matches(e.Arguments.ToString()))
+					foreach (Match match in regex.Matches(args))
 					{
 						GroupCollection groupCollection = match.Groups;
 						int dieCount = groupCollection[1].Success ? int.Parse(groupCollection[1].Value) : 1;
@@ -489,9 +494,11 @@ namespace Miki.Modules
 		[Command(Name = "reminder", Aliases = new[] { "remind" })]
 		public async Task RemindAsync(EventContext e)
 		{
-			string lowercaseArguments = e.Arguments.ToString().ToLower().Split(' ')[0];
+			string arguments = e.Arguments.Pack.TakeAll();
+            string lowercaseArguments = arguments.ToLower().Split(' ')[0];
 
-			switch (lowercaseArguments)
+
+            switch (lowercaseArguments)
 			{
 				case "-clear":
 				{
@@ -507,23 +514,21 @@ namespace Miki.Modules
 
 				default:
 				{
-					if (string.IsNullOrWhiteSpace(e.Arguments.ToString()) || e.Arguments.ToString().StartsWith("-"))
+					if (string.IsNullOrWhiteSpace(lowercaseArguments) || lowercaseArguments.StartsWith("-"))
 					{
 						await HelpReminderAsync(e);
 					}
 					else
 					{
-						await PlaceReminderAsync(e);
+						await PlaceReminderAsync(e, arguments);
 					}
 				}
 				break;
 			}
 		}
 
-		private async Task PlaceReminderAsync(EventContext e)
+		private async Task PlaceReminderAsync(EventContext e, string args)
 		{
-            string args = e.Arguments.ToString();
-
 			int inIndex = args.ToLower().LastIndexOf(" in ");
 			int everyIndex = args.ToLower().LastIndexOf(" every ");
 
@@ -675,32 +680,33 @@ namespace Miki.Modules
 			ILinkable s = null;
 
 			if (e.Arguments.Take(out string useArg))
-			{
-				if (useArg.ToLower().StartsWith("use"))
+            {
+                string tags = e.Arguments.Pack.TakeAll();
+                if (useArg.ToLower().StartsWith("use"))
 				{
-					switch (useArg.Split(':')[1].ToLower())
+                    switch (useArg.Split(':')[1].ToLower())
 					{
 						case "safebooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(tags, ImageboardRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(e.Arguments.Pack.TakeAll(), ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(tags, ImageboardRating.SAFE);
 						}
 						break;
 
@@ -713,12 +719,13 @@ namespace Miki.Modules
 				}
 				else
 				{
-					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
 				}
 			}
 			else
 			{
-				s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(e.Arguments.ToString(), ImageboardRating.SAFE);
+                string tags = e.Arguments.Pack.TakeAll();
+                s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
 			}
 
 			if (s == null)

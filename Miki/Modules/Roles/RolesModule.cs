@@ -26,7 +26,7 @@ namespace Miki.Modules.Roles
 		{
 			using (var context = new MikiContext())
 			{
-				string roleName = e.Arguments.ToString();
+				string roleName = e.Arguments.Pack.TakeAll();
 
 				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
@@ -149,7 +149,7 @@ namespace Miki.Modules.Roles
 		[Command(Name = "iamnot")]
 		public async Task IAmNotAsync(EventContext e)
 		{
-			string roleName = e.Arguments.ToString();
+			string roleName = e.Arguments.Pack.TakeAll();
 
 			using (var context = new MikiContext())
 			{
@@ -303,9 +303,10 @@ namespace Miki.Modules.Roles
 		[Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task ConfigRoleAsync(EventContext e)
 		{
-			if (!string.IsNullOrWhiteSpace(e.Arguments.ToString()))
+            string args = e.Arguments.Pack.TakeAll();
+			if (!string.IsNullOrWhiteSpace(args))
 			{
-				await ConfigRoleQuickAsync(e);
+				await ConfigRoleQuickAsync(e, args);
 			}
 		}
 
@@ -608,11 +609,11 @@ namespace Miki.Modules.Roles
 			}
 		}*/
 
-		public async Task ConfigRoleQuickAsync(EventContext e)
+		public async Task ConfigRoleQuickAsync(EventContext e, string args)
 		{
 			using (var context = new MikiContext())
 			{
-				string roleName = e.Arguments.ToString().Split('"')[1];
+				string roleName = args.Split('"')[1];
 
 				IDiscordRole role = null;
 				if (ulong.TryParse(roleName, out ulong s))
@@ -625,7 +626,7 @@ namespace Miki.Modules.Roles
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-				MSLResponse arguments = new MMLParser(e.Arguments.ToString().Substring(roleName.Length + 3))
+				MSLResponse arguments = new MMLParser(args.Substring(roleName.Length + 3))
 					.Parse();
 
 				if (role.Name.Length > 20)

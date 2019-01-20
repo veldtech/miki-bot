@@ -111,7 +111,9 @@ namespace Miki.Modules
 		[Command(Name = "deletepasta")]
 		public async Task DeletePasta(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
+            string pastaArg = e.Arguments.Pack.TakeAll();
+
+            if (string.IsNullOrWhiteSpace(pastaArg))
 			{
 				await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_specify", e.Locale.GetString("miki_module_pasta_error_specify")))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
@@ -120,7 +122,7 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				GlobalPasta pasta = await context.Pastas.FindAsync(e.Arguments.ToString());
+				GlobalPasta pasta = await context.Pastas.FindAsync(pastaArg);
 
 				if (pasta == null)
 				{
@@ -132,12 +134,12 @@ namespace Miki.Modules
 				{
 					context.Pastas.Remove(pasta);
 
-					List<PastaVote> votes = context.Votes.Where(p => p.Id == e.Arguments.ToString()).ToList();
+					List<PastaVote> votes = context.Votes.Where(p => p.Id == pastaArg).ToList();
 					context.Votes.RemoveRange(votes);
 
 					await context.SaveChangesAsync();
 
-					await e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_delete_success", e.Arguments.ToString())).QueueToChannelAsync(e.Channel);
+					await e.SuccessEmbed(e.Locale.GetString("miki_module_pasta_delete_success", pastaArg)).QueueToChannelAsync(e.Channel);
 					return;
 				}
 				await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_error_no_permissions", e.Locale.GetString("miki_module_pasta_error_specify_delete")))
@@ -180,7 +182,8 @@ namespace Miki.Modules
 		[Command(Name = "pasta")]
 		public async Task GetPasta(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
+            string pastaArg = e.Arguments.Pack.TakeAll();
+			if (string.IsNullOrWhiteSpace(pastaArg))
 			{
                 await e.ErrorEmbed(e.Locale.GetString("pasta_error_no_arg")).ToEmbed().QueueToChannelAsync(e.Channel);
 				return;
@@ -188,10 +191,10 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				GlobalPasta pasta = await context.Pastas.FindAsync(e.Arguments.ToString());
+				GlobalPasta pasta = await context.Pastas.FindAsync(pastaArg);
 				if (pasta == null)
 				{
-                    await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_search_error_no_results", e.Arguments.ToString()))
+                    await e.ErrorEmbed(e.Locale.GetString("miki_module_pasta_search_error_no_results", pastaArg))
 						.ToEmbed().QueueToChannelAsync(e.Channel);
 					return;
 				}
@@ -206,7 +209,8 @@ namespace Miki.Modules
 		[Command(Name = "infopasta")]
 		public async Task IdentifyPasta(EventContext e)
 		{
-			if (string.IsNullOrWhiteSpace(e.Arguments.ToString()))
+            string pastaArg = e.Arguments.Pack.TakeAll();
+            if (string.IsNullOrWhiteSpace(pastaArg))
 			{
                 await e.ErrorEmbed(e.Locale.GetString("infopasta_error_no_arg"))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
@@ -215,7 +219,7 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				GlobalPasta pasta = await context.Pastas.FindAsync(e.Arguments.ToString());
+				GlobalPasta pasta = await context.Pastas.FindAsync(pastaArg);
 
 				if (pasta == null)
 				{

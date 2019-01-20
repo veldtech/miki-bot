@@ -35,6 +35,7 @@ using System.Resources;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.BunnyCDN;
+using Miki.UrbanDictionary;
 
 namespace Miki
 {
@@ -145,6 +146,7 @@ namespace Miki
                 }));
             }
 
+            app.AddSingletonService(new UrbanDictionaryAPI());
             app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
             app.AddSingletonService(new ConfigurationManager());
             app.AddSingletonService(new EventSystem(new EventSystemConfig()

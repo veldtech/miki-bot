@@ -2,7 +2,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Miki.API.Leaderboards;
 using Miki.BunnyCDN;
-using Miki.Cache.StackExchange;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -10,161 +9,159 @@ using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Arguments;
 using Miki.Framework.Events;
+using Miki.Framework.Language;
+using Miki.Helpers;
 using Miki.Localization;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Miki
 {
-	public static class Utils
-	{
-		public const string EveryonePattern = @"@(everyone|here)";
-		
-		public static string EscapeEveryone(string text) => Regex.Replace(text, Miki.Utils.EveryonePattern, "@\u200b$1");
-		
-		public static T FromEnum<T>(this string argument, T defaultValue) 
-            where T : Enum
-		{
-			if (Enum.TryParse(typeof(T), argument, true, out object result))
-			{
-				return (T)result;
-			}
-			return defaultValue;
-		}
+    public static class Utils
+    {
+        public const string EveryonePattern = @"@(everyone|here)";
 
-        public static bool TryFromEnum<T>(this string argument, out T value) 
-            where T : struct 
+        public static string EscapeEveryone(string text) 
+            => Regex.Replace(text, EveryonePattern, "@\u200b$1");
+
+        public static T FromEnum<T>(this string argument, T defaultValue)
+            where T : Enum
+        {
+            if (Enum.TryParse(typeof(T), argument, true, out object result))
+            {
+                return (T)result;
+            }
+            return defaultValue;
+        }
+
+        public static bool TryFromEnum<T>(this string argument, out T value)
+            where T : struct
             => Enum.TryParse(argument ?? "", true, out value);
 
-		public static DateTime UnixToDateTime(long unix)
-		{
-			DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-			time = time.AddSeconds(unix).ToLocalTime();
-			return time;
-		}
+        public static DateTime UnixToDateTime(long unix)
+        {
+            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            time = time.AddSeconds(unix).ToLocalTime();
+            return time;
+        }
 
-		public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
-		{
-			List<TimeValue> t = new List<TimeValue>();
-			if (Math.Floor(time.TotalDays) > 0)
-			{
-				if (Math.Floor(time.TotalDays) > 1)
-				{
-					t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
-				}
-				else
-				{
-					t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
-				}
-			}
-			if (time.Hours > 0)
-			{
-				if (time.Hours > 1)
-				{
-					t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
-				}
-				else
-				{
-					t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
-				}
-			}
-			if (time.Minutes > 0)
-			{
-				if (time.Minutes > 1)
-				{
-					t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
-				}
-				else
-				{
-					t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
-				}
-			}
+        public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
+        {
+            List<TimeValue> t = new List<TimeValue>();
+            if (Math.Floor(time.TotalDays) > 0)
+            {
+                if (Math.Floor(time.TotalDays) > 1)
+                {
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
+                }
+                else
+                {
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
+                }
+            }
+            if (time.Hours > 0)
+            {
+                if (time.Hours > 1)
+                {
+                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
+                }
+                else
+                {
+                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
+                }
+            }
+            if (time.Minutes > 0)
+            {
+                if (time.Minutes > 1)
+                {
+                    t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
+                }
+                else
+                {
+                    t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
+                }
+            }
 
-			if (t.Count == 0 || time.Seconds > 0)
-			{
-				if (time.Seconds > 1)
-				{
-					t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
-				}
-				else
-				{
-					t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
-				}
-			}
+            if (t.Count == 0 || time.Seconds > 0)
+            {
+                if (time.Seconds > 1)
+                {
+                    t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
+                }
+                else
+                {
+                    t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
+                }
+            }
 
-			if (t.Count != 0)
-			{
-				List<string> s = new List<string>();
-				foreach (TimeValue v in t)
-				{
-					s.Add(v.ToString());
-				}
+            if (t.Count != 0)
+            {
+                List<string> s = new List<string>();
+                foreach (TimeValue v in t)
+                {
+                    s.Add(v.ToString());
+                }
 
-				string text = "";
-				if (t.Count > 1)
-				{
-					int offset = 1;
-					if (minified)
-					{
-						offset = 0;
-					}
-					text = string.Join(", ", s.ToArray(), 0, s.Count - offset);
+                string text = "";
+                if (t.Count > 1)
+                {
+                    int offset = 1;
+                    if (minified)
+                    {
+                        offset = 0;
+                    }
+                    text = string.Join(", ", s.ToArray(), 0, s.Count - offset);
 
-					if (!minified)
-					{
-						text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
-					}
-				}
-				else if (t.Count == 1)
-				{
-					text = s[0].ToString();
-				}
+                    if (!minified)
+                    {
+                        text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
+                    }
+                }
+                else if (t.Count == 1)
+                {
+                    text = s[0].ToString();
+                }
 
-				return text;
-			}
-			return "";
-		}
+                return text;
+            }
+            return "";
+        }
 
-		public static bool IsAll(string input)
-		    => (input == "all") || (input == "*");
+        public static bool IsAll(string input)
+            => (input == "all") || (input == "*");
 
-		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
-			=> new EmbedBuilder()
-				.SetTitle($"🚫 {e.Locale.GetString("miki_error_message_generic")}")
+        public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
+            => new LocalizedEmbedBuilder(e.Locale)
+                .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
 		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
 			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
 
-		public static EmbedBuilder ErrorEmbedResource(this EventContext e, IResource resource)
-			=> ErrorEmbed(e, resource.Get(e.Locale));
+        public static EmbedBuilder ErrorEmbedResource(this EventContext e, IResource resource)
+            => ErrorEmbed(e, resource.Get(e.Locale));
 
-		public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
+        public static DateTime MinDbValue 
+            => new DateTime(1755, 1, 1, 0, 0, 0);
 
 		public static DiscordEmbed SuccessEmbed(this EventContext e, string message)
-		{
-			return new EmbedBuilder()
+		    => new EmbedBuilder()
 			{
 				Title = "✅ " + e.Locale.GetString("miki_success_message_generic"),
 				Description = message,
 				Color = new Color(119, 178, 85)
 			}.ToEmbed();
-		}
 
-		public static string ToFormattedString(this int val)
-		{
-			return val.ToString("N0");
-		}
+        public static string ToFormattedString(this int val)
+            => val.ToString("N0");
+
 		public static string ToFormattedString(this long val)
-		{
-			return val.ToString("N0");
-		}
+		    => val.ToString("N0");
 
 		public static string RemoveMentions(this string arg, IDiscordGuild guild)
 		{
@@ -172,11 +169,6 @@ namespace Miki
 			{
 				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
 			}, RegexOptions.None);
-		}
-
-		public static string DefaultIfEmpty(this string a, string b)
-		{
-			return string.IsNullOrEmpty(a) ? b : a;
 		}
 
 		public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
@@ -321,58 +313,5 @@ namespace Miki
 			if (minified) return Value + Identifier;
 			return Value + " " + Identifier;
 		}
-	}
-
-	public class RedisDictionary
-	{
-		private Cache.ICacheClient client;
-		private readonly string name;
-
-		public async Task<IEnumerable<string>> GetKeysAsync()
-			=> (await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashKeysAsync(name))
-				.Cast<string>()
-				.ToList();
-
-		public RedisDictionary(string name, Miki.Cache.ICacheClient client)
-		{
-			this.name = name;
-			this.client = client;
-		}
-
-		~RedisDictionary()
-		{
-			client.RemoveAsync(name);
-		}
-
-		public async Task AddAsync(object key, object value)
-			=> await AddAsync(key.ToString(), value.ToString());
-
-		public async Task AddAsync(string key, object value)
-		{
-			await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashSetAsync(name, key, value.ToString());
-		}
-
-		public async Task<string> GetAsync(object key)
-			=> await GetAsync(key.ToString());
-
-		public async Task<string> GetAsync(string key)
-		{
-			if (await ContainsAsync(key))
-			{
-				return (client as StackExchangeCacheClient).Client.GetDatabase(0).HashGet(name, key);
-			}
-			throw new IndexOutOfRangeException($"No member found with key `{key}`");
-		}
-
-		public async Task ClearAsync()
-		{
-			await client.RemoveAsync(name);
-		}
-
-		public async Task<bool> ContainsAsync(object key)
-			=> await ContainsAsync(key.ToString());
-
-		public async Task<bool> ContainsAsync(string key)
-			=> await (client as StackExchangeCacheClient).Client.GetDatabase(0).HashExistsAsync(name, key);
 	}
 }

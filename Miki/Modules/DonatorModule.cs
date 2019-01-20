@@ -123,7 +123,7 @@ namespace Miki.Modules
 
 		[Command(Name = "box")]
 		public async Task BoxAsync(EventContext e)
-			=> await PerformCall(e, $"/api/box?text={e.Arguments.ToString().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
+			=> await PerformCall(e, $"/api/box?text={e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
 
 		[Command(Name = "disability")]
 		public async Task DisabilityAsync(EventContext e)
@@ -131,11 +131,11 @@ namespace Miki.Modules
 
 		[Command(Name = "tohru")]
 		public async Task TohruAsync(EventContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.ToString().RemoveMentions(e.Guild));
+			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild));
 
 		[Command(Name = "truth")]
 		public async Task TruthAsync(EventContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.ToString().RemoveMentions(e.Guild));
+			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild));
 
 		[Command(Name = "trapcard")]
 		public async Task YugiAsync(EventContext e)

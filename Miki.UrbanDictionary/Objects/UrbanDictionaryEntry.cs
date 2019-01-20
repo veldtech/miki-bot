@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Miki.API.UrbanDictionary
+namespace Miki.UrbanDictionary
 {
 	public class UrbanDictionaryEntry
 	{
@@ -32,6 +32,7 @@ namespace Miki.API.UrbanDictionary
 		public string Example { get; set; }
 
 		public int Score => ThumbsUp - ThumbsDown;
+
 		public string SearchUrl => "http://www.urbandictionary.com/define.php?term=" + Term;
 	}
 }

@@ -366,7 +366,7 @@ namespace Miki.Modules
 
 			if (e.Arguments.Pack.Length > 0)
 			{
-				builder.Title = $"{e.Author.Username} {action} {e.Arguments.ToString().RemoveMentions(e.Guild)}";
+				builder.Title = $"{e.Author.Username} {action} {e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}";
 			}
 			else
 			{

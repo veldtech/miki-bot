@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Miki.API.UrbanDictionary
+namespace Miki.UrbanDictionary
 {
-	internal class UrbanDictionaryResponse
+	public class UrbanDictionaryResponse
 	{
 		[JsonProperty("tags")]
 		public List<string> Tags { get; set; }
