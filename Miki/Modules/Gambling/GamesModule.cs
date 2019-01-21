@@ -628,146 +628,141 @@ namespace Miki.Modules
 			}
 		}
 
-		
 
-		//[Command(Name = "lottery")]
-		//public async Task LotteryAsync(EventContext e)
-		//{
-		//	ArgObject arg = e.Arguments.FirstOrDefault();
 
-		//	if (arg == null)
-		//	{
-		//		long totalTickets = await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLengthAsync(lotteryKey);
-		//		long yourTickets = 0;
+        //[Command(Name = "lottery")]
+        //public async Task LotteryAsync(EventContext e)
+        //{
+        //	ArgObject arg = e.Arguments.FirstOrDefault();
 
-		//		string latestWinner = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).StringGet("lottery:winner");
+        //	if (arg == null)
+        //	{
+        //		long totalTickets = await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLengthAsync(lotteryKey);
+        //		long yourTickets = 0;
 
-		//		if (await lotteryDict.ContainsAsync(e.Author.Id))
-		//		{
-		//			yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
-		//		}
+        //		string latestWinner = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).StringGet("lottery:winner");
 
-		//		string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Locale, true) ?? "1h?m?s - will be fixed soon!";
+        //		if (await lotteryDict.ContainsAsync(e.Author.Id))
+        //		{
+        //			yourTickets = long.Parse(await lotteryDict.GetAsync(e.Author.Id));
+        //		}
 
-		//		new EmbedBuilder()
-		//		{
-		//			Title = "🍀 Lottery",
-		//			Description = "Make the biggest gamble, and get paid off massively if legit.",
-		//			Color = new Color(119, 178, 85)
-		//		}.AddInlineField("Tickets Owned", yourTickets.ToString())
-		//		.AddInlineField("Drawing In", timeLeft)
-		//		.AddInlineField("Total Tickets", totalTickets.ToString())
-		//		.AddInlineField("Ticket price", $"{100} mekos")
-		//		.AddInlineField("Latest Winner", latestWinner ?? "no name")
-		//		.AddInlineField("How to buy?", ">lottery buy [amount]")
-		//		.ToEmbed().QueueToChannelAsync(e.Channel);
-		//		return;
-		//	}
+        //		string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.Locale, true) ?? "1h?m?s - will be fixed soon!";
 
-		//	switch (arg.Argument.ToLower())
-		//	{
-		//		case "buy":
-		//		{
-		//			arg = arg.Next();
-		//			int amount = arg?.AsInt() ?? 1;
+        //		new EmbedBuilder()
+        //		{
+        //			Title = "🍀 Lottery",
+        //			Description = "Make the biggest gamble, and get paid off massively if legit.",
+        //			Color = new Color(119, 178, 85)
+        //		}.AddInlineField("Tickets Owned", yourTickets.ToString())
+        //		.AddInlineField("Drawing In", timeLeft)
+        //		.AddInlineField("Total Tickets", totalTickets.ToString())
+        //		.AddInlineField("Ticket price", $"{100} mekos")
+        //		.AddInlineField("Latest Winner", latestWinner ?? "no name")
+        //		.AddInlineField("How to buy?", ">lottery buy [amount]")
+        //		.ToEmbed().QueueToChannelAsync(e.Channel);
+        //		return;
+        //	}
 
-		//			if (amount < 1)
-		//				amount = 1;
+        //	switch (arg.Argument.ToLower())
+        //	{
+        //		case "buy":
+        //		{
+        //			arg = arg.Next();
+        //			int amount = arg?.AsInt() ?? 1;
 
-		//			using (var context = new MikiContext())
-		//			{
-		//				User u = await DatabaseHelpers.GetUserAsync(context, e.Author);
+        //			if (amount < 1)
+        //				amount = 1;
 
-		//				if (amount * 100 > u.Currency)
-		//				{
-		//					e.ErrorEmbedResource("miki_mekos_insufficient")
-		//						.ToEmbed().QueueToChannelAsync(e.Channel);
-		//					return;
-		//				}
+        //			using (var context = new MikiContext())
+        //			{
+        //				User u = await DatabaseHelpers.GetUserAsync(context, e.Author);
 
-		//				await u.AddCurrencyAsync(-amount * 100, e.Channel);
+        //				if (amount * 100 > u.Currency)
+        //				{
+        //					e.ErrorEmbedResource("miki_mekos_insufficient")
+        //						.ToEmbed().QueueToChannelAsync(e.Channel);
+        //					return;
+        //				}
 
-		//				RedisValue[] tickets = new RedisValue[amount];
+        //				await u.AddCurrencyAsync(-amount * 100, e.Channel);
 
-		//				for (int i = 0; i < amount; i++)
-		//				{
-		//					tickets[i] = e.Author.Id.ToString();
-		//				}
+        //				RedisValue[] tickets = new RedisValue[amount];
 
-		//				await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListRightPushAsync(lotteryKey, tickets);
+        //				for (int i = 0; i < amount; i++)
+        //				{
+        //					tickets[i] = e.Author.Id.ToString();
+        //				}
 
-		//				int totalTickets = 0;
+        //				await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListRightPushAsync(lotteryKey, tickets);
 
-		//				if (await lotteryDict.ContainsAsync(e.Author.Id.ToString()))
-		//				{
-		//					totalTickets = int.Parse(await lotteryDict.GetAsync(e.Author.Id.ToString()));
-		//				}
+        //				int totalTickets = 0;
 
-		//				await lotteryDict.AddAsync(e.Author.Id, amount + totalTickets);
+        //				if (await lotteryDict.ContainsAsync(e.Author.Id.ToString()))
+        //				{
+        //					totalTickets = int.Parse(await lotteryDict.GetAsync(e.Author.Id.ToString()));
+        //				}
 
-		//				await context.SaveChangesAsync();
+        //				await lotteryDict.AddAsync(e.Author.Id, amount + totalTickets);
 
-		//				e.SuccessEmbed($"Successfully bought {amount} tickets!")
-		//					.QueueToChannelAsync(e.Channel);
-		//			}
-		//		}
-		//		break;
-		//	}
-		//}
+        //				await context.SaveChangesAsync();
 
-		public async Task<int?> ValidateBetAsync(EventContext e, int maxBet = 1000000)
-		{
-			if (e.Arguments.Take(out string arg))
-			{
-                using (MikiContext context = new MikiContext())
+        //				e.SuccessEmbed($"Successfully bought {amount} tickets!")
+        //					.QueueToChannelAsync(e.Channel);
+        //			}
+        //		}
+        //		break;
+        //	}
+        //}
+
+        public async Task<int?> ValidateBetAsync(EventContext e, int maxBet = 1000000)
+        {
+            using (MikiContext context = new MikiContext())
+            {
+                User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+
+                if (user == null)
                 {
-                    User user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
+                    throw new UserNullException();
+                }
 
-                    if (user == null)
-                    {
-                        throw new UserNullException();
-                    }
-
-                    if (int.TryParse(arg, out int bet))
-                    {
-                    }
-                    else if (arg.ToLower() == "all" || arg == "*")
+                if (e.Arguments.Take(out int bet))
+                {
+                }
+                else if (e.Arguments.Take(out string arg))
+                {
+                    if (arg.ToLower() == "all" || arg == "*")
                     {
                         bet = Math.Min(user.Currency, maxBet);
                     }
-                    else
-                    {
-                        await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
-                            .ToEmbed().QueueToChannelAsync(e.Channel);
-                        return null;
-                    }
+                }
 
-                    if (bet < 1)
-                    {
-                        throw new ArgumentLessThanZeroException();
-                    }
+                if (bet == 0)
+                {
+                    await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_parse_error"))
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return null;
+                }
 
-                    if (bet > user.Currency)
-                    {
-                        throw new InsufficientCurrencyException(user.Currency, bet);
-                    }
+                if (bet < 0)
+                {
+                    throw new ArgumentLessThanZeroException();
+                }
 
-                    if (bet > maxBet)
-                    {
-                        await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
-                            .ToEmbed().QueueToChannelAsync(e.Channel);
-                        return null;
-                    }
+                if (bet > user.Currency)
+                {
+                    throw new InsufficientCurrencyException(user.Currency, bet);
+                }
 
-                    return bet;
-                }          
-			}
-			else
-			{
-                await e.ErrorEmbed(e.Locale.GetString("miki_error_gambling_no_arg"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return null;
-			}
+                if (bet > maxBet)
+                {
+                    await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return null;
+                }
+
+                return bet;
+            }
 		}
 	}
 }
