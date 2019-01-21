@@ -1,3 +1,4 @@
+using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Repositories;
 using Miki.Cache;
 using Miki.Discord;
@@ -74,9 +75,7 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await e.ErrorEmbed("I couldn't find this user!")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
+                throw new UserNullException();
 			}
 
 			if (user.Id == e.Author.Id)
