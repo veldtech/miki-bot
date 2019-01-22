@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
+using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -22,7 +23,7 @@ namespace Miki.Modules
 	internal class GuildAccountsModule
 	{
 		[Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
-		public async Task GuildWeekly(EventContext e)
+		public async Task GuildWeeklyAsync(EventContext e)
 		{
 			using (MikiContext database = new MikiContext())
 			{
@@ -32,8 +33,8 @@ namespace Miki.Modules
 
 				if (thisUser == null)
 				{
-					return;
-				}
+                    throw new UserNullException();
+                }
 
 				if (thisGuild == null)
 				{
@@ -72,8 +73,7 @@ namespace Miki.Modules
 
 						if (user == null)
 						{
-							// TODO: Add response
-							return;
+                            throw new UserNullException();
 						}
 
 						await user.AddCurrencyAsync(mekosGained, e.Channel);
