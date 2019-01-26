@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki", "Miki.csproj", "{154
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Arguments", "..\Miki.Framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj", "{09A3A767-E8C2-46AC-89C3-384F7495050B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.UrbanDictionary", "..\Miki.UrbanDictionary\Miki.UrbanDictionary.csproj", "{FD29A033-ED7B-4934-83BE-6AD24DC6AB88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.UrbanDictionary", "..\Miki.UrbanDictionary\Miki.UrbanDictionary.csproj", "{FD29A033-ED7B-4934-83BE-6AD24DC6AB88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
