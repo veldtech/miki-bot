@@ -203,7 +203,7 @@ namespace Miki
 			}
 
             await MikiApp.Instance.GetService<BunnyCDNClient>()
-                .PurgeCacheAsync($"https://cdn.miki.ai/avatars/{user.Id}.png");
+                .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
             using (var context = new MikiContext())
 			{
