@@ -141,7 +141,7 @@ namespace Miki.Modules.AccountsModule
 
 			e.Arguments.Peek(out string argument);
 
-			switch (argument.ToLower() ?? "")
+			switch (argument?.ToLower() ?? "")
 			{
 				case "commands":
 				case "cmds":
@@ -200,13 +200,16 @@ namespace Miki.Modules.AccountsModule
 				break;
 			}
 
-			if (argument.ToLower() == "local")
+			if (e.Arguments.Peek(out string localArg))
 			{
-				if (options.Type != LeaderboardsType.PASTA)
-				{
-					options.GuildId = e.Guild.Id;
-				}
-                e.Arguments.Skip();
+                if (localArg.ToLower() == "local")
+                {
+                    if (options.Type != LeaderboardsType.PASTA)
+                    {
+                        options.GuildId = e.Guild.Id;
+                    }
+                    e.Arguments.Skip();
+                }
             }
 
             if (e.Arguments.Peek<int>(out int index))
