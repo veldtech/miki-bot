@@ -71,6 +71,7 @@ namespace Miki.Modules
                     {
                         await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
                             .ToEmbed().QueueToChannelAsync(e.Channel);
+                        return;
                     }
 
                     context.EventMessages.Remove(leaveMessage);
@@ -80,7 +81,7 @@ namespace Miki.Modules
                 else
                 {
                     await SetMessageAsync(welcomeMessage, EventMessageType.JOINSERVER, e.Channel.Id);
-                    await e.SuccessEmbed($"Your new welcome message is set to: `{welcomeMessage}`")
+                    await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
                         .QueueToChannelAsync(e.Channel);
                 }
                 await context.SaveChangesAsync();
