@@ -212,7 +212,7 @@ namespace Miki.Modules.AccountsModule
                 }
             }
 
-            if (e.Arguments.Peek<int>(out int index))
+            if (e.Arguments.Peek(out int index))
 			{
 				options.Offset = Math.Max(0, index - 1) * 12;
                 e.Arguments.Skip();

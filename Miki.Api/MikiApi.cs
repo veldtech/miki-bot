@@ -1,4 +1,5 @@
-﻿using Miki.API.Leaderboards;
+﻿using Miki.Api.Models;
+using Miki.API.Leaderboards;
 using Miki.Rest;
 using System;
 using System.Text;
@@ -33,6 +34,8 @@ namespace Miki.API
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
 			=> (await _client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
 
+        public async Task<UserInventory> GetUserInventoryAsync(long id)
+            => (await _client.GetAsync<UserInventory>($"users/{id}/inventory")).Data;
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
@@ -44,7 +47,6 @@ namespace Miki.API
 			}
 
 			sb.Append($"/{options.Type.ToString().ToLower()}");
-
 
 			QueryString qs = new QueryString();
 

@@ -8,6 +8,7 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
 using Miki.Models;
+using Miki.Modules.Roles.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,32 +97,16 @@ namespace Miki.Modules.Roles
 				if (newRole.RequiredRole != 0 && !discordUser.RoleIds.Contains(newRole.RequiredRole.FromDbLong()))
 				{
 					var requiredRole = await e.Guild.GetRoleAsync(newRole.RequiredRole.FromDbLong());
+                    throw new RequiredRoleMissingException(requiredRole);
+                }
 
-                    await e.ErrorEmbed(
-						e.Locale.GetString(
-							"error_role_required", $"**{requiredRole.Name}**"
-						)
-					).ToEmbed().QueueToChannelAsync(e.Channel);
-					return;
-				}
-
-				if (newRole.Price > 0)
-				{
-					if (user.Currency >= newRole.Price)
-					{
-						user.RemoveCurrency(newRole.Price);
-						await context.SaveChangesAsync();
-					}
-					else
-					{
-						await e.ErrorEmbed(e.Locale.GetString("user_error_insufficient_mekos"))
-							.ToEmbed().SendToChannel(e.Channel);
-						return;
-					}
-				}
+                if (newRole.Price > 0)
+                {
+                    user.RemoveCurrency(newRole.Price);
+                    await context.SaveChangesAsync();
+                }
 
 				var me = await e.Guild.GetSelfAsync();
-
 				if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
 				{
                     await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
@@ -300,15 +285,14 @@ namespace Miki.Modules.Roles
 			}
 		}
 
-		[Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task ConfigRoleAsync(EventContext e)
-		{
-            string args = e.Arguments.Pack.TakeAll();
-			if (!string.IsNullOrWhiteSpace(args))
-			{
-				await ConfigRoleQuickAsync(e, args);
-			}
-		}
+        [Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task ConfigRoleAsync(EventContext e)
+        {
+            if (e.Arguments.CanTake)
+            {
+                await ConfigRoleQuickAsync(e);
+            }
+        }
 
 		#endregion commands
 
@@ -609,11 +593,16 @@ namespace Miki.Modules.Roles
 			}
 		}*/
 
-		public async Task ConfigRoleQuickAsync(EventContext e, string args)
+		public async Task ConfigRoleQuickAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
 			{
-				string roleName = args.Split('"')[1];
+                if (!e.Arguments.Take(out string roleName))
+                {
+                    await e.ErrorEmbed("Expected a role name")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
 
 				IDiscordRole role = null;
 				if (ulong.TryParse(roleName, out ulong s))
@@ -626,7 +615,7 @@ namespace Miki.Modules.Roles
 				}
 
 				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-				MSLResponse arguments = new MMLParser(args.Substring(roleName.Length + 3))
+				MSLResponse arguments = new MMLParser(e.Arguments.Pack.TakeAll())
 					.Parse();
 
 				if (role.Name.Length > 20)
@@ -695,6 +684,7 @@ namespace Miki.Modules.Roles
 				}
 
 				await context.SaveChangesAsync();
+
                 await new EmbedBuilder()
 					.SetTitle("⚙ Role Config")
 					.SetColor(102, 117, 127)

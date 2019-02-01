@@ -56,6 +56,7 @@ namespace Miki.Modules
 			};
 		}
 
+        // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
 		[Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetWelcomeMessage(EventContext e)
 		{
@@ -63,29 +64,28 @@ namespace Miki.Modules
 
 			using (var context = new MikiContext())
 			{
-				if (string.IsNullOrEmpty(welcomeMessage))
-				{
-					EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
-					if (leaveMessage != null)
-					{
-						context.EventMessages.Remove(leaveMessage);
-						e.Channel.QueueMessage($"✅ deleted your welcome message");
-						await context.SaveChangesAsync();
-						return;
-					}
-					else
-					{
-						e.Channel.QueueMessage($"⚠ no welcome message found!");
-					}
-				}
+                if (string.IsNullOrEmpty(welcomeMessage))
+                {
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
+                    if (leaveMessage == null)
+                    {
+                        await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
+                            .ToEmbed().QueueToChannelAsync(e.Channel);
+                    }
 
-				if (await SetMessage(welcomeMessage, EventMessageType.JOINSERVER, e.Channel.Id))
-				{
-					e.Channel.QueueMessage($"✅ new welcome message is set to: `{welcomeMessage}`");
-				}
-				await context.SaveChangesAsync();
-			}
-		}
+                    context.EventMessages.Remove(leaveMessage);
+                        await e.SuccessEmbed($"Deleted your welcome message")
+                            .QueueToChannelAsync(e.Channel);
+                }
+                else
+                {
+                    await SetMessageAsync(welcomeMessage, EventMessageType.JOINSERVER, e.Channel.Id);
+                    await e.SuccessEmbed($"Your new welcome message is set to: `{welcomeMessage}`")
+                        .QueueToChannelAsync(e.Channel);
+                }
+                await context.SaveChangesAsync();
+            }
+        }
 
 		[Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetLeaveMessage(EventContext e)
@@ -94,27 +94,28 @@ namespace Miki.Modules
 
             using (var context = new MikiContext())
 			{
-				if (string.IsNullOrEmpty(leaveMsgString))
-				{
-					EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
-					if (leaveMessage != null)
-					{
-						context.EventMessages.Remove(leaveMessage);
-						e.Channel.QueueMessage($"✅ deleted your leave message");
-						await context.SaveChangesAsync();
-						return;
-					}
-					else
-					{
-						e.Channel.QueueMessage($"⚠ no leave message found!");
-					}
-				}
+                if (string.IsNullOrEmpty(leaveMsgString))
+                {
+                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
+                    if (leaveMessage == null)
+                    {
+                        await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
+                            .ToEmbed().QueueToChannelAsync(e.Channel);
+                        return;
+                    }
 
-				if (await SetMessage(leaveMsgString, EventMessageType.LEAVESERVER, e.Channel.Id))
-				{
-					e.Channel.QueueMessage($"✅ new leave message is set to: `{leaveMsgString}`");
-				}
-				await context.SaveChangesAsync();
+                    context.EventMessages.Remove(leaveMessage);
+                    await e.SuccessEmbed($"Deleted your leave message")
+                        .QueueToChannelAsync(e.Channel);
+
+                }
+                else
+                {
+                    await SetMessageAsync(leaveMsgString, EventMessageType.LEAVESERVER, e.Channel.Id);
+                    await e.SuccessEmbed($"Your new leave message is set to: ```{leaveMsgString}```")
+                        .QueueToChannelAsync(e.Channel);
+                }
+                await context.SaveChangesAsync();
 			}
 		}
 
@@ -131,7 +132,7 @@ namespace Miki.Modules
 			e.Channel.QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
 		}
 
-		private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
+		private async Task SetMessageAsync(string message, EventMessageType v, ulong channelid)
 		{
 			using (var context = new MikiContext())
 			{
@@ -153,7 +154,6 @@ namespace Miki.Modules
 
 				await context.SaveChangesAsync();
 			}
-			return true;
 		}
 
 		public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
