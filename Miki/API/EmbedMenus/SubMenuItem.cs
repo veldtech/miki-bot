@@ -44,8 +44,10 @@ namespace Miki.API.EmbedMenus
 				builder.Description += $"`{i + 1}` - {Children[i].Name}\n";
 			}
 
-			if (canGoBack && Parent != null)
-				builder.Description += $"`{Children.Count + 1}` - Back";
+            if (canGoBack && Parent != null)
+            {
+                builder.Description += $"`{Children.Count + 1}` - Back";
+            }
 
 			return builder.ToEmbed();
 		}

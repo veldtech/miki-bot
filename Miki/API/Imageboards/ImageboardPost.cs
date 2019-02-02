@@ -74,7 +74,7 @@ namespace Miki.API.Imageboards
 					Config.NetHeaders.ForEach(x => c.Headers.Add(x.Item1, x.Item2));
 				}
 
-				var b = await c.GetAsync<List<T>>("");
+				var b = await c.GetAsync<List<T>>();
 
 				if (b.Success)
 				{
@@ -83,7 +83,7 @@ namespace Miki.API.Imageboards
 						return b.Data[MikiRandom.Next(0, b.Data.Count)];
 					}
 				}
-				return default(T);
+				return default;
 			}
 		}
 
