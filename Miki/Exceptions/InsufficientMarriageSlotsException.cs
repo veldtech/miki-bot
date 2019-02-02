@@ -1,4 +1,5 @@
-﻿using Miki.Localization;
+﻿using Miki.Bot.Models;
+using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Models;
 using System;

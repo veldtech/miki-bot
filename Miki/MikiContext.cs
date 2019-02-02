@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models.Queries;
-using Miki.Framework.Models;
+using Miki.Bot.Models;
 using Miki.Models.Objects.Guild;
 using System.Reflection;
 

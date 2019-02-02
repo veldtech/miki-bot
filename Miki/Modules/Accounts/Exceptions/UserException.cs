@@ -1,5 +1,5 @@
-﻿using Miki.Localization.Exceptions;
-using Miki.Models;
+﻿using Miki.Bot.Models;
+using Miki.Localization.Exceptions;
 
 namespace Miki.Exceptions
 {
