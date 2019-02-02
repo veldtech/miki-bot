@@ -16,10 +16,6 @@ namespace Miki.API.Cards.Objects
 		[ProtoMember(3)]
 		public bool isPublic;
 
-		public Card()
-		{
-		}
-
 		public Card(CardType t, CardValue v)
 		{
 			type = t;
@@ -28,15 +24,13 @@ namespace Miki.API.Cards.Objects
 
 		public override string ToString()
 		{
-			string output = "";
-
 			if (!isPublic)
 			{
 				return "??";
 			}
 
-			output += ":" + type.ToString().ToLower() + ":";
-
+            string output = $":{type.ToString().ToLower()}:";
+            
             switch (value)
             {
                 case CardValue.ACES:
