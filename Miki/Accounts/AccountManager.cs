@@ -112,7 +112,7 @@ namespace Miki.Accounts
 				}
 		   };
 
-			//bot.Discord.Guild += Client_GuildUpdated;
+			//bot.Discord.Update += Client_GuildUpdated;
 			bot.Discord.GuildMemberCreate += Client_UserJoined;
 			bot.Discord.MessageCreate += CheckAsync;
 		}
@@ -133,9 +133,9 @@ namespace Miki.Accounts
 			{
                 if (await e.GetChannelAsync() is IDiscordGuildChannel channel)
                 {
-                        var cache = MikiApp.Instance.GetService<ICacheClient>();
+                    var cache = MikiApp.Instance.GetService<ICacheClient>();
 
-                        string key = GetContextKey(channel.GuildId, e.Author.Id);
+                    string key = GetContextKey(channel.GuildId, e.Author.Id);
 
                     if (lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
                     {

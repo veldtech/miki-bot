@@ -351,13 +351,13 @@ namespace Miki.Modules
 		[Command(Name = "lovepasta")]
 		public async Task LovePasta(EventContext e)
 		{
-			await VotePasta(e, true);
+			await VotePasta(e, true).ConfigureAwait(false);
 		}
 
 		[Command(Name = "hatepasta")]
 		public async Task HatePasta(EventContext e)
 		{
-			await VotePasta(e, false);
+			await VotePasta(e, false).ConfigureAwait(false);
 		}
 
         private async Task VotePasta(EventContext e, bool vote)
