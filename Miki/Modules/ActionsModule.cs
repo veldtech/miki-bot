@@ -371,25 +371,25 @@ namespace Miki.Modules
 			=> await QueueAction(e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
-		public async Task QueueAction(EventContext e, string action, string imageUrl)
-		{
-			string username = (await e.Guild.GetSelfAsync()).Username;
+        public async Task QueueAction(EventContext e, string action, string imageUrl)
+        {
+            string username = (await e.Guild.GetSelfAsync()).Username;
 
-			EmbedBuilder builder = new EmbedBuilder();
+            EmbedBuilder builder = new EmbedBuilder();
 
-			if (e.Arguments.CanTake)
-			{
-				builder.SetTitle($"{e.Author.Username} {action} {e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}");
-			}
-			else
-			{
-				builder.SetTitle($"{username} {action} {e.Author.Username}");
-			}
+            if (e.Arguments.CanTake)
+            {
+                builder.SetTitle($"{e.Author.Username} {action} {e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}");
+            }
+            else
+            {
+                builder.SetTitle($"{username} {action} {e.Author.Username}");
+            }
 
-			builder.SetImage(imageUrl);
+            builder.SetImage(imageUrl);
 
             await builder.ToEmbed().QueueToChannelAsync(e.Channel)
                 .ConfigureAwait(false);
-		}
+        }
 	}
 }
