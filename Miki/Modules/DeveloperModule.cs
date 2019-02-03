@@ -1,4 +1,5 @@
 ﻿using Miki.API.EmbedMenus;
+using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -109,6 +110,15 @@ namespace Miki.Modules
 
 			await (e.Channel as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
+
+        [Command(Name = "identifyrole", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task IdentifyRoleAsync(EventContext e)
+        {
+            if (e.Arguments.Take(out ulong roleId))
+            {
+                await e.Guild.GetRoleAsync(roleId);
+            }
+        }
 
 		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetGameAsync(EventContext e)
