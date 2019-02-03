@@ -97,6 +97,29 @@ namespace Miki.Modules
 			await (e.Channel as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
+        [Command(Name = "showpermissions", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task ShowPermissionsAsync(EventContext e)
+        {
+            if(e.Arguments.Take(out ulong id))
+            {
+                var member = await e.Guild.GetMemberAsync(id);
+                var permissions = await e.Guild.GetPermissionsAsync(member);
+
+                string x = "";
+
+                foreach(var z in Enum.GetNames(typeof(GuildPermission)))
+                {
+                    if(permissions.HasFlag(Enum.Parse<GuildPermission>(z)))
+                    {
+                        x += z + " ";
+                    }
+                }
+
+                e.Channel.QueueMessage(x);
+            }
+        }
+
+
         [Command(Name = "haspermission", Accessibility =EventAccessibility.DEVELOPERONLY)]
         public async Task HasPermissionAsync(EventContext e)
         {
