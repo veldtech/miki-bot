@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Miki.API;
+using Miki.Bot.Models;
+using Miki.BunnyCDN;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
-using Miki.Common;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
@@ -12,16 +14,15 @@ using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Commands;
 using Miki.Framework.Events.Filters;
 using Miki.Framework.Languages;
-using Miki.Framework.Services;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
+using Miki.UrbanDictionary;
 using SharpRaven;
 using SharpRaven.Data;
 using StackExchange.Redis;
@@ -33,10 +34,6 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.BunnyCDN;
-using Miki.UrbanDictionary;
-using Miki.Bot.Models;
 
 namespace Miki
 {

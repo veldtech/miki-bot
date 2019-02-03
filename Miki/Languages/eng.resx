@@ -2228,4 +2228,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
 `&gt;prune &lt;amount&gt; [mention] [phrase]` - Prunes previous messages of a specific user that contain a certain phrase by an amount.</value>
     <comment>When translating, do not translate the command; you can translate the arguments. Remember to not remove important syntax like ` and ". </comment>
   </data>
+  <data name="permission_missing" xml:space="preserve">
+    <value>I do not have the permission to {0}. Please give me this!</value>
+  </data>
 </root>

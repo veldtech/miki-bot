@@ -110,7 +110,7 @@ namespace Miki.Modules.Roles
 				var me = await e.Guild.GetSelfAsync();
 				if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
 				{
-                    await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
+                    await e.ErrorEmbed(e.Locale.GetString("permission_missing", "give roles")).ToEmbed()
 						.QueueToChannelAsync(e.Channel);
 					return;
 				}
