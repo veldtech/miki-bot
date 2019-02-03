@@ -120,7 +120,15 @@ namespace Miki.Modules
             }
         }
 
-		[Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        [Command(Name = "identifybotroles", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task IdentifyBotRolesAsync(EventContext e)
+        {
+            var roles = await e.Guild.GetRolesAsync();
+            var self = await e.Guild.GetSelfAsync();
+            e.Channel.QueueMessage($"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
+        }
+
+        [Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
 		public async Task SetGameAsync(EventContext e)
 		{
             if (!e.Arguments.Take(out string arg))
