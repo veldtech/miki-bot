@@ -107,6 +107,7 @@ namespace Miki
             new LogBuilder()
                 .AddLogEvent((msg, lvl) => Console.WriteLine(msg))
                 .SetLogHeader((msg) => $"[{msg}]: ")
+                .SetTheme(new LogTheme())
                 .Apply();
 
             var cache = new StackExchangeCacheClient(
