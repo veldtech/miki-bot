@@ -10,7 +10,7 @@ Below you will find a basic workflow of how the branches should work. Please fol
 ### [Getting Started](#getting-started-1)
  
 ## Useful links
-Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
+Bot invite: https://discordapp.com/oauth2/authorize?client_id=160185389313818624&scope=bot&permissions=1342565622<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
