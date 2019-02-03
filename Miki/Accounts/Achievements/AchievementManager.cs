@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Framework;

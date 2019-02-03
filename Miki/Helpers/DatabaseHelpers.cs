@@ -1,4 +1,5 @@
 ﻿using Miki.Accounts.Achievements;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord.Common;

@@ -1,4 +1,5 @@
-﻿using Miki.Models;
+﻿using Miki.Bot.Models;
+using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

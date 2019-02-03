@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -114,7 +115,9 @@ namespace Miki.Modules.Roles
 					return;
 				}
 
-				if (discordRole.Position >= await me.GetHierarchyAsync())
+                int hierarchy = await me.GetHierarchyAsync();
+
+                if (discordRole.Position >= hierarchy)
 				{
                     await e.ErrorEmbed(e.Locale.GetString("permission_error_low", "give roles")).ToEmbed()
 						.QueueToChannelAsync(e.Channel);

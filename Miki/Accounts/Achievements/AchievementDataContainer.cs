@@ -1,4 +1,5 @@
 ﻿using Miki.Accounts.Achievements.Objects;
+using Miki.Bot.Models;
 using Miki.Framework;
 using Miki.Helpers;
 using Miki.Models;

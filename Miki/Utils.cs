@@ -1,6 +1,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Miki.API.Leaderboards;
+using Miki.Bot.Models;
 using Miki.BunnyCDN;
 using Miki.Discord;
 using Miki.Discord.Common;

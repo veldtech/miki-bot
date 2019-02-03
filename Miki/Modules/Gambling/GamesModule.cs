@@ -1,6 +1,7 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
 using Miki.API.Cards.Objects;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord;

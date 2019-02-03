@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Common;
+﻿using Miki.Bot.Models;
+using Miki.Discord.Common;
 using Miki.Framework.Events;
 using Miki.Models;
 

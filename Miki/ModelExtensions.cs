@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Repositories;
 using Miki.Discord.Common;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -11,7 +12,6 @@ using Miki.Framework.Language;
 using Miki.Helpers;
 using Miki.Localization;
 using Miki.Models;
-using Miki.Models.Objects.Guild;
 using System;
 using System.Collections.Generic;
 using System.Linq;

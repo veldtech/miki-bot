@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.BunnyCDN;
 using Miki.UrbanDictionary;
+using Miki.Bot.Models;
 
 namespace Miki
 {
@@ -103,16 +104,20 @@ namespace Miki
 
         public async Task LoadServicesAsync(MikiAppBuilder app)
         {
+            new LogBuilder()
+                .AddLogEvent((msg, lvl) => Console.WriteLine(msg))
+                .SetTheme(new LogTheme())
+                .SetLogHeader((msg) => $"[{msg}]: ")
+                .Apply();
+
             var cache = new StackExchangeCacheClient(
                 new ProtobufSerializer(),
                 await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
             );
-
+            
             app.AddSingletonService<ICacheClient>(cache);
             app.AddSingletonService<IExtendedCacheClient>(cache);
             app.Services.AddDbContext<DbContext, MikiContext>(x => x.UseNpgsql(Global.Config.ConnString));
-
-            app.AddSingletonService(new LoggingService());
 
             if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
             {
