@@ -106,7 +106,6 @@ namespace Miki
         {
             new LogBuilder()
                 .AddLogEvent((msg, lvl) => Console.WriteLine(msg))
-                .SetTheme(new LogTheme())
                 .SetLogHeader((msg) => $"[{msg}]: ")
                 .Apply();
 

@@ -116,7 +116,14 @@ namespace Miki.Modules
         {
             if (e.Arguments.Take(out ulong roleId))
             {
-                await e.Guild.GetRoleAsync(roleId);
+                var x = await e.Guild.GetRoleAsync(roleId);
+                var myHierarchy = await (await e.Guild.GetSelfAsync()).GetHierarchyAsync();
+
+                e.Channel.QueueMessage("```" + JsonConvert.SerializeObject(new
+                {
+                    role = x,
+                    bot_position = myHierarchy
+                }) + "```");
             }
         }
 
