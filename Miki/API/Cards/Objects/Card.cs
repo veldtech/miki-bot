@@ -16,6 +16,8 @@ namespace Miki.API.Cards.Objects
 		[ProtoMember(3)]
 		public bool isPublic;
 
+        public Card()
+        { }
 		public Card(CardType t, CardValue v)
 		{
 			type = t;
