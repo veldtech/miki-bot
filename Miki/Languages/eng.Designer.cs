@@ -304,6 +304,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot use &apos;{0}&apos; in this context!.
+        /// </summary>
+        internal static string error_invalid_character {
+            get {
+                return ResourceManager.GetString("error_invalid_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} is not a valid language. use &apos;{1}listlocale&apos; to check all languages available..
         /// </summary>
         internal static string error_language_invalid {
@@ -318,6 +327,15 @@ namespace Miki.Languages {
         internal static string error_marriageslots_insufficient {
             get {
                 return ResourceManager.GetString("error_marriageslots_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unknown parsing exception occured with message: &quot;{0}&quot;.
+        /// </summary>
+        internal static string error_miscript_parse {
+            get {
+                return ResourceManager.GetString("error_miscript_parse", resourceCulture);
             }
         }
         

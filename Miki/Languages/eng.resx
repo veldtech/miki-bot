@@ -2231,4 +2231,10 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="permission_missing" xml:space="preserve">
     <value>I do not have the permission to {0}. Please give me this!</value>
   </data>
+  <data name="error_invalid_character" xml:space="preserve">
+    <value>You cannot use '{0}' in this context!</value>
+  </data>
+  <data name="error_miscript_parse" xml:space="preserve">
+    <value>An unknown parsing exception occured with message: "{0}"</value>
+  </data>
 </root>

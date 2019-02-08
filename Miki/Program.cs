@@ -144,7 +144,7 @@ namespace Miki
                     QueueName = "gateway",
                     ExchangeName = "consumer",
                     ConsumerAutoAck = false,
-                    PrefetchCount = 25
+                    PrefetchCount = 25,
                 }));
             }
 
