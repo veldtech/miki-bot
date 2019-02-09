@@ -53,7 +53,11 @@ namespace Miki.Modules
 					return;
 				}
 
-                e.Arguments.Take(out int pruneDays);
+                int prune = 1;
+                if(e.Arguments.Take(out int pruneDays))
+                {
+                    prune = pruneDays;
+                }
 
                 string reason = e.Arguments.Pack.TakeAll();
 
@@ -72,7 +76,7 @@ namespace Miki.Modules
 
 				await embed.ToEmbed().SendToUser(user);
 
-				await e.Guild.AddBanAsync(user, 1, reason);
+				await e.Guild.AddBanAsync(user, prune, reason);
 			}
 			else
 			{
@@ -94,7 +98,7 @@ namespace Miki.Modules
             
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
 			{
-				IDiscordGuildUser bannedUser = null;
+				IDiscordGuildUser bannedUser;
 				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
                 e.Arguments.Take(out string userName);
@@ -176,13 +180,12 @@ namespace Miki.Modules
                 return;
             }
 
-            int amount = _amount;
             string filter = _filter;
             string args = e.Arguments.Pack.TakeAll();
             string[] argsSplit = args.Split(' ');
             ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
 
-            if (int.TryParse(argsSplit[0], out amount))
+            if (int.TryParse(argsSplit[0], out int amount))
 			{
 				if (amount < 0)
 				{

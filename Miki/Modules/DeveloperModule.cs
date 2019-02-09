@@ -438,7 +438,6 @@ namespace Miki.Modules
         [Command(Name = "setglobexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
         public async Task SetGlobalExpAsync(EventContext e)
         {
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
             if (!e.Arguments.Take(out string userName))
             {
                 return;

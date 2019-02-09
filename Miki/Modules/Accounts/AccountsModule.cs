@@ -802,11 +802,9 @@ namespace Miki.Modules.AccountsModule
 		[Command(Name = "give")]
 		public async Task GiveMekosAsync(EventContext e)
 		{
-			IDiscordUser user = null;
-
             if (e.Arguments.Take(out string userName))
             {
-                user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
+                var user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
                 if (user == null)
                 {

@@ -178,7 +178,7 @@ namespace Miki.Modules
 				BlackjackManager manager = new BlackjackManager(bet.Value);
 
 				CardHand dealer = manager.AddPlayer(0);
-				CardHand player = manager.AddPlayer(e.Author.Id);
+				manager.AddPlayer(e.Author.Id);
 
 				manager.DealAll();
 				manager.DealAll();
@@ -451,8 +451,7 @@ namespace Miki.Modules
 				await context.SaveChangesAsync();
 			}
 
-			string output = "";
-
+			string output;
 			if (win)
 			{
 				output = e.Locale.GetString("flip_description_win", $"`{bet}`");

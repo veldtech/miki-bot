@@ -325,9 +325,8 @@ namespace Miki.Modules
 		[Command(Name = "dog")]
 		public async Task DogAsync(EventContext e)
 		{
-			string url = "";
-
-			do
+            string url;
+            do
 			{
 				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Body;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
@@ -335,7 +334,7 @@ namespace Miki.Modules
 			await new EmbedBuilder()
 				.SetTitle("🐶 Doggo!")
 				.SetColor(0.8f, 0.8f, 0.8f)
-				.SetImage("https://random.dog/" + url)
+				.SetImage("https://random.dog/{url}")
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 

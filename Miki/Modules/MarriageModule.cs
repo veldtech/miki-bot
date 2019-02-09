@@ -303,8 +303,8 @@ namespace Miki.Modules
         [Command(Name = "marry")]
         public async Task MarryAsync(EventContext e)
         {
-            long askerId = 0;
-            long receiverId = 0;
+            long askerId;
+            long receiverId;
 
 
 
@@ -382,7 +382,7 @@ namespace Miki.Modules
 		{
             if(e.Arguments.Take(out int page))
             {
-                page = page - 1;
+                page -= 1;
             }
 
 			using (var context = new MikiContext())

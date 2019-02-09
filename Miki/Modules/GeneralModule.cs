@@ -143,7 +143,7 @@ namespace Miki.Modules
 				return;
 			}
 
-			giveawayText = giveawayText + ((amount > 1) ? " x " + amount : "");
+			giveawayText += ((amount > 1) ? " x " + amount : "");
 
 			List<IDiscordUser> winners = new List<IDiscordUser>();
 
