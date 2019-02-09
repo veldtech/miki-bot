@@ -102,7 +102,9 @@ namespace Miki
         public async Task LoadServicesAsync(MikiAppBuilder app)
         {
             new LogBuilder()
-                .AddLogEvent((msg, lvl) => Console.WriteLine(msg))
+                .AddLogEvent((msg, lvl) => {
+                    if (lvl >= Global.Config.LogLevel) Console.WriteLine(msg);
+                })
                 .SetLogHeader((msg) => $"[{msg}]: ")
                 .SetTheme(new LogTheme())
                 .Apply();
