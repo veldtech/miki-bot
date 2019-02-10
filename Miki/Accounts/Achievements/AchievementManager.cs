@@ -91,6 +91,21 @@ namespace Miki.Accounts.Achievements
                 }
 			};
 
+            bot.Discord.MessageCreate += async (msg) =>
+            {
+                MessageEventPacket m = new MessageEventPacket()
+                {
+                    discordChannel = await msg.GetChannelAsync(),
+                    discordUser = msg.Author,
+                    message = msg
+                };
+
+                if (OnMessage != null)
+                {
+                    await OnMessage(m);
+                }
+            };
+
             bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
             {
                 CommandPacket p = new CommandPacket()
