@@ -238,37 +238,37 @@ namespace Miki
 				configFile
 			);
 
-			app.Discord.MessageCreate += Bot_MessageReceived;
+			//app.Discord.MessageCreate += Bot_MessageReceived;
 
-			app.Discord.GuildJoin += Client_JoinedGuild;
-			app.Discord.GuildLeave += Client_LeftGuild;
-            app.Discord.UserUpdate += Client_UserUpdated;
+			//app.Discord.GuildJoin += Client_JoinedGuild;
+			//app.Discord.GuildLeave += Client_LeftGuild;
+   //         app.Discord.UserUpdate += Client_UserUpdated;
 
 			await gateway.StartAsync();
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
-			if (oldUser.AvatarId != newUser.AvatarId)
-			{
-				await Utils.SyncAvatarAsync(newUser);
-			}
+			//if (oldUser.AvatarId != newUser.AvatarId)
+			//{
+			//	await Utils.SyncAvatarAsync(newUser);
+			//}
 		}
 
 		private async Task Bot_MessageReceived(IDiscordMessage arg)
 		{
-            var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
+   //         var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
 
-			DogStatsd.Increment("messages.received");
+			//DogStatsd.Increment("messages.received");
 
-			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
-			{
-                using (var context = new MikiContext())
-                {
-                    string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
-                    (await arg.GetChannelAsync()).QueueMessage(msg);
-                }
-			}
+			//if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
+			//{
+   //             using (var context = new MikiContext())
+   //             {
+   //                 string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
+   //                 (await arg.GetChannelAsync()).QueueMessage(msg);
+   //             }
+			//}
 
             if(Global.Config.LogLevel <= LogLevel.Debug)
             {
