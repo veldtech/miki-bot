@@ -175,7 +175,7 @@ namespace Miki
             var cache = app.GetService<IExtendedCacheClient>();
             var gateway = app.GetService<IGateway>();
 
-			new BasicCacheStage().Initialize(gateway, cache);
+			//new BasicCacheStage().Initialize(gateway, cache);
 
             var config = app.GetService<ConfigurationManager>();
             EventSystem eventSystem = app.GetService<EventSystem>();

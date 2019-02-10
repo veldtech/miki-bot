@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Serialization.Protobuf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Serialization", "..\..\Miki.Serialization\Miki.Serialization\Miki.Serialization.csproj", "{CE4D4F2C-63DA-4789-BD46-294BA31A7CE8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Gateway.Distributed", "..\..\Miki.Discord\Miki.Discord.Gateway.Distributed\Miki.Discord.Gateway.Distributed.csproj", "{5ED4364F-894C-4664-813F-69993B18D0C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Discord.Common", "..\..\Miki.Discord\Miki.Discord.Common\Miki.Discord.Common.csproj", "{66F9BF39-F27C-4059-986F-833D0F45A5F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Production|Any CPU = Debug Production|Any CPU
@@ -91,6 +95,22 @@ Global
 		{CE4D4F2C-63DA-4789-BD46-294BA31A7CE8}.Prod|Any CPU.Build.0 = Debug|Any CPU
 		{CE4D4F2C-63DA-4789-BD46-294BA31A7CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE4D4F2C-63DA-4789-BD46-294BA31A7CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED4364F-894C-4664-813F-69993B18D0C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66F9BF39-F27C-4059-986F-833D0F45A5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
