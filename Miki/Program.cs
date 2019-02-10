@@ -180,7 +180,7 @@ namespace Miki
             var config = app.GetService<ConfigurationManager>();
             EventSystem eventSystem = app.GetService<EventSystem>();
             {
-                app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
+                //app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
 
                 eventSystem.OnError += async (ex, context) =>
                 {
