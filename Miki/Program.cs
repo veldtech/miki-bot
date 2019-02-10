@@ -175,12 +175,12 @@ namespace Miki
             var cache = app.GetService<IExtendedCacheClient>();
             var gateway = app.GetService<IGateway>();
 
-			//new BasicCacheStage().Initialize(gateway, cache);
+			new BasicCacheStage().Initialize(gateway, cache);
 
             var config = app.GetService<ConfigurationManager>();
             EventSystem eventSystem = app.GetService<EventSystem>();
             {
-                //app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
+                app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
 
                 eventSystem.OnError += async (ex, context) =>
                 {
@@ -217,7 +217,7 @@ namespace Miki
                     Log.Message($"{cmd.Name} processed in {time}ms");
                 };
 
-                //eventSystem.AddCommandHandler(handler);
+                eventSystem.AddCommandHandler(handler);
 
                 commandMap.RegisterAttributeCommands();
                 commandMap.Install(eventSystem);
@@ -238,39 +238,39 @@ namespace Miki
 				configFile
 			);
 
-			//app.Discord.MessageCreate += Bot_MessageReceived;
+			app.Discord.MessageCreate += Bot_MessageReceived;
 
-			//app.Discord.GuildJoin += Client_JoinedGuild;
-			//app.Discord.GuildLeave += Client_LeftGuild;
-   //         app.Discord.UserUpdate += Client_UserUpdated;
+			app.Discord.GuildJoin += Client_JoinedGuild;
+			app.Discord.GuildLeave += Client_LeftGuild;
+            app.Discord.UserUpdate += Client_UserUpdated;
 
 			await gateway.StartAsync();
 		}
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
-			//if (oldUser.AvatarId != newUser.AvatarId)
-			//{
-			//	await Utils.SyncAvatarAsync(newUser);
-			//}
-		}
+            if (oldUser.AvatarId != newUser.AvatarId)
+            {
+                await Utils.SyncAvatarAsync(newUser);
+            }
+        }
 
 		private async Task Bot_MessageReceived(IDiscordMessage arg)
 		{
-   //         var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
+            var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
 
-			//DogStatsd.Increment("messages.received");
+            DogStatsd.Increment("messages.received");
 
-			//if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
-			//{
-   //             using (var context = new MikiContext())
-   //             {
-   //                 string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
-   //                 (await arg.GetChannelAsync()).QueueMessage(msg);
-   //             }
-			//}
+            if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
+            {
+                using (var context = new MikiContext())
+                {
+                    string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
+                    (await arg.GetChannelAsync()).QueueMessage(msg);
+                }
+            }
 
-            if(Global.Config.LogLevel <= LogLevel.Debug)
+            if (Global.Config.LogLevel <= LogLevel.Debug)
             {
                 Log.Debug($"Memory value: {GC.GetTotalMemory(true)}GB");
             }
@@ -295,40 +295,41 @@ namespace Miki
                 }
 			}
 
-			//List<string> allArgs = new List<string>();
-			//List<object> allParams = new List<object>();
-			//List<object> allExpParams = new List<object>();
+            List<string> allArgs = new List<string>();
+            List<object> allParams = new List<object>();
+            List<object> allExpParams = new List<object>();
 
-			//try
-			//{
-			//	for (int i = 0; i < arg.Members.Count; i++)
-			//	{
-			//		allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+            try
+            {
+                var members = await arg.GetMembersAsync();
+                for (int i = 0; i < members.Length; i++)
+                {
+                    allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-			//		allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-			//		allParams.Add(arg.Members.ElementAt(i).Username);
+                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allParams.Add(members.ElementAt(i).Username);
 
-			//		allExpParams.Add(arg.Id.ToDbLong());
-			//		allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-			//	}
+                    allExpParams.Add(arg.Id.ToDbLong());
+                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                }
 
-			//	using (var context = new MikiContext())
-			//	{
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+                using (var context = new MikiContext())
+                {
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
 
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
 
-			//		await context.SaveChangesAsync();
-			//	}
-			//}
-			//catch (Exception e)
-			//{
-			//	Log.Error(e.ToString());
-			//}
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.ToString());
+            }
 
-			DogStatsd.Increment("guilds.joined");
+            DogStatsd.Increment("guilds.joined");
 		}
 	}
 }

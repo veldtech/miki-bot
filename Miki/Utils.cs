@@ -223,7 +223,12 @@ namespace Miki
             }
             return string.Join(" ", allItems);
         }
-	}
+
+        internal static string UserSyncedKey()
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 	public class MikiRandom : RandomNumberGenerator
 	{

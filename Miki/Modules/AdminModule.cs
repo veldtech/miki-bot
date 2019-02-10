@@ -348,9 +348,7 @@ namespace Miki.Modules
 		[Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
 		public async Task SetModuleAsync(EventContext e)
 		{
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-
-			if (e.Arguments.Take(out string moduleName))
+			if (!e.Arguments.Take(out string moduleName))
 			{
 				return;
 			}
@@ -374,9 +372,31 @@ namespace Miki.Modules
                 }
             }
 
-			await m.SetEnabled(cache, e.Guild.Id, setValue);
+            bool global = false;
+            using (var context = new MikiContext())
+            {
+                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+                if (e.Arguments.Peek(out string g))
+                {
+                    if (g == "-g")
+                    {
+                        global = true;
+                        var channels = await e.Guild.GetChannelsAsync();
+                        foreach (var c in channels)
+                        {
+                            await m.SetEnabled(context, cache, c.Id, setValue);
+                        }
+                    }
+                }
+                else
+                {
+                    await m.SetEnabled(context, cache, e.Channel.Id, setValue);
+                }
 
-            await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}")
+                await context.SaveChangesAsync();
+            }
+
+            await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}" + ((global) ? " globally" : ""))
 				.QueueToChannelAsync(e.Channel);
 		}
 

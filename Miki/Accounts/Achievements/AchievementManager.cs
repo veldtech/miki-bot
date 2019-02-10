@@ -91,19 +91,19 @@ namespace Miki.Accounts.Achievements
                 }
 			};
 
-			//bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
-			//{
-			//	CommandPacket p = new CommandPacket()
-			//	{
-			//		discordUser = m.Author,
-			//		discordChannel = await m.GetChannelAsync(),
-			//		message = m,
-			//		command = e,
-			//		success = true
-			//	};
-			//	await OnCommandUsed?.Invoke(p);
-			//};
-		}
+            bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
+            {
+                CommandPacket p = new CommandPacket()
+                {
+                    discordUser = m.Author,
+                    discordChannel = await m.GetChannelAsync(),
+                    message = m,
+                    command = e,
+                    success = true
+                };
+                await OnCommandUsed?.Invoke(p);
+            };
+        }
 
 		internal void AddContainer(AchievementDataContainer container)
 		{

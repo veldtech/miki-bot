@@ -424,20 +424,20 @@ namespace Miki.Modules.Accounts.Services
 				await AchievementAchievements.CheckAsync(pa);
 			};
 
-			#endregion Achievement Achievements
+            #endregion Achievement Achievements
 
-			#region Command Achievements
+            #region Command Achievements
 
-			//AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
-			//AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
-			//AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
-			//AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
 
-			#endregion Command Achievements
+            #endregion Command Achievements
 
-			#region Level Achievements
+            #region Level Achievements
 
-			AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
+            AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
 
 			#endregion Level Achievements
 

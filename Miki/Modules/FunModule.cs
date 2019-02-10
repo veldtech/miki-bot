@@ -8,6 +8,7 @@ using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
 using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
 using Miki.Common.Builders;
 using Miki.Configuration;
 using Miki.Core.API.Reminder;
@@ -740,6 +741,7 @@ namespace Miki.Modules
 		[Command(Name = "ship")]
 		public async Task ShipAsync(EventContext e)
 		{
+            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
             e.Arguments.Take(out string shipPartner);
 
 			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.Guild);
