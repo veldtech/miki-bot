@@ -428,10 +428,10 @@ namespace Miki.Modules.Accounts.Services
 
 			#region Command Achievements
 
-			AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
+			//AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
+			//AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
+			//AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
+			//AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
 
 			#endregion Command Achievements
 
