@@ -269,6 +269,11 @@ namespace Miki
                     (await arg.GetChannelAsync()).QueueMessage(msg);
                 }
 			}
+
+            if(Global.Config.LogLevel <= LogLevel.Debug)
+            {
+                Log.Debug($"Memory value: {GC.GetTotalMemory(false)/1000/1000}GB");
+            }
 		}
 
 		private Task Client_LeftGuild(ulong guildId)

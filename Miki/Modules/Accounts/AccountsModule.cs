@@ -55,7 +55,7 @@ namespace Miki.Modules.AccountsModule
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
 
-        public AccountsModule(Module m, MikiApp app)
+        public AccountsModule()
         {
             if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey) 
                 && !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))

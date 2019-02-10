@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
     <PackageReference Include="Miki.Anilist" Version="0.6.0-beta2" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.0-beta2" />
-    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.2.1" />
+    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.1.2" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.0" />
     <PackageReference Include="Miki.Discord.Caching" Version="2.4.4" />
