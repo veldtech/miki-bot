@@ -255,11 +255,14 @@ namespace Miki.Modules.Accounts.Services
 				x.Name = "frog";
 				x.Achievements = new List<IAchievement>()
 				{
-					new MessageAchievement()
+					new CommandAchievement()
 					{
 						Name = "Oh shit! Waddup",
 						Icon = "🐸",
-						CheckMessage = async (p) => p.message.Content.Contains("dat boi"),
+                        CheckCommand = async (p) =>
+                        {
+                            return p.command.Name == "pasta" && p.message.Content.Contains("dat boi");
+                        },
 						Points = 5
 					}
 				};
@@ -269,13 +272,13 @@ namespace Miki.Modules.Accounts.Services
 				x.Name = "lenny";
 				x.Achievements = new List<IAchievement>()
 				{
-					new MessageAchievement()
+					new CommandAchievement()
 					{
 						Name = "Lenny",
 						Icon = "😏",
-						CheckMessage = async (p) =>
+						CheckCommand = async (p) =>
 						{
-							return p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
+							return p.command.Name == "pasta" && p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
 						},
 						Points = 5
 					}
@@ -286,13 +289,13 @@ namespace Miki.Modules.Accounts.Services
 				x.Name = "poi";
 				x.Achievements = new List<IAchievement>
 				{
-					new MessageAchievement()
+					new CommandAchievement()
 					{
 						Name = "Shipgirl",
 						Icon = "⛵",
-						CheckMessage = async (p) =>
+						CheckCommand = async (p) =>
 						{
-							return p.message.Content.Split(' ').Contains("poi");
+                            return p.command.Name == "pasta" && p.message.Content.Split(' ').Contains("poi");
 						},
 						Points = 5,
 					}
@@ -303,11 +306,11 @@ namespace Miki.Modules.Accounts.Services
 				x.Name = "goodluck";
 				x.Achievements = new List<IAchievement>()
 				{
-					new MessageAchievement()
+					new CommandAchievement()
 					{
 						Name = "Lucky",
 						Icon = "🍀",
-						CheckMessage = async (p) =>
+						CheckCommand = async (p) =>
 						{
 							return (MikiRandom.Next(0, 10000000) == 5033943);
 						},
@@ -441,10 +444,10 @@ namespace Miki.Modules.Accounts.Services
 
 			#endregion Level Achievements
 
-			AchievementManager.Instance.OnMessage += LennyAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += PoiAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += LuckyAchievement.CheckAsync;
-			AchievementManager.Instance.OnMessage += FrogAchievement.CheckAsync;
+			AchievementManager.Instance.OnCommandUsed += LennyAchievement.CheckAsync;
+			AchievementManager.Instance.OnCommandUsed += PoiAchievement.CheckAsync;
+			AchievementManager.Instance.OnCommandUsed += LuckyAchievement.CheckAsync;
+			AchievementManager.Instance.OnCommandUsed += FrogAchievement.CheckAsync;
 
 			#region Misc Achievements
 
