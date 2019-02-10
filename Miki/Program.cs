@@ -272,7 +272,7 @@ namespace Miki
 
             if(Global.Config.LogLevel <= LogLevel.Debug)
             {
-                Log.Debug($"Memory value: {GC.GetTotalMemory(false)/1000/1000}GB");
+                Log.Debug($"Memory value: {GC.GetTotalMemory(true)}GB");
             }
 		}
 
