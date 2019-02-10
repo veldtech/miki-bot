@@ -217,7 +217,7 @@ namespace Miki
                     Log.Message($"{cmd.Name} processed in {time}ms");
                 };
 
-                eventSystem.AddCommandHandler(handler);
+                //eventSystem.AddCommandHandler(handler);
 
                 commandMap.RegisterAttributeCommands();
                 commandMap.Install(eventSystem);
