@@ -61,7 +61,6 @@ If you have any questions about the setup process **do not** ask in the support 
 [For Mac users](https://docs.docker.com/docker-for-mac/install/), and if you're on Linux you already know what you're doing.
 
 2. `docker-compose up -d miki_postgres`
->>>>>>> e0120c5... fixed dockerfile and readme
 
 3. `docker build -t miki_bot . --network=mikinet`
 
