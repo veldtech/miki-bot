@@ -20,15 +20,9 @@ Support server: https://discord.gg/39Xpj7K<br>
 ## Feature requests
 [Go to Suggestions.Miki.ai](https://suggestions.miki.ai)
 
-## Getting Started 
-Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
-
-#### Important:
-Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
-
-If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you. DM Xetera#9596 for questions instead.
 
 ## Installation Steps:
+
 1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
 
 2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
@@ -57,9 +51,22 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     
 9) Run Miki. 🎉
 
-## Possible issues:
-These will likely be fixed in the near future (if it's not already by the time you're reading this):
 
-* A lack of API keys might be giving you issues in the `DonatorModule` and `FunModule`, the simplest way to solve it is to just comment out the lines that raise exceptions and  the lines that reference the client **(there shouldn't be more than 2 reference max, if so, you're doing something wrong).**
+#### Important:
+Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
 
-* If you're having trouble running migrations make sure your `EntityFramework` for both base `Miki` and `Miki.Framework` is on version 2.0.1-2.0.3 **NOT** 2.1.1.
+If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you.
+
+1. Download docker and docker-compose. [For Windows users](https://docs.docker.com/docker-for-windows/install/),
+[For Mac users](https://docs.docker.com/docker-for-mac/install/), and if you're on Linux you already know what you're doing.
+
+2. `docker-compose up -d miki_postgres`
+>>>>>>> e0120c5... fixed dockerfile and readme
+
+3. `docker build -t miki_bot . --network=mikinet`
+
+4. `docker-compose -d up`
+
+These steps are only required **once** for installation. After that 
+you can just do `docker-compose -d up` and `docker-compose down`
+to start and stop Miki.
