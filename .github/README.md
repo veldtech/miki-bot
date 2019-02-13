@@ -31,11 +31,13 @@ If you have any questions about the setup process **do not** ask in the support 
 1. Download docker and docker-compose. [For Windows users](https://docs.docker.com/docker-for-windows/install/),
 [For Mac users](https://docs.docker.com/docker-for-mac/install/), and if you're on Linux you already know what you're doing.
 
-2. `docker-compose up -d miki_postgres`
+2. Add your bot token in `selfhost.json` under "token"
 
-3. `docker build -t miki_bot . --network=mikinet`
+3. `docker-compose up -d miki_postgres`
 
-4. `docker-compose -d up`
+4. `docker build -t miki_bot . --network=mikinet`
+
+5. `docker-compose -d up`
 
 These steps are only required **once** for installation. After that 
 you can just do `docker-compose -d up` and `docker-compose down`
