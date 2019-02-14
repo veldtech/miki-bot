@@ -301,6 +301,7 @@ namespace Miki.Modules.Accounts.Services
 					}
 				};
 			});
+
 			AchievementDataContainer LuckyAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "goodluck";

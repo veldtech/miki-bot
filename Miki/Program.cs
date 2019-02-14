@@ -153,10 +153,7 @@ namespace Miki
             app.AddSingletonService(new UrbanDictionaryAPI());
             app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
             app.AddSingletonService(new ConfigurationManager());
-            app.AddSingletonService(new EventSystem(new EventSystemConfig()
-            {
-                Developers = Global.Config.DeveloperIds,
-            }));
+            app.AddSingletonService(new EventSystem());
 
             app.AddSingletonService(new BackgroundStore());
 

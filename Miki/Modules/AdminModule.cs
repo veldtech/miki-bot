@@ -88,7 +88,7 @@ namespace Miki.Modules
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task CleanAsync(EventContext e)
 		{
-			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id, null);
+			await PruneAsync(e, (await e.Guild.GetSelfAsync()).Id, null);
 		}
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
@@ -158,9 +158,9 @@ namespace Miki.Modules
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PruneAsync(EventContext e)
 		{
-			await PruneAsync(e, 100, 0, null);
+			await PruneAsync(e, 0, null);
 		}
-		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0, string _filter = null)
+        public async Task PruneAsync(EventContext e, ulong target = 0, string filter = null)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
 			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
@@ -180,10 +180,9 @@ namespace Miki.Modules
                 return;
             }
 
-            string filter = _filter;
             string args = e.Arguments.Pack.TakeAll();
             string[] argsSplit = args.Split(' ');
-            ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
+            target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : target;
 
             if (int.TryParse(argsSplit[0], out int amount))
 			{
