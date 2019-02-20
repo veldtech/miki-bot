@@ -1,14 +1,14 @@
 # Miki
-![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0181e7d12f8344fd9950067e80f53f74)](https://www.codacy.com/app/velddev/Miki?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=velddev/Miki&amp;utm_campaign=Badge_Grade)
+![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0181e7d12f8344fd9950067e80f53f74)](https://www.codacy.com/app/velddev/Miki?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=velddev/Miki&amp;utm_campaign=Badge_Grade) 
 <br>
 Below you will find a basic workflow of how the branches should work. Please follow this to prevent bad merge conflicts on Miki and things constantly breaking.
 
-## Table of contents
+## Build status
+| Platform | Status |
+| --- | --- |
+| Ubuntu 16.04 | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-ubuntu-master) |
+| Windows | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-windows-master) |
 
-### [Workflow for branches](#workflow-for-branches-1)
-### [Useful links](#useful-links-1)
-### [Getting Started](#getting-started-1)
- 
 ## Useful links
 Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
