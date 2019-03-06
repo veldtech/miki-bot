@@ -10,7 +10,7 @@ Your solution to a great Discord Community! Adding levels, role management, achi
 | Windows | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-windows-master) |
 
 ## Useful links
-Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
+Bot invite: https://miki.ai/invite?ref=github<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
