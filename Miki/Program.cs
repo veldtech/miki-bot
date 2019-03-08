@@ -292,19 +292,7 @@ namespace Miki
 
         private async Task Bot_MessageReceived(IDiscordMessage arg)
         {
-            var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
-
             DogStatsd.Increment("messages.received");
-
-            if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
-            {
-                using (var scope = MikiApp.Instance.Services.CreateScope())
-
-                {
-                    string msg = (await Locale.GetLanguageInstanceAsync(scope.ServiceProvider.GetService<DbContext>(), arg.ChannelId)).GetString("miki_join_message");
-                    (await arg.GetChannelAsync()).QueueMessage(msg);
-                }
-            }
         }
 
         private Task Client_LeftGuild(ulong guildId)
