@@ -39,6 +39,12 @@ namespace Miki.Modules.CustomCommands
                     throw new InvalidCharacterException(" ");
                 }
 
+                if(e.EventSystem.GetCommandHandler<SimpleCommandHandler>()
+                    .GetCommandByIdOrDefault(commandName) != null)
+                {
+                    throw new DuplicateComandException(commandName);
+                }
+
                 if(!e.Arguments.CanTake)
                 {
                     // TODO (Veld): Command has no function body.

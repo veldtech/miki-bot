@@ -756,13 +756,13 @@ namespace Miki.Modules.AccountsModule
         {
             IDiscordGuildUser member;
 
-            if (!e.Arguments.Take(out string value))
+            if (e.Arguments.Take(out string value))
             {
-                member = await e.Guild.GetMemberAsync(e.Author.Id);
+                member = await DiscordExtensions.GetUserAsync(value, e.Guild);
             }
             else
             {
-                member = await DiscordExtensions.GetUserAsync(value, e.Guild);
+                member = await e.Guild.GetMemberAsync(e.Author.Id);
             }
 
             var context = e.GetService<MikiDbContext>();
