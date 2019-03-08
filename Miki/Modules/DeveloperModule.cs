@@ -1,5 +1,4 @@
-﻿using Miki.API.EmbedMenus;
-using Miki.Bot.Models;
+﻿using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -22,7 +21,7 @@ namespace Miki.Modules
 	internal class DeveloperModule
 	{
 		[Command(Name = "identifyemoji", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdentifyEmojiAsync(EventContext e)
+		public async Task IdentifyEmojiAsync(CommandContext e)
 		{
 			if (DiscordEmoji.TryParse(e.Arguments.Pack.TakeAll(), out var emote))
 			{
@@ -38,14 +37,14 @@ namespace Miki.Modules
         }
 
 		[Command(Name = "say", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public Task SayAsync(EventContext e)
+		public Task SayAsync(CommandContext e)
 		{
 			e.Channel.QueueMessage(e.Arguments.Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
 		[Command(Name = "sayembed", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SayEmbedAsync(EventContext e)
+		public async Task SayEmbedAsync(CommandContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
 			string text = e.Arguments.Pack.TakeAll();
@@ -70,9 +69,9 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "identifyuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdenUserAsync(EventContext e)
+		public async Task IdenUserAsync(CommandContext e)
 		{
-            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var api = e.GetService<IApiClient>();
             var user = await api.GetUserAsync(ulong.Parse(e.Arguments.Pack.TakeAll()));
 
 			if (user == null)
@@ -84,9 +83,9 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "identifyguilduser", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdenGuildUserAsync(EventContext e)
+		public async Task IdenGuildUserAsync(CommandContext e)
 		{
-            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var api = e.GetService<IApiClient>();
             var user = await api.GetGuildUserAsync(ulong.Parse(e.Arguments.Pack.TakeAll()), e.Guild.Id);
 
 			if (user == null)
@@ -98,7 +97,7 @@ namespace Miki.Modules
 		}
 
         [Command(Name = "showpermissions", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task ShowPermissionsAsync(EventContext e)
+        public async Task ShowPermissionsAsync(CommandContext e)
         {
             if(e.Arguments.Take(out ulong id))
             {
@@ -121,7 +120,7 @@ namespace Miki.Modules
 
 
         [Command(Name = "haspermission", Accessibility =EventAccessibility.DEVELOPERONLY)]
-        public async Task HasPermissionAsync(EventContext e)
+        public async Task HasPermissionAsync(CommandContext e)
         {
             var user = await e.Guild.GetSelfAsync();
             if(await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.Arguments.Pack.TakeAll())))
@@ -135,9 +134,9 @@ namespace Miki.Modules
         }
 
 		[Command(Name = "identifyguildchannel", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task IdenGuildChannelAsync(EventContext e)
+		public async Task IdenGuildChannelAsync(CommandContext e)
 		{
-            var api = (IApiClient)e.Services.GetService(typeof(IApiClient));
+            var api = e.GetService<IApiClient>();
             var user = await api.GetChannelAsync(ulong.Parse(e.Arguments.Pack.TakeAll()));
 
 			if (user == null)
@@ -149,7 +148,7 @@ namespace Miki.Modules
 		}
 
         [Command(Name = "identifyrole", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task IdentifyRoleAsync(EventContext e)
+        public async Task IdentifyRoleAsync(CommandContext e)
         {
             if (e.Arguments.Take(out ulong roleId))
             {
@@ -165,7 +164,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "identifybotroles", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task IdentifyBotRolesAsync(EventContext e)
+        public async Task IdentifyBotRolesAsync(CommandContext e)
         {
             var roles = await e.Guild.GetRolesAsync();
             var self = await e.Guild.GetSelfAsync();
@@ -173,7 +172,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "setactivity", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SetGameAsync(EventContext e)
+		public async Task SetGameAsync(CommandContext e)
 		{
             if (!e.Arguments.Take(out string arg))
             {
@@ -205,7 +204,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "ignore", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public Task IgnoreIdAsync(EventContext e)
+		public Task IgnoreIdAsync(CommandContext e)
 		{
 			if (ulong.TryParse(e.Arguments.Pack.TakeAll(), out ulong id))
 			{
@@ -216,7 +215,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "dev", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public Task ShowCacheAsync(EventContext e)
+		public Task ShowCacheAsync(CommandContext e)
 		{
 			e.Channel.QueueMessage("Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
@@ -258,47 +257,8 @@ namespace Miki.Modules
         //	await Task.Yield();
         //}
 
-        [Command(Name = "menutest", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task MenuTestAsync(EventContext context)
-		{
-			await new Menu(m =>
-			{
-				m.Owner = context.Author;
-				m.Root = new SubMenuItem()
-				{
-					MenuInstance = m,
-					Parent = null,
-					name = "Test menu",
-					children = new List<IMenuItem>()
-					{
-						new SubMenuItem()
-						{
-							MenuInstance = m,
-							Parent = m.Root,
-							name = "Option 1",
-							children = null,
-						},
-						new SubMenuItem()
-						{
-							MenuInstance = m,
-							Parent = m.Root,
-							name = "Option 2",
-							children = null,
-						},
-						new PreviewItem()
-						{
-							MenuInstance = m,
-							Parent = m.Root,
-							name = "Show me an image",
-							imageUrl = "https://cdn.discordapp.com/attachments/431318403119185931/431543971823484938/unknown.png",
-						}
-					},
-				};
-			}).StartAsync(context.Channel);
-		}
-
 		[Command(Name = "spellcheck", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SpellCheckAsync(EventContext context)
+		public async Task SpellCheckAsync(CommandContext context)
 		{
 			EmbedBuilder embed = new EmbedBuilder
 			{
@@ -324,35 +284,8 @@ namespace Miki.Modules
 			await Task.Yield();
 		}
 
-		[Command(Name = "setdonator", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SetDonator(EventContext context)
-		{
-			using (MikiContext database = new MikiContext())
-			{
-				if (context.message.MentionedUserIds.Count > 0)
-				{
-					Achievement a = await database.Achievements.FindAsync(context.message.MentionedUserIds.First().ToDbLong(), "donator");
-					if (a == null)
-					{
-						database.Achievements.Add(new Achievement() { UserId = context.message.MentionedUserIds.First().ToDbLong(), Name = "donator", Rank = 0 });
-						await database.SaveChangesAsync();
-					}
-				}
-				else
-				{
-					ulong.TryParse(context.message.Content, out ulong x);
-					if (x != 0)
-					{
-						database.Achievements.Add(new Achievement() { UserId = x.ToDbLong(), Name = "donator", Rank = 0 });
-						await database.SaveChangesAsync();
-					}
-				}
-				context.Channel.QueueMessage(":ok_hand:");
-			}
-		}
-
 		[Command(Name = "presence", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task PresenceTestAsync(EventContext e)
+		public async Task PresenceTestAsync(CommandContext e)
 		{
 			IDiscordPresence presence = await e.Author.GetPresenceAsync();
 
@@ -368,77 +301,48 @@ namespace Miki.Modules
             await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SetMekos(EventContext e)
-		{
+        [Command(Name = "setmekos", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SetMekos(CommandContext e)
+        {
             if (e.Arguments.Take(out string userArg))
             {
                 IDiscordUser user = await DiscordExtensions.GetUserAsync(userArg, e.Guild);
 
                 if (e.Arguments.Take(out int value))
                 {
-                    using (var context = new MikiContext())
+                    var context = e.GetService<MikiDbContext>();
+
+                    User u = await context.Users.FindAsync((long)user.Id);
+                    if (u == null)
                     {
-                        User u = await context.Users.FindAsync((long)user.Id);
-                        if (u == null)
-                        {
-                            return;
-                        }
-                        u.Currency = value;
-                        await context.SaveChangesAsync();
-                        e.Channel.QueueMessage(":ok_hand:");
+                        return;
                     }
+                    u.Currency = value;
+                    await context.SaveChangesAsync();
+                    e.Channel.QueueMessage(":ok_hand:");
                 }
             }
-		}
+        }
 
-		[Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task CreateKeyAsync(EventContext e)
-		{
-			using (var context = new MikiContext())
-			{
-				DonatorKey key = (await context.DonatorKey.AddAsync(new DonatorKey()
-				{
-					StatusTime = new TimeSpan(int.Parse(e.Arguments.Pack.TakeAll()), 0, 0, 0, 0)
-				})).Entity;
-
-				await context.SaveChangesAsync();
-				e.Channel.QueueMessage($"key generated for {e.Arguments.Pack.TakeAll()} days `{key.Key}`");
-			}
-		}
-
-		[Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task SetExp(EventContext e)
-		{
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-
-            if(!e.Arguments.Take(out string userName))
-            {
-                return;
-            }
-
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
-
-            e.Arguments.Take(out int amount);
-
-            using (var context = new MikiContext())
-			{
-				LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong(), user.Username);
-				if (u == null)
-				{
-					return;
-				}
-				u.Experience = amount;
-				await context.SaveChangesAsync();
-				await cache.UpsertAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
-				e.Channel.QueueMessage(":ok_hand:");
-			}
-		}
-
-        [Command(Name = "setglobexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        public async Task SetGlobalExpAsync(EventContext e)
+        [Command(Name = "createkey", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task CreateKeyAsync(CommandContext e)
         {
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var context = e.GetService<MikiDbContext>();
+
+            DonatorKey key = (await context.DonatorKey.AddAsync(new DonatorKey()
+            {
+                StatusTime = new TimeSpan(int.Parse(e.Arguments.Pack.TakeAll()), 0, 0, 0, 0)
+            })).Entity;
+
+            await context.SaveChangesAsync();
+            e.Channel.QueueMessage($"key generated for {e.Arguments.Pack.TakeAll()} days `{key.Key}`");
+        }
+
+        [Command(Name = "setexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SetExp(CommandContext e)
+        {
+            var cache = e.GetService<ICacheClient>();
+
             if (!e.Arguments.Take(out string userName))
             {
                 return;
@@ -446,35 +350,58 @@ namespace Miki.Modules
 
             IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
-            if(!e.Arguments.Take(out int amount))
+            e.Arguments.Take(out int amount);
+            var context = e.GetService<MikiDbContext>();
+
+            LocalExperience u = await LocalExperience.GetAsync(context, e.Guild.Id.ToDbLong(), user.Id.ToDbLong(), user.Username);
+            if (u == null)
             {
                 return;
             }
 
-            using (var context = new MikiContext())
+            u.Experience = amount;
+            await context.SaveChangesAsync();
+            await cache.UpsertAsync($"user:{e.Guild.Id}:{e.Author.Id}:exp", u.Experience);
+            e.Channel.QueueMessage(":ok_hand:");
+        }
+
+        [Command(Name = "setglobexp", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SetGlobalExpAsync(CommandContext e)
+        {
+            if (!e.Arguments.Take(out string userName))
             {
-                User u = await User.GetAsync(context, user.Id.ToDbLong(), user.Username);
-                if (u == null)
-                {
-                    return;
-                }
-                u.Total_Experience = amount;
-                await context.SaveChangesAsync();
-                e.Channel.QueueMessage(":ok_hand:");
+                return;
             }
+
+            IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
+
+            if (!e.Arguments.Take(out int amount))
+            {
+                return;
+            }
+            var context = e.GetService<MikiDbContext>();
+
+            User u = await User.GetAsync(context, user.Id.ToDbLong(), user.Username);
+            if (u == null)
+            {
+                return;
+            }
+            u.Total_Experience = amount;
+            await context.SaveChangesAsync();
+            e.Channel.QueueMessage(":ok_hand:");
         }
 
         [Command(Name = "banuser", Accessibility = EventAccessibility.DEVELOPERONLY)]
-		public async Task BanUserAsync(EventContext e)
-		{
+        public async Task BanUserAsync(CommandContext e)
+        {
             if (e.Arguments.Take(out string user))
             {
                 IDiscordUser u = await DiscordExtensions.GetUserAsync(user, e.Guild);
-                using (var context = new MikiContext())
-                {
-                    await (await User.GetAsync(context, u.Id.ToDbLong(), u.Username)).BanAsync();
-                }
+
+                var context = e.GetService<MikiDbContext>();
+                await (await User.GetAsync(context, u.Id.ToDbLong(), u.Username))
+                    .BanAsync(context);
             }
-		}
+        }
 	}
 }

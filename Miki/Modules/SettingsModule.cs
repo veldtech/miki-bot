@@ -40,8 +40,8 @@ namespace Miki.Modules
         };
 
         [Command(Name = "setnotifications", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task SetupNotifications(EventContext e)
-		{
+        public async Task SetupNotifications(CommandContext e)
+        {
             if (!e.Arguments.Take(out string enumString))
             {
                 // TODO (Veld) : Handle error.
@@ -66,7 +66,7 @@ namespace Miki.Modules
             {
             }
 
-            if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
+            if (!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
             {
                 await Utils.ErrorEmbedResource(e, new LanguageResource(
                     "error_notifications_type_not_found",
@@ -79,41 +79,40 @@ namespace Miki.Modules
             }
 
 
-            using (MikiContext context = new MikiContext())
-			{
-                IEnumerable<IDiscordTextChannel> channels 
+            var context = e.GetService<MikiDbContext>();
+
+            IEnumerable<IDiscordTextChannel> channels
                     = new List<IDiscordTextChannel> { e.Channel };
 
-                if (e.Arguments.CanTake)
+            if (e.Arguments.CanTake)
+            {
+
+                if (e.Arguments.Take(out string attr))
                 {
-                    
-                    if (e.Arguments.Take(out string attr))
+                    if (attr.StartsWith("-g"))
                     {
-                        if (attr.StartsWith("-g"))
-                        {
-                            channels = (await e.Guild.GetChannelsAsync())
-                                .Where(x => x.Type == ChannelType.GUILDTEXT)
-                                .Select(x => x as IDiscordTextChannel);
-                        }
+                        channels = (await e.Guild.GetChannelsAsync())
+                            .Where(x => x.Type == ChannelType.GUILDTEXT)
+                            .Select(x => x as IDiscordTextChannel);
                     }
                 }
+            }
 
-                foreach (var c in channels)
-                {
-                    await Setting.UpdateAsync(context, c.Id, value, (int)type);
-                }
-                await context.SaveChangesAsync();
-			}
+            foreach (var c in channels)
+            {
+                await Setting.UpdateAsync(context, c.Id, value, (int)type);
+            }
+            await context.SaveChangesAsync();
 
             await Utils.SuccessEmbed(e, e.Locale.GetString("notifications_update_success"))
                 .QueueToChannelAsync(e.Channel);
         }
 
         [Command(Name = "showmodule")]
-		public async Task ConfigAsync(EventContext e)
+		public async Task ConfigAsync(CommandContext e)
 		{
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-            var db = (DbContext)e.Services.GetService(typeof(DbContext));
+            var cache = e.GetService<ICacheClient>();
+            var db = e.GetService<DbContext>();
 
             string args = e.Arguments.Pack.TakeAll();
             Module module = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == args.ToLower());
@@ -128,7 +127,7 @@ namespace Miki.Modules
 
 				foreach (CommandEvent ev in module.Events.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(cache, db, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabledAsync(e) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				embed.AddInlineField("Events", content);
@@ -137,7 +136,7 @@ namespace Miki.Modules
 
 				foreach (BaseService ev in module.Services.OrderBy((x) => x.Name))
 				{
-					content += (await ev.IsEnabled(cache, db, e.Channel.Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
+					content += (await ev.IsEnabledAsync(e) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
 				}
 
 				if (!string.IsNullOrEmpty(content))
@@ -148,10 +147,10 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "showmodules")]
-		public async Task ShowModulesAsync(EventContext e)
+		public async Task ShowModulesAsync(CommandContext e)
 		{
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-            var db = (DbContext)e.Services.GetService(typeof(DbContext));
+            var cache = e.GetService<ICacheClient>();
+            var db = e.GetService<DbContext>();
 
             List<string> modules = new List<string>();
 			SimpleCommandHandler commandHandler = e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
@@ -193,13 +192,13 @@ namespace Miki.Modules
 		}
 
         [Command(Name = "setlocale", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetLocale(EventContext e)
+        public async Task SetLocale(CommandContext e)
         {
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var cache = e.GetService<ICacheClient>();
 
-            using (var context = new MikiContext())
-            {
-                string localeName = e.Arguments.Pack.TakeAll() ?? "";
+            var context = e.GetService<MikiDbContext>();
+
+            string localeName = e.Arguments.Pack.TakeAll() ?? "";
 
                 if (Locale.LocaleNames.TryGetValue(localeName, out string langId))
                 {
@@ -214,13 +213,12 @@ namespace Miki.Modules
                     localeName,
                     await e.Prefix.GetForGuildAsync(context, cache, e.Guild.Id)
                 ).ToEmbed().QueueToChannelAsync(e.Channel);
-            }
         }
 
 		[Command(Name = "setprefix", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task PrefixAsync(EventContext e)
+		public async Task PrefixAsync(CommandContext e)
 		{
-            var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var cache = e.GetService<ICacheClient>();
             string args = e.Arguments.Pack.TakeAll();
 
             if (string.IsNullOrEmpty(args))
@@ -229,12 +227,14 @@ namespace Miki.Modules
 				return;
 			}
 
-			PrefixInstance defaultInstance = e.commandHandler.GetDefaultPrefix();
+            PrefixTrigger defaultInstance = e.EventSystem.GetMessageTriggers()
+                .Where(x => x is PrefixTrigger)
+                .Select(x => x as PrefixTrigger)
+                .Where(x => x.IsDefault)        
+                .FirstOrDefault();
 
-			using (var context = new MikiContext())
-			{
-				await defaultInstance.ChangeForGuildAsync(context, cache, e.Guild.Id, args);
-			}
+            var context = e.GetService<MikiDbContext>();
+            await defaultInstance.ChangeForGuildAsync(context, cache, e.Guild.Id, args);
 
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.SetTitle(e.Locale.GetString("miki_module_general_prefix_success_header"));
@@ -246,9 +246,11 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "syncavatar")]
-		public async Task SyncAvatarAsync(EventContext e)
+		public async Task SyncAvatarAsync(CommandContext e)
 		{
-			await Utils.SyncAvatarAsync(e.Author);
+            var context = e.GetService<MikiDbContext>();
+            var cache = e.GetService<IExtendedCacheClient>();
+            await Utils.SyncAvatarAsync(e.Author, cache, context);
 
 			await e.SuccessEmbed(
 				e.Locale.GetString("setting_avatar_updated")	
@@ -256,7 +258,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "listlocale", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task ListLocaleAsync(EventContext e)
+		public async Task ListLocaleAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{

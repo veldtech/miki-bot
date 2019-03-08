@@ -1,4 +1,6 @@
-﻿using Miki.Bot.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Discord;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Models;
@@ -11,12 +13,21 @@ namespace Miki
 {
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
-        public override async Task<bool> CheckAsync(EventContext e)
+        public override async Task<bool> CheckAsync(ICommandContext e)
         {
-            using (var context = new MikiContext())
+            var context = e.GetService<DbContext>();
+            return await IsDonator.ForUserAsync(context, e.Author.Id);
+        }
+
+        public override async Task OnCheckFail(ICommandContext e)
+        {
+            await new EmbedBuilder()
             {
-                return await IsDonator.ForUserAsync(context, e.Author.Id);
-            }
+                Title = "Sorry!",
+                Description = "... but you haven't donated yet, please support us with a small donation to unlock these commands!",
+            }.AddField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
+             .AddField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
+             .ToEmbed().QueueToChannelAsync(e.Channel);
         }
     }
 }

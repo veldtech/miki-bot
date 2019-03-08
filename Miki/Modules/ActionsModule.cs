@@ -307,71 +307,71 @@ namespace Miki.Modules
         };
 
 		[Command(Name = "ask")]
-		public async Task AskAsync(EventContext e)
+		public async Task AskAsync(CommandContext e)
 			=> await QueueAction(e, "asks", askImage)
                 .ConfigureAwait(false);
 
 		[Command(Name = "bite")]
-		public async Task BiteAsync(EventContext e)
+		public async Task BiteAsync(CommandContext e)
 			=> await QueueAction(e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "cake")]
-		public async Task CakeAsync(EventContext e)
+		public async Task CakeAsync(CommandContext e)
 			=> await QueueAction(e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "cuddle")]
-		public async Task CuddleAsync(EventContext e)
+		public async Task CuddleAsync(CommandContext e)
 			=> await QueueAction(e, "cuddles", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "glare")]
-		public async Task GlareAsync(EventContext e)
+		public async Task GlareAsync(CommandContext e)
 			=> await QueueAction(e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "highfive")]
-		public async Task HighFiveAsync(EventContext e)
+		public async Task HighFiveAsync(CommandContext e)
 			=> await QueueAction(e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "hug")]
-		public async Task HugAsync(EventContext e)
+		public async Task HugAsync(CommandContext e)
 			=> await QueueAction(e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "poke")]
-		public async Task PokeAsync(EventContext e)
+		public async Task PokeAsync(CommandContext e)
 			=> await QueueAction(e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "punch")]
-		public async Task PunchAsync(EventContext e)
+		public async Task PunchAsync(CommandContext e)
 			=> await QueueAction(e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "kiss")]
-		public async Task KissAsync(EventContext e)
+		public async Task KissAsync(CommandContext e)
 			=> await QueueAction(e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "lick")]
-		public async Task LickAsync(EventContext e)
+		public async Task LickAsync(CommandContext e)
 			=> await QueueAction(e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "pat", Aliases = new string[] { "pet" })]
-		public async Task PetAsync(EventContext e)
+		public async Task PetAsync(CommandContext e)
 			=> await QueueAction(e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
         [Command(Name = "slap")]
-		public async Task SlapAsync(EventContext e)
+		public async Task SlapAsync(CommandContext e)
 			=> await QueueAction(e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
-        public async Task QueueAction(EventContext e, string action, string imageUrl)
+        public async Task QueueAction(CommandContext e, string action, string imageUrl)
         {
             string username = (await e.Guild.GetSelfAsync()).Username;
 

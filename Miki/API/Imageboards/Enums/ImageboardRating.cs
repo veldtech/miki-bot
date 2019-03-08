@@ -1,6 +1,6 @@
 ﻿namespace Miki.API.Imageboards.Enums
 {
-	public enum ImageboardRating
+	public enum ImageRating
 	{
 		NONE,
 		SAFE,

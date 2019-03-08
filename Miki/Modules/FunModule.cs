@@ -7,7 +7,9 @@ using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
+using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
 using Miki.Common.Builders;
 using Miki.Configuration;
 using Miki.Core.API.Reminder;
@@ -128,7 +130,7 @@ namespace Miki.Modules
 		private readonly API.TaskScheduler<string> reminders = new API.TaskScheduler<string>();
         private readonly RestClient imageClient;
 
-		public FunModule(Module m, Framework.MikiApp b)
+		public FunModule()
 		{
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
 			{
@@ -215,7 +217,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "8ball")]
-		public Task EightBallAsync(EventContext e)
+		public Task EightBallAsync(ICommandContext e)
 		{
 			string output = e.Locale.GetString("miki_module_fun_8ball_result",
 				e.Author.Username, e.Locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
@@ -224,7 +226,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "bird", Aliases = new string[] { "birb" })]
-		public async Task BirdAsync(EventContext e)
+		public async Task BirdAsync(ICommandContext e)
 		{
 			string[] bird = {
 				"http://i.imgur.com/aN948tq.jpg",
@@ -259,7 +261,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "cat")]
-		public async Task CatAsync(EventContext e)
+		public async Task CatAsync(ICommandContext e)
 		{
 			WebClient c = new WebClient();
 			byte[] b = c.DownloadData("http://aws.random.cat/meow");
@@ -275,7 +277,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "compliment")]
-		public Task ComplimentAsync(EventContext e)
+		public Task ComplimentAsync(ICommandContext e)
 		{
 			string[] I_LIKE =
 			{
@@ -316,18 +318,17 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "cage")]
-		public Task CageAsync(EventContext e)
+		public Task CageAsync(ICommandContext e)
 		{
 			e.Channel.QueueMessage("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
 			return Task.CompletedTask;
 		}
 
 		[Command(Name = "dog")]
-		public async Task DogAsync(EventContext e)
+		public async Task DogAsync(ICommandContext e)
 		{
-			string url = "";
-
-			do
+            string url;
+            do
 			{
 				url = (await new Rest.RestClient("https://random.dog/woof").GetAsync("")).Body;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
@@ -340,7 +341,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "gif")]
-		public async Task ImgurGifAsync(EventContext e)
+		public async Task ImgurGifAsync(ICommandContext e)
 		{
             string title = e.Arguments.Pack.TakeAll();
 			if (string.IsNullOrEmpty(title))
@@ -374,7 +375,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "img")]
-		public async Task ImgurImageAsync(EventContext e)
+		public async Task ImgurImageAsync(ICommandContext e)
 		{
             string title = e.Arguments.Pack.TakeAll();
             if (string.IsNullOrEmpty(title))
@@ -408,7 +409,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "pick")]
-		public Task PickAsync(EventContext e)
+		public Task PickAsync(ICommandContext e)
 		{
             string args = e.Arguments.Pack.TakeAll();
 
@@ -424,14 +425,14 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "pun")]
-		public Task PunAsync(EventContext e)
+		public Task PunAsync(ICommandContext e)
 		{
 			e.Channel.QueueMessage(e.Locale.GetString(puns[MikiRandom.Next(0, puns.Length)]));
 			return Task.CompletedTask;
 		}
 
 		[Command(Name = "roll")]
-		public async Task RollAsync(EventContext e)
+		public async Task RollAsync(ICommandContext e)
 		{
 			string rollResult;
             string args = e.Arguments.Pack.TakeAll();
@@ -492,7 +493,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "reminder", Aliases = new[] { "remind" })]
-		public async Task RemindAsync(EventContext e)
+		public async Task RemindAsync(ICommandContext e)
 		{
 			string arguments = e.Arguments.Pack.TakeAll();
             string lowercaseArguments = arguments.ToLower().Split(' ')[0];
@@ -527,7 +528,7 @@ namespace Miki.Modules
 			}
 		}
 
-		private async Task PlaceReminderAsync(EventContext e, string args)
+		private async Task PlaceReminderAsync(ICommandContext e, string args)
 		{
 			int inIndex = args.ToLower().LastIndexOf(" in ");
 			int everyIndex = args.ToLower().LastIndexOf(" every ");
@@ -581,7 +582,7 @@ namespace Miki.Modules
 			}
 		}
 
-		private async Task CancelReminderAsync(EventContext e)
+		private async Task CancelReminderAsync(ICommandContext e)
 		{
             if (e.Arguments.Take(out string arg))
             {
@@ -616,7 +617,7 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		private async Task ListRemindersAsync(EventContext e)
+		private async Task ListRemindersAsync(ICommandContext e)
 		{
 			var instances = reminders.GetAllInstances(e.Author.Id);
 			if (instances?.Count > 0)
@@ -652,30 +653,30 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		private async Task HelpReminderAsync(EventContext e)
-		{
-            using (var context = new MikiContext())
-            {
-                string prefix = await e.EventSystem
-                    .GetCommandHandler<SimpleCommandHandler>()
-                    .GetDefaultPrefixValueAsync(
-                    context,
-                    e.Guild.Id);
+        private async Task HelpReminderAsync(ICommandContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
 
-                await new EmbedBuilder()
-                    .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
-                    .SetColor(0.86f, 0.18f, 0.26f)
-                    .SetDescription(e.Locale.GetString("reminder_help_description"))
-                    .AddInlineField(e.Locale.GetString("term_commands"),
-                    $"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
-                    $"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
-                    $"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
-                .ToEmbed().QueueToChannelAsync(e.Channel);
-            }
-		}
+            string prefix = await e.EventSystem
+                    .GetDefaultPrefixTrigger()
+                    .GetForGuildAsync(
+                        context,
+                        e.GetService<ICacheClient>(),
+                        e.Guild.Id);
 
-		[Command(Name = "safe")]
-		public async Task DoSafe(EventContext e)
+            await new EmbedBuilder()
+                .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                .SetColor(0.86f, 0.18f, 0.26f)
+                .SetDescription(e.Locale.GetString("reminder_help_description"))
+                .AddInlineField(e.Locale.GetString("term_commands"),
+                $"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
+                $"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
+                $"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
+            .ToEmbed().QueueToChannelAsync(e.Channel);
+        }
+
+        [Command(Name = "safe")]
+		public async Task DoSafe(ICommandContext e)
 		{
 			ILinkable s = null;
 
@@ -688,25 +689,25 @@ namespace Miki.Modules
 					{
 						case "safebooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(tags, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(tags, ImageboardRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
@@ -719,13 +720,13 @@ namespace Miki.Modules
 				}
 				else
 				{
-					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
 				}
 			}
 			else
 			{
                 string tags = e.Arguments.Pack.TakeAll();
-                s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageboardRating.SAFE);
+                s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
 			}
 
 			if (s == null)
@@ -739,8 +740,11 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "ship")]
-		public async Task ShipAsync(EventContext e)
+		public async Task ShipAsync(ICommandContext e)
 		{
+            var cache = e.GetService<IExtendedCacheClient>();
+            var context = e.GetService<MikiDbContext>();
+
             e.Arguments.Take(out string shipPartner);
 
 			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.Guild);
@@ -750,7 +754,17 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-			Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            if (await cache.HashExistsAsync("avtr:sync", e.Author.Id.ToString()))
+            {
+                await Utils.SyncAvatarAsync(e.Author, cache, context);
+            }
+
+            if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
+            {
+                await Utils.SyncAvatarAsync(user, cache, context);
+            }
+
+            Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
 
@@ -759,7 +773,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "greentext", Aliases = new string[] { "green", "gt" })]
-		public async Task GreentextAsync(EventContext e)
+		public async Task GreentextAsync(ICommandContext e)
 		{
 			string[] images = new string[]
 			{

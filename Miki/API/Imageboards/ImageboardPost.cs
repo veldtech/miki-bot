@@ -27,7 +27,7 @@ namespace Miki.API.Imageboards
 			Config = config;
 		}
 
-		public virtual async Task<T> GetPostAsync(string content, ImageboardRating r)
+		public virtual async Task<T> GetPostAsync(string content, ImageRating r)
 		{
 			bool nsfw = false;
 			string[] command = content.Split(' ');
@@ -36,21 +36,21 @@ namespace Miki.API.Imageboards
 
 			switch (r)
 			{
-				case ImageboardRating.EXPLICIT:
+				case ImageRating.EXPLICIT:
 				{
 					tags.Add(Config.ExplicitTag);
 					nsfw = true;
 				}
 				break;
 
-				case ImageboardRating.QUESTIONABLE:
+				case ImageRating.QUESTIONABLE:
 				{
 					tags.Add(Config.QuestionableTag);
 					nsfw = true;
 				}
 				break;
 
-				case ImageboardRating.SAFE:
+				case ImageRating.SAFE:
 				{
 					tags.Add(Config.SafeTag);
 				}

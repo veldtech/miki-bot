@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
+    <Authors>Velddev</Authors>
+    <Product>Miki</Product>
+    <Description>Urban dictionary api implementation.</Description>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

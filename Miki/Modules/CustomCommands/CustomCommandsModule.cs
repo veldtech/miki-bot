@@ -1,7 +1,12 @@
-﻿using Miki.Discord;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
+using Miki.Logging;
+using Miki.Modules.CustomCommands.CommandHandlers;
 using MiScript;
 using MiScript.Models;
 using MiScript.Parser;
@@ -19,8 +24,13 @@ namespace Miki.Modules.CustomCommands
     {
         private Tokenizer _tokenizer = new Tokenizer();
 
-        [Command(Name = "newcommand", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task NewCustomCommandAsync(EventContext e)
+        public CustomCommandsModule(Module mod, MikiApp app)
+        {
+            app.GetService<EventSystem>().AddCommandHandler(new CustomCommandsHandler());
+        }
+
+        [Command(Name = "createcommand", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task NewCustomCommandAsync(CommandContext e)
         {
             if(e.Arguments.Take(out string commandName))
             {
@@ -40,26 +50,33 @@ namespace Miki.Modules.CustomCommands
                 try
                 {
                     var tokens = _tokenizer.Tokenize(scriptBody);
-                   
-                    string response = new Parser(tokens).Parse(new Dictionary<string, object>
-                    {
-                        { "author", e.Author.Username },
-                        { "author.id", e.Author.Id }
-                    });
-
-                    response = response.Replace("@everyone", "ping :3");
-                    response = response.Replace("@here", "ping! :(");
-
-                    if(response != null)
-                    {
-                        e.Channel.QueueMessage(response);
-                    }
+                    new Parser(tokens).Parse(new Dictionary<string, object>());
                 }
                 catch(Exception ex)
                 {
                     await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex.ToString()}```")
                         .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
                 }
+
+                try
+                {
+                    var db = e.GetService<DbContext>();
+                    await db.Set<CustomCommand>().AddAsync(new CustomCommand
+                    {
+                        CommandName = commandName.ToLowerInvariant(),
+                        CommandBody = scriptBody,
+                        GuildId = e.Guild.Id.ToDbLong()
+                    });
+                    await db.SaveChangesAsync();
+                }
+                catch(Exception ex)
+                {
+                    Log.Error(ex);
+                }
+
+                await e.SuccessEmbed($"Created script '>{commandName}'")
+                    .QueueToChannelAsync(e.Channel);
             }
         }
     }

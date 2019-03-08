@@ -14,10 +14,10 @@ namespace Miki.Helpers
 {
 	public static class DatabaseHelpers
 	{
-		public static async Task<User> GetUserAsync(MikiContext context, IDiscordUser discordUser)
+		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
 			=> await User.GetAsync(context, (long)discordUser.Id, discordUser.Username);
 
-        public static async Task<Achievement> GetAchievementAsync(MikiContext context, long userId, string name)
+        public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
         {
             string key = $"achievement:{userId}:{name}";
 

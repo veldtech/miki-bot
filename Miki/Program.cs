@@ -9,18 +9,16 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
-using Miki.Discord.Gateway.Centralized;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Filters;
+using Miki.Framework.Events.Triggers;
 using Miki.Framework.Languages;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
-using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
 using SharpRaven;
@@ -39,37 +37,47 @@ namespace Miki
 {
     public class Program
 	{
-		private static async Task Main()
-		{
-			Program p = new Program();
+        private static async Task Main(string[] args)
+        {
+            Program p = new Program();
+
+            if (args.Length > 0)
+            {
+                if (args.Any(x => x.ToLowerInvariant() == "--migrate" && x.ToLowerInvariant() == "-m"))
+                {
+                    await new MikiDbContextFactory().CreateDbContext(new string[] { }).Database.MigrateAsync();
+                    return;
+                }
+            }
 
             var appBuilder = new MikiAppBuilder();
-     
+
             await p.LoadServicesAsync(appBuilder);
 
             MikiApp app = appBuilder.Build();
 
-			await p.LoadDiscord(app);
+            await p.LoadDiscord(app);
 
-			p.LoadLocales();
+            p.LoadLocales();
 
-			for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
-			{
-				MessageBucket.AddWorker();
-			}
+            for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
+            {
+                MessageBucket.AddWorker();
+            }
 
-			using (var c = new MikiContext())
-			{
-				List<User> bannedUsers = await c.Users.Where(x => x.Banned).ToListAsync();
-				foreach (var u in bannedUsers)
-				{
-					app.GetService<EventSystem>().MessageFilter
-						.Get<UserFilter>().Users.Add(u.Id.FromDbLong());
-				}
-			}
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+                List<User> bannedUsers = await context.Users.Where(x => x.Banned).ToListAsync();
+                foreach (var u in bannedUsers)
+                {
+                    app.GetService<EventSystem>().MessageFilter
+                        .Get<UserFilter>().Users.Add(u.Id.FromDbLong());
+                }
+            }
 
-			await Task.Delay(-1);
-		}
+            await Task.Delay(-1);
+        }
 
 		private void LoadLocales()
 		{
@@ -79,13 +87,11 @@ namespace Miki
 				.GetTypes()
 				.Where(t => t.IsClass && t.Namespace == nameSpace);
 
-			typeList.ToList()
-				.ForEach(t =>
+            foreach(var t in typeList)
 			{
 				try
 				{
 					string l = t.Name.ToLowerInvariant();
-
 					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
 					Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
 				}
@@ -94,7 +100,7 @@ namespace Miki
 					Log.Error($"Language {t.Name} did not load correctly");
 					Log.Debug(ex.ToString());
 				}
-			});
+			}
 
 			Locale.SetDefaultLanguage("eng");
 		}
@@ -114,7 +120,9 @@ namespace Miki
             
             app.AddSingletonService<ICacheClient>(cache);
             app.AddSingletonService<IExtendedCacheClient>(cache);
-            app.Services.AddDbContext<DbContext, MikiContext>(x => x.UseNpgsql(Global.Config.ConnString));
+
+            app.Services.AddDbContext<MikiDbContext>(x => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+            app.Services.AddDbContext<DbContext, MikiDbContext>(x => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
 
             if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
             {
@@ -151,10 +159,7 @@ namespace Miki
             app.AddSingletonService(new UrbanDictionaryAPI());
             app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
             app.AddSingletonService(new ConfigurationManager());
-            app.AddSingletonService(new EventSystem(new EventSystemConfig()
-            {
-                Developers = Global.Config.DeveloperIds,
-            }));
+            app.AddSingletonService(new EventSystem());
 
             app.AddSingletonService(new BackgroundStore());
 
@@ -184,8 +189,11 @@ namespace Miki
                 {
                     if (ex is LocalizedException botEx)
                     {
-                        await Utils.ErrorEmbedResource(context, botEx.LocaleResource)
-                            .ToEmbed().QueueToChannelAsync(context.Channel);
+                        if (context is ICommandContext m)
+                        {
+                            await Utils.ErrorEmbedResource(m, botEx.LocaleResource)
+                                .ToEmbed().QueueToChannelAsync(m.Channel);
+                        }
                     }
                     else
                     {
@@ -198,17 +206,16 @@ namespace Miki
                 eventSystem.MessageFilter.AddFilter(new UserFilter());
 
                 var commandMap = new Framework.Events.CommandMap();
-
                 commandMap.OnModuleLoaded += (module) =>
                 {
                     config.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
                 };
 
-                var handler = new SimpleCommandHandler(cache, commandMap);
+                eventSystem.AddMessageTrigger(new PrefixTrigger(">", true, true));
+                eventSystem.AddMessageTrigger(new PrefixTrigger("miki.", false));
+                eventSystem.AddMessageTrigger(new MentionTrigger());
 
-                handler.AddPrefix(">", true, true);
-                handler.AddPrefix("miki.");
-
+                var handler = new SimpleCommandHandler(commandMap);
                 handler.OnMessageProcessed += async (cmd, msg, time) =>
                 {
                     await Task.Yield();
@@ -247,10 +254,13 @@ namespace Miki
 
 		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
 		{
-			if (oldUser.AvatarId != newUser.AvatarId)
-			{
-				await Utils.SyncAvatarAsync(newUser);
-			}
+            using (var scope = MikiApp.Instance.Services.CreateScope())
+            {
+                if (oldUser.AvatarId != newUser.AvatarId)
+                {
+                    await Utils.SyncAvatarAsync(newUser, scope.ServiceProvider.GetService<IExtendedCacheClient>(), scope.ServiceProvider.GetService<MikiDbContext>());
+                }
+            }
 		}
 
 		private async Task Bot_MessageReceived(IDiscordMessage arg)
@@ -261,9 +271,9 @@ namespace Miki
 
 			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
 			{
-                using (var context = new MikiContext())
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
-                    string msg = (await Locale.GetLanguageInstanceAsync(context, arg.ChannelId)).GetString("miki_join_message");
+                    string msg = (await Locale.GetLanguageInstanceAsync(scope.ServiceProvider.GetService<DbContext>(), arg.ChannelId)).GetString("miki_join_message");
                     (await arg.GetChannelAsync()).QueueMessage(msg);
                 }
 			}
@@ -281,8 +291,9 @@ namespace Miki
 
 			if (defaultChannel != null)
 			{
-                using (var context = new MikiContext())
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
+                    var context = scope.ServiceProvider.GetService<DbContext>();
                     LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
                     (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
                 }

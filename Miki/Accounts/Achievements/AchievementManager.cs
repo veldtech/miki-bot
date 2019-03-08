@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Bot.Models;
 using Miki.Cache;
@@ -55,41 +56,29 @@ namespace Miki.Accounts.Achievements
 			this.bot = bot;
 
 			AccountManager.Instance.OnLocalLevelUp += async (u, c, l) =>
-			{
-                using (var db = new MikiContext())
+            {
+                LevelPacket p = new LevelPacket()
                 {
-                    if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), db, c.Id))
-                    {
-                        LevelPacket p = new LevelPacket()
-                        {
-                            discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
-                            discordChannel = c,
-                            level = l,
-                        };
-                        await OnLevelGained?.Invoke(p);
-                    }
-                }
-			};
+                    discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
+                    discordChannel = c,
+                    level = l,
+                };
+                await OnLevelGained?.Invoke(p);
+            };
 
 			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
-			{
-                using (var db = new MikiContext())
+            {
+                TransactionPacket p = new TransactionPacket()
                 {
-                    if (await provider.IsEnabled(MikiApp.Instance.GetService<ICacheClient>(), db, msg.ChannelId))
-                    {
-                        TransactionPacket p = new TransactionPacket()
-                        {
-                            discordUser = msg.Author,
-                            discordChannel = await msg.GetChannelAsync(),
-                            giver = u1,
-                            receiver = u2,
-                            amount = amount
-                        };
+                    discordUser = msg.Author,
+                    discordChannel = await msg.GetChannelAsync(),
+                    giver = u1,
+                    receiver = u2,
+                    amount = amount
+                };
 
-                        await OnTransaction?.Invoke(p);
-                    }
-                }
-			};
+                await OnTransaction?.Invoke(p);
+            };
 
 			bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
 			{
@@ -154,9 +143,10 @@ namespace Miki.Accounts.Achievements
 
 			long id = user.Id.ToDbLong();
 
-			using (var context = new MikiContext())
-			{
-				int achievementCount = await context.Achievements
+            using (var scope = MikiApp.Instance.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+                int achievementCount = await context.Achievements
 					.Where(q => q.UserId == id)
 					.CountAsync();
 
@@ -233,8 +223,9 @@ namespace Miki.Accounts.Achievements
 
         public async Task<bool> UnlockIsValid(IAchievement achievement, long userId, int newRank)
         {
-            using (var context = new MikiContext())
+            using (var scope = MikiApp.Instance.Services.CreateScope())
             {
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
                 var achievementObject = await DatabaseHelpers.GetAchievementAsync(context, userId, achievement.ParentName);
 
                 // If no achievement has been found and want to unlock first

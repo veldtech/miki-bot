@@ -24,11 +24,11 @@ namespace Miki.Modules.Roles
 		#region commands
 
 		[Command(Name = "iam")]
-		public async Task IAmAsync(EventContext e)
+		public async Task IAmAsync(CommandContext e)
 		{
-			using (var context = new MikiContext())
-			{
-				string roleName = e.Arguments.Pack.TakeAll();
+            var context = e.GetService<MikiDbContext>();
+
+            string roleName = e.Arguments.Pack.TakeAll();
 
 				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
@@ -131,17 +131,16 @@ namespace Miki.Modules.Roles
 					.SetColor(128, 255, 128)
 					.SetDescription($"You're a(n) {role.Name} now!")
 					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
 		}
 
 		[Command(Name = "iamnot")]
-		public async Task IAmNotAsync(EventContext e)
+		public async Task IAmNotAsync(CommandContext e)
 		{
 			string roleName = e.Arguments.Pack.TakeAll();
 
-			using (var context = new MikiContext())
-			{
-				List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
+            var context = e.GetService<MikiDbContext>();
+
+            List<IDiscordRole> roles = await GetRolesByName(e.Guild, roleName);
 				IDiscordRole role = null;
 
 				if (roles.Count > 1)
@@ -204,15 +203,14 @@ namespace Miki.Modules.Roles
 					.SetColor(255, 128, 128)
 					.SetDescription($"You're no longer a(n) {role.Name}!")
 					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
 		}
 
 		[Command(Name = "iamlist")]
-		public async Task IAmListAsync(EventContext e)
+		public async Task IAmListAsync(CommandContext e)
 		{
-			using (var context = new MikiContext())
-			{
-                e.Arguments.Take(out int index);
+            var context = e.GetService<MikiDbContext>();
+
+            e.Arguments.Take(out int index);
                 
                 int page = Math.Max(index - 1, 0);
              
@@ -285,11 +283,10 @@ namespace Miki.Modules.Roles
 					.SetColor(204, 214, 221)
 					.SetFooter("page " + (page + 1))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
 		}
 
         [Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task ConfigRoleAsync(EventContext e)
+        public async Task ConfigRoleAsync(CommandContext e)
         {
             if (e.Arguments.CanTake)
             {
@@ -297,9 +294,9 @@ namespace Miki.Modules.Roles
             }
         }
 
-		#endregion commands
+        #endregion commands
 
-		/*public async Task ConfigRoleInteractiveAsync(EventContext e)
+        /*public async Task ConfigRoleInteractiveAsync(EventContext e)
 		{
 			using (var context = new MikiContext())
 			{
@@ -596,105 +593,104 @@ namespace Miki.Modules.Roles
 			}
 		}*/
 
-		public async Task ConfigRoleQuickAsync(EventContext e)
-		{
-			using (var context = new MikiContext())
-			{
-                if (!e.Arguments.Take(out string roleName))
+        public async Task ConfigRoleQuickAsync(CommandContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
+
+            if (!e.Arguments.Take(out string roleName))
+            {
+                await e.ErrorEmbed("Expected a role name")
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
+
+            IDiscordRole role = null;
+            if (ulong.TryParse(roleName, out ulong s))
+            {
+                role = await e.Guild.GetRoleAsync(s);
+            }
+            else
+            {
+                role = (await GetRolesByName(e.Guild, roleName)).FirstOrDefault();
+            }
+
+            LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
+            MSLResponse arguments = new MMLParser(e.Arguments.Pack.TakeAll())
+                .Parse();
+
+            if (role.Name.Length > 20)
+            {
+                await e.ErrorEmbed("Please keep role names below 20 letters.")
+                    .ToEmbed().SendToChannel(e.Channel);
+                return;
+            }
+
+            if (newRole == null)
+            {
+                newRole = context.LevelRoles.Add(new LevelRole()
                 {
-                    await e.ErrorEmbed("Expected a role name")
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
-                    return;
+                    GuildId = (e.Guild.Id.ToDbLong()),
+                    RoleId = (role.Id.ToDbLong()),
+                }).Entity;
+            }
+
+            if (arguments.HasKey("automatic"))
+            {
+                newRole.Automatic = arguments.GetBool("automatic");
+            }
+
+            if (arguments.HasKey("optable"))
+            {
+                newRole.Optable = arguments.GetBool("optable");
+            }
+
+            if (arguments.HasKey("level-required"))
+            {
+                newRole.RequiredLevel = arguments.GetInt("level-required");
+            }
+
+            if (arguments.HasKey("price"))
+            {
+                newRole.Price = arguments.GetInt("price");
+                if (newRole.Price < 0)
+                {
+                    throw new ArgumentLessThanZeroException();
+                }
+            }
+
+            if (arguments.HasKey("role-required"))
+            {
+                long id = 0;
+                if (arguments.TryGet("role-required", out long l))
+                {
+                    id = l;
+                }
+                else
+                {
+                    var r = (await e.Guild.GetRolesAsync())
+                        .Where(x => x.Name.ToLower() == arguments.GetString("role-required").ToLower())
+                        .FirstOrDefault();
+
+                    if (r != null)
+                    {
+                        id = r.Id.ToDbLong();
+                    }
                 }
 
-				IDiscordRole role = null;
-				if (ulong.TryParse(roleName, out ulong s))
-				{
-					role = await e.Guild.GetRoleAsync(s);
-				}
-				else
-				{
-					role = (await GetRolesByName(e.Guild, roleName)).FirstOrDefault();
-				}
+                if (id != 0)
+                {
+                    newRole.RequiredRole = id;
+                }
+            }
 
-				LevelRole newRole = await context.LevelRoles.FindAsync(e.Guild.Id.ToDbLong(), role.Id.ToDbLong());
-				MSLResponse arguments = new MMLParser(e.Arguments.Pack.TakeAll())
-					.Parse();
+            await context.SaveChangesAsync();
 
-				if (role.Name.Length > 20)
-				{
-					await e.ErrorEmbed("Please keep role names below 20 letters.")
-						.ToEmbed().SendToChannel(e.Channel);
-					return;
-				}
-
-				if (newRole == null)
-				{
-					newRole = context.LevelRoles.Add(new LevelRole()
-					{
-						GuildId = (e.Guild.Id.ToDbLong()),
-						RoleId = (role.Id.ToDbLong()),
-					}).Entity;
-				}
-
-				if (arguments.HasKey("automatic"))
-				{
-					newRole.Automatic = arguments.GetBool("automatic");
-				}
-
-				if (arguments.HasKey("optable"))
-				{
-					newRole.Optable = arguments.GetBool("optable");
-				}
-
-				if (arguments.HasKey("level-required"))
-				{
-					newRole.RequiredLevel = arguments.GetInt("level-required");
-				}
-
-				if(arguments.HasKey("price"))
-				{
-					newRole.Price = arguments.GetInt("price");
-					if(newRole.Price < 0)
-					{
-						throw new ArgumentLessThanZeroException();
-					}
-				}
-
-				if (arguments.HasKey("role-required"))
-				{
-					long id = 0;
-					if (arguments.TryGet("role-required", out long l))
-					{
-						id = l;
-					}
-					else
-					{
-						var r = (await e.Guild.GetRolesAsync())
-							.Where(x => x.Name.ToLower() == arguments.GetString("role-required").ToLower())
-							.FirstOrDefault();
-
-						if (r != null)
-						{
-							id = r.Id.ToDbLong();
-						}
-					}
-
-					if (id != 0)
-					{
-						newRole.RequiredRole = id;
-					}
-				}
-
-				await context.SaveChangesAsync();
-
-                await new EmbedBuilder()
-					.SetTitle("⚙ Role Config")
-					.SetColor(102, 117, 127)
-					.SetDescription($"Updated {role.Name}!")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
-		}
+            await new EmbedBuilder()
+                .SetTitle("⚙ Role Config")
+                .SetColor(102, 117, 127)
+                .SetDescription($"Updated {role.Name}!")
+                .ToEmbed().QueueToChannelAsync(e.Channel);
+        }
 
 		public async Task<List<IDiscordRole>> GetRolesByName(IDiscordGuild guild, string roleName)
 			=> (await guild.GetRolesAsync()).Where(x => x.Name.ToLower() == roleName.ToLower()).ToList();

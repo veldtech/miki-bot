@@ -1,7 +1,9 @@
-﻿	using Miki.Accounts.Achievements;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts.Achievements;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Models;
 using System.Threading.Tasks;
 
@@ -16,8 +18,10 @@ namespace Miki
         {
             if(channel is IDiscordGuildChannel c)
             {
-                using (var context = new MikiContext())
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
+                    var context = scope.ServiceProvider.GetService<MikiDbContext>();
+
                     var guild = await c.GetGuildAsync();
                     int achievementSetting = await Setting.GetAsync(context, (long)guild.Id, DatabaseSettingId.Achievements);
                     if (achievementSetting != 0)
