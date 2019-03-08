@@ -9,6 +9,7 @@ using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
+using Miki.Discord.Gateway;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
@@ -19,6 +20,7 @@ using Miki.Framework.Languages;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models.Objects.Backgrounds;
+using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
 using SharpRaven;
@@ -117,59 +119,79 @@ namespace Miki
                 new ProtobufSerializer(),
                 await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
             );
-            
-            app.AddSingletonService<ICacheClient>(cache);
-            app.AddSingletonService<IExtendedCacheClient>(cache);
 
-            app.Services.AddDbContext<MikiDbContext>(x => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
-            app.Services.AddDbContext<DbContext, MikiDbContext>(x => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
-
-            if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+            // Setup Redis
             {
-                app.AddSingletonService(new MikiApiClient(Global.Config.MikiApiKey));
-            }
-            else
-            {
-                Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
+                app.AddSingletonService<ICacheClient>(cache);
+                app.AddSingletonService<IExtendedCacheClient>(cache);
             }
 
-            app.AddSingletonService<IApiClient>(new DiscordApiClient(Global.Config.Token, cache));
-
-            if (Global.Config.SelfHosted)
+            // Setup Entity Framework
             {
-                var gatewayConfig = GatewayConfiguration.Default();
-                gatewayConfig.ShardCount = 1;
-                gatewayConfig.ShardId = 0;
-                gatewayConfig.Token = Global.Config.Token;
-                gatewayConfig.WebSocketClient = new BasicWebSocketClient();
-                app.AddSingletonService<IGateway>(new CentralizedGatewayShard(gatewayConfig));
+                app.Services.AddDbContext<MikiDbContext>(x
+                    => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                app.Services.AddDbContext<DbContext, MikiDbContext>(x
+                    => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
-            else
+
+            // Setup Miki API
             {
-                app.AddSingletonService<IGateway>(new DistributedGateway(new MessageClientConfiguration
+                if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
                 {
-                    ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
-                    QueueName = "gateway",
-                    ExchangeName = "consumer",
-                    ConsumerAutoAck = false,
-                    PrefetchCount = 25,
-                }));
+                    app.AddSingletonService(new MikiApiClient(Global.Config.MikiApiKey));
+                }
+                else
+                {
+                    Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
+                }
             }
 
-            app.AddSingletonService(new UrbanDictionaryAPI());
-            app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
-            app.AddSingletonService(new ConfigurationManager());
-            app.AddSingletonService(new EventSystem());
-
-            app.AddSingletonService(new BackgroundStore());
-
-            if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+            // Setup Discord
             {
-                app.AddSingletonService(new RavenClient(Global.Config.SharpRavenKey));
+                app.AddSingletonService<IApiClient>(new DiscordApiClient(Global.Config.Token, cache));
+                if (Global.Config.SelfHosted)
+                {
+                    var gatewayConfig = new GatewayProperties();
+                    gatewayConfig.ShardCount = 1;
+                    gatewayConfig.ShardId = 0;
+                    gatewayConfig.Token = Global.Config.Token;
+                    gatewayConfig.Compressed = true;
+                    gatewayConfig.AllowNonDispatchEvents = true;
+                    app.AddSingletonService<IGateway>(new GatewayCluster(gatewayConfig));
+                }
+                else
+                {
+                    app.AddSingletonService<IGateway>(new DistributedGateway(new MessageClientConfiguration
+                    {
+                        ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+                        QueueName = "gateway",
+                        ExchangeName = "consumer",
+                        ConsumerAutoAck = false,
+                        PrefetchCount = 25,
+                    }));
+                }
             }
-            else
+
+            // Setup web services
             {
-                Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
+                app.AddSingletonService(new UrbanDictionaryAPI());
+                app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
+            }
+
+            // Setup miscellanious services
+            {
+                app.AddSingletonService(new ConfigurationManager());
+                app.AddSingletonService(new EventSystem());
+                app.AddSingletonService(new BackgroundStore());
+
+                if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+                {
+                    app.AddSingletonService(new RavenClient(Global.Config.SharpRavenKey));
+                }
+                else
+                {
+                    Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
+                }
             }
         }
 
@@ -288,7 +310,6 @@ namespace Miki
 		private async Task Client_JoinedGuild(IDiscordGuild arg)
 		{
 			IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
-
 			if (defaultChannel != null)
 			{
                 using (var scope = MikiApp.Instance.Services.CreateScope())

@@ -31,10 +31,12 @@
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.0" />
     <PackageReference Include="Miki.Discord.Caching" Version="2.4.4" />
+    <PackageReference Include="Miki.Discord.Gateway" Version="0.1.0" />
     <PackageReference Include="Miki.Discord.Gateway.Distributed" Version="1.3.4" />
     <PackageReference Include="Miki.Discord.Rest" Version="2.6.2" />
     <PackageReference Include="Miki.Dsl" Version="1.1.0" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
+    <PackageReference Include="Miki.UrbanDictionary" Version="0.1.0" />
     <PackageReference Include="MiScript" Version="0.1.0" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

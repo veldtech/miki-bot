@@ -32,12 +32,27 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 { "author.mention", e.Author.Mention },
                 { "author.discrim", e.Author.Discriminator },
                 { "author.name", e.Author.Username },
-                { "channel", "#" + e.Channel.Name }
+                { "channel", "#" + e.Channel.Name },
+                { "channel.id", e.Channel.Id },
+                { "channel.nsfw", e.Channel.IsNsfw },
+                { "message", e.Message.Content },
+                { "message.id", e.Message.Id }
             };
+
+            int i = 0;
+            while(e.Arguments.Take<string>(out var str))
+            {
+                context.Add($"args.{i}", str);
+                i++;
+            }
 
             if(e.Guild != null)
             {
                 context.Add("guild", e.Guild.Name);
+                context.Add("guild.id", e.Guild.Id);
+                context.Add("guild.owner.id", e.Guild.OwnerId);
+                context.Add("guild.members", e.Guild.MemberCount);
+                context.Add("guild.icon", e.Guild.IconUrl);
             }
 
             return context;

@@ -149,15 +149,15 @@ namespace Miki.Modules
 		{
 			string url = e.Author.GetAvatarUrl();
 
-			if (e.Message.MentionedUserIds.Count > 0)
+            if (e.Message.MentionedUserIds.Count > 0)
 			{
 				url = (await e.Guild.GetMemberAsync(e.Message.MentionedUserIds.First())).GetAvatarUrl();
 			}
 
-            //if (e.Message.Attachments.Count > 0)
-            //{
-            //    url = e.message.Attachments.First().Url;
-            //}
+            if (e.Message.Attachments.Count > 0)
+            {
+                url = e.Message.Attachments.First().Url;
+            }
 
             return url;
 		}
