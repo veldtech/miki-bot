@@ -2237,4 +2237,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_miscript_parse" xml:space="preserve">
     <value>An unknown parsing exception occured with message: "{0}"</value>
   </data>
+  <data name="String1" xml:space="preserve">
+    <value>A command with the name {0} already exists!</value>
+  </data>
 </root>

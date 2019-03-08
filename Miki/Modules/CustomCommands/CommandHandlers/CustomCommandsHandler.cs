@@ -79,8 +79,13 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 .Split(' ');
             string commandName = args.FirstOrDefault()
                 .ToLowerInvariant();
-
             
+            if(message.EventSystem
+                .GetCommandHandler<SimpleCommandHandler>()
+                .GetCommandByIdOrDefault(commandName) != null)
+            {
+                return;
+            }
 
             var cachePackage = await cache.HashGetAsync<ScriptPackage>(CommandCacheKey, commandName + ":" + guild.Id);
             if (cachePackage != null)

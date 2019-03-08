@@ -5835,6 +5835,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A command with the name {0} already exists!.
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I&apos;ve synchronized your current {0} to Miki&apos;s database!.
         /// </summary>
         internal static string sync_success {
