@@ -439,17 +439,16 @@ namespace Miki.Modules
 
             await context.SaveChangesAsync();
 
-            string output = "";
-
-            if (win)
-            {
-                output = e.Locale.GetString("flip_description_win", $"`{bet}`");
-            }
-            else
-            {
-                output = e.Locale.GetString("flip_description_lose");
-            }
-
+			string output;
+			if (win)
+			{
+				output = e.Locale.GetString("flip_description_win", $"`{bet}`");
+			}
+			else
+			{
+				output = e.Locale.GetString("flip_description_lose");
+			}
+            
             output += "\n" + e.Locale.GetString("miki_blackjack_new_balance", currencyNow);
 
             DiscordEmbed embed = new EmbedBuilder()

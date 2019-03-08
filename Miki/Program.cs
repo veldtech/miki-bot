@@ -110,7 +110,9 @@ namespace Miki
         public async Task LoadServicesAsync(MikiAppBuilder app)
         {
             new LogBuilder()
-                .AddLogEvent((msg, lvl) => Console.WriteLine(msg))
+                .AddLogEvent((msg, lvl) => {
+                    if (lvl >= Global.Config.LogLevel) Console.WriteLine(msg);
+                })
                 .SetLogHeader((msg) => $"[{msg}]: ")
                 .SetTheme(new LogTheme())
                 .Apply();
@@ -285,20 +287,27 @@ namespace Miki
             }
 		}
 
+
 		private async Task Bot_MessageReceived(IDiscordMessage arg)
 		{
             var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
 
-			DogStatsd.Increment("messages.received");
+            DogStatsd.Increment("messages.received");
 
 			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
 			{
                 using (var scope = MikiApp.Instance.Services.CreateScope())
+
                 {
                     string msg = (await Locale.GetLanguageInstanceAsync(scope.ServiceProvider.GetService<DbContext>(), arg.ChannelId)).GetString("miki_join_message");
                     (await arg.GetChannelAsync()).QueueMessage(msg);
                 }
-			}
+            }
+
+            if (Global.Config.LogLevel <= LogLevel.Debug)
+            {
+                Log.Debug($"Memory value: {GC.GetTotalMemory(true)}GB");
+            }
 		}
 
 		private Task Client_LeftGuild(ulong guildId)
@@ -320,40 +329,41 @@ namespace Miki
                 }
 			}
 
-			//List<string> allArgs = new List<string>();
-			//List<object> allParams = new List<object>();
-			//List<object> allExpParams = new List<object>();
+            List<string> allArgs = new List<string>();
+            List<object> allParams = new List<object>();
+            List<object> allExpParams = new List<object>();
 
-			//try
-			//{
-			//	for (int i = 0; i < arg.Members.Count; i++)
-			//	{
-			//		allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+            try
+            {
+                var members = await arg.GetMembersAsync();
+                for (int i = 0; i < members.Length; i++)
+                {
+                    allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-			//		allParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-			//		allParams.Add(arg.Members.ElementAt(i).Username);
+                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allParams.Add(members.ElementAt(i).Username);
 
-			//		allExpParams.Add(arg.Id.ToDbLong());
-			//		allExpParams.Add(arg.Members.ElementAt(i).Id.ToDbLong());
-			//	}
+                    allExpParams.Add(arg.Id.ToDbLong());
+                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                }
 
-			//	using (var context = new MikiContext())
-			//	{
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//			$"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
+                using (var context = new MikiContext())
+                {
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
 
-			//		await context.Database.ExecuteSqlCommandAsync(
-			//			$"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allExpParams);
 
-			//		await context.SaveChangesAsync();
-			//	}
-			//}
-			//catch (Exception e)
-			//{
-			//	Log.Error(e.ToString());
-			//}
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.ToString());
+            }
 
-			DogStatsd.Increment("guilds.joined");
+            DogStatsd.Increment("guilds.joined");
 		}
 	}
 }

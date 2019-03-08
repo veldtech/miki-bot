@@ -775,17 +775,17 @@ namespace Miki.Modules.AccountsModule
                 Description = e.Locale.GetString("miki_user_mekos", user.Name, user.Currency.ToFormattedString()),
                 Color = new Color(1f, 0.5f, 0.7f)
             }.ToEmbed().QueueToChannelAsync(e.Channel);
-
             await context.SaveChangesAsync();
         }
 
         [Command(Name = "give")]
-        public async Task GiveMekosAsync(CommandContext e)
+        public async Task GiveMekosAsync(ICommandContext e)
         {
             IDiscordUser user;
+
             if (e.Arguments.Take(out string userName))
             {
-                user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
+                var user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
 
                 if (user == null)
                 {

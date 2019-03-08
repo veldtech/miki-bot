@@ -54,9 +54,10 @@ namespace Miki.Modules
 					return;
 				}
 
-                if(!e.Arguments.Take(out int pruneDays))
+                int prune = 1;
+                if(e.Arguments.Take(out int pruneDays))
                 {
-                    pruneDays = 1;
+                    prune = pruneDays;
                 }
 
                 string reason = e.Arguments.Pack.TakeAll();
@@ -76,7 +77,7 @@ namespace Miki.Modules
 
 				await embed.ToEmbed().SendToUser(user);
 
-				await e.Guild.AddBanAsync(user, pruneDays, reason);
+				await e.Guild.AddBanAsync(user, prune, reason);
 			}
 			else
 			{
@@ -88,7 +89,7 @@ namespace Miki.Modules
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task CleanAsync(CommandContext e)
 		{
-			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id, null);
+			await PruneAsync(e, (await e.Guild.GetSelfAsync()).Id, null);
 		}
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
@@ -98,7 +99,7 @@ namespace Miki.Modules
             
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
 			{
-				IDiscordGuildUser bannedUser = null;
+				IDiscordGuildUser bannedUser;
 				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
                 e.Arguments.Take(out string userName);
@@ -158,9 +159,10 @@ namespace Miki.Modules
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task PruneAsync(CommandContext e)
 		{
-			await PruneAsync(e, 100, 0, null);
+			await PruneAsync(e, 0, null);
 		}
-		public async Task PruneAsync(CommandContext e, int _amount = 100, ulong _target = 0, string _filter = null)
+
+        public async Task PruneAsync(EventContext e, ulong target = 0, string filter = null)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
 			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
@@ -180,12 +182,15 @@ namespace Miki.Modules
                 return;
             }
 
-            string[] argsSplit = e.Arguments.Pack.TakeAll().Split(' ');
-            ulong target = e.Message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.Message.MentionedUserIds.First())).Id : _target;
+
+            string args = e.Arguments.Pack.TakeAll();
+            string[] argsSplit = args.Split(' ');
+            target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : target;
+
             if (int.TryParse(argsSplit[0], out int amount))
-            {
-                if (amount < 0)
-                {
+			{
+				if (amount < 0)
+				{
                     await Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_negative"))
                         .ToEmbed().QueueToChannelAsync(e.Channel);
                     return;
@@ -344,9 +349,7 @@ namespace Miki.Modules
 		[Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
 		public async Task SetModuleAsync(CommandContext e)
 		{
-            var cache = e.GetService<ICacheClient>();
-
-			if (e.Arguments.Take(out string moduleName))
+			if (!e.Arguments.Take(out string moduleName))
 			{
 				return;
 			}
@@ -370,9 +373,31 @@ namespace Miki.Modules
                 }
             }
 
-			await m.SetEnabled(e.GetService<MikiDbContext>(), cache, e.Guild.Id, setValue);
+            bool global = false;
+            using (var context = new MikiContext())
+            {
+                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+                if (e.Arguments.Peek(out string g))
+                {
+                    if (g == "-g")
+                    {
+                        global = true;
+                        var channels = await e.Guild.GetChannelsAsync();
+                        foreach (var c in channels)
+                        {
+                            await m.SetEnabled(context, cache, c.Id, setValue);
+                        }
+                    }
+                }
+                else
+                {
+                    await m.SetEnabled(context, cache, e.Channel.Id, setValue);
+                }
 
-            await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}")
+                await context.SaveChangesAsync();
+            }
+
+            await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}" + ((global) ? " globally" : ""))
 				.QueueToChannelAsync(e.Channel);
 		}
 

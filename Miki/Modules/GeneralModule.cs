@@ -4,7 +4,6 @@ using Miki.UrbanDictionary;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
-using Miki.Dsl;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
@@ -22,6 +21,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Miki.Cache;
 using Miki.Bot.Models;
+
 
 namespace Miki.Modules
 {
@@ -440,57 +440,6 @@ namespace Miki.Modules
 			}.AddField($"🖥️ {e.Locale.GetString("discord_servers")}", (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToFormattedString())
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
 			 .ToEmbed().QueueToChannelAsync(e.Channel);
-		}
-
-		[Command(Name = "urban")]
-		public async Task UrbanAsync(CommandContext e)
-		{
-            if (!e.Arguments.Pack.CanTake)
-            {
-                return;
-            }
-
-            var api = e.GetService<UrbanDictionaryAPI>();
-            var query = e.Arguments.Pack.TakeAll();
-            var searchResult = await api.SearchTermAsync(query);
-
-            if(searchResult == null)
-            {
-                // TODO (Veld): Something went wrong/No results found.
-                return;
-            }
-
-            UrbanDictionaryEntry entry = searchResult.Entries
-                .FirstOrDefault();
-
-			if (entry != null)
-			{
-                string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]", 
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                await new EmbedBuilder()
-				{
-					Author = new EmbedAuthor()
-					{
-						Name = "📚 " + entry.Term,
-						Url = "http://www.urbandictionary.com/define.php?term=" + query,
-					},
-					Description = e.Locale.GetString("miki_module_general_urban_author", entry.Author)
-				}.AddField(e.Locale.GetString("miki_module_general_urban_definition"), desc, true)
-				 .AddField(e.Locale.GetString("miki_module_general_urban_example"), example, true)
-				 .AddField(e.Locale.GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-				 .ToEmbed().QueueToChannelAsync(e.Channel);
-			}
-			else
-			{
-                await e.ErrorEmbed(e.Locale.GetString("error_term_invalid"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
 		}
 
 		[Command(Name = "whois")]
