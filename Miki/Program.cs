@@ -38,7 +38,7 @@ using System.Threading.Tasks;
 namespace Miki
 {
     public class Program
-	{
+    {
         private static async Task Main(string[] args)
         {
             Program p = new Program();
@@ -81,37 +81,39 @@ namespace Miki
             await Task.Delay(-1);
         }
 
-		private void LoadLocales()
-		{
-			string nameSpace = "Miki.Languages";
+        private void LoadLocales()
+        {
+            string nameSpace = "Miki.Languages";
 
-			var typeList = Assembly.GetExecutingAssembly()
-				.GetTypes()
-				.Where(t => t.IsClass && t.Namespace == nameSpace);
+            var typeList = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.IsClass && t.Namespace == nameSpace);
 
-            foreach(var t in typeList)
-			{
-				try
-				{
-					string l = t.Name.ToLowerInvariant();
-					ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
-					Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
-				}
-				catch (Exception ex)
-				{
-					Log.Error($"Language {t.Name} did not load correctly");
-					Log.Debug(ex.ToString());
-				}
-			}
+            foreach (var t in typeList)
+            {
+                try
+                {
+                    string l = t.Name.ToLowerInvariant();
+                    ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
+                    Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Language {t.Name} did not load correctly");
+                    Log.Debug(ex.ToString());
+                }
+            }
 
-			Locale.SetDefaultLanguage("eng");
-		}
+            Locale.SetDefaultLanguage("eng");
+        }
 
         public async Task LoadServicesAsync(MikiAppBuilder app)
         {
             new LogBuilder()
-                .AddLogEvent((msg, lvl) => {
-                    if (lvl >= Global.Config.LogLevel) Console.WriteLine(msg);
+                .AddLogEvent((msg, lvl) =>
+                {
+                    if (lvl >= Global.Config.LogLevel)
+                        Console.WriteLine(msg);
                 })
                 .SetLogHeader((msg) => $"[{msg}]: ")
                 .SetTheme(new LogTheme())
@@ -198,11 +200,11 @@ namespace Miki
         }
 
         public async Task LoadDiscord(MikiApp app)
-		{
+        {
             var cache = app.GetService<IExtendedCacheClient>();
             var gateway = app.GetService<IGateway>();
 
-			new BasicCacheStage().Initialize(gateway, cache);
+            new BasicCacheStage().Initialize(gateway, cache);
 
             var config = app.GetService<ConfigurationManager>();
             EventSystem eventSystem = app.GetService<EventSystem>();
@@ -252,32 +254,32 @@ namespace Miki
                 commandMap.Install(eventSystem);
             }
 
-			string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
+            string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
 
-			if (File.Exists(configFile))
-			{
-				await config.ImportAsync(
-					new JsonSerializationProvider(),
-					configFile
-				);
-			}
+            if (File.Exists(configFile))
+            {
+                await config.ImportAsync(
+                    new JsonSerializationProvider(),
+                    configFile
+                );
+            }
 
-			await config.ExportAsync(
-				new JsonSerializationProvider(),
-				configFile
-			);
+            await config.ExportAsync(
+                new JsonSerializationProvider(),
+                configFile
+            );
 
-			app.Discord.MessageCreate += Bot_MessageReceived;
+            app.Discord.MessageCreate += Bot_MessageReceived;
 
-			app.Discord.GuildJoin += Client_JoinedGuild;
-			app.Discord.GuildLeave += Client_LeftGuild;
+            app.Discord.GuildJoin += Client_JoinedGuild;
+            app.Discord.GuildLeave += Client_LeftGuild;
             app.Discord.UserUpdate += Client_UserUpdated;
 
-			await gateway.StartAsync();
-		}
+            await gateway.StartAsync();
+        }
 
-		private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
-		{
+        private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
+        {
             using (var scope = MikiApp.Instance.Services.CreateScope())
             {
                 if (oldUser.AvatarId != newUser.AvatarId)
@@ -285,17 +287,17 @@ namespace Miki
                     await Utils.SyncAvatarAsync(newUser, scope.ServiceProvider.GetService<IExtendedCacheClient>(), scope.ServiceProvider.GetService<MikiDbContext>());
                 }
             }
-		}
+        }
 
 
-		private async Task Bot_MessageReceived(IDiscordMessage arg)
-		{
+        private async Task Bot_MessageReceived(IDiscordMessage arg)
+        {
             var user = await MikiApp.Instance.Discord.GetCurrentUserAsync();
 
             DogStatsd.Increment("messages.received");
 
-			if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
-			{
+            if (arg.Content.StartsWith($"<@!{user.Id}>") || arg.Content.StartsWith($"<@{user.Id}>"))
+            {
                 using (var scope = MikiApp.Instance.Services.CreateScope())
 
                 {
@@ -303,52 +305,45 @@ namespace Miki
                     (await arg.GetChannelAsync()).QueueMessage(msg);
                 }
             }
+        }
 
-            if (Global.Config.LogLevel <= LogLevel.Debug)
+        private Task Client_LeftGuild(ulong guildId)
+        {
+            DogStatsd.Increment("guilds.left");
+            return Task.CompletedTask;
+        }
+
+        private async Task Client_JoinedGuild(IDiscordGuild arg)
+        {
+            using (var scope = MikiApp.Instance.Services.CreateScope())
             {
-                Log.Debug($"Memory value: {GC.GetTotalMemory(true)}GB");
-            }
-		}
+                var context = scope.ServiceProvider.GetService<DbContext>();
 
-		private Task Client_LeftGuild(ulong guildId)
-		{
-			DogStatsd.Increment("guilds.left");
-			return Task.CompletedTask;
-		}
-
-		private async Task Client_JoinedGuild(IDiscordGuild arg)
-		{
-			IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
-			if (defaultChannel != null)
-			{
-                using (var scope = MikiApp.Instance.Services.CreateScope())
+                IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
+                if (defaultChannel != null)
                 {
-                    var context = scope.ServiceProvider.GetService<DbContext>();
                     LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
                     (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
                 }
-			}
 
-            List<string> allArgs = new List<string>();
-            List<object> allParams = new List<object>();
-            List<object> allExpParams = new List<object>();
+                List<string> allArgs = new List<string>();
+                List<object> allParams = new List<object>();
+                List<object> allExpParams = new List<object>();
 
-            try
-            {
-                var members = await arg.GetMembersAsync();
-                for (int i = 0; i < members.Length; i++)
+                try
                 {
-                    allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+                    var members = await arg.GetMembersAsync();
+                    for (int i = 0; i < members.Length; i++)
+                    {
+                        allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
-                    allParams.Add(members.ElementAt(i).Username);
+                        allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                        allParams.Add(members.ElementAt(i).Username);
 
-                    allExpParams.Add(arg.Id.ToDbLong());
-                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
-                }
+                        allExpParams.Add(arg.Id.ToDbLong());
+                        allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    }
 
-                using (var context = new MikiContext())
-                {
                     await context.Database.ExecuteSqlCommandAsync(
                         $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING", allParams);
 
@@ -357,13 +352,13 @@ namespace Miki
 
                     await context.SaveChangesAsync();
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.ToString());
-            }
+                catch (Exception e)
+                {
+                    Log.Error(e.ToString());
+                }
 
-            DogStatsd.Increment("guilds.joined");
-		}
-	}
+                DogStatsd.Increment("guilds.joined");
+            }
+        }
+    }
 }

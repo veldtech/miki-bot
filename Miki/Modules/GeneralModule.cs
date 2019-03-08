@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Miki.Cache;
 using Miki.Bot.Models;
-
+using Miki.Dsl;
 
 namespace Miki.Modules
 {

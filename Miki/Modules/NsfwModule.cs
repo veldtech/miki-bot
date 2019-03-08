@@ -117,14 +117,14 @@ namespace Miki.Modules
 		}
 
         [Command(Name = "urban")]
-        public async Task UrbanAsync(EventContext e)
+        public async Task UrbanAsync(ICommandContext e)
         {
             if (!e.Arguments.Pack.CanTake)
             {
                 return;
             }
 
-            var api = (UrbanDictionaryAPI)e.Services.GetService(typeof(UrbanDictionaryAPI));
+            var api = e.GetService<UrbanDictionaryAPI>();
 
             var query = e.Arguments.Pack.TakeAll();
             var searchResult = await api.SearchTermAsync(query);
@@ -169,7 +169,7 @@ namespace Miki.Modules
         }
 
         [Command(Name = "yandere")]
-		public async Task RunYandere(EventContext e)
+		public async Task RunYandere(ICommandContext e)
 		{
 			try
 			{

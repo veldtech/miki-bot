@@ -157,12 +157,12 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task PruneAsync(CommandContext e)
+		public async Task PruneAsync(ICommandContext e)
 		{
 			await PruneAsync(e, 0, null);
 		}
 
-        public async Task PruneAsync(EventContext e, ulong target = 0, string filter = null)
+        public async Task PruneAsync(ICommandContext e, ulong target = 0, string filter = null)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
 			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
@@ -185,7 +185,7 @@ namespace Miki.Modules
 
             string args = e.Arguments.Pack.TakeAll();
             string[] argsSplit = args.Split(' ');
-            target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : target;
+            target = e.Message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.Message.MentionedUserIds.First())).Id : target;
 
             if (int.TryParse(argsSplit[0], out int amount))
 			{
@@ -212,7 +212,7 @@ namespace Miki.Modules
             if (Regex.IsMatch(e.Arguments.Pack.TakeAll(), "\"(.*?)\""))
             {
                 Regex regex = new Regex("\"(.*?)\"");
-                string filter = regex.Match(e.Arguments.Pack.TakeAll()).ToString().Trim('"', ' ');
+                filter = regex.Match(e.Arguments.Pack.TakeAll()).ToString().Trim('"', ' ');
             }
             
 			await e.Message.DeleteAsync(); // Delete the calling message before we get the message history.
@@ -235,7 +235,7 @@ namespace Miki.Modules
 				if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
 					continue;
 
-                if (_filter != null && messages.ElementAt(i)?.Content.IndexOf(_filter) < 0)
+                if (filter != null && messages.ElementAt(i)?.Content.IndexOf(filter) < 0)
                     continue;
             
 				if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
@@ -346,22 +346,22 @@ namespace Miki.Modules
                 .QueueToChannelAsync(e.Channel);
         }
 
-		[Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
-		public async Task SetModuleAsync(CommandContext e)
-		{
-			if (!e.Arguments.Take(out string moduleName))
-			{
-				return;
-			}
+        [Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
+        public async Task SetModuleAsync(CommandContext e)
+        {
+            if (!e.Arguments.Take(out string moduleName))
+            {
+                return;
+            }
 
-			Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
+            Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
 
-			if (m == null)
-			{
+            if (m == null)
+            {
                 await e.ErrorEmbed($"{moduleName} is not a valid module.")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
 
             if (e.Arguments.Take(out bool setValue))
             {
@@ -374,32 +374,31 @@ namespace Miki.Modules
             }
 
             bool global = false;
-            using (var context = new MikiContext())
+            var cache = e.GetService<ICacheClient>();
+            var context = e.GetService<MikiDbContext>();
+
+            if (e.Arguments.Peek(out string g))
             {
-                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-                if (e.Arguments.Peek(out string g))
+                if (g == "-g")
                 {
-                    if (g == "-g")
+                    global = true;
+                    var channels = await e.Guild.GetChannelsAsync();
+                    foreach (var c in channels)
                     {
-                        global = true;
-                        var channels = await e.Guild.GetChannelsAsync();
-                        foreach (var c in channels)
-                        {
-                            await m.SetEnabled(context, cache, c.Id, setValue);
-                        }
+                        await m.SetEnabled(context, cache, c.Id, setValue);
                     }
                 }
-                else
-                {
-                    await m.SetEnabled(context, cache, e.Channel.Id, setValue);
-                }
-
-                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await m.SetEnabled(context, cache, e.Channel.Id, setValue);
             }
 
+            await context.SaveChangesAsync();
+
             await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}" + ((global) ? " globally" : ""))
-				.QueueToChannelAsync(e.Channel);
-		}
+                .QueueToChannelAsync(e.Channel);
+        }
 
 		[Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SoftbanAsync(CommandContext e)

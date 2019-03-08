@@ -40,13 +40,17 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             };
 
             int i = 0;
-            while(e.Arguments.Take<string>(out var str))
+            if (e.Arguments != null)
             {
-                context.Add($"args.{i}", str);
-                i++;
+                while (e.Arguments.Take<string>(out var str))
+                {
+                    context.Add($"args.{i}", str);
+                    i++;
+                }
             }
+            context.Add("args.count", i + 1);
 
-            if(e.Guild != null)
+            if (e.Guild != null)
             {
                 context.Add("guild", e.Guild.Name);
                 context.Add("guild.id", e.Guild.Id);

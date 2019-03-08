@@ -781,8 +781,6 @@ namespace Miki.Modules.AccountsModule
         [Command(Name = "give")]
         public async Task GiveMekosAsync(ICommandContext e)
         {
-            IDiscordUser user;
-
             if (e.Arguments.Take(out string userName))
             {
                 var user = await DiscordExtensions.GetUserAsync(userName, e.Guild);
