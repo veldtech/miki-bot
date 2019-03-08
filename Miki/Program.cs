@@ -290,9 +290,10 @@ namespace Miki
         }
 
 
-        private async Task Bot_MessageReceived(IDiscordMessage arg)
+        private Task Bot_MessageReceived(IDiscordMessage arg)
         {
             DogStatsd.Increment("messages.received");
+            return Task.CompletedTask;
         }
 
         private Task Client_LeftGuild(ulong guildId)
