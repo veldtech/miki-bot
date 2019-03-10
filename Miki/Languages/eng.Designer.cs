@@ -1260,6 +1260,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create commands with miki&apos;s scripting language!.
+        /// </summary>
+        internal static string miki_command_description_createcommand {
+            get {
+                return ResourceManager.GetString("miki_command_description_createcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create your own special pasta and share it with everyone!.
         /// </summary>
         internal static string miki_command_description_createpasta {
@@ -1818,6 +1827,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove your scripted commands..
+        /// </summary>
+        internal static string miki_command_description_removecommand {
+            get {
+                return ResourceManager.GetString("miki_command_description_removecommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Give your friends reputation for being such good friends!.
         /// </summary>
         internal static string miki_command_description_rep {
@@ -2276,6 +2294,16 @@ namespace Miki.Languages {
         internal static string miki_command_usage_confused {
             get {
                 return ResourceManager.GetString("miki_command_usage_confused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;createcommand &lt;command name&gt; &lt;script&gt;
+        ///To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript!.
+        /// </summary>
+        internal static string miki_command_usage_createcommand {
+            get {
+                return ResourceManager.GetString("miki_command_usage_createcommand", resourceCulture);
             }
         }
         
@@ -2844,6 +2872,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_remind {
             get {
                 return ResourceManager.GetString("miki_command_usage_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;removecommand &lt;command name&gt;.
+        /// </summary>
+        internal static string miki_command_usage_removecommand {
+            get {
+                return ResourceManager.GetString("miki_command_usage_removecommand", resourceCulture);
             }
         }
         

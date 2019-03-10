@@ -2243,4 +2243,17 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="ok_command_deleted" xml:space="preserve">
     <value>Command '{0}' deleted successfully!</value>
   </data>
+  <data name="miki_command_description_createcommand" xml:space="preserve">
+    <value>Create commands with miki's scripting language!</value>
+  </data>
+  <data name="miki_command_description_removecommand" xml:space="preserve">
+    <value>Remove your scripted commands.</value>
+  </data>
+  <data name="miki_command_usage_createcommand" xml:space="preserve">
+    <value>&gt;createcommand &lt;command name&gt; &lt;script&gt;
+To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript!</value>
+  </data>
+  <data name="miki_command_usage_removecommand" xml:space="preserve">
+    <value>&gt;removecommand &lt;command name&gt;</value>
+  </data>
 </root>
