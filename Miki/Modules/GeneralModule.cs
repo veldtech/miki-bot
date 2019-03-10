@@ -56,7 +56,6 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "avatar")]
-        [PatreonOnly]
 		public async Task AvatarAsync(CommandContext e)
 		{
 			if (!e.Arguments.Take(out string arg))

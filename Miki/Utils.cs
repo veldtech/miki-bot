@@ -45,13 +45,6 @@ namespace Miki
             where T : struct
             => Enum.TryParse(argument ?? "", true, out value);
 
-        public static DateTime UnixToDateTime(long unix)
-        {
-            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            time = time.AddSeconds(unix).ToLocalTime();
-            return time;
-        }
-
         public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
@@ -168,6 +161,8 @@ namespace Miki
 				Description = message,
 				Color = new Color(119, 178, 85)
 			}.ToEmbed();
+        public static DiscordEmbed SuccessEmbedResource(this ICommandContext e, string resource, params object[] param)
+            => SuccessEmbed(e, e.Locale.GetString(resource, param));
 
         public static string ToFormattedString(this int val)
             => val.ToString("N0");
@@ -231,11 +226,6 @@ namespace Miki
                 allItems.Add(pack.Take());
             }
             return string.Join(" ", allItems);
-        }
-
-        internal static string UserSyncedKey()
-        {
-            throw new NotImplementedException();
         }
     }
 

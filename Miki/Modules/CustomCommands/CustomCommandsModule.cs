@@ -7,6 +7,7 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Logging;
 using Miki.Modules.CustomCommands.CommandHandlers;
+using Miki.Modules.CustomCommands.Exceptions;
 using MiScript;
 using MiScript.Models;
 using MiScript.Parser;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,7 +32,7 @@ namespace Miki.Modules.CustomCommands
         }
 
         [Command(Name = "createcommand", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task NewCustomCommandAsync(CommandContext e)
+        public async Task NewCustomCommandAsync(ICommandContext e)
         {
             if(e.Arguments.Take(out string commandName))
             {
@@ -56,7 +58,20 @@ namespace Miki.Modules.CustomCommands
                 try
                 {
                     var tokens = _tokenizer.Tokenize(scriptBody);
-                    new Parser(tokens).Parse(new Dictionary<string, object>());
+                    var values = tokens.Where(x => x.TokenType == Tokens.Argument)
+                        .Select(x => x.Value);
+
+                    var context = new Dictionary<string, object>();
+                    foreach(var v in values)
+                    {
+                        if(context.ContainsKey(v))
+                        {
+                            continue;
+                        }
+                        context.Add(v, "");
+                    }
+
+                    new Parser(tokens).Parse(context);
                 }
                 catch(Exception ex)
                 {
@@ -83,6 +98,32 @@ namespace Miki.Modules.CustomCommands
 
                 await e.SuccessEmbed($"Created script '>{commandName}'")
                     .QueueToChannelAsync(e.Channel);
+            }
+        }
+
+        [Command(Name = "removecommand", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task RemoveCommandAsync(ICommandContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
+            var guildId = e.Guild.Id.ToDbLong();
+
+            if (e.Arguments.Take(out string commandName))
+            {
+                var cmd = await context.CustomCommands.FindAsync(guildId, commandName);
+                if(cmd == null)
+                {
+                    throw new CommandNullException(commandName);
+                }
+
+                context.Remove(cmd);
+                await context.SaveChangesAsync();
+
+                await e.SuccessEmbedResource("ok_command_deleted", commandName)
+                    .QueueToChannelAsync(e.Channel);
+            }
+            else
+            {
+                // No arguments provided
             }
         }
     }

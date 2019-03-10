@@ -5556,6 +5556,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command &apos;{0}&apos; deleted successfully!.
+        /// </summary>
+        internal static string ok_command_deleted {
+            get {
+                return ResourceManager.GetString("ok_command_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to page {0} of {1}.
         /// </summary>
         internal static string page_footer {

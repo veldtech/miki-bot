@@ -2240,4 +2240,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="String1" xml:space="preserve">
     <value>A command with the name {0} already exists!</value>
   </data>
+  <data name="ok_command_deleted" xml:space="preserve">
+    <value>Command '{0}' deleted successfully!</value>
+  </data>
 </root>
