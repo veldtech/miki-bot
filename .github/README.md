@@ -35,39 +35,27 @@ If you have any questions about the setup process **do not** ask in the support 
 
 3) Add your bot token in Miki/miki/settings.json.
 
-4) Download [RabbitMQ](https://www.rabbitmq.com/download.html) and have the service running.
+4) Download [Redis](https://redis.io/download) and get that running too.
 
-5) Download [Redis](https://redis.io/download) and get that running too.
+5) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
 
-6) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
+6) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
 
-7) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
-
-```js
+```json
 "connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
 ```
 
-8) Install the `uuid-ossp` postgres extensions on the `Miki` database.
+7) Install the `uuid-ossp` postgres extensions on the `Miki` database.
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
-9) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+8) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
 
     * Tools -> NuGet Package Manager -> Package Manager Console
-
-10) Clone the [gateway repository](https://github.com/Mikibot/sharder/tree/js) in a separate location.
-
-11) Download [Node.js](https://nodejs.org/en/) if you don't have it installed already.
-
-12) Run `npm install` in the sharder download location to setup the dependencies.
-
-13) Create a `config.js` by copy pasting the format from `config.js.example` and filling in your bot token.
-
-14) Run `node gateway.js`.
-
-15) Run Miki. 🎉
+    
+9) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
