@@ -495,10 +495,10 @@ namespace Miki.Modules
 
             string[] objectsChosen =
             {
-                    objects[MikiRandom.Next(objects.Length)],
-                    objects[MikiRandom.Next(objects.Length)],
-                    objects[MikiRandom.Next(objects.Length)]
-                };
+                objects[MikiRandom.Next(objects.Length)],
+                objects[MikiRandom.Next(objects.Length)],
+                objects[MikiRandom.Next(objects.Length)]
+            };
 
             Dictionary<string, int> score = new Dictionary<string, int>();
 
