@@ -69,8 +69,8 @@ namespace Miki.Accounts
 						.Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
 						.ToListAsync();
 
-					var setting = (LevelNotificationsSetting)
-						await Setting.GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
+					var setting = (LevelNotificationsSetting)await Setting
+                        .GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
 
 					if (setting == LevelNotificationsSetting.None)
 						return;

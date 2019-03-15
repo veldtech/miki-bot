@@ -21,9 +21,7 @@ namespace Miki
                 using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<MikiDbContext>();
-
-                    var guild = await c.GetGuildAsync();
-                    int achievementSetting = await Setting.GetAsync(context, (long)guild.Id, DatabaseSettingId.Achievements);
+                    var achievementSetting = await Setting.GetAsync(context, channel.Id, DatabaseSettingId.Achievements);
                     if (achievementSetting != 0)
                     {
                         return;
