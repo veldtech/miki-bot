@@ -26,7 +26,7 @@ namespace Miki.Services
                 throw new BlackjackSessionExistsException();
             }
 
-
+            // TODO (Veld): Finish this service.
         }
     }
 }
