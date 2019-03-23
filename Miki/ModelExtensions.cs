@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
+using Miki.Bot.Models.Models.User;
 using Miki.Bot.Models.Repositories;
 using Miki.Discord.Common;
 using Miki.Exceptions;
@@ -40,7 +41,14 @@ namespace Miki
 
             MikiApp.Instance.GetService<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
 
-            u.Banned = true;
+            await context.Set<IsBanned>()
+                .AddAsync(new IsBanned
+            {
+                UserId = user.Id,
+                TimeOfBan = DateTime.UtcNow,
+                ExpirationDate = DateTime.UtcNow.AddYears(10)
+            });
+
             u.Total_Commands = 0;
             u.Total_Experience = 0;
             u.MarriageSlots = 0;

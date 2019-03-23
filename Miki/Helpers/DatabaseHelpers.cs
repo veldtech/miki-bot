@@ -44,8 +44,6 @@ namespace Miki.Helpers
 
 		public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)
 		{
-			if (user.Banned) return;
-
 			if (amount < 0)
 			{
 				throw new ArgumentLessThanZeroException();
