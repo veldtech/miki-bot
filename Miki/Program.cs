@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Miki.API;
 using Miki.Bot.Models;
+using Miki.Bot.Models.Models.User;
 using Miki.BunnyCDN;
 using Miki.Cache;
 using Miki.Cache.StackExchange;
@@ -69,12 +70,17 @@ namespace Miki
 
             using (var scope = app.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
-                List<User> bannedUsers = await context.Users.Where(x => x.Banned).ToListAsync();
+                var context = scope.ServiceProvider
+                    .GetService<MikiDbContext>();
+
+                List<IsBanned> bannedUsers = await context.IsBanned
+                    .Where(x => x.ExpirationDate > DateTime.UtcNow)
+                    .ToListAsync();
+
                 foreach (var u in bannedUsers)
                 {
                     app.GetService<EventSystem>().MessageFilter
-                        .Get<UserFilter>().Users.Add(u.Id.FromDbLong());
+                        .Get<UserFilter>().Users.Add(u.UserId.FromDbLong());
                 }
             }
 
