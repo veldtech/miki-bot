@@ -2256,4 +2256,7 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="miki_command_usage_removecommand" xml:space="preserve">
     <value>&gt;removecommand &lt;command name&gt;</value>
   </data>
+  <data name="error_guild_rival_null" xml:space="preserve">
+    <value>Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!</value>
+  </data>
 </root>
