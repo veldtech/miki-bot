@@ -466,11 +466,38 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A roulette table is already active in this channel..
+        /// </summary>
+        internal static string error_roulette_table_exists {
+            get {
+                return ResourceManager.GetString("error_roulette_table_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No roulette table is currently active in this channel..
+        /// </summary>
+        internal static string error_roulette_table_missing {
+            get {
+                return ResourceManager.GetString("error_roulette_table_missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I&apos;m already waiting for a response from you in this channel. Please finish your previous actions first!.
         /// </summary>
         internal static string error_session_in_use {
             get {
                 return ResourceManager.GetString("error_session_in_use", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re not the current table runner, please ask the creator of the table to run this command..
+        /// </summary>
+        internal static string error_table_unauthorized {
+            get {
+                return ResourceManager.GetString("error_table_unauthorized", resourceCulture);
             }
         }
         

@@ -2259,4 +2259,13 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="error_guild_rival_null" xml:space="preserve">
     <value>Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!</value>
   </data>
+  <data name="error_roulette_table_exists" xml:space="preserve">
+    <value>A roulette table is already active in this channel.</value>
+  </data>
+  <data name="error_roulette_table_missing" xml:space="preserve">
+    <value>No roulette table is currently active in this channel.</value>
+  </data>
+  <data name="error_table_unauthorized" xml:space="preserve">
+    <value>You're not the current table runner, please ask the creator of the table to run this command.</value>
+  </data>
 </root>

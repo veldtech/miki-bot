@@ -6,16 +6,18 @@ using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
 using Miki.Localization;
-using Miki.Models;
 using Miki.Modules.Gambling.Managers;
+using Miki.Modules.Gambling.Services.Roulette;
+using Miki.Modules.Gambling.Services.Roulette.Exceptions;
+using Miki.Modules.Gambling.Services.Roulette.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -23,6 +25,14 @@ namespace Miki.Modules
     [Module("Gambling")]
     public class GamblingModule
     {
+        private RouletteService _rouletteService;
+
+        public GamblingModule(Module mod, MikiApp app)
+        {
+            _rouletteService = new RouletteService(
+                app.GetService<IExtendedCacheClient>());
+        }
+
         [Command(Name = "rps")]
         public async Task RPSAsync(CommandContext e)
         {
@@ -615,6 +625,209 @@ namespace Miki.Modules
             await embed.ToEmbed().QueueToChannelAsync(e.Channel);
         }
 
+        [Command(Name = "roulette")]
+        public async Task RouletteAsync(ICommandContext e)
+        {
+            /*
+             * >roulette new
+             * >roulette bet 1000 1
+             * >roulette roll
+             * >roulette table
+             */
+
+            if (!e.Arguments.Take(out string subcommand))
+            {
+                await GetDefaultRouletteEmbed()
+                    .QueueToChannelAsync(e.Channel);
+            }
+
+            switch (subcommand.ToLowerInvariant())
+            {
+                case "new":
+                {
+                    var table = await _rouletteService.GetTableAsync(e.Channel.Id);
+                    if (table != null)
+                    {
+                        throw new TableExistsException();
+                    }
+
+                    table = await _rouletteService.CreateTableAsync(
+                        e.Channel.Id, 
+                        e.Author.Id);
+
+                    await (await GetTableEmbedAsync(table, e.Guild))
+                        .QueueToChannelAsync(e.Channel);
+                } break;
+
+                case "bet":
+                {
+                    var table = await _rouletteService.GetTableAsync(e.Channel.Id);
+
+                    var bet = await ValidateBetAsync(e);
+                    if(bet == null)
+                    {
+                        return;
+                    }
+
+                    var context = e.GetService<MikiDbContext>();
+                    var user = await User.GetAsync(context, e.Author.Id, e.Author.Username);
+                    
+                    if(table.Bets == null)
+                    {
+                        table.Bets = new List<RouletteBet>();
+                    }
+
+                    user.Currency -= bet.Value;
+
+                    if (e.Arguments.Take(out int slotVal))
+                    {
+                        table.Bets.Add(new RouletteBet
+                        {
+                            BetAmount = bet.Value,
+                            BetType = (int)InsideBetTypes.STRAIGHT,
+                            IsInside = true,
+                            NumbersAffected = new int[] { slotVal },
+                            UserId = e.Author.Id
+                        });
+                        await _rouletteService.UpdateTableAsync(e.Channel.Id, table);
+                    }
+                    else
+                    {
+                        if (!e.Arguments.Take(out string slot))
+                        {
+                            throw new Exception("BAD!");
+                        }
+                    }
+                    
+                    
+
+                    await context.SaveChangesAsync();
+
+                } break;
+
+                case "roll":
+                {
+                    var table = await _rouletteService.GetTableAsync(e.Channel.Id);
+                    if (table == null)
+                    {
+                        throw new TableMissingException();
+                    }
+                    if (table.CreatorId != e.Author.Id)
+                    {
+                        throw new TableUnauthorizedException();
+                    }
+                    var roll = table.Roll();
+                    var winners = table.GetAllWinners(roll);
+
+                    foreach(var w in winners)
+                    {
+                        var context = e.GetService<MikiDbContext>();
+                        var user = await context.Users.FindAsync(w.UserId.ToDbLong());
+                        user.Currency += w.GetWinAmount();
+                    }
+
+                    await (await GetWinnerEmbedAsync(winners, roll, e.Guild))
+                        .QueueToChannelAsync(e.Channel); 
+                    
+
+                } break;
+
+                case "table":
+                {
+                    var table = await _rouletteService.GetTableAsync(e.Channel.Id);
+                    if (table == null)
+                    {
+                        throw new TableExistsException();
+                    }
+                    await (await GetTableEmbedAsync(table, e.Guild))
+                        .QueueToChannelAsync(e.Channel);
+                } break;
+            }
+        }
+
+        public DiscordEmbed GetBetAddedEmbed()
+        {
+            return new EmbedBuilder()
+                .SetTitle("🎲 Roulette")
+                .SetColor(234, 89, 110)
+                .SetDescription("Your bet has been added to the table. Please wait until the table owner rolls the ball.")
+                .ToEmbed();
+        }
+
+        public DiscordEmbed GetDefaultRouletteEmbed()
+        {
+            return new EmbedBuilder()
+                .SetTitle("🎲 Roulette")
+                .SetColor(234, 89, 110)
+                .SetDescription("Play together with your friends in a virtual roulette table!")
+                .ToEmbed();
+        }
+
+        public async Task<DiscordEmbed> GetWinnerEmbedAsync(IEnumerable<RouletteBet> winners, int roll, IDiscordGuild guild)
+        {
+            var e = new EmbedBuilder()
+                .SetTitle("🎲 Roulette")
+                .SetColor(234, 89, 110)
+                .SetDescription($"The wheel stopped at **{roll}!**");
+
+            if (winners.Count() > 0)
+            {
+                List<Tuple<RouletteBet, IDiscordGuildUser>> usersBet
+                    = new List<Tuple<RouletteBet, IDiscordGuildUser>>();
+                foreach (var u in winners)
+                {
+                    var member = await guild.GetMemberAsync(u.UserId);
+                    usersBet.Add(
+                        new Tuple<RouletteBet, IDiscordGuildUser>(u, member));
+                }
+
+                e.AddInlineField(
+                    "Winners",
+                    string.Join("\n", usersBet.Select(x => $"`{x.Item2.Username}`: won {x.Item1.GetWinAmount():N0} mekos!")));
+            }
+            else
+            {
+                e.AddInlineField(
+                   "Winners",
+                   "none");
+            }
+
+            return e.ToEmbed();
+        }
+
+        public async Task<DiscordEmbed> GetTableEmbedAsync(RouletteTable table, IDiscordGuild guild)
+        {
+            var e = new EmbedBuilder()
+                .SetTitle("🎲 Roulette")
+                .SetColor(234, 89, 110)
+                .SetDescription(
+                "Here is your shared roulette table! You can add a bet by using either of the following commands!")
+                .AddInlineField(
+                    "Commands",
+                    ">roulette bet `<amount>` `<box>`"
+                    + "\n>roulette bet `<amount>` `<num>:<num>` for splits")
+                .AddInlineField("test", "Test content this is some text to see how this would look.")
+                .SetImage("https://cdn.miki.ai/resources/roulette/table.png");
+                
+
+            if(table.Bets.Count > 0)
+            {
+                List<Tuple<RouletteBet, IDiscordGuildUser>> usersBet 
+                    = new List<Tuple<RouletteBet, IDiscordGuildUser>>();
+                foreach (var u in table.Bets)
+                {
+                    var member = await guild.GetMemberAsync(u.UserId);
+                    usersBet.Add(
+                        new Tuple<RouletteBet, IDiscordGuildUser>(u, member));
+                }
+
+                e.AddInlineField(
+                    "Current bets",
+                    string.Join("\n", usersBet.Select(x => $"`{x.Item2.Username}`: {x.Item1.BetAmount:N0}")));
+            }
+
+            return e.ToEmbed();
+        }
 
         //[Command(Name = "lottery")]
         //public async Task LotteryAsync(EventContext e)
@@ -701,7 +914,9 @@ namespace Miki.Modules
         //	}
         //}
 
-        public async Task<int?> ValidateBetAsync(CommandContext e, int maxBet = 1000000)
+            
+        // TODO (Veld): change current "return null"'s to localized exceptions and remove the nullable return type.
+        public async Task<int?> ValidateBetAsync(ICommandContext e, int maxBet = 1000000)
         {
             var context = e.GetService<MikiDbContext>();
 
@@ -742,7 +957,7 @@ namespace Miki.Modules
 
             if (bet > maxBet)
             {
-                await e.ErrorEmbed($"you cannot bet more than {maxBet:n0} mekos!")
+                await e.ErrorEmbed($"you cannot bet more than {maxBet:N0} mekos!")
                     .ToEmbed().QueueToChannelAsync(e.Channel);
                 return null;
             }
