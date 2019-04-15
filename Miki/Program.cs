@@ -21,7 +21,6 @@ using Miki.Framework.Languages;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
 using SharpRaven;

@@ -41,7 +41,7 @@ namespace Miki.Modules.Gambling.Services.Roulette.Models
         public int BetType { get; set; }
 
         [ProtoMember(5)]
-        public int[] NumbersAffected { get; set; }
+        public IEnumerable<int> NumbersAffected { get; set; }
 
         /// <summary>
         /// Decides whether the player has won or not based on <paramref name="resultNum"/>.
@@ -50,7 +50,8 @@ namespace Miki.Modules.Gambling.Services.Roulette.Models
         {
             if (IsInside)
             {
-                return NumbersAffected.Any(x => x == resultNum);
+                return NumbersAffected
+                    .Any(x => x == resultNum);
             }
             else
             {
