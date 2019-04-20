@@ -1,15 +1,18 @@
-﻿using Amazon;
+﻿using Miki.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Miki
 {
 	public class Config
 	{
+		public const string MikiSettingsFile = "/miki/settings.json";
+
+		/// <summary>
+		/// This is the new Miki.Configuration file. Over time it will take over everything completely.
+		/// </summary>
+		public const string MikiConfigurationFile = "/miki/configuration.json";
+
 		/// <summary>
 		/// Discord API Token
 		/// </summary>
@@ -47,16 +50,10 @@ namespace Miki
 		public string DatadogHost { get; set; } = "127.0.0.1";
 
 		/// <summary>
-		/// Datadog Agent api key
-		/// </summary>
-		[JsonProperty("datadog_key")]
-		public string DatadogKey { get; set; } = "";
-
-		/// <summary>
 		/// Database connection string
 		/// </summary>
 		[JsonProperty("connection_string")]
-		public string ConnString { get; set; } = "";
+		public string ConnString { get; set; } = "Server=127.0.0.1;Database=miki;";
 
 		/// <summary>
 		/// Cache connection string
@@ -82,12 +79,6 @@ namespace Miki
 		[JsonProperty("image_api_url")]
 		public string ImageApiUrl { get; internal set; } = "";
 
-		/// <summary>
-		/// Check if this is the patreon
-		/// </summary>
-		[JsonProperty("is_patreon_bot")]
-		public bool IsMainBot { get; internal set; } = true;
-
 		[JsonProperty("message_worker_count")]
 		public int MessageWorkerCount { get; internal set; } = 4;
 
@@ -108,5 +99,20 @@ namespace Miki
 
 		[JsonProperty("danbooru_credentials")]
 		public string DanbooruCredentials { get; internal set; } = "";
-	}
+
+		[JsonProperty("redis_endpoints")]
+		public string[] RedisEndPoints { get; internal set; }
+
+		[JsonProperty("redis_password")]
+		public string RedisPassword { get; internal set; }
+
+		[JsonProperty("self_hosted")]
+		public bool SelfHosted { get; internal set; }
+
+		[JsonProperty("loglevel")]
+		public LogLevel LogLevel { get; internal set; } = LogLevel.Information;
+
+        [JsonProperty("bunny_cdn_key")]
+        public string BunnyCdnKey { get; internal set; }
+    }
 }

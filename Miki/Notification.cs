@@ -1,33 +1,45 @@
-﻿using Miki.Framework;
-using Miki.Common;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts.Achievements;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Models;
 using System.Threading.Tasks;
-using System;
-using Miki.Framework.Extension;
-using Miki.Discord.Common;
-using Miki.Discord;
 
 namespace Miki
 {
 	internal class Notification
 	{
-		public static void SendAchievement(AchievementDataContainer d, int rank, IDiscordChannel channel, IDiscordUser user)
-		{
-			SendAchievement(d.Achievements[rank], channel, user);
-		}
-		public static void SendAchievement(BaseAchievement d, IDiscordChannel channel, IDiscordUser user)
-		{
-			CreateAchievementEmbed(d, user).QueueToChannel(channel);	
-		}
-		public static async Task SendAchievementAsync(BaseAchievement baseAchievement, IDiscordUser user)
-		{
-			SendAchievement(baseAchievement, await user.GetDMChannel(), user);
-		}
+		public static async ValueTask SendAchievementAsync(AchievementDataContainer d, int rank, IDiscordTextChannel channel, IDiscordUser user)
+		    => await SendAchievementAsync(d.Achievements[rank], channel, user);
 
-		private static DiscordEmbed CreateAchievementEmbed(BaseAchievement baseAchievement, IDiscordUser user)
+        public static async Task SendAchievementAsync(IAchievement d, IDiscordTextChannel channel, IDiscordUser user)
+        {
+            if(channel is IDiscordGuildChannel c)
+            {
+                using (var scope = MikiApp.Instance.Services.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetService<MikiDbContext>();
+                    var achievementSetting = await Setting.GetAsync(context, channel.Id, DatabaseSettingId.Achievements);
+                    if (achievementSetting != 0)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            await CreateAchievementEmbed(d, user)
+                .QueueToChannelAsync(channel);
+        }
+
+		public static async Task SendAchievementAsync(IAchievement baseAchievement, IDiscordUser user)
+		    => await SendAchievementAsync(baseAchievement, await user.GetDMChannelAsync(), user);
+
+		private static DiscordEmbed CreateAchievementEmbed(IAchievement baseAchievement, IDiscordUser user)
 		{
-			return Utils.Embed.SetTitle("Achievement Unlocked")
+			return new EmbedBuilder()
+				.SetTitle("Achievement Unlocked")
 				.SetDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{baseAchievement.Name}**! {baseAchievement.Icon}").ToEmbed();
 		}
 	}

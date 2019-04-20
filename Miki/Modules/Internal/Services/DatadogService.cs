@@ -1,78 +1,156 @@
-﻿using Miki.Configuration;
+﻿using Miki.Accounts;
+using Miki.Accounts.Achievements;
+using Miki.Configuration;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
+using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Logging;
 using StatsdClient;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Internal.Services
 {
     public class DatadogService : BaseService
     {
-		[Configurable]
-		public string DatadogKey { get; set; } = "";
+        public override void Install(Module m)
+        {
+            DogStatsd.Configure(new StatsdConfig
+            {
+                // TODO #534: Change to [Configurable]
+                StatsdServerName = Global.Config.DatadogHost,
+                StatsdPort = 8125,
+                Prefix = "miki"
+            });
 
-		public override void Install(Module m, Bot b)
-		{
-			var dogstatsdConfig = new StatsdConfig
-			{
-				StatsdServerName = Global.Config.DatadogHost,
-				StatsdPort = 8125,
-				Prefix = "miki"
-			};
+            base.Install(m);
 
-			DogStatsd.Configure(dogstatsdConfig);
+            CreateAccountMetrics();
 
-			base.Install(m, b);
+            CreateAchievementsMetrics();
 
-			var eventSystem = b.GetAttachedObject<EventSystem>();
-			var restClient = b.Client._apiClient;
+            CreateEventSystemMetrics(m.EventSystem);
 
-			restClient.RestClient.OnRequestComplete += (method, uri) =>
-			{
-				DogStatsd.Histogram("discord.http.requests", 1, 1, new[]
-				{
-					$"http_method:{method}", $"http_uri:{uri}"
-				});
-			};
+            CreateDiscordMetrics();
 
-			if(eventSystem != null)
-			{
-				var defaultHandler = eventSystem.GetCommandHandler<SimpleCommandHandler>();
+            CreateHttpMetrics();
 
-				if (defaultHandler != null)
-				{
-					defaultHandler.OnMessageProcessed += (command, message, time) =>
-					{
-						if (command.Module == null)
-						{
-							return Task.CompletedTask;
-						}
+            Log.Message("Datadog set up!");
+        }
 
-						DogStatsd.Histogram("commands.time", time, 0.1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
-						});
+        private void CreateAccountMetrics()
+        {
+            var accounts = AccountManager.Instance;
+            if (accounts == null)
+            {
+                return;
+            }
 
-						DogStatsd.Counter("commands.count", 1, 1, new[] {
-						$"commandtype:{command.Module.Name.ToLowerInvariant()}",
-						$"commandname:{command.Name.ToLowerInvariant()}"
-						});
+            accounts.OnGlobalLevelUp += (user, channel, level) =>
+            {
+                DogStatsd.Counter("levels.global", level, 1, new[]{
+                    $"level:{level}"
+                });
+                return Task.CompletedTask;
+            };
+            accounts.OnLocalLevelUp += (user, channel, level) =>
+            {
+                DogStatsd.Counter("levels.local", level, 1, new[]{
+                    $"level:{level}"
+                });
+                return Task.CompletedTask;
+            };
+        }
+        private void CreateAchievementsMetrics()
+        {
+            var achievements = AchievementManager.Instance;
+            if(achievements == null)
+            {
+                return;
+            }
 
-						return Task.CompletedTask;
-					};
-				}
-			}
+            achievements.OnAchievementUnlocked += (achievement) =>
+            {
+                DogStatsd.Increment("achievements.gained");
+                return Task.CompletedTask;
+            };
+        }
+        private void CreateDiscordMetrics()
+        {
+            var discord = MikiApp.Instance.Discord;
+            if (discord == null)
+            {
+                return;
+            }
 
-			Log.Message("Datadog set up!");
-		}
-		public override void Uninstall(Module m, Bot b)
-		{
-			base.Uninstall(m, b);
-			
-		}
+            discord.MessageCreate += (msg) =>
+            {
+                DogStatsd.Increment("messages.received");
+                return Task.CompletedTask;
+            };
+            discord.GuildJoin += (newGuild) =>
+            {
+                DogStatsd.Increment("guilds.joined");
+                return Task.CompletedTask;
+            };
+            discord.GuildLeave += (oldGuild) =>
+            {
+                DogStatsd.Increment("guilds.left");
+                return Task.CompletedTask;
+            };
+        }
+        private void CreateEventSystemMetrics(EventSystem system)
+        {
+            if (system == null)
+            {
+                return;
+            }
+
+            var defaultHandler = system.GetCommandHandler<SimpleCommandHandler>();
+            if (defaultHandler != null)
+            {
+                defaultHandler.OnMessageProcessed += OnMessageProcessed;
+            }
+        }
+        private void CreateHttpMetrics()
+        {
+            var discordHttpClient = MikiApp.Instance
+               .GetService<DiscordApiClient>()?.RestClient;
+            if (discordHttpClient == null)
+            {
+                return;
+            }
+
+            discordHttpClient.OnRequestComplete += (method, url) =>
+            {
+                DogStatsd.Histogram("discord.http.requests", 1, 1, new[] {
+                    $"http_method:{method}",
+                    $"http_uri:{url}"
+                });
+            };
+        }
+
+        private Task OnMessageProcessed(CommandEvent ev, IDiscordMessage msg, long timeMs)
+        {
+            if (ev.Module == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            DogStatsd.Histogram("commands.time", timeMs, 0.1, new[] {
+                $"commandtype:{ev.Module.Name.ToLowerInvariant()}",
+                $"commandname:{ev.Name.ToLowerInvariant()}"
+            });
+
+            DogStatsd.Counter("commands.count", 1, 1, new[] {
+                $"commandtype:{ev.Module.Name.ToLowerInvariant()}",
+                $"commandname:{ev.Name.ToLowerInvariant()}"
+            });
+
+            return Task.CompletedTask;
+        }
 	}
 }

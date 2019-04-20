@@ -1,59 +1,62 @@
-﻿using Miki.Framework;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Helpers;
 using Miki.Models;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
 {
-    public class AchievementDataContainer
-    {
-        public string Name = Constants.NotDefined;
+	public class AchievementDataContainer
+	{
+		public string Name = Constants.NotDefined;
 
-        public List<BaseAchievement> Achievements = new List<BaseAchievement>();
+		public List<IAchievement> Achievements = new List<IAchievement>();
 
-        public AchievementDataContainer()
-        {
+		public AchievementDataContainer()
+		{
 			AchievementManager.Instance.AddContainer(this);
 
-			foreach (BaseAchievement d in Achievements)
+			foreach (IAchievement d in Achievements)
 			{
 				d.ParentName = Name;
 			}
 		}
-        public AchievementDataContainer(Action<AchievementDataContainer> instance)
-        {
-            instance.Invoke(this);
 
-            AchievementManager.Instance.AddContainer(this);
+		public AchievementDataContainer(Action<AchievementDataContainer> instance)
+		{
+			instance.Invoke(this);
 
-            foreach (BaseAchievement d in Achievements)
-            {
-                d.ParentName = Name;
-            }
-        }
+			AchievementManager.Instance.AddContainer(this);
 
-        public async Task CheckAsync(BasePacket packet)
-        {
-            await InternalCheckAsync(packet);
-        }
-
-        private async Task InternalCheckAsync(BasePacket packet)
-        {
-            long userId = packet.discordUser.Id.ToDbLong();
-
-			using (var context = new MikiContext())
+			foreach (IAchievement d in Achievements)
 			{
-				Achievement a = await Achievement.GetAsync(context, userId, Name);
+				d.ParentName = Name;
+			}
+		}
+
+		public async Task CheckAsync(BasePacket packet)
+		{
+			await InternalCheckAsync(packet);
+		}
+
+		private async Task InternalCheckAsync(BasePacket packet)
+		{
+			long userId = packet.discordUser.Id.ToDbLong();
+
+			using (var scope = MikiApp.Instance.Services.CreateScope())
+			{
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+				Achievement a = await DatabaseHelpers.GetAchievementAsync(context, userId, Name);
 
 				if (a == null)
 				{
 					if (await Achievements[0].CheckAsync(packet))
 					{
-						await Achievements[0].UnlockAsync(packet.discordChannel, packet.discordUser);
+						await AchievementManager.Instance.UnlockAsync(Achievements[0], packet.discordChannel, packet.discordUser);
 						await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
 					}
 					return;
@@ -66,24 +69,24 @@ namespace Miki.Accounts.Achievements
 
 				if (await Achievements[a.Rank + 1].CheckAsync(packet))
 				{
-					await Achievements[a.Rank + 1].UnlockAsync(packet.discordChannel, packet.discordUser, a.Rank + 1);
+					await AchievementManager.Instance.UnlockAsync(Achievements[a.Rank + 1], packet.discordChannel, packet.discordUser, a.Rank + 1);
 					await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
 				}
 			}
-        }
+		}
 
-        public AchievementDataContainer ToBase()
-        {
-            AchievementDataContainer b = new AchievementDataContainer();
+		public AchievementDataContainer ToBase()
+		{
+			AchievementDataContainer b = new AchievementDataContainer();
 
-            b.Name = Name;
+			b.Name = Name;
 
-            foreach (BaseAchievement a in Achievements)
-            {
-                b.Achievements.Add(a);
-            }
+			foreach (IAchievement a in Achievements)
+			{
+				b.Achievements.Add(a);
+			}
 
-            return b;
-        }
-    }
+			return b;
+		}
+	}
 }

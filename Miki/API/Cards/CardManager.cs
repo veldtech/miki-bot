@@ -1,39 +1,58 @@
-﻿using System;
+﻿using Miki.API.Cards.Objects;
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.API.Cards.Objects;
-using Miki.Modules;
 
 namespace Miki.API.Cards
 {
-    public delegate int GetCardValue(int totalValue, CardHand hand);
+	public delegate int GetCardValue(int totalValue, CardHand hand);
 
-    public class CardManager
-    {
-        private Dictionary<ulong, CardHand> hands = new Dictionary<ulong, CardHand>();
-        private CardSet deck = new CardSet();
+	[ProtoContract]
+	public class CardManager
+	{
+		[ProtoMember(1)]
+		protected Dictionary<ulong, CardHand> _hands = new Dictionary<ulong, CardHand>();
 
-        public void AddPlayer(ulong userid)
-        {
-            if (!hands.ContainsKey(userid))
-            {
-                hands.Add(userid, new CardHand());
-            }
-        }
+		[ProtoMember(2)]
+		protected CardSet _deck = new CardSet();
 
-        public void DealAll()
-        {
-            foreach (CardHand h in hands.Values)
-            {
-                h.AddToHand(deck.DrawRandom());
-            }
-        }
+		public CardHand AddPlayer(ulong userid)
+		{
+			if (!_hands.ContainsKey(userid))
+			{
+				CardHand hand = new CardHand();
+				_hands.Add(userid, hand);
+				return hand;
+			}
+			return null;
+		}
 
-        public void DealTo(ulong userid)
-        {
-            hands[userid].AddToHand(deck.DrawRandom());
-        }
-    }
+		public CardHand GetPlayer(ulong userId)
+		{
+			_hands.TryGetValue(userId, out CardHand value);
+			return value;
+		}
+
+		public void DealAll()
+		{
+			foreach (CardHand h in _hands.Values)
+			{
+				h.AddToHand(_deck.DrawRandom());
+			}
+		}
+
+		public void DealTo(ulong userid)
+		{
+			if (_hands.TryGetValue(userid, out CardHand hand))
+			{
+				DealTo(hand);
+			}
+			throw new InvalidOperationException("Your hand does not exist.");
+		}
+
+		public void DealTo(CardHand hand)
+		{
+			hand.AddToHand(_deck.DrawRandom());
+		}
+	}
 }

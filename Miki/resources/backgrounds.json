@@ -302,7 +302,7 @@
     {
         "id": 32,
         "name": "Business Miki",
-        "price": -1,
+        "price": 500000,
         "tags": [
             "miki",
             "lootbox"
@@ -312,7 +312,7 @@
     {
         "id": 33,
         "name": "Chemist Miki",
-        "price": -1,
+        "price": 500000,
         "tags": [
             "miki",
             "lootbox"
@@ -322,7 +322,7 @@
     {
         "id": 34,
         "name": "Florist Miki",
-        "price": -1,
+        "price": 500000,
         "tags": [
             "miki",
             "lootbox"
@@ -332,7 +332,7 @@
     {
         "id": 35,
         "name": "Idol Miki",
-        "price": -1,
+        "price": 1000000,
         "tags": [
             "miki",
             "lootbox"
@@ -342,7 +342,7 @@
     {
         "id": 36,
         "name": "Maid Miki",
-        "price": -1,
+        "price": 1000000,
         "tags": [
             "miki",
             "lootbox"
@@ -352,7 +352,7 @@
     {
         "id": 37,
         "name": "Mechanic Miki",
-        "price": -1,
+        "price": 500000,
         "tags": [
             "miki",
             "lootbox"
@@ -362,11 +362,11 @@
     {
         "id": 38,
         "name": "Astro Miki",
-        "price": -1,
+        "price": 2500000,
         "tags": [
             "miki",
             "lootbox"
         ],
         "quality": 2
     }
-]
+];

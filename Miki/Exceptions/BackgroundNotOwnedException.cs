@@ -1,12 +1,11 @@
-﻿using Miki.Framework.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
 namespace Miki.Exceptions
 {
-    public class BackgroundNotOwnedException : BotException
-    {
-		public override string Resource => "error_background_not_owned";
+	public class BackgroundNotOwnedException : LocalizedException
+	{
+		public override IResource LocaleResource
+			=> new LanguageResource("error_background_not_owned");
 	}
 }

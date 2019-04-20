@@ -1,78 +1,111 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Miki.API.Cards.Enums;
+﻿using Miki.API.Cards.Enums;
+using ProtoBuf;
+using System;
 
 namespace Miki.API.Cards.Objects
 {
-    public class Card
-    {
-        public CardType type;
-        public CardValue value;
-        public bool isPublic = true;
+	[ProtoContract]
+	public class Card
+	{
+		[ProtoMember(1)]
+		public CardType type;
 
-        public Card(CardType t, CardValue v)
-        {
-            type = t;
-            value = v;
-        }
+		[ProtoMember(2)]
+		public CardValue value;
 
-        public string Print()
-        {
-            string output = "";
+		[ProtoMember(3)]
+		public bool isPublic;
 
-            if (!isPublic)
-            {
-                return "??";
-            }
+        public Card()
+        { }
+		public Card(CardType t, CardValue v)
+		{
+			type = t;
+			value = v;
+		}
 
-            output += ":" + type.ToString().ToLower() + ":";
+		public override string ToString()
+		{
+			if (!isPublic)
+			{
+				return "??";
+			}
 
+            string output = $":{type.ToString().ToLower()}:";
+            
             switch (value)
             {
                 case CardValue.ACES:
+                {
                     output += "A";
-                    break;
+                } break;
+
                 case CardValue.TWOS:
+                {
                     output += "2";
-                    break;
+                } break;
+
                 case CardValue.THREES:
+                {
                     output += "3";
-                    break;
+                } break;
+
                 case CardValue.FOURS:
+                {
                     output += "4";
-                    break;
+                } break;
+
                 case CardValue.FIVES:
+                {
                     output += "5";
-                    break;
+                } break;
+
                 case CardValue.SIXES:
+                {
                     output += "6";
-                    break;
+                } break;
+
                 case CardValue.SEVENS:
+                {
                     output += "7";
-                    break;
+                } break;
+
                 case CardValue.EIGHTS:
+                {
                     output += "8";
-                    break;
+                } break;
+
                 case CardValue.NINES:
+                {
                     output += "9";
-                    break;
+                } break;
+
                 case CardValue.TENS:
+                {
                     output += "10";
-                    break;
+                } break;
+
                 case CardValue.JACKS:
+                {
                     output += "J";
-                    break;
+                } break;
+
                 case CardValue.QUEENS:
+                {
                     output += "Q";
-                    break;
-                case CardValue.KINGS:
+                } break;
+
+				case CardValue.KINGS:
+                {
                     output += "K";
-                    break;
-            }
-            return output;
-        }
-    }
+                } break;
+
+                default:
+                {
+                    throw new InvalidOperationException($"{value} is not a valid card");
+                }
+			}
+			return output;
+		}
+	}
 }

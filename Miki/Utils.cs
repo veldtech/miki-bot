@@ -1,116 +1,99 @@
-﻿using Miki.Common;
-using Miki;
-using Miki.Accounts;
+using Amazon.S3;
+using Amazon.S3.Model;
 using Miki.API.Leaderboards;
-using Miki.Languages;
+using Miki.Bot.Models;
+using Miki.BunnyCDN;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Events;
+using Miki.Framework.Language;
+using Miki.Helpers;
+using Miki.Localization;
+using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Miki.Framework.Events;
-using Miki.Framework.Extension;
-using Microsoft.EntityFrameworkCore;
-using Miki.Models;
-using StackExchange.Redis;
-using StackExchange.Redis.Extensions.Core;
-using Miki.Framework.Languages;
-using Amazon.S3.Model;
-using Miki.Exceptions;
-using Amazon.S3;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
+using System.Threading.Tasks;
 
 namespace Miki
 {
-	public static class Utils
-	{
-		static char[] hexDigits = {
-		 '0', '1', '2', '3', '4', '5', '6', '7',
-		 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    public static class Utils
+    {
+        public const string EveryonePattern = @"@(everyone|here)";
 
-		public static T FromEnum<T>(this ArgObject argument, T defaultValue) where T : struct
-		{
-			if (Enum.TryParse(argument.Argument, true, out T result))
-			{
-				return result;
-			}
-			return defaultValue;
-		}
+        public static string EscapeEveryone(string text) 
+            => Regex.Replace(text, EveryonePattern, "@\u200b$1");
 
-        public static DateTime UnixToDateTime(long unix)
+        public static T FromEnum<T>(this string argument, T defaultValue)
+            where T : Enum
         {
-            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            time = time.AddSeconds(unix).ToLocalTime();
-            return time;
+            if (Enum.TryParse(typeof(T), argument, true, out object result))
+            {
+                return (T)result;
+            }
+            return defaultValue;
         }
 
-        public static string ToTimeString(this int seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-        public static string ToTimeString(this float seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-        public static string ToTimeString(this long seconds, ulong channelId, bool minified = false)
-        {
-            TimeSpan time = new TimeSpan(0, 0, 0, (int)seconds, 0);
-            return time.ToTimeString(channelId, minified);
-        }
-		public static string ToTimeString(this TimeSpan time, ulong channelId,  bool minified = false)
+        public static bool TryFromEnum<T>(this string argument, out T value)
+            where T : struct
+            => Enum.TryParse(argument ?? "", true, out value);
+
+        public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if (Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
             if (time.Hours > 0)
             {
                 if (time.Hours > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hours"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_hour"), time.Hours, minified));
+                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
                 }
             }
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minutes"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(Locale.GetString(channelId, "time_minute"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
                 }
             }
 
-			if (t.Count == 0 || time.Seconds > 0)
-			{
-				if (time.Seconds > 1)
-				{
-					t.Add(new TimeValue(Locale.GetString(channelId, "time_seconds"), time.Seconds, minified));
-				}
-				else
-				{
-					t.Add(new TimeValue(Locale.GetString(channelId, "time_second"), time.Seconds, minified));
-				}
-			}
-            
+            if (t.Count == 0 || time.Seconds > 0)
+            {
+                if (time.Seconds > 1)
+                {
+                    t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
+                }
+                else
+                {
+                    t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
+                }
+            }
+
             if (t.Count != 0)
             {
                 List<string> s = new List<string>();
@@ -131,7 +114,7 @@ namespace Miki
 
                     if (!minified)
                     {
-                        text += $", {Locale.GetString(channelId, "time_and")} " + s[s.Count - 1].ToString();
+                        text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
                     }
                 }
                 else if (t.Count == 1)
@@ -144,79 +127,67 @@ namespace Miki
             return "";
         }
 
-		public static bool IsAll(this ArgObject input)
-		{
-			if (input == null) return false;
-			return (input?.Argument == "all") || (input?.Argument == "*");
-		}
+        public static bool IsAll(string input)
+            => (input == "all") || (input == "*");
 
-		public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
-			=> new EmbedBuilder()
-				.SetTitle($"🚫 {e.GetResource(LocaleTags.ErrorMessageGeneric)}")
+        public static EmbedBuilder ErrorEmbed(this ICommandContext e, string message)
+            => new LocalizedEmbedBuilder(e.Locale)
+                .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
-		public static string GetResource(this EventContext e, string resource, params object[] args)
-			=> Locale.GetString(e.Channel.Id, resource, args);
+		public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, string resourceId, params object[] args)
+			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
 
-		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
-			=> ErrorEmbed(e, e.GetResource(resourceId, args));
+        public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, IResource resource)
+            => ErrorEmbed(e, resource.Get(e.Locale));
 
-		public static EmbedBuilder Embed => new EmbedBuilder();
+        public static DateTime MinDbValue 
+            => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static DateTime MinDbValue => new DateTime(1755, 1, 1, 0, 0, 0);
-
-        public static DiscordEmbed SuccessEmbed(ulong id, string message)
+        public static PrefixTrigger GetDefaultPrefixTrigger(this EventSystem es)
         {
-            return new EmbedBuilder()
-            {
-                Title = "✅ " + Locale.GetString(id, LocaleTags.SuccessMessageGeneric),
-				Description = message,
-                Color = new Color(119, 178, 85)
-            }.ToEmbed();
+            return es.GetMessageTriggers()
+                .Where(x => x is PrefixTrigger)
+                .Select(x => x as PrefixTrigger)
+                .Where(x => x.IsDefault)
+                .FirstOrDefault();
         }
 
-		public static string RemoveMentions(this ArgObject arg, IDiscordGuild guild)
-		{
-			return Regex.Replace(arg.Argument, "<@!?(\\d+)>", (m) =>
+		public static DiscordEmbed SuccessEmbed(this ICommandContext e, string message)
+		    => new EmbedBuilder()
 			{
-				return (guild.GetUserAsync(ulong.Parse(m.Groups[1].Value))).Result.Username;
-			}, RegexOptions.None);
-		}
+				Title = "✅ " + e.Locale.GetString("miki_success_message_generic"),
+				Description = message,
+				Color = new Color(119, 178, 85)
+			}.ToEmbed();
+        public static DiscordEmbed SuccessEmbedResource(this ICommandContext e, string resource, params object[] param)
+            => SuccessEmbed(e, e.Locale.GetString(resource, param));
 
-		public static string DefaultIfEmpty(this string a, string b)
+        public static string ToFormattedString(this int val)
+            => val.ToString("N0");
+
+		public static string ToFormattedString(this long val)
+		    => val.ToString("N0");
+
+		public static string RemoveMentions(this string arg, IDiscordGuild guild)
 		{
-			return string.IsNullOrEmpty(a) ? b : a;
+			return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
+			{
+				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
+			}, RegexOptions.None);
 		}
 
 		public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
 		{
-			for(int i = 0; i < Math.Min(items.Count, 12); i++)
+			for (int i = 0; i < Math.Min(items.Count, 12); i++)
 			{
 				embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
 			}
 			return embed;
 		}
 
-		public static string ToHexString(this Color color)
-		{
-			byte[] bytes = new byte[3];
-			bytes[0] = color.R;
-			bytes[1] = color.G;
-			bytes[2] = color.B;
-
-			char[] chars = new char[bytes.Length * 2];
-
-			for (int i = 0; i < bytes.Length; i++)
-			{
-				int b = bytes[i];
-				chars[i * 2] = hexDigits[b >> 4];
-				chars[i * 2 + 1] = hexDigits[b & 0xF];
-			}
-			return new string(chars);
-		}
-
-		public static async Task SyncAvatarAsync(IDiscordUser user)
+		public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
 		{
 			PutObjectRequest request = new PutObjectRequest();
 			request.BucketName = "miki-cdn";
@@ -224,10 +195,12 @@ namespace Miki
 			request.ContentType = "image/png";
 			request.CannedACL = new S3CannedACL("public-read");
 
-			//using (var client = new Rest.RestClient(user.GetAvatarUrl(ImageFormat.Png)))
-			//{
-			//	request.InputStream = await client.GetStreamAsync("");
-			//}
+			string avatarUrl = user.GetAvatarUrl();
+
+			using (var client = new Rest.RestClient(avatarUrl, true))
+			{
+				request.InputStream = await client.GetStreamAsync();
+			}
 
 			var response = await Global.CdnClient.PutObjectAsync(request);
 
@@ -236,36 +209,46 @@ namespace Miki
 				throw new AvatarSyncException();
 			}
 
-			using (var context = new MikiContext())
-			{
-				User u = await User.GetAsync(context, user);
-				u.HeaderUrl = u.Id.ToString();
-				await context.SaveChangesAsync();
-			}
+            await MikiApp.Instance.GetService<BunnyCDNClient>()
+                .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
-			await Global.RedisClient.AddAsync($"user:{user.Id}:avatar:synced", true);
+			User u = await User.GetAsync(context, user.Id, user.Username);
+            await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
+            u.AvatarUrl = u.Id.ToString();
+			await context.SaveChangesAsync();
 		}
-	}
 
-    public class MikiRandom : RandomNumberGenerator
-    {
-        private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
-
-        public static int Next()
+        public static string TakeAll(this IArgumentPack pack)
         {
-            var data = new byte[sizeof(int)];
-            rng.GetBytes(data);
-            return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
+            List<string> allItems = new List<string>();
+            while(pack.CanTake)
+            {
+                allItems.Add(pack.Take());
+            }
+            return string.Join(" ", allItems);
         }
+    }
+
+	public class MikiRandom : RandomNumberGenerator
+	{
+		private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
+
+		public static int Next()
+		{
+			var data = new byte[sizeof(int)];
+			rng.GetBytes(data);
+			return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
+		}
 
 		public static long Next(long maxValue)
 		{
 			return Next(0L, maxValue);
 		}
-        public static int Next(int maxValue)
-        {
-            return Next(0, maxValue);
-        }
+
+		public static int Next(int maxValue)
+		{
+			return Next(0, maxValue);
+		}
 
 		public static int Roll(int maxValue)
 		{
@@ -280,106 +263,60 @@ namespace Miki
 			}
 			return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
 		}
+
 		public static int Next(int minValue, int maxValue)
-        {
-            if (minValue > maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-        }
-
-        public static double NextDouble()
-        {
-            var data = new byte[sizeof(uint)];
-            rng.GetBytes(data);
-            var randUint = BitConverter.ToUInt32(data, 0);
-            return randUint / (uint.MaxValue + 1.0);
-        }
-
-        public override void GetBytes(byte[] data)
-        {
-            rng.GetBytes(data);
-        }
-
-        public override void GetNonZeroBytes(byte[] data)
-        {
-            rng.GetNonZeroBytes(data);
-        }
-    }
-
-    public class TimeValue
-    {
-        public int Value { get; set; }
-        public string Identifier { get; set; }
-
-        private bool minified;
-
-        public TimeValue(string i, int v, bool minified = false)
-        {
-            Value = v;
-            if (minified)
-            {
-                Identifier = i[0].ToString();
-            }
-            else
-            {
-                Identifier = i;
-            }
-            this.minified = minified;
-        }
-
-        public override string ToString()
-        {
-            if (minified) return Value + Identifier;
-            return Value + " " + Identifier;
-        }
-    }
-
-	public class RedisDictionary
-	{
-		ICacheClient client;
-		string name;
-
-		public async Task<IEnumerable<string>> GetKeysAsync() 
-			=> (await client.HashKeysAsync(name));
-
-		public RedisDictionary(string name, ICacheClient client)
 		{
-			this.name = name;
-			this.client = client;
-		}
-		~RedisDictionary()
-		{
-			client.Remove(name);
-		}
-
-		public async Task AddAsync(object key, object value)
-			=> await AddAsync(key.ToString(), value.ToString());
-		public async Task AddAsync(string key, object value)
-		{
-			await client.HashSetAsync(name, key, value);
-		}
-
-		public async Task<string> GetAsync(object key)
-			=> await GetAsync(key.ToString());
-		public async Task<string> GetAsync(string key)
-		{
-			if(await ContainsAsync(key))
+			if (minValue > maxValue)
 			{
-				return client.HashGet<string>(name, key);
+				throw new ArgumentOutOfRangeException();
 			}
-			throw new IndexOutOfRangeException($"No member found with key `{key}`");
+			return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
 		}
 
-		public async Task ClearAsync()
+		public static double NextDouble()
 		{
-			await client.RemoveAsync(name);
+			var data = new byte[sizeof(uint)];
+			rng.GetBytes(data);
+			var randUint = BitConverter.ToUInt32(data, 0);
+			return randUint / (uint.MaxValue + 1.0);
 		}
 
-		public async Task<bool> ContainsAsync(object key)
-			=> await ContainsAsync(key.ToString());
-		public async Task<bool> ContainsAsync(string key)
-			=> await client.Database.HashExistsAsync(name, key);
+		public override void GetBytes(byte[] data)
+		{
+			rng.GetBytes(data);
+		}
+
+		public override void GetNonZeroBytes(byte[] data)
+		{
+			rng.GetNonZeroBytes(data);
+		}
+	}
+
+	public class TimeValue
+	{
+		public int Value { get; set; }
+		public string Identifier { get; set; }
+
+		private readonly bool minified;
+
+		public TimeValue(string i, int v, bool minified = false)
+		{
+			Value = v;
+			if (minified)
+			{
+				Identifier = i[0].ToString();
+			}
+			else
+			{
+				Identifier = i;
+			}
+			this.minified = minified;
+		}
+
+		public override string ToString()
+		{
+			if (minified) return Value + Identifier;
+			return Value + " " + Identifier;
+		}
 	}
 }

@@ -1,47 +1,65 @@
-# Welcome to Miki Repository
-![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg)
+# Miki
+![lol oily fucked up](https://discordbots.org/api/widget/status/160105994217586689.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0181e7d12f8344fd9950067e80f53f74)](https://www.codacy.com/app/velddev/Miki?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=velddev/Miki&amp;utm_campaign=Badge_Grade) 
 <br>
-Below you will find a basic workflow of how the branches should work. Please follow this to prevent bad merge conflicts on Miki and things constantly breaking.
+Your solution to a great Discord Community! Adding levels, role management, achievements, profiles, image search, games, and many more!
 
-## Table of contents
+## Build status
+| Platform | Status |
+| --- | --- |
+| Ubuntu 16.04 | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-ubuntu-master) |
+| Windows | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-windows-master) |
 
-### Workflow for branches
-### Dependencies
-### Useful links
-
-## Workflow for Branches
-
-* Pull the latest changes from the **master** branch.
-* Create a new working branch based off the last commit from the **master** branch.
-  * Branches should be named as follows:
-    * **update_name**: For LARGE updates that will take a while to update. Smaller hotfix updates will be merged into this if they are released before the large update.
-      * *(e.g., update_v2.0.1)*
-    * **hf_name**: For SMALLER hotfix updates that will be pushed out before larger updates are completed. These will be merged back into master AND the update branches whenever they are released.
-      * *(e.g., hf_fixmarrycommand)*
-    * **helper_name_date**: For helper-related changes (such as cleaning up code, web documentation updates, etc), that need to be approved by Veld before they can be merged into any other branches.
-      * *(e.g., helper_veld_201610 or helper_documentation_201610)*
-* Make your changes in the branch you have just created.
-* Commit those changes, and then push the branch to the remote git repository.
-* When changes are approved, and are ready for release, the branch will be merged into the **master** branch.
-  * *Note: The working branch at this time will be deleted from the repository.*
-  
-## Dependencies
-The following dependencies are mostly gotten from nuget, I'll link a github source repo otherwise.
-
-* Entity Framework 6.0
-* Discord.Net
-* IA ([source](https://github.com/velddev/IA))
-* IA.SDK ([source](https://github.com/velddev/IA.SDK))
-* Imgur.API
-* Newtonsoft.Json
-  
 ## Useful links
-Bot invite: https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot<br>
+Bot invite: https://miki.ai/invite?ref=github<br>
 Documentation: https://github.com/velddev/Miki/wiki<br>
 Issues: https://github.com/velddev/Miki/issues<br>
 Patreon: https://www.patreon.com/mikibot<br>
-Support server: https://discord.gg/55sAjsW<br>
-Trello: https://trello.com/b/4Mgl8nBa/miki<br>
+Support server: https://discord.gg/39Xpj7K<br>
+
 
 ## Feature requests
-[![Feature Requests](http://feathub.com/Mikibot/Miki?format=svg)](http://feathub.com/Mikibot/Miki)
+[Go to Suggestions.Miki.ai](https://suggestions.miki.ai)
+
+## Getting Started 
+Yes, in its current state this process is _tedious_. However, there will be an installer in the future that will make getting started much simpler.
+
+#### Important:
+Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
+
+If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you. DM Xetera#9596 for questions instead.
+
+## Installation Steps:
+1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
+
+2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
+
+3) Add your bot token in Miki/miki/settings.json.
+
+4) Download [Redis](https://redis.io/download) and get that running too.
+
+5) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
+
+6) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
+
+```json
+"connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
+```
+
+7) Install the `uuid-ossp` postgres extensions on the `Miki` database.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+8) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+
+    * Tools -> NuGet Package Manager -> Package Manager Console
+    
+9) Run Miki. 🎉
+
+## Possible issues:
+These will likely be fixed in the near future (if it's not already by the time you're reading this):
+
+* A lack of API keys might be giving you issues in the `DonatorModule` and `FunModule`, the simplest way to solve it is to just comment out the lines that raise exceptions and  the lines that reference the client **(there shouldn't be more than 2 reference max, if so, you're doing something wrong).**
+
+* If you're having trouble running migrations make sure your `EntityFramework` for both base `Miki` and `Miki.Framework` is on version 2.0.1-2.0.3 **NOT** 2.1.1.

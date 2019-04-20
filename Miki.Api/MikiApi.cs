@@ -1,44 +1,29 @@
-﻿using Miki.API.Leaderboards;
+﻿using Miki.Api.Models;
+using Miki.API.Leaderboards;
 using Miki.Rest;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.API
 {
-	public class MikiApi
+	public class MikiApiClient : IDisposable
 	{
-		public static MikiApi Instance => _instance;
-		static MikiApi _instance = null;
+		private readonly RestClient _client;
 
-		RestClient client;
+		private const string _baseUrl = "https://api.miki.ai/";
 
-		string token = "";
-		string baseUrl = "";
-
-		public const int API_VERSION = 1;
-
-		public MikiApi(string base_url, string token)
+		public MikiApiClient(string token)
 		{
-			if(_instance == null)
-			{
-				_instance = this;	
-			}
-
-			this.token = token;
-			baseUrl = base_url;
-
-			client = new RestClient(baseUrl + $"/{API_VERSION}/");
-			client.SetAuthorization(token);
+			_client = new RestClient(_baseUrl);
+            _client.AddHeader("Authorization", "Bearer " + token);
 		}
 
 		/// <summary>
 		/// Builds the url to the leaderboards page on the miki website
 		/// </summary>
 		/// <param name="options">Leaderboards Options Object</param>
-		/// <returns>https://miki.ai/leaderboards/{guild_id?}/{type}/{page}</returns>
+		/// <returns>https://miki.ai/leaderboards/{guild_id?}/{type}</returns>
 		public string BuildLeaderboardsUrl(LeaderboardsOptions options)
 			=> "https://miki.ai" + BuildLeaderboardsRoute(options);
 
@@ -47,22 +32,33 @@ namespace Miki.API
 		/// </summary>
 		/// <param name="options">Leaderboards Options Object</param>
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
-			=> (await client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
+			=> (await _client.GetAsync<LeaderboardsObject>(BuildLeaderboardsRoute(options))).Data;
 
+        public async Task<UserInventory> GetUserInventoryAsync(long id)
+            => (await _client.GetAsync<UserInventory>($"users/{id}/inventory")).Data;
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
-				.Append("/leaderboards")
-				.Append((options.guildId == 0) ? "" : $"/{options.guildId}")
-				.Append($"/{options.type.ToString().ToLower()}");
+				.Append("/leaderboards");
 
-			if (options.type == LeaderboardsType.COMMANDS && !string.IsNullOrEmpty(options.commandSpecified))
+			if (options.GuildId.HasValue)
 			{
-				sb.Append($"/{options.commandSpecified.ToLower()}");
+				sb.Append($"/{options.GuildId}");
 			}
 
-			sb.Append($"/{options.pageNumber}");
-			return sb.ToString();
+			sb.Append($"/{options.Type.ToString().ToLower()}");
+
+			QueryString qs = new QueryString();
+
+			qs.Add("amount", options.Amount);
+			qs.Add("offset", options.Offset);
+
+			return sb.ToString() + qs.Query;
+		}
+
+		public void Dispose()
+		{
+			_client.Dispose();
 		}
 	}
 }

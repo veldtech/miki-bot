@@ -1,0 +1,2063 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="miki_errors_enabled_message" xml:space="preserve">
+    <value>Miki egy problémát észlelt a kéréseddel kapcsolatban. Privát üzenetben küldünk neked egy eseménynaplót és utasításokat.</value>
+    <comment>This message is sent when miki catches a uncaught error</comment>
+  </data>
+  <data name="miki_error_message_generic" xml:space="preserve">
+    <value>Valami elromlott!</value>
+    <comment>When no other error message is appliable to this version</comment>
+  </data>
+  <data name="miki_join_message" xml:space="preserve">
+    <value>Üdv! **Miki** vagyok! Használd a `&gt;help`-et, hogy megnézd, mire vagyok képes!</value>
+    <comment>This message is called when miki joins a new guild</comment>
+  </data>
+  <data name="miki_global_profile_user_header" xml:space="preserve">
+    <value>{0} </value>
+  </data>
+  <data name="miki_local_profile_user_header" xml:space="preserve">
+    <value>{0} helyi profilja</value>
+  </data>
+  <data name="miki_mekos_insufficient" xml:space="preserve">
+    <value>Nincs elég mekod.</value>
+  </data>
+  <data name="miki_module_eventmessages_delete_guildjoin" xml:space="preserve">
+    <value>✅ Az üdvözlő üzeneted el lett törölve.</value>
+  </data>
+  <data name="miki_module_eventmessages_set_guildjoin" xml:space="preserve">
+    <value>✅ Az új üdvözlő üzenet: `{0}`</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
+    <value>Ne számíts rá.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
+    <value>A válaszom nem.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_3" xml:space="preserve">
+    <value>A forrásaim szerint nem.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
+    <value>Nem jók a kilátások.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
+    <value>Nagyon kétséges.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_1" xml:space="preserve">
+    <value>Bizonytalan, próbáld meg újra.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_2" xml:space="preserve">
+    <value>Kérdezd meg később.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_3" xml:space="preserve">
+    <value>Jobb, ha nem mondom el most neked.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_4" xml:space="preserve">
+    <value>Most nem tudom megjósolni.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_neutral_5" xml:space="preserve">
+    <value>Koncentrálj és kérdezd meg újra.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_1" xml:space="preserve">
+    <value>Biztosan.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_2" xml:space="preserve">
+    <value>Határozottan igen.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_3" xml:space="preserve">
+    <value>Kétségkívül.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_4" xml:space="preserve">
+    <value>Igen, biztosan.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_5" xml:space="preserve">
+    <value>Számíthatsz rá.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_6" xml:space="preserve">
+    <value>Nagyon valószínű.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_7" xml:space="preserve">
+    <value>Jók a kilátások.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_8" xml:space="preserve">
+    <value>Igen.</value>
+  </data>
+  <data name="miki_module_fun_8ball_answer_positive_9" xml:space="preserve">
+    <value>A jelek arra mutatnak, hogy igen.</value>
+  </data>
+  <data name="miki_module_fun_compliment_body_1" xml:space="preserve">
+    <value>az alsó ajkadat</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_10" xml:space="preserve">
+    <value>a szöget, amit a könyököd bezár</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_11" xml:space="preserve">
+    <value>a bájgödröket az arcodon</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_12" xml:space="preserve">
+    <value>a selymes hajadat</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_2" xml:space="preserve">
+    <value>a bal kislábujjadat</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_3" xml:space="preserve">
+    <value>a jobb kislábujjadat</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_4" xml:space="preserve">
+    <value>a bal szemed második szempilláját</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_5" xml:space="preserve">
+    <value>az állad alsó részét</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_6" xml:space="preserve">
+    <value>a fura ujjadat a bal kezeden</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_7" xml:space="preserve">
+    <value>a cuki mosolyodat</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_8" xml:space="preserve">
+    <value>a káprázatos szemeidet</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_body_9" xml:space="preserve">
+    <value>a fura ujjadat a jobb kezeden</value>
+    <comment>These need to connect to [miki_module_fun_compliment_suffix_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_1" xml:space="preserve">
+    <value>Szeretem</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_2" xml:space="preserve">
+    <value>imádom</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_3" xml:space="preserve">
+    <value>csodálom</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_4" xml:space="preserve">
+    <value>tetszik</value>
+    <comment>These need to connect to [miki_module_fun_compliment_body_*]</comment>
+  </data>
+  <data name="miki_module_fun_compliment_prefix_5" xml:space="preserve">
+    <value>kedvelem valami oknál fogva</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_1" xml:space="preserve">
+    <value>Nagyon</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_2" xml:space="preserve">
+    <value>Eléggé</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_3" xml:space="preserve">
+    <value>Kifejezetten</value>
+  </data>
+  <data name="miki_module_fun_compliment_suffix_4" xml:space="preserve">
+    <value>Lehet, hogy fura, de nagyon</value>
+  </data>
+  <data name="miki_module_fun_pick" xml:space="preserve">
+    <value>{0}, `{1}`-et választottam.</value>
+  </data>
+  <data name="miki_module_fun_pick_no_arg" xml:space="preserve">
+    <value>Nincs miből választanom! :( Használj vesszőket (,) hogy elválaszd a választási lehetőségeket.</value>
+  </data>
+  <data name="miki_module_fun_pun_1" xml:space="preserve">
+    <value>Nem hiszem el, hogy kirúgtak a naptárgyárból. Csak egy napot hagytam ki.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_10" xml:space="preserve">
+    <value>Sohasem lehetek liftszerelő, szinttévesztő vagyok.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_11" xml:space="preserve">
+    <value>Néhány tolvaj betört a házamba és ellopott mindent, kivéve a szappant, a tusfürdőt, a törülközőt és a dezodort. Azok a mocskok...</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_12" xml:space="preserve">
+    <value>Kik laknak a falon? Festék.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_13" xml:space="preserve">
+    <value>Először egy narancslégyárban dolgoztam, de kirúgtak; nem tudtam koncentrálni.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_14" xml:space="preserve">
+    <value>Bementem reggel az istállóba a tehenekhez, és azt láttam, hogy óriási a fejetlenség.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_15" xml:space="preserve">
+    <value>Akartam egy viccet mondani a neonról, de mások azt mondták, hogy Ne.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_16" xml:space="preserve">
+    <value>A szúnyogok kézilabdáztak a szobában. De jött a házigazda és lefújta a meccset.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_17" xml:space="preserve">
+    <value>Néhány barát együtt dobolt. A dolog befejeztével egyikük rápillantott az órájára, majd megszólalt: "Jól elütöttük az időt!"</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_18" xml:space="preserve">
+    <value>A liftben való szexelés minden szinten visszataszító.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_19" xml:space="preserve">
+    <value>Tegnap lelőttem a szelet. De a szél feltámadt.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_2" xml:space="preserve">
+    <value>Min terem a nejlon? Celofán!</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_20" xml:space="preserve">
+    <value>Mi a Myspace továbbfejlesztett verziója? Vesespace.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_21" xml:space="preserve">
+    <value>Mi az: szürke és csattog? Köt a beton.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_22" xml:space="preserve">
+    <value>Pistike, vesd meg az ágyat! - Fúj, ágy!</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_23" xml:space="preserve">
+    <value>Nem vagyok túl jó angolból, de annyit tudok legalább, hogy leg a láb.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_24" xml:space="preserve">
+    <value>Hogyan kezdte pályáját a hóhér? Gyerekfejjel.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_25" xml:space="preserve">
+    <value>R2D2 a legkeményebb arc. Minden szavát ki kell sípolni!</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_26" xml:space="preserve">
+    <value>Melyik a legfájdalmasabb sportág? A véraláfutás.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_27" xml:space="preserve">
+    <value>Vettem borsót. Egyelőre ennyit mondok, majd később kifejtem.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_28" xml:space="preserve">
+    <value>Mit csinálnak a várvédők szabadidejükben? Elfoglalják magukat.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_29" xml:space="preserve">
+    <value>Azért nem nyávog a macskakő, mert a nyávogáshoz macska kő.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_3" xml:space="preserve">
+    <value>Mondanék egy kémiás szóviccet, de tudom, hogy úgyse lenne semmi reakció.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_30" xml:space="preserve">
+    <value>Hogyan hal meg a teniszező? Megáll benne az ütő.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_31" xml:space="preserve">
+    <value>Tudtad, hogy mi a közös a tanárok és a drogdílerek között? Mindig csak az anyagra gondolnak.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_32" xml:space="preserve">
+    <value>Mi történik akkor, ha elütnek egy matematikust? Már nem számít.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_33" xml:space="preserve">
+    <value>8 állat utazik a buszon. Az elöl utazó a róka, mögötte a sün, mellette a medve, kicsit hátrébb a nyúl, amögött az oroszlán, a jobbján a zebra, mögötte a ló és a bal oldalán a hal. Mindegyik állat ül, csak a nyolcadik utas, a hal áll.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_34" xml:space="preserve">
+    <value>Mit csinál az űrhajós, ha szomjas? Űrkutat ás.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_35" xml:space="preserve">
+    <value>Nem hallgatok komolyzenét; lisztérzékeny vagyok.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_36" xml:space="preserve">
+    <value>Hogy hívják, mikor két matematikus veszekszik? Négyzeteltérés.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_37" xml:space="preserve">
+    <value>Mikor az alföldön járok, mindig szétnézek, hátha meglátok valami érdekes dolgot. Pusztán furdal a kíváncsiság.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_38" xml:space="preserve">
+    <value>Melyik diák a geometriatanár kedvence? Amelyik sokoldalú.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_39" xml:space="preserve">
+    <value>Az orvos nem írhat fel receptre szúrásra alkalmas kézi fegyvert, tehát a tőr vényen kívüli.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_4" xml:space="preserve">
+    <value>Mit kapunk, ha egy kör alakú területre építünk kastélyt? Körtelekvárt.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_40" xml:space="preserve">
+    <value>A minap találkoztam egy harcos lánnyal. Xéniának hívják, de én nem ezen a néven szólítom, hanem Amazon.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_41" xml:space="preserve">
+    <value>Ha beleéneklek a 100 fokos vízbe, akkor forradalom?</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_42" xml:space="preserve">
+    <value>És akkor mi van, ha nem tudom, mit jelent az "apokalipszis"? Az még nem a világvége!</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_43" xml:space="preserve">
+    <value>A barátom péksége múlt éjjel leégett. Most próbálnak valamit kisütni.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_44" xml:space="preserve">
+    <value>Tegnap befizettem egy reinkarnációs tanfolyamra. Baromi sokba került, de hát egyszer élünk.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_45" xml:space="preserve">
+    <value>Vettem egy kiló finom lisztet. Megkóstoltam, mégsem volt az.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_46" xml:space="preserve">
+    <value>Miért nincs bástya a vonaton? Mert a vonat nem vár.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_47" xml:space="preserve">
+    <value>A tehén bonyolult állat. De én megfejtem.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_48" xml:space="preserve">
+    <value>Két szőlőszem ül a sínen és beszélgetnek: "Te, jön a vonat." - "Mikor?" - "Must!"</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_49" xml:space="preserve">
+    <value>Ebéd közben kajacsatáztunk a haverommal. De aztán lekenyereztem.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_5" xml:space="preserve">
+    <value>Örülök, hogy ismerem a jelbeszédet, nagyon kézenfekvő.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_50" xml:space="preserve">
+    <value>Mi a különbség az anyós és a laposelem közt? Az elemnek van pozitív oldala.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_51" xml:space="preserve">
+    <value>Az í­jászati szaküzlet tulajdonosa a helyi tévének is nyilat hozott.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_52" xml:space="preserve">
+    <value>Egy madzagra kukoricapehely-karikákat fűztem fel, hogy tanulmányozzam a táplálékláncot.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_6" xml:space="preserve">
+    <value>Mi lesz abból, ha két busz összeütközik? Két rombusz.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_7" xml:space="preserve">
+    <value>"Kislányom, hozz egy hurkát a boltból, de ne véreset!" - "Denevéreset?"</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_8" xml:space="preserve">
+    <value>Elkezdtem olvasni egy könyvet a súlytalanságról. Nem lehet letenni.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_pun_9" xml:space="preserve">
+    <value>Felmondtam a szennyví­zszállí­tó cégnél, mert untam az örökös szarrakodást.</value>
+    <comment>If this pun can't be translated to your language. Do me a favour and change it with a different one for your language. Otherwise no worries &lt;3</comment>
+  </data>
+  <data name="miki_module_fun_roll_result" xml:space="preserve">
+    <value>🎲 {0} **{1}**-t gurított.</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner" xml:space="preserve">
+    <value>És a `{0}` nyertese {1}.</value>
+  </data>
+  <data name="miki_module_fun_roulette_winner_no_arg" xml:space="preserve">
+    <value>És a győztes: {0}</value>
+  </data>
+  <data name="miki_module_fun_slots_header" xml:space="preserve">
+    <value>félkarú rabló</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_fun_slots_win_amount" xml:space="preserve">
+    <value>{0}🔸 hozzá lett adva a fiókodhoz.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_fun_slots_win_header" xml:space="preserve">
+    <value>Nyertél!</value>
+  </data>
+  <data name="miki_command_description_8ball" xml:space="preserve">
+    <value>Teszteld a szerencsédet azzal, hogy kérdéseket teszel fel Mikinek az életedről!</value>
+  </data>
+  <data name="miki_command_description_pasta" xml:space="preserve">
+    <value>Találj mémeket a világ minden tájáról!</value>
+  </data>
+  <data name="miki_command_usage_8ball" xml:space="preserve">
+    <value>&gt;8ball &lt;kérdés&gt;</value>
+  </data>
+  <data name="miki_command_usage_pasta" xml:space="preserve">
+    <value>&gt;pasta &lt;kulcsszó&gt;</value>
+    <comment>Please do not change "pasta new", do change &lt;keyword&gt; stuff</comment>
+  </data>
+  <data name="miki_module_fun_8ball_result" xml:space="preserve">
+    <value>{0}, a kérdésedre a válasz: `{1}`</value>
+  </data>
+  <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
+    <value>Nem találtam képet a keresésed alapján :(</value>
+  </data>
+  <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
+    <value>Ilyen nevű paszta már létezik! Próbálj egy másik nevet adni neki.</value>
+  </data>
+  <data name="miki_module_pasta_create_success" xml:space="preserve">
+    <value>`{0}` megalkotva!</value>
+  </data>
+  <data name="miki_module_pasta_delete_success" xml:space="preserve">
+    <value>`{0}` törölve!</value>
+  </data>
+  <data name="miki_module_pasta_edit_success" xml:space="preserve">
+    <value>`{0}` szerkesztve!</value>
+  </data>
+  <data name="miki_module_pasta_error_no_permissions" xml:space="preserve">
+    <value>Nem tudsz {0} olyan pasztákat, amiket nem te készítettél!</value>
+  </data>
+  <data name="miki_module_pasta_error_null" xml:space="preserve">
+    <value>Ez a paszta nem létezik!</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
+    <value>Kérlek, írj be egy címkét vagy parancsot.</value>
+  </data>
+  <data name="miki_module_pasta_error_search_no_results" xml:space="preserve">
+    <value>Nem találtam a keresőszót. Pontosítsd, mire akarsz rákeresni.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify" xml:space="preserve">
+    <value>Kérlek, írd be, melyik pasztát szeretnéd {0}.</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_check" xml:space="preserve">
+    <value>megtalálni</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_delete" xml:space="preserve">
+    <value>törölni</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_edit" xml:space="preserve">
+    <value>szerkeszteni</value>
+  </data>
+  <data name="miki_module_pasta_error_specify_upvote" xml:space="preserve">
+    <value>pontozni</value>
+  </data>
+  <data name="miki_module_pasta_identify_created_by" xml:space="preserve">
+    <value>Készítő</value>
+  </data>
+  <data name="miki_module_pasta_identify_date_created" xml:space="preserve">
+    <value>Készítés napja</value>
+  </data>
+  <data name="miki_module_pasta_identify_rating" xml:space="preserve">
+    <value>Értékelés</value>
+  </data>
+  <data name="miki_module_pasta_identify_times_used" xml:space="preserve">
+    <value>Használatok száma</value>
+  </data>
+  <data name="miki_module_pasta_mine_error_null" xml:space="preserve">
+    <value>Bocsi, de még nem alkottál egy pasztát se.</value>
+  </data>
+  <data name="miki_module_pasta_mine_header" xml:space="preserve">
+    <value>{0} pasztái</value>
+  </data>
+  <data name="miki_module_pasta_search_error_no_results" xml:space="preserve">
+    <value>Bocsi, de nem találtunk {0} nevű pasztát.</value>
+  </data>
+  <data name="miki_module_pasta_search_footer" xml:space="preserve">
+    <value>{0}. oldal a {1}-ből</value>
+  </data>
+  <data name="miki_module_pasta_search_header" xml:space="preserve">
+    <value>🔎 Ezeket a pasztákat találtam</value>
+  </data>
+  <data name="miki_module_pasta_vote_success" xml:space="preserve">
+    <value>A szavazatod frissült! Jelenlegi értékelés: `{0}`</value>
+  </data>
+  <data name="miki_success_message_generic" xml:space="preserve">
+    <value>Sikerült!</value>
+  </data>
+  <data name="miki_command_description_info" xml:space="preserve">
+    <value>Információt ad a botról és készítőjéről.</value>
+  </data>
+  <data name="miki_command_description_prefix" xml:space="preserve">
+    <value>Állítsd be Miki parancsainak előtagját (alapesetben: &gt;) valami másra.</value>
+  </data>
+  <data name="miki_command_usage_info" xml:space="preserve">
+    <value>&gt;info</value>
+  </data>
+  <data name="miki_command_usage_prefix" xml:space="preserve">
+    <value>&gt;prefix</value>
+  </data>
+  <data name="miki_module_admin_disable_command" xml:space="preserve">
+    <value>A `{0}` parancs ki lett kapcsolva!</value>
+  </data>
+  <data name="miki_module_admin_disable_module" xml:space="preserve">
+    <value>A `{0}` modul ki lett kapcsolva!</value>
+  </data>
+  <data name="miki_module_admin_enable_command" xml:space="preserve">
+    <value>A `{0}` parancs be lett kapcsolva! </value>
+  </data>
+  <data name="miki_module_admin_enable_module" xml:space="preserve">
+    <value>A `{0}` modul be lett kapcsolva!</value>
+  </data>
+  <data name="miki_module_admin_error_module_disabled" xml:space="preserve">
+    <value>A `{0}` modul ki van kapcsolva.</value>
+  </data>
+  <data name="miki_module_admin_kick_by" xml:space="preserve">
+    <value>💁 Kirúgott:</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_admin_kick_description" xml:space="preserve">
+    <value>Kirúgtak a **{0}** csoportból!</value>
+  </data>
+  <data name="miki_module_admin_kick_header" xml:space="preserve">
+    <value>⚠ KIRÚGÁS</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_admin_kick_reason" xml:space="preserve">
+    <value>💬 Indoklás</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_admin_prune_error_max" xml:space="preserve">
+    <value>Nem törölhetsz 100-nál több üzenetet parancsonként.</value>
+  </data>
+  <data name="miki_module_admin_prune_error_no_access" xml:space="preserve">
+    <value>Nem törölhetek üzeneteket ebből a csatornából. ):</value>
+  </data>
+  <data name="miki_module_admin_prune_success" xml:space="preserve">
+    <value>{0} üzenet törölve!</value>
+  </data>
+  <data name="miki_module_general_calc_error" xml:space="preserve">
+    <value>Ilyen számítást nem tudok végezni!</value>
+  </data>
+  <data name="miki_module_general_guildinfo_channels" xml:space="preserve">
+    <value>Csatornák</value>
+  </data>
+  <data name="miki_module_general_guildinfo_owned_by" xml:space="preserve">
+    <value>Tulajdonos</value>
+  </data>
+  <data name="miki_module_general_guildinfo_roles" xml:space="preserve">
+    <value>Szerepek</value>
+  </data>
+  <data name="miki_module_general_guildinfo_users" xml:space="preserve">
+    <value>Felhasználók</value>
+  </data>
+  <data name="miki_module_general_help_description" xml:space="preserve">
+    <value>Leírás</value>
+  </data>
+  <data name="miki_module_general_help_dm" xml:space="preserve">
+    <value>Már úton van egy privát üzenet, amely tartalmazza az összes parancsomat! Használd a `&gt;help [parancs]`-ot, hogy több információt szerezz bizonyos parancsokról!</value>
+  </data>
+  <data name="miki_module_general_help_usage" xml:space="preserve">
+    <value>Használat</value>
+  </data>
+  <data name="miki_module_general_info_docs" xml:space="preserve">
+    <value>Dokumentáció</value>
+  </data>
+  <data name="miki_module_general_info_donate_string" xml:space="preserve">
+    <value>Üdv mindenkinek! Csináltam egy Patreon-fiókot, hogy így lehessen támogatni Mikit. Kérlek, nézz rá, és támogasd, hogyha tudod!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_links" xml:space="preserve">
+    <value>Linkek</value>
+  </data>
+  <data name="miki_module_general_info_made_by_description" xml:space="preserve">
+    <value>Külön köszönet: Florestina, Mei, Rappy, Rie, Rosie</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_made_by_header" xml:space="preserve">
+    <value>**Készítette:** Veld</value>
+  </data>
+  <data name="miki_module_general_info_patreon" xml:space="preserve">
+    <value>patreon</value>
+  </data>
+  <data name="miki_module_general_info_reddit" xml:space="preserve">
+    <value>alreddit</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_server" xml:space="preserve">
+    <value>támogatói szerver</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_twitter" xml:space="preserve">
+    <value>twitter</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_info_website" xml:space="preserve">
+    <value>weboldal</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_general_invite_dm" xml:space="preserve">
+    <value>Tessék! :3</value>
+  </data>
+  <data name="miki_module_general_invite_message" xml:space="preserve">
+    <value>Küldök egy privát üzenetet egy meghívó URL-lel.</value>
+  </data>
+  <data name="miki_module_general_prefix_error_no_arg" xml:space="preserve">
+    <value>Az előtagodat nem törölheted ki. Írd be a `&gt;help prefix`-et, hogy megtudd, mire való ez a parancs.</value>
+  </data>
+  <data name="miki_module_general_prefix_example_command_header" xml:space="preserve">
+    <value>Példaparancs</value>
+  </data>
+  <data name="miki_module_general_prefix_success_header" xml:space="preserve">
+    <value>⚙️ Előtag megváltoztatva!</value>
+  </data>
+  <data name="miki_module_general_prefix_success_message" xml:space="preserve">
+    <value>Az előtagod átváltozott **{0}**-ra!</value>
+  </data>
+  <data name="miki_module_general_urban_definition" xml:space="preserve">
+    <value>Leírás</value>
+  </data>
+  <data name="miki_module_general_urban_example" xml:space="preserve">
+    <value>Példa</value>
+  </data>
+  <data name="miki_module_general_urban_rating" xml:space="preserve">
+    <value>Értékelés</value>
+  </data>
+  <data name="miki_module_help_didyoumean" xml:space="preserve">
+    <value>Így értetted?</value>
+  </data>
+  <data name="miki_module_help_error_null_header" xml:space="preserve">
+    <value>A parancs nem található.</value>
+  </data>
+  <data name="miki_module_help_error_null_message" xml:space="preserve">
+    <value>Ez nem egy létező parancs. Ahhoz, hogy a `{0}help [parancs]` funkciót használd, írj be egy létező parancsot!</value>
+  </data>
+  <data name="miki_module_whois_header" xml:space="preserve">
+    <value>Kicsoda {0}!?</value>
+    <comment>example: Who is Veld!?</comment>
+  </data>
+  <data name="miki_module_whois_tag_personal" xml:space="preserve">
+    <value>🙎 Személyes</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_accounts_level_up_content" xml:space="preserve">
+    <value>**{0}** átlépett a **{1}.** szintre!</value>
+  </data>
+  <data name="miki_accounts_level_up_header" xml:space="preserve">
+    <value>☀️️ szintlépés!</value>
+  </data>
+  <data name="miki_command_description_leaderboards" xml:space="preserve">
+    <value>Nézz rá a Miki elitjeire!</value>
+  </data>
+  <data name="miki_command_description_profile" xml:space="preserve">
+    <value>Nézd meg, hogyan haladsz a Miki Mesterré válás felé!</value>
+  </data>
+  <data name="miki_command_description_toggledm" xml:space="preserve">
+    <value>Állítsd be, hogy Miki küldjön-e neked privát üzeneteket vagy sem!</value>
+  </data>
+  <data name="miki_command_description_toggleerrors" xml:space="preserve">
+    <value>Állítsd be, hogy Miki küldjön-e neked hibaüzeneteket vagy sem!</value>
+  </data>
+  <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
+    <value>Állítsd be, hogy Miki küldjön-e nem parancshoz kapcsolható üzeneteket ebbe a csatornába, vagy sem!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_leaderboards" xml:space="preserve">
+    <value>&gt;leaderboards
+&gt;leaderboards local
+&gt;leaderboards mekos
+&gt;leaderboards commands</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_profile" xml:space="preserve">
+    <value>&gt;profile
+&gt;profile &lt;felhasználó azonosítója&gt;</value>
+  </data>
+  <data name="miki_command_usage_toggledm" xml:space="preserve">
+    <value>&gt;toggledm</value>
+  </data>
+  <data name="miki_command_usage_toggleerrors" xml:space="preserve">
+    <value>&gt;toggleerrors</value>
+  </data>
+  <data name="miki_generic_achievements" xml:space="preserve">
+    <value>Teljesítmények</value>
+  </data>
+  <data name="miki_generic_disabled" xml:space="preserve">
+    <value>kikapcsolva</value>
+  </data>
+  <data name="miki_generic_enabled" xml:space="preserve">
+    <value>bekapcsolva</value>
+  </data>
+  <data name="miki_generic_global_information" xml:space="preserve">
+    <value>Általános információ</value>
+  </data>
+  <data name="miki_generic_information" xml:space="preserve">
+    <value>Információ</value>
+  </data>
+  <data name="miki_generic_mekos" xml:space="preserve">
+    <value>Mekok</value>
+  </data>
+  <data name="miki_generic_reward" xml:space="preserve">
+    <value>Díj</value>
+  </data>
+  <data name="miki_module_accounts_information_level" xml:space="preserve">
+    <value>Szint: {0} ({1}/{2})</value>
+  </data>
+  <data name="miki_module_accounts_information_rank" xml:space="preserve">
+    <value>Helyezés: #{0}</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_commands_header" xml:space="preserve">
+    <value>Ranglista: Parancshasználat</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_header" xml:space="preserve">
+    <value>Ranglista: Összes tapasztalat</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_local_header" xml:space="preserve">
+    <value>Ranglista: Helyi tapasztalat</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_mekos_header" xml:space="preserve">
+    <value>Ranglista: Mekok</value>
+  </data>
+  <data name="miki_module_accounts_profile_error_null" xml:space="preserve">
+    <value>{0} profilja nem létezik!</value>
+  </data>
+  <data name="miki_module_accounts_profile_favourite_command" xml:space="preserve">
+    <value>Kedvenc parancs</value>
+  </data>
+  <data name="miki_module_accounts_profile_footer" xml:space="preserve">
+    <value>tag {0} óta | a kérelem teljesítése {0}ms-ba telt</value>
+  </data>
+  <data name="miki_module_accounts_profile_header" xml:space="preserve">
+    <value>{0} profilja</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_profile_marriedto" xml:space="preserve">
+    <value>Házastársak</value>
+  </data>
+  <data name="miki_module_accounts_profile_url" xml:space="preserve">
+    <value>Profil URL-címe</value>
+  </data>
+  <data name="miki_module_settings_dm" xml:space="preserve">
+    <value>{0} privát üzenet</value>
+    <comment>example [enabled:disabled] direct messages</comment>
+  </data>
+  <data name="miki_module_settings_error_dm" xml:space="preserve">
+    <value>{0} hibaüzenet</value>
+    <comment>example [enabled:disabled] error notifications</comment>
+  </data>
+  <data name="miki_module_settings_guild_notifications" xml:space="preserve">
+    <value>{0} csoportos értesítés</value>
+    <comment>example [enabled:disabled] guild notifications</comment>
+  </data>
+  <data name="miki_placeholder_null" xml:space="preserve">
+    <value>nincs (még!)</value>
+  </data>
+  <data name="miki_module_general_urban_author" xml:space="preserve">
+    <value>{0} által</value>
+  </data>
+  <data name="miki_module_accounts_divorce_content" xml:space="preserve">
+    <value>{0} elvált {1}-től</value>
+  </data>
+  <data name="miki_module_accounts_divorce_header" xml:space="preserve">
+    <value>🔔 Válás</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_module_accounts_error_no_marriage" xml:space="preserve">
+    <value>Nem mentél hozzá ehhez az emberhez!</value>
+  </data>
+  <data name="miki_module_general_prefix_help" xml:space="preserve">
+    <value>A jelenlegi előtagod **{0}**!</value>
+  </data>
+  <data name="miki_module_general_prefix_help_header" xml:space="preserve">
+    <value>Előtag</value>
+  </data>
+  <data name="miki_command_description_divorce" xml:space="preserve">
+    <value>Eleged volt a házasságból? Válj el ma!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_divorce" xml:space="preserve">
+    <value>&gt;divorce &lt;megemlítés&gt;
+&gt;divorce &lt;név&gt;</value>
+  </data>
+  <data name="miki_module_general_help_aliases" xml:space="preserve">
+    <value>Más nevek:</value>
+  </data>
+  <data name="miki_label_prefix" xml:space="preserve">
+    <value>Előtag</value>
+  </data>
+  <data name="miki_module_general_guildinfo_roles_count" xml:space="preserve">
+    <value>Szerepek száma</value>
+  </data>
+  <data name="miki_module_general_guildinfo_voicechannels" xml:space="preserve">
+    <value>Hangcsatornák</value>
+  </data>
+  <data name="miki_command_description_marry" xml:space="preserve">
+    <value>Menj hozzá a lelki társadhoz &lt;3</value>
+  </data>
+  <data name="miki_command_usage_marry" xml:space="preserve">
+    <value>&gt;marry &lt;megemlítés&gt;</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_exists" xml:space="preserve">
+    <value>Már hozzámentél ehhez az emberhez/megkérted a kezét.</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
+    <value>Kérlek, említsd meg az embert, akinek meg akarod kérni a kezét!</value>
+  </data>
+  <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
+    <value>Neked vagy a másik embernek még nincs Miki fiókja. Bírd rá, hogy többet beszéljen!</value>
+  </data>
+  <data name="miki_module_accounts_marry_text" xml:space="preserve">
+    <value>{0} megkérte {1} kezét!</value>
+  </data>
+  <data name="miki_module_accounts_marry_text2" xml:space="preserve">
+    <value>Elfogadod?</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_terms_mention" xml:space="preserve">
+    <value>megemlítés</value>
+  </data>
+  <data name="miki_command_declinemarriage_description" xml:space="preserve">
+    <value>Csak akkor, ha nagyon nem akarsz összeházasodni valakivel.</value>
+  </data>
+  <data name="miki_command_declinemarriage_usage" xml:space="preserve">
+    <value>&gt;declinemarriage @felhasználó
+&gt;declinemarriage *</value>
+  </data>
+  <data name="miki_marriage_all_declined" xml:space="preserve">
+    <value>Minden kérés elutasítva!</value>
+  </data>
+  <data name="miki_marriage_declined" xml:space="preserve">
+    <value>A kérés el lett utasítva.</value>
+  </data>
+  <data name="miki_marriage_no_mention" xml:space="preserve">
+    <value>Kérlek, említsd meg azt az embert, akit el akarsz utasítani.</value>
+  </data>
+  <data name="miki_marriage_null" xml:space="preserve">
+    <value>Ez a felhasználó nem kérte még meg a kezed!</value>
+  </data>
+  <data name="miki_admin_cannot_disable" xml:space="preserve">
+    <value>{0} nem kikapcsolható</value>
+  </data>
+  <data name="miki_command_description_acceptmarriage" xml:space="preserve">
+    <value>Találd meg az igaz szerelmet, fogadd el, ha megkérik a kezed!</value>
+  </data>
+  <data name="miki_command_description_ban" xml:space="preserve">
+    <value>Szabadulj meg a problémás emberektől és ne lásd őket többé!</value>
+  </data>
+  <data name="miki_command_description_buymarriageslot" xml:space="preserve">
+    <value>Vegyél több házassági lehetőséget, az ár 2500-zal nő minden új helyért, és 10 hely a maximum.</value>
+  </data>
+  <data name="miki_command_description_clean" xml:space="preserve">
+    <value>Takarítsd el Miki legutóbbi üzeneteit!</value>
+  </data>
+  <data name="miki_command_description_daily" xml:space="preserve">
+    <value>Kapj mekokat minden nap!</value>
+  </data>
+  <data name="miki_command_description_declinemarriage" xml:space="preserve">
+    <value>Utasíts vissza házassági ajánlatokat általad vagy más emberek által. Ezt a parancsot használhatod a saját kéréseid visszavonására is! Használd a *-ot, hogy az összes ajánlatot elutasítsd.</value>
+  </data>
+  <data name="miki_command_description_give" xml:space="preserve">
+    <value>Adj szeretetet és mekokat a barátaidnak... többnyire mekokat.</value>
+  </data>
+  <data name="miki_command_description_kick" xml:space="preserve">
+    <value>Rúgd ki a rosszfiúkat a Miki erejével!</value>
+  </data>
+  <data name="miki_command_description_mekos" xml:space="preserve">
+    <value>Mutasd meg a mekoidat a világnak!</value>
+  </data>
+  <data name="miki_command_description_prune" xml:space="preserve">
+    <value>Takarítsd el a szemetedet!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setcommand" xml:space="preserve">
+    <value>Kapcsolj ki vagy be más parancsokat ezzel a paranccsal! (ezt az parancsot ne kapcsold ki)</value>
+  </data>
+  <data name="miki_command_description_setmodule" xml:space="preserve">
+    <value>Kapcsold ki vagy be a modulokat és a hozzájuk tartozó háttérmunkásokat ezzel a paranccsal!</value>
+  </data>
+  <data name="miki_command_description_setrolelevel" xml:space="preserve">
+    <value>Engedd, hogy a felhasználók új szerepeket kapjanak, amikor elérnek egy bizonyos szintre!</value>
+  </data>
+  <data name="miki_command_description_showproposals" xml:space="preserve">
+    <value>Nézd meg a házassági ajánlataidat ezzel a kézenfekvő paranccsal!</value>
+  </data>
+  <data name="miki_command_description_softban" xml:space="preserve">
+    <value>Némíts el valakit, aki taplón viselkedik.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_syncavatar" xml:space="preserve">
+    <value>Szinkronizáld a profilképed Miki adatbázisával!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_syncname" xml:space="preserve">
+    <value>Szinkronizáld a neved Miki adatbázisával!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_acceptmarriage" xml:space="preserve">
+    <value>&gt;acceptmarriage &lt;megemlítés&gt;</value>
+  </data>
+  <data name="miki_command_usage_ban" xml:space="preserve">
+    <value>&gt;ban &lt;megemlítés&gt; [indoklás]
+&gt;ban &lt;felhasználó azonosítója&gt; [indoklás]</value>
+  </data>
+  <data name="miki_command_usage_buymarriageslot" xml:space="preserve">
+    <value>&gt;buymarriageslot</value>
+  </data>
+  <data name="miki_command_usage_clean" xml:space="preserve">
+    <value>&gt;clean</value>
+  </data>
+  <data name="miki_command_usage_daily" xml:space="preserve">
+    <value>&gt;daily</value>
+  </data>
+  <data name="miki_command_usage_declinemarriage" xml:space="preserve">
+    <value>&gt;declinemarriage &lt;megemlítés&gt;
+&gt;declinemarriage *</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_give" xml:space="preserve">
+    <value>&gt;give &lt;felhasználó&gt; &lt;mennyiség&gt;</value>
+  </data>
+  <data name="miki_command_usage_kick" xml:space="preserve">
+    <value>&gt;kick &lt;megemlítés&gt; [indoklás]
+&gt;kick &lt;felhasználó azonosítója&gt; [indoklás]</value>
+  </data>
+  <data name="miki_command_usage_mekos" xml:space="preserve">
+    <value>&gt;mekos</value>
+  </data>
+  <data name="miki_command_usage_prune" xml:space="preserve">
+    <value>&gt;prune [üzenetek száma]</value>
+  </data>
+  <data name="miki_command_usage_setcommand" xml:space="preserve">
+    <value>&gt;setcommand &lt;parancs neve&gt; 1 a bekapcsoláshoz
+&gt;setcommand &lt;parancs neve&gt; 0 a kikapcsoláshoz</value>
+  </data>
+  <data name="miki_command_usage_setmodule" xml:space="preserve">
+    <value>&gt;setmodule &lt;modul neve&gt; 1 a bekapcsoláshoz
+&gt;setmodule &lt;modul neve&gt; 0 a kikapcsoláshoz</value>
+  </data>
+  <data name="miki_command_usage_setrolelevel" xml:space="preserve">
+    <value>&gt;setrolelevel &lt;szerep neve&gt; &lt;szint&gt;</value>
+  </data>
+  <data name="miki_command_usage_showproposals" xml:space="preserve">
+    <value>&gt;showproposals</value>
+  </data>
+  <data name="miki_command_usage_softban" xml:space="preserve">
+    <value>&gt;softban &lt;megemlítés&gt; [indoklás]
+&gt;softban &lt;felhasználó azonosítója&gt; [indoklás]</value>
+  </data>
+  <data name="miki_command_usage_syncavatar" xml:space="preserve">
+    <value>&gt;syncavatar</value>
+  </data>
+  <data name="miki_command_usage_syncname" xml:space="preserve">
+    <value>&gt;syncname</value>
+  </data>
+  <data name="miki_command_usage_toggleguildnotifications" xml:space="preserve">
+    <value>&gt;toggleguildnotifications</value>
+  </data>
+  <data name="miki_command_description_ask" xml:space="preserve">
+    <value>Kérdezz ostoba dolgokat barátaidtól.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_bird" xml:space="preserve">
+    <value>A madarak túl cukik ahhoz, hogy ne legyen külön parancsuk!</value>
+  </data>
+  <data name="miki_command_description_cage" xml:space="preserve">
+    <value>NICK CAGE KÉPEK</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_cat" xml:space="preserve">
+    <value>Miaú, én egy macskás kép generátor vagyok!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_compliment" xml:space="preserve">
+    <value>Személyesen dícsérlek meg egy különleges bókkal.</value>
+  </data>
+  <data name="miki_command_description_confused" xml:space="preserve">
+    <value>Mutasd meg, mennyire összezavarnak a barátod shitpostjai, a cuki anime lányok erejével!</value>
+  </data>
+  <data name="miki_command_description_ctb" xml:space="preserve">
+    <value>Kapj el gyümölcsöket és lenyűgözd barátaidat ezzel a Catch the Beat paranccsal!</value>
+  </data>
+  <data name="miki_command_description_dog" xml:space="preserve">
+    <value>Cuki állatok, a Miki alkalmazottjai által válogatva!</value>
+  </data>
+  <data name="miki_command_description_e621" xml:space="preserve">
+    <value>Tulajdonképpen nagyon szőrös emberek huncut dolgokat csinálnak.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_gelbooru" xml:space="preserve">
+    <value>Gelbooru képek csak neked, te mocskos kutya.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_gif" xml:space="preserve">
+    <value>Add ide az összes gif-et!</value>
+  </data>
+  <data name="miki_command_description_img" xml:space="preserve">
+    <value>Találj meg egy képet akármilyen címkével!</value>
+  </data>
+  <data name="miki_command_description_lewd" xml:space="preserve">
+    <value>Valaki úgy viselkedik, mint egy baka hentai? Mutasd ki nemtetszésedet ezzel a képpel!</value>
+  </data>
+  <data name="miki_command_description_lunch" xml:space="preserve">
+    <value>Vau, vau! Mi van ebédre?!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_mania" xml:space="preserve">
+    <value>Te vagy a gépelés királya? Mutasd meg az osu!maniaban elért helyezésedet ezzel a paranccsal!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_osu" xml:space="preserve">
+    <value>Mutasd meg, mennyire büszke vagy a kör alakú tárgyakra</value>
+  </data>
+  <data name="miki_command_description_pick" xml:space="preserve">
+    <value>Félsz a döntésektől? Majd én megteszem helyetted!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_pout" xml:space="preserve">
+    <value>Amikor csalódott, szomorú, vagy ideges vagy valaki miatt. Adj nekik egy jó kis tsundere duzzogást &gt;:T</value>
+  </data>
+  <data name="miki_command_description_pun" xml:space="preserve">
+    <value>Nem lenne vicces, ha ez is egy szóvicc lenne?</value>
+  </data>
+  <data name="miki_command_description_roll" xml:space="preserve">
+    <value>Guríts 17-nél többet egy 20 oldalú kockán, hogy legyőzd ezt a trollt!</value>
+  </data>
+  <data name="miki_command_description_roulette" xml:space="preserve">
+    <value>Csinálj mókás ajándékozásokat, válassz egy random embert a szerveredről, és adj nekik hírnevet és dicsőséget!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_rule34" xml:space="preserve">
+    <value>Mert nincs semmi, aminek nincs pornó verziója.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_safe" xml:space="preserve">
+    <value>Szerezz gyerekbarát képeket cuki anime lányokról!
+Az összes címke megtalálható itt: &lt;https://safebooru.org/index.php?page=tags&amp;s=list&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_slots" xml:space="preserve">
+    <value>Teszteld a szerencsédet ezekkel az egyáltalán nem megbundázott félkarú rablókkal a szórakozásod kedvéért!</value>
+  </data>
+  <data name="miki_command_description_smug" xml:space="preserve">
+    <value>Amikor megnyersz egy menetet Hearthstoneban.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_taiko" xml:space="preserve">
+    <value>don don don katsu don katsu don don katsu</value>
+  </data>
+  <data name="miki_command_usage_ask" xml:space="preserve">
+    <value>&gt;ask &lt;kérdés&gt;</value>
+  </data>
+  <data name="miki_command_usage_bird" xml:space="preserve">
+    <value>&gt;bird</value>
+  </data>
+  <data name="miki_command_usage_cage" xml:space="preserve">
+    <value>&gt;cage</value>
+  </data>
+  <data name="miki_command_usage_cat" xml:space="preserve">
+    <value>&gt;cat</value>
+  </data>
+  <data name="miki_command_usage_compliment" xml:space="preserve">
+    <value>&gt;compliment</value>
+  </data>
+  <data name="miki_command_usage_confused" xml:space="preserve">
+    <value>&gt;confused</value>
+  </data>
+  <data name="miki_command_usage_ctb" xml:space="preserve">
+    <value>&gt;ctb &lt;osu! felhasználónév&gt;</value>
+  </data>
+  <data name="miki_command_usage_dog" xml:space="preserve">
+    <value>&gt;dog</value>
+  </data>
+  <data name="miki_command_usage_e621" xml:space="preserve">
+    <value>&gt;e621 &lt;e621 címkék&gt;</value>
+  </data>
+  <data name="miki_command_usage_gelbooru" xml:space="preserve">
+    <value>&gt;gelbooru &lt;gelbooru címkék&gt;</value>
+  </data>
+  <data name="miki_command_usage_gif" xml:space="preserve">
+    <value>&gt;gif [címkék]</value>
+  </data>
+  <data name="miki_command_usage_img" xml:space="preserve">
+    <value>&gt;img [címkék]</value>
+  </data>
+  <data name="miki_command_usage_lewd" xml:space="preserve">
+    <value>&gt;lewd</value>
+  </data>
+  <data name="miki_command_usage_lunch" xml:space="preserve">
+    <value>&gt;lunch</value>
+  </data>
+  <data name="miki_command_usage_mania" xml:space="preserve">
+    <value>&gt;mania &lt;osu! felhasználónév&gt;</value>
+  </data>
+  <data name="miki_command_usage_osu" xml:space="preserve">
+    <value>&gt;osu &lt;osu! felhasználónév&gt;</value>
+  </data>
+  <data name="miki_command_usage_pick" xml:space="preserve">
+    <value>&gt;pick &lt;opció1&gt;,[opció2],[...]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_pout" xml:space="preserve">
+    <value>&gt;pout</value>
+  </data>
+  <data name="miki_command_usage_pun" xml:space="preserve">
+    <value>&gt;pun</value>
+  </data>
+  <data name="miki_command_usage_roll" xml:space="preserve">
+    <value>&gt;roll [mennyiség]
+&gt;roll [kockák száma]d[oldalak száma]</value>
+  </data>
+  <data name="miki_command_usage_roulette" xml:space="preserve">
+    <value>&gt;roulette [szöveg]</value>
+  </data>
+  <data name="miki_command_usage_rule34" xml:space="preserve">
+    <value>&gt;rule34 &lt;rule34 címkék&gt;</value>
+  </data>
+  <data name="miki_command_usage_safe" xml:space="preserve">
+    <value>&gt;safe &lt;címkék&gt;</value>
+  </data>
+  <data name="miki_command_usage_slots" xml:space="preserve">
+    <value>&gt;slots &lt;fogadás mérete&gt;</value>
+  </data>
+  <data name="miki_command_usage_smug" xml:space="preserve">
+    <value>&gt;smug</value>
+  </data>
+  <data name="miki_command_usage_taiko" xml:space="preserve">
+    <value>&gt;taiko &lt;osu felhasználónév&gt;</value>
+  </data>
+  <data name="miki_command_description_remind" xml:space="preserve">
+    <value>Emlékeztesd magadat dolgokra!</value>
+  </data>
+  <data name="miki_command_usage_remind" xml:space="preserve">
+    <value>&gt;remind me to &lt;cselekvés&gt; in &lt;időtartam&gt; (pl. 2 minutes and 11 seconds) **(Mindent angolul írj be!)**</value>
+  </data>
+  <data name="pasta_page_index" xml:space="preserve">
+    <value>{0}. oldal a {1}-ből</value>
+  </data>
+  <data name="miki_command_description_createpasta" xml:space="preserve">
+    <value>Alkosd meg a saját, különleges pasztádat és oszd meg mindenkivel!</value>
+  </data>
+  <data name="miki_command_description_deletepasta" xml:space="preserve">
+    <value>Megbántad egy pasztád elkészítését? Töröld ezzel a paranccsal!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_editpasta" xml:space="preserve">
+    <value>Nem vagy elégedett a jelenlegi pasztáddal? Szerkeszd meg, hogy újra király és releváns legyen!</value>
+  </data>
+  <data name="miki_command_description_guildconfig" xml:space="preserve">
+    <value>Állítsd be a csoportodat úgy, ahogy akarod, hogy működjön.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_guildnewrival" xml:space="preserve">
+    <value>Állíts be egy (új) riválist a csoportodnak! Ideje némi versenynek!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_guildprofile" xml:space="preserve">
+    <value>Ez a parancs megmutatja a csoportod összes statisztikáját!</value>
+  </data>
+  <data name="miki_command_description_guildtop" xml:space="preserve">
+    <value>Nézd meg a legtöbb tapasztalattal rendelkező csoportok listáját!</value>
+  </data>
+  <data name="miki_command_description_guildweekly" xml:space="preserve">
+    <value>Ha győzöl a riválisoddal szemben, több díjat kapsz! Szerezd meg azokat ezzel a paranccsal!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_hatepasta" xml:space="preserve">
+    <value>Teljes szívedből gyűlölsz egy pasztát? Mutasd ki az utálatodat ezzel a paranccsal!</value>
+  </data>
+  <data name="miki_command_description_infopasta" xml:space="preserve">
+    <value>Meg akarod nézni, ki alkotta ezt a pasztát? Használd ezt a parancsot!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_lovepasta" xml:space="preserve">
+    <value>Van kedvenc pasztád? Mutasd ki szeretetedet ennek a parancsnak a használatával!</value>
+  </data>
+  <data name="miki_command_description_mypasta" xml:space="preserve">
+    <value>Szerezz egy listát az összes pasztádról!</value>
+  </data>
+  <data name="miki_command_description_poppasta" xml:space="preserve">
+    <value>Ez a parancs megmutatja a legtöbbet használt pasztákat.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_searchpasta" xml:space="preserve">
+    <value>Keresd át az összes létező pasztát, és fedezz fel új, fasza mémeket!</value>
+  </data>
+  <data name="miki_command_description_toppasta" xml:space="preserve">
+    <value>Ez a parancs megmutatja a legimádottabb pasztákat!</value>
+  </data>
+  <data name="miki_command_usage_createpasta" xml:space="preserve">
+    <value>&gt;createpasta &lt;név&gt; &lt;tartalom&gt;</value>
+  </data>
+  <data name="miki_command_usage_deletepasta" xml:space="preserve">
+    <value>&gt;deletepasta &lt;név&gt;</value>
+  </data>
+  <data name="miki_command_usage_editpasta" xml:space="preserve">
+    <value>&gt;editpasta &lt;név&gt; &lt;új tartalom&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildconfig" xml:space="preserve">
+    <value>&gt;guildconfig expneeded &lt;pontok száma&gt;
+&gt;guildconfig visible &lt;yes:no&gt;</value>
+  </data>
+  <data name="miki_command_usage_guildnewrival" xml:space="preserve">
+    <value>&gt;guildnewrival</value>
+  </data>
+  <data name="miki_command_usage_guildprofile" xml:space="preserve">
+    <value>&gt;guildprofile</value>
+  </data>
+  <data name="miki_command_usage_guildtop" xml:space="preserve">
+    <value>&gt;guildtop</value>
+  </data>
+  <data name="miki_command_usage_guildweekly" xml:space="preserve">
+    <value>&gt;guildweekly</value>
+  </data>
+  <data name="miki_command_usage_infopasta" xml:space="preserve">
+    <value>&gt;infopasta &lt;név&gt;</value>
+  </data>
+  <data name="miki_command_usage_lovepasta" xml:space="preserve">
+    <value>&gt;lovepasta &lt;név&gt;</value>
+  </data>
+  <data name="miki_command_usage_mypasta" xml:space="preserve">
+    <value>&gt;mypasta</value>
+  </data>
+  <data name="miki_command_usage_poppasta" xml:space="preserve">
+    <value>&gt;poppasta</value>
+  </data>
+  <data name="miki_command_usage_searchpasta" xml:space="preserve">
+    <value>&gt;searchpasta &lt;név&gt; [page=1]</value>
+  </data>
+  <data name="miki_command_usage_toppasta" xml:space="preserve">
+    <value>&gt;toppasta</value>
+  </data>
+  <data name="miki_guildweekly_insufficient_exp" xml:space="preserve">
+    <value>Nincs elég tapasztalati pontod ahhoz, hogy megkapd az ennek a csoportnak járó díjakat. Kérlek, maradj itt még egy darabig, ameddig ezt megteheted!
+
+Még legalább **{0}** tapasztalati pontot kell szerezz, mielőtt ezt a parancsot használhatod ebben a csoportban.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_terms_weekly" xml:space="preserve">
+    <value>Heti díj</value>
+  </data>
+  <data name="createpasta_error_no_content" xml:space="preserve">
+    <value>Nem találtam ennek a pasztának a tartalmát, kérlek, írd le, mit szeretnél alkotni.</value>
+  </data>
+  <data name="infopasta_error_no_arg" xml:space="preserve">
+    <value>Kérlek, írd le, melyik pasztát szeretnéd azonosítani.</value>
+  </data>
+  <data name="infopasta_rating" xml:space="preserve">
+    <value>Értékelés</value>
+  </data>
+  <data name="lunch_line" xml:space="preserve">
+    <value>Vau, vau! Mi van ebédre?</value>
+  </data>
+  <data name="miki_blackjack" xml:space="preserve">
+    <value>Blackjack</value>
+  </data>
+  <data name="miki_blackjack_cards_miki" xml:space="preserve">
+    <value>Miki ({0})</value>
+  </data>
+  <data name="miki_blackjack_cards_you" xml:space="preserve">
+    <value>Te ({0})</value>
+  </data>
+  <data name="miki_blackjack_explanation" xml:space="preserve">
+    <value>Aki a legközelebb jut 21-ig, nyer. Minden kártya az értékével megegyező számot ér, egészen 10-ig. A döntetleneket Miki nyeri.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_hit" xml:space="preserve">
+    <value>Használd a `hit`-et, hogy új kártyát húzz.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_lose_description" xml:space="preserve">
+    <value>Elvesztetted a fogadást Mikivel szemben.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_lose_title" xml:space="preserve">
+    <value>Miki győz!</value>
+  </data>
+  <data name="miki_blackjack_no_arg" xml:space="preserve">
+    <value>Nem írtad be, mennyi mekoban akarsz fogadni! Helyes felhasználás: &gt;blackjack &lt;mennyiség&gt;</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_stay" xml:space="preserve">
+    <value>Használd a `stay`-t, hogy véglegesítsd a pontjaidat.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_win_description" xml:space="preserve">
+    <value>Miki nem tudta utolérni a pontszámodat, így te nyerted a jackpotot. Kaptál {0} mekot!</value>
+  </data>
+  <data name="miki_blackjack_win_title" xml:space="preserve">
+    <value>Te győztél!</value>
+  </data>
+  <data name="miki_command_description_blackjack" xml:space="preserve">
+    <value>Tedd kockára a mekoidat egy Miki elleni, teljesen fair blackjack játékban!</value>
+  </data>
+  <data name="miki_command_usage_blackjack" xml:space="preserve">
+    <value>&gt;blackjack &lt;mennyiség&gt;</value>
+  </data>
+  <data name="mypasta_error_no_pastas" xml:space="preserve">
+    <value>Bocsi, de még nem csináltál egy pasztát se...</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="mypasta_title" xml:space="preserve">
+    <value>{0} pasztái</value>
+    <comment>example: Veld's pastas</comment>
+  </data>
+  <data name="pasta_error_no_arg" xml:space="preserve">
+    <value>Kérlek, írj be egy címkét vagy parancsot.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="poppasta_title" xml:space="preserve">
+    <value>Legnépszerűbb paszták</value>
+  </data>
+  <data name="searchpasta_error_no_arg" xml:space="preserve">
+    <value>Kérlek, írd be a kifejezéseket, amikre rá akarsz keresni.</value>
+  </data>
+  <data name="toppasta_title" xml:space="preserve">
+    <value>Legjobb paszták</value>
+  </data>
+  <data name="social_patreon" xml:space="preserve">
+    <value />
+  </data>
+  <data name="miki_command_description_setevent" xml:space="preserve">
+    <value>Kapcsolj ki és be parancsokat ezzel a paranccsal! (ne kapcsold ki ezt a parancsot)</value>
+  </data>
+  <data name="miki_command_usage_setevent" xml:space="preserve">
+    <value>&gt;setcommand &lt;parancsnév&gt; 1 a bekapcsolásért
+&gt;setcommand &lt;parancsnév&gt; 0 a kikapcsolásért</value>
+  </data>
+  <data name="page_index" xml:space="preserve">
+    <value>{0}. oldal a {1}-ből</value>
+    <comment>example: page 1 of 32</comment>
+  </data>
+  <data name="guildconfig_expneeded" xml:space="preserve">
+    <value>A felhasználóidnak mostantól {0} pont kell, hogy használják a &gt;guildweekly-t!</value>
+  </data>
+  <data name="guildconfig_visibility_false" xml:space="preserve">
+    <value>A te csoportod mostantól nem látható a ranglistán!</value>
+  </data>
+  <data name="guildconfig_visibility_true" xml:space="preserve">
+    <value>A csoportod látható a ranglistán!</value>
+  </data>
+  <data name="guildnewrival_error_matchmaking_failed" xml:space="preserve">
+    <value>Nem tudtunk összepárosítani titeket most, próbáld újra később!</value>
+  </data>
+  <data name="guildnewrival_error_timer_running" xml:space="preserve">
+    <value>Kérlek, várj egy napot, mielőtt ezt a parancsot újra használod!</value>
+  </data>
+  <data name="guildnewrival_success" xml:space="preserve">
+    <value>Az új riválisotok a **{0}**!</value>
+  </data>
+  <data name="guildtop_title" xml:space="preserve">
+    <value>Legjobb csoportok</value>
+  </data>
+  <data name="guildweekly_error_low_level" xml:space="preserve">
+    <value>Nagyobb szinttel kell rendelkezz, mint a riválisod!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="guildweekly_error_no_rival" xml:space="preserve">
+    <value>Még nincs riválisod. Szerver adminjai: használjátok a `&gt;guildnewrival`-t hogy elkezdjétek a párosítást!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="guildweekly_error_timer_running" xml:space="preserve">
+    <value>Már megkaptad a heti díjadat, {0} múlva lesz újra elérhető!</value>
+  </data>
+  <data name="miki_terms_config" xml:space="preserve">
+    <value>Configuráció</value>
+  </data>
+  <data name="miki_terms_experience" xml:space="preserve">
+    <value>Tapasztalat</value>
+  </data>
+  <data name="miki_terms_level" xml:space="preserve">
+    <value>Szint</value>
+  </data>
+  <data name="miki_terms_rank" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="miki_terms_rival" xml:space="preserve">
+    <value>Rivális</value>
+  </data>
+  <data name="blackjack_draw_description" xml:space="preserve">
+    <value>Visszakaptad a pénzed! Hurrá!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="blackjack_draw_title" xml:space="preserve">
+    <value>Döntetlen!</value>
+  </data>
+  <data name="blackjack_error_instance_exists" xml:space="preserve">
+    <value>Már játszol blackjackkel ebben a csatornában!</value>
+  </data>
+  <data name="pasta_error_out_of_index" xml:space="preserve">
+    <value>Nincsenek pasztáid ezen az oldalon!</value>
+  </data>
+  <data name="give_error_max_mekos" xml:space="preserve">
+    <value>Bocsi, de csak 999,999 mekot tudok feldolgozni tranzakciónként!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="give_error_min_mekos" xml:space="preserve">
+    <value>Legalább 1 mekot kell küldj, hogy ez a tranzakció működjön.</value>
+  </data>
+  <data name="give_error_no_arg" xml:space="preserve">
+    <value>Nem írtad be a mennyiséget, amit küldeni akarsz, illetve a felhasználót, akinek küldeni akarod. Kérlek, töltsd ki őket az alábbi módon!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="give_description" xml:space="preserve">
+    <value>{0} az imént adott {1}-nek {2} mekot!</value>
+    <comment>example: Veld just gave Godweeb 120 mekos!</comment>
+  </data>
+  <data name="give_error_amount_unparsable" xml:space="preserve">
+    <value>A második argumentumod nem egy szám! Kérlek, használd a `&gt;help give`-t, hogy megnézd, hogy kell ezt a parancsot használni!</value>
+  </data>
+  <data name="give_error_no_mention" xml:space="preserve">
+    <value>Kérlek, említsd meg az embert, akinek mekot akarsz adni. Használd a `&gt;help give`-t, hogy kiderítsd, hogy kell használni!</value>
+  </data>
+  <data name="user_error_no_account" xml:space="preserve">
+    <value>Ennek a felhasználónak nincs Miki fiókja.</value>
+  </data>
+  <data name="user_error_insufficient_mekos" xml:space="preserve">
+    <value>Nincs elég mekod, hogy ezt csináld!</value>
+  </data>
+  <data name="buymarriageslot_insufficient_mekos" xml:space="preserve">
+    <value>Nincs elég mekod! Még {0} mekora van szükséged!</value>
+  </data>
+  <data name="buymarriageslot_success" xml:space="preserve">
+    <value>Sikeresen vettél új házassági lehetőséget, már {0} lehetőséged van!</value>
+    <comment>example: You successfully purchased a new marriage slot, you now have 12 slots!</comment>
+  </data>
+  <data name="time_day" xml:space="preserve">
+    <value>nap</value>
+  </data>
+  <data name="time_days" xml:space="preserve">
+    <value>nap</value>
+  </data>
+  <data name="time_hour" xml:space="preserve">
+    <value>óra</value>
+  </data>
+  <data name="time_hours" xml:space="preserve">
+    <value>óra</value>
+  </data>
+  <data name="time_minute" xml:space="preserve">
+    <value>perc</value>
+  </data>
+  <data name="time_minutes" xml:space="preserve">
+    <value>perc</value>
+  </data>
+  <data name="time_second" xml:space="preserve">
+    <value>másodperc</value>
+  </data>
+  <data name="time_seconds" xml:space="preserve">
+    <value>másodperc</value>
+  </data>
+  <data name="miki_module_admin_prune_error_no_messages" xml:space="preserve">
+    <value>Bocsi, de nem találtam egy kitörölhető üzenetet sem ezzel a kéréssel! Használd a `{0}help prune`-t, hogy kapj tippeket ennek a parancsnak a használatára!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_blackjack_current_balance" xml:space="preserve">
+    <value>A jelenlegi egyenleged `{0}`.</value>
+  </data>
+  <data name="miki_blackjack_new_balance" xml:space="preserve">
+    <value>Az új egyenleged `{0}`.</value>
+  </data>
+  <data name="miki_module_fun_slots_lose_amount" xml:space="preserve">
+    <value>{0}🔸-t vesztettél. Az új egyenleged `{1}`.</value>
+  </data>
+  <data name="miki_module_fun_slots_lose_header" xml:space="preserve">
+    <value>Te vesztettél!</value>
+  </data>
+  <data name="ban_error_user_null" xml:space="preserve">
+    <value>Nem találtam meg  a felhasználót, akit ki akarsz tiltani, írj be egy azonosítót vagy egy megemlítést.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="ban_header" xml:space="preserve">
+    <value>Kitiltottak a {0} csoportból!</value>
+  </data>
+  <data name="ban_term" xml:space="preserve">
+    <value>Kitiltás</value>
+  </data>
+  <data name="permission_ban_members" xml:space="preserve">
+    <value>Felhasználók kitiltása</value>
+  </data>
+  <data name="permission_error_low" xml:space="preserve">
+    <value>Az ember, akit szeretnél {0}, magasabb szereppel rendelkezik, mint én, nem tudok {0} olyan embereket, akik magasabb szereppel rendelkeznek, mint én</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="permission_kick_members" xml:space="preserve">
+    <value>Felhasználók kirúgása</value>
+  </data>
+  <data name="permission_needed_error" xml:space="preserve">
+    <value>Kérlek, add nekem a {0} engedélyt</value>
+  </data>
+  <data name="miki_error_gambling_no_arg" xml:space="preserve">
+    <value>Nem használhatod ezt a parancsot argumentum nélkül. Kérlek, írd be, mennyi mekoban akarsz fogadni.</value>
+  </data>
+  <data name="miki_error_gambling_parse_error" xml:space="preserve">
+    <value>Csak egész számot, `all`-t (minden) vagy `*`-ot írhatsz be.</value>
+  </data>
+  <data name="miki_error_gambling_zero_or_less" xml:space="preserve">
+    <value>Egy vagy több mekoban kell fogadj.</value>
+  </data>
+  <data name="miki_module_accounts_leaderboards_reputation_header" xml:space="preserve">
+    <value>Ranglista: Hírnév</value>
+  </data>
+  <data name="miki_module_accounts_mekos_bot" xml:space="preserve">
+    <value>Nem nézheted meg egy bot mekoit!</value>
+  </data>
+  <data name="miki_module_accounts_mekos_no_user" xml:space="preserve">
+    <value>Az említett felhasználó nem található!</value>
+  </data>
+  <data name="miki_module_admin_prune_error_negative" xml:space="preserve">
+    <value>Nem írhatsz be negatív számot!</value>
+  </data>
+  <data name="miki_module_admin_prune_error_parse" xml:space="preserve">
+    <value>Egész számot kell beírj a mennyiséghez!</value>
+  </data>
+  <data name="miki_user_mekos" xml:space="preserve">
+    <value>{0}-nak {1} mekoja van!</value>
+  </data>
+  <data name="guild_error_null" xml:space="preserve">
+    <value>Ennek a csoportnak még nincs profilja.</value>
+  </data>
+  <data name="time_and" xml:space="preserve">
+    <value>és</value>
+  </data>
+  <data name="discord_servers" xml:space="preserve">
+    <value>Szerverek</value>
+  </data>
+  <data name="error_role_not_found" xml:space="preserve">
+    <value>Nem találtuk meg ezt a szerepet. Próbáld újra!</value>
+  </data>
+  <data name="error_term_invalid" xml:space="preserve">
+    <value>Ez a kifejezés nem található!</value>
+  </data>
+  <data name="flip_description_lose" xml:space="preserve">
+    <value>Vesztettél! Neked nem jár meko!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="flip_description_win" xml:space="preserve">
+    <value>Nyertél! Díjként kaptál {0} mekot!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_flip" xml:space="preserve">
+    <value>Dobj fel egy érmét, és nézd meg, ki lesz a szerencsés!</value>
+  </data>
+  <data name="miki_command_description_ping" xml:space="preserve">
+    <value>Ellenőrizd, milyen gyors Miki jelenleg! (Több ms magasabb várakozási időt jelent!)</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_flip" xml:space="preserve">
+    <value>&gt;flip &lt;mennyiség&gt; &lt;tails:heads&gt; (írás vagy fej) [-bónusz]</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_ping" xml:space="preserve">
+    <value>&gt;ping</value>
+  </data>
+  <data name="miki_warning" xml:space="preserve">
+    <value>Várj!</value>
+  </data>
+  <data name="permission_manage_roles" xml:space="preserve">
+    <value>Szerepek kezelése</value>
+  </data>
+  <data name="ping_placeholder" xml:space="preserve">
+    <value>Várj, pinget küldök a szolgáltatóknak...</value>
+  </data>
+  <data name="setrolelevel_error_no_permissions" xml:space="preserve">
+    <value>Úgy tűnik, Miki nem adhat ki szerepeket, ennek megjavításához add hozzá a {0} szerepet!</value>
+  </data>
+  <data name="stats_description" xml:space="preserve">
+    <value>Általános, valós idejű statisztikák Mikiről!</value>
+  </data>
+  <data name="miki_command_description_help" xml:space="preserve">
+    <value>Miért néztél rá erre? Nyilván tudod, hogy ez a parancs hogy működik.</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setleavemessage" xml:space="preserve">
+    <value>Szeretnél üzenni azoknak, akik elhagyják a csoportod? Használd ezt a király parancsot!</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_description_setwelcomemessage" xml:space="preserve">
+    <value>Üdvözölj barátot, ellenséget vagy ismeretlent ezzel a paranccsal!</value>
+  </data>
+  <data name="miki_command_usage_help" xml:space="preserve">
+    <value>&gt;help
+&gt;help &lt;parancs&gt;</value>
+  </data>
+  <data name="miki_command_usage_setleavemessage" xml:space="preserve">
+    <value>&gt;setleavemessage
+&gt;setleavemessage &lt;üzenet&gt;
+
+-u = felhasználónév
+-um = felhasználó megemlítése
+-o = csoport vezetője
+-om = csoport vezetőjének megemlítése
+-g = csoport neve
+-c = csoport létszáma</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="miki_command_usage_setwelcomemessage" xml:space="preserve">
+    <value>&gt;setwelcomemessage
+&gt;setwelcomemessage &lt;üzenet&gt;
+
+-u = felhasználónév
+-um = felhasználó megemlítése
+-o = csoport vezetője
+-om = csoport vezetőjének megemlítése
+-g = csoport neve
+-c = csoport létszáma</value>
+    <comment>Fuzzy</comment>
+  </data>
+  <data name="flip_header" xml:space="preserve">
+    <value>Pénzfeldobás</value>
+  </data>
+  <data name="miki_command_description_invite" xml:space="preserve">
+    <value>Szerezd meg Miki meghívó linkjét, hogy a szerveredre helyezhesd!</value>
+  </data>
+  <data name="miki_command_usage_invite" xml:space="preserve">
+    <value>&gt;invite</value>
+  </data>
+  <data name="common_string_all" xml:space="preserve">
+    <value>összes</value>
+  </data>
+  <data name="miki_module_accounts_rep_description" xml:space="preserve">
+    <value>Itt vannak a hírnév pontjaid statisztikái!
+
+Hogy másnak hírnevet adj, írd be, hogy `&gt;rep &lt;mention&gt; ["összes"|mennyiség]`</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_insufficient" xml:space="preserve">
+    <value>Nincsen {0} adható pontod!</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_none" xml:space="preserve">
+    <value>Kifogytál a mai pontokból!</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_self" xml:space="preserve">
+    <value>Nem adhatsz pontot magadnak.</value>
+  </data>
+  <data name="miki_module_accounts_rep_error_zero" xml:space="preserve">
+    <value>Nem adhatsz 0 pontot!</value>
+  </data>
+  <data name="miki_module_accounts_rep_header" xml:space="preserve">
+    <value>Hírnév</value>
+  </data>
+  <data name="miki_module_accounts_rep_points_left" xml:space="preserve">
+    <value>Mai megmaradt pontok</value>
+  </data>
+  <data name="miki_module_accounts_rep_remaining" xml:space="preserve">
+    <value>Megmaradt Hírvév Pontok</value>
+  </data>
+  <data name="miki_module_accounts_rep_reset" xml:space="preserve">
+    <value>Hírnév Pontok Visszaállítása</value>
+  </data>
+  <data name="miki_module_accounts_rep_success" xml:space="preserve">
+    <value>{0} **{2}** hírnevet adott {1} részére! {1} most **{3}** ponttal rendelkezik!</value>
+  </data>
+  <data name="miki_module_accounts_rep_total_received" xml:space="preserve">
+    <value>Összes Kapott Hírnév</value>
+  </data>
+  <data name="miki_module_pasta_favlist_mention_none" xml:space="preserve">
+    <value>Úgy tűnik, ő még nem {0} egy pasztát sem! :(</value>
+  </data>
+  <data name="miki_module_pasta_favlist_self_none" xml:space="preserve">
+    <value>Úgy tűnik, te még nem {0} egy pasztát sem! :(</value>
+  </data>
+  <data name="miki_module_pasta_hated" xml:space="preserve">
+    <value>utált</value>
+  </data>
+  <data name="miki_module_pasta_hated_header" xml:space="preserve">
+    <value>Utált paszták</value>
+  </data>
+  <data name="miki_module_pasta_loved" xml:space="preserve">
+    <value>kedvelt</value>
+  </data>
+  <data name="miki_module_pasta_loved_header" xml:space="preserve">
+    <value>Kedvelt paszták</value>
+  </data>
+  <data name="miki_command_description_rep" xml:space="preserve">
+    <value>Adj a barátaidnak hírnevet, amiért ilyen jó barátok!</value>
+  </data>
+  <data name="miki_command_description_rps" xml:space="preserve">
+    <value>Játssz kő-papír-ollót, hogy sok pénzt nyerj!</value>
+  </data>
+  <data name="miki_command_usage_rep" xml:space="preserve">
+    <value>&gt;rep
+&gt;rep &lt;megemlítés&gt; [további megemlítések]
+&gt;rep &lt;megemlítés&gt; &lt;mennyiség|összes&gt;</value>
+  </data>
+  <data name="miki_command_usage_rps" xml:space="preserve">
+    <value>&gt;rps &lt;feltett pénz&gt; &lt;r/p/s&gt;</value>
+  </data>
+  <data name="warning_mention_self" xml:space="preserve">
+    <value>Észrevettük, hogy megpróbáltad magadat megemlíteni. Ezt nem teheted!</value>
+  </data>
+  <data name="error_account_null" xml:space="preserve">
+    <value>Még nem létezik a fiókod! Ha ez a probléma sokáig fennáll, értesíts minket!</value>
+  </data>
+  <data name="error_rep_limit" xml:space="preserve">
+    <value>Nem adhatsz {0} felhasználó(k)nak {1} hírnév pontot, ha csak {2} pontod maradt.</value>
+  </data>
+  <data name="rep_success" xml:space="preserve">
+    <value>Sikeresen adtál hírnevet</value>
+  </data>
+  <data name="sync_success" xml:space="preserve">
+    <value>Szinkronizáltam a jelenlegi {0}-et Miki adatbázisához!</value>
+  </data>
+  <data name="term_avatar" xml:space="preserve">
+    <value>profilkép</value>
+  </data>
+  <data name="term_commands" xml:space="preserve">
+    <value>Parancsok</value>
+  </data>
+  <data name="term_shard" xml:space="preserve">
+    <value>Szilánk</value>
+  </data>
+  <data name="miki_command_description_avatar" xml:space="preserve">
+    <value>Nem akarod elveszteni a jelenlegi profilképed, amikor lecseréled egy újra? Mentsd el!</value>
+  </data>
+  <data name="miki_command_description_cake" xml:space="preserve">
+    <value>Hé, ez sok süti, ember!! Nyugi!</value>
+  </data>
+  <data name="miki_command_description_cuddle" xml:space="preserve">
+    <value>Ölelkezz a szeretteiddel, mint ahogy ők ott &lt;3</value>
+  </data>
+  <data name="miki_command_description_donate" xml:space="preserve">
+    <value>Támogasd ezt a csodálatos botot! Minden segítségre szükség van, hogy életben maradhassunk.</value>
+  </data>
+  <data name="miki_command_description_glare" xml:space="preserve">
+    <value>Valaki adott neked egy &gt;slap-et de nem akarsz visszapofozni? Meredj rájuk fenyegetően, és talán nem teszik meg még egyszer!</value>
+  </data>
+  <data name="miki_command_description_greentext" xml:space="preserve">
+    <value>A mémek és az álmok maradtak egyedül az életemben. ha ha.</value>
+  </data>
+  <data name="miki_command_description_guildinfo" xml:space="preserve">
+    <value>Nézz meg király információkat a csoportodról és a benne lévő emberekről!</value>
+  </data>
+  <data name="miki_command_description_highfive" xml:space="preserve">
+    <value>Sikerült egy Pentakillt csinálnod a haveroddal? Pacsi!</value>
+  </data>
+  <data name="miki_command_description_hug" xml:space="preserve">
+    <value>Öleld meg a barátaidat, ellenségeidet, vagy akiket imádsz utálni!</value>
+  </data>
+  <data name="miki_command_description_kiss" xml:space="preserve">
+    <value>Adj annak a kishölgynek (vagy fiatalúrnak) egy puszit a kemény munkájukért! &lt;3</value>
+  </data>
+  <data name="miki_command_description_poke" xml:space="preserve">
+    <value>Hé, haver. Nézz balra!</value>
+  </data>
+  <data name="miki_command_description_punch" xml:space="preserve">
+    <value>Tudjátok, mindig is bokszoló szerettem volna lenni.</value>
+  </data>
+  <data name="miki_command_description_showmodule" xml:space="preserve">
+    <value>Megmutatja, mely parancsok vannak be- és kikapcsolva egy modulban. Hasznos!</value>
+  </data>
+  <data name="miki_command_description_slap" xml:space="preserve">
+    <value>Valaki komiszan viselkedik? Adj nekik egy pofont, hogy a fal adja a másikat.</value>
+  </data>
+  <data name="miki_command_description_stats" xml:space="preserve">
+    <value>Statisztikák Miki futási idejéről! Hát nem érdekes ez a sok szám?!</value>
+  </data>
+  <data name="miki_command_description_trapcard" xml:space="preserve">
+    <value>Sajnos, KAIBA, uralmad véget ért, ugyanis a KÁRTYÁK SZÍVE a győzelemhez fog vezetni!</value>
+  </data>
+  <data name="miki_command_description_truth" xml:space="preserve">
+    <value>Be akarod bizonyítani, hogy a te érved a legjobb, de nincs statisztikád, amivel bizonyíthatod? Dobj rájuk egy &gt;truth bombát!</value>
+  </data>
+  <data name="miki_command_description_urban" xml:space="preserve">
+    <value>Nézd meg egy szó definícióját menő emberek szavaival B)</value>
+  </data>
+  <data name="miki_command_description_whois" xml:space="preserve">
+    <value>Ki ez a srác, aki most csatlakozott? Bár lenne egy nyomozóm... Várjunk! Itt van Miki!</value>
+  </data>
+  <data name="miki_command_description_yandere" xml:space="preserve">
+    <value>Miki téged szeret, és senki mást! Nézd ezeket a szexi képeket, amiket csak neked küldött!</value>
+  </data>
+  <data name="miki_command_usage_avatar" xml:space="preserve">
+    <value>&gt;avatar [megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_cake" xml:space="preserve">
+    <value>&gt;cake</value>
+  </data>
+  <data name="miki_command_usage_cuddle" xml:space="preserve">
+    <value>&gt;cuddle [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_donate" xml:space="preserve">
+    <value>&gt;donate</value>
+  </data>
+  <data name="miki_command_usage_glare" xml:space="preserve">
+    <value>&gt;glare [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_greentext" xml:space="preserve">
+    <value>&gt;greentext</value>
+  </data>
+  <data name="miki_command_usage_guildinfo" xml:space="preserve">
+    <value>&gt;guildinfo</value>
+  </data>
+  <data name="miki_command_usage_highfive" xml:space="preserve">
+    <value>&gt;highfive [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_hug" xml:space="preserve">
+    <value>&gt;hug [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_kiss" xml:space="preserve">
+    <value>&gt;kiss [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_poke" xml:space="preserve">
+    <value>&gt;poke [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_punch" xml:space="preserve">
+    <value>&gt;punch [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_showmodule" xml:space="preserve">
+    <value>&gt;showmodule &lt;modul neve&gt;</value>
+  </data>
+  <data name="miki_command_usage_slap" xml:space="preserve">
+    <value>&gt;slap [szöveg vagy megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_stats" xml:space="preserve">
+    <value>&gt;stats</value>
+  </data>
+  <data name="miki_command_usage_trapcard" xml:space="preserve">
+    <value>&gt;trapcard [kép url-je]
+&gt;trapcard [csatolmány]
+&gt;trapcard [megemlítés]</value>
+  </data>
+  <data name="miki_command_usage_truth" xml:space="preserve">
+    <value>&gt;truth &lt;szöveg&gt;</value>
+  </data>
+  <data name="miki_command_usage_urban" xml:space="preserve">
+    <value>&gt;urban &lt;szó&gt;</value>
+  </data>
+  <data name="miki_command_usage_whois" xml:space="preserve">
+    <value>&gt;whois &lt;felhasználó azonosítója&gt;
+&gt;whois &lt;megemlítés&gt;</value>
+  </data>
+  <data name="miki_command_usage_yandere" xml:space="preserve">
+    <value>&gt;yandere &lt;címszavak&gt;</value>
+  </data>
+  <data name="localization_set" xml:space="preserve">
+    <value>Nyelv átállítva {0}-ra!</value>
+  </data>
+  <data name="miki_command_description_hatedpasta" xml:space="preserve">
+    <value>Egy király lista az utált pasztáidról, arra az esetre, ha kéne az egyikük. A tudomány érdekében, természetesen!</value>
+  </data>
+  <data name="miki_command_description_listlocale" xml:space="preserve">
+    <value>Egy lista az összes nyelvről, amit Miki támogat!</value>
+  </data>
+  <data name="miki_command_description_overwatchuser" xml:space="preserve">
+    <value>Mutasd meg, milyen jó vagy Overwatchban ezzel a király paranccsal!</value>
+  </data>
+  <data name="miki_command_description_setlocale" xml:space="preserve">
+    <value>Állítsd be a bot nyelvét egy másik nyelvre ebben a csatornában!</value>
+  </data>
+  <data name="miki_command_description_setprefix" xml:space="preserve">
+    <value>Állítsd át a &gt;profile-odat !profile-ra ezzel a király paranccsal!</value>
+  </data>
+  <data name="miki_command_description_stare" xml:space="preserve">
+    <value>Bámulj valamire minden erőddel!</value>
+  </data>
+  <data name="miki_command_usage_hatedpasta" xml:space="preserve">
+    <value>&gt;hatedpasta &lt;oldal&gt;</value>
+  </data>
+  <data name="miki_command_usage_hatepasta" xml:space="preserve">
+    <value>&gt;hatedpasta &lt;pasta&gt;</value>
+  </data>
+  <data name="miki_command_usage_listlocale" xml:space="preserve">
+    <value>&gt;listlocale</value>
+  </data>
+  <data name="miki_command_usage_overwatchuser" xml:space="preserve">
+    <value>&gt;overwatchuser &lt;battle.net azonosító&gt; [-c a Competitive módhoz]</value>
+  </data>
+  <data name="miki_command_usage_setlocale" xml:space="preserve">
+    <value>&gt;setlocale &lt;nyelv a listlocale-ban&gt;</value>
+  </data>
+  <data name="miki_command_usage_setprefix" xml:space="preserve">
+    <value>&gt;setprefix &lt;új előtag&gt;</value>
+  </data>
+  <data name="miki_command_usage_stare" xml:space="preserve">
+    <value>&gt;stare</value>
+  </data>
+  <data name="term_roles" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_role_forbidden" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_role_null" xml:space="preserve">
+    <value />
+  </data>
+  <data name="term_available" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_role_required" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_argument_null" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_no_reminders" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_reminder_null" xml:space="preserve">
+    <value />
+  </data>
+  <data name="term_ok" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminders" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_cancel" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_cancelled_all" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_desc_add" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_desc_clear" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_desc_list" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_help_add" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_help_clear" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_help_description" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_help_list" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reminder_cancelled" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_role_level_low" xml:space="preserve">
+    <value />
+  </data>
+  <data name="error_role_already_given" xml:space="preserve">
+    <value />
+  </data>
+  <data name="current_language_name" xml:space="preserve">
+    <value>hungarian</value>
+  </data>
+</root>

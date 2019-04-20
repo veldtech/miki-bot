@@ -1,16 +1,16 @@
-﻿using Miki.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Common;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Framework.Extension;
-using Microsoft.EntityFrameworkCore;
-using Miki.Discord.Common;
-using Miki.Discord;
 
 namespace Miki.Modules
 {
@@ -31,203 +31,185 @@ namespace Miki.Modules
         {
             m.UserJoinGuild = async (user) =>
             {
-				IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
+                IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
 
-                List<EventMessageObject> data = await GetMessage(guild, EventMessageType.JOINSERVER, user);
-
-                if (data == null)
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
-                    return;
-                }
+                    List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.JOINSERVER, user);
+                    if (data == null)
+                    {
+                        return;
+                    }
 
-                data.ForEach(x =>  x.destinationChannel.QueueMessageAsync(x.message));
+                    data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
+                }
             };
 
             m.UserLeaveGuild = async (user) =>
             {
-				IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
-
-				List<EventMessageObject> data = await GetMessage(guild, EventMessageType.LEAVESERVER, user);
-
-                if (data == null)
+                IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
+                    List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.LEAVESERVER, user);
+                    if (data == null)
+                    {
+                        return;
+                    }
+
+                    data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
+                }
+            };
+        }
+
+        // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
+        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task SetWelcomeMessage(CommandContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
+            string welcomeMessage = e.Arguments.Pack.TakeAll();
+
+            if (string.IsNullOrEmpty(welcomeMessage))
+            {
+                EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
+                if (leaveMessage == null)
+                {
+                    await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
                     return;
                 }
 
-				data.ForEach(x => x.destinationChannel.QueueMessageAsync(x.message));
-			};
-        }
-
-        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetWelcomeMessage(EventContext e)
-        {
-            using (var context = new MikiContext())
-            {
-                if (string.IsNullOrEmpty(e.Arguments.ToString()))
-                {
-                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
-                    if (leaveMessage != null)
-                    {
-                        context.EventMessages.Remove(leaveMessage);
-                        e.Channel.QueueMessageAsync($"✅ deleted your welcome message");
-                        await context.SaveChangesAsync();
-                        return;
-                    }
-                    else
-                    {
-                        e.Channel.QueueMessageAsync($"⚠ no welcome message found!");
-                    }
-                }
-
-                if (await SetMessage(e.Arguments.ToString(), EventMessageType.JOINSERVER, e.Channel.Id))
-                {
-                    e.Channel.QueueMessageAsync($"✅ new welcome message is set to: `{ e.Arguments.ToString() }`");
-                }
-                await context.SaveChangesAsync();
+                context.EventMessages.Remove(leaveMessage);
+                await e.SuccessEmbed($"Deleted your welcome message")
+                    .QueueToChannelAsync(e.Channel);
             }
+            else
+            {
+                await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.Channel.Id);
+                await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
+                    .QueueToChannelAsync(e.Channel);
+            }
+            await context.SaveChangesAsync();
         }
 
         [Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetLeaveMessage(EventContext e)
+        public async Task SetLeaveMessage(CommandContext e)
         {
-            using (var context = new MikiContext())
+            var context = e.GetService<MikiDbContext>();
+            string leaveMsgString = e.Arguments.Pack.TakeAll();
+
+            if (string.IsNullOrEmpty(leaveMsgString))
             {
-                if (string.IsNullOrEmpty(e.Arguments.ToString()))
+                EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
+                if (leaveMessage == null)
                 {
-                    EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
-                    if (leaveMessage != null)
-                    {
-                        context.EventMessages.Remove(leaveMessage);
-                        e.Channel.QueueMessageAsync($"✅ deleted your leave message");
-                        await context.SaveChangesAsync();
-                        return;
-                    }
-                    else
-                    {
-                        e.Channel.QueueMessageAsync($"⚠ no leave message found!");
-                    }
+                    await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
                 }
 
-                if (await SetMessage(e.Arguments.ToString(), EventMessageType.LEAVESERVER, e.Channel.Id))
+                context.EventMessages.Remove(leaveMessage);
+                await e.SuccessEmbed($"Deleted your leave message")
+                    .QueueToChannelAsync(e.Channel);
+
+            }
+            else
+            {
+                await SetMessageAsync(context, leaveMsgString, EventMessageType.LEAVESERVER, e.Channel.Id);
+                await e.SuccessEmbed($"Your new leave message is set to: ```{leaveMsgString}```")
+                    .QueueToChannelAsync(e.Channel);
+            }
+            await context.SaveChangesAsync();
+        }
+
+        [Command(Name = "testmessage", Accessibility = EventAccessibility.ADMINONLY)]
+        public async Task TestMessage(CommandContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
+            if (Enum.TryParse(e.Arguments.Pack.TakeAll().ToLower(), true, out EventMessageType type))
+            {
+                var allmessages = await GetMessageAsync(context, e.Guild, type, e.Author);
+                EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);
+                e.Channel.QueueMessage(msg.message ?? "No message set in this channel");
+                return;
+            }
+            e.Channel.QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+        }
+
+        private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)
+        {
+            EventMessage messageInstance = await db.Set<EventMessage>().FindAsync(channelid.ToDbLong(), (short)v);
+
+            if (messageInstance == null)
+            {
+                db.Set<EventMessage>().Add(new EventMessage()
                 {
-                    e.Channel.QueueMessageAsync($"✅ new leave message is set to: `{ e.Arguments.ToString() }`");
-                }
-                await context.SaveChangesAsync();
+                    ChannelId = channelid.ToDbLong(),
+                    Message = message,
+                    EventType = (short)v
+                });
+            }
+            else
+            {
+                messageInstance.Message = message;
             }
         }
 
-		[Command(Name = "testmessage", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task TestMessage(EventContext e)
-		{
-			if (Enum.TryParse(e.Arguments.ToString().ToLower(), true, out EventMessageType type))
-			{
-				var allmessages = await GetMessage(e.Guild, type, e.Author);
-				EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);
-				e.Channel.QueueMessageAsync(msg.message ?? "No message set in this channel");
-				return;
-			}
-			e.Channel.QueueMessageAsync($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
-		}
-
-		private async Task<bool> SetMessage(string message, EventMessageType v, ulong channelid)
+        public async Task<List<EventMessageObject>> GetMessageAsync(DbContext db, IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-            using (var context = new MikiContext())
+            var channels = await guild.GetChannelsAsync();
+            var channelIds = channels.Select(x => x.Id.ToDbLong());
+
+            IDiscordGuildUser owner = await guild.GetOwnerAsync();
+            var ownerMention = owner.Mention;
+            var ownerName = owner.Username;
+
+            List<EventMessageObject> output = new List<EventMessageObject>();
+            short t = (short)type;
+
+            var messageObjects = await db.Set<EventMessage>()
+                .Where(x => channelIds.Contains(x.ChannelId) && t == x.EventType)
+                .ToListAsync();
+
+            foreach (var c in messageObjects)
             {
-                EventMessage messageInstance = await context.EventMessages.FindAsync(channelid.ToDbLong(), (short)v);
-
-                if (messageInstance == null)
+                if (c == null)
                 {
-                    context.EventMessages.Add(new EventMessage()
-                    {
-                        ChannelId = channelid.ToDbLong(),
-                        Message = message,
-                        EventType = (short)v
-                    });
-                }
-                else
-                {
-                    messageInstance.Message = message;
+                    continue;
                 }
 
-                await context.SaveChangesAsync();
+                if (string.IsNullOrEmpty(c.Message))
+                {
+                    continue;
+                }
+
+                string modifiedMessage = c.Message;
+
+                modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
+                modifiedMessage = modifiedMessage.Replace("-uc", guild.MemberCount.ToString());
+                modifiedMessage = modifiedMessage.Replace("-u", user.Username);
+
+                modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
+                modifiedMessage = modifiedMessage.Replace("-s", guild.Name);
+
+                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
+                modifiedMessage = modifiedMessage.Replace("-o", ownerName);
+
+                modifiedMessage = modifiedMessage.Replace("-cc", channels.Count().ToString());
+                modifiedMessage = modifiedMessage.Replace("-vc", channels.Count().ToString());
+
+                output.Add(new EventMessageObject()
+                {
+                    message = modifiedMessage,
+                    destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId) as IDiscordTextChannel
+                });
             }
-            return true;
-        }
-
-        public async Task<List<EventMessageObject>> GetMessage(IDiscordGuild guild, EventMessageType type, IDiscordUser user)
-        {
-            long guildId = guild.Id.ToDbLong();
-
-			var channels = await guild.GetTextChannelsAsync();
-			var channelIds = channels.Select(x => x.Id.ToDbLong());
-
-			var guildCount = (await guild.GetUsersAsync()).Count;
-
-			IDiscordGuildUser owner = await guild.GetOwnerAsync();
-
-			var ownerMention = owner.Mention;
-			var ownerName = owner.Username;
-
-			List<EventMessageObject> output = new List<EventMessageObject>();
-
-            using (var context = new MikiContext())
-            {
-				var messageObjects = await context.EventMessages
-					.Where(x => channelIds.Contains(x.ChannelId) && (short)type == x.EventType)
-					.ToListAsync();
-
-				var allUsers = await guild.GetUsersAsync();
-
-				foreach (var c in messageObjects)
-                {
-                    if (c == null)
-                    {
-                        continue;
-                    }
-
-                    if (string.IsNullOrEmpty(c.Message))
-                    {
-                        continue;
-                    }
-
-					IDiscordGuild g = await (user as IDiscordGuildUser).GetGuildAsync();
-
-
-					string modifiedMessage = c.Message;
-
-                    modifiedMessage = modifiedMessage.Replace("-um", user.Mention);
-					modifiedMessage = modifiedMessage.Replace("-uc", 
-						(await g.GetUsersAsync()).Count().ToString());
-                    modifiedMessage = modifiedMessage.Replace("-u", user.Username);
-
-                    modifiedMessage = modifiedMessage.Replace("-ru", allUsers.ElementAt(MikiRandom.Next(0, allUsers.Count())).Username);   
-
-                    modifiedMessage = modifiedMessage.Replace("-now", DateTime.Now.ToShortDateString());
-                    modifiedMessage = modifiedMessage.Replace("-sc", guildCount.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-s", 
-						g.Name);
-
-
-	                modifiedMessage = modifiedMessage.Replace("-om", ownerMention);
-                    modifiedMessage = modifiedMessage.Replace("-o", ownerName);
-
-                    modifiedMessage = modifiedMessage.Replace("-cc", (await g.GetChannelsAsync()).Count.ToString());
-                    modifiedMessage = modifiedMessage.Replace("-vc", (await g.GetVoiceChannelsAsync()).Count().ToString());
-					
-                    output.Add(new EventMessageObject()
-					{
-						message = modifiedMessage,
-						destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId)
-					});
-                }
-                return output;
-            }
+            return output;
         }
     }
 
 	public struct EventMessageObject
 	{
-		public IDiscordChannel destinationChannel;
+		public IDiscordTextChannel destinationChannel;
 		public string message;
 	}
 }

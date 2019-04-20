@@ -2,11 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Configurations>Debug;Release;Debug Production;Prod</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Rest" Version="1.4.1" />
+    <PackageReference Include="Miki.Rest" Version="1.5.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Users\" />
   </ItemGroup>
 
 </Project>
