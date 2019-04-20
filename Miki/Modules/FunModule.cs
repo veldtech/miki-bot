@@ -530,24 +530,13 @@ namespace Miki.Modules
 
 		private async Task PlaceReminderAsync(ICommandContext e, string args)
 		{
-			int inIndex = args.ToLower().LastIndexOf(" in ");
-			int everyIndex = args.ToLower().LastIndexOf(" every ");
-
+			int splitIndex = args.ToLower().LastIndexOf(" in ");
 			// TODO: still a bit hacky
-			bool isIn = (inIndex > everyIndex);
-			bool repeated = false;
-
-			int splitIndex = isIn ? inIndex : everyIndex;
 
 			if (splitIndex == -1)
 			{
 				await e.ErrorEmbed(e.Locale.GetString("error_argument_null", "time"))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
-			}
-
-			if (!isIn)
-			{
-				repeated = true;
 			}
 
 			string reminderText = new string(args
@@ -567,11 +556,11 @@ namespace Miki.Modules
 							.AppendText(context)
 							.BuildWithBlockCode())
 						.ToEmbed().QueueToChannelAsync(e.Author.GetDMChannelAsync().Result);
-				}, reminderText, timeUntilReminder, repeated);
+				}, reminderText, timeUntilReminder);
 
 				await new EmbedBuilder()
 					.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
-					.SetDescription($"I'll remind you to **{reminderText}** {(repeated ? "every" : "in")} **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
+					.SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
 					.SetColor(255, 220, 93)
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 			}
