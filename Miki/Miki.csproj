@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Configurations>Debug;Release;Debug Production;Prod</Configurations>
 	<Deterministic>False</Deterministic>
+	<Version>2019.2</Version>
+	<AssemblyVersion>2019.2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

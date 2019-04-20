@@ -215,7 +215,7 @@ namespace Miki
             var config = app.GetService<ConfigurationManager>();
             EventSystem eventSystem = app.GetService<EventSystem>();
             {
-                app.Discord.MessageCreate += eventSystem.OnMessageReceivedAsync;
+                eventSystem.Subscribe(app.Discord);
 
                 eventSystem.OnError += async (ex, context) =>
                 {
@@ -275,10 +275,7 @@ namespace Miki
                 configFile
             );
 
-            app.Discord.MessageCreate += Bot_MessageReceived;
-
             app.Discord.GuildJoin += Client_JoinedGuild;
-            app.Discord.GuildLeave += Client_LeftGuild;
             app.Discord.UserUpdate += Client_UserUpdated;
 
             await gateway.StartAsync();
@@ -293,19 +290,6 @@ namespace Miki
                     await Utils.SyncAvatarAsync(newUser, scope.ServiceProvider.GetService<IExtendedCacheClient>(), scope.ServiceProvider.GetService<MikiDbContext>());
                 }
             }
-        }
-
-
-        private Task Bot_MessageReceived(IDiscordMessage arg)
-        {
-            DogStatsd.Increment("messages.received");
-            return Task.CompletedTask;
-        }
-
-        private Task Client_LeftGuild(ulong guildId)
-        {
-            DogStatsd.Increment("guilds.left");
-            return Task.CompletedTask;
         }
 
         private async Task Client_JoinedGuild(IDiscordGuild arg)
@@ -351,8 +335,6 @@ namespace Miki
                 {
                     Log.Error(e.ToString());
                 }
-
-                DogStatsd.Increment("guilds.joined");
             }
         }
     }

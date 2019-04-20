@@ -15,7 +15,7 @@ namespace Miki.Helpers
 	public static class DatabaseHelpers
 	{
 		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
-			=> await User.GetAsync(context, (long)discordUser.Id, discordUser.Username);
+			=> await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
         public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
         {
@@ -49,7 +49,8 @@ namespace Miki.Helpers
 				throw new ArgumentLessThanZeroException();
 			}
 
-			DogStatsd.Counter("currency.change", amount);
+            // TODO #535: Move to DatadogService
+            DogStatsd.Counter("currency.change", amount);
 
 			user.Currency += amount;
 
@@ -71,7 +72,8 @@ namespace Miki.Helpers
 				throw new InsufficientCurrencyException(user.Currency, (long)amount);
 			}
 
-			DogStatsd.Counter("currency.change", -amount);
+            // TODO #535: Move to DatadogService
+            DogStatsd.Counter("currency.change", -amount);
 
 			user.Currency -= amount;
 		}
