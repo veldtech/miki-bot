@@ -2256,4 +2256,16 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="miki_command_usage_removecommand" xml:space="preserve">
     <value>&gt;removecommand &lt;command name&gt;</value>
   </data>
+  <data name="miki_command_description_redeemkey" xml:space="preserve">
+    <value>Redeem your keys to get donator permissions!</value>
+  </data>
+  <data name="miki_command_description_sellkey" xml:space="preserve">
+    <value>Sell your unwanted keys for a flat sum of mekos!</value>
+  </data>
+  <data name="miki_command_usage_redeemkey" xml:space="preserve">
+    <value>&gt;redeemkey &lt;key&gt;</value>
+  </data>
+  <data name="miki_command_usage_sellkey" xml:space="preserve">
+    <value>&gt;sellkey &lt;key&gt;</value>
+  </data>
 </root>

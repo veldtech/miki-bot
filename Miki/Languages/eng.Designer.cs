@@ -1818,6 +1818,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Redeem your keys to get donator permissions!.
+        /// </summary>
+        internal static string miki_command_description_redeemkey {
+            get {
+                return ResourceManager.GetString("miki_command_description_redeemkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remind yourself to do things!.
         /// </summary>
         internal static string miki_command_description_remind {
@@ -1896,6 +1905,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_searchpasta {
             get {
                 return ResourceManager.GetString("miki_command_description_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sell your unwanted keys for a flat sum of mekos!.
+        /// </summary>
+        internal static string miki_command_description_sellkey {
+            get {
+                return ResourceManager.GetString("miki_command_description_sellkey", resourceCulture);
             }
         }
         
@@ -2867,6 +2885,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;redeemkey &lt;key&gt;.
+        /// </summary>
+        internal static string miki_command_usage_redeemkey {
+            get {
+                return ResourceManager.GetString("miki_command_usage_redeemkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds).
         /// </summary>
         internal static string miki_command_usage_remind {
@@ -2947,6 +2974,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_searchpasta {
             get {
                 return ResourceManager.GetString("miki_command_usage_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;sellkey &lt;key&gt;.
+        /// </summary>
+        internal static string miki_command_usage_sellkey {
+            get {
+                return ResourceManager.GetString("miki_command_usage_sellkey", resourceCulture);
             }
         }
         
