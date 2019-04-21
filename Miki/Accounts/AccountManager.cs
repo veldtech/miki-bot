@@ -43,20 +43,8 @@ namespace Miki.Accounts
 
 		public AccountManager(MikiApp bot)
 		{
-			OnGlobalLevelUp += (a, e, l) =>
-			{
-				DogStatsd.Counter("levels.global", l, 1, new []{
-                    $"level:{l}"
-                });
-				return Task.CompletedTask;
-			};
-
 			OnLocalLevelUp += async (a, e, l) =>
 			{
-				DogStatsd.Counter("levels.local", l, 1, new[]{
-                    $"level:{l}"
-                });
-
 				var guild = await (e as IDiscordGuildChannel).GetGuildAsync();
 				long guildId = guild.Id.ToDbLong();
 
@@ -69,8 +57,8 @@ namespace Miki.Accounts
 						.Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
 						.ToListAsync();
 
-					var setting = (LevelNotificationsSetting)
-						await Setting.GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
+					var setting = (LevelNotificationsSetting)await Setting
+                        .GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
 
 					if (setting == LevelNotificationsSetting.None)
 						return;
@@ -105,7 +93,9 @@ namespace Miki.Accounts
 						}
 
 						embed.AddInlineField("Rewards", 
-							string.Join("\n", rolesObtained.Select(x => $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId).Name}**")));
+							string.Join("\n", 
+                                rolesObtained
+                                    .Select(x => $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId).Name}**")));
 					}
 
                     if (e is IDiscordTextChannel tc)

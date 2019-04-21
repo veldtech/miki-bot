@@ -134,9 +134,7 @@ namespace Miki.Accounts.Achievements
 
 		public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordTextChannel channel)
 		{
-			DogStatsd.Counter("achievements.gained", 1);
-
-            if (achievement as AchievementAchievement != null)
+            if (achievement as AchievementAchievement == null)
             {
                 return;
             }
@@ -145,7 +143,8 @@ namespace Miki.Accounts.Achievements
 
             using (var scope = MikiApp.Instance.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+                var context = scope.ServiceProvider
+                    .GetService<MikiDbContext>();
                 int achievementCount = await context.Achievements
 					.Where(q => q.UserId == id)
 					.CountAsync();
@@ -210,7 +209,6 @@ namespace Miki.Accounts.Achievements
                 await Notification.SendAchievementAsync(achievement, channel, user);
             }
         }
-
         public async Task UnlockAsync(IAchievement achievement, IDiscordUser user, int r = 0)
         {
             long userid = user.Id.ToDbLong();

@@ -739,7 +739,7 @@ namespace Miki.Modules.AccountsModule
 
             if (user == null)
             {
-                return;
+                throw new UserNullException();
             }
 
             user.Name = e.Author.Username;
@@ -807,21 +807,28 @@ namespace Miki.Modules.AccountsModule
                 if (amount <= sender.Currency)
                 {
                     sender.RemoveCurrency(amount);
+
+                    if (await receiver.IsBannedAsync(context))
+                    {
+                        throw new UserNullException();
+                    }
+
                     await receiver.AddCurrencyAsync(amount);
 
                     await new EmbedBuilder()
                     {
                         Title = "🔸 transaction",
-                        Description = e.Locale.GetString("give_description", sender.Name, receiver.Name, amount.ToFormattedString()),
+                        Description = e.Locale.GetString("give_description", 
+                            sender.Name, 
+                            receiver.Name, 
+                            amount.ToFormattedString()),
                         Color = new Color(255, 140, 0),
                     }.ToEmbed().QueueToChannelAsync(e.Channel);
-
                     await context.SaveChangesAsync();
                 }
                 else
                 {
-                    await e.ErrorEmbedResource("user_error_insufficient_mekos")
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    throw new InsufficientCurrencyException(sender.Currency, amount);
                 }
             }
         }

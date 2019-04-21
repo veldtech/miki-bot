@@ -13,6 +13,7 @@ using Miki.Framework.Language;
 using Miki.Helpers;
 using Miki.Localization;
 using Miki.Models;
+using Miki.Modules.GuildAccounts.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,10 @@ namespace Miki.Modules
                 if (timer.Value.AddDays(7) <= DateTime.Now)
                 {
                     GuildUser rival = await thisGuild.GetRivalOrDefaultAsync(database);
+                    if(rival == null)
+                    {
+                        throw new RivalNullException();
+                    }
 
                     if (rival.Experience > thisGuild.Experience)
                     {

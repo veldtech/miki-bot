@@ -22,6 +22,7 @@ using System.Web;
 using Miki.Cache;
 using Miki.Bot.Models;
 using Miki.Dsl;
+using System.Reflection;
 
 namespace Miki.Modules
 {
@@ -331,7 +332,7 @@ namespace Miki.Modules
 
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 
-			foreach (Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
+			foreach (Miki.Framework.Events.Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
 			{
 				List<CommandEvent> events = m.Events
 					.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e).Result >= x.Accessibility).ToList();
@@ -362,10 +363,11 @@ namespace Miki.Modules
 		[Command(Name = "info", Aliases = new string[] { "about" })]
 		public async Task InfoAsync(CommandContext e)
 		{
-			EmbedBuilder embed = new EmbedBuilder();
+            Version v = Assembly.GetEntryAssembly().GetName().Version;
 
-			embed.SetAuthor("Miki " + Global.Version, "", "");
-			embed.Color = new Color(0.6f, 0.6f, 1.0f);
+            EmbedBuilder embed = new EmbedBuilder()
+                .SetAuthor($"Miki {v}")
+                .SetColor(0.6f, 0.6f, 1.0f);
 
 			embed.AddField(e.Locale.GetString("miki_module_general_info_made_by_header"),
 				e.Locale.GetString("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");

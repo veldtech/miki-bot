@@ -295,6 +295,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!.
+        /// </summary>
+        internal static string error_guild_rival_null {
+            get {
+                return ResourceManager.GetString("error_guild_rival_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have enough mekos! You need {0} more mekos to be able to do this..
         /// </summary>
         internal static string error_insufficient_currency {

@@ -1,4 +1,5 @@
-﻿using Miki.Bot.Models;
+﻿using Miki.Accounts.Achievements.Objects;
+using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -161,6 +162,14 @@ namespace Miki.Modules
                     bot_position = myHierarchy
                 }) + "```");
             }
+        }
+
+        [Command(Name = "sendtestachievement", Accessibility = EventAccessibility.DEVELOPERONLY)]
+        public async Task SendTestAchievementAsync(ICommandContext e)
+        {
+            await Notification.SendAchievementAsync(
+                new ManualAchievement { Name = "test", Icon = "⚙", Points = 0, ParentName = "" }, 
+                e.Channel, e.Author);
         }
 
         [Command(Name = "identifybotroles", Accessibility = EventAccessibility.DEVELOPERONLY)]

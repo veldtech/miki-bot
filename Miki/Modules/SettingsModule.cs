@@ -80,19 +80,18 @@ namespace Miki.Modules
 
             var context = e.GetService<MikiDbContext>();
 
-            IEnumerable<IDiscordTextChannel> channels
-                    = new List<IDiscordTextChannel> { e.Channel };
+            var channels = new List<IDiscordTextChannel> { e.Channel };
 
             if (e.Arguments.CanTake)
             {
-
                 if (e.Arguments.Take(out string attr))
                 {
                     if (attr.StartsWith("-g"))
                     {
                         channels = (await e.Guild.GetChannelsAsync())
                             .Where(x => x.Type == ChannelType.GUILDTEXT)
-                            .Select(x => x as IDiscordTextChannel);
+                            .Select(x => x as IDiscordTextChannel)
+                            .ToList();
                     }
                 }
             }

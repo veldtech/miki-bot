@@ -331,7 +331,7 @@ namespace Miki.Modules
                 return;
             }
 
-            if (mentionedPerson.Banned)
+            if (await mentionedPerson.IsBannedAsync(context))
             {
                 await e.ErrorEmbed("This person has been banned from Miki.").ToEmbed().QueueToChannelAsync(e.Channel);
                 return;

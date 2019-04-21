@@ -2251,7 +2251,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   </data>
   <data name="miki_command_usage_createcommand" xml:space="preserve">
     <value>&gt;createcommand &lt;command name&gt; &lt;script&gt;
-To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript!</value>
+To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript</value>
   </data>
   <data name="miki_command_usage_removecommand" xml:space="preserve">
     <value>&gt;removecommand &lt;command name&gt;</value>
@@ -2267,5 +2267,7 @@ To read more about the miki scripting language. Check out https://github.com/mik
   </data>
   <data name="miki_command_usage_sellkey" xml:space="preserve">
     <value>&gt;sellkey &lt;key&gt;</value>
+  <data name="error_guild_rival_null" xml:space="preserve">
+    <value>Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!</value>
   </data>
 </root>
