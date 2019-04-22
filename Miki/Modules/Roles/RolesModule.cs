@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
@@ -23,7 +24,7 @@ namespace Miki.Modules.Roles
 	{
 		#region commands
 
-		[Command(Name = "iam")]
+		[GuildOnly, Command(Name = "iam")]
 		public async Task IAmAsync(CommandContext e)
 		{
             var context = e.GetService<MikiDbContext>();
@@ -133,7 +134,7 @@ namespace Miki.Modules.Roles
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "iamnot")]
+		[GuildOnly, Command(Name = "iamnot")]
 		public async Task IAmNotAsync(CommandContext e)
 		{
 			string roleName = e.Arguments.Pack.TakeAll();
@@ -205,7 +206,7 @@ namespace Miki.Modules.Roles
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "iamlist")]
+		[GuildOnly, Command(Name = "iamlist")]
 		public async Task IAmListAsync(CommandContext e)
 		{
             var context = e.GetService<MikiDbContext>();
@@ -285,7 +286,7 @@ namespace Miki.Modules.Roles
 					.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-        [Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
+        [GuildOnly, Command(Name = "configrole", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task ConfigRoleAsync(CommandContext e)
         {
             if (e.Arguments.CanTake)

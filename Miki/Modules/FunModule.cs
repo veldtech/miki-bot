@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -743,16 +744,24 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            if (await cache.HashExistsAsync("avtr:sync", e.Author.Id.ToString()))
+            using (var client = new RestClient(""))
             {
-                await Utils.SyncAvatarAsync(e.Author, cache, context);
-            }
+                var authorResponse = await client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new HttpMethod("HEAD"),
+                    RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{e.Author.Id}.png")
+                });
 
-            if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
-            {
-                await Utils.SyncAvatarAsync(user, cache, context);
-            }
+                if (!authorResponse.Success)
+                {
+                    await Utils.SyncAvatarAsync(e.Author, cache, context);
+                }
 
+                if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
+                {
+                    await Utils.SyncAvatarAsync(user, cache, context);
+                }
+            }
             Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);

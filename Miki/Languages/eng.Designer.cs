@@ -259,6 +259,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command can only be used in discord servers!.
+        /// </summary>
+        internal static string error_command_guildonly {
+            get {
+                return ResourceManager.GetString("error_command_guildonly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command &apos;{0}&apos; does not exist!.
         /// </summary>
         internal static string error_command_null {
@@ -2326,7 +2335,7 @@ namespace Miki.Languages {
         
         /// <summary>
         ///   Looks up a localized string similar to &gt;createcommand &lt;command name&gt; &lt;script&gt;
-        ///To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript!.
+        ///To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript.
         /// </summary>
         internal static string miki_command_usage_createcommand {
             get {

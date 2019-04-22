@@ -412,14 +412,6 @@ namespace Miki.Modules
 				}
 
 				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(argObject, e.Guild);
-
-				string reason = null;
-
-				if (e.Arguments.CanTake)
-				{
-                    reason = e.Arguments.Pack.TakeAll();
-				}
-
 				if (user == null)
 				{
                     await e.ErrorEmbed(e.Locale.GetString("ban_error_user_null"))
@@ -427,7 +419,13 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+                string reason = null;
+                if (e.Arguments.CanTake)
+                {
+                    reason = e.Arguments.Pack.TakeAll();
+                }
+
+                IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
 				{

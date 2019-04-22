@@ -62,25 +62,35 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             return context;
         }
 
-        public override async Task CheckAsync(CommandContext message)
+        public override async Task CheckAsync(CommandContext e)
         {
-            if(message.Message.Type != MessageType.GUILDTEXT)
+            if(e == null)
             {
                 return;
             }
 
-            var channel = await message.Message.GetChannelAsync();
-            var guild = await (channel as IDiscordGuildChannel).GetGuildAsync();
+            if(e.Message.Type != MessageType.GUILDTEXT)
+            {
+                return;
+            }
 
-            var cache = message.GetService<IExtendedCacheClient>();
+            var channel = await e.Message.GetChannelAsync();
+            if (!(channel is IDiscordGuildChannel guildChannel))
+            {
+                return;
+            }
+
+            var guild = await guildChannel.GetGuildAsync();
+
+            var cache = e.GetService<IExtendedCacheClient>();
             IEnumerable<Token> tokens = null;
 
-            string[] args = message.Message.Content.Substring(message.PrefixUsed.Length)
+            string[] args = e.Message.Content.Substring(e.PrefixUsed.Length)
                 .Split(' ');
             string commandName = args.FirstOrDefault()
                 .ToLowerInvariant();
             
-            if(message.EventSystem
+            if(e.EventSystem
                 .GetCommandHandler<SimpleCommandHandler>()
                 .GetCommandByIdOrDefault(commandName) != null)
             {
@@ -94,7 +104,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             }
             else
             {
-                var db = message.GetService<MikiDbContext>();
+                var db = e.GetService<MikiDbContext>();
                 var command = await db.CustomCommands
                     .FindAsync(guild.Id.ToDbLong(), commandName);
 
@@ -106,8 +116,8 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
 
             if(tokens != null)
             {
-                var context = CreateContext(message);
-                message.Channel.QueueMessage(new Parser(tokens).Parse(context));
+                var context = CreateContext(e);
+                e.Channel.QueueMessage(new Parser(tokens).Parse(context));
             }
         }
     }

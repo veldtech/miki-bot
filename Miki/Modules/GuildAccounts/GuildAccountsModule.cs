@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
@@ -22,9 +23,9 @@ using System.Threading.Tasks;
 namespace Miki.Modules
 {
 	[Module("Guild_Accounts")]
-	internal class GuildAccountsModule
+	public class GuildAccountsModule
 	{
-        [Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
+        [GuildOnly, Command(Name = "guildweekly", Aliases = new string[] { "weekly" })]
         public async Task GuildWeeklyAsync(CommandContext e)
         {
             var database = e.GetService<MikiDbContext>();
@@ -109,7 +110,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command(Name = "guildnewrival", Accessibility = EventAccessibility.ADMINONLY)]
+        [GuildOnly, Command(Name = "guildnewrival", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task GuildNewRival(CommandContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -165,7 +166,7 @@ namespace Miki.Modules
                 .ToEmbed().QueueToChannelAsync(e.Channel);
         }
 
-        [Command(Name = "guildbank")]
+        [GuildOnly, Command(Name = "guildbank")]
         public async Task GuildBankAsync(CommandContext e)
         {
             e.Arguments.Take(out string arg);
@@ -258,7 +259,7 @@ namespace Miki.Modules
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "guildprofile")]
+		[GuildOnly, Command(Name = "guildprofile")]
 		public async Task GuildProfile(CommandContext e)
 		{
             var context = e.GetService<MikiDbContext>();
@@ -312,7 +313,7 @@ namespace Miki.Modules
                 await embed.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		[Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
+		[GuildOnly, Command(Name = "guildconfig", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task SetGuildConfig(CommandContext e)
 		{
             var context = e.GetService<MikiDbContext>();
@@ -368,7 +369,7 @@ namespace Miki.Modules
 				}
 		}
 
-		[Command(Name = "guildupgrade", Accessibility = EventAccessibility.ADMINONLY)]
+		[GuildOnly, Command(Name = "guildupgrade", Accessibility = EventAccessibility.ADMINONLY)]
 		public async Task GuildUpgradeAsync(CommandContext e)
 		{
             e.Arguments.Take(out string arg);
@@ -402,7 +403,7 @@ namespace Miki.Modules
 				}
 		}
 
-		[Command(Name = "guildhouse")]
+		[GuildOnly, Command(Name = "guildhouse")]
 		public async Task GuildHouseAsync(CommandContext e)
 		{
             var context = e.GetService<MikiDbContext>();

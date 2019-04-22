@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -31,7 +32,7 @@ namespace Miki.Modules.CustomCommands
             app.GetService<EventSystem>().AddCommandHandler(new CustomCommandsHandler());
         }
 
-        [Command(Name = "createcommand", Accessibility = EventAccessibility.ADMINONLY)]
+        [GuildOnly, Command(Name = "createcommand", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task NewCustomCommandAsync(ICommandContext e)
         {
             if(e.Arguments.Take(out string commandName))
@@ -101,7 +102,7 @@ namespace Miki.Modules.CustomCommands
             }
         }
 
-        [Command(Name = "removecommand", Accessibility = EventAccessibility.ADMINONLY)]
+        [GuildOnly, Command(Name = "removecommand", Accessibility = EventAccessibility.ADMINONLY)]
         public async Task RemoveCommandAsync(ICommandContext e)
         {
             var context = e.GetService<MikiDbContext>();

@@ -2267,7 +2267,11 @@ To read more about the miki scripting language. Check out https://github.com/mik
   </data>
   <data name="miki_command_usage_sellkey" xml:space="preserve">
     <value>&gt;sellkey &lt;key&gt;</value>
+  </data>
   <data name="error_guild_rival_null" xml:space="preserve">
     <value>Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!</value>
+  </data>
+  <data name="error_command_guildonly" xml:space="preserve">
+    <value>This command can only be used in discord servers!</value>
   </data>
 </root>
