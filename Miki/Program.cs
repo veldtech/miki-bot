@@ -14,20 +14,21 @@ using Miki.Discord.Gateway;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Localization;
+using Miki.Framework.Commands.Pipelines;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Filters;
 using Miki.Framework.Events.Triggers;
-using Miki.Framework.Languages;
+using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
 using SharpRaven;
 using SharpRaven.Data;
 using StackExchange.Redis;
-using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,12 +57,13 @@ namespace Miki
             var appBuilder = new MikiAppBuilder();
 
             await p.LoadServicesAsync(appBuilder);
+            var pipelineBuilder =  p.BuildCommandsPipeline(appBuilder);
 
             MikiApp app = appBuilder.Build();
 
-            await p.LoadDiscord(app);
+            await p.LoadDiscord(app, pipelineBuilder.Build(app));
 
-            p.LoadLocales();
+            p.LoadLocales(app);
 
             for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
             {
@@ -77,17 +79,34 @@ namespace Miki
                     .Where(x => x.ExpirationDate > DateTime.UtcNow)
                     .ToListAsync();
 
-                foreach (var u in bannedUsers)
-                {
-                    app.GetService<EventSystem>().MessageFilter
-                        .Get<UserFilter>().Users.Add(u.UserId.FromDbLong());
-                }
+                //foreach (var u in bannedUsers)
+                //{
+                //    app.GetService<EventSystem>().MessageFilter
+                //        .Get<UserFilter>().Users.Add(u.UserId.FromDbLong());
+                //}
             }
 
             await Task.Delay(-1);
         }
 
-        private void LoadLocales()
+        private CommandPipelineBuilder BuildCommandsPipeline(MikiAppBuilder appBuilder)
+        {
+            var commandMap = Framework.Commands.CommandMap
+                .FromAssembly(Assembly.GetEntryAssembly());
+
+            return new CommandPipelineBuilder(appBuilder)
+                .WithStage(new CorePipelineStage())
+                .WithLocalization()
+                .WithPrefixes(
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", false),
+                    new MentionTrigger()
+                )
+                .WithArgumentPack()
+                .WithCommandMap(commandMap);
+        }
+
+        private void LoadLocales(MikiApp app)
         {
             string nameSpace = "Miki.Languages";
 
@@ -95,13 +114,25 @@ namespace Miki
                 .GetTypes()
                 .Where(t => t.IsClass && t.Namespace == nameSpace);
 
+            var locale = app.GetService<LocalizationPipelineStage>();
+
             foreach (var t in typeList)
             {
                 try
                 {
-                    string l = t.Name.ToLowerInvariant();
-                    ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
-                    Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
+                    string languageName = t.Name.ToLowerInvariant();
+
+                    ResourceManager resources = new ResourceManager(
+                        $"Miki.Languages.{languageName}", 
+                        t.Assembly);
+
+                    IResourceManager resourceManager = new ResxResourceManager(
+                        resources);
+
+                    locale.LoadLanguage(
+                        languageName,
+                        resourceManager,
+                        resourceManager.GetString("current_language_name"));
                 }
                 catch (Exception ex)
                 {
@@ -110,7 +141,7 @@ namespace Miki
                 }
             }
 
-            Locale.SetDefaultLanguage("eng");
+            locale.SetDefaultLanguage("eng");
         }
 
         public async Task LoadServicesAsync(MikiAppBuilder app)
@@ -191,7 +222,6 @@ namespace Miki
             // Setup miscellanious services
             {
                 app.AddSingletonService(new ConfigurationManager());
-                app.AddSingletonService(new EventSystem());
                 app.AddSingletonService(new BackgroundStore());
 
                 if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
@@ -205,7 +235,7 @@ namespace Miki
             }
         }
 
-        public async Task LoadDiscord(MikiApp app)
+        public async Task LoadDiscord(MikiApp app, CommandPipeline pipeline)
         {
             var cache = app.GetService<IExtendedCacheClient>();
             var gateway = app.GetService<IGateway>();
@@ -213,67 +243,55 @@ namespace Miki
             new BasicCacheStage().Initialize(gateway, cache);
 
             var config = app.GetService<ConfigurationManager>();
-            EventSystem eventSystem = app.GetService<EventSystem>();
             {
-                eventSystem.Subscribe(app.Discord);
+                //eventSystem.OnError += async (ex, context) =>
+                //{
+                //    if (ex is LocalizedException botEx)
+                //    {
+                //        if (context is IIContext m)
+                //        {
+                //            await Utils.ErrorEmbedResource(m, botEx.LocaleResource)
+                //                .ToEmbed().QueueToChannelAsync(m.Channel);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        Log.Error(ex);
+                //        await app.GetService<RavenClient>().CaptureAsync(new SentryEvent(ex));
+                //    }
+                //};
 
-                eventSystem.OnError += async (ex, context) =>
-                {
-                    if (ex is LocalizedException botEx)
-                    {
-                        if (context is ICommandContext m)
-                        {
-                            await Utils.ErrorEmbedResource(m, botEx.LocaleResource)
-                                .ToEmbed().QueueToChannelAsync(m.Channel);
-                        }
-                    }
-                    else
-                    {
-                        Log.Error(ex);
-                        await app.GetService<RavenClient>().CaptureAsync(new SentryEvent(ex));
-                    }
-                };
+                app.Discord.MessageCreate += pipeline.CheckAsync;
 
-                eventSystem.MessageFilter.AddFilter(new BotFilter());
-                eventSystem.MessageFilter.AddFilter(new UserFilter());
 
-                var commandMap = new Framework.Events.CommandMap();
-                commandMap.OnModuleLoaded += (module) =>
-                {
-                    config.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
-                };
 
-                eventSystem.AddMessageTrigger(new PrefixTrigger(">", true, true));
-                eventSystem.AddMessageTrigger(new PrefixTrigger("miki.", false));
-                eventSystem.AddMessageTrigger(new MentionTrigger());
+                  //eventSystem.AddMessageTrigger(new PrefixTrigger(">", true, true));
+                  //eventSystem.AddMessageTrigger(new PrefixTrigger("miki.", false));
+                  //eventSystem.AddMessageTrigger(new MentionTrigger());
 
-                var handler = new SimpleCommandHandler(commandMap);
-                handler.OnMessageProcessed += async (cmd, msg, time) =>
-                {
-                    await Task.Yield();
-                    Log.Message($"{cmd.Name} processed in {time}ms");
-                };
+                //var handler = new SimpleCommandHandler(commandMap);
+                //handler.OnMessageProcessed += async (cmd, msg, time) =>
+                //{
+                //    await Task.Yield();
+                //    Log.Message($"{cmd.ToString()} processed in {time}ms");
+                //};
 
-                eventSystem.AddCommandHandler(handler);
-
-                commandMap.RegisterAttributeCommands();
-                commandMap.Install(eventSystem);
             }
 
-            string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
+            //string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
 
-            if (File.Exists(configFile))
-            {
-                await config.ImportAsync(
-                    new JsonSerializationProvider(),
-                    configFile
-                );
-            }
+            //if (File.Exists(configFile))
+            //{
+            //    await config.ImportAsync(
+            //        new JsonSerializationProvider(),
+            //        configFile
+            //    );
+            //}
 
-            await config.ExportAsync(
-                new JsonSerializationProvider(),
-                configFile
-            );
+            //await config.ExportAsync(
+            //    new JsonSerializationProvider(),
+            //    configFile
+            //);
 
             app.Discord.GuildJoin += Client_JoinedGuild;
             app.Discord.UserUpdate += Client_UserUpdated;
@@ -301,7 +319,10 @@ namespace Miki
                 IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
                 if (defaultChannel != null)
                 {
-                    LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
+                    var locale = scope.ServiceProvider.GetService<LocalizationPipelineStage>();
+                    IResourceManager i = await locale.GetLocaleForChannelAsync(
+                        scope.ServiceProvider, 
+                        (long)defaultChannel.Id);
                     (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
                 }
 

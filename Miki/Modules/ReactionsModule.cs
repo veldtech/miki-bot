@@ -1,11 +1,15 @@
 ﻿using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module(Name = "reactions")]
+	[Module("reactions")]
 	public class ReactionsModule
 	{
 		readonly string[] confusedImages = new string[]
@@ -217,58 +221,58 @@ namespace Miki.Modules
 			"http://i.imgur.com/rmfWuM0.gif"
 		};
 
-		[Command(Name = "confused")]
-		public async Task ConfusedAsync(CommandContext e)
+		[Command("confused")]
+		public async Task ConfusedAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = confusedImages[MikiRandom.Next(0, confusedImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "lewd")]
-		public async Task LewdAsync(CommandContext e)
+		[Command("lewd")]
+		public async Task LewdAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "pout")]
-		public async Task PoutAsync(CommandContext e)
+		[Command("pout")]
+		public async Task PoutAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = poutImages[MikiRandom.Next(0, poutImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "smug")]
-		public async Task SmugAsync(CommandContext e)
+		[Command("smug")]
+		public async Task SmugAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = smugImages[MikiRandom.Next(0, smugImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "cry")]
-		public async Task CryAsync(CommandContext e)
+		[Command("cry")]
+		public async Task CryAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = cryImages[MikiRandom.Next(0, cryImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "stare")]
-		public async Task StareAsync(CommandContext e)
+		[Command("stare")]
+		public async Task StareAsync(IContext e)
 		{
             await new EmbedBuilder()
 			{
 				ImageUrl = stareImages[MikiRandom.Next(0, stareImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.Channel);
+			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 	}
 }

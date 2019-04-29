@@ -39,8 +39,6 @@ namespace Miki
                 await context.Set<LocalExperience>().Where(x => x.UserId == user.Id).ToListAsync()
             );
 
-            MikiApp.Instance.GetService<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
-
             await context.Set<IsBanned>()
                 .AddAsync(new IsBanned
             {

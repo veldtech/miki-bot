@@ -15,6 +15,9 @@ using Miki.Configuration;
 using Miki.Core.API.Reminder;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Extension;
@@ -34,7 +37,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module(Name = "Fun")]
+	[Module("Fun")]
 	public class FunModule
 	{
 		/// <summary>
@@ -217,17 +220,17 @@ namespace Miki.Modules
             }
 		}
 
-		[Command(Name = "8ball")]
-		public Task EightBallAsync(ICommandContext e)
+		[Command("8ball")]
+		public Task EightBallAsync(IContext e)
 		{
-			string output = e.Locale.GetString("miki_module_fun_8ball_result",
-				e.Author.Username, e.Locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
-			e.Channel.QueueMessage(output);
+			string output = e.GetLocale().GetString("miki_module_fun_8ball_result",
+				e.GetAuthor().Username, e.GetLocale().GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage(output);
 			return Task.CompletedTask;
 		}
 
-		[Command(Name = "bird", Aliases = new string[] { "birb" })]
-		public async Task BirdAsync(ICommandContext e)
+		[Command("bird", "birb")]
+		public async Task BirdAsync(IContext e)
 		{
 			string[] bird = {
 				"http://i.imgur.com/aN948tq.jpg",
@@ -258,11 +261,11 @@ namespace Miki.Modules
 				.SetTitle("🐦 Birbs!")
 				.SetColor(0.8f, 0.4f, 0.4f)
 				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "cat")]
-		public async Task CatAsync(ICommandContext e)
+		[Command("cat")]
+		public async Task CatAsync(IContext e)
 		{
 			WebClient c = new WebClient();
 			byte[] b = c.DownloadData("http://aws.random.cat/meow");
@@ -274,11 +277,11 @@ namespace Miki.Modules
 				.SetColor(0.8f, 0.6f, 0.4f)
 				.SetImage(cat.File)
 				.ToEmbed()
-				.QueueToChannelAsync(e.Channel);
+				.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "compliment")]
-		public Task ComplimentAsync(ICommandContext e)
+		[Command("compliment")]
+		public Task ComplimentAsync(IContext e)
 		{
 			string[] I_LIKE =
 			{
@@ -314,19 +317,19 @@ namespace Miki.Modules
 				" a lot, is that weird?",
 			};
 
-			e.Channel.QueueMessage(I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage(I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
 			return Task.CompletedTask;
 		}
 
-		[Command(Name = "cage")]
-		public Task CageAsync(ICommandContext e)
+		[Command("cage")]
+		public Task CageAsync(IContext e)
 		{
-			e.Channel.QueueMessage("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
 			return Task.CompletedTask;
 		}
 
-		[Command(Name = "dog")]
-		public async Task DogAsync(ICommandContext e)
+		[Command("dog")]
+		public async Task DogAsync(IContext e)
 		{
             string url;
             do
@@ -338,16 +341,16 @@ namespace Miki.Modules
 				.SetTitle("🐶 Doggo!")
 				.SetColor(0.8f, 0.8f, 0.8f)
 				.SetImage("https://random.dog/{url}")
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		[Command(Name = "gif")]
-		public async Task ImgurGifAsync(ICommandContext e)
+		[Command("gif")]
+		public async Task ImgurGifAsync(IContext e)
 		{
-            string title = e.Arguments.Pack.TakeAll();
+            string title = e.GetArgumentPack().Pack.TakeAll();
 			if (string.IsNullOrEmpty(title))
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -367,21 +370,21 @@ namespace Miki.Modules
 			{
 				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
-				e.Channel.QueueMessage(i.Link);
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(i.Link);
 			}
 			else
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
-		[Command(Name = "img")]
-		public async Task ImgurImageAsync(ICommandContext e)
+		[Command("img")]
+		public async Task ImgurImageAsync(IContext e)
 		{
-            string title = e.Arguments.Pack.TakeAll();
+            string title = e.GetArgumentPack().Pack.TakeAll();
             if (string.IsNullOrEmpty(title))
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -401,42 +404,42 @@ namespace Miki.Modules
 			{
 				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
-				e.Channel.QueueMessage(i.Link);
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(i.Link);
 			}
 			else
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_image_error_no_image_found"));
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
-		[Command(Name = "pick")]
-		public Task PickAsync(ICommandContext e)
+		[Command("pick")]
+		public Task PickAsync(IContext e)
 		{
-            string args = e.Arguments.Pack.TakeAll();
+            string args = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrWhiteSpace(args))
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_pick_no_arg"));
+				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_pick_no_arg"));
 				return Task.CompletedTask;
 			}
 			string[] choices = args.Split(',');
 
-			e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_pick", new object[] { e.Author.Username, choices[MikiRandom.Next(0, choices.Length)] }));
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_pick", new object[] { e.GetAuthor().Username, choices[MikiRandom.Next(0, choices.Length)] }));
 			return Task.CompletedTask;
 		}
 
-		[Command(Name = "pun")]
-		public Task PunAsync(ICommandContext e)
+		[Command("pun")]
+		public Task PunAsync(IContext e)
 		{
-			e.Channel.QueueMessage(e.Locale.GetString(puns[MikiRandom.Next(0, puns.Length)]));
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString(puns[MikiRandom.Next(0, puns.Length)]));
 			return Task.CompletedTask;
 		}
 
-		[Command(Name = "roll")]
-		public async Task RollAsync(ICommandContext e)
+		[Command("roll")]
+		public async Task RollAsync(IContext e)
 		{
 			string rollResult;
-            string args = e.Arguments.Pack.TakeAll();
+            string args = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrWhiteSpace(args)) // No Arguments.
 			{
@@ -485,18 +488,18 @@ namespace Miki.Modules
 			{
 				await AchievementManager.Instance.GetContainerById("badluck").CheckAsync(new BasePacket()
 				{
-					discordUser = e.Author,
-					discordChannel = e.Channel
-				});
+					discordUser = e.GetAuthor(),
+					discordChannel = e.GetChannel() as IDiscordTextChannel
+                });
 			}
 
-			e.Channel.QueueMessage(e.Locale.GetString("miki_module_fun_roll_result", e.Author.Username, rollResult));
+			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_fun_roll_result", e.GetAuthor().Username, rollResult));
 		}
 
-		[Command(Name = "reminder", Aliases = new[] { "remind" })]
-		public async Task RemindAsync(ICommandContext e)
+		[Command("reminder","remind")]
+		public async Task RemindAsync(IContext e)
 		{
-			string arguments = e.Arguments.Pack.TakeAll();
+			string arguments = e.GetArgumentPack().Pack.TakeAll();
             string lowercaseArguments = arguments.ToLower().Split(' ')[0];
 
 
@@ -529,15 +532,15 @@ namespace Miki.Modules
 			}
 		}
 
-		private async Task PlaceReminderAsync(ICommandContext e, string args)
+		private async Task PlaceReminderAsync(IContext e, string args)
 		{
 			int splitIndex = args.ToLower().LastIndexOf(" in ");
 			// TODO: still a bit hacky
 
 			if (splitIndex == -1)
 			{
-				await e.ErrorEmbed(e.Locale.GetString("error_argument_null", "time"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+				await e.ErrorEmbed(e.GetLocale().GetString("error_argument_null", "time"))
+					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 			}
 
 			string reminderText = new string(args
@@ -549,73 +552,73 @@ namespace Miki.Modules
 
 			if (timeUntilReminder > new TimeSpan(0, 10, 0))
 			{
-				int id = reminders.AddTask(e.Author.Id, async (context) =>
+				int id = reminders.AddTask(e.GetAuthor().Id, async (context) =>
 				{
 					await new EmbedBuilder()
 						.SetTitle("⏰ Reminder")
 						.SetDescription(new MessageBuilder()
 							.AppendText(context)
 							.BuildWithBlockCode())
-						.ToEmbed().QueueToChannelAsync(e.Author.GetDMChannelAsync().Result);
+						.ToEmbed().QueueToChannelAsync(e.GetAuthor().GetDMChannelAsync().Result);
 				}, reminderText, timeUntilReminder);
 
 				await new EmbedBuilder()
-					.SetTitle($"👌 {e.Locale.GetString("term_ok")}")
-					.SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.Locale)}**\nYour reminder code is `{id}`")
+					.SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
+					.SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\nYour reminder code is `{id}`")
 					.SetColor(255, 220, 93)
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 			}
 			else
 			{
 				await e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 			}
 		}
 
-		private async Task CancelReminderAsync(ICommandContext e)
+		private async Task CancelReminderAsync(IContext e)
 		{
-            if (e.Arguments.Take(out string arg))
+            if (e.GetArgumentPack().Take(out string arg))
             {
                 if (Utils.IsAll(arg))
                 {
-                    if (reminders.GetAllInstances(e.Author.Id) is List<TaskInstance<string>> instances)
+                    if (reminders.GetAllInstances(e.GetAuthor().Id) is List<TaskInstance<string>> instances)
                     {
                         instances.ForEach(i => i.Cancel());
                     }
 
                     await new EmbedBuilder()
-                        .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                        .SetTitle($"⏰ {e.GetLocale().GetString("reminders")}")
                         .SetColor(0.86f, 0.18f, 0.26f)
-                        .SetDescription(e.Locale.GetString("reminder_cancelled_all"))
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                        .SetDescription(e.GetLocale().GetString("reminder_cancelled_all"))
+                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
                     return;
                 }
             }
-            else if (e.Arguments.Take(out int id))
+            else if (e.GetArgumentPack().Take(out int id))
             {
-                if (reminders.CancelReminder(e.Author.Id, id) is TaskInstance<string> i)
+                if (reminders.CancelReminder(e.GetAuthor().Id, id) is TaskInstance<string> i)
                 {
                     await new EmbedBuilder()
-                        .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                        .SetTitle($"⏰ {e.GetLocale().GetString("reminders")}")
                         .SetColor(0.86f, 0.18f, 0.26f)
-                        .SetDescription(e.Locale.GetString("reminder_cancelled", $"`{i.Context}`"))
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                        .SetDescription(e.GetLocale().GetString("reminder_cancelled", $"`{i.Context}`"))
+                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
                     return;
                 }
             }
-			await e.ErrorEmbed(e.Locale.GetString("error_reminder_null"))
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+			await e.ErrorEmbed(e.GetLocale().GetString("error_reminder_null"))
+				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-		private async Task ListRemindersAsync(ICommandContext e)
+		private async Task ListRemindersAsync(IContext e)
 		{
-			var instances = reminders.GetAllInstances(e.Author.Id);
+			var instances = reminders.GetAllInstances(e.GetAuthor().Id);
 			if (instances?.Count > 0)
 			{
 				instances = instances.OrderBy(x => x.Id).ToList();
 
 				EmbedBuilder embed = new EmbedBuilder()
-					.SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+					.SetTitle($"⏰ {e.GetLocale().GetString("reminders")}")
 					.SetColor(0.86f, 0.18f, 0.26f);
 
 				foreach (var x in instances)
@@ -634,45 +637,45 @@ namespace Miki.Modules
 					}
 
 					embed.Description +=
-						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.Locale, true)}`\n";
+						$"{status} `{x.Id.ToString().PadRight(3)} - {tx.PadRight(30)} : {x.TimeLeft.ToTimeString(e.GetLocale(), true)}`\n";
 				}
-				await embed.ToEmbed().QueueToChannelAsync(e.Channel);
+				await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 			}
 
-			await e.ErrorEmbed(e.Locale.GetString("error_no_reminders"))
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+			await e.ErrorEmbed(e.GetLocale().GetString("error_no_reminders"))
+				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 
-        private async Task HelpReminderAsync(ICommandContext e)
+        private async Task HelpReminderAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
 
-            string prefix = await e.EventSystem
-                    .GetDefaultPrefixTrigger()
-                    .GetForGuildAsync(
-                        context,
-                        e.GetService<ICacheClient>(),
-                        e.Guild.Id);
-
+            //string prefix = await e.EventSystem
+            //        .GetDefaultPrefixTrigger()
+            //        .GetForGuildAsync(
+            //            context,
+            //            e.GetService<ICacheClient>(),
+            //            e.GetGuild().Id);
+            string prefix = "";
             await new EmbedBuilder()
-                .SetTitle($"⏰ {e.Locale.GetString("reminders")}")
+                .SetTitle($"⏰ {e.GetLocale().GetString("reminders")}")
                 .SetColor(0.86f, 0.18f, 0.26f)
-                .SetDescription(e.Locale.GetString("reminder_help_description"))
-                .AddInlineField(e.Locale.GetString("term_commands"),
-                $"`{prefix}{e.Locale.GetString("reminder_help_add")}` - {e.Locale.GetString("reminder_desc_add")}\n" +
-                $"`{prefix}{e.Locale.GetString("reminder_help_clear")}` - {e.Locale.GetString("reminder_desc_clear")}\n" +
-                $"`{prefix}{e.Locale.GetString("reminder_help_list")}` - {e.Locale.GetString("reminder_desc_list")}\n")
-            .ToEmbed().QueueToChannelAsync(e.Channel);
+                .SetDescription(e.GetLocale().GetString("reminder_help_description"))
+                .AddInlineField(e.GetLocale().GetString("term_commands"),
+                $"`{prefix}{e.GetLocale().GetString("reminder_help_add")}` - {e.GetLocale().GetString("reminder_desc_add")}\n" +
+                $"`{prefix}{e.GetLocale().GetString("reminder_help_clear")}` - {e.GetLocale().GetString("reminder_desc_clear")}\n" +
+                $"`{prefix}{e.GetLocale().GetString("reminder_help_list")}` - {e.GetLocale().GetString("reminder_desc_list")}\n")
+            .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
         }
 
-        [Command(Name = "safe")]
-		public async Task DoSafe(ICommandContext e)
+        [Command("safe")]
+		public async Task DoSafe(IContext e)
 		{
 			ILinkable s = null;
 
-			if (e.Arguments.Take(out string useArg))
+			if (e.GetArgumentPack().Take(out string useArg))
             {
-                string tags = e.Arguments.Pack.TakeAll();
+                string tags = e.GetArgumentPack().Pack.TakeAll();
                 if (useArg.ToLower().StartsWith("use"))
 				{
                     switch (useArg.Split(':')[1].ToLower())
@@ -703,7 +706,7 @@ namespace Miki.Modules
 
 						default:
 						{
-							e.Channel.QueueMessage("I do not support this image host :(");
+							(e.GetChannel() as IDiscordTextChannel).QueueMessage("I do not support this image host :(");
 						}
 						break;
 					}
@@ -715,29 +718,29 @@ namespace Miki.Modules
 			}
 			else
 			{
-                string tags = e.Arguments.Pack.TakeAll();
+                string tags = e.GetArgumentPack().Pack.TakeAll();
                 s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
 			}
 
 			if (s == null)
 			{
 				await e.ErrorEmbed("We couldn't find an image with these tags!")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 				return;
 			}
 
-			e.Channel.QueueMessage(s.Url);
+            (e.GetChannel() as IDiscordTextChannel).QueueMessage(s.Url);
 		}
 
-		[Command(Name = "ship")]
-		public async Task ShipAsync(ICommandContext e)
+		[Command("ship")]
+		public async Task ShipAsync(IContext e)
 		{
             var cache = e.GetService<IExtendedCacheClient>();
             var context = e.GetService<MikiDbContext>();
 
-            e.Arguments.Take(out string shipPartner);
+            e.GetArgumentPack().Take(out string shipPartner);
 
-			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.Guild);
+			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.GetGuild());
 
 			if (user == null)
             {
@@ -749,12 +752,12 @@ namespace Miki.Modules
                 var authorResponse = await client.SendAsync(new HttpRequestMessage()
                 {
                     Method = new HttpMethod("HEAD"),
-                    RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{e.Author.Id}.png")
+                    RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{e.GetAuthor().Id}.png")
                 });
 
                 if (!authorResponse.Success)
                 {
-                    await Utils.SyncAvatarAsync(e.Author, cache, context);
+                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
                 }
 
                 if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
@@ -762,16 +765,16 @@ namespace Miki.Modules
                     await Utils.SyncAvatarAsync(user, cache, context);
                 }
             }
-            Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            Random r = new Random((int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
 
-			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.Author.Id}&other={user.Id}&value={value}");
-			await (e.Channel as IDiscordTextChannel).SendFileAsync(s, "meme.png");
+			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
+			await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(s, "meme.png");
 		}
 
-		[Command(Name = "greentext", Aliases = new string[] { "green", "gt" })]
-		public async Task GreentextAsync(ICommandContext e)
+		[Command("greentext","green", "gt")]
+		public async Task GreentextAsync(IContext e)
 		{
 			string[] images = new string[]
 			{
@@ -824,7 +827,7 @@ namespace Miki.Modules
 
 			await new EmbedBuilder()
 				.SetImage(images[MikiRandom.Next(0, images.Length)])
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
 		}
 	}
 }

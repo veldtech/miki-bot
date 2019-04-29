@@ -2,25 +2,26 @@
 using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
-{
-	public class ExperienceTrackerService : BaseService
+{/*
+	public class ExperienceTrackerService
 	{
 		public ExperienceTrackerService()
 		{
 			Name = "Experience";
 		}
 
-		public override void Install(Module m)
+		public void Install(NodeModule m)
 		{
 			base.Install(m);
 			m.MessageRecieved += Service_MessageReceived;
 		}
 
-		public override void Uninstall(Module m)
+		public void Uninstall(NodeModule m)
 		{
 			base.Uninstall(m);
 			m.MessageRecieved -= Service_MessageReceived;
@@ -31,4 +32,4 @@ namespace Miki.Modules.Accounts.Services
             await AccountManager.Instance.CheckAsync(m);
         }
 	}
-}
+*/}

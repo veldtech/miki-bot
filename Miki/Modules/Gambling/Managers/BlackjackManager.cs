@@ -4,6 +4,7 @@ using Miki.API.Cards.Objects;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework.Commands;
 using Miki.Framework.Events;
 using Miki.Services.Blackjack.Exceptions;
 using ProtoBuf;
@@ -89,24 +90,24 @@ namespace Miki.Modules.Gambling.Managers
 			return FromContext(context);
 		}
 
-		public EmbedBuilder CreateEmbed(MessageContext e)
+		public EmbedBuilder CreateEmbed(IContext e)
 		{
-			string explanation = e.Locale.GetString("miki_blackjack_explanation");
+			string explanation = e.GetLocale().GetString("miki_blackjack_explanation");
 
-			CardHand Player = GetPlayer(e.Author.Id);
+			CardHand Player = GetPlayer(e.GetAuthor().Id);
 			CardHand Dealer = GetPlayer(0);
 
 			return new EmbedBuilder()
 			{
 				Author = new EmbedAuthor()
 				{
-					Name = e.Locale.GetString("miki_blackjack") + " | " + e.Author.Username,
-					IconUrl = e.Author.GetAvatarUrl(),
+					Name = e.GetLocale().GetString("miki_blackjack") + " | " + e.GetAuthor().Username,
+					IconUrl = e.GetAuthor().GetAvatarUrl(),
 					Url = "https://patreon.com/mikibot"
 				},
-				Description = $"{explanation}\n{e.Locale.GetString("miki_blackjack_hit")}\n{e.Locale.GetString("miki_blackjack_stay")}"
-			}.AddField(e.Locale.GetString("miki_blackjack_cards_you", Worth(Player)), Player.Print(), true)
-			.AddField(e.Locale.GetString("miki_blackjack_cards_miki", Worth(Dealer)), Dealer.Print(), true);
+				Description = $"{explanation}\n{e.GetLocale().GetString("miki_blackjack_hit")}\n{e.GetLocale().GetString("miki_blackjack_stay")}"
+			}.AddField(e.GetLocale().GetString("miki_blackjack_cards_you", Worth(Player)), Player.Print(), true)
+			.AddField(e.GetLocale().GetString("miki_blackjack_cards_miki", Worth(Dealer)), Dealer.Print(), true);
 		}
 
 		public BlackjackContext ToContext()

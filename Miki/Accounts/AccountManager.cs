@@ -6,7 +6,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.Languages;
+using Miki.Localization;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Modules;
@@ -16,6 +16,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Localization;
 
 namespace Miki.Accounts
 {
@@ -66,7 +68,12 @@ namespace Miki.Accounts
 					if (setting == LevelNotificationsSetting.RewardsOnly && rolesObtained.Count == 0)
 						return;
 
-					LocaleInstance instance = await Locale.GetLanguageInstanceAsync(context, e.Id);
+                    var pipeline = scope.ServiceProvider
+                        .GetService<LocalizationPipelineStage>();
+					IResourceManager instance = await pipeline
+                        .GetLocaleForChannelAsync(
+                            scope.ServiceProvider, 
+                            (long)e.Id);
 
 					EmbedBuilder embed = new EmbedBuilder()
 					{

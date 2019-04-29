@@ -1,4 +1,6 @@
 ﻿using Miki.Framework;
+using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Modules.Internal.Services;
@@ -10,9 +12,5 @@ namespace Miki.Modules
 	{
 		[Service("datadog")]
 		public DatadogService DatadogService { get; set; }
-
-		public InternalModule(Module module, MikiApp bot)
-		{
-		}
 	}
 }

@@ -2,14 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts.Achievements.Objects;
 using Miki.Bot.Models;
-using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Framework;
-using Miki.Framework.Events;
+using Miki.Framework.Commands;
 using Miki.Helpers;
 using Miki.Logging;
-using Miki.Models;
-using StatsdClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
 {
-	public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
+    public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
 
-	public delegate Task<bool> CheckCommandAchievement(User u, CommandEvent e);
+	public delegate Task<bool> CheckCommandAchievement(User u, Node e);
 
 	public class AchievementManager
 	{
@@ -36,7 +33,7 @@ namespace Miki.Accounts.Achievements
 			}
 		}
 
-		internal BaseService provider = null;
+		//internal BaseService provider = null;
 
 		private readonly MikiApp bot;
 		private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
@@ -80,18 +77,18 @@ namespace Miki.Accounts.Achievements
                 await OnTransaction?.Invoke(p);
             };
 
-            bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
-            {
-                CommandPacket p = new CommandPacket()
-                {
-                    discordUser = m.Author,
-                    discordChannel = await m.GetChannelAsync(),
-                    message = m,
-                    command = e,
-                    success = true
-                };
-                await OnCommandUsed?.Invoke(p);
-            };
+            //bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
+            //{
+            //    CommandPacket p = new CommandPacket()
+            //    {
+            //        discordUser = m.Author,
+            //        discordChannel = await m.GetChannelAsync(),
+            //        message = m,
+            //        command = e,
+            //        success = true
+            //    };
+            //    await OnCommandUsed?.Invoke(p);
+            //};
         }
 
 		internal void AddContainer(AchievementDataContainer container)

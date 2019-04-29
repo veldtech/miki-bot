@@ -4,6 +4,9 @@ using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Logging;
@@ -27,34 +30,29 @@ namespace Miki.Modules.CustomCommands
     {
         private Tokenizer _tokenizer = new Tokenizer();
 
-        public CustomCommandsModule(Module mod, MikiApp app)
+        [GuildOnly, Command("createcommand")]
+        public async Task NewCustomCommandAsync(IContext e)
         {
-            app.GetService<EventSystem>().AddCommandHandler(new CustomCommandsHandler());
-        }
-
-        [GuildOnly, Command(Name = "createcommand", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task NewCustomCommandAsync(ICommandContext e)
-        {
-            if(e.Arguments.Take(out string commandName))
+            if(e.GetArgumentPack().Take(out string commandName))
             {
                 if(commandName.Contains(' '))
                 {
                     throw new InvalidCharacterException(" ");
                 }
 
-                if(e.EventSystem.GetCommandHandler<SimpleCommandHandler>()
-                    .GetCommandByIdOrDefault(commandName) != null)
-                {
-                    throw new DuplicateComandException(commandName);
-                }
+                //if(e.EventSystem.GetCommandHandler<SimpleCommandHandler>()
+                //    .GetCommandByIdOrDefault(commandName) != null)
+                //{
+                //    throw new DuplicateComandException(commandName);
+                //}
 
-                if(!e.Arguments.CanTake)
+                if(!e.GetArgumentPack().CanTake)
                 {
                     // TODO (Veld): Command has no function body.
                     return;
                 }
 
-                string scriptBody = e.Arguments.Pack.TakeAll().TrimStart('`').TrimEnd('`');
+                string scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
 
                 try
                 {
@@ -77,7 +75,7 @@ namespace Miki.Modules.CustomCommands
                 catch(Exception ex)
                 {
                     await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex.ToString()}```")
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
                     return;
                 }
 
@@ -88,7 +86,7 @@ namespace Miki.Modules.CustomCommands
                     {
                         CommandName = commandName.ToLowerInvariant(),
                         CommandBody = scriptBody,
-                        GuildId = e.Guild.Id.ToDbLong()
+                        GuildId = e.GetGuild().Id.ToDbLong()
                     });
                     await db.SaveChangesAsync();
                 }
@@ -98,17 +96,17 @@ namespace Miki.Modules.CustomCommands
                 }
 
                 await e.SuccessEmbed($"Created script '>{commandName}'")
-                    .QueueToChannelAsync(e.Channel);
+                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
             }
         }
 
-        [GuildOnly, Command(Name = "removecommand", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task RemoveCommandAsync(ICommandContext e)
+        [GuildOnly, Command("removecommand")]
+        public async Task RemoveCommandAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            var guildId = e.Guild.Id.ToDbLong();
+            var guildId = e.GetGuild().Id.ToDbLong();
 
-            if (e.Arguments.Take(out string commandName))
+            if (e.GetArgumentPack().Take(out string commandName))
             {
                 var cmd = await context.CustomCommands.FindAsync(guildId, commandName);
                 if(cmd == null)
@@ -120,7 +118,7 @@ namespace Miki.Modules.CustomCommands
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbedResource("ok_command_deleted", commandName)
-                    .QueueToChannelAsync(e.Channel);
+                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
             }
             else
             {

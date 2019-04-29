@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retsu.Consumer", "..\..\ret
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands", "..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands\Miki.Framework.Commands.csproj", "{9CCB5344-4E1A-4098-8627-39105E66E5E1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Prefixes", "..\..\Miki.Framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj", "{CCD367F8-38B0-481B-991C-C072E51ED806}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Localization", "..\..\Miki.Framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj", "{E4E55777-16BA-4857-80C6-A907D98C5866}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Production|Any CPU = Debug Production|Any CPU
@@ -81,6 +85,22 @@ Global
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Prod|Any CPU.Build.0 = Debug|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

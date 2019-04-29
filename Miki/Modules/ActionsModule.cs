@@ -1,4 +1,8 @@
 ﻿using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
@@ -306,89 +310,89 @@ namespace Miki.Modules
 	        "http://i.imgur.com/pDohPrm.gif",
         };
 
-		[Command(Name = "ask")]
-		public async Task AskAsync(CommandContext e)
+		[Command("ask")]
+		public async Task AskAsync(IContext e)
 			=> await QueueAction(e, "asks", askImage)
                 .ConfigureAwait(false);
 
-		[Command(Name = "bite")]
-		public async Task BiteAsync(CommandContext e)
+		[Command("bite")]
+		public async Task BiteAsync(IContext e)
 			=> await QueueAction(e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "cake")]
-		public async Task CakeAsync(CommandContext e)
+        [Command("cake")]
+		public async Task CakeAsync(IContext e)
 			=> await QueueAction(e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "cuddle")]
-		public async Task CuddleAsync(CommandContext e)
+        [Command("cuddle")]
+		public async Task CuddleAsync(IContext e)
 			=> await QueueAction(e, "cuddles", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "glare")]
-		public async Task GlareAsync(CommandContext e)
+        [Command("glare")]
+		public async Task GlareAsync(IContext e)
 			=> await QueueAction(e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "highfive")]
-		public async Task HighFiveAsync(CommandContext e)
+        [Command("highfive")]
+		public async Task HighFiveAsync(IContext e)
 			=> await QueueAction(e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "hug")]
-		public async Task HugAsync(CommandContext e)
+        [Command("hug")]
+		public async Task HugAsync(IContext e)
 			=> await QueueAction(e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "poke")]
-		public async Task PokeAsync(CommandContext e)
+        [Command("poke")]
+		public async Task PokeAsync(IContext e)
 			=> await QueueAction(e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "punch")]
-		public async Task PunchAsync(CommandContext e)
+        [Command("punch")]
+		public async Task PunchAsync(IContext e)
 			=> await QueueAction(e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "kiss")]
-		public async Task KissAsync(CommandContext e)
+        [Command("kiss")]
+		public async Task KissAsync(IContext e)
 			=> await QueueAction(e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "lick")]
-		public async Task LickAsync(CommandContext e)
+        [Command("lick")]
+		public async Task LickAsync(IContext e)
 			=> await QueueAction(e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "pat", Aliases = new string[] { "pet" })]
-		public async Task PetAsync(CommandContext e)
+        [Command("pat",  "pet" )]
+		public async Task PetAsync(IContext e)
 			=> await QueueAction(e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "slap")]
-		public async Task SlapAsync(CommandContext e)
+        [Command("slap")]
+		public async Task SlapAsync(IContext e)
 			=> await QueueAction(e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
-        public async Task QueueAction(CommandContext e, string action, string imageUrl)
+        public async Task QueueAction(IContext e, string action, string imageUrl)
         {
-            string username = (await e.Guild.GetSelfAsync()).Username;
+            string username = (await e.GetGuild().GetSelfAsync()).Username;
 
             EmbedBuilder builder = new EmbedBuilder();
 
-            if (e.Arguments.CanTake)
+            if (e.GetArgumentPack().CanTake)
             {
-                builder.SetTitle($"{e.Author.Username} {action} {e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}");
+                builder.SetTitle($"{e.GetAuthor().Username} {action} {e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}");
             }
             else
             {
-                builder.SetTitle($"{username} {action} {e.Author.Username}");
+                builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
             }
 
             builder.SetImage(imageUrl);
 
-            await builder.ToEmbed().QueueToChannelAsync(e.Channel)
+            await builder.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel)
                 .ConfigureAwait(false);
         }
 	}

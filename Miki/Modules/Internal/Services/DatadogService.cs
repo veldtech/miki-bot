@@ -6,6 +6,8 @@ using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
 using Miki.Logging;
 using StatsdClient;
@@ -14,32 +16,30 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Internal.Services
 {
-    public class DatadogService : BaseService
+    public class DatadogService
     {
-        public override void Install(Module m)
-        {
-            DogStatsd.Configure(new StatsdConfig
-            {
-                // TODO #534: Change to [Configurable]
-                StatsdServerName = Global.Config.DatadogHost,
-                StatsdPort = 8125,
-                Prefix = "miki"
-            });
+        //public override void Install(NodeModule m)
+        //{
+        //    DogStatsd.Configure(new StatsdConfig
+        //    {
+        //        // TODO #534: Change to [Configurable]
+        //        StatsdServerName = Global.Config.DatadogHost,
+        //        StatsdPort = 8125,
+        //        Prefix = "miki"
+        //    });
 
-            base.Install(m);
+        //    CreateAccountMetrics();
 
-            CreateAccountMetrics();
+        //    CreateAchievementsMetrics();
 
-            CreateAchievementsMetrics();
+        //    //CreateEventSystemMetrics(m.EventSystem);
 
-            CreateEventSystemMetrics(m.EventSystem);
+        //    CreateDiscordMetrics();
 
-            CreateDiscordMetrics();
+        //    CreateHttpMetrics();
 
-            CreateHttpMetrics();
-
-            Log.Message("Datadog set up!");
-        }
+        //    Log.Message("Datadog set up!");
+        //}
 
         private void CreateAccountMetrics()
         {
@@ -102,19 +102,19 @@ namespace Miki.Modules.Internal.Services
                 return Task.CompletedTask;
             };
         }
-        private void CreateEventSystemMetrics(EventSystem system)
-        {
-            if (system == null)
-            {
-                return;
-            }
+        //private void CreateEventSystemMetrics(EventSystem system)
+        //{
+        //    if (system == null)
+        //    {
+        //        return;
+        //    }
 
-            var defaultHandler = system.GetCommandHandler<SimpleCommandHandler>();
-            if (defaultHandler != null)
-            {
-                defaultHandler.OnMessageProcessed += OnMessageProcessed;
-            }
-        }
+        //    //var defaultHandler = system.GetCommandHandler<SimpleCommandHandler>();
+        //    //if (defaultHandler != null)
+        //    //{
+        //    //    defaultHandler.OnMessageProcessed += OnMessageProcessed;
+        //    //}
+        //}
         private void CreateHttpMetrics()
         {
             var discordHttpClient = MikiApp.Instance
@@ -133,21 +133,21 @@ namespace Miki.Modules.Internal.Services
             };
         }
 
-        private Task OnMessageProcessed(CommandEvent ev, IDiscordMessage msg, long timeMs)
+        private Task OnMessageProcessed(Node ev, IDiscordMessage msg, long timeMs)
         {
-            if (ev.Module == null)
+            if (ev.Parent == null)
             {
                 return Task.CompletedTask;
             }
 
             DogStatsd.Histogram("commands.time", timeMs, 0.1, new[] {
-                $"commandtype:{ev.Module.Name.ToLowerInvariant()}",
-                $"commandname:{ev.Name.ToLowerInvariant()}"
+                $"commandtype:{ev.Parent.Metadata.Name.ToLowerInvariant()}",
+                $"commandname:{ev.Metadata.Name.ToLowerInvariant()}"
             });
 
             DogStatsd.Counter("commands.count", 1, 1, new[] {
-                $"commandtype:{ev.Module.Name.ToLowerInvariant()}",
-                $"commandname:{ev.Name.ToLowerInvariant()}"
+                $"commandtype:{ev.Parent.Metadata.Name.ToLowerInvariant()}",
+                $"commandname:{ev.Metadata.Name.ToLowerInvariant()}"
             });
 
             return Task.CompletedTask;
