@@ -14,6 +14,7 @@ using Miki.Discord.Gateway;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Arguments;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Localization;
 using Miki.Framework.Commands.Pipelines;
@@ -57,13 +58,14 @@ namespace Miki
             var appBuilder = new MikiAppBuilder();
 
             await p.LoadServicesAsync(appBuilder);
-            var pipelineBuilder =  p.BuildCommandsPipeline(appBuilder);
 
             MikiApp app = appBuilder.Build();
 
-            await p.LoadDiscord(app, pipelineBuilder.Build(app));
+            var pipelineBuilder = p.BuildCommandsPipeline(app);
+            var commands = pipelineBuilder.Build();
 
-            p.LoadLocales(app);
+            await p.LoadDiscord(app, commands);
+            p.LoadLocales(commands);
 
             for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
             {
@@ -89,24 +91,22 @@ namespace Miki
             await Task.Delay(-1);
         }
 
-        private CommandPipelineBuilder BuildCommandsPipeline(MikiAppBuilder appBuilder)
+        private CommandPipelineBuilder BuildCommandsPipeline(MikiApp app)
         {
-            var commandMap = Framework.Commands.CommandMap
-                .FromAssembly(Assembly.GetEntryAssembly());
-
-            return new CommandPipelineBuilder(appBuilder)
-                .WithStage(new CorePipelineStage())
-                .WithLocalization()
-                .WithPrefixes(
+            return new CommandPipelineBuilder(app)
+                .UseStage(new CorePipelineStage())
+                .UsePrefixes(
                     new PrefixTrigger(">", true, true),
                     new PrefixTrigger("miki.", false),
                     new MentionTrigger()
                 )
-                .WithArgumentPack()
-                .WithCommandMap(commandMap);
+                .UseLocalization()
+                .UseArgumentPack()
+                .UsePermissions()
+                .UseCommandHandler(Assembly.GetEntryAssembly());
         }
 
-        private void LoadLocales(MikiApp app)
+        private void LoadLocales(CommandPipeline app)
         {
             string nameSpace = "Miki.Languages";
 
@@ -114,7 +114,10 @@ namespace Miki
                 .GetTypes()
                 .Where(t => t.IsClass && t.Namespace == nameSpace);
 
-            var locale = app.GetService<LocalizationPipelineStage>();
+            var locale = app.PipelineStages
+                .Where(x => x is LocalizationPipelineStage)
+                .Select(x => x as LocalizationPipelineStage)
+                .FirstOrDefault();
 
             foreach (var t in typeList)
             {
@@ -263,13 +266,6 @@ namespace Miki
 
                 app.Discord.MessageCreate += pipeline.CheckAsync;
 
-
-
-                  //eventSystem.AddMessageTrigger(new PrefixTrigger(">", true, true));
-                  //eventSystem.AddMessageTrigger(new PrefixTrigger("miki.", false));
-                  //eventSystem.AddMessageTrigger(new MentionTrigger());
-
-                //var handler = new SimpleCommandHandler(commandMap);
                 //handler.OnMessageProcessed += async (cmd, msg, time) =>
                 //{
                 //    await Task.Yield();
@@ -320,7 +316,7 @@ namespace Miki
                 if (defaultChannel != null)
                 {
                     var locale = scope.ServiceProvider.GetService<LocalizationPipelineStage>();
-                    IResourceManager i = await locale.GetLocaleForChannelAsync(
+                    IResourceManager i = await locale.GetLocaleAsync(
                         scope.ServiceProvider, 
                         (long)defaultChannel.Id);
                     (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));

@@ -10,7 +10,7 @@ namespace Miki
 {
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
-        public override async Task<bool> CheckAsync(IContext e)
+        public override async ValueTask<bool> CheckAsync(IContext e)
         {
             var context = e.GetService<DbContext>();
             return await IsDonator.ForUserAsync(context, e.GetAuthor().Id);

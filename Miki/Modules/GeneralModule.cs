@@ -419,21 +419,49 @@ namespace Miki.Modules
 		}
 
         [Command("prefix")]
-        public async Task PrefixHelpAsync(IContext e)
+        class PrefixCommand
         {
-            var context = e.GetService<MikiDbContext>();
-            var prefixMiddleware = e.GetService<PipelineStageTrigger>();
+            [Command]
+            public async Task PrefixHelpAsync(IContext e)
+            {
+                var prefixMiddleware = e.GetService<PipelineStageTrigger>();
 
-            var prefix = await prefixMiddleware.GetDefaultTrigger()
-                .GetForGuildAsync(
-                    context, 
-                    e.GetService<ICacheClient>(), 
-                    e.GetGuild().Id);
+                var prefix = await prefixMiddleware.GetDefaultTrigger()
+                    .GetForGuildAsync(
+                        e.GetService<MikiDbContext>(),
+                        e.GetService<ICacheClient>(),
+                        e.GetGuild().Id);
 
-            await new LocalizedEmbedBuilder(e.GetLocale())
-                .WithTitle("miki_module_general_prefix_help_header")
-                .WithDescription("prefix_info", prefix)
-                .Build().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await new LocalizedEmbedBuilder(e.GetLocale())
+                    .WithTitle("miki_module_general_prefix_help_header")
+                    .WithDescription("prefix_info", prefix)
+                    .Build().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            }
+
+            [Command("set")]
+            public async Task SetPrefixAsync(IContext e)
+            {
+                var prefixMiddleware = e.GetService<PipelineStageTrigger>();
+                
+                if(!e.GetArgumentPack().Take(out string prefix))
+                {
+
+                }
+
+                await prefixMiddleware.GetDefaultTrigger()
+                    .ChangeForGuildAsync(
+                        e.GetService<DbContext>(),
+                        e.GetService<ICacheClient>(),
+                        e.GetGuild().Id,
+                        prefix);
+
+                await new EmbedBuilder()
+                    .SetTitle(e.GetLocale().GetString("miki_module_general_prefix_success_header"))
+                    .SetDescription(
+                    e.GetLocale().GetString("miki_module_general_prefix_success_message", prefix
+                )).ToEmbed()
+                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            }
         }
 
 		[Command("stats")]

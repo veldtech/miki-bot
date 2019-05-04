@@ -244,6 +244,8 @@ namespace Miki.Modules.AccountsModule
         [Command("profile")]
         public async Task ProfileAsync(IContext e)
         {
+            var timer = Stopwatch.StartNew();
+
             var args = e.GetArgumentPack();
 
             var context = e.GetService<MikiDbContext>();
@@ -281,8 +283,7 @@ namespace Miki.Modules.AccountsModule
                 return;
             }
 
-            string icon = "";
-
+            string icon = null;
             if (await account.IsDonatorAsync(context))
             {
                 icon = "https://cdn.discordapp.com/emojis/421969679561785354.png";
@@ -398,14 +399,13 @@ namespace Miki.Modules.AccountsModule
             List<Achievement> allAchievements = await context.Achievements.Where(x => x.UserId == id)
                 .ToListAsync();
 
-            string achievements = e.GetLocale().GetString("miki_placeholder_null");
+            string achievements = e.GetLocale()
+                .GetString("miki_placeholder_null");
 
-            if (allAchievements != null)
+            if (allAchievements != null
+                && allAchievements.Count > 0)
             {
-                if (allAchievements.Count > 0)
-                {
-                    achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
-                }
+                achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
             }
 
             embed.AddInlineField(
@@ -416,9 +416,10 @@ namespace Miki.Modules.AccountsModule
                 e.GetLocale().GetString(
                     "miki_module_accounts_profile_footer",
                     account.DateCreated.ToShortDateString(),
-                    "NaN"));
+                    timer.ElapsedMilliseconds), null);
 
-            await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            await embed.ToEmbed()
+                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
         }
 
         [Command("setbackground")]

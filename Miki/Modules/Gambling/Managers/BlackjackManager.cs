@@ -4,6 +4,7 @@ using Miki.API.Cards.Objects;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Events;
 using Miki.Services.Blackjack.Exceptions;

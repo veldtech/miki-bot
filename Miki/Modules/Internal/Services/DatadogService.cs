@@ -141,13 +141,13 @@ namespace Miki.Modules.Internal.Services
             }
 
             DogStatsd.Histogram("commands.time", timeMs, 0.1, new[] {
-                $"commandtype:{ev.Parent.Metadata.Name.ToLowerInvariant()}",
-                $"commandname:{ev.Metadata.Name.ToLowerInvariant()}"
+                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                $"commandname:{ev.ToString().ToLowerInvariant()}"
             });
 
             DogStatsd.Counter("commands.count", 1, 1, new[] {
-                $"commandtype:{ev.Parent.Metadata.Name.ToLowerInvariant()}",
-                $"commandname:{ev.Metadata.Name.ToLowerInvariant()}"
+                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                $"commandname:{ev.ToString().ToLowerInvariant()}"
             });
 
             return Task.CompletedTask;

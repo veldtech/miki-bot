@@ -7,6 +7,8 @@ using Miki.Discord.Common.Packets;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Framework.Events.Filters;
@@ -24,7 +26,8 @@ namespace Miki.Modules
 	internal class DeveloperModule
 	{
 		[Command("identifyemoji")]
-		public async Task IdentifyEmojiAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public async Task IdentifyEmojiAsync(IContext e)
 		{
 			if (DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
 			{
@@ -40,31 +43,19 @@ namespace Miki.Modules
         }
 
 		[Command("say")]
-		public Task SayAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public Task SayAsync(IContext e)
 		{
 			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
 		[Command("sayembed")]
-		public async Task SayEmbedAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public async Task SayEmbedAsync(IContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
 			string text = e.GetArgumentPack().Pack.TakeAll();
-
-			//if (e.message.Attachments.Count == 0)
-			//{
-			//	Match m = Regex.Match(e.message.Content, "(http(s)?://)(i.)?(imgur.com)/([A-Za-z0-9]+)(.png|.gif(v)?)");
-			//	if(m.Success)
-			//	{
-			//		text = text.Replace(m.Value, "");
-			//		b.SetImage(m.Value);
-			//	}
-			//}
-			//else
-			//{
-			//	b.SetImage(e.message.Attachments.First().Url);
-			//}
 
 			b.SetDescription(text);
 
@@ -72,7 +63,8 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyuser")]
-		public async Task IdenUserAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public async Task IdenUserAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
             var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
@@ -86,7 +78,8 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyguilduser")]
-		public async Task IdenGuildUserAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public async Task IdenGuildUserAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
             var user = await api.GetGuildUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
@@ -100,6 +93,7 @@ namespace Miki.Modules
 		}
 
         [Command("showpermissions")]
+        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task ShowPermissionsAsync(IContext e)
         {
             if(e.GetArgumentPack().Take(out ulong id))
@@ -121,8 +115,8 @@ namespace Miki.Modules
             }
         }
 
-
         [Command("haspermission")]
+        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task HasPermissionAsync(IContext e)
         {
             var user = await e.GetGuild().GetSelfAsync();
@@ -137,7 +131,8 @@ namespace Miki.Modules
         }
 
 		[Command("identifyguildchannel")]
-		public async Task IdenGuildChannelAsync(IContext e)
+        [RequiresPermission(PermissionLevel.STAFF)]
+        public async Task IdenGuildChannelAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
             var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
@@ -151,6 +146,7 @@ namespace Miki.Modules
 		}
 
         [Command("identifyrole")]
+        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdentifyRoleAsync(IContext e)
         {
             if (e.GetArgumentPack().Take(out ulong roleId))
@@ -166,16 +162,8 @@ namespace Miki.Modules
             }
         }
 
-        [Command("sendtestachievement")]
-        public async Task SendTestAchievementAsync(IContext e)
-        {
-            await Notification.SendAchievementAsync(
-                new ManualAchievement { Name = "test", Icon = "⚙", Points = 0, ParentName = "" },
-                e.GetChannel() as IDiscordTextChannel, 
-                e.GetAuthor());
-        }
-
         [Command("identifybotroles")]
+        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdentifyBotRolesAsync(IContext e)
         {
             var roles = await e.GetGuild().GetRolesAsync();
@@ -184,7 +172,8 @@ namespace Miki.Modules
         }
 
         [Command("setactivity")]
-		public async Task SetGameAsync(IContext e)
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
+        public async Task SetGameAsync(IContext e)
 		{
             if (!e.GetArgumentPack().Take(out string arg))
             {
@@ -216,7 +205,8 @@ namespace Miki.Modules
 		}
 
 		[Command("ignore")]
-		public Task IgnoreIdAsync(IContext e)
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
+        public Task IgnoreIdAsync(IContext e)
 		{
 			if (ulong.TryParse(e.GetArgumentPack().Pack.TakeAll(), out ulong id))
 			{
@@ -227,66 +217,15 @@ namespace Miki.Modules
 		}
 
 		[Command("dev")]
-		public Task ShowCacheAsync(IContext e)
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
+        public Task ShowCacheAsync(IContext e)
 		{
 			(e.GetChannel() as IDiscordTextChannel).QueueMessage("Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
 		}
 
-        //[Command(Name = "changeavatar", Accessibility = EventAccessibility.DEVELOPERONLY)]
-        //public async Task ChangeAvatarAsync(EventContext e)
-        //{
-        //	using (Stream s = new FileStream("./" + e.GetArgumentPack().Pack.TakeAll(), FileMode.Open))
-        //	{
-        //		await Bot.Instance.Client.GetShardFor(e.GetGuild()).CurrentUser.ModifyAsync(z =>
-        //		{
-        //			z.Avatar = new Image(s);
-        //		});
-        //	}
-        //}
-
-        //[Command(Name = "dumpshards", Accessibility = EventAccessibility.DEVELOPERONLY, Aliases = new string[] { "ds" })]
-        //public async Task DumpShards(EventContext e)
-        //{
-        //	EmbedBuilder embed = Utils.Embed;
-        //	embed.Title = "Shards";
-
-        //	for (int i = 0; i < (int)Math.Ceiling((double)Bot.Instance.Client.Shards.Count / 20); i++)
-        //	{
-        //		string title = $"{i * 20} - {(i + 1) * 20}";
-        //		string content = "";
-        //		for (int j = i * 20; j < Math.Min(i * 20 + 20, Bot.Instance.Client.Shards.Count); j++)
-        //		{
-        //			DiscordSocketClient c = Bot.Instance.Client.Shards.ElementAt(j);
-
-        //			content += $"`Shard {c.ShardId.ToString().PadRight(2)}` | `State: {c.ConnectionState} Ping: {c.Latency} Guilds: {c.Guilds.Count}`\n";
-        //		}
-        //		embed.AddInlineField(title, content);
-        //	}
-
-        //	embed.Build().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-
-        //	await Task.Yield();
-        //}
-
-		[Command("presence")]
-		public async Task PresenceTestAsync(IContext e)
-		{
-			IDiscordPresence presence = await e.GetAuthor().GetPresenceAsync();
-
-			var embed = new EmbedBuilder()
-				.SetTitle($"{e.GetAuthor().Username} - {presence.Status}")
-				.SetThumbnail(e.GetAuthor().GetAvatarUrl());
-
-			if (presence.Activity != null)
-			{
-				embed.SetDescription($"{presence.Activity.Name} - {presence.Activity.Details ?? ""}\n{presence.Activity.State ?? ""}");
-			}
-
-            await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-		}
-
         [Command("setmekos")]
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetMekos(IContext e)
         {
             if (e.GetArgumentPack().Take(out string userArg))
@@ -310,6 +249,7 @@ namespace Miki.Modules
         }
 
         [Command("createkey")]
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task CreateKeyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -324,6 +264,7 @@ namespace Miki.Modules
         }
 
         [Command("setexp")]
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetExp(IContext e)
         {
             var cache = e.GetService<ICacheClient>();
@@ -351,6 +292,7 @@ namespace Miki.Modules
         }
 
         [Command("setglobexp")]
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetGlobalExpAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string userName))
@@ -377,6 +319,7 @@ namespace Miki.Modules
         }
 
         [Command("banuser")]
+        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task BanUserAsync(IContext e)
         {
             if (e.GetArgumentPack().Take(out string user))

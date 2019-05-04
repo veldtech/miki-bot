@@ -13,9 +13,9 @@ namespace Miki.Attributes
 {
     public class GuildOnlyAttribute : CommandRequirementAttribute
     {
-        public override Task<bool> CheckAsync(IContext e)
+        public override ValueTask<bool> CheckAsync(IContext e)
         {
-            return Task.FromResult(e.GetGuild() != null);
+            return new ValueTask<bool>(e.GetGuild() != null);
         }
 
         public override async Task OnCheckFail(IContext e)

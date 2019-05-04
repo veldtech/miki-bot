@@ -71,7 +71,7 @@ namespace Miki.Accounts
                     var pipeline = scope.ServiceProvider
                         .GetService<LocalizationPipelineStage>();
 					IResourceManager instance = await pipeline
-                        .GetLocaleForChannelAsync(
+                        .GetLocaleAsync(
                             scope.ServiceProvider, 
                             (long)e.Id);
 

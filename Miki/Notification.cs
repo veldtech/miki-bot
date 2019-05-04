@@ -16,7 +16,7 @@ namespace Miki
 
         public static async Task SendAchievementAsync(IAchievement d, IDiscordTextChannel channel, IDiscordUser user)
         {
-            if(channel is IDiscordGuildChannel c)
+            if(channel is IDiscordGuildChannel)
             {
                 using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
@@ -28,7 +28,6 @@ namespace Miki
                     }
                 }
             }
-
             await CreateAchievementEmbed(d, user)
                 .QueueToChannelAsync(channel);
         }

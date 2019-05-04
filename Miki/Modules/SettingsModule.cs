@@ -221,32 +221,32 @@ namespace Miki.Modules
 		[Command("setprefix")]
 		public async Task PrefixAsync(IContext e)
 		{
-            var cache = e.GetService<ICacheClient>();
-            string args = e.GetArgumentPack().Pack.TakeAll();
+            var prefixMiddleware = e.GetService<PipelineStageTrigger>();
 
-            if (string.IsNullOrEmpty(args))
-			{
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_general_prefix_error_no_arg")).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-				return;
-			}
+            if (!e.GetArgumentPack().Take(out string prefix))
+            {
+                return;
+            }
 
-            //PrefixTrigger defaultInstance = e.GetMessageTriggers()
-            //    .Where(x => x is PrefixTrigger)
-            //    .Select(x => x as PrefixTrigger)
-            //    .Where(x => x.IsDefault)        
-            //    .FirstOrDefault();
+            await prefixMiddleware.GetDefaultTrigger()
+                .ChangeForGuildAsync(
+                    e.GetService<DbContext>(),
+                    e.GetService<ICacheClient>(),
+                    e.GetGuild().Id,
+                    prefix);
 
-            var context = e.GetService<MikiDbContext>();
-            //await defaultInstance.ChangeForGuildAsync(context, cache, e.GetGuild().Id, args);
+            var locale = e.GetLocale();
 
-			EmbedBuilder embed = new EmbedBuilder();
-			embed.SetTitle(e.GetLocale().GetString("miki_module_general_prefix_success_header"));
-			embed.SetDescription(
-				e.GetLocale().GetString("miki_module_general_prefix_success_message", args
-            ));
-
-			await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-		}
+            await new EmbedBuilder()
+                .SetTitle(
+                    locale.GetString("miki_module_general_prefix_success_header"))
+                .SetDescription(
+                    locale.GetString("miki_module_general_prefix_success_message", 
+                    prefix))
+                .AddField("Warning", "This command has been replaced with `>prefix set`.")
+                .ToEmbed()
+                .QueueToChannelAsync(e.GetChannel());
+        }
 
 		[Command("syncavatar")]
 		public async Task SyncAvatarAsync(IContext e)
@@ -257,7 +257,7 @@ namespace Miki.Modules
 
 			await e.SuccessEmbed(
 				e.GetLocale().GetString("setting_avatar_updated")	
-			).QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			).QueueToChannelAsync(e.GetChannel());
 		}
 
 		[Command("listlocale")]

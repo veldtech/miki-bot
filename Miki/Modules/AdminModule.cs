@@ -6,6 +6,8 @@ using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Models;
@@ -21,7 +23,8 @@ namespace Miki.Modules
 	public class AdminModule
 	{
 		[Command("ban")]
-		public async Task BanAsync(IContext e)
+        [RequiresPermission(PermissionLevel.MODERATOR)]
+        public async Task BanAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
 			if ((await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
@@ -93,13 +96,15 @@ namespace Miki.Modules
 		}
 
 		[Command("clean")]
-		public async Task CleanAsync(IContext e)
+        [RequiresPermission(PermissionLevel.MODERATOR)]
+        public async Task CleanAsync(IContext e)
 		{
 			await PruneAsync(e, (await e.GetGuild().GetSelfAsync()).Id, null);
 		}
 
 		[Command("kick")]
-		public async Task KickAsync(IContext e)
+        [RequiresPermission(PermissionLevel.MODERATOR)]
+        public async Task KickAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
             
@@ -165,6 +170,7 @@ namespace Miki.Modules
 		}
 
 		[Command("prune")]
+        [RequiresPermission(PermissionLevel.MODERATOR)]
 		public async Task PruneAsync(IContext e)
 		{
 			await PruneAsync(e, 0, null);
@@ -289,6 +295,7 @@ namespace Miki.Modules
 		}
 
         [Command("setevent", "setcommand")]
+        [RequiresPermission(PermissionLevel.ADMIN)]
         public async Task SetCommandAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string commandId))
@@ -362,6 +369,7 @@ namespace Miki.Modules
         }
 
         [Command("setmodule")]
+        [RequiresPermission(PermissionLevel.ADMIN)]
         public async Task SetModuleAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string moduleName))
@@ -416,7 +424,8 @@ namespace Miki.Modules
         }
 
 		[Command("softban")]
-		public async Task SoftbanAsync(IContext e)
+        [RequiresPermission(PermissionLevel.MODERATOR)]
+        public async Task SoftbanAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
 			if ((await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
