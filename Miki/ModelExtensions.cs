@@ -7,7 +7,6 @@ using Miki.Discord.Common;
 using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Filters;
 using Miki.Models;
 using System;
 using System.Linq;

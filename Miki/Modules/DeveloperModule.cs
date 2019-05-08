@@ -11,7 +11,6 @@ using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
-using Miki.Framework.Events.Filters;
 using Miki.Models;
 using Newtonsoft.Json;
 using System;

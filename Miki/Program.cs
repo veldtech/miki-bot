@@ -16,10 +16,10 @@ using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Arguments;
 using Miki.Framework.Commands;
+using Miki.Framework.Commands.Filters.Filters;
 using Miki.Framework.Commands.Localization;
 using Miki.Framework.Commands.Pipelines;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Filters;
 using Miki.Framework.Events.Triggers;
 using Miki.Localization;
 using Miki.Localization.Exceptions;
@@ -95,6 +95,9 @@ namespace Miki
         {
             return new CommandPipelineBuilder(app)
                 .UseStage(new CorePipelineStage())
+                .UseFilters(
+                    new BotFilter()
+                )
                 .UsePrefixes(
                     new PrefixTrigger(">", true, true),
                     new PrefixTrigger("miki.", false),

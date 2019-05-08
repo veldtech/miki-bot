@@ -121,7 +121,7 @@ namespace Miki.Modules
             {
                 var cache = e.GetService<ICacheClient>();
                 var context = e.GetService<MikiDbContext>();
-                
+
                 var user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
                 if (user == null)
                 {
