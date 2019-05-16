@@ -8,8 +8,10 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Localization;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Stages;
+using Miki.Framework.Commands.States;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Localization;
 using Miki.Models;
 using System;
@@ -55,7 +57,7 @@ namespace Miki.Modules
                     "error_notifications_setting_not_found",
                     string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
                         .Select(x => $"`{x}`"))))
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -71,19 +73,20 @@ namespace Miki.Modules
             if (!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
             {
                 await Utils.ErrorEmbedResource(e, new LanguageResource(
-                    "error_notifications_type_not_found",
-                    enumValue,
-                    value.ToString(),
-                    string.Join(", ", Enum.GetNames(@enum.GetType())
-                        .Select(x => $"`{x}`"))))
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        "error_notifications_type_not_found",
+                        enumValue,
+                        value.ToString(),
+                        string.Join(", ", Enum.GetNames(@enum.GetType())
+                            .Select(x => $"`{x}`"))))
+                    .ToEmbed()
+                    .QueueAsync(e.GetChannel());
                 return;
             }
 
 
             var context = e.GetService<MikiDbContext>();
 
-            var channels = new List<IDiscordTextChannel> { (e.GetChannel() as IDiscordTextChannel) };
+            var channels = new List<IDiscordTextChannel> { e.GetChannel() };
 
             if (e.GetArgumentPack().CanTake)
             {
@@ -106,7 +109,7 @@ namespace Miki.Modules
             await context.SaveChangesAsync();
 
             await Utils.SuccessEmbed(e, e.GetLocale().GetString("notifications_update_success"))
-                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .QueueAsync(e.GetChannel());
         }
 
         [Command("showmodule")]
@@ -115,82 +118,44 @@ namespace Miki.Modules
             var cache = e.GetService<ICacheClient>();
             var db = e.GetService<DbContext>();
 
+            var commandHandler = e.GetStage<CommandHandlerStage>();
+            var stateManager = e.GetStage<StatePipelineStage>();
+
             string args = e.GetArgumentPack().Pack.TakeAll();
-            //Module module = null;//e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name.ToLower() == args.ToLower());
 
-			//if (module != null)
-			//{
-			//	EmbedBuilder embed = new EmbedBuilder();
+            var module = commandHandler.Modules
+                .Where(x => x is NodeContainer)
+                .Select(x => x as NodeContainer)
+                .FirstOrDefault(x => x.Metadata.Identifiers
+                    .Any(y => y.ToLowerInvariant() == args.ToLowerInvariant()));
 
-			//	embed.Title = (args.ToUpper());
+            if (module != null)
+            {
+                // No module found
+                return;
+            }
 
-			//	string content = "";
+            EmbedBuilder embed = new EmbedBuilder()
+                .SetTitle(args.ToUpperInvariant());
 
-			//	//foreach (CommandEvent ev in module.Events.OrderBy((x) => x.Name))
-			//	//{
-			//	//	content += (await ev.IsEnabledAsync(e) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
-			//	//}
+            string content = "";
 
-			//	embed.AddInlineField("Events", content);
+            foreach (Node ev in module.Children.OrderBy((x) => x.Metadata.Identifiers.First()))
+            {
+                var state = await stateManager
+                    .GetCommandStateAsync(db, ev.ToString(), (long)e.GetChannel().Id);
+                content += (state.State 
+                    ? "<:iconenabled:341251534522286080>" 
+                    : "<:icondisabled:341251533754728458>") + $" {ev.Metadata.Identifiers.First()}\n";
+            }
 
-			//	content = "";
+            embed.AddInlineField("Events", content);
 
-			//	//foreach (BaseService ev in module.Services.OrderBy((x) => x.Name))
-			//	//{
-			//	//	content += (await ev.IsEnabledAsync(e) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>") + " " + ev.Name + "\n";
-			//	//}
+            content = "";
 
-			//	if (!string.IsNullOrEmpty(content))
-			//		embed.AddInlineField("Services", content);
-
-   //             await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-			//}
-		}
-
-		[Command("showmodules")]
-		public async Task ShowModulesAsync(IContext e)
-		{
-            var cache = e.GetService<ICacheClient>();
-            var db = e.GetService<DbContext>();
-
-            List<string> modules = new List<string>();
-            //SimpleCommandHandler commandHandler = null;//            e.EventSystem.GetCommandHandler<SimpleCommandHandler>();
-			//EventAccessibility userEventAccessibility = await commandHandler.GetUserAccessibility(e);
-
-			//foreach (CommandEvent ev in commandHandler.Commands)
-			//{
-			//	if (userEventAccessibility >= ev.Accessibility)
-			//	{
-			//		if (ev.Module != null && !modules.Contains(ev.Module.Name.ToUpper()))
-			//		{
-			//			modules.Add(ev.Module.Name.ToUpper());
-			//		}
-			//	}
-			//}
-
-			modules.Sort();
-
-			string firstColumn = "", secondColumn = "";
-
-			for (int i = 0; i < modules.Count(); i++)
-			{
-                string output = "";//$"{(await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules[i].IsEnabled(cache, db, e.GetChannel().Id) ? "<:iconenabled:341251534522286080>" : "<:icondisabled:341251533754728458>")} {modules[i]}\n";
-				if (i < modules.Count() / 2 + 1)
-				{
-					firstColumn += output;
-				}
-				else
-				{
-					secondColumn += output;
-				}
-			}
-
-            await new EmbedBuilder()
-				.SetTitle($"Module Status for '{e.GetChannel().Name}'")
-				.AddInlineField("Column 1", firstColumn)
-				.AddInlineField("Column 2", secondColumn)
-				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
-		}
+            await embed.ToEmbed()
+                .QueueAsync(e.GetChannel());
+        }
 
         [Command("setlocale")]
         public async Task SetLocale(IContext e)
@@ -205,7 +170,7 @@ namespace Miki.Modules
                     "error_language_invalid",
                     localeName,
                     e.GetPrefixMatch()
-                ).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                ).ToEmbed().QueueAsync(e.GetChannel());
             }
 
             await localization.SetLocaleForChannelAsync(e, (long)e.GetChannel().Id, langId);
@@ -215,7 +180,7 @@ namespace Miki.Modules
                     .GetString(
                         "localization_set", 
                         $"`{localeName}`"))
-                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .QueueAsync(e.GetChannel());
         }
 
 		[Command("setprefix")]
@@ -245,7 +210,7 @@ namespace Miki.Modules
                     prefix))
                 .AddField("Warning", "This command has been replaced with `>prefix set`.")
                 .ToEmbed()
-                .QueueToChannelAsync(e.GetChannel());
+                .QueueAsync(e.GetChannel());
         }
 
 		[Command("syncavatar")]
@@ -253,28 +218,34 @@ namespace Miki.Modules
 		{
             var context = e.GetService<MikiDbContext>();
             var cache = e.GetService<IExtendedCacheClient>();
+            var locale = e.GetLocale();
             await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
 
 			await e.SuccessEmbed(
-				e.GetLocale().GetString("setting_avatar_updated")	
-			).QueueToChannelAsync(e.GetChannel());
+                locale.GetString("setting_avatar_updated")	
+			).QueueAsync(e.GetChannel());
 		}
 
 		[Command("listlocale")]
 		public async Task ListLocaleAsync(IContext e)
 		{
-            var locale = e.GetService<LocalizationPipelineStage>();
+            var localeStage = e.GetService<LocalizationPipelineStage>();
+            var locale = e.GetLocale();
+
+            var localeNames = string.Join(", ", 
+                localeStage.LocaleNames.Keys
+                    .Select(x => $"`{x}`"));
 
             await new EmbedBuilder()
-			{
-				Title = e.GetLocale().GetString("locales_available"),
-				Description = ("`" + string.Join("`, `", locale.LocaleNames.Keys) + "`")
-			}.AddField(
-				"Your language not here?",
-				e.GetLocale().GetString("locales_contribute",
-					$"[{e.GetLocale().GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"
-				)
-			).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .SetTitle(locale.GetString("locales_available"))
+                .SetDescription(localeNames)
+                .AddField(
+				    "Your language not here?",
+                    locale.GetString(
+                        "locales_contribute", 
+                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                .ToEmbed()
+                .QueueAsync(e.GetChannel());
 		}
 	}
 }

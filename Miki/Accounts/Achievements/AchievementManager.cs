@@ -33,8 +33,6 @@ namespace Miki.Accounts.Achievements
 			}
 		}
 
-		//internal BaseService provider = null;
-
 		private readonly MikiApp bot;
 		private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
@@ -76,19 +74,6 @@ namespace Miki.Accounts.Achievements
 
                 await OnTransaction?.Invoke(p);
             };
-
-            //bot.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().OnMessageProcessed += async (e, m, t) =>
-            //{
-            //    CommandPacket p = new CommandPacket()
-            //    {
-            //        discordUser = m.Author,
-            //        discordChannel = await m.GetChannelAsync(),
-            //        message = m,
-            //        command = e,
-            //        success = true
-            //    };
-            //    await OnCommandUsed?.Invoke(p);
-            //};
         }
 
 		internal void AddContainer(AchievementDataContainer container)

@@ -1,15 +1,5 @@
 ﻿using Amazon.S3;
-using Miki.Cache;
-using Miki.Cache.StackExchange;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Models.Objects.Backgrounds;
-using Miki.Serialization.Protobuf;
 using Newtonsoft.Json;
-using SharpRaven;
-using StackExchange.Redis;
-using System;
 using System.IO;
 
 namespace Miki

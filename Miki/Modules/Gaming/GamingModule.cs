@@ -3,7 +3,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Modules.Overwatch.API;
 using Miki.Modules.Overwatch.Objects;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}
@@ -44,7 +43,7 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(mem, $"{username}.png");
+					await e.GetChannel().SendFileAsync(mem, $"{username}.png");
 				}
 			}
 		}
@@ -60,7 +59,7 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}
@@ -76,7 +75,7 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}

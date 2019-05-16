@@ -10,7 +10,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
 using Miki.Models;
 using System;
@@ -50,7 +49,7 @@ namespace Miki.Modules
                 }
 
                 embed.Color = new Color(1f, 0.6f, 0.4f);
-                await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await embed.ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -63,7 +62,7 @@ namespace Miki.Modules
             {
                 Color = new Color(0.4f, 1f, 0.6f),
                 Description = e.GetLocale().GetString("buymarriageslot_success", user.MarriageSlots),
-            }.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            }.ToEmbed().QueueAsync(e.GetChannel());
 
             await context.SaveChangesAsync();
         }
@@ -81,7 +80,7 @@ namespace Miki.Modules
             if (user.Id == e.GetAuthor().Id)
             {
                 await e.ErrorEmbed("Please mention someone else than yourself.")
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -108,7 +107,7 @@ namespace Miki.Modules
 
                 if (marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
                 {
-                    (e.GetChannel() as IDiscordTextChannel).QueueMessage($"You can not accept your own responses!");
+                    e.GetChannel().QueueMessage($"You can not accept your own responses!");
                     return;
                 }
 
@@ -123,17 +122,17 @@ namespace Miki.Modules
                         Title = ("❤️ Happily married"),
                         Color = new Color(190, 25, 49),
                         Description = ($"Much love to { e.GetAuthor().Username } and { user.Username } in their future adventures together!")
-                    }.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    }.ToEmbed().QueueAsync(e.GetChannel());
                 }
                 else
                 {
                     await e.ErrorEmbed("You're already married to this person ya doofus!")
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                 }
             }
             else
             {
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage("This user hasn't proposed to you!");
+                e.GetChannel().QueueMessage("This user hasn't proposed to you!");
                 return;
             }
         }
@@ -165,7 +164,7 @@ namespace Miki.Modules
                     Title = $"💔 You took back your proposal to {otherName}!",
                     Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
                     Color = new Color(231, 90, 112)
-                }.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                }.ToEmbed().QueueAsync(e.GetChannel());
 
                 m.Remove(context);
                 await context.SaveChangesAsync();
@@ -187,7 +186,7 @@ namespace Miki.Modules
                 await BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
 
                 await embed.ToEmbed()
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
         }
 
@@ -219,7 +218,7 @@ namespace Miki.Modules
 						Title = $"🔫 You shot down {otherName}!",
 						Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
 						Color = new Color(191, 105, 82)
-					}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					}.ToEmbed().QueueAsync(e.GetChannel());
 
 					m.Remove(context);
 					await context.SaveChangesAsync();
@@ -239,7 +238,7 @@ namespace Miki.Modules
 					};
 
                     await BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
-					await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					await embed.ToEmbed().QueueAsync(e.GetChannel());
 				}
 		}
 
@@ -270,7 +269,7 @@ namespace Miki.Modules
                     Title = $"🔔 {e.GetLocale().GetString("miki_module_accounts_divorce_header")}",
                     Description = e.GetLocale().GetString("miki_module_accounts_divorce_content", e.GetAuthor().Username, otherUser.Username),
                     Color = new Color(0.6f, 0.4f, 0.1f)
-                }.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                }.ToEmbed().QueueAsync(e.GetChannel());
 
                 m.Remove(context);
                 await context.SaveChangesAsync();
@@ -290,7 +289,7 @@ namespace Miki.Modules
                 };
 
                 await BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
-                await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await embed.ToEmbed().QueueAsync(e.GetChannel());
             }
         }
 
@@ -306,13 +305,13 @@ namespace Miki.Modules
 
             if (user == null)
             {
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage("Couldn't find this person..");
+                e.GetChannel().QueueMessage("Couldn't find this person..");
                 return;
             }
 
             if (user.Id == (await e.GetGuild().GetSelfAsync()).Id)
             {
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage("(´・ω・`)");
+                e.GetChannel().QueueMessage("(´・ω・`)");
                 return;
             }
 
@@ -328,25 +327,25 @@ namespace Miki.Modules
 
             if (currentUser == null || mentionedPerson == null)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
             if (await mentionedPerson.IsBannedAsync(context))
             {
-                await e.ErrorEmbed("This person has been banned from Miki.").ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await e.ErrorEmbed("This person has been banned from Miki.").ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
             if (receiverId == askerId)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
             if (await repository.ExistsAsync(receiverId, askerId))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_exists")).ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_exists")).ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -362,7 +361,7 @@ namespace Miki.Modules
                 .AddInlineField("✅ To accept", $">acceptmarriage @user")
                 .AddInlineField("❌ To decline", $">declinemarriage @user")
                 .SetFooter("Take your time though! This proposal won't disappear", "")
-                .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .ToEmbed().QueueAsync(e.GetChannel());
         }
 
         [Command("showproposals")]
@@ -427,7 +426,7 @@ namespace Miki.Modules
             {
                 embed.SetFooter(e.GetLocale().GetString("page_footer", page + 1, pageCount));
             }
-            await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            await embed.ToEmbed().QueueAsync(e.GetChannel());
         }
 
 		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, List<UserMarriedTo> marriages)

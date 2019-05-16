@@ -3,7 +3,6 @@ using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +20,7 @@ namespace Miki.Attributes
         public override async Task OnCheckFail(IContext e)
         {
             await e.ErrorEmbedResource("error_command_guildonly")
-                .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .ToEmbed().QueueAsync(e.GetChannel() as IDiscordTextChannel);
         }
     }
 }

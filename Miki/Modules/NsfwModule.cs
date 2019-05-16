@@ -8,7 +8,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.UrbanDictionary;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -30,17 +29,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.QueueAsync(e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
@@ -55,17 +54,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.QueueAsync(e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
@@ -80,17 +79,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.QueueAsync(e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
@@ -105,17 +104,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.QueueAsync(e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
@@ -162,12 +161,12 @@ namespace Miki.Modules
                 }.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
                  .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
                  .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-                 .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                 .ToEmbed().QueueAsync(e.GetChannel());
             }
             else
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
             }
         }
 
@@ -182,16 +181,16 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
 
-                await CreateEmbed(s).QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                await CreateEmbed(s).QueueAsync(e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 

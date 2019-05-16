@@ -28,7 +28,7 @@
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.3.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
-    <PackageReference Include="Miki.Anilist" Version="0.6.0-beta2" />
+    <PackageReference Include="Miki.Anilist" Version="0.6.0" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.0-beta2" />
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.2.1" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
@@ -54,6 +54,8 @@
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj" />
     <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
+    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.States\Miki.Framework.Commands.States.csproj" />
+    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\Miki.Bot.Models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\Miki.Framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj" />

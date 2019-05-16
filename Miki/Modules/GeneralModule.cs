@@ -6,7 +6,6 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Framework.Extension;
 using Miki.Framework.Language;
 using Miki.Helpers;
@@ -64,20 +63,20 @@ namespace Miki.Modules
 		{
 			if (!e.GetArgumentPack().Take(out string arg))
 			{
-				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetAuthor().GetAvatarUrl());
+				e.GetChannel().QueueMessage(e.GetAuthor().GetAvatarUrl());
 			}
 			else
 			{
 				if (arg == "-s")
 				{
-					(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetGuild().IconUrl);
+					e.GetChannel().QueueMessage(e.GetGuild().IconUrl);
 					return;
 				}
 
 				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
 				if (user != null)
 				{
-					(e.GetChannel() as IDiscordTextChannel).QueueMessage(user.GetAvatarUrl());
+					e.GetChannel().QueueMessage(user.GetAvatarUrl());
 				}
 			}
 		}
@@ -104,11 +103,11 @@ namespace Miki.Modules
 
 				object output = expression.Evaluate();
 
-				(e.GetChannel() as IDiscordTextChannel).QueueMessage(output.ToString());
+				e.GetChannel().QueueMessage(output.ToString());
 			}
 			catch (Exception ex)
 			{
-				(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
+				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
 			}
 			return Task.CompletedTask;
 		}
@@ -121,7 +120,7 @@ namespace Miki.Modules
 			{
 				Title = "Changelog",
 				Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("giveaway")]
@@ -145,7 +144,7 @@ namespace Miki.Modules
 			if (amount > 10)
 			{
                 await e.ErrorEmbed("We can only allow up to 10 picks per giveaway")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 				return;
 			}
 
@@ -156,7 +155,8 @@ namespace Miki.Modules
 			IDiscordMessage msg = await CreateGiveawayEmbed(e, giveawayText)
 			.AddField("Time", timeLeft.ToTimeString(e.GetLocale()), true)
 			.AddField("React to participate", "good luck", true)
-			.ToEmbed().SendToChannel(e.GetChannel() as IDiscordTextChannel);
+			.ToEmbed()
+            .SendToChannel(e.GetChannel());
 
 			await msg.CreateReactionAsync(emoji);
 
@@ -164,7 +164,7 @@ namespace Miki.Modules
 
 			int task = taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
 			{
-				msg = await (e.GetChannel() as IDiscordTextChannel).GetMessageAsync(msg.Id);
+				msg = await e.GetChannel().GetMessageAsync(msg.Id);
 
 				if (msg != null)
 				{
@@ -262,7 +262,7 @@ namespace Miki.Modules
             .AddField("📜 " + e.GetLocale().GetString("miki_module_general_guildinfo_roles"),
                 string.Join(",", roles.Select(x => $"`{x.Name}`")))
             .AddField("😃 " + e.GetLocale().GetString("term_emoji"), emojiOutput)
-            .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            .ToEmbed().QueueAsync(e.GetChannel());
         }
 
 		//[Command("help")]
@@ -292,7 +292,7 @@ namespace Miki.Modules
   //                      helpListEmbed.AddField(e.GetLocale().GetString("miki_module_help_didyoumean"), best.text);
 
   //                      await helpListEmbed.ToEmbed()
-  //                          .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+  //                          .QueueToChannelAsync(e.GetChannel());
 		//		}
 		//		else
 		//		{
@@ -323,7 +323,7 @@ namespace Miki.Modules
 		//				e.GetLocale().HasString("miki_command_usage_" + ev.Name.ToLower())
 		//					? e.GetLocale().GetString("miki_command_usage_" + ev.Name.ToLower()) : e.GetLocale().GetString("miki_placeholder_null"));
 
-  //                  await explainedHelpEmbed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+  //                  await explainedHelpEmbed.ToEmbed().QueueToChannelAsync(e.GetChannel());
 		//		}
 		//		return;
 		//	}
@@ -332,7 +332,7 @@ namespace Miki.Modules
 		//	{
 		//		Description = e.GetLocale().GetString("miki_module_general_help_dm"),
 		//		Color = new Color(0.6f, 0.6f, 1.0f)
-		//	}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+		//	}.ToEmbed().QueueToChannelAsync(e.GetChannel());
 
 		//	EmbedBuilder embedBuilder = new EmbedBuilder();
 
@@ -361,7 +361,7 @@ namespace Miki.Modules
 				ThumbnailUrl = "https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png",
 			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
 			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
-			.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("info", "about")]
@@ -384,7 +384,7 @@ namespace Miki.Modules
 				$"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
 				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) [suggestions](https://suggestions.miki.ai/)");
 
-            await embed.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            await embed.ToEmbed().QueueAsync(e.GetChannel());
 
 			await Task.Yield();
 		}
@@ -392,7 +392,7 @@ namespace Miki.Modules
 		[Command("invite")]
 		public async Task InviteAsync(IContext e)
 		{
-			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetLocale().GetString("miki_module_general_invite_message"));
+			e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_invite_message"));
 			(await e.GetAuthor().GetDMChannelAsync()).QueueMessage(e.GetLocale().GetString("miki_module_general_invite_dm")
 				+ "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
 		}
@@ -404,7 +404,7 @@ namespace Miki.Modules
 				  .WithTitle(new RawResource("Ping"))
 				  .WithDescription("ping_placeholder")
 				  .Build()
-				  .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel))
+				  .QueueAsync(e.GetChannel()))
 				  .ThenWait(200)
 				  .Then(async x =>
 				  {
@@ -435,7 +435,7 @@ namespace Miki.Modules
                 await new LocalizedEmbedBuilder(e.GetLocale())
                     .WithTitle("miki_module_general_prefix_help_header")
                     .WithDescription("prefix_info", prefix)
-                    .Build().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .Build().QueueAsync(e.GetChannel());
             }
 
             [Command("set")]
@@ -460,7 +460,7 @@ namespace Miki.Modules
                     .SetDescription(
                     e.GetLocale().GetString("miki_module_general_prefix_success_message", prefix
                 )).ToEmbed()
-                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .QueueAsync(e.GetChannel());
             }
         }
 
@@ -478,7 +478,7 @@ namespace Miki.Modules
 				Color = new Color(0.3f, 0.8f, 1),
 			}.AddField($"🖥️ {e.GetLocale().GetString("discord_servers")}", (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToFormattedString())
 			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
-			 .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			 .ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("whois")]
@@ -534,7 +534,7 @@ namespace Miki.Modules
 				);
 			}
 
-            await embed.Build().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            await embed.Build().QueueAsync(e.GetChannel());
 		}
 	}
 }
