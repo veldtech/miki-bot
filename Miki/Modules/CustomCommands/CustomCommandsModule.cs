@@ -7,8 +7,9 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Commands.Pipelines;
+using Miki.Framework.Commands.Stages;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Logging;
 using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Modules.CustomCommands.Exceptions;
@@ -28,7 +29,16 @@ namespace Miki.Modules.CustomCommands
     [Module("CustomCommands")]
     public class CustomCommandsModule
     {
-        private Tokenizer _tokenizer = new Tokenizer();
+        private readonly Tokenizer _tokenizer = new Tokenizer();
+
+        public CustomCommandsModule(MikiApp app)
+        {
+            new CommandPipelineBuilder(app)
+                .UseStage(async (msg, context, next) =>
+                {
+
+                });
+        }
 
         [GuildOnly, Command("createcommand")]
         public async Task NewCustomCommandAsync(IContext e)
@@ -40,11 +50,11 @@ namespace Miki.Modules.CustomCommands
                     throw new InvalidCharacterException(" ");
                 }
 
-                //if(e.EventSystem.GetCommandHandler<SimpleCommandHandler>()
-                //    .GetCommandByIdOrDefault(commandName) != null)
-                //{
-                //    throw new DuplicateComandException(commandName);
-                //}
+                var commandHandler = e.GetStage<CommandHandlerStage>();
+                if(commandHandler.GetCommand(commandName) != null)
+                {
+                    return;
+                }
 
                 if(!e.GetArgumentPack().CanTake)
                 {
@@ -75,7 +85,7 @@ namespace Miki.Modules.CustomCommands
                 catch(Exception ex)
                 {
                     await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex.ToString()}```")
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
@@ -96,7 +106,7 @@ namespace Miki.Modules.CustomCommands
                 }
 
                 await e.SuccessEmbed($"Created script '>{commandName}'")
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
         }
 
@@ -118,7 +128,7 @@ namespace Miki.Modules.CustomCommands
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbedResource("ok_command_deleted", commandName)
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
             else
             {

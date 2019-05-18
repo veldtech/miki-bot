@@ -11,7 +11,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
 using Miki.Localization;
 using Miki.Models;
@@ -42,7 +41,7 @@ namespace Miki.Modules
                 if (e.GetArgumentPack().Pack.Length < 2)
                 {
                     await e.ErrorEmbed("You need to choose a weapon!")
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                 }
 
                 RPSManager rps = RPSManager.Instance;
@@ -54,7 +53,7 @@ namespace Miki.Modules
                 if (!rps.TryParse(weapon, out RPSWeapon playerWeapon))
                 {
                     await resultMessage.SetDescription("Invalid weapon!").ToEmbed()
-                        .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .QueueAsync(e.GetChannel());
                     return;
                 }
 
@@ -95,7 +94,7 @@ namespace Miki.Modules
                 }
 
                 await resultMessage.ToEmbed()
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
         }
 
@@ -113,7 +112,7 @@ namespace Miki.Modules
                         "`>blackjack hit` to draw a card\n" +
                         "`>blackjack stay` to stand")
                     .ToEmbed()
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
 
             [Command("new")]
@@ -136,7 +135,7 @@ namespace Miki.Modules
                 if (await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}"))
                 {
                     await e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
@@ -151,7 +150,7 @@ namespace Miki.Modules
                 dealer.Hand[1].isPublic = false;
 
                 IDiscordMessage message = await manager.CreateEmbed(e)
-                    .ToEmbed().SendToChannel(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().SendToChannel(e.GetChannel());
 
                 manager.MessageId = message.Id;
 
@@ -359,7 +358,7 @@ namespace Miki.Modules
             if (e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed("Please pick either `heads` or `tails`!")
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -379,7 +378,7 @@ namespace Miki.Modules
             if (pickedSide == -1)
             {
                 await e.ErrorEmbed("This is not a valid option!")
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -422,7 +421,7 @@ namespace Miki.Modules
                 .SetThumbnail(imageUrl)
                 .ToEmbed();
 
-            await embed.QueueToChannelAsync(
+            await embed.QueueAsync(
                 e.GetChannel() as IDiscordTextChannel);
         }
 
@@ -579,7 +578,7 @@ namespace Miki.Modules
 
             await context.SaveChangesAsync();
             await embed.ToEmbed()
-                .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                .QueueAsync(e.GetChannel());
         }
 
         //[Command(Name = "lottery")]
@@ -612,7 +611,7 @@ namespace Miki.Modules
         //		.AddInlineField("Ticket price", $"{100} mekos")
         //		.AddInlineField("Latest Winner", latestWinner ?? "no name")
         //		.AddInlineField("How to buy?", ">lottery buy [amount]")
-        //		.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+        //		.ToEmbed().QueueToChannelAsync(e.GetChannel());
         //		return;
         //	}
 
@@ -633,7 +632,7 @@ namespace Miki.Modules
         //				if (amount * 100 > u.Currency)
         //				{
         //					e.ErrorEmbedResource("miki_mekos_insufficient")
-        //						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+        //						.ToEmbed().QueueToChannelAsync(e.GetChannel());
         //					return;
         //				}
 
@@ -660,7 +659,7 @@ namespace Miki.Modules
         //				await context.SaveChangesAsync();
 
         //				e.SuccessEmbed($"Successfully bought {amount} tickets!")
-        //					.QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+        //					.QueueToChannelAsync(e.GetChannel());
         //			}
         //		}
         //		break;

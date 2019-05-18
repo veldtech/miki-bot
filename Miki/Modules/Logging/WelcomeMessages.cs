@@ -8,7 +8,6 @@ using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
@@ -77,19 +76,19 @@ namespace Miki.Modules
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
                 await e.SuccessEmbed($"Deleted your welcome message")
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
             else
             {
                 await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.GetChannel().Id);
                 await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
@@ -106,20 +105,20 @@ namespace Miki.Modules
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
-                        .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
                 await e.SuccessEmbed($"Deleted your leave message")
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
 
             }
             else
             {
                 await SetMessageAsync(context, leaveMsgString, EventMessageType.LEAVESERVER, e.GetChannel().Id);
                 await e.SuccessEmbed($"Your new leave message is set to: ```{leaveMsgString}```")
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
@@ -132,10 +131,10 @@ namespace Miki.Modules
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
                 EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage(msg.message ?? "No message set in this channel");
+                e.GetChannel().QueueMessage(msg.message ?? "No message set in this channel");
                 return;
             }
-            (e.GetChannel() as IDiscordTextChannel).QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)

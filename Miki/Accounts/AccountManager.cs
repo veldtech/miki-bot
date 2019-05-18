@@ -70,6 +70,7 @@ namespace Miki.Accounts
 
                     var pipeline = scope.ServiceProvider
                         .GetService<LocalizationPipelineStage>();
+
 					IResourceManager instance = await pipeline
                         .GetLocaleAsync(
                             scope.ServiceProvider, 
@@ -107,7 +108,7 @@ namespace Miki.Accounts
 
                     if (e is IDiscordTextChannel tc)
                     {
-                        await embed.ToEmbed().QueueToChannelAsync(tc);
+                        await embed.ToEmbed().QueueAsync(tc);
                     }
 				}
 		   };

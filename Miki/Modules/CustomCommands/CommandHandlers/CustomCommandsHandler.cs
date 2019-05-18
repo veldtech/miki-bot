@@ -116,7 +116,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if(tokens != null)
             {
                 var context = CreateContext(e);
-                (e.GetChannel() as IDiscordTextChannel)
+                e.GetChannel()
                     .QueueMessage(new Parser(tokens).Parse(context));
             }
         }

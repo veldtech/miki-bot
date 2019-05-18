@@ -29,7 +29,7 @@ namespace Miki
                 }
             }
             await CreateAchievementEmbed(d, user)
-                .QueueToChannelAsync(channel);
+                .QueueAsync(channel);
         }
 
 		public static async Task SendAchievementAsync(IAchievement baseAchievement, IDiscordUser user)

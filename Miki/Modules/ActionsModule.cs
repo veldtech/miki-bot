@@ -4,7 +4,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -392,7 +391,8 @@ namespace Miki.Modules
 
             builder.SetImage(imageUrl);
 
-            await builder.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel)
+            await builder.ToEmbed()
+                .QueueAsync(e.GetChannel())
                 .ConfigureAwait(false);
         }
 	}

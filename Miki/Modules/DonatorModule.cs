@@ -4,7 +4,6 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Rest;
@@ -57,7 +56,7 @@ namespace Miki.Modules
                 await context.SaveChangesAsync();
 
                 await Utils.SuccessEmbed(e, e.GetLocale().GetString("key_sold_success", 30000))
-                    .QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .QueueAsync(e.GetChannel());
             }
         }
 
@@ -98,7 +97,7 @@ namespace Miki.Modules
                     Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
                     ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
                 }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-                    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
 
                 context.DonatorKey.Remove(key);
                 await context.SaveChangesAsync();
@@ -170,7 +169,7 @@ namespace Miki.Modules
         private async Task PerformCall(IContext e, string url)
         {
             Stream s = await client.GetStreamAsync(url);
-            await (e.GetChannel() as IDiscordTextChannel).SendFileAsync(s, "meme.png");
+            await e.GetChannel().SendFileAsync(s, "meme.png");
         }
 	}
 }

@@ -4,7 +4,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -227,7 +226,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = confusedImages[MikiRandom.Next(0, confusedImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("lewd")]
@@ -236,7 +235,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("pout")]
@@ -245,7 +244,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = poutImages[MikiRandom.Next(0, poutImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("smug")]
@@ -254,7 +253,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = smugImages[MikiRandom.Next(0, smugImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("cry")]
@@ -263,7 +262,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = cryImages[MikiRandom.Next(0, cryImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("stare")]
@@ -272,7 +271,7 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = stareImages[MikiRandom.Next(0, stareImages.Length)]
-			}.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 	}
 }

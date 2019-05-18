@@ -13,25 +13,13 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
-    /*
-	public class AchievementsService : BaseService
+    
+	public class AchievementsService
 	{
-		public AchievementsService()
-		{
-			Name = "Achievements";
-		}
-
-		public override void Install(NodeModule m)
-		{
-			base.Install(m);
-			AchievementManager.Instance.provider = this;
-			LoadAchievements();
-		}
-
-		public override void Uninstall(NodeModule m)
-		{
-			base.Uninstall(m);
-		}
+        public AchievementsService()
+        {
+            LoadAchievements();
+        }
 
 		public void LoadAchievements()
 		{
@@ -117,20 +105,20 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "info";
-				x.Achievements = new List<IAchievement>()
-				{
-					new CommandAchievement()
-					{
-						Name = "Informed",
-						Icon = "📚",
+                x.Achievements = new List<IAchievement>()
+                {
+                    new CommandAchievement()
+                    {
+                        Name = "Informed",
+                        Icon = "📚",
 
-						CheckCommand = async (p) =>
-						{
-							await Task.Yield();
-							return p.command.Name.ToLower() == "info";
-						},
-						Points = 5
-					}
+                        CheckCommand = async (p) =>
+                        {
+                            await Task.Yield();
+                            return p.command.Metadata.Identifiers.Contains("info");
+                        },
+                        Points = 5
+                    },
 				};
 			});
 			AchievementDataContainer LonelyAchievement = new AchievementDataContainer(x =>
@@ -146,7 +134,7 @@ namespace Miki.Modules.Accounts.Services
 						CheckCommand = async (p) =>
 						{
 							await Task.Yield();
-							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.FirstOrDefault() == p.message.GetAuthor().Id;
+							return p.command.Metadata.Identifiers.Contains("marry") && p.message.MentionedUserIds.FirstOrDefault() == p.discordUser.Id;
 						},
 						Points = 5,
 					}
@@ -161,10 +149,9 @@ namespace Miki.Modules.Accounts.Services
 					{
 						Name = "Chef",
 						Icon = "📝",
-						CheckCommand = async (p) =>
+						CheckCommand = (p) =>
 						{
-							await Task.Yield();
-							return p.command.Name.ToLower() == "createpasta";
+                            return Task.FromResult(p.command.Metadata.Identifiers.Contains("createpasta"));
 						},
 						Points = 5,
 					}
@@ -264,7 +251,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "🐸",
                         CheckCommand = async (p) =>
                         {
-                            return p.command.Name == "pasta" && p.message.Content.Contains("dat boi");
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("dat boi");
                         },
 						Points = 5
 					}
@@ -281,7 +268,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "😏",
 						CheckCommand = async (p) =>
 						{
-							return p.command.Name == "pasta" && p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
+							return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
 						},
 						Points = 5
 					}
@@ -298,7 +285,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "⛵",
 						CheckCommand = async (p) =>
 						{
-                            return p.command.Name == "pasta" && p.message.Content.Split(' ').Contains("poi");
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Split(' ').Contains("poi");
 						},
 						Points = 5,
 					}
@@ -556,5 +543,5 @@ namespace Miki.Modules.Accounts.Services
 
 			#endregion Transaction Achievements
 		}
-	}*/
+	}
 }

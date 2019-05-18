@@ -5,7 +5,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.GraphQL;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,12 +51,12 @@ namespace Miki.Core.Modules.Anime
 					.SetColor(0, 170, 255)
 					.SetThumbnail(character.LargeImageUrl)
 					.SetFooter("Powered by anilist.co", "")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 			else
 			{
                 await e.ErrorEmbed("Character not found!")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
@@ -81,12 +80,12 @@ namespace Miki.Core.Modules.Anime
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
                     await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
                     await e.ErrorEmbed($"No characters listed containing `{e.GetArgumentPack().Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -101,7 +100,7 @@ namespace Miki.Core.Modules.Anime
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("findmanga")]
@@ -113,19 +112,19 @@ namespace Miki.Core.Modules.Anime
             }
             e.GetArgumentPack().Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.MANGA, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
                     await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
                     await e.ErrorEmbed($"No characters listed containing `{e.GetArgumentPack().Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -140,7 +139,7 @@ namespace Miki.Core.Modules.Anime
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("findanime")]
@@ -152,19 +151,19 @@ namespace Miki.Core.Modules.Anime
             }
             e.GetArgumentPack().Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.ANIME, MediaFormat.MANGA, MediaFormat.NOVEL));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
                     await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
                     await e.ErrorEmbed($"No characters listed containing `{e.GetArgumentPack().Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -179,7 +178,7 @@ namespace Miki.Core.Modules.Anime
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
 				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		private async Task GetMediaAsync(IContext e, bool manga, params MediaFormat[] format)
@@ -223,12 +222,14 @@ namespace Miki.Core.Modules.Anime
 				    .SetColor(0, 170, 255)
 				    .SetThumbnail(media.CoverImage)
 				    .SetFooter("Powered by anilist.co", "")
-				    .ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+				    .ToEmbed()
+                    .QueueAsync(e.GetChannel());
 			}
 			else
 			{
                 await e.ErrorEmbed("Anime not found!")
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed()
+                    .QueueAsync(e.GetChannel());
 			}
 		}
 	}

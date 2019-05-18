@@ -7,10 +7,10 @@ using Miki.Discord.Common.Packets;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Filters;
 using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Models;
 using Newtonsoft.Json;
 using System;
@@ -37,7 +37,8 @@ namespace Miki.Modules
 					//.AddInlineField("Created At", emote.ToString())
 					.AddInlineField("Code", "`" + emote.ToString() + "`")
 					//.SetThumbnail(emote.Url)
-					.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+					.ToEmbed()
+                    .QueueAsync(e.GetChannel());
 			}
         }
 
@@ -45,7 +46,8 @@ namespace Miki.Modules
         [RequiresPermission(PermissionLevel.STAFF)]
         public Task SayAsync(IContext e)
 		{
-			(e.GetChannel() as IDiscordTextChannel).QueueMessage(e.GetArgumentPack().Pack.TakeAll());
+			e.GetChannel()
+                .QueueMessage(e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
@@ -58,7 +60,7 @@ namespace Miki.Modules
 
 			b.SetDescription(text);
 
-            await b.ToEmbed().QueueToChannelAsync(e.GetChannel() as IDiscordTextChannel);
+            await b.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("identifyuser")]
@@ -70,10 +72,10 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync($"none.");
 			}
 
-			await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
 		[Command("identifyguilduser")]
@@ -85,10 +87,10 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync($"none.");
 			}
 
-			await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
         [Command("showpermissions")]
@@ -110,7 +112,7 @@ namespace Miki.Modules
                     }
                 }
 
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage(x);
+                e.GetChannel().QueueMessage(x);
             }
         }
 
@@ -121,11 +123,11 @@ namespace Miki.Modules
             var user = await e.GetGuild().GetSelfAsync();
             if(await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
             {
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage("Yes!");
+                e.GetChannel().QueueMessage("Yes!");
             }
             else
             {
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage($"No!");
+                e.GetChannel().QueueMessage($"No!");
             }
         }
 
@@ -138,10 +140,10 @@ namespace Miki.Modules
 
 			if (user == null)
 			{
-				await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync($"none.");
 			}
 
-			await (e.GetChannel() as IDiscordTextChannel).SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
 		}
 
         [Command("identifyrole")]
@@ -153,7 +155,7 @@ namespace Miki.Modules
                 var x = await e.GetGuild().GetRoleAsync(roleId);
                 var myHierarchy = await (await e.GetGuild().GetSelfAsync()).GetHierarchyAsync();
 
-                (e.GetChannel() as IDiscordTextChannel).QueueMessage("```" + JsonConvert.SerializeObject(new
+                e.GetChannel().QueueMessage("```" + JsonConvert.SerializeObject(new
                 {
                     role = x,
                     bot_position = myHierarchy
@@ -167,7 +169,7 @@ namespace Miki.Modules
         {
             var roles = await e.GetGuild().GetRolesAsync();
             var self = await e.GetGuild().GetSelfAsync();
-            (e.GetChannel() as IDiscordTextChannel).QueueMessage($"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
+            e.GetChannel().QueueMessage($"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
         }
 
         [Command("setactivity")]
@@ -207,11 +209,14 @@ namespace Miki.Modules
         [RequiresPermission(PermissionLevel.DEVELOPER)]
         public Task IgnoreIdAsync(IContext e)
 		{
-			if (ulong.TryParse(e.GetArgumentPack().Pack.TakeAll(), out ulong id))
-			{
-				//e.EventSystem.MessageFilter.Get<UserFilter>().Users.Add(id);
-				(e.GetChannel() as IDiscordTextChannel).QueueMessage(":ok_hand:");
-			}
+            if (e.GetArgumentPack().Take(out ulong id))
+            {
+                var userFilter = e.GetService<FilterPipelineStage>()
+                    .GetFilterOfType<UserFilter>();
+                userFilter.Users.Add((long)id);
+
+                e.GetChannel().QueueMessage(":ok_hand:");
+            }
 			return Task.CompletedTask;
 		}
 
@@ -219,7 +224,7 @@ namespace Miki.Modules
         [RequiresPermission(PermissionLevel.DEVELOPER)]
         public Task ShowCacheAsync(IContext e)
 		{
-			(e.GetChannel() as IDiscordTextChannel).QueueMessage("Yes, this is Veld, my developer.");
+			e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
 		}
 
@@ -242,7 +247,7 @@ namespace Miki.Modules
                     }
                     u.Currency = value;
                     await context.SaveChangesAsync();
-                    (e.GetChannel() as IDiscordTextChannel).QueueMessage(":ok_hand:");
+                    e.GetChannel().QueueMessage(":ok_hand:");
                 }
             }
         }
@@ -259,7 +264,7 @@ namespace Miki.Modules
             })).Entity;
 
             await context.SaveChangesAsync();
-            (e.GetChannel() as IDiscordTextChannel).QueueMessage($"key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
+            e.GetChannel().QueueMessage($"key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
         }
 
         [Command("setexp")]
@@ -287,7 +292,7 @@ namespace Miki.Modules
             u.Experience = amount;
             await context.SaveChangesAsync();
             await cache.UpsertAsync($"user:{e.GetGuild().Id}:{e.GetAuthor().Id}:exp", u.Experience);
-            (e.GetChannel() as IDiscordTextChannel).QueueMessage(":ok_hand:");
+            e.GetChannel().QueueMessage(":ok_hand:");
         }
 
         [Command("setglobexp")]
@@ -314,7 +319,7 @@ namespace Miki.Modules
             }
             u.Total_Experience = amount;
             await context.SaveChangesAsync();
-            (e.GetChannel() as IDiscordTextChannel).QueueMessage(":ok_hand:");
+            e.GetChannel().QueueMessage(":ok_hand:");
         }
 
         [Command("banuser")]
