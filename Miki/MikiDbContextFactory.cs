@@ -6,7 +6,7 @@ namespace Miki
 {
     public class MikiDbContextFactory : IDesignTimeDbContextFactory<MikiDbContext>
     {
-        public MikiDbContext CreateDbContext(string[] args)
+        public MikiDbContext CreateDbContext(params string[] args)
         {
             var builder = new DbContextOptionsBuilder<MikiDbContext>();
             builder.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models"));

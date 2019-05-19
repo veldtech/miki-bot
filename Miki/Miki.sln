@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Per
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Filters", "..\Miki.Framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj", "{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.Framework.Services", "..\..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj", "{06AD97BC-4D63-4388-A146-75A65C976600}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.Framework.Services", "..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj", "{06AD97BC-4D63-4388-A146-75A65C976600}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -31,15 +31,6 @@ namespace Miki.Modules.CustomCommands
     {
         private readonly Tokenizer _tokenizer = new Tokenizer();
 
-        public CustomCommandsModule(MikiApp app)
-        {
-            new CommandPipelineBuilder(app)
-                .UseStage(async (msg, context, next) =>
-                {
-
-                });
-        }
-
         [GuildOnly, Command("createcommand")]
         public async Task NewCustomCommandAsync(IContext e)
         {

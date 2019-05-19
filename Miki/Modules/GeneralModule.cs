@@ -25,6 +25,8 @@ using System.Reflection;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
 using Miki.Attributes;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands.Nodes;
 
 namespace Miki.Modules
 {
@@ -265,92 +267,92 @@ namespace Miki.Modules
             .ToEmbed().QueueAsync(e.GetChannel());
         }
 
-		//[Command("help")]
-		//public async Task HelpAsync(IContext e)
-		//{
-		//	if (e.GetArgumentPack().Take(out string arg))
-		//	{
-		//		CommandEvent ev = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands
-		//			.FirstOrDefault(x => x.Name.ToLower() == arg.ToString().ToLower());
+        [Command("help")]
+        public async Task HelpAsync(IContext e)
+        {
+            var commandTree = e.GetService<CommandTree>();
 
-		//		if (ev == null)
-		//		{
-  //                  var context = e.GetService<MikiDbContext>();
+            if (e.GetArgumentPack().Take(out string arg))
+            {
+                var command = commandTree.GetCommand(new ArgumentPack(arg.Split(' ')));
+                string prefix = ">"; // TODO
 
-  //                  EmbedBuilder helpListEmbed = new EmbedBuilder();
-  //                      helpListEmbed.Title = e.GetLocale().GetString("miki_module_help_error_null_header");
+                if (command == null)
+                {
+                    var helpListEmbed = new EmbedBuilder();
+                    helpListEmbed.Title = e.GetLocale().GetString("miki_module_help_error_null_header");
+                    helpListEmbed.Description = e.GetLocale().GetString("miki_module_help_error_null_message", prefix);
+                    helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
-  //                      helpListEmbed.Description = e.GetLocale().GetString("miki_module_help_error_null_message", 
-  //                          await e.EventSystem.GetDefaultPrefixTrigger()
-  //                              .GetForGuildAsync(context, e.GetService<ICacheClient>(), e.GetGuild().Id));
+                    var allExecutables = (await commandTree.Root.GetAllExecutableAsync(e)).ToArray();
+                    var comparer = new API.StringComparison.StringComparer(allExecutables.SelectMany(node => node.Metadata.Identifiers));
+                    var best = comparer.GetBest(arg);
 
-  //                      helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
+                    helpListEmbed.AddField(e.GetLocale().GetString("miki_module_help_didyoumean"), best.text);
 
-  //                      API.StringComparison.StringComparer comparer = new API.StringComparison.StringComparer(e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Commands.Select(x => x.Name));
-  //                      API.StringComparison.StringComparison best = comparer.GetBest(arg);
+                    await helpListEmbed.ToEmbed()
+                        .QueueAsync(e.GetChannel());
+                }
+                else
+                {
+                    if (!(await command.ValidateRequirementsAsync(e)))
+                    {
+                        return;
+                    }
 
-  //                      helpListEmbed.AddField(e.GetLocale().GetString("miki_module_help_didyoumean"), best.text);
+                    var commandId = command.Metadata.Identifiers.First();
 
-  //                      await helpListEmbed.ToEmbed()
-  //                          .QueueToChannelAsync(e.GetChannel());
-		//		}
-		//		else
-		//		{
-		//			if (await e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e) < ev.Accessibility)
-		//			{
-		//				return;
-		//			}
+                    EmbedBuilder explainedHelpEmbed = new EmbedBuilder()
+                        .SetTitle(commandId.ToUpper());
 
-		//			EmbedBuilder explainedHelpEmbed = new EmbedBuilder()
-		//				.SetTitle(ev.Name.ToUpper());
+                    if (command.Metadata.Identifiers.Count > 1)
+                    {
+                        explainedHelpEmbed.AddInlineField(
+                            e.GetLocale().GetString("miki_module_general_help_aliases"),
+                            string.Join(", ", command.Metadata.Identifiers.Skip(1)));
+                    }
 
-		//			if (ev.Aliases.Length > 0)
-		//			{
-		//				explainedHelpEmbed.AddInlineField(
-		//					e.GetLocale().GetString("miki_module_general_help_aliases"),
-		//					string.Join(", ", ev.Aliases));
-		//			}
+                    explainedHelpEmbed.AddField
+                    (
+                        e.GetLocale().GetString("miki_module_general_help_description"),
+                        e.GetLocale().GetString("miki_command_description_" + commandId.ToLower()) ?? e.GetLocale().GetString("miki_placeholder_null"));
 
-		//			explainedHelpEmbed.AddField
-		//			(
-		//				e.GetLocale().GetString("miki_module_general_help_description"),
-		//				e.GetLocale().HasString("miki_command_description_" + ev.Name.ToLower())
-		//					? e.GetLocale().GetString("miki_command_description_" + ev.Name.ToLower())
-		//					: e.GetLocale().GetString("miki_placeholder_null"));
+                    explainedHelpEmbed.AddField(
+                        e.GetLocale().GetString("miki_module_general_help_usage"),
+                        e.GetLocale().GetString("miki_command_usage_" + commandId.ToLower()) ?? e.GetLocale().GetString("miki_placeholder_null"));
 
-		//			explainedHelpEmbed.AddField(
-		//				e.GetLocale().GetString("miki_module_general_help_usage"),
-		//				e.GetLocale().HasString("miki_command_usage_" + ev.Name.ToLower())
-		//					? e.GetLocale().GetString("miki_command_usage_" + ev.Name.ToLower()) : e.GetLocale().GetString("miki_placeholder_null"));
+                    await explainedHelpEmbed.ToEmbed().QueueAsync(e.GetChannel());
+                }
+                return;
+            }
 
-  //                  await explainedHelpEmbed.ToEmbed().QueueToChannelAsync(e.GetChannel());
-		//		}
-		//		return;
-		//	}
+            await new EmbedBuilder()
+            {
+                Description = e.GetLocale().GetString("miki_module_general_help_dm"),
+                Color = new Color(0.6f, 0.6f, 1.0f)
+            }.ToEmbed().QueueAsync(e.GetChannel());
 
-  //          await new EmbedBuilder()
-		//	{
-		//		Description = e.GetLocale().GetString("miki_module_general_help_dm"),
-		//		Color = new Color(0.6f, 0.6f, 1.0f)
-		//	}.ToEmbed().QueueToChannelAsync(e.GetChannel());
+            var embedBuilder = new EmbedBuilder();
 
-		//	EmbedBuilder embedBuilder = new EmbedBuilder();
+            foreach (var nodeModule in commandTree.Root.Children.OfType<NodeModule>())
+            {
+                var id = nodeModule.Metadata.Identifiers.First();
+                var executables = (await nodeModule.GetAllExecutableAsync(e)).ToArray();
+                var moduleCommands = executables
+                    .Where(node => node.Parent == nodeModule)
+                    .Select(node => '`' + node.Metadata.Identifiers.First() + '`')
+                    .ToArray();
 
-		//	foreach (Miki.Framework.Events.Module m in e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.OrderBy(x => x.Name))
-		//	{
-		//		List<CommandEvent> events = m.Events
-		//			.Where(x => e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(e).Result >= x.Accessibility).ToList();
+                if (moduleCommands.Length > 0)
+                {
+                    embedBuilder.AddField(id.ToUpper(), string.Join(", ", moduleCommands));
+                }
+            }
 
-		//		if (events.Count > 0)
-		//		{
-		//			embedBuilder.AddField(m.Name.ToUpper(), string.Join(", ", events.Select(x => "`" + x.Name + "`")));
-		//		}
-		//	}
+            await embedBuilder.ToEmbed().QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
+        }
 
-  //          await embedBuilder.ToEmbed().QueueToChannelAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
-		//}
-
-		[Command("donate")]
+        [Command("donate")]
 		public async Task DonateAsync(IContext e)
 		{
             await new EmbedBuilder()

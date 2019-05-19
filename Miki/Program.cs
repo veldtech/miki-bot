@@ -44,14 +44,30 @@ namespace Miki
 {
     public class Program
     {
-        private static async Task Main()
+        private static async Task Main(string[] args)
         {
+            // Migrate the database if the program was started with the argument '--migrate' or '-m'.
+            if (args.Any(x => x.ToLowerInvariant() == "--migrate" || x.ToLowerInvariant() == "-m"))
+            {
+                try
+                {
+                    await new MikiDbContextFactory().CreateDbContext().Database.MigrateAsync();
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("Failed to migrate the database: " + ex.Message);
+                    Log.Debug(ex.ToString());
+                    Console.ReadKey();
+                    return;
+                }
+            }
+
+            // Start the bot.
             var appBuilder = new MikiAppBuilder();
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
-            var cmdTree = await BuildCommandMapAsync(app);
-            var commands = BuildPipeline(app, cmdTree);
+            var commands = BuildPipeline(app);
             await LoadDiscordAsync(app, commands);
             await LoadFiltersAsync(app, commands);
             LoadLocales(commands);
@@ -63,20 +79,17 @@ namespace Miki
             await Task.Delay(-1);
         }
 
-        private static async Task<CommandTree> BuildCommandMapAsync(MikiApp app)
+        private static CommandTree BuildCommandMap(ConfigurationManager config)
         {
-            CommandTreeBuilder commandBuilder = new CommandTreeBuilder();
+            var commandBuilder = new CommandTreeBuilder();
             commandBuilder.OnContainerLoaded += (c) =>
             {
-                var config = app.GetService<ConfigurationManager>();
                 config.RegisterType(c.GetType(), c.Instance);
-                return Task.CompletedTask;
             };
-            return await commandBuilder
-                .CreateAsync(Assembly.GetEntryAssembly());
+            return commandBuilder.Create(Assembly.GetEntryAssembly());
         }
 
-        private static CommandPipeline BuildPipeline(MikiApp app, CommandTree map)
+        private static CommandPipeline BuildPipeline(MikiApp app)
             => new CommandPipelineBuilder(app)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
@@ -90,7 +103,7 @@ namespace Miki
                 )
                 .UseLocalization()
                 .UseArgumentPack()
-                .UseCommandHandler(map)
+                .UseCommandHandler(app.GetService<CommandTree>())
                 .UseStates()
                 .UsePermissions()
                 .Build();
@@ -224,6 +237,11 @@ namespace Miki
                 {
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
+            }
+
+            // Setup commands
+            {
+                app.AddSingletonService<CommandTree>(provider => BuildCommandMap(provider.GetService<ConfigurationManager>()));
             }
         }
 
