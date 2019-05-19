@@ -4,4 +4,4 @@
 [submodule "Miki.Framework"]
 	path = Miki.Framework
 	url = https://github.com/Senkobot/Senko.Framework
-	branch = core-rewrite-
+	branch = senko

@@ -25,6 +25,7 @@ using System.Reflection;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
 using Miki.Attributes;
+using Miki.Discord.Rest.Exceptions;
 using Miki.Framework.Arguments;
 using Miki.Framework.Commands.Nodes;
 
@@ -326,12 +327,6 @@ namespace Miki.Modules
                 return;
             }
 
-            await new EmbedBuilder()
-            {
-                Description = e.GetLocale().GetString("miki_module_general_help_dm"),
-                Color = new Color(0.6f, 0.6f, 1.0f)
-            }.ToEmbed().QueueAsync(e.GetChannel());
-
             var embedBuilder = new EmbedBuilder();
 
             foreach (var nodeModule in commandTree.Root.Children.OfType<NodeModule>())
@@ -346,7 +341,28 @@ namespace Miki.Modules
                 }
             }
 
-            await embedBuilder.ToEmbed().QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
+            await embedBuilder.ToEmbed()
+                .QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K")
+                .Then(msg =>
+                {
+                    var embed = new EmbedBuilder
+                        {
+                            Description = e.GetLocale().GetString("miki_module_general_help_dm"),
+                            Color = new Color(0.6f, 0.6f, 1.0f)
+                        }
+                        .ToEmbed();
+
+                    return embed.QueueAsync(e.GetChannel());
+                })
+                .Catch(args =>
+                {
+                    // The bot doesn't have access to the DMs because the author didn't add 2FA or the user blocks DMs.
+                    // Send it in the channel instead.
+
+                    args.LogException = false;
+
+                    return args.Reference.RequeueAsync(e.GetChannel());
+                });
         }
 
         [Command("donate")]
@@ -399,11 +415,11 @@ namespace Miki.Modules
 		[Command("ping", "lag")]
 		public async Task PingAsync(IContext e)
 		{
-            (await new LocalizedEmbedBuilder(e.GetLocale())
+            await new LocalizedEmbedBuilder(e.GetLocale())
 				  .WithTitle(new RawResource("Ping"))
 				  .WithDescription("ping_placeholder")
 				  .Build()
-				  .QueueAsync(e.GetChannel()))
+				  .QueueAsync(e.GetChannel())
 				  .ThenWait(200)
 				  .Then(async x =>
 				  {
