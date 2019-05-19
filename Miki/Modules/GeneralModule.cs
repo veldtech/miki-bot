@@ -284,7 +284,7 @@ namespace Miki.Modules
                     helpListEmbed.Description = e.GetLocale().GetString("miki_module_help_error_null_message", prefix);
                     helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
-                    var allExecutables = (await commandTree.Root.GetAllExecutableAsync(e)).ToArray();
+                    var allExecutables = await commandTree.Root.GetAllExecutableAsync(e);
                     var comparer = new API.StringComparison.StringComparer(allExecutables.SelectMany(node => node.Metadata.Identifiers));
                     var best = comparer.GetBest(arg);
 
@@ -337,15 +337,12 @@ namespace Miki.Modules
             foreach (var nodeModule in commandTree.Root.Children.OfType<NodeModule>())
             {
                 var id = nodeModule.Metadata.Identifiers.First();
-                var executables = (await nodeModule.GetAllExecutableAsync(e)).ToArray();
-                var moduleCommands = executables
-                    .Where(node => node.Parent == nodeModule)
-                    .Select(node => '`' + node.Metadata.Identifiers.First() + '`')
-                    .ToArray();
+                var executables = await nodeModule.GetAllExecutableAsync(e);
+                var commandNames = string.Join(", ", executables.Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
 
-                if (moduleCommands.Length > 0)
+                if (!string.IsNullOrEmpty(commandNames))
                 {
-                    embedBuilder.AddField(id.ToUpper(), string.Join(", ", moduleCommands));
+                    embedBuilder.AddField(id.ToUpper(), commandNames);
                 }
             }
 
