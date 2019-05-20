@@ -39,6 +39,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
+using Miki.Languages;
 
 namespace Miki
 {
@@ -107,6 +108,9 @@ namespace Miki
                 .UsePermissions()
                 .Build();
 
+
+        public static Type FallbackLocaleType = typeof(eng);
+		
         private static void LoadLocales(CommandPipeline app)
         {
             string nameSpace = "Miki.Languages";
@@ -116,36 +120,50 @@ namespace Miki
                 .Where(t => t.IsClass && t.Namespace == nameSpace);
 
             var locale = app.PipelineStages
-                .Where(x => x is LocalizationPipelineStage)
-                .Select(x => x as LocalizationPipelineStage)
+                .OfType<LocalizationPipelineStage>()
                 .FirstOrDefault();
 
-            foreach (var t in typeList)
+			LoadLocale(locale, FallbackLocaleType);
+
+            foreach (var t in typeList.Where(t => t != FallbackLocaleType))
             {
-                try
-                {
-                    string languageName = t.Name.ToLowerInvariant();
-
-                    ResourceManager resources = new ResourceManager(
-                        $"Miki.Languages.{languageName}",
-                        t.Assembly);
-
-                    IResourceManager resourceManager = new ResxResourceManager(
-                        resources);
-
-                    locale.LoadLanguage(
-                        languageName,
-                        resourceManager,
-                        resourceManager.GetString("current_language_name"));
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"Language {t.Name} did not load correctly");
-                    Log.Debug(ex.ToString());
-                }
+	            LoadLocale(locale, t);
             }
 
-            locale.SetDefaultLanguage(Global.Config.DefaultLanguage);
+			locale.SetDefaultLanguage(Global.Config.DefaultLanguage);
+        }
+		
+		private static void LoadLocale(LocalizationPipelineStage pipeLine, Type type)
+        {
+	        try
+	        {
+		        string languageName = type.Name.ToLowerInvariant();
+
+		        ResourceManager resources = new ResourceManager(
+			        $"Miki.Languages.{languageName}",
+			        type.Assembly);
+
+		        IResourceManager resourceManager = new ResxResourceManager(resources);
+
+		        if (type != FallbackLocaleType)
+		        {
+					resourceManager = new AggregateResourceManager(
+						resourceManager,
+						LanguageDatabase.GetLanguageOrDefault(FallbackLocaleType.Name.ToLowerInvariant())
+					);
+		        }
+
+		        pipeLine.LoadLanguage(
+			        languageName,
+			        resourceManager,
+			        resourceManager.GetString("current_language_name")
+			    );
+	        }
+	        catch (Exception ex)
+	        {
+		        Log.Error($"Language {type.Name} did not load correctly");
+		        Log.Debug(ex.ToString());
+	        }
         }
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
