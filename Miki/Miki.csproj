@@ -4,9 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Configurations>Debug;Release;Debug Production;Prod</Configurations>
-	<Deterministic>False</Deterministic>
-	<Version>2019.2</Version>
-	<AssemblyVersion>2019.2.0.0</AssemblyVersion>
+	  <Deterministic>False</Deterministic>
+	  <Version>2019.2</Version>
+	  <AssemblyVersion>2019.2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -50,16 +50,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj" />
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj" />
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Commands.States\Miki.Framework.Commands.States.csproj" />
-    <ProjectReference Include="..\..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands.States\Miki.Framework.Commands.States.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\Miki.Bot.Models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\Miki.Framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj" />
-    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
+    <ProjectReference Include="..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
     <ProjectReference Include="..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
   </ItemGroup>
 
