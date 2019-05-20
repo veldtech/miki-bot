@@ -55,9 +55,8 @@ namespace Miki
                 }
                 catch(Exception ex)
                 {
-                    Log.Error("Failed to migrate the database: " + ex.Message);
-                    Log.Debug(ex.ToString());
-                    Console.ReadKey();
+                    Console.WriteLine("Failed to migrate the database: " + ex.Message);
+                    Console.WriteLine(ex.ToString());
                     return;
                 }
             }
@@ -146,7 +145,7 @@ namespace Miki
                 }
             }
 
-            locale.SetDefaultLanguage("eng");
+            locale.SetDefaultLanguage(Global.Config.DefaultLanguage);
         }
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)

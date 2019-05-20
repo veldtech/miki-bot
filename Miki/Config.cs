@@ -114,5 +114,8 @@ namespace Miki
 
         [JsonProperty("bunny_cdn_key")]
         public string BunnyCdnKey { get; internal set; }
-    }
+
+        [JsonProperty("default_language")]
+		public string DefaultLanguage { get; internal set; } = "eng";
+	}
 }
