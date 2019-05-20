@@ -20,10 +20,10 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("Marriage")]
+    [Module("Trouwen")]
 	public class MarriageModule
     {
-        [Command("buymarriageslot")]
+        [Command("buymarriageslot","kooptrouwslot")]
         public async Task BuyMarriageSlotAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -44,8 +44,8 @@ namespace Miki.Modules
 
                 if (limit == 10 && !isDonator)
                 {
-                    embed.AddField("Pro tip!", "Donators get 5 more slots!")
-                        .SetFooter("Check `>donate` for more information!");
+                    embed.AddField("Pro tip!", "Donators krijgen 5 meer trouw slots!")
+                        .SetFooter("Doe `>donate` voor meer informatie!");
                 }
 
                 embed.Color = new Color(1f, 0.6f, 0.4f);
@@ -67,7 +67,7 @@ namespace Miki.Modules
             await context.SaveChangesAsync();
         }
 
-        [Command("acceptmarriage")]
+        [Command("IkWil")]
         public async Task AcceptMarriageAsync(IContext e)
         {
             IDiscordUser user = await DiscordExtensions.GetUserAsync(e.GetArgumentPack().Pack.TakeAll(), e.GetGuild());
@@ -79,7 +79,7 @@ namespace Miki.Modules
 
             if (user.Id == e.GetAuthor().Id)
             {
-                await e.ErrorEmbed("Please mention someone else than yourself.")
+                await e.ErrorEmbed("Mention alsjeblieft iemand anders dan jezelf.")
                     .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
@@ -107,7 +107,7 @@ namespace Miki.Modules
 
                 if (marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
                 {
-                    e.GetChannel().QueueMessage($"You can not accept your own responses!");
+                    e.GetChannel().QueueMessage($"Je kunt je eigen huwelijk niet accepteren gekkie!");
                     return;
                 }
 
@@ -119,25 +119,25 @@ namespace Miki.Modules
 
                     await new EmbedBuilder()
                     {
-                        Title = ("❤️ Happily married"),
+                        Title = ("❤️ Gelukkig getrouwt"),
                         Color = new Color(190, 25, 49),
-                        Description = ($"Much love to { e.GetAuthor().Username } and { user.Username } in their future adventures together!")
+                        Description = ($"Veel geluk samen { e.GetAuthor().Username } en { user.Username } mogen jullie nog lang en gelukkig samen zijn!")
                     }.ToEmbed().QueueAsync(e.GetChannel());
                 }
                 else
                 {
-                    await e.ErrorEmbed("You're already married to this person ya doofus!")
+                    await e.ErrorEmbed("Jij bent al getrouwt met deze persoon gekkie!")
                         .ToEmbed().QueueAsync(e.GetChannel());
                 }
             }
             else
             {
-                e.GetChannel().QueueMessage("This user hasn't proposed to you!");
+                e.GetChannel().QueueMessage("Dit lid heeft jou geen aanzoek gedaan!");
                 return;
             }
         }
 
-        [Command("cancelmarriage")]
+        [Command("sorry")]
         public async Task CancelMarriageAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -161,8 +161,8 @@ namespace Miki.Modules
 
                 await new EmbedBuilder()
                 {
-                    Title = $"💔 You took back your proposal to {otherName}!",
-                    Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
+                    Title = $"💔 Je hebt {otherName}'s verzoek afgewezen!",
+                    Description = $"Aww, geen zorgen {otherName}. Er zijn nog genoeg vissen in de zee!",
                     Color = new Color(231, 90, 112)
                 }.ToEmbed().QueueAsync(e.GetChannel());
 
@@ -175,10 +175,10 @@ namespace Miki.Modules
 
                 var embed = new EmbedBuilder()
                 {
-                    Title = "💍 Proposals",
+                    Title = "💍 Verzoeken",
                     Footer = new EmbedFooter()
                     {
-                        Text = $"Use {e.GetPrefixMatch()}cancelmarriage <number> to decline",
+                        Text = $"Gebreuk {e.GetPrefixMatch()}cancelmarriage <nummer> om te annuleren",
                     },
                     Color = new Color(154, 170, 180)
                 };
@@ -190,7 +190,7 @@ namespace Miki.Modules
             }
         }
 
-		[Command("declinemarriage")]
+		[Command("AnnuleerTrouw")]
 		public async Task DeclineMarriageAsync(IContext e)
 		{
             var context = e.GetService<MikiDbContext>();
@@ -215,8 +215,8 @@ namespace Miki.Modules
 
 					await new EmbedBuilder()
 					{
-						Title = $"🔫 You shot down {otherName}!",
-						Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
+						Title = $"🔫 Je hebt {otherName} afgewezen!",
+						Description = $"Aww, maak je maar geen zorgen {otherName}. Er zijn nog genoeg vissen in de zee!",
 						Color = new Color(191, 105, 82)
 					}.ToEmbed().QueueAsync(e.GetChannel());
 
@@ -229,10 +229,10 @@ namespace Miki.Modules
 
                     var embed = new EmbedBuilder()
 					{
-						Title = "💍 Proposals",
+						Title = "💍 Verzoeken",
 						Footer = new EmbedFooter()
 						{
-							Text = $"Use {e.GetPrefixMatch()}declinemarriage <number> to decline",
+							Text = $"Gebreuk {e.GetPrefixMatch()}declinemarriage <nummer> om te annuleren",
 						},
 						Color = new Color(154, 170, 180)
 					};
@@ -242,7 +242,8 @@ namespace Miki.Modules
 				}
 		}
 
-        [Command("divorce")]
+ 
+        [Command("vaarwel","divorce")]
         public async Task DivorceAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -280,10 +281,10 @@ namespace Miki.Modules
 
                 var embed = new EmbedBuilder()
                 {
-                    Title = "💍 Marriages",
+                    Title = "💍 Huwelijken",
                     Footer = new EmbedFooter()
                     {
-                        Text = $"Use {e.GetPrefixMatch()}divorce <number> to decline",
+                        Text = $"Doe {e.GetPrefixMatch()}vaarwel <nummer> om te sheiden",
                     },
                     Color = new Color(154, 170, 180)
                 };
@@ -293,7 +294,7 @@ namespace Miki.Modules
             }
         }
 
-        [Command("marry")]
+        [Command("marry","trouw")]
         public async Task MarryAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string args))
@@ -305,7 +306,7 @@ namespace Miki.Modules
 
             if (user == null)
             {
-                e.GetChannel().QueueMessage("Couldn't find this person..");
+                e.GetChannel().QueueMessage("Ik kon deze persoon niet vinden..");
                 return;
             }
 
@@ -327,13 +328,13 @@ namespace Miki.Modules
 
             if (currentUser == null || mentionedPerson == null)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_accounts_marry_error_null")).ToEmbed().QueueAsync(e.GetChannel());
+                await e.ErrorEmbed(e.GetLocale().GetString("Shiro_module_account_trouwen_error_null")).ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
             if (await mentionedPerson.IsBannedAsync(context))
             {
-                await e.ErrorEmbed("This person has been banned from Miki.").ToEmbed().QueueAsync(e.GetChannel());
+                await e.ErrorEmbed("Deze persoon is verbannen van Miki's database.").ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
 
@@ -358,9 +359,9 @@ namespace Miki.Modules
                 .SetDescription(e.GetLocale().GetString("miki_module_accounts_marry_text2", user.Username, e.GetAuthor().Username))
                 .SetColor(0.4f, 0.4f, 0.8f)
                 .SetThumbnail("https://i.imgur.com/TKZSKIp.png")
-                .AddInlineField("✅ To accept", $">acceptmarriage @user")
-                .AddInlineField("❌ To decline", $">declinemarriage @user")
-                .SetFooter("Take your time though! This proposal won't disappear", "")
+                .AddInlineField("✅ Om te accepeteren", $">Ikwil @user")
+                .AddInlineField("❌ Om te weigeren", $">Sorry @user")
+                .SetFooter("Neem gerust je tijd! Dit aanzoek zal niet verdwijnen!", "")
                 .ToEmbed().QueueAsync(e.GetChannel());
         }
 
@@ -394,11 +395,11 @@ namespace Miki.Modules
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetTitle(e.GetAuthor().Username)
-                .SetDescription("Here it shows both the people who you've proposed to and who have proposed to you.");
+                .SetDescription("Hier zie je de mensen zien waardat jij mee wou trouwen net zoals je hier ook kunt zien wie dat er met jou wou trouwen.");
 
             string output = string.Join("\n", proposalNames);
 
-            embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
+            embed.AddField("Aanzoek aangekregen!", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
             proposals = await repository.GetProposalsSent(e.GetAuthor().Id.ToDbLong());
             proposalNames = new List<string>();

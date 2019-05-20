@@ -19,7 +19,7 @@ using Miki.Framework.Commands.Nodes;
 
 namespace Miki.Modules
 {
-	[Module("Donator")]
+	[Module("Doneren")]
 	internal class DonatorModule
 	{
         private readonly RestClient client;

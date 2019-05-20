@@ -65,7 +65,7 @@ namespace Miki.Modules.AccountsModule
             }
             else
             {
-                Log.Warning("Image API can not be loaded in AccountsModule");
+                Log.Warning("Afbeelding API kan niet worden geladen in AccountsModule");
             }
 
             AchievementsService = new AchievementsService();
@@ -113,11 +113,11 @@ namespace Miki.Modules.AccountsModule
 
 				if (string.IsNullOrEmpty(leftBuilder.ToString()))
 				{
-					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
+					embed.AddInlineField("Totaale Pts: " + totalScore.ToFormattedString(), "Nog, niet.");
 				}
 				else
 				{
-					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
+					embed.AddInlineField("Totaale Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
 				}
 
 				await embed.ToEmbed().QueueAsync(e.GetChannel());
@@ -129,7 +129,7 @@ namespace Miki.Modules.AccountsModule
 			Stream s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
 			if (s == null)
 			{
-				await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
+				await e.ErrorEmbed("Afbeelding generation API reageerde niet. Dit is een fout, report dit alsjeblieft.")
 					.ToEmbed().QueueAsync(e.GetChannel());
 				return;
 			}
@@ -241,7 +241,7 @@ namespace Miki.Modules.AccountsModule
                 .QueueAsync(e.GetChannel());
         }
 
-        [Command("profile")]
+        [Command("profile","profiel")]
         public async Task ProfileAsync(IContext e)
         {
             var timer = Stopwatch.StartNew();
@@ -748,7 +748,7 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        [Command("syncname")]
+        [Command("syncname","HoiSenko")]
         public async Task SyncNameAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -851,7 +851,7 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-        [Command("daily")]
+        [Command("daily","dagelijks")]
         public async Task GetDailyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();

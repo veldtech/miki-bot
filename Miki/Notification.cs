@@ -38,8 +38,8 @@ namespace Miki
 		private static DiscordEmbed CreateAchievementEmbed(IAchievement baseAchievement, IDiscordUser user)
 		{
 			return new EmbedBuilder()
-				.SetTitle("Achievement Unlocked")
-				.SetDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** has unlocked the achievement **{baseAchievement.Name}**! {baseAchievement.Icon}").ToEmbed();
+				.SetTitle("Achievement gekregen!")
+				.SetDescription($"{baseAchievement.Icon} **{user.Username}#{user.Discriminator}** heeft de achievement **{baseAchievement.Name}** gekregen! {baseAchievement.Icon}").ToEmbed();
 		}
 	}
 }

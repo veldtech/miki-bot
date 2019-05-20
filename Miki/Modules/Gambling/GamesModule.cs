@@ -22,10 +22,10 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("Gambling")]
+    [Module("Gok spelletjes")]
     public class GamblingModule
     {
-        [Command("rps")]
+        [Command("SPS")]
         class RPSCommand
         {
             [Command]
@@ -40,19 +40,19 @@ namespace Miki.Modules
 
                 if (e.GetArgumentPack().Pack.Length < 2)
                 {
-                    await e.ErrorEmbed("You need to choose a weapon!")
+                    await e.ErrorEmbed("Je moet een wapen kiezen!")
                         .ToEmbed().QueueAsync(e.GetChannel());
                 }
 
                 RPSManager rps = RPSManager.Instance;
                 EmbedBuilder resultMessage = new EmbedBuilder()
-                    .SetTitle("Rock, Paper, Scissors!");
+                    .SetTitle("Steen, Papier, Schaar!");
 
                 e.GetArgumentPack().Take(out string weapon);
 
                 if (!rps.TryParse(weapon, out RPSWeapon playerWeapon))
                 {
-                    await resultMessage.SetDescription("Invalid weapon!").ToEmbed()
+                    await resultMessage.SetDescription("Dat is geen wapen!").ToEmbed()
                         .QueueAsync(e.GetChannel());
                     return;
                 }
@@ -70,7 +70,7 @@ namespace Miki.Modules
                             await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.GetChannel());
                             await context.SaveChangesAsync();
                         }
-                        resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier)}` mekos! Your new balance is `{user.Currency}`.";
+                        resultMessage.Description += $"\n\nJe hebt `{(int)(bet * rewardMultiplier)}` mekos gewonnen! Nu heb je in totaal `{user.Currency}` mekos.";
                     }
                     break;
 
@@ -82,13 +82,13 @@ namespace Miki.Modules
                             await context.SaveChangesAsync();
                         }
 
-                        resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
+                        resultMessage.Description += $"\n\nJe hebt `{bet}` mekos verloren! Nu heb je in totaal `{user.Currency}`mekos.";
                     }
                     break;
 
                     case RPSManager.VictoryStatus.DRAW:
                     {
-                        resultMessage.Description += $"\n\nIt's a draw! no mekos were lost!.";
+                        resultMessage.Description += $"\n\nHet is gelijk spel! Geen mekos gingen verloren!.";
                     }
                     break;
                 }

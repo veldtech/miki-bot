@@ -31,7 +31,7 @@ namespace Miki.Modules.CustomCommands
     {
         private readonly Tokenizer _tokenizer = new Tokenizer();
 
-        [GuildOnly, Command("createcommand")]
+        [GuildOnly, Command("maakcommand", "makecommand")]
         public async Task NewCustomCommandAsync(IContext e)
         {
             if(e.GetArgumentPack().Take(out string commandName))
@@ -101,7 +101,7 @@ namespace Miki.Modules.CustomCommands
             }
         }
 
-        [GuildOnly, Command("removecommand")]
+        [GuildOnly, Command("verwijdercommand", "removecommand")]
         public async Task RemoveCommandAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
