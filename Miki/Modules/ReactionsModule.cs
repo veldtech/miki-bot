@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("reactions")]
+	[Module("Reacties")]
 	public class ReactionsModule
 	{
 		readonly string[] confusedImages = new string[]
@@ -220,7 +220,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/rmfWuM0.gif"
 		};
 
-		[Command("confused")]
+		[Command("confused", "verward", "shy", "verlegen")]
 		public async Task ConfusedAsync(IContext e)
 		{
             await new EmbedBuilder()
@@ -256,7 +256,7 @@ namespace Miki.Modules
 			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		[Command("cry")]
+		[Command("cry","huil","ween","huilt","crying")]
 		public async Task CryAsync(IContext e)
 		{
             await new EmbedBuilder()
@@ -265,7 +265,7 @@ namespace Miki.Modules
 			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		[Command("stare")]
+		[Command("stare","staar")]
 		public async Task StareAsync(IContext e)
 		{
             await new EmbedBuilder()

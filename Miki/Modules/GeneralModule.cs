@@ -31,7 +31,7 @@ using Miki.Framework.Commands.Nodes;
 
 namespace Miki.Modules
 {
-	[Module("General")]
+	[Module("Algemeen")]
 	internal class GeneralModule
 	{
    		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
@@ -342,7 +342,7 @@ namespace Miki.Modules
             }
 
             await embedBuilder.ToEmbed()
-                .QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K")
+                .QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Hoi ik ben **Senko**! :wave:\n\nEn ik ben hier om jou te helpen!\nOnderaan heb ik een lijstje voor jou klaar staan met alles wat ik kan! \n\n**:scroll: Informatie**\n\n Terwijl dat jij \n\n• Senko word constant geupdate en verbeterd!\n• NSFW commando's kunnen alleen in NSFW channels worden gebreukt.\n• Je kunt altijd aan de staff vragen om nieuwe \n\n**:link: Linkjes** \n\n• Discord: <https://discord.gg/bAzdjdp>\n• Facebook: <https://bit.ly/AnimeFansNederlandFacebook> \n\n**:sparkling_heart:\n\nVerdere hulp**\n\nStiekem ben ik eigenlijk het kleine zusje van de bot Miki!\nJoin Miki's support server voor verdere hulp: <https://bit.ly/MikiSupport>")
                 .Then(msg =>
                 {
                     var embed = new EmbedBuilder
@@ -370,12 +370,12 @@ namespace Miki.Modules
 		{
             await new EmbedBuilder()
 			{
-				Title = "Hi everyone!",
+				Title = "Hoi allemaal!",
 				Description = e.GetLocale().GetString("miki_module_general_info_donate_string"),
 				Color = new Color(0.8f, 0.4f, 0.4f),
 				ThumbnailUrl = "https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png",
-			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
-			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
+			}.AddField("Linkjes", "https://www.patreon.com/mikibot - als je elke maand zou willen doneren en coole prijzen zou willen!\nhttps://ko-fi.com/velddy - Voor een eenmalige donatie!", true)
+			.AddField("Heb je niet zoveel geld?", "Je kunt ons ook op andere manieren supporteren! Doe alsjeblieft mee aan onze [VoteIdeeën](https://suggestions.miki.ai/) Zodat wij een betere grip kunnen krijgen van wat jullie willen! Of vote voor Miki op [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
 			.ToEmbed().QueueAsync(e.GetChannel());
 		}
 

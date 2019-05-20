@@ -30,7 +30,7 @@ namespace Miki.Modules.Accounts.Services
 				{
 					new AchievementAchievement()
 					{
-						Name = "Underachiever",
+						Name = "Onderachiever",
 						Icon = "🖍",
 						CheckAchievement = async (p) =>
 						{
@@ -81,7 +81,7 @@ namespace Miki.Modules.Accounts.Services
 					// Win a lottery > 100k
 					new ManualAchievement()
 					{
-						Name = "Celebrator",
+						Name = "Feestjes Vierder",
 						Icon = "🍺",
 						Points = 5,
 					},
@@ -109,7 +109,7 @@ namespace Miki.Modules.Accounts.Services
                 {
                     new CommandAchievement()
                     {
-                        Name = "Informed",
+                        Name = "Computer Nerd",
                         Icon = "📚",
 
                         CheckCommand = async (p) =>
@@ -128,7 +128,7 @@ namespace Miki.Modules.Accounts.Services
 				{
 					new CommandAchievement()
 					{
-						Name = "Lonely",
+						Name = "Eenzaam en alleen",
 						Icon = "😭",
 
 						CheckCommand = async (p) =>
@@ -159,12 +159,12 @@ namespace Miki.Modules.Accounts.Services
 			});
 			AchievementDataContainer NoPermissionAchievement = new AchievementDataContainer(x =>
 			 {
-				 x.Name = "noperms";
+				 x.Name = "Geen permissie";
 				 x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
-						Name = "NO! Don't touch that!",
+						Name = "NEE! Blijf daar van af!",
 						Icon = "😱",
 						CheckCommand = async (p) =>
 						{
@@ -183,42 +183,42 @@ namespace Miki.Modules.Accounts.Services
 				 {
 					new LevelAchievement()
 					{
-						Name = "Novice",
+						Name = "Leuke loli",
 						Icon = "🎟",
 						CheckLevel = async (p) => p.level >= 3,
 						Points = 5,
 					},
 					new LevelAchievement()
 					{
-						Name = "Intermediate",
+						Name = "Top gozer",
 						Icon = "🎫",
 						CheckLevel = async (p) => p.level >= 5,
 						Points = 10,
 					},
 					new LevelAchievement()
 					{
-						Name = "Experienced",
+						Name = "Leuk persoontje",
 						Icon = "🏵",
 						CheckLevel = async (p) => p.level >= 10,
 						Points = 15,
 					},
 					new LevelAchievement()
 					{
-						Name = "Expert",
+						Name = "Super schattig persoontje",
 						Icon = "🎗",
 						CheckLevel = async (p) => p.level >= 20,
 						Points = 20,
 					},
 					new LevelAchievement()
 					{
-						Name = "Sage",
+						Name = "Succesvol persoon",
 						Icon = "🎖",
 						CheckLevel = async (p) => p.level >= 30,
 						Points = 25,
 					},
 					new LevelAchievement()
 					{
-						Name = "Master",
+						Name = "Mawster",
 						Icon = "🏅",
 						CheckLevel = async (p) => p.level >= 50,
 						Points = 30,

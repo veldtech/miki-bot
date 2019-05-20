@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch
 {
-	[Module("Gaming")]
+	[Module("Games")]
 	internal class GamingModule
 	{
 		[Command("osu")]

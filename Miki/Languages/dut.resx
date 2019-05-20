@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="miki_errors_enabled_message" xml:space="preserve">
-    <value>Miki is een probleem in haar code tegengekomen door uw verzoek. We zullen een log en instructies toesturen via PM.</value>
+    <value>Senko is een probleem in haar code tegengekomen door jou verzoek. We zullen een log en instructies toesturen via PM.</value>
     <comment>This message is sent when miki catches a uncaught error</comment>
   </data>
   <data name="miki_error_message_generic" xml:space="preserve">
@@ -126,14 +126,14 @@
     <comment>When no other error message is appliable to this version</comment>
   </data>
   <data name="miki_join_message" xml:space="preserve">
-    <value>Hallo, ik ben **Miki**! Tot uw dienst! Probeer **&gt;help** om te zien wat ik kan doen! :notes:</value>
+    <value>Hallo, ik ben **Senko**! Tot uw dienst! Probeer **&gt;help** om te zien wat ik kan doen! :notes:</value>
     <comment>This message is called when miki joins a new guild</comment>
   </data>
   <data name="miki_global_profile_user_header" xml:space="preserve">
-    <value>{0}'s globale profiel</value>
+    <value>{0}'s Wereld wijde profiel</value>
   </data>
   <data name="miki_local_profile_user_header" xml:space="preserve">
-    <value>{0}'s lokale profiel</value>
+    <value>{0}'s AnimeFans profiel</value>
   </data>
   <data name="miki_mekos_insufficient" xml:space="preserve">
     <value>Je hebt niet genoeg mekos.</value>
@@ -142,28 +142,28 @@
     <value>✅ je welkomstbericht is verwijderd</value>
   </data>
   <data name="miki_module_eventmessages_set_guildjoin" xml:space="preserve">
-    <value>✅ new welkomstbericht is ingesteld als: `{0}`</value>
+    <value>✅ Het nieuwe welkomstbericht is ingesteld als: `{0}`</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_1" xml:space="preserve">
-    <value>Reken er niet op</value>
+    <value>Reken daar maar niet op</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_2" xml:space="preserve">
-    <value>Mijn antwoord is nee</value>
+    <value>Nee sowwy...</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_3" xml:space="preserve">
-    <value>Mijn bronnen zeggen van niet</value>
+    <value>Ik denk het niet</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_4" xml:space="preserve">
     <value>Het ziet er niet naar uit</value>
   </data>
   <data name="miki_module_fun_8ball_answer_negative_5" xml:space="preserve">
-    <value>Zeer twijfelachtig</value>
+    <value>Dat is zeer twijfelachtig</value>
   </data>
   <data name="miki_module_fun_8ball_answer_neutral_1" xml:space="preserve">
-    <value>Wazig antwoord, probeer nogmaals</value>
+    <value>Ik kom op een erg wazig antwoord uit. probeer het nog eens een keertje!</value>
   </data>
   <data name="miki_module_fun_8ball_answer_neutral_2" xml:space="preserve">
-    <value>Vraag later nog een keer</value>
+    <value>Vraag me dat later nog maar eens een keertje</value>
   </data>
   <data name="miki_module_fun_8ball_answer_neutral_3" xml:space="preserve">
     <value>Dat kan ik je nu beter niet vertellen</value>
@@ -172,7 +172,7 @@
     <value>Dat kan ik nu niet voorspellen</value>
   </data>
   <data name="miki_module_fun_8ball_answer_neutral_5" xml:space="preserve">
-    <value>Concentreer je en vraag het nog een keer</value>
+    <value>Concentreer je en vraag het me nog een keer!</value>
   </data>
   <data name="miki_module_fun_8ball_answer_positive_1" xml:space="preserve">
     <value>Het is zeker</value>
@@ -184,7 +184,7 @@
     <value>Zonder twijfel</value>
   </data>
   <data name="miki_module_fun_8ball_answer_positive_4" xml:space="preserve">
-    <value>Jazeker</value>
+    <value>Jazeker!</value>
   </data>
   <data name="miki_module_fun_8ball_answer_positive_5" xml:space="preserve">
     <value>Reken er maar op</value>
@@ -199,7 +199,7 @@
     <value>Ja</value>
   </data>
   <data name="miki_module_fun_8ball_answer_positive_9" xml:space="preserve">
-    <value>De tekenen zeggen van wel</value>
+    <value>De goden zeggen van wel</value>
   </data>
   <data name="miki_module_fun_compliment_body_1" xml:space="preserve">
     <value>de onderkant van je lip</value>
@@ -570,10 +570,10 @@ pasta hate &lt;sleutelwoord&gt;</value>
 Fuzzy</comment>
   </data>
   <data name="miki_module_fun_8ball_result" xml:space="preserve">
-    <value>🎱 {0}, je vraag is beantwoord `{1}`</value>
+    <value>🎱 {0}... `{1}`</value>
   </data>
   <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
-    <value>Geen afbeeldingen gevonden voor uw zoekopdracht. :(</value>
+    <value>Ik heb geen afbeeldingen gevonden voor jou zoekopdracht. :(</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_pasta_create_error_already_exist" xml:space="preserve">
@@ -595,13 +595,13 @@ Fuzzy</comment>
     <value>Deze pasta bestaat niet!</value>
   </data>
   <data name="miki_module_pasta_error_search_no_arg" xml:space="preserve">
-    <value>Voer a.u.b. een tag of commando in.</value>
+    <value>Voer alsjeblieft een tag of commando in.</value>
   </data>
   <data name="miki_module_pasta_error_search_no_results" xml:space="preserve">
-    <value>Geen zoekvraag gevonden. Specificeer a.u.b. wat u wilt opzoeken.</value>
+    <value>Geen zoekvraag gevonden. Specificeer alsjeblieft wat je wilt opzoeken.</value>
   </data>
   <data name="miki_module_pasta_error_specify" xml:space="preserve">
-    <value>Specificeer a.u.b. welke pasta u wilt {0}.</value>
+    <value>Specificeer alsjeblieft welke pasta je wilt {0}.</value>
   </data>
   <data name="miki_module_pasta_error_specify_check" xml:space="preserve">
     <value>controleren</value>
@@ -733,7 +733,7 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_dm" xml:space="preserve">
-    <value>Een persoonlijk bericht met alle commandos is onderweg! Gebruik `&gt;help [commando]` voor meer informatie over dit commando!</value>
+    <value>Een persoonlijk berichtje waar ik je zal veder helpen is onderweg! :gift_heart: </value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_help_usage" xml:space="preserve">
@@ -743,7 +743,7 @@ Fuzzy</comment>
     <value>Documentatie</value>
   </data>
   <data name="miki_module_general_info_donate_string" xml:space="preserve">
-    <value>Hallo allemaal! Ik heb een Patreon opgezet zodat mensen Miki kunnen ondersteunen. Neem a.u.b. een kijkje en help me als dat kan!</value>
+    <value>Ik ben de creator van Miki! Ik heb een Patreon opgezet zodat mensen Miki kunnen ondersteunen. Neem alsjeblieft een kijkje en help me om miki online te houden! Senko is het kleine zusje van Miki.</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_links" xml:space="preserve">
@@ -751,11 +751,11 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_made_by_description" xml:space="preserve">
-    <value>Speciale dank aan: Florestina, Mei, Rappy, Rie, Rosie</value>
+    <value>Speciale dank aan: Florestina, Mei, Rappy, Rie, Rosie, Gerard, Bent</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_general_info_made_by_header" xml:space="preserve">
-    <value>**Gemaakt door:** Veld</value>
+    <value>**Ik ben gemaakt door:** Veld\n\nSenko is eigenlijk het kleine zusje van de bot Miki! </value>
   </data>
   <data name="miki_module_general_info_patreon" xml:space="preserve">
     <value>patreon</value>
@@ -826,30 +826,30 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_accounts_level_up_content" xml:space="preserve">
-    <value>**{0}** is een niveau omhoog gegaan naar niveau **{1}**!</value>
+    <value>Gefeliciteerd **{0}** je bent nu level **{1}**!</value>
   </data>
   <data name="miki_accounts_level_up_header" xml:space="preserve">
     <value>☀️️ Niveau omhoog!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_leaderboards" xml:space="preserve">
-    <value>Kijk ook eens naar de Miki Elites!</value>
+    <value>Kijk ook eens naar de Senko Elites!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_profile" xml:space="preserve">
-    <value>Controleer je voortgang om een Miki Meester te worden!</value>
+    <value>Controleer je voortgang om Senko's Meester te worden!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_toggledm" xml:space="preserve">
-    <value>Zet Miki's mogelijkheid om je DMs te sturen aan/uit!</value>
+    <value>Zet Senko's mogelijkheid om je DMs te sturen aan/uit!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_toggleerrors" xml:space="preserve">
-    <value>Zet Miki's mogelijkheid om je foutmeldingen in DMs te sturen aan/uit!</value>
+    <value>Zet Senko's mogelijkheid om je foutmeldingen in DMs te sturen aan/uit!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_toggleguildnotifications" xml:space="preserve">
-    <value>Zet Miki's mogelijkheid om non-commando berichten in dit kanaal te versturen aan/uit!</value>
+    <value>Zet Senko's mogelijkheid om non-commando berichten in dit kanaal te versturen aan/uit!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_usage_leaderboards" xml:space="preserve">
@@ -998,14 +998,14 @@ Fuzzy</comment>
     <value>Je bent al getrouwd met deze persoon, of je hebt al een aanzoek gestuurd.</value>
   </data>
   <data name="miki_module_accounts_marry_error_no_mention" xml:space="preserve">
-    <value>Noem alstublieft de persoon aan wie je een aanzoek doet!</value>
+    <value>Noem alsjeblieft de persoon op met wie je wilt trouwen doet!</value>
   </data>
   <data name="miki_module_accounts_marry_error_null" xml:space="preserve">
     <value>Jij of de andere persoon heeft nog geen miki account. Zorg ervoor dat ze meer praten!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_accounts_marry_text" xml:space="preserve">
-    <value>{0} heeft {1} een aanzoek gedaan.</value>
+    <value>{0} heeft {1} een aanzoek gedaan!</value>
   </data>
   <data name="miki_module_accounts_marry_text2" xml:space="preserve">
     <value>Neem je het aan?</value>
@@ -1034,14 +1034,14 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_marriage_null" xml:space="preserve">
-    <value>Deze gebruiker heeft u geen aanzoek gedaan!</value>
+    <value>Deze gebruiker heeft je geen aanzoek gedaan!</value>
   </data>
   <data name="miki_admin_cannot_disable" xml:space="preserve">
     <value>{0} kan niet worde uitgeschakeld.</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_acceptmarriage" xml:space="preserve">
-    <value>Vind je ware liefde. Accepteer een aanzoek!</value>
+    <value>Je ware liefde accepteerde jou aanzoek!</value>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_command_description_ban" xml:space="preserve">
@@ -1875,7 +1875,7 @@ Je hebt allerminst **{0}** ervaringspunten nodig voordat je in dit gilde gebruik
     <value />
   </data>
   <data name="sync_success" xml:space="preserve">
-    <value />
+    <value>Ik heb jou naam profiel opgeslagen {0} in mijn database!</value>
   </data>
   <data name="term_avatar" xml:space="preserve">
     <value />

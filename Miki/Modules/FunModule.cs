@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("fun")]
+	[Module("Plezier")]
 	public class FunModule
 	{
 		/// <summary>
@@ -227,7 +227,7 @@ namespace Miki.Modules
 			return Task.CompletedTask;
 		}
 
-		[Command("bird", "birb")]
+		[Command("bird", "birb", "vogel", "birdo", "dino")]
 		public async Task BirdAsync(IContext e)
 		{
 			string[] bird = {
@@ -256,13 +256,13 @@ namespace Miki.Modules
 			};
 
 			await new EmbedBuilder()
-				.SetTitle("🐦 Birbs!")
+				.SetTitle("🐦 Vogeltjes!")
 				.SetColor(0.8f, 0.4f, 0.4f)
 				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
 				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		[Command("cat")]
+		[Command("cat","poes","kat","kitten")]
 		public async Task CatAsync(IContext e)
 		{
 			WebClient c = new WebClient();
@@ -271,7 +271,7 @@ namespace Miki.Modules
 			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);
 
 			await new EmbedBuilder()
-				.SetTitle("🐱 Kitties!")
+				.SetTitle("🐱 Katjes!")
 				.SetColor(0.8f, 0.6f, 0.4f)
 				.SetImage(cat.File)
 				.ToEmbed()
@@ -326,7 +326,7 @@ namespace Miki.Modules
 			return Task.CompletedTask;
 		}
 
-		[Command("dog")]
+		[Command("dog","hond","dogo","pup")]
 		public async Task DogAsync(IContext e)
 		{
             string url;
@@ -411,7 +411,7 @@ namespace Miki.Modules
 			}
 		}
 
-		[Command("pick")]
+		[Command("pick","kies")]
 		public Task PickAsync(IContext e)
 		{
             string args = e.GetArgumentPack().Pack.TakeAll();
@@ -427,7 +427,7 @@ namespace Miki.Modules
 			return Task.CompletedTask;
 		}
 
-		[Command("pun")]
+		[Command("grap","grapje","joke")]
 		public Task PunAsync(IContext e)
 		{
 			e.GetChannel().QueueMessage(e.GetLocale().GetString(puns[MikiRandom.Next(0, puns.Length)]));
@@ -498,7 +498,7 @@ namespace Miki.Modules
                 .QueueMessage(e.GetLocale().GetString("miki_module_fun_roll_result", e.GetAuthor().Username, rollResult));
 		}
 
-        [Command("reminder", "remind")]
+        [Command("reminder", "remind", "herinner")]
         public class ReminderCommand
         {
             private readonly API.TaskScheduler<string> reminders;
@@ -524,7 +524,7 @@ namespace Miki.Modules
                 }
             }
 
-            [Command("list")]
+            [Command("list","lijst")]
             public async Task ListRemindersAsync(IContext e)
             {
                 var locale = e.GetLocale();
@@ -559,7 +559,7 @@ namespace Miki.Modules
                     .QueueAsync(e.GetChannel());
             }
 
-            [Command("clear", "cancel")]
+            [Command("clear", "cancel","annuleer")]
             public async Task CancelReminderAsync(IContext e)
             {
                 var locale = e.GetLocale();
@@ -655,13 +655,13 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    await e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
+                    await e.ErrorEmbed("Sorry, maar ik kan je pas iets laten herinneren na 10 minutes.")
                         .ToEmbed().QueueAsync(e.GetChannel());
                 }
             }
         }
 
-        [Command("safe")]
+        [Command("safe","veilig","cute","kawaii","kawai","lief")]
 		public async Task DoSafe(IContext e)
 		{
 			ILinkable s = null;
@@ -699,7 +699,7 @@ namespace Miki.Modules
 
 						default:
 						{
-							e.GetChannel().QueueMessage("I do not support this image host :(");
+							e.GetChannel().QueueMessage("Ik support deze host niet :(");
 						}
 						break;
 					}
@@ -717,7 +717,7 @@ namespace Miki.Modules
 
 			if (s == null)
 			{
-				await e.ErrorEmbed("We couldn't find an image with these tags!")
+				await e.ErrorEmbed("We konden geen afbeeldingen vinden met deze tags!")
 					.ToEmbed().QueueAsync(e.GetChannel());
 				return;
 			}

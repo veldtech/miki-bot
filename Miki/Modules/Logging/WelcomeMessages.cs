@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("eventmessages")]
+    [Module("eventberichten")]
     public class EventMessageModule
     {
         /*
@@ -64,7 +64,7 @@ namespace Miki.Modules
         }
 
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
-        [Command("setwelcomemessage")]
+        [Command("setwelcomemessage","welkomsbericht")]
         public async Task SetWelcomeMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -75,19 +75,19 @@ namespace Miki.Modules
                 EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
                 if (leaveMessage == null)
                 {
-                    await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
+                    await e.ErrorEmbed($"Geen welkoms berichten gevonden! Doe >welkomsbericht <bericht> om er eentje in te stellen`")
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
-                await e.SuccessEmbed($"Deleted your welcome message")
+                await e.SuccessEmbed($"Verwijder jou welkom's bericht")
                     .QueueAsync(e.GetChannel());
             }
             else
             {
                 await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.GetChannel().Id);
-                await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
+                await e.SuccessEmbed($"Jou nieuwe welkom's bericht is ingesteld als: ```{welcomeMessage}```")
                     .QueueAsync(e.GetChannel());
             }
             await context.SaveChangesAsync();
@@ -123,7 +123,7 @@ namespace Miki.Modules
             await context.SaveChangesAsync();
         }
 
-        [Command("testmessage")]
+        [Command("testmessage","testbericht")]
         public async Task TestMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -131,10 +131,10 @@ namespace Miki.Modules
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
                 EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
-                e.GetChannel().QueueMessage(msg.message ?? "No message set in this channel");
+                e.GetChannel().QueueMessage(msg.message ?? "Er is geen berichtje ingesteld in dit kanaal");
                 return;
             }
-            e.GetChannel().QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage($"Gebreuk alsjeblieft een van deze tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)

@@ -64,7 +64,7 @@ namespace Miki
 		{
 			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
 			{
-				throw new Exception("You can't add discord invites!");
+				throw new Exception("Je kunt geen discord invite's toevoegen!");
 			}
 
 			GlobalPasta pasta = await context.Pastas.FindAsync(id);

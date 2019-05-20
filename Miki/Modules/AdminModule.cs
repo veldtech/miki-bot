@@ -23,7 +23,7 @@ namespace Miki.Modules
 	[Module("Admin")]
 	public class AdminModule
 	{
-		[Command("ban")]
+		[Command("ban","verban")]
         [RequiresPermission(PermissionLevel.MODERATOR)]
         public async Task BanAsync(IContext e)
 		{
@@ -415,16 +415,16 @@ namespace Miki.Modules
 				EmbedBuilder embed = new EmbedBuilder
 				{
 					Title = "⚠ SOFTBAN",
-					Description = $"You've been banned from **{e.GetGuild().Name}**!"
+					Description = $"Je bent verbannen van **{e.GetGuild().Name}**!"
 				};
 
 				if (!string.IsNullOrWhiteSpace(reason))
 				{
-					embed.AddInlineField("💬 Reason", reason);
+					embed.AddInlineField("💬 Reden", reason);
 				}
 
 				embed.AddInlineField(
-                    "💁 Banned by", 
+                    "💁 Verbannen door", 
                     $"{author.Username}#{author.Discriminator}");
 
 				await embed.ToEmbed().SendToUser(user);

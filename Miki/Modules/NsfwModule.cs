@@ -18,7 +18,7 @@ namespace Miki.Modules
 	[Module("nsfw")]
 	internal class NsfwModule
 	{
-		[Command("gelbooru", "gel")]
+		[Command("gelbooru", "gel","nsfw")]
 		public async Task RunGelbooru(IContext e)
 		{
 			try
@@ -28,7 +28,7 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+                    await e.ErrorEmbed("Ik kon niets vinden met deze tags!")
 						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
@@ -38,7 +38,7 @@ namespace Miki.Modules
 			}
 			catch
 			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                await e.ErrorEmbed("Dat zijn te veel tags. sorry :(")
 					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
@@ -53,7 +53,7 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+                    await e.ErrorEmbed("Ik kon niets vinden met deze tags!")
 						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
@@ -63,7 +63,7 @@ namespace Miki.Modules
 			}
 			catch
 			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                await e.ErrorEmbed("Dat zijn te veel tags. sorry :(")
 					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
@@ -78,7 +78,7 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+                    await e.ErrorEmbed("Ik kon hellemaal niets vinden met deze tags!")
 						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
@@ -88,7 +88,7 @@ namespace Miki.Modules
 			}
 			catch
 			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                await e.ErrorEmbed("Dat zijn te veel tags. sorry :(")
 					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
@@ -103,7 +103,7 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+                    await e.ErrorEmbed("Ik kon niets vinden met deze tags!")
 						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
@@ -113,7 +113,7 @@ namespace Miki.Modules
 			}
 			catch
 			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                await e.ErrorEmbed("Dat waren net te veel tags. sorry :(")
 					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
@@ -180,7 +180,7 @@ namespace Miki.Modules
 
 				if (!IsValid(s))
 				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
+                    await e.ErrorEmbed("Ik kon niets vinden met deze tags!")
 						.ToEmbed().QueueAsync(e.GetChannel());
 					return;
 				}
@@ -189,7 +189,7 @@ namespace Miki.Modules
 			}
 			catch
 			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                await e.ErrorEmbed("Dat waren veel te veel tags . sowwy :(")
 					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
