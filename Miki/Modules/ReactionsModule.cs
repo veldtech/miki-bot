@@ -224,7 +224,8 @@ namespace Miki.Modules
 		{
 			"https://i.imgur.com/FRyZty3.gif",
 			"https://i.imgur.com/LhZimxF.gif",
-			"https://i.imgur.com/wbOFsFg.gif"
+			"https://i.imgur.com/wbOFsFg.gif",
+			"https://i.imgur.com/TeZJVoT.gif"
 		};
 
 		[Command("confused", "verward", "shy", "verlegen")]
