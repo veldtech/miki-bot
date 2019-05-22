@@ -309,14 +309,14 @@ namespace Miki.Modules
 	        "http://i.imgur.com/pDohPrm.gif",
         };
 
-		[Command("ask","vraagt")]
+		[Command("ask","vraagt","vraag")]
 		public async Task AskAsync(IContext e)
 			=> await QueueAction(e, "vraagt iets aan", askImage)
                 .ConfigureAwait(false);
 
-		[Command("bijt","bite","bites")]
+		[Command("bijt","bite","bites","hap")]
 		public async Task BiteAsync(IContext e)
-			=> await QueueAction(e, "neemt een hapje van", biteImages[MikiRandom.Next(biteImages.Length)])
+			=> await QueueAction(e, "bijt", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("voeder","feed","cake")]
@@ -329,7 +329,7 @@ namespace Miki.Modules
 			=> await QueueAction(e, "knuffelt", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command("boos","angry")]
+        [Command("angry","boos")]
 		public async Task GlareAsync(IContext e)
 			=> await QueueAction(e, "kijkt boos naar", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
@@ -354,22 +354,22 @@ namespace Miki.Modules
 			=> await QueueAction(e, "slaat", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command("kiss","kust")]
+        [Command("kiss","kust","kus","lebber")]
 		public async Task KissAsync(IContext e)
 			=> await QueueAction(e, "kust", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command("lick","likt","liks")]
+        [Command("lick","likt","liks","lik","lek")]
 		public async Task LickAsync(IContext e)
 			=> await QueueAction(e, "likt", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command("pat","pet" )]
+        [Command("pat","pet")]
 		public async Task PetAsync(IContext e)
 			=> await QueueAction(e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command("slap","slaat")]
+        [Command("slap","sla","slaat","slaan")]
 		public async Task SlapAsync(IContext e)
 			=> await QueueAction(e, "slaat", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);

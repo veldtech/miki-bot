@@ -126,7 +126,7 @@
     <comment>When no other error message is appliable to this version</comment>
   </data>
   <data name="miki_join_message" xml:space="preserve">
-    <value>Hallo, ik ben **Senko**! Tot uw dienst! Probeer **&gt;help** om te zien wat ik kan doen! :notes:</value>
+    <value>Hallo, ik ben **Senko**! Tot uw dienst! Probeer **&gt;help** om te zien wat dat ik kan doen! :notes:</value>
     <comment>This message is called when miki joins a new guild</comment>
   </data>
   <data name="miki_global_profile_user_header" xml:space="preserve">
@@ -690,7 +690,7 @@ Fuzzy</comment>
     <comment>Fuzzy</comment>
   </data>
   <data name="miki_module_admin_kick_description" xml:space="preserve">
-    <value>You bent gekicked van **{0}**</value>
+    <value>Je bent gekicked van **{0}**</value>
   </data>
   <data name="miki_module_admin_kick_header" xml:space="preserve">
     <value>⚠ KICK</value>
@@ -704,13 +704,13 @@ Fuzzy</comment>
     <value>U kunt niet meer dan 100 berichten knippen per commando.</value>
   </data>
   <data name="miki_module_admin_prune_error_no_access" xml:space="preserve">
-    <value>I kan geen berichten verwijderen in dit kanaal. ):</value>
+    <value>Het spijt me baasje maar ik kan geen berichten verwijderen in dit kanaal. :cold_sweat:</value>
   </data>
   <data name="miki_module_admin_prune_success" xml:space="preserve">
     <value>{0} berichten verwijderd!</value>
   </data>
   <data name="miki_module_general_calc_error" xml:space="preserve">
-    <value>Ik kan dit niet uitrekenen!</value>
+    <value>Ik kan dit niet berekenen!</value>
   </data>
   <data name="miki_module_general_guildinfo_channels" xml:space="preserve">
     <value>📺 Kanalen</value>
