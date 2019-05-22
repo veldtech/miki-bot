@@ -223,7 +223,8 @@ namespace Miki.Modules
 		readonly string[] danceImages = new string[]
 		{
 			"https://i.imgur.com/FRyZty3.gif",
-			"https://tenor.com/view/dance-anime-gif-9417087"
+			"https://i.imgur.com/LhZimxF.gif",
+			"https://i.imgur.com/wbOFsFg.gif"
 		};
 
 		[Command("confused", "verward", "shy", "verlegen")]
