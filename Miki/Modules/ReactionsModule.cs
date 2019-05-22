@@ -220,6 +220,12 @@ namespace Miki.Modules
 			"http://i.imgur.com/rmfWuM0.gif"
 		};
 
+		readonly string[] danceImages = new string[]
+		{
+			"https://i.imgur.com/FRyZty3.gif",
+			"https://tenor.com/view/dance-anime-gif-9417087"
+		};
+
 		[Command("confused", "verward", "shy", "verlegen")]
 		public async Task ConfusedAsync(IContext e)
 		{
@@ -262,6 +268,15 @@ namespace Miki.Modules
             await new EmbedBuilder()
 			{
 				ImageUrl = cryImages[MikiRandom.Next(0, cryImages.Length)]
+			}.ToEmbed().QueueAsync(e.GetChannel());
+		}
+
+		[Command("dance","dans")]
+		public async Task danceAsync(IContext e)
+		{
+            await new EmbedBuilder()
+			{
+				ImageUrl = danceImages[MikiRandom.Next(0, danceImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
