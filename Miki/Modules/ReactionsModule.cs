@@ -220,7 +220,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/rmfWuM0.gif"
 		};
 
-		readonly string[] danceImage = new string[]
+		readonly string[] danceImages = new string[]
 		{
 			"https://i.imgur.com/FRyZty3.gif",
 			"https://i.imgur.com/LhZimxF.gif",
