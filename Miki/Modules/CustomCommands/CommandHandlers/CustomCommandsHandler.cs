@@ -5,8 +5,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Framework;
-using Miki.Framework.Events;
-using Miki.Framework.Events.Commands;
+using Miki.Framework.Commands;
 using MiScript;
 using MiScript.Models;
 using MiScript.Parser;
@@ -18,31 +17,31 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
-    public class CustomCommandsHandler : CommandHandler
+    public class CustomCommandsHandler
     {
         const string CommandCacheKey = "customcommands";
 
-        public Dictionary<string, object> CreateContext(CommandContext e)
+        public Dictionary<string, object> CreateContext(IContext e)
         {
             var context = new Dictionary<string, object>
             {
-                { "author", e.Author.Username + "#" + e.Author.Discriminator },
-                { "author.id", e.Author.Id },
-                { "author.bot", e.Author.IsBot },
-                { "author.mention", e.Author.Mention },
-                { "author.discrim", e.Author.Discriminator },
-                { "author.name", e.Author.Username },
-                { "channel", "#" + e.Channel.Name },
-                { "channel.id", e.Channel.Id },
-                { "channel.nsfw", e.Channel.IsNsfw },
-                { "message", e.Message.Content },
-                { "message.id", e.Message.Id }
+                { "author", e.GetAuthor().Username + "#" + e.GetAuthor().Discriminator },
+                { "author.id", e.GetAuthor().Id },
+                { "author.bot", e.GetAuthor().IsBot },
+                { "author.mention", e.GetAuthor().Mention },
+                { "author.discrim", e.GetAuthor().Discriminator },
+                { "author.name", e.GetAuthor().Username },
+                { "channel", "#" + e.GetChannel().Name },
+                { "channel.id", e.GetChannel().Id },
+                { "channel.nsfw", e.GetChannel().IsNsfw },
+                { "message", e.GetMessage().Content },
+                { "message.id", e.GetMessage().Id }
             };
 
             int i = 0;
-            if (e.Arguments != null)
+            if (e.GetArgumentPack() != null)
             {
-                while (e.Arguments.Take<string>(out var str))
+                while (e.GetArgumentPack().Take<string>(out var str))
                 {
                     context.Add($"args.{i}", str);
                     i++;
@@ -50,31 +49,31 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             }
             context.Add("args.count", i + 1);
 
-            if (e.Guild != null)
+            if (e.GetGuild() != null)
             {
-                context.Add("guild", e.Guild.Name);
-                context.Add("guild.id", e.Guild.Id);
-                context.Add("guild.owner.id", e.Guild.OwnerId);
-                context.Add("guild.members", e.Guild.MemberCount);
-                context.Add("guild.icon", e.Guild.IconUrl);
+                context.Add("guild", e.GetGuild().Name);
+                context.Add("guild.id", e.GetGuild().Id);
+                context.Add("guild.owner.id", e.GetGuild().OwnerId);
+                context.Add("guild.members", e.GetGuild().MemberCount);
+                context.Add("guild.icon", e.GetGuild().IconUrl);
             }
 
             return context;
         }
 
-        public override async Task CheckAsync(CommandContext e)
+        public async Task CheckAsync(IContext e)
         {
             if(e == null)
             {
                 return;
             }
 
-            if(e.Message.Type != MessageType.GUILDTEXT)
+            if(e.GetMessage().Type != MessageType.GUILDTEXT)
             {
                 return;
             }
 
-            var channel = await e.Message.GetChannelAsync();
+            var channel = await e.GetMessage().GetChannelAsync();
             if (!(channel is IDiscordGuildChannel guildChannel))
             {
                 return;
@@ -85,17 +84,17 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             var cache = e.GetService<IExtendedCacheClient>();
             IEnumerable<Token> tokens = null;
 
-            string[] args = e.Message.Content.Substring(e.PrefixUsed.Length)
+            string[] args = e.GetMessage().Content.Substring(e.GetPrefixMatch().Length)
                 .Split(' ');
             string commandName = args.FirstOrDefault()
                 .ToLowerInvariant();
             
-            if(e.EventSystem
-                .GetCommandHandler<SimpleCommandHandler>()
-                .GetCommandByIdOrDefault(commandName) != null)
-            {
-                return;
-            }
+            //if(e.EventSystem
+            //    .GetCommandHandler<SimpleCommandHandler>()
+            //    .GetCommandByIdOrDefault(commandName) != null)
+            //{
+            //    return;
+            //}
 
             var cachePackage = await cache.HashGetAsync<ScriptPackage>(CommandCacheKey, commandName + ":" + guild.Id);
             if (cachePackage != null)
@@ -117,7 +116,8 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if(tokens != null)
             {
                 var context = CreateContext(e);
-                e.Channel.QueueMessage(new Parser(tokens).Parse(context));
+                e.GetChannel()
+                    .QueueMessage(new Parser(tokens).Parse(context));
             }
         }
     }

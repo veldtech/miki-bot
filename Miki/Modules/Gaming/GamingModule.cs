@@ -1,6 +1,8 @@
 ﻿using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Modules.Overwatch.API;
 using Miki.Modules.Overwatch.Objects;
 using System.Collections.Generic;
@@ -11,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Overwatch
 {
-	[Module("Gaming")]
+	[Module("Games")]
 	internal class GamingModule
 	{
-		[Command(Name = "osu")]
-		public async Task SendOsuSignatureAsync(CommandContext e)
+		[Command("osu")]
+		public async Task SendOsuSignatureAsync(IContext e)
 		{
-            e.Arguments.Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
             using (WebClient webClient = new WebClient())
 			{
@@ -25,15 +27,15 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.Channel as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}
 
-		[Command(Name = "ctb")]
-		public async Task SendCatchTheBeatSignatureAsync(CommandContext e)
+		[Command("ctb")]
+		public async Task SendCatchTheBeatSignatureAsync(IContext e)
 		{
-            e.Arguments.Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
 			using (WebClient webClient = new WebClient())
 			{
@@ -41,15 +43,15 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.Channel as IDiscordTextChannel).SendFileAsync(mem, $"{username}.png");
+					await e.GetChannel().SendFileAsync(mem, $"{username}.png");
 				}
 			}
 		}
 
-		[Command(Name = "mania")]
-		public async Task SendManiaSignatureAsync(CommandContext e)
+		[Command("mania")]
+		public async Task SendManiaSignatureAsync(IContext e)
 		{
-            e.Arguments.Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
             using (WebClient webClient = new WebClient())
 			{
@@ -57,15 +59,15 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.Channel as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}
 
-		[Command(Name = "taiko")]
-		public async Task SendTaikoSignatureAsync(CommandContext e)
+		[Command("taiko")]
+		public async Task SendTaikoSignatureAsync(IContext e)
 		{
-            e.Arguments.Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
             using (WebClient webClient = new WebClient())
 			{
@@ -73,7 +75,7 @@ namespace Miki.Modules.Overwatch
 
 				using (MemoryStream mem = new MemoryStream(data))
 				{
-					await (e.Channel as IDiscordTextChannel).SendFileAsync(mem, $"sig.png");
+					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
 			}
 		}
@@ -102,7 +104,7 @@ namespace Miki.Modules.Overwatch
 			}).FirstOrDefault();
 		}
 
-		public async Task<OverwatchUserResponse> InternalGetUser(EventContext e, string[] username)
+		public async Task<OverwatchUserResponse> InternalGetUser(IContext e, string[] username)
 		{
 			if (username.Length <= 1)
 			{

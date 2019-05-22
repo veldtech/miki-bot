@@ -10,6 +10,7 @@ using Miki.Discord.Rest;
 using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
 using Miki.Framework.Events;
 using Miki.Framework.Language;
 using Miki.Helpers;
@@ -45,7 +46,7 @@ namespace Miki
             where T : struct
             => Enum.TryParse(argument ?? "", true, out value);
 
-        public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
+        public static string ToTimeString(this TimeSpan time, IResourceManager instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
@@ -127,42 +128,36 @@ namespace Miki
             return "";
         }
 
+        public static IDiscordUser GetAuthor(this IContext c)
+            => c.GetMessage().Author;
+
         public static bool IsAll(string input)
             => (input == "all") || (input == "*");
 
-        public static EmbedBuilder ErrorEmbed(this ICommandContext e, string message)
-            => new LocalizedEmbedBuilder(e.Locale)
+        public static EmbedBuilder ErrorEmbed(this IContext e, string message)
+            => new LocalizedEmbedBuilder(e.GetLocale())
                 .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
-		public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, string resourceId, params object[] args)
-			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
+		public static EmbedBuilder ErrorEmbedResource(this IContext e, string resourceId, params object[] args)
+			=> ErrorEmbed(e, e.GetLocale().GetString(resourceId, args));
 
-        public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, IResource resource)
-            => ErrorEmbed(e, resource.Get(e.Locale));
+        public static EmbedBuilder ErrorEmbedResource(this IContext e, IResource resource)
+            => ErrorEmbed(e, resource.Get(e.GetLocale()));
 
         public static DateTime MinDbValue 
             => new DateTime(1755, 1, 1, 0, 0, 0);
 
-        public static PrefixTrigger GetDefaultPrefixTrigger(this EventSystem es)
-        {
-            return es.GetMessageTriggers()
-                .Where(x => x is PrefixTrigger)
-                .Select(x => x as PrefixTrigger)
-                .Where(x => x.IsDefault)
-                .FirstOrDefault();
-        }
-
-		public static DiscordEmbed SuccessEmbed(this ICommandContext e, string message)
+		public static DiscordEmbed SuccessEmbed(this IContext e, string message)
 		    => new EmbedBuilder()
 			{
-				Title = "✅ " + e.Locale.GetString("miki_success_message_generic"),
+				Title = "✅ " + e.GetLocale().GetString("miki_success_message_generic"),
 				Description = message,
 				Color = new Color(119, 178, 85)
 			}.ToEmbed();
-        public static DiscordEmbed SuccessEmbedResource(this ICommandContext e, string resource, params object[] param)
-            => SuccessEmbed(e, e.Locale.GetString(resource, param));
+        public static DiscordEmbed SuccessEmbedResource(this IContext e, string resource, params object[] param)
+            => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
 
         public static string ToFormattedString(this int val)
             => val.ToString("N0");

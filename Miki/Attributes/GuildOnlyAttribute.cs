@@ -1,6 +1,8 @@
 ﻿using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,15 +12,15 @@ namespace Miki.Attributes
 {
     public class GuildOnlyAttribute : CommandRequirementAttribute
     {
-        public override Task<bool> CheckAsync(ICommandContext e)
+        public override ValueTask<bool> CheckAsync(IContext e)
         {
-            return Task.FromResult(e.Guild != null);
+            return new ValueTask<bool>(e.GetGuild() != null);
         }
 
-        public override async Task OnCheckFail(ICommandContext e)
+        public override async Task OnCheckFail(IContext e)
         {
             await e.ErrorEmbedResource("error_command_guildonly")
-                .ToEmbed().QueueToChannelAsync(e.Channel);
+                .ToEmbed().QueueAsync(e.GetChannel() as IDiscordTextChannel);
         }
     }
 }

@@ -7,7 +7,6 @@ using Miki.Discord.Common;
 using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Filters;
 using Miki.Models;
 using System;
 using System.Linq;
@@ -39,8 +38,6 @@ namespace Miki
                 await context.Set<LocalExperience>().Where(x => x.UserId == user.Id).ToListAsync()
             );
 
-            MikiApp.Instance.GetService<EventSystem>().MessageFilter.Get<UserFilter>().Users.Add(user.Id.FromDbLong());
-
             await context.Set<IsBanned>()
                 .AddAsync(new IsBanned
             {
@@ -67,7 +64,7 @@ namespace Miki
 		{
 			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
 			{
-				throw new Exception("You can't add discord invites!");
+				throw new Exception("Je kunt geen discord invite's toevoegen!");
 			}
 
 			GlobalPasta pasta = await context.Pastas.FindAsync(id);

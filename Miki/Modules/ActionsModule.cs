@@ -1,11 +1,14 @@
 ﻿using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("Actions")]
+	[Module("Acties")]
 	public class ActionsModule
 	{
         readonly string askImage = "http://i.imgur.com/AHPnL.gif";
@@ -203,14 +206,14 @@ namespace Miki.Modules
 		};
         readonly string[] lickImages = new string[]
 		{
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/2187d457-703a-43a0-93de-3304774f972f.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/82b45d73-4b6a-4886-b79f-d43282193843.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/c397769d-7563-43e1-a21e-e89498371bff.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f56b349d-507d-46df-849a-584b718c345c.gif",
-			"https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
-		};
+			"https://cdn.miki.ai/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
+            "https://cdn.miki.ai/images/2187d457-703a-43a0-93de-3304774f972f.gif",
+			"https://cdn.miki.ai/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
+			"https://cdn.miki.ai/images/82b45d73-4b6a-4886-b79f-d43282193843.gif",
+			"https://cdn.miki.ai/images/c397769d-7563-43e1-a21e-e89498371bff.gif",
+			"https://cdn.miki.ai/images/f56b349d-507d-46df-849a-584b718c345c.gif",
+            "https://cdn.miki.ai/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
+        };
         readonly string[] patImages = new string[]
 		{
 			"http://i.imgur.com/Y2DrXtT.gif",
@@ -306,89 +309,90 @@ namespace Miki.Modules
 	        "http://i.imgur.com/pDohPrm.gif",
         };
 
-		[Command(Name = "ask")]
-		public async Task AskAsync(CommandContext e)
-			=> await QueueAction(e, "asks", askImage)
+		[Command("ask","vraagt")]
+		public async Task AskAsync(IContext e)
+			=> await QueueAction(e, "vraagt iets aan", askImage)
                 .ConfigureAwait(false);
 
-		[Command(Name = "bite")]
-		public async Task BiteAsync(CommandContext e)
-			=> await QueueAction(e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
+		[Command("bijt","bite","bites")]
+		public async Task BiteAsync(IContext e)
+			=> await QueueAction(e, "neemt een hapje van", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "cake")]
-		public async Task CakeAsync(CommandContext e)
-			=> await QueueAction(e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
+        [Command("voeder","feed","cake")]
+		public async Task CakeAsync(IContext e)
+			=> await QueueAction(e, "voedert", cakeImages[MikiRandom.Next(cakeImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "cuddle")]
-		public async Task CuddleAsync(CommandContext e)
-			=> await QueueAction(e, "cuddles", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
+        [Command("cuddle")]
+		public async Task CuddleAsync(IContext e)
+			=> await QueueAction(e, "knuffelt", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "glare")]
-		public async Task GlareAsync(CommandContext e)
-			=> await QueueAction(e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
+        [Command("boos","angry")]
+		public async Task GlareAsync(IContext e)
+			=> await QueueAction(e, "kijkt boos naar", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "highfive")]
-		public async Task HighFiveAsync(CommandContext e)
-			=> await QueueAction(e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
+        [Command("highfive","dunegang")]
+		public async Task HighFiveAsync(IContext e)
+			=> await QueueAction(e, "high-fived", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "hug")]
-		public async Task HugAsync(CommandContext e)
-			=> await QueueAction(e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
+        [Command("hug","knuffel","knuffelt","knuf","hugs")]
+		public async Task HugAsync(IContext e)
+			=> await QueueAction(e, "knuffelt", hugImages[MikiRandom.Next(hugImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "poke")]
-		public async Task PokeAsync(CommandContext e)
-			=> await QueueAction(e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
+        [Command("poke","port","por","pokes")]
+		public async Task PokeAsync(IContext e)
+			=> await QueueAction(e, "port", pokeImages[MikiRandom.Next(pokeImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "punch")]
-		public async Task PunchAsync(CommandContext e)
-			=> await QueueAction(e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
+        [Command("punch")]
+		public async Task PunchAsync(IContext e)
+			=> await QueueAction(e, "slaat", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "kiss")]
-		public async Task KissAsync(CommandContext e)
-			=> await QueueAction(e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
+        [Command("kiss","kust")]
+		public async Task KissAsync(IContext e)
+			=> await QueueAction(e, "kust", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "lick")]
-		public async Task LickAsync(CommandContext e)
-			=> await QueueAction(e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
+        [Command("lick","likt","liks")]
+		public async Task LickAsync(IContext e)
+			=> await QueueAction(e, "likt", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "pat", Aliases = new string[] { "pet" })]
-		public async Task PetAsync(CommandContext e)
+        [Command("pat","pet" )]
+		public async Task PetAsync(IContext e)
 			=> await QueueAction(e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
-        [Command(Name = "slap")]
-		public async Task SlapAsync(CommandContext e)
-			=> await QueueAction(e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
+        [Command("slap","slaat")]
+		public async Task SlapAsync(IContext e)
+			=> await QueueAction(e, "slaat", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
-        public async Task QueueAction(CommandContext e, string action, string imageUrl)
+        public async Task QueueAction(IContext e, string action, string imageUrl)
         {
-            string username = (await e.Guild.GetSelfAsync()).Username;
+            string username = (await e.GetGuild().GetSelfAsync()).Username;
 
             EmbedBuilder builder = new EmbedBuilder();
 
-            if (e.Arguments.CanTake)
+            if (e.GetArgumentPack().CanTake)
             {
-                builder.SetTitle($"{e.Author.Username} {action} {e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}");
+                builder.SetTitle($"{e.GetAuthor().Username} {action} {e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}");
             }
             else
             {
-                builder.SetTitle($"{username} {action} {e.Author.Username}");
+                builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
             }
 
             builder.SetImage(imageUrl);
 
-            await builder.ToEmbed().QueueToChannelAsync(e.Channel)
+            await builder.ToEmbed()
+                .QueueAsync(e.GetChannel())
                 .ConfigureAwait(false);
         }
 	}

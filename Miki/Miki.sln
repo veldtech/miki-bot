@@ -13,9 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki", "Miki.csproj", "{154
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Arguments", "..\Miki.Framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj", "{09A3A767-E8C2-46AC-89C3-384F7495050B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retsu.Consumer", "..\..\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj", "{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands", "..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj", "{9CCB5344-4E1A-4098-8627-39105E66E5E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands", "..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands\Miki.Framework.Commands.csproj", "{9CCB5344-4E1A-4098-8627-39105E66E5E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Prefixes", "..\Miki.Framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj", "{CCD367F8-38B0-481B-991C-C072E51ED806}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Localization", "..\Miki.Framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj", "{E4E55777-16BA-4857-80C6-A907D98C5866}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.States", "..\Miki.Framework\Miki.Framework.Commands.States\Miki.Framework.Commands.States.csproj", "{3DCDD99C-3CF1-433C-9988-8F0411C4B511}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Permissions", "..\Miki.Framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj", "{874DFA8D-C2EE-4142-BB13-532552B04647}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands.Filters", "..\Miki.Framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj", "{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miki.Framework.Services", "..\Miki.Framework\Miki.Framework.Services\Miki.Framework.Services.csproj", "{06AD97BC-4D63-4388-A146-75A65C976600}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +91,54 @@ Global
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Prod|Any CPU.Build.0 = Debug|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD367F8-38B0-481B-991C-C072E51ED806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4E55777-16BA-4857-80C6-A907D98C5866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DCDD99C-3CF1-433C-9988-8F0411C4B511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874DFA8D-C2EE-4142-BB13-532552B04647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35A8E013-9D13-48F0-B061-7AFF5EA8A95A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Prod|Any CPU.Build.0 = Debug|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06AD97BC-4D63-4388-A146-75A65C976600}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

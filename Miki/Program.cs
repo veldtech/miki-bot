@@ -14,22 +14,26 @@ using Miki.Discord.Gateway;
 using Miki.Discord.Gateway.Distributed;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Filters;
+using Miki.Framework.Commands.Filters.Filters;
+using Miki.Framework.Commands.Localization;
+using Miki.Framework.Commands.Pipelines;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Filters;
 using Miki.Framework.Events.Triggers;
-using Miki.Framework.Languages;
+using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models.Objects.Backgrounds;
-using Miki.Net.WebSockets;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
 using SharpRaven;
 using SharpRaven.Data;
 using StackExchange.Redis;
-using StatsdClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -42,52 +46,69 @@ namespace Miki
     {
         private static async Task Main(string[] args)
         {
-            Program p = new Program();
-
-            if (args.Length > 0)
+            // Migrate the database if the program was started with the argument '--migrate' or '-m'.
+            if (args.Any(x => x.ToLowerInvariant() == "--migrate" || x.ToLowerInvariant() == "-m"))
             {
-                if (args.Any(x => x.ToLowerInvariant() == "--migrate" && x.ToLowerInvariant() == "-m"))
+                try
                 {
-                    await new MikiDbContextFactory().CreateDbContext(new string[] { }).Database.MigrateAsync();
+                    await new MikiDbContextFactory().CreateDbContext().Database.MigrateAsync();
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("Failed to migrate the database: " + ex.Message);
+                    Log.Debug(ex.ToString());
+                    Console.ReadKey();
                     return;
                 }
             }
 
+            // Start the bot.
             var appBuilder = new MikiAppBuilder();
-
-            await p.LoadServicesAsync(appBuilder);
-
+            await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
-            await p.LoadDiscord(app);
-
-            p.LoadLocales();
+            var commands = BuildPipeline(app);
+            await LoadDiscordAsync(app, commands);
+            await LoadFiltersAsync(app, commands);
+            LoadLocales(commands);
 
             for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
             {
                 MessageBucket.AddWorker();
             }
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider
-                    .GetService<MikiDbContext>();
-
-                List<IsBanned> bannedUsers = await context.IsBanned
-                    .Where(x => x.ExpirationDate > DateTime.UtcNow)
-                    .ToListAsync();
-
-                foreach (var u in bannedUsers)
-                {
-                    app.GetService<EventSystem>().MessageFilter
-                        .Get<UserFilter>().Users.Add(u.UserId.FromDbLong());
-                }
-            }
-
             await Task.Delay(-1);
         }
 
-        private void LoadLocales()
+        private static CommandTree BuildCommandMap(ConfigurationManager config)
+        {
+            var commandBuilder = new CommandTreeBuilder();
+            commandBuilder.OnContainerLoaded += (c) =>
+            {
+                config.RegisterType(c.GetType(), c.Instance);
+            };
+            return commandBuilder.Create(Assembly.GetEntryAssembly());
+        }
+
+        private static CommandPipeline BuildPipeline(MikiApp app)
+            => new CommandPipelineBuilder(app)
+                .UseStage(new CorePipelineStage())
+                .UseFilters(
+                    new BotFilter(),
+                    new UserFilter()
+                )
+                .UsePrefixes(
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", false),
+                    new MentionTrigger()
+                )
+                .UseLocalization()
+                .UseArgumentPack()
+                .UseCommandHandler(app.GetService<CommandTree>())
+                .UseStates()
+                .UsePermissions()
+                .Build();
+
+        private static void LoadLocales(CommandPipeline app)
         {
             string nameSpace = "Miki.Languages";
 
@@ -95,13 +116,28 @@ namespace Miki
                 .GetTypes()
                 .Where(t => t.IsClass && t.Namespace == nameSpace);
 
+            var locale = app.PipelineStages
+                .Where(x => x is LocalizationPipelineStage)
+                .Select(x => x as LocalizationPipelineStage)
+                .FirstOrDefault();
+
             foreach (var t in typeList)
             {
                 try
                 {
-                    string l = t.Name.ToLowerInvariant();
-                    ResourceManager resources = new ResourceManager($"Miki.Languages.{l}", t.Assembly);
-                    Locale.LoadLanguage(l, resources, resources.GetString("current_language_name"));
+                    string languageName = t.Name.ToLowerInvariant();
+
+                    ResourceManager resources = new ResourceManager(
+                        $"Miki.Languages.{languageName}",
+                        t.Assembly);
+
+                    IResourceManager resourceManager = new ResxResourceManager(
+                        resources);
+
+                    locale.LoadLanguage(
+                        languageName,
+                        resourceManager,
+                        resourceManager.GetString("current_language_name"));
                 }
                 catch (Exception ex)
                 {
@@ -110,10 +146,10 @@ namespace Miki
                 }
             }
 
-            Locale.SetDefaultLanguage("eng");
+            locale.SetDefaultLanguage("eng");
         }
 
-        public async Task LoadServicesAsync(MikiAppBuilder app)
+        public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
             new LogBuilder()
                 .AddLogEvent((msg, lvl) =>
@@ -191,7 +227,6 @@ namespace Miki
             // Setup miscellanious services
             {
                 app.AddSingletonService(new ConfigurationManager());
-                app.AddSingletonService(new EventSystem());
                 app.AddSingletonService(new BackgroundStore());
 
                 if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
@@ -203,9 +238,14 @@ namespace Miki
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
             }
+
+            // Setup commands
+            {
+                app.AddSingletonService<CommandTree>(provider => BuildCommandMap(provider.GetService<ConfigurationManager>()));
+            }
         }
 
-        public async Task LoadDiscord(MikiApp app)
+        public static async Task LoadDiscordAsync(MikiApp app, CommandPipeline pipeline)
         {
             var cache = app.GetService<IExtendedCacheClient>();
             var gateway = app.GetService<IGateway>();
@@ -213,75 +253,66 @@ namespace Miki
             new BasicCacheStage().Initialize(gateway, cache);
 
             var config = app.GetService<ConfigurationManager>();
-            EventSystem eventSystem = app.GetService<EventSystem>();
-            {
-                eventSystem.Subscribe(app.Discord);
 
-                eventSystem.OnError += async (ex, context) =>
-                {
-                    if (ex is LocalizedException botEx)
-                    {
-                        if (context is ICommandContext m)
-                        {
-                            await Utils.ErrorEmbedResource(m, botEx.LocaleResource)
-                                .ToEmbed().QueueToChannelAsync(m.Channel);
-                        }
-                    }
-                    else
-                    {
-                        Log.Error(ex);
-                        await app.GetService<RavenClient>().CaptureAsync(new SentryEvent(ex));
-                    }
-                };
+            //string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
 
-                eventSystem.MessageFilter.AddFilter(new BotFilter());
-                eventSystem.MessageFilter.AddFilter(new UserFilter());
+            //if (File.Exists(configFile))
+            //{
+            //    await config.ImportAsync(
+            //        new JsonSerializationProvider(),
+            //        configFile
+            //    );
+            //}
 
-                var commandMap = new Framework.Events.CommandMap();
-                commandMap.OnModuleLoaded += (module) =>
-                {
-                    config.RegisterType(module.GetReflectedInstance().GetType(), module.GetReflectedInstance());
-                };
+            //await config.ExportAsync(
+            //    new JsonSerializationProvider(),
+            //    configFile
+            //);
 
-                eventSystem.AddMessageTrigger(new PrefixTrigger(">", true, true));
-                eventSystem.AddMessageTrigger(new PrefixTrigger("miki.", false));
-                eventSystem.AddMessageTrigger(new MentionTrigger());
-
-                var handler = new SimpleCommandHandler(commandMap);
-                handler.OnMessageProcessed += async (cmd, msg, time) =>
-                {
-                    await Task.Yield();
-                    Log.Message($"{cmd.Name} processed in {time}ms");
-                };
-
-                eventSystem.AddCommandHandler(handler);
-
-                commandMap.RegisterAttributeCommands();
-                commandMap.Install(eventSystem);
-            }
-
-            string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
-
-            if (File.Exists(configFile))
-            {
-                await config.ImportAsync(
-                    new JsonSerializationProvider(),
-                    configFile
-                );
-            }
-
-            await config.ExportAsync(
-                new JsonSerializationProvider(),
-                configFile
-            );
-
+            app.Discord.MessageCreate += pipeline.CheckAsync;
+            pipeline.OnError += OnErrorAsync;
             app.Discord.GuildJoin += Client_JoinedGuild;
             app.Discord.UserUpdate += Client_UserUpdated;
 
             await gateway.StartAsync();
         }
 
-        private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
+        public static async Task LoadFiltersAsync(MikiApp app, CommandPipeline pipeline)
+        {
+            var filters = pipeline
+                .GetPipelineStagesOfType<FilterPipelineStage>()
+                .FirstOrDefault();
+            if (filters == null)
+            {
+                Log.Warning("Filters not set up in command pipeline.");
+                return;
+            }
+
+            var userFilter = filters
+                .GetFilterOfType<UserFilter>();
+            if (userFilter == null)
+            {
+                Log.Warning("User filter not set up in command pipeline.");
+                return;
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider
+                    .GetService<MikiDbContext>();
+
+                List<IsBanned> bannedUsers = await context.IsBanned
+                    .Where(x => x.ExpirationDate > DateTime.UtcNow)
+                    .ToListAsync();
+
+                foreach (var u in bannedUsers)
+                {
+                    userFilter.Users.Add(u.UserId);
+                }
+            }
+        }
+
+        private static async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
         {
             using (var scope = MikiApp.Instance.Services.CreateScope())
             {
@@ -292,7 +323,7 @@ namespace Miki
             }
         }
 
-        private async Task Client_JoinedGuild(IDiscordGuild arg)
+        private static async Task Client_JoinedGuild(IDiscordGuild arg)
         {
             using (var scope = MikiApp.Instance.Services.CreateScope())
             {
@@ -301,7 +332,10 @@ namespace Miki
                 IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync();
                 if (defaultChannel != null)
                 {
-                    LocaleInstance i = await Locale.GetLanguageInstanceAsync(context, defaultChannel.Id);
+                    var locale = scope.ServiceProvider.GetService<LocalizationPipelineStage>();
+                    IResourceManager i = await locale.GetLocaleAsync(
+                        scope.ServiceProvider,
+                        (long)defaultChannel.Id);
                     (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
                 }
 
@@ -335,6 +369,21 @@ namespace Miki
                 {
                     Log.Error(e.ToString());
                 }
+            }
+        }
+
+        private static async Task OnErrorAsync(Exception exception, IContext context)
+        {
+            if (exception is LocalizedException botEx)
+            {
+                await Utils.ErrorEmbedResource(context, botEx.LocaleResource)
+                    .ToEmbed().QueueAsync(context.GetChannel());
+            }
+            else
+            {
+                Log.Error(exception);
+                await context.GetService<RavenClient>()
+                    .CaptureAsync(new SentryEvent(exception));
             }
         }
     }

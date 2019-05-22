@@ -1,7 +1,10 @@
 ﻿using Miki.Anilist;
 using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.GraphQL;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +18,19 @@ namespace Miki.Core.Modules.Anime
 	{
 		private readonly AnilistClient anilistClient = new AnilistClient();
 
-		[Command(Name = "getanime")]
-		public async Task GetAnimeAsync(CommandContext e)
+		[Command("getanime","geefanime")]
+		public async Task GetAnimeAsync(IContext e)
 			=> await GetMediaAsync(e, false, MediaFormat.MANGA, MediaFormat.NOVEL);
 
-		[Command(Name = "getcharacter")]
-		public async Task GetCharacterAsync(CommandContext e)
+		[Command("getcharacter","geefcaracter")]
+		public async Task GetCharacterAsync(IContext e)
 		{
 			ICharacter character = null;
-			if (e.Arguments.Take(out int characterId))
+			if (e.GetArgumentPack().Take(out int characterId))
 			{
 				character = await anilistClient.GetCharacterAsync(characterId);
 			}
-			else if (e.Arguments.Take(out string arg))
+			else if (e.GetArgumentPack().Take(out string arg))
 			{
 				character = await anilistClient.GetCharacterAsync(arg);
 			}
@@ -44,31 +47,31 @@ namespace Miki.Core.Modules.Anime
                 await new EmbedBuilder()
 					.SetAuthor($"{character.FirstName} {character.LastName}", "https://anilist.co/img/logo_al.png", character.SiteUrl)
 					.SetDescription(character.NativeName)
-					.AddInlineField("Description", description)
+					.AddInlineField("Discriptie", description)
 					.SetColor(0, 170, 255)
 					.SetThumbnail(character.LargeImageUrl)
 					.SetFooter("Powered by anilist.co", "")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 			else
 			{
-                await e.ErrorEmbed("Character not found!")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+                await e.ErrorEmbed("Caracter niet gevonden!")
+					.ToEmbed().QueueAsync(e.GetChannel());
 			}
 		}
 
-		[Command(Name = "getmanga")]
-		public async Task GetMangaAsync(CommandContext e)
+		[Command("getmanga","geefmanga")]
+		public async Task GetMangaAsync(IContext e)
 			=> await GetMediaAsync(e, true, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT);
 
-		[Command(Name = "findcharacter")]
-		public async Task FindCharacterAsync(CommandContext e)
+		[Command("findcharacter","zoekcaracter")]
+		public async Task FindCharacterAsync(IContext e)
 		{
-            if (!e.Arguments.Take(out string query))
+            if (!e.GetArgumentPack().Take(out string query))
             {
                 return;
             }
-            e.Arguments.Take(out int page);
+            e.GetArgumentPack().Take(out int page);
 
 			ISearchResult<ICharacterSearchResult> result = (await anilistClient.SearchCharactersAsync(query, page));
 
@@ -76,13 +79,13 @@ namespace Miki.Core.Modules.Anime
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
-                    await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Je hebt het totaal aantal beschikbare pagina's overschreden! Je wilt misschien een beetje terug gaan!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Geen caracters gevonden met `{e.GetArgumentPack().Pack.TakeAll()}`, probeer iets anders!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -93,35 +96,35 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].FirstName} {result.Items[i].LastName}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Zoek resultaaten voor `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.SetFooter($"Pagina {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		[Command(Name = "findmanga")]
-		public async Task FindMangaAsync(CommandContext e)
+		[Command("findmanga","zoekmanga")]
+		public async Task FindMangaAsync(IContext e)
 		{
-            if (!e.Arguments.Take(out string query))
+            if (!e.GetArgumentPack().Take(out string query))
             {
                 return;
             }
-            e.Arguments.Take(out int page);
+            e.GetArgumentPack().Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.MANGA, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
-                    await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Je hebt het totaal aantal pagina's berijkt! Je zou misschien een beetje terug gaan!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Geen caracters gevonden met `{e.GetArgumentPack().Pack.TakeAll()}`, probeer iets anders!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -132,35 +135,35 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Zoek resultaat voor `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.SetFooter($"Pagina {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		[Command(Name = "findanime")]
-		public async Task FindAnimeAsync(CommandContext e)
+		[Command("findanime","zoekanime")]
+		public async Task FindAnimeAsync(IContext e)
 		{
-            if (!e.Arguments.Take(out string query))
+            if (!e.GetArgumentPack().Take(out string query))
             {
                 return;
             }
-            e.Arguments.Take(out int page);
+            e.GetArgumentPack().Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.ANIME, MediaFormat.MANGA, MediaFormat.NOVEL));
 
 			if (result.Items.Count == 0)
 			{
 				if (page > result.PageInfo.TotalPages && page != 0)
 				{
-                    await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Je hebt het totaal aantal pagina's berijkt! Je zou misschien een beetje terug gaan!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				else
 				{
-                    await e.ErrorEmbed($"No characters listed containing `{e.Arguments.Pack.TakeAll()}`, try something else!")
-						.ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Geen caracters gevonden met `{e.GetArgumentPack().Pack.TakeAll()}`, probeer iets anders!")
+						.ToEmbed().QueueAsync(e.GetChannel());
 				}
 				return;
 			}
@@ -171,21 +174,21 @@ namespace Miki.Core.Modules.Anime
 				sb.AppendLine($"`{result.Items[i].Id.ToString().PadRight(5)}:` {result.Items[i].DefaultTitle}");
 
             await new EmbedBuilder()
-				.SetAuthor($"Search result for `{query}`", "https://anilist.co/img/logo_al.png", "")
+				.SetAuthor($"Zoek resultaat voor `{query}`", "https://anilist.co/img/logo_al.png", "")
 				.SetDescription(sb.ToString())
 				.SetColor(0, 170, 255)
-				.SetFooter($"Page {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
-				.ToEmbed().QueueToChannelAsync(e.Channel);
+				.SetFooter($"Pagina {result.PageInfo.CurrentPage} of {result.PageInfo.TotalPages} | Powered by anilist.co", "")
+				.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
-		private async Task GetMediaAsync(CommandContext e, bool manga, params MediaFormat[] format)
+		private async Task GetMediaAsync(IContext e, bool manga, params MediaFormat[] format)
 		{
             IMedia media = null;
-            if (e.Arguments.Take(out int mediaId))
+            if (e.GetArgumentPack().Take(out int mediaId))
             {
                 media = await anilistClient.GetMediaAsync(mediaId);
             }
-            else if (e.Arguments.Take(out string arg))
+            else if (e.GetArgumentPack().Take(out string arg))
             {
                 media = await anilistClient.GetMediaAsync(arg, format);
             }
@@ -204,8 +207,8 @@ namespace Miki.Core.Modules.Anime
 
                 if (!manga)
                 {
-                    embed.AddInlineField("Status", media.Status ?? "Unknown")
-                    .AddInlineField("Episodes", (media.Episodes ?? 0).ToString());
+                    embed.AddInlineField("Status", media.Status ?? "Onbekend")
+                    .AddInlineField("Afleveringen", (media.Episodes ?? 0).ToString());
                 }
                 else
                 {
@@ -215,16 +218,18 @@ namespace Miki.Core.Modules.Anime
 
                 await embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
 				    .AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
-			        .AddInlineField("Description", description ?? "None")
+			        .AddInlineField("Beschrijving", description ?? "None")
 				    .SetColor(0, 170, 255)
 				    .SetThumbnail(media.CoverImage)
 				    .SetFooter("Powered by anilist.co", "")
-				    .ToEmbed().QueueToChannelAsync(e.Channel);
+				    .ToEmbed()
+                    .QueueAsync(e.GetChannel());
 			}
 			else
 			{
-                await e.ErrorEmbed("Anime not found!")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
+                await e.ErrorEmbed("Anime niet gevonden!")
+					.ToEmbed()
+                    .QueueAsync(e.GetChannel());
 			}
 		}
 	}

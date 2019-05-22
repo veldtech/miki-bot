@@ -1,4 +1,6 @@
-﻿using Miki.Framework.Events;
+﻿using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Events;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -79,9 +81,9 @@ namespace Miki.Modules.Logging.Interpreter
 			new RegexToken("^\".*\"", QueryTokenType.STRING);
 		}
 
-		public static void Run(CommandContext x)
+		public static void Run(IContext x)
 		{
-			List<Token> allTokens = instance.Tokenize(x.Arguments.ToString());
+			List<Token> allTokens = instance.Tokenize(x.GetArgumentPack().ToString());
 		}
 
 		public class Executor

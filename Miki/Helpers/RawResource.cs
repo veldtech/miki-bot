@@ -13,7 +13,7 @@ namespace Miki.Helpers
             _resourceText = resource;
         }
 
-        public string Get(LocaleInstance instance)
+        public string Get(IResourceManager instance)
             => _icon + " " + instance.GetString(_resourceText);
     }
 
@@ -26,7 +26,7 @@ namespace Miki.Helpers
 			_content = content;
 		}
 
-		public string Get(LocaleInstance instance)
+		public string Get(IResourceManager instance)
 		{
 			return _content;
 		}

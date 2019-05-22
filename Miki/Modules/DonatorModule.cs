@@ -4,7 +4,6 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Logging;
 using Miki.Models;
 using Miki.Rest;
@@ -14,15 +13,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
+using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
 
 namespace Miki.Modules
 {
-	[Module(Name = "Donator")]
+	[Module("Doneren")]
 	internal class DonatorModule
 	{
         private readonly RestClient client;
 
-		public DonatorModule(Module m)
+		public DonatorModule()
 		{
             if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl) 
                 && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
@@ -32,40 +34,39 @@ namespace Miki.Modules
             }
             else
             {
-                m.Enabled = false;
                 Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
             }
 		}
 
-        [Command(Name = "sellkey")]
-        public async Task SellKeyAsync(CommandContext e)
+        [Command("sellkey")]
+        public async Task SellKeyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long)e.Author.Id;
+            long id = (long)e.GetAuthor().Id;
 
-            if (e.Arguments.Take(out Guid guid))
+            if (e.GetArgumentPack().Take(out Guid guid))
             {
                 DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-                User u = await User.GetAsync(context, id, e.Author.Username);
+                User u = await User.GetAsync(context, id, e.GetAuthor().Username);
 
-                await u.AddCurrencyAsync(30000, e.Channel);
+                await u.AddCurrencyAsync(30000, e.GetChannel());
                 context.DonatorKey.Remove(key);
 
                 await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e, e.Locale.GetString("key_sold_success", 30000))
-                    .QueueToChannelAsync(e.Channel);
+                await Utils.SuccessEmbed(e, e.GetLocale().GetString("key_sold_success", 30000))
+                    .QueueAsync(e.GetChannel());
             }
         }
 
-        [Command(Name = "redeemkey")]
-        public async Task RedeemKeyAsync(CommandContext e)
+        [Command("redeemkey")]
+        public async Task RedeemKeyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long)e.Author.Id;
-            if (e.Arguments.Take(out Guid guid))
+            long id = (long)e.GetAuthor().Id;
+            if (e.GetArgumentPack().Take(out Guid guid))
             {
                 DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
                 IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
@@ -91,12 +92,12 @@ namespace Miki.Modules
 
                 await new EmbedBuilder()
                 {
-                    Title = ($"🎉 Congratulations, {e.Author.Username}"),
+                    Title = ($"🎉 Congratulations, {e.GetAuthor().Username}"),
                     Color = new Color(226, 46, 68),
                     Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
                     ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
                 }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                    .ToEmbed().QueueAsync(e.GetChannel());
 
                 context.DonatorKey.Remove(key);
                 await context.SaveChangesAsync();
@@ -107,65 +108,68 @@ namespace Miki.Modules
 
                 if (donatorStatus.KeysRedeemed == 1)
                 {
-                    await achievementManager.UnlockAsync(achievements[0], e.Channel, e.Author, 0);
+                    await achievementManager.UnlockAsync(achievements[0], 
+                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 0);
                 }
                 else if (donatorStatus.KeysRedeemed == 5)
                 {
-                    await achievementManager.UnlockAsync(achievements[1], e.Channel, e.Author, 1);
+                    await achievementManager.UnlockAsync(achievements[1], 
+                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 1);
                 }
                 else if (donatorStatus.KeysRedeemed == 25)
                 {
-                    await achievementManager.UnlockAsync(achievements[2], e.Channel, e.Author, 2);
+                    await achievementManager.UnlockAsync(achievements[2], 
+                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 2);
                 }
             }
         }
 
-		[Command(Name = "box")]
+		[Command("box")]
         [PatreonOnly]
-        public async Task BoxAsync(CommandContext e)
-			=> await PerformCall(e, $"/api/box?text={e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild)}&url={(await GetUrlFromMessageAsync(e))}");
+        public async Task BoxAsync(IContext e)
+			=> await PerformCall(e, $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={(await GetUrlFromMessageAsync(e))}");
 
-		[Command(Name = "disability")]
+		[Command("disability")]
         [PatreonOnly]
-        public async Task DisabilityAsync(CommandContext e)
+        public async Task DisabilityAsync(IContext e)
 			=> await PerformCall(e, "/api/disability?url=" + (await GetUrlFromMessageAsync(e)));
 
-		[Command(Name = "tohru")]
+		[Command("tohru")]
         [PatreonOnly]
-        public async Task TohruAsync(CommandContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild));
+        public async Task TohruAsync(IContext e)
+			=> await PerformCall(e, "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
-		[Command(Name = "truth")]
+		[Command("truth")]
         [PatreonOnly]
-        public async Task TruthAsync(CommandContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.Arguments.Pack.TakeAll().RemoveMentions(e.Guild));
+        public async Task TruthAsync(IContext e)
+			=> await PerformCall(e, "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
-		[Command(Name = "trapcard")]
+		[Command("trapcard")]
         [PatreonOnly]
-		public async Task YugiAsync(CommandContext e)
+		public async Task YugiAsync(IContext e)
 			=> await PerformCall(e, $"/api/yugioh?url={(await GetUrlFromMessageAsync(e))}");
 
-		private async Task<string> GetUrlFromMessageAsync(MessageContext e)
+		private async Task<string> GetUrlFromMessageAsync(IContext e)
 		{
-			string url = e.Author.GetAvatarUrl();
+			string url = e.GetMessage().Author.GetAvatarUrl();
 
-            if (e.Message.MentionedUserIds.Count > 0)
+            if (e.GetMessage().MentionedUserIds.Count > 0)
 			{
-				url = (await e.Guild.GetMemberAsync(e.Message.MentionedUserIds.First())).GetAvatarUrl();
+				url = (await e.GetGuild().GetMemberAsync(e.GetMessage().MentionedUserIds.First())).GetAvatarUrl();
 			}
 
-            if (e.Message.Attachments.Count > 0)
+            if (e.GetMessage().Attachments.Count > 0)
             {
-                url = e.Message.Attachments.First().Url;
+                url = e.GetMessage().Attachments.First().Url;
             }
 
             return url;
 		}
 
-        private async Task PerformCall(MessageContext e, string url)
+        private async Task PerformCall(IContext e, string url)
         {
             Stream s = await client.GetStreamAsync(url);
-            await (e.Channel as IDiscordTextChannel).SendFileAsync(s, "meme.png");
+            await e.GetChannel().SendFileAsync(s, "meme.png");
         }
 	}
 }

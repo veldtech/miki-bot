@@ -4,8 +4,10 @@ using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module(Name = "eventmessages")]
+    [Module("eventberichten")]
     public class EventMessageModule
     {
         /*
@@ -27,112 +29,112 @@ namespace Miki.Modules
 		 * -uc  = user count
          */
 
-        public EventMessageModule(Module m)
+        public EventMessageModule()
         {
-            m.UserJoinGuild = async (user) =>
-            {
-                IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
+            //m.UserJoinGuild = async (user) =>
+            //{
+            //    IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
 
-                using (var scope = MikiApp.Instance.Services.CreateScope())
-                {
-                    List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.JOINSERVER, user);
-                    if (data == null)
-                    {
-                        return;
-                    }
+            //    using (var scope = MikiApp.Instance.Services.CreateScope())
+            //    {
+            //        List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.JOINSERVER, user);
+            //        if (data == null)
+            //        {
+            //            return;
+            //        }
 
-                    data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
-                }
-            };
+            //        data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
+            //    }
+            //};
 
-            m.UserLeaveGuild = async (user) =>
-            {
-                IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
-                using (var scope = MikiApp.Instance.Services.CreateScope())
-                {
-                    List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.LEAVESERVER, user);
-                    if (data == null)
-                    {
-                        return;
-                    }
+            //m.UserLeaveGuild = async (user) =>
+            //{
+            //    IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
+            //    using (var scope = MikiApp.Instance.Services.CreateScope())
+            //    {
+            //        List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.LEAVESERVER, user);
+            //        if (data == null)
+            //        {
+            //            return;
+            //        }
 
-                    data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
-                }
-            };
+            //        data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
+            //    }
+            //};
         }
 
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
-        [Command(Name = "setwelcomemessage", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetWelcomeMessage(CommandContext e)
+        [Command("setwelcomemessage","welkomsbericht")]
+        public async Task SetWelcomeMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            string welcomeMessage = e.Arguments.Pack.TakeAll();
+            string welcomeMessage = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrEmpty(welcomeMessage))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
+                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
                 if (leaveMessage == null)
                 {
-                    await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    await e.ErrorEmbed($"Geen welkoms berichten gevonden! Doe >welkomsbericht <bericht> om er eentje in te stellen`")
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
-                await e.SuccessEmbed($"Deleted your welcome message")
-                    .QueueToChannelAsync(e.Channel);
+                await e.SuccessEmbed($"Verwijder jou welkom's bericht")
+                    .QueueAsync(e.GetChannel());
             }
             else
             {
-                await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.Channel.Id);
-                await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
-                    .QueueToChannelAsync(e.Channel);
+                await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.GetChannel().Id);
+                await e.SuccessEmbed($"Jou nieuwe welkom's bericht is ingesteld als: ```{welcomeMessage}```")
+                    .QueueAsync(e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
 
-        [Command(Name = "setleavemessage", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task SetLeaveMessage(CommandContext e)
+        [Command("setleavemessage")]
+        public async Task SetLeaveMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            string leaveMsgString = e.Arguments.Pack.TakeAll();
+            string leaveMsgString = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrEmpty(leaveMsgString))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.Channel.Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
+                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
-                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                        .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
                 await e.SuccessEmbed($"Deleted your leave message")
-                    .QueueToChannelAsync(e.Channel);
+                    .QueueAsync(e.GetChannel());
 
             }
             else
             {
-                await SetMessageAsync(context, leaveMsgString, EventMessageType.LEAVESERVER, e.Channel.Id);
+                await SetMessageAsync(context, leaveMsgString, EventMessageType.LEAVESERVER, e.GetChannel().Id);
                 await e.SuccessEmbed($"Your new leave message is set to: ```{leaveMsgString}```")
-                    .QueueToChannelAsync(e.Channel);
+                    .QueueAsync(e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
 
-        [Command(Name = "testmessage", Accessibility = EventAccessibility.ADMINONLY)]
-        public async Task TestMessage(CommandContext e)
+        [Command("testmessage","testbericht")]
+        public async Task TestMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            if (Enum.TryParse(e.Arguments.Pack.TakeAll().ToLower(), true, out EventMessageType type))
+            if (Enum.TryParse(e.GetArgumentPack().Pack.TakeAll().ToLower(), true, out EventMessageType type))
             {
-                var allmessages = await GetMessageAsync(context, e.Guild, type, e.Author);
-                EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.Channel.Id);
-                e.Channel.QueueMessage(msg.message ?? "No message set in this channel");
+                var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
+                EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
+                e.GetChannel().QueueMessage(msg.message ?? "Er is geen berichtje ingesteld in dit kanaal");
                 return;
             }
-            e.Channel.QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage($"Gebreuk alsjeblieft een van deze tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)

@@ -2,6 +2,7 @@
 using Miki.Accounts.Achievements.Objects;
 using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
@@ -12,24 +13,13 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
-	public class AchievementsService : BaseService
+    
+	public class AchievementsService
 	{
-		public AchievementsService()
-		{
-			Name = "Achievements";
-		}
-
-		public override void Install(Module m)
-		{
-			base.Install(m);
-			AchievementManager.Instance.provider = this;
-			LoadAchievements();
-		}
-
-		public override void Uninstall(Module m)
-		{
-			base.Uninstall(m);
-		}
+        public AchievementsService()
+        {
+            LoadAchievements();
+        }
 
 		public void LoadAchievements()
 		{
@@ -40,7 +30,7 @@ namespace Miki.Modules.Accounts.Services
 				{
 					new AchievementAchievement()
 					{
-						Name = "Underachiever",
+						Name = "Onderachiever",
 						Icon = "🖍",
 						CheckAchievement = async (p) =>
 						{
@@ -91,7 +81,7 @@ namespace Miki.Modules.Accounts.Services
 					// Win a lottery > 100k
 					new ManualAchievement()
 					{
-						Name = "Celebrator",
+						Name = "Feestjes Vierder",
 						Icon = "🍺",
 						Points = 5,
 					},
@@ -115,20 +105,20 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "info";
-				x.Achievements = new List<IAchievement>()
-				{
-					new CommandAchievement()
-					{
-						Name = "Informed",
-						Icon = "📚",
+                x.Achievements = new List<IAchievement>()
+                {
+                    new CommandAchievement()
+                    {
+                        Name = "Computer Nerd",
+                        Icon = "📚",
 
-						CheckCommand = async (p) =>
-						{
-							await Task.Yield();
-							return p.command.Name.ToLower() == "info";
-						},
-						Points = 5
-					}
+                        CheckCommand = async (p) =>
+                        {
+                            await Task.Yield();
+                            return p.command.Metadata.Identifiers.Contains("info");
+                        },
+                        Points = 5
+                    },
 				};
 			});
 			AchievementDataContainer LonelyAchievement = new AchievementDataContainer(x =>
@@ -138,13 +128,13 @@ namespace Miki.Modules.Accounts.Services
 				{
 					new CommandAchievement()
 					{
-						Name = "Lonely",
+						Name = "Eenzaam en alleen",
 						Icon = "😭",
 
 						CheckCommand = async (p) =>
 						{
 							await Task.Yield();
-							return p.command.Name.ToLower() == "marry" && p.message.MentionedUserIds.FirstOrDefault() == p.message.Author.Id;
+							return p.command.Metadata.Identifiers.Contains("marry") && p.message.MentionedUserIds.FirstOrDefault() == p.discordUser.Id;
 						},
 						Points = 5,
 					}
@@ -159,10 +149,9 @@ namespace Miki.Modules.Accounts.Services
 					{
 						Name = "Chef",
 						Icon = "📝",
-						CheckCommand = async (p) =>
+						CheckCommand = (p) =>
 						{
-							await Task.Yield();
-							return p.command.Name.ToLower() == "createpasta";
+                            return Task.FromResult(p.command.Metadata.Identifiers.Contains("createpasta"));
 						},
 						Points = 5,
 					}
@@ -170,16 +159,17 @@ namespace Miki.Modules.Accounts.Services
 			});
 			AchievementDataContainer NoPermissionAchievement = new AchievementDataContainer(x =>
 			 {
-				 x.Name = "noperms";
+				 x.Name = "Geen permissie";
 				 x.Achievements = new List<IAchievement>()
 				{
 					new CommandAchievement()
 					{
-						Name = "NO! Don't touch that!",
+						Name = "NEE! Blijf daar van af!",
 						Icon = "😱",
 						CheckCommand = async (p) =>
 						{
-							return await MikiApp.Instance.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
+                            return false;
+							//return await MikiApp.Instance.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
 						},
 						Points = 5
 					}
@@ -193,42 +183,42 @@ namespace Miki.Modules.Accounts.Services
 				 {
 					new LevelAchievement()
 					{
-						Name = "Novice",
+						Name = "Leuke loli",
 						Icon = "🎟",
 						CheckLevel = async (p) => p.level >= 3,
 						Points = 5,
 					},
 					new LevelAchievement()
 					{
-						Name = "Intermediate",
+						Name = "Top gozer",
 						Icon = "🎫",
 						CheckLevel = async (p) => p.level >= 5,
 						Points = 10,
 					},
 					new LevelAchievement()
 					{
-						Name = "Experienced",
+						Name = "Leuk persoontje",
 						Icon = "🏵",
 						CheckLevel = async (p) => p.level >= 10,
 						Points = 15,
 					},
 					new LevelAchievement()
 					{
-						Name = "Expert",
+						Name = "Super schattig persoontje",
 						Icon = "🎗",
 						CheckLevel = async (p) => p.level >= 20,
 						Points = 20,
 					},
 					new LevelAchievement()
 					{
-						Name = "Sage",
+						Name = "Succesvol persoon",
 						Icon = "🎖",
 						CheckLevel = async (p) => p.level >= 30,
 						Points = 25,
 					},
 					new LevelAchievement()
 					{
-						Name = "Master",
+						Name = "Mawster",
 						Icon = "🏅",
 						CheckLevel = async (p) => p.level >= 50,
 						Points = 30,
@@ -261,7 +251,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "🐸",
                         CheckCommand = async (p) =>
                         {
-                            return p.command.Name == "pasta" && p.message.Content.Contains("dat boi");
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("dat boi");
                         },
 						Points = 5
 					}
@@ -278,7 +268,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "😏",
 						CheckCommand = async (p) =>
 						{
-							return p.command.Name == "pasta" && p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
+							return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("( ͡° ͜ʖ ͡°)");
 						},
 						Points = 5
 					}
@@ -295,7 +285,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "⛵",
 						CheckCommand = async (p) =>
 						{
-                            return p.command.Name == "pasta" && p.message.Content.Split(' ').Contains("poi");
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Split(' ').Contains("poi");
 						},
 						Points = 5,
 					}

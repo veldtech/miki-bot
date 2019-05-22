@@ -1,6 +1,5 @@
 ﻿using Miki.Discord.Common;
 using Miki.Framework.Events;
-using Miki.Framework.Events.Attributes;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
