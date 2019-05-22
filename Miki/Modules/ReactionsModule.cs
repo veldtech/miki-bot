@@ -224,7 +224,11 @@ namespace Miki.Modules
 		{
 			"https://i.imgur.com/FRyZty3.gif",
 			"https://i.imgur.com/LhZimxF.gif",
-			"https://i.imgur.com/wbOFsFg.gif"
+			"https://i.imgur.com/wbOFsFg.gif",
+			"https://i.imgur.com/7vfcBBp.gif",
+			"https://i.imgur.com/NVtrEqR.gif",
+			"https://i.imgur.com/HFYEI12.gif",
+			"https://i.imgur.com/sZ750iM.gif"
 		};
 
 		[Command("confused", "verward", "shy", "verlegen")]
