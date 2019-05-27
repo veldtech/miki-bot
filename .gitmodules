@@ -5,3 +5,9 @@
 	path = Miki.Framework
 	url = https://github.com/mikibot/Miki.Framework
 	branch = core-rewrite-
+[submodule "submodules/miki.discord"]
+	path = submodules/miki.discord
+	url = https://github.com/mikibot/miki.discord
+[submodule "submodules/retsu"]
+	path = submodules/retsu
+	url = https://github.com/mikibot/retsu
