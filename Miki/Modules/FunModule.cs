@@ -815,7 +815,6 @@ namespace Miki.Modules
 				"http://i.imgur.com/FXHFLCH.jpg",
 				"http://i.imgur.com/vRRK4qd.png",
 				"http://i.imgur.com/0OycISQ.jpg",
-				"http://i.imgur.com/0OycISQ.jpg",
 				"http://i.imgur.com/g2vdQ6i.jpg",
 				"http://i.imgur.com/3vDUWgr.png",
 				"http://i.imgur.com/TN58jEQ.jpg",
