@@ -399,8 +399,11 @@ namespace Miki
             else
             {
                 Log.Error(exception);
-                await context.GetService<RavenClient>()
-                    .CaptureAsync(new SentryEvent(exception));
+                var sentry = context.GetService<RavenClient>();
+                if (sentry != null)
+                { 
+                    await sentry.CaptureAsync(new SentryEvent(exception));
+                }
             }
         }
     }

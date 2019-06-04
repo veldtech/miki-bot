@@ -186,7 +186,7 @@ namespace Miki.Modules
 		[Command("setprefix")]
 		public async Task PrefixAsync(IContext e)
 		{
-            var prefixMiddleware = e.GetService<PipelineStageTrigger>();
+            var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
 
             if (!e.GetArgumentPack().Take(out string prefix))
             {

@@ -196,7 +196,7 @@ namespace Miki.Modules
 				await e.GetService<DiscordClient>()
                     .SetGameAsync(i, new DiscordStatus
 				{
-					Game = new Discord.Common.Packets.Activity
+					Game = new Discord.Common.Packets.DiscordActivity
 					{
 						Name = text,
 						Url = url,

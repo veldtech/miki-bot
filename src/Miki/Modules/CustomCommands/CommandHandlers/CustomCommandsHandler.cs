@@ -68,7 +68,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 return;
             }
 
-            if(e.GetMessage().Type != MessageType.GUILDTEXT)
+            if(e.GetMessage().Type != DiscordMessageType.DEFAULT)
             {
                 return;
             }

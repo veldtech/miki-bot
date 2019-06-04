@@ -198,42 +198,70 @@ namespace Miki.Modules
         [Command("guildinfo")]
         public async Task GuildInfoAsync(IContext e)
         {
-            IDiscordGuildUser owner = await e.GetGuild().GetOwnerAsync();
+            var guild = e.GetGuild();
+            var locale = e.GetLocale();
 
-            //var emojiNames = e.GetGuild().R.Select(x => x.ToString());
+            IDiscordGuildUser owner = await guild.GetOwnerAsync();
+
             string emojiOutput = "none (yet!)";
-
-            //if (emojiNames.Count() > 0)
-            //{	
-            //	emojiOutput = string.Join(",", emojiNames);
+            //if (guild.getemoji.Count() > 0)
+            //{
+            //    emojiOutput = string.Join(",", emojiNames);
             //}
-            var context = e.GetService<MikiDbContext>();
 
-            // TODO: 
-            string prefix = ">";//await e.EventSystem.GetDefaultPrefixTrigger()
-                    //.GetForGuildAsync(context, e.GetService<ICacheClient>(), e.GetGuild().Id);
+            var context = e.GetService<MikiDbContext>();
+            var cache = e.GetService<ICacheClient>();
+
+            string prefix = await e.GetStage<PipelineStageTrigger>()
+                .GetDefaultTrigger()
+                .GetForGuildAsync(context, cache, guild.Id);
 
             var roles = await e.GetGuild().GetRolesAsync();
             var channels = await e.GetGuild().GetChannelsAsync();
 
-            await new EmbedBuilder()
+            var builder = new EmbedBuilder()
             {
                 Author = new EmbedAuthor()
                 {
-                    Name = e.GetGuild().Name,
-                    IconUrl = e.GetGuild().IconUrl,
-                    Url = e.GetGuild().IconUrl
+                    Name = guild.Name,
+                    IconUrl = guild.IconUrl,
+                    Url = guild.IconUrl
                 },
-            }.AddInlineField("👑 " + e.GetLocale().GetString("miki_module_general_guildinfo_owned_by"), $"{owner.Username}#{owner.Discriminator}")
-            .AddInlineField("👉 " + e.GetLocale().GetString("miki_label_prefix"), prefix)
-            .AddInlineField("📺 " + e.GetLocale().GetString("miki_module_general_guildinfo_channels"), channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString())
-            .AddInlineField("🔊 " + e.GetLocale().GetString("miki_module_general_guildinfo_voicechannels"), channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToFormattedString())
-            .AddInlineField("🙎 " + e.GetLocale().GetString("miki_module_general_guildinfo_users"), roles.Count().ToFormattedString())
-            .AddInlineField("#⃣ " + e.GetLocale().GetString("miki_module_general_guildinfo_roles_count"), roles.Count().ToFormattedString())
-            .AddField("📜 " + e.GetLocale().GetString("miki_module_general_guildinfo_roles"),
-                string.Join(",", roles.Select(x => $"`{x.Name}`")))
-            .AddField("😃 " + e.GetLocale().GetString("term_emoji"), emojiOutput)
-            .ToEmbed().QueueAsync(e.GetChannel());
+            };
+            builder.AddInlineField(
+                "👑 " + locale.GetString("miki_module_general_guildinfo_owned_by"), 
+                $"{owner.Username}#{owner.Discriminator}");
+
+            builder.AddInlineField(
+                "👉 " + locale.GetString("miki_label_prefix"), 
+                prefix);
+
+            builder.AddInlineField(
+                "📺 " + locale.GetString("miki_module_general_guildinfo_channels"), 
+                channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString());
+
+            builder.AddInlineField(
+                "🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"), 
+                channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToFormattedString());
+
+            builder.AddInlineField(
+                "🙎 " + locale.GetString("miki_module_general_guildinfo_users"), 
+                roles.Count().ToFormattedString());
+
+            builder.AddInlineField(
+                "#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"), 
+                roles.Count().ToFormattedString());
+
+            builder.AddField(
+                "📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
+                string.Join(",", roles.Select(x => $"`{x.Name}`")));
+
+            builder.AddField(
+                "😃 " + e.GetLocale().GetString("term_emoji"), 
+                emojiOutput);
+
+            await builder.ToEmbed()
+                .QueueAsync(e.GetChannel());
         }
 
         [Command("help")]
@@ -392,7 +420,7 @@ namespace Miki.Modules
             [Command]
             public async Task PrefixHelpAsync(IContext e)
             {
-                var prefixMiddleware = e.GetService<PipelineStageTrigger>();
+                var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
 
                 var prefix = await prefixMiddleware.GetDefaultTrigger()
                     .GetForGuildAsync(
@@ -409,8 +437,9 @@ namespace Miki.Modules
             [Command("set")]
             public async Task SetPrefixAsync(IContext e)
             {
-                var prefixMiddleware = e.GetService<PipelineStageTrigger>();
-                
+                var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
+                var locale = e.GetLocale();
+
                 if(!e.GetArgumentPack().Take(out string prefix))
                 {
 
@@ -424,10 +453,12 @@ namespace Miki.Modules
                         prefix);
 
                 await new EmbedBuilder()
-                    .SetTitle(e.GetLocale().GetString("miki_module_general_prefix_success_header"))
+                    .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
                     .SetDescription(
-                    e.GetLocale().GetString("miki_module_general_prefix_success_message", prefix
-                )).ToEmbed()
+                    locale.GetString(
+                        "miki_module_general_prefix_success_message", 
+                        prefix))
+                    .ToEmbed()
                 .QueueAsync(e.GetChannel());
             }
         }
@@ -435,18 +466,22 @@ namespace Miki.Modules
 		[Command("stats")]
 		public async Task StatsAsync(IContext e)
 		{
-			await Task.Yield();
-
-			var cache = MikiApp.Instance.GetService<IExtendedCacheClient>();
+			var cache = e.GetService<IExtendedCacheClient>();
+            var locale = e.GetLocale();
 
             await new EmbedBuilder()
 			{
 				Title = "⚙️ Miki stats",
 				Description = e.GetLocale().GetString("stats_description"),
 				Color = new Color(0.3f, 0.8f, 1),
-			}.AddField($"🖥️ {e.GetLocale().GetString("discord_servers")}", (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToFormattedString())
-			 .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
-			 .ToEmbed().QueueAsync(e.GetChannel());
+			}.AddField(
+                $"🖥️ {locale.GetString("discord_servers")}", 
+                (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToString("N0"))
+			 .AddField(
+                "More info", 
+                "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
+			 .ToEmbed()
+             .QueueAsync(e.GetChannel());
 		}
 
 		[Command("whois")]
@@ -489,7 +524,6 @@ namespace Miki.Modules
 
 			string r = string.Join(", ", roles
                 .Select(x => $"`{x.Name}`"));
-
             if (string.IsNullOrEmpty(r))
 			{
 				r = "none (yet!)";
@@ -497,10 +531,11 @@ namespace Miki.Modules
 
             embed.AddField(
                 e.CreateResource("miki_module_general_guildinfo_roles"),
-                new RawResource(r.Take(1000))
+                new RawResource(r)
             );
 
-            await embed.Build().QueueAsync(e.GetChannel());
+            await embed.Build()
+                .QueueAsync(e.GetChannel());
 		}
 	}
 }
