@@ -8,7 +8,6 @@ using Miki.Cache;
 using Miki.Cache.StackExchange;
 using Miki.Configuration;
 using Miki.Discord;
-using Miki.Discord.Caching.Stages;
 using Miki.Discord.Common;
 using Miki.Discord.Gateway;
 using Miki.Discord.Rest;
@@ -291,7 +290,6 @@ namespace Miki
             discord.UserUpdate += Client_UserUpdated;
 
             var gateway = app.GetService<IGateway>();
-            new BasicCacheStage().Initialize(gateway, cache);
         }
 
         public static async Task LoadFiltersAsync(MikiApp app, CommandPipeline pipeline)
@@ -363,7 +361,7 @@ namespace Miki
                 try
                 {
                     var members = await arg.GetMembersAsync();
-                    for (int i = 0; i < members.Length; i++)
+                    for (int i = 0; i < members.Count(); i++)
                     {
                         allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 

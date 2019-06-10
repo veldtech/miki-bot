@@ -88,13 +88,6 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 .Split(' ');
             string commandName = args.FirstOrDefault()
                 .ToLowerInvariant();
-            
-            //if(e.EventSystem
-            //    .GetCommandHandler<SimpleCommandHandler>()
-            //    .GetCommandByIdOrDefault(commandName) != null)
-            //{
-            //    return;
-            //}
 
             var cachePackage = await cache.HashGetAsync<ScriptPackage>(CommandCacheKey, commandName + ":" + guild.Id);
             if (cachePackage != null)
@@ -103,10 +96,10 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             }
             else
             {
-                var db = e.GetService<MikiDbContext>();
-                var command = await db.CustomCommands
-                    .FindAsync(guild.Id.ToDbLong(), commandName);
+                var db = e.GetService<DbContext>();
 
+                var command = await db.Set<CustomCommand>()
+                    .FindAsync(guild.Id.ToDbLong(), commandName);
                 if(command != null)
                 {
                     tokens = new Tokenizer().Tokenize(command.CommandBody);

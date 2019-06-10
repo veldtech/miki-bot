@@ -290,7 +290,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Caching\Miki.Discord.Caching.csproj" />
     <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
     <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
     <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />

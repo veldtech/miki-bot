@@ -154,13 +154,13 @@ namespace Miki.Modules
 					// Select random winners
 					for (int i = 0; i < amount; i++)
 					{
-						if (reactions.Count == 0)
+						if (reactions.Count() == 0)
 						{
 							break;
 						}
 
-						int index = MikiRandom.Next(reactions.Count);
-						winners.Add(reactions[index]);
+						int index = MikiRandom.Next(reactions.Count());
+						winners.Add(reactions.ElementAtOrDefault(index));
 					}
 
 					if (updateTask != -1)
@@ -455,9 +455,9 @@ namespace Miki.Modules
                 await new EmbedBuilder()
                     .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
                     .SetDescription(
-                    locale.GetString(
-                        "miki_module_general_prefix_success_message", 
-                        prefix))
+                        locale.GetString(
+                            "miki_module_general_prefix_success_message", 
+                            prefix))
                     .ToEmbed()
                 .QueueAsync(e.GetChannel());
             }
