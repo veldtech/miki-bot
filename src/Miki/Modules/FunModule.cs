@@ -18,9 +18,11 @@ using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands.Localization;
 using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using Miki.Models;
+using Miki.Net.Http;
 using Miki.Rest;
 using NCalc;
 using Newtonsoft.Json;
@@ -29,7 +31,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -130,7 +131,7 @@ namespace Miki.Modules
 			"miki_module_fun_8ball_answer_positive_9"
 		};
 
-        private readonly Net.Http.HttpClient imageClient;
+        private readonly HttpClient imageClient;
 
 		public FunModule()
 		{
@@ -142,7 +143,7 @@ namespace Miki.Modules
 				SafeTag = "rating:s",
 				NetUseCredentials = true,
 				NetHeaders = new List<Tuple<string, string>>() {
-					new Tuple<string, string>("User-Agent", "Other"),
+					new Tuple<string, string>("User-Agent", "MikiBot"),
 				},
 				BlacklistedTags =
 				{
@@ -214,7 +215,7 @@ namespace Miki.Modules
 
             if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
             {
-                imageClient = new Net.Http.HttpClient(Global.Config.ImageApiUrl);
+                imageClient = new HttpClient(Global.Config.ImageApiUrl);
             }
 		}
 
@@ -345,10 +346,13 @@ namespace Miki.Modules
 		[Command("gif")]
 		public async Task ImgurGifAsync(IContext e)
 		{
+            var locale = e.GetLocale();
+
             string title = e.GetArgumentPack().Pack.TakeAll();
 			if (string.IsNullOrEmpty(title))
 			{
-				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
+				e.GetChannel()
+                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -368,11 +372,13 @@ namespace Miki.Modules
 			{
 				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
-				e.GetChannel().QueueMessage(i.Link);
+				e.GetChannel()
+                    .QueueMessage(i.Link);
 			}
 			else
 			{
-				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
+				e.GetChannel()
+                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
@@ -740,13 +746,14 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            using (var client = new Net.Http.HttpClient(""))
+            using (var client = new HttpClient(""))
             {
-                var authorResponse = await client.SendAsync(new HttpRequestMessage()
+                var authorResponse = await client.SendAsync(new System.Net.Http.HttpRequestMessage
                 {
-                    Method = new HttpMethod("HEAD"),
+                    Method = new System.Net.Http.HttpMethod("HEAD"),
                     RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{e.GetAuthor().Id}.png")
                 });
+
 
                 if (!authorResponse.Success)
                 {
@@ -820,7 +827,8 @@ namespace Miki.Modules
 
 			await new EmbedBuilder()
 				.SetImage(images[MikiRandom.Next(0, images.Length)])
-				.ToEmbed().QueueAsync(e.GetChannel());
+				.ToEmbed()
+                .QueueAsync(e.GetChannel());
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <Configurations>Debug;Release;Debug Production;Prod</Configurations>
 	  <Deterministic>False</Deterministic>
 	  <Version>2019.2</Version>
@@ -30,8 +30,6 @@
     <PackageReference Include="Miki.Anilist" Version="0.6.0" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.0-beta2" />
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.3.0" />
-    <PackageReference Include="Miki.Configuration" Version="1.0.0" />
-    <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.0" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="Miki.UrbanDictionary" Version="0.1.0" />
@@ -299,7 +297,6 @@
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.States\Miki.Framework.Commands.States.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework\Miki.Framework.csproj" />

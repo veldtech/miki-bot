@@ -72,7 +72,7 @@ namespace Miki.Modules
             var api = e.GetService<IApiClient>();
             var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
-			if (user == null)
+			if (user.Id == 0)
 			{
 				await e.GetChannel().SendMessageAsync($"none.");
 			}

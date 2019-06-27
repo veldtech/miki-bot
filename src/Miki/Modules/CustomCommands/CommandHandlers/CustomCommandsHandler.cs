@@ -6,6 +6,7 @@ using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Framework;
 using Miki.Framework.Commands;
+using Miki.Framework.Commands.Pipelines;
 using MiScript;
 using MiScript.Models;
 using MiScript.Parser;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
-    public class CustomCommandsHandler
+    public class CustomCommandsHandler : IPipelineStage
     {
         const string CommandCacheKey = "customcommands";
 
@@ -61,14 +62,14 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             return context;
         }
 
-        public async Task CheckAsync(IContext e)
+        public async Task CheckAsync(IDiscordMessage data, IMutableContext e, Func<Task> next)
         {
-            if(e == null)
+            if (e == null)
             {
                 return;
             }
 
-            if(e.GetMessage().Type != DiscordMessageType.DEFAULT)
+            if (e.GetMessage().Type != DiscordMessageType.DEFAULT)
             {
                 return;
             }
@@ -100,13 +101,13 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
 
                 var command = await db.Set<CustomCommand>()
                     .FindAsync(guild.Id.ToDbLong(), commandName);
-                if(command != null)
+                if (command != null)
                 {
                     tokens = new Tokenizer().Tokenize(command.CommandBody);
                 }
             }
 
-            if(tokens != null)
+            if (tokens != null)
             {
                 var context = CreateContext(e);
                 e.GetChannel()

@@ -2274,4 +2274,10 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="error_command_guildonly" xml:space="preserve">
     <value>This command can only be used in discord servers!</value>
   </data>
+  <data name="locale_not_here" xml:space="preserve">
+    <value>Is your language not here?</value>
+  </data>
+  <data name="permission_set" xml:space="preserve">
+    <value>Permissions of {0} set to level {1}!</value>
+  </data>
 </root>

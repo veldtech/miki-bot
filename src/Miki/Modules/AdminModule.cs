@@ -8,10 +8,13 @@ using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
 using Miki.Framework.Commands.Stages;
 using Miki.Framework.Commands.States;
 using Miki.Framework.Events;
+using Miki.Logging;
 using Miki.Models;
+using Miki.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +27,7 @@ namespace Miki.Modules
 	public class AdminModule
 	{
 		[Command("ban")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task BanAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
@@ -97,14 +100,14 @@ namespace Miki.Modules
 		}
 
 		[Command("clean")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task CleanAsync(IContext e)
 		{
 			await PruneAsync(e, (await e.GetGuild().GetSelfAsync()).Id, null);
 		}
 
 		[Command("kick")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task KickAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
@@ -171,8 +174,8 @@ namespace Miki.Modules
 		}
 
 		[Command("prune")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
-		public async Task PruneAsync(IContext e)
+        [DefaultPermission(PermissionStatus.Deny)]
+        public async Task PruneAsync(IContext e)
 		{
 			await PruneAsync(e, 0, null);
 		}
@@ -181,6 +184,8 @@ namespace Miki.Modules
 		{
 			IDiscordGuildUser invoker = await e.GetGuild()
                 .GetSelfAsync();
+            var locale = e.GetLocale();
+
 			if (!(await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
 			{
 				e.GetChannel()
@@ -210,20 +215,20 @@ namespace Miki.Modules
 			{
 				if (amount < 0)
 				{
-                    await Utils.ErrorEmbed(e, e.GetLocale().GetString("miki_module_admin_prune_error_negative"))
+                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_negative"))
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
                 if (amount > 100)
                 {
-                    await Utils.ErrorEmbed(e, e.GetLocale().GetString("miki_module_admin_prune_error_max"))
+                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_max"))
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
             }
             else
             {
-                await Utils.ErrorEmbed(e, e.GetLocale().GetString("miki_module_admin_prune_error_parse"))
+                await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_parse"))
                     .ToEmbed().QueueAsync(e.GetChannel());
                 return;
             }
@@ -248,8 +253,11 @@ namespace Miki.Modules
 				await e.GetMessage()
                     .DeleteAsync();
 
-                await e.ErrorEmbed(e.GetLocale().GetString("miki_module_admin_prune_no_messages", ">"))
-					.ToEmbed().QueueAsync(e.GetChannel());
+                await e.ErrorEmbed(locale.GetString(
+                        "miki_module_admin_prune_no_messages", 
+                        e.GetPrefixMatch()))
+					.ToEmbed()
+                    .QueueAsync(e.GetChannel());
 				return;
 			}
 			for (int i = 0; i < amount; i++)
@@ -272,31 +280,67 @@ namespace Miki.Modules
                     .DeleteMessagesAsync(deleteMessages.ToArray());
 			}
 
-			string[] titles = new string[]
-			{
-				"POW!",
-				"BANG!",
-				"BAM!",
-				"KAPOW!",
-				"BOOM!",
-				"ZIP!",
-				"ZING!",
-				"SWOOSH!",
-				"POP!"
-			};
-
-		    (await new EmbedBuilder
-			{
-				Title = titles[MikiRandom.Next(titles.Length - 1)],
-				Description = e.GetLocale().GetString("miki_module_admin_prune_success", deleteMessages.Count),
-				Color = new Color(1, 1, 0.5f)
-			}.ToEmbed().QueueAsync(e.GetChannel()))
-				.ThenWait(5000)
-				.ThenDelete();
+            await e.SuccessEmbedResource("miki_module_admin_prune_success", deleteMessages.Count)
+                .QueueAsync(e.GetChannel())
+                .ThenWaitAsync(5000)
+                .ThenDeleteAsync();
 		}
 
+        [Command("permissions")]
+        public class PermissionsCommand
+        {
+            [Command("set")]
+            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
+            [DefaultPermission(PermissionStatus.Deny)]
+            public async Task SetPermissionsAsync(IContext e)
+            {
+                var permissions = e.GetStage<PermissionPipelineStage>();
+
+                if (!e.GetArgumentPack().Take(out string permission))
+                {
+                    return;
+                }
+
+                if (!Enum.TryParse<PermissionStatus>(permission, true, out var level))
+                {
+                    // invalid permission level
+                    return;
+                }
+
+                if (!e.GetArgumentPack().Take(out string user))
+                {
+                    return;
+                }
+
+                var userObject = await e.GetGuild().FindUserAsync(user);
+                if (userObject == null)
+                {
+                    // User not found
+                    return;
+                }
+
+                if (!e.GetArgumentPack().Take(out string commandName))
+                {
+                    return;
+                }
+
+                var ownPermission = await permissions.GetAllowedForUser(e, e.GetMessage(), commandName);
+                if (!ownPermission)
+                {
+                    // You can't do that :)
+                    return;
+                }
+
+                // TODO: implement 
+                //await permissions.SetForUserAsync(e, (long)userObject.Id, level);
+
+                await e.SuccessEmbedResource("permission_set", userObject, level)
+                    .QueueAsync(e.GetChannel());
+            }
+        }
+
         [Command("setevent", "setcommand")]
-        [RequiresPermission(PermissionLevel.ADMIN)]
+        [DefaultPermission(PermissionStatus.Deny)]
         [RequiresPipelineStage(typeof(StatePipelineStage))]
         public async Task SetCommandAsync(IContext e)
         {
@@ -427,7 +471,8 @@ namespace Miki.Modules
                     "💁 Banned by", 
                     $"{author.Username}#{author.Discriminator}");
 
-				await embed.ToEmbed().SendToUser(user);
+                await embed.ToEmbed()
+                    .SendToUser(user);
 
 				await e.GetGuild().AddBanAsync(user, 1, reason);
 				await e.GetGuild().RemoveBanAsync(user);

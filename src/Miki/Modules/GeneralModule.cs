@@ -11,6 +11,8 @@ using Miki.Framework.Arguments;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Commands.Stages;
+using Miki.Framework.Events;
 using Miki.Framework.Extension;
 using Miki.Framework.Language;
 using Miki.Helpers;
@@ -265,14 +267,14 @@ namespace Miki.Modules
         }
 
         [Command("help")]
+        [RequiresPipelineStage(typeof(CommandHandlerStage))]
         public async Task HelpAsync(IContext e)
         {
-            var commandTree = e.GetService<CommandTree>();
-
+            var commandHandler = e.GetStage<CommandHandlerStage>();
             if (e.GetArgumentPack().Take(out string arg))
             {
-                var command = commandTree.GetCommand(new ArgumentPack(arg.Split(' ')));
-                string prefix = ">"; // TODO
+                var command = commandHandler.GetCommand(new ArgumentPack(arg.Split(' ')));
+                string prefix = e.GetPrefixMatch();
 
                 if (command == null)
                 {
@@ -281,7 +283,10 @@ namespace Miki.Modules
                     helpListEmbed.Description = e.GetLocale().GetString("miki_module_help_error_null_message", prefix);
                     helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
 
-                    var allExecutables = await commandTree.Root.GetAllExecutableAsync(e);
+                    var firstModule = commandHandler.Modules.OfType<NodeModule>().First();
+                    var root = (firstModule.Parent as NodeRoot);
+
+                    var allExecutables = await root.GetAllExecutableAsync(e);
                     var comparer = new API.StringComparison.StringComparer(allExecutables.SelectMany(node => node.Metadata.Identifiers));
                     var best = comparer.GetBest(arg);
 
@@ -327,15 +332,18 @@ namespace Miki.Modules
             {
                 Description = e.GetLocale().GetString("miki_module_general_help_dm"),
                 Color = new Color(0.6f, 0.6f, 1.0f)
-            }.ToEmbed().QueueAsync(e.GetChannel());
+            }.ToEmbed()
+                .QueueAsync(e.GetChannel());
 
             var embedBuilder = new EmbedBuilder();
 
-            foreach (var nodeModule in commandTree.Root.Children.OfType<NodeModule>())
+            foreach (var nodeModule in commandHandler
+                .Modules.OfType<NodeModule>())
             {
                 var id = nodeModule.Metadata.Identifiers.First();
                 var executables = await nodeModule.GetAllExecutableAsync(e);
-                var commandNames = string.Join(", ", executables.Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
+                var commandNames = string.Join(", ", executables
+                    .Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
 
                 if (!string.IsNullOrEmpty(commandNames))
                 {
@@ -343,7 +351,8 @@ namespace Miki.Modules
                 }
             }
 
-            await embedBuilder.ToEmbed().QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
+            await embedBuilder.ToEmbed()
+                .QueueAsync(await e.GetAuthor().GetDMChannelAsync(), "Join our support server: https://discord.gg/39Xpj7K");
         }
 
         [Command("donate")]
@@ -396,13 +405,13 @@ namespace Miki.Modules
 		[Command("ping", "lag")]
 		public async Task PingAsync(IContext e)
 		{
-            (await new LocalizedEmbedBuilder(e.GetLocale())
+            await new LocalizedEmbedBuilder(e.GetLocale())
 				  .WithTitle(new RawResource("Ping"))
 				  .WithDescription("ping_placeholder")
 				  .Build()
-				  .QueueAsync(e.GetChannel()))
-				  .ThenWait(200)
-				  .Then(async x =>
+				  .QueueAsync(e.GetChannel())
+				  .ThenWaitAsync(200)
+				  .ThenAsync(async x =>
 				  {
 					  float ping = (float)(x.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
 					  await new EmbedBuilder()
@@ -458,6 +467,30 @@ namespace Miki.Modules
                         locale.GetString(
                             "miki_module_general_prefix_success_message", 
                             prefix))
+                    .ToEmbed()
+                .QueueAsync(e.GetChannel());
+            }
+
+            [Command("reset")]
+            public async Task ResetPrefixAsync(IContext e)
+            {
+                var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
+                var locale = e.GetLocale();
+
+                var trigger = prefixMiddleware.GetDefaultTrigger();
+                   
+                await trigger.ChangeForGuildAsync(
+                        e.GetService<DbContext>(),
+                        e.GetService<ICacheClient>(),
+                        e.GetGuild().Id,
+                        trigger.DefaultValue);
+
+                await new EmbedBuilder()
+                    .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
+                    .SetDescription(
+                        locale.GetString(
+                            "miki_module_general_prefix_success_message",
+                            trigger.DefaultValue))
                     .ToEmbed()
                 .QueueAsync(e.GetChannel());
             }
