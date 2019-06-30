@@ -212,6 +212,22 @@ namespace Miki
             u.AvatarUrl = u.Id.ToString();
 			await context.SaveChangesAsync();
 		}
+        public static async Task<bool> HeadAvatarAsync(IDiscordUser user)
+        {
+            if(user == null)
+            {
+                return false;
+            }
+
+            using (var client = new Net.Http.HttpClient($"https://cdn.miki.ai/avatars/{user.Id}.png"))
+            {
+                var response = await client.SendAsync(new System.Net.Http.HttpRequestMessage
+                {
+                    Method = new System.Net.Http.HttpMethod("HEAD"),
+                });
+                return response.Success;
+            }   
+        }
 
         public static string TakeAll(this IArgumentPack pack)
         {

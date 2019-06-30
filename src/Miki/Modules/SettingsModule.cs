@@ -226,8 +226,7 @@ namespace Miki.Modules
                 .SetTitle(
                     locale.GetString("miki_module_general_prefix_success_header"))
                 .SetDescription(
-                    locale.GetString("miki_module_general_prefix_success_message", 
-                    prefix))
+                    locale.GetString("miki_module_general_prefix_success_message", prefix))
                 .AddField("Warning", "This command has been replaced with `>prefix set`.")
                 .ToEmbed()
                 .QueueAsync(e.GetChannel());
@@ -242,8 +241,8 @@ namespace Miki.Modules
             await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
 
 			await e.SuccessEmbed(
-                locale.GetString("setting_avatar_updated")	
-			).QueueAsync(e.GetChannel());
+                locale.GetString("setting_avatar_updated"))
+                .QueueAsync(e.GetChannel());
 		}
 	}
 }
