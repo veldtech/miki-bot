@@ -9,6 +9,7 @@ using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Localization;
 using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Stages;
 using Miki.Framework.Commands.States;
 using Miki.Framework.Events;
@@ -43,7 +44,57 @@ namespace Miki.Modules
             {DatabaseSettingId.Achievements, (AchievementNotificationSetting)0 }
         };
 
+        [Command("listlocale")]
+        public async Task ListLocaleAsync(IContext e)
+        {
+            var localeStage = e.GetService<LocalizationPipelineStage>();
+            var locale = e.GetLocale();
+
+            var localeNames = string.Join(", ",
+                localeStage.LocaleNames.Keys
+                    .Select(x => $"`{x}`"));
+
+            await new EmbedBuilder()
+                .SetTitle(locale.GetString("locales_available"))
+                .SetDescription(localeNames)
+                .AddField(
+                    "Your language not here?",
+                    locale.GetString(
+                        "locales_contribute",
+                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                .ToEmbed()
+                .QueueAsync(e.GetChannel());
+        }
+
+        [Command("setlocale")]
+        [RequiresPermission(PermissionLevel.ADMIN)]
+        public async Task SetLocale(IContext e)
+        {
+            var localization = e.GetStage<LocalizationPipelineStage>();
+
+            string localeName = e.GetArgumentPack().Pack.TakeAll() ?? "";
+
+            if (!localization.LocaleNames.TryGetValue(localeName, out string langId))
+            {
+                await e.ErrorEmbedResource(
+                    "error_language_invalid",
+                    localeName,
+                    e.GetPrefixMatch()
+                ).ToEmbed().QueueAsync(e.GetChannel());
+            }
+
+            await localization.SetLocaleForChannelAsync(e, (long)e.GetChannel().Id, langId);
+
+            await e.SuccessEmbed(
+                    e.GetLocale()
+                    .GetString(
+                        "localization_set",
+                        $"`{localeName}`"))
+                .QueueAsync(e.GetChannel());
+        }
+
         [Command("setnotifications")]
+        [RequiresPermission(PermissionLevel.MODERATOR)]
         public async Task SetupNotifications(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string enumString))
@@ -157,33 +208,8 @@ namespace Miki.Modules
                 .QueueAsync(e.GetChannel());
         }
 
-        [Command("setlocale")]
-        public async Task SetLocale(IContext e)
-        {
-            var localization = e.GetService<LocalizationPipelineStage>();
-
-            string localeName = e.GetArgumentPack().Pack.TakeAll() ?? "";
-
-            if (!localization.LocaleNames.TryGetValue(localeName, out string langId))
-            {
-                await e.ErrorEmbedResource(
-                    "error_language_invalid",
-                    localeName,
-                    e.GetPrefixMatch()
-                ).ToEmbed().QueueAsync(e.GetChannel());
-            }
-
-            await localization.SetLocaleForChannelAsync(e, (long)e.GetChannel().Id, langId);
-
-            await e.SuccessEmbed(
-                    e.GetLocale()
-                    .GetString(
-                        "localization_set", 
-                        $"`{localeName}`"))
-                .QueueAsync(e.GetChannel());
-        }
-
 		[Command("setprefix")]
+        [RequiresPermission(PermissionLevel.ADMIN)]
 		public async Task PrefixAsync(IContext e)
 		{
             var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
@@ -224,28 +250,6 @@ namespace Miki.Modules
 			await e.SuccessEmbed(
                 locale.GetString("setting_avatar_updated")	
 			).QueueAsync(e.GetChannel());
-		}
-
-		[Command("listlocale")]
-		public async Task ListLocaleAsync(IContext e)
-		{
-            var localeStage = e.GetService<LocalizationPipelineStage>();
-            var locale = e.GetLocale();
-
-            var localeNames = string.Join(", ", 
-                localeStage.LocaleNames.Keys
-                    .Select(x => $"`{x}`"));
-
-            await new EmbedBuilder()
-                .SetTitle(locale.GetString("locales_available"))
-                .SetDescription(localeNames)
-                .AddField(
-				    "Your language not here?",
-                    locale.GetString(
-                        "locales_contribute", 
-                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
-                .ToEmbed()
-                .QueueAsync(e.GetChannel());
 		}
 	}
 }

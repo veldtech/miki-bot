@@ -10,12 +10,11 @@ using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Commands.Pipelines;
 using Miki.Framework.Commands.Stages;
 using Miki.Framework.Events;
+using Miki.Framework.Events.Triggers;
 using Miki.Logging;
 using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Modules.CustomCommands.Exceptions;
 using MiScript;
-using MiScript.Models;
-using MiScript.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +29,21 @@ namespace Miki.Modules.CustomCommands
     public class CustomCommandsModule
     {
         private readonly Tokenizer _tokenizer = new Tokenizer();
+
+        public CustomCommandsModule(MikiApp app)
+        {
+            var pipeline = new CommandPipelineBuilder(app)
+                .UseStage(new CorePipelineStage())
+                .UseArgumentPack()
+                .UsePrefixes(
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", true),
+                    new MentionTrigger())
+                .UseStage(new CustomCommandsHandler())
+                .Build();
+            app.GetService<DiscordClient>()
+                .MessageCreate += pipeline.CheckAsync;
+        }
 
         [GuildOnly, Command("createcommand")]
         public async Task NewCustomCommandAsync(IContext e)
@@ -57,21 +71,21 @@ namespace Miki.Modules.CustomCommands
 
                 try
                 {
-                    var tokens = _tokenizer.Tokenize(scriptBody);
-                    var values = tokens.Where(x => x.TokenType == Tokens.Argument)
-                        .Select(x => x.Value);
+                    //var tokens = _tokenizer.Tokenize(scriptBody);
+                    //var values = tokens.Where(x => x.TokenType == Tokens.Argument)
+                    //    .Select(x => x.Value);
 
-                    var context = new Dictionary<string, object>();
-                    foreach(var v in values)
-                    {
-                        if(context.ContainsKey(v))
-                        {
-                            continue;
-                        }
-                        context.Add(v, "");
-                    }
+                    //var context = new Dictionary<string, object>();
+                    //foreach(var v in values)
+                    //{
+                    //    if(context.ContainsKey(v))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    context.Add(v, "");
+                    //}
 
-                    new Parser(tokens).Parse(context);
+                    //new Parser(tokens).Parse(context);
                 }
                 catch(Exception ex)
                 {

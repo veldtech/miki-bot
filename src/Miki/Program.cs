@@ -9,6 +9,7 @@ using Miki.Cache.StackExchange;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
+using Miki.Discord.Common.Utils;
 using Miki.Discord.Gateway;
 using Miki.Discord.Rest;
 using Miki.Framework;
@@ -67,10 +68,29 @@ namespace Miki
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
-            var commands = BuildPipeline(app);
+            var commandBuilder = new CommandTreeBuilder(app);
+
+            var configManager = app.GetService<ConfigurationManager>();
+            if (configManager != null)
+            {
+                commandBuilder.OnContainerLoaded += (c, sc) =>
+                    {
+                        var config = sc.GetService<ConfigurationManager>();
+                        config.RegisterType(c.Instance.GetType(), c.Instance);
+                    };
+            }
+
+            var cmd = commandBuilder.Create(Assembly.GetEntryAssembly());
+
+            var commands = BuildPipeline(app, cmd);
             LoadDiscord(app, commands);
             await LoadFiltersAsync(app, commands);
             LoadLocales(commands);
+
+            if (configManager != null)
+            {
+                await LoadConfigAsync(configManager);
+            }
 
             for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
             {
@@ -82,17 +102,7 @@ namespace Miki
             await Task.Delay(-1);
         }
 
-        private static CommandTree BuildCommandMap(ConfigurationManager config)
-        {
-            var commandBuilder = new CommandTreeBuilder();
-            commandBuilder.OnContainerLoaded += (c) =>
-            {
-                config.RegisterType(c.GetType(), c.Instance);
-            };
-            return commandBuilder.Create(Assembly.GetEntryAssembly());
-        }
-
-        private static CommandPipeline BuildPipeline(MikiApp app)
+        private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
             => new CommandPipelineBuilder(app)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
@@ -106,8 +116,7 @@ namespace Miki
                 )
                 .UseLocalization()
                 .UseArgumentPack()
-                .UseCommandHandler(app.GetService<CommandTree>())
-                .UseStates()
+                .UseCommandHandler(cmdTree)
                 .UsePermissions()
                 .Build();
 
@@ -120,8 +129,7 @@ namespace Miki
                 .Where(t => t.IsClass && t.Namespace == nameSpace);
 
             var locale = app.PipelineStages
-                .Where(x => x is LocalizationPipelineStage)
-                .Select(x => x as LocalizationPipelineStage)
+                .OfType<LocalizationPipelineStage>()
                 .FirstOrDefault();
 
             foreach (var t in typeList)
@@ -255,37 +263,36 @@ namespace Miki
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
             }
+        }
 
-            // Setup commands
+        public static async Task LoadConfigAsync(ConfigurationManager m)
+        {
+            string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
+
+            if (File.Exists(configFile))
             {
-                app.AddSingletonService(provider 
-                    => BuildCommandMap(provider.GetService<ConfigurationManager>()));
+                await m.ImportAsync(
+                    new JsonSerializationProvider(),
+                    configFile
+                );
             }
+
+            await m.ExportAsync(
+                new JsonSerializationProvider(),
+                configFile
+            );
         }
 
         public static void LoadDiscord(MikiApp app, CommandPipeline pipeline)
         {
             var cache = app.GetService<IExtendedCacheClient>();
             var discord = app.GetService<DiscordClient>();
-            var config = app.GetService<ConfigurationManager>();
 
-            //string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
-
-            //if (File.Exists(configFile))
-            //{
-            //    await config.ImportAsync(
-            //        new JsonSerializationProvider(),
-            //        configFile
-            //    );
-            //}
-
-            //await config.ExportAsync(
-            //    new JsonSerializationProvider(),
-            //    configFile
-            //);
-
-            discord.MessageCreate += pipeline.CheckAsync;
-            pipeline.OnError += OnErrorAsync;
+            if (pipeline != null)
+            {
+                discord.MessageCreate += pipeline.CheckAsync;
+                pipeline.OnError += OnErrorAsync;
+            }
             discord.GuildJoin += Client_JoinedGuild;
             discord.UserUpdate += Client_UserUpdated;
 

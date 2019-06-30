@@ -935,6 +935,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is your language not here?.
+        /// </summary>
+        internal static string locale_not_here {
+            get {
+                return ResourceManager.GetString("locale_not_here", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Languages available.
         /// </summary>
         internal static string locales_available {
@@ -5751,6 +5760,15 @@ namespace Miki.Languages {
         internal static string permission_needed_error {
             get {
                 return ResourceManager.GetString("permission_needed_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permissions of {0} set to level {1}!.
+        /// </summary>
+        internal static string permission_set {
+            get {
+                return ResourceManager.GetString("permission_set", resourceCulture);
             }
         }
         

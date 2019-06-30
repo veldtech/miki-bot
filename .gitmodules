@@ -1,8 +1,8 @@
 [submodule "Miki.Bot.Models"]
-	path = Miki.Bot.Models
+	path = submodules/Miki.Bot.Models
 	url = https://github.com/mikibot/Miki.Bot.Models
 [submodule "Miki.Framework"]
-	path = Miki.Framework
+	path = submodules/Miki.Framework
 	url = https://github.com/mikibot/Miki.Framework
 	branch = core-rewrite-
 [submodule "submodules/miki.discord"]
@@ -11,6 +11,6 @@
 [submodule "submodules/retsu"]
 	path = submodules/retsu
 	url = https://github.com/mikibot/retsu
-[submodule "submodules/miki.framework"]
-	path = submodules/miki.framework
-	url = https://github.com/mikibot/miki.framework
+[submodule "submodules/miki.configuration"]
+	path = submodules/miki.configuration
+	url = https://github.com/mikibot/miki.configuration
