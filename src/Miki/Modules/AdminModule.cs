@@ -10,7 +10,6 @@ using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Permissions.Models;
 using Miki.Framework.Commands.Stages;
-using Miki.Framework.Commands.States;
 using Miki.Framework.Events;
 using Miki.Logging;
 using Miki.Models;
@@ -341,7 +340,6 @@ namespace Miki.Modules
 
         [Command("setevent", "setcommand")]
         [DefaultPermission(PermissionStatus.Deny)]
-        [RequiresPipelineStage(typeof(StatePipelineStage))]
         public async Task SetCommandAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string commandId))
@@ -374,7 +372,6 @@ namespace Miki.Modules
             bool global = false;
 
             var context = e.GetService<MikiDbContext>();
-            var states = e.GetStage<StatePipelineStage>();
 
             if (e.GetArgumentPack().Peek(out string g))
             {
@@ -384,21 +381,11 @@ namespace Miki.Modules
                     var channels = await e.GetGuild().GetChannelsAsync();
                     foreach (var c in channels)
                     {
-                        await states.SetCommandStateAsync(
-                            context, 
-                            (long)c.Id,
-                            command.ToString(),
-                            setValue);
                     }
                 }
             }
             else
             {
-                await states.SetCommandStateAsync(
-                    context,
-                    (long)e.GetChannel().Id,
-                    command.ToString(),
-                    setValue);
             }
 
             await context.SaveChangesAsync();
@@ -414,7 +401,6 @@ namespace Miki.Modules
         }
 
 		[Command("softban")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
         public async Task SoftbanAsync(IContext e)
 		{
 			IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();

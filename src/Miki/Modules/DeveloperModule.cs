@@ -27,7 +27,6 @@ namespace Miki.Modules
 	internal class DeveloperModule
 	{
 		[Command("identifyemoji")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdentifyEmojiAsync(IContext e)
 		{
 			if (DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
@@ -45,7 +44,6 @@ namespace Miki.Modules
         }
 
 		[Command("say")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public Task SayAsync(IContext e)
 		{
 			e.GetChannel()
@@ -54,7 +52,6 @@ namespace Miki.Modules
 		}
 
 		[Command("sayembed")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task SayEmbedAsync(IContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
@@ -66,7 +63,6 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyuser")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdenUserAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
@@ -81,7 +77,6 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyguilduser")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdenGuildUserAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
@@ -96,7 +91,6 @@ namespace Miki.Modules
 		}
 
         [Command("showpermissions")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task ShowPermissionsAsync(IContext e)
         {
             if(e.GetArgumentPack().Take(out ulong id))
@@ -119,7 +113,6 @@ namespace Miki.Modules
         }
 
         [Command("haspermission")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task HasPermissionAsync(IContext e)
         {
             var user = await e.GetGuild().GetSelfAsync();
@@ -134,7 +127,6 @@ namespace Miki.Modules
         }
 
 		[Command("identifyguildchannel")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdenGuildChannelAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
@@ -149,7 +141,6 @@ namespace Miki.Modules
 		}
 
         [Command("identifyrole")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdentifyRoleAsync(IContext e)
         {
             if (e.GetArgumentPack().Take(out ulong roleId))
@@ -166,7 +157,6 @@ namespace Miki.Modules
         }
 
         [Command("identifybotroles")]
-        [RequiresPermission(PermissionLevel.STAFF)]
         public async Task IdentifyBotRolesAsync(IContext e)
         {
             var roles = await e.GetGuild().GetRolesAsync();
@@ -175,7 +165,6 @@ namespace Miki.Modules
         }
 
         [Command("setactivity")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetGameAsync(IContext e)
 		{
             if (!e.GetArgumentPack().Take(out string arg))
@@ -209,7 +198,6 @@ namespace Miki.Modules
 		}
 
 		[Command("ignore")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public Task IgnoreIdAsync(IContext e)
 		{
             if (e.GetArgumentPack().Take(out ulong id))
@@ -224,7 +212,6 @@ namespace Miki.Modules
 		}
 
 		[Command("dev")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public Task ShowCacheAsync(IContext e)
 		{
 			e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
@@ -232,7 +219,6 @@ namespace Miki.Modules
 		}
 
         [Command("setmekos")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetMekos(IContext e)
         {
             if (e.GetArgumentPack().Take(out string userArg))
@@ -256,7 +242,6 @@ namespace Miki.Modules
         }
 
         [Command("changeavatar")]
-        //[RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task ChangeAvatarAsync(IContext e)
         {
             var s = e.GetMessage().Attachments.FirstOrDefault();
@@ -270,7 +255,6 @@ namespace Miki.Modules
         }
 
         [Command("createkey")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task CreateKeyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -285,7 +269,6 @@ namespace Miki.Modules
         }
 
         [Command("setexp")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetExp(IContext e)
         {
             var cache = e.GetService<ICacheClient>();
@@ -313,7 +296,6 @@ namespace Miki.Modules
         }
 
         [Command("setglobexp")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task SetGlobalExpAsync(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string userName))
@@ -340,7 +322,6 @@ namespace Miki.Modules
         }
 
         [Command("banuser")]
-        [RequiresPermission(PermissionLevel.DEVELOPER)]
         public async Task BanUserAsync(IContext e)
         {
             if (e.GetArgumentPack().Take(out string user))

@@ -11,7 +11,6 @@ using Miki.Framework.Commands.Localization;
 using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Stages;
-using Miki.Framework.Commands.States;
 using Miki.Framework.Events;
 using Miki.Localization;
 using Miki.Models;
@@ -67,7 +66,6 @@ namespace Miki.Modules
         }
 
         [Command("setlocale")]
-        [RequiresPermission(PermissionLevel.ADMIN)]
         public async Task SetLocale(IContext e)
         {
             var localization = e.GetStage<LocalizationPipelineStage>();
@@ -94,7 +92,6 @@ namespace Miki.Modules
         }
 
         [Command("setnotifications")]
-        [RequiresPermission(PermissionLevel.MODERATOR)]
         public async Task SetupNotifications(IContext e)
         {
             if (!e.GetArgumentPack().Take(out string enumString))
@@ -170,7 +167,6 @@ namespace Miki.Modules
             var db = e.GetService<DbContext>();
 
             var commandHandler = e.GetStage<CommandHandlerStage>();
-            var stateManager = e.GetStage<StatePipelineStage>();
 
             string args = e.GetArgumentPack().Pack.TakeAll();
 
@@ -193,9 +189,8 @@ namespace Miki.Modules
 
             foreach (Node ev in module.Children.OrderBy((x) => x.Metadata.Identifiers.First()))
             {
-                var state = await stateManager
-                    .GetCommandStateAsync(db, ev.ToString(), (long)e.GetChannel().Id);
-                content += (state.State 
+                var state = true;
+                content += (state 
                     ? "<:iconenabled:341251534522286080>" 
                     : "<:icondisabled:341251533754728458>") + $" {ev.Metadata.Identifiers.First()}\n";
             }
@@ -209,7 +204,6 @@ namespace Miki.Modules
         }
 
 		[Command("setprefix")]
-        [RequiresPermission(PermissionLevel.ADMIN)]
 		public async Task PrefixAsync(IContext e)
 		{
             var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
