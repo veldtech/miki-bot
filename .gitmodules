@@ -11,3 +11,6 @@
 [submodule "submodules/retsu"]
 	path = submodules/retsu
 	url = https://github.com/mikibot/retsu
+[submodule "submodules/miki.framework"]
+	path = submodules/miki.framework
+	url = https://github.com/mikibot/miki.framework
