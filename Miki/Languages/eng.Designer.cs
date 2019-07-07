@@ -259,6 +259,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command can only be used in discord servers!.
+        /// </summary>
+        internal static string error_command_guildonly {
+            get {
+                return ResourceManager.GetString("error_command_guildonly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command &apos;{0}&apos; does not exist!.
         /// </summary>
         internal static string error_command_null {
@@ -295,11 +304,29 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!.
+        /// </summary>
+        internal static string error_guild_rival_null {
+            get {
+                return ResourceManager.GetString("error_guild_rival_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have enough mekos! You need {0} more mekos to be able to do this..
         /// </summary>
         internal static string error_insufficient_currency {
             get {
                 return ResourceManager.GetString("error_insufficient_currency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot use &apos;{0}&apos; in this context!.
+        /// </summary>
+        internal static string error_invalid_character {
+            get {
+                return ResourceManager.GetString("error_invalid_character", resourceCulture);
             }
         }
         
@@ -318,6 +345,15 @@ namespace Miki.Languages {
         internal static string error_marriageslots_insufficient {
             get {
                 return ResourceManager.GetString("error_marriageslots_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unknown parsing exception occured with message: &quot;{0}&quot;.
+        /// </summary>
+        internal static string error_miscript_parse {
+            get {
+                return ResourceManager.GetString("error_miscript_parse", resourceCulture);
             }
         }
         
@@ -1242,6 +1278,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create commands with miki&apos;s scripting language!.
+        /// </summary>
+        internal static string miki_command_description_createcommand {
+            get {
+                return ResourceManager.GetString("miki_command_description_createcommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create your own special pasta and share it with everyone!.
         /// </summary>
         internal static string miki_command_description_createpasta {
@@ -1791,11 +1836,29 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Redeem your keys to get donator permissions!.
+        /// </summary>
+        internal static string miki_command_description_redeemkey {
+            get {
+                return ResourceManager.GetString("miki_command_description_redeemkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remind yourself to do things!.
         /// </summary>
         internal static string miki_command_description_remind {
             get {
                 return ResourceManager.GetString("miki_command_description_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove your scripted commands..
+        /// </summary>
+        internal static string miki_command_description_removecommand {
+            get {
+                return ResourceManager.GetString("miki_command_description_removecommand", resourceCulture);
             }
         }
         
@@ -1860,6 +1923,15 @@ namespace Miki.Languages {
         internal static string miki_command_description_searchpasta {
             get {
                 return ResourceManager.GetString("miki_command_description_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sell your unwanted keys for a flat sum of mekos!.
+        /// </summary>
+        internal static string miki_command_description_sellkey {
+            get {
+                return ResourceManager.GetString("miki_command_description_sellkey", resourceCulture);
             }
         }
         
@@ -2258,6 +2330,16 @@ namespace Miki.Languages {
         internal static string miki_command_usage_confused {
             get {
                 return ResourceManager.GetString("miki_command_usage_confused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;createcommand &lt;command name&gt; &lt;script&gt;
+        ///To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript.
+        /// </summary>
+        internal static string miki_command_usage_createcommand {
+            get {
+                return ResourceManager.GetString("miki_command_usage_createcommand", resourceCulture);
             }
         }
         
@@ -2821,11 +2903,29 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;redeemkey &lt;key&gt;.
+        /// </summary>
+        internal static string miki_command_usage_redeemkey {
+            get {
+                return ResourceManager.GetString("miki_command_usage_redeemkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;remind me to &lt;action&gt; in &lt;time&gt; (e.g. 2 minutes and 11 seconds).
         /// </summary>
         internal static string miki_command_usage_remind {
             get {
                 return ResourceManager.GetString("miki_command_usage_remind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;removecommand &lt;command name&gt;.
+        /// </summary>
+        internal static string miki_command_usage_removecommand {
+            get {
+                return ResourceManager.GetString("miki_command_usage_removecommand", resourceCulture);
             }
         }
         
@@ -2892,6 +2992,15 @@ namespace Miki.Languages {
         internal static string miki_command_usage_searchpasta {
             get {
                 return ResourceManager.GetString("miki_command_usage_searchpasta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;sellkey &lt;key&gt;.
+        /// </summary>
+        internal static string miki_command_usage_sellkey {
+            get {
+                return ResourceManager.GetString("miki_command_usage_sellkey", resourceCulture);
             }
         }
         
@@ -5538,6 +5647,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command &apos;{0}&apos; deleted successfully!.
+        /// </summary>
+        internal static string ok_command_deleted {
+            get {
+                return ResourceManager.GetString("ok_command_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to page {0} of {1}.
         /// </summary>
         internal static string page_footer {
@@ -5813,6 +5931,15 @@ namespace Miki.Languages {
         internal static string stats_description {
             get {
                 return ResourceManager.GetString("stats_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A command with the name {0} already exists!.
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

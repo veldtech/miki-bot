@@ -79,7 +79,7 @@ namespace Miki.Modules.Logging.Interpreter
 			new RegexToken("^\".*\"", QueryTokenType.STRING);
 		}
 
-		public static void Run(EventContext x)
+		public static void Run(CommandContext x)
 		{
 			List<Token> allTokens = instance.Tokenize(x.Arguments.ToString());
 		}

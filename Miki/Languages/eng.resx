@@ -2231,4 +2231,47 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="permission_missing" xml:space="preserve">
     <value>I do not have the permission to {0}. Please give me this!</value>
   </data>
+  <data name="error_invalid_character" xml:space="preserve">
+    <value>You cannot use '{0}' in this context!</value>
+  </data>
+  <data name="error_miscript_parse" xml:space="preserve">
+    <value>An unknown parsing exception occured with message: "{0}"</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value>A command with the name {0} already exists!</value>
+  </data>
+  <data name="ok_command_deleted" xml:space="preserve">
+    <value>Command '{0}' deleted successfully!</value>
+  </data>
+  <data name="miki_command_description_createcommand" xml:space="preserve">
+    <value>Create commands with miki's scripting language!</value>
+  </data>
+  <data name="miki_command_description_removecommand" xml:space="preserve">
+    <value>Remove your scripted commands.</value>
+  </data>
+  <data name="miki_command_usage_createcommand" xml:space="preserve">
+    <value>&gt;createcommand &lt;command name&gt; &lt;script&gt;
+To read more about the miki scripting language. Check out https://github.com/mikibot/miki.bot/wiki/miscript</value>
+  </data>
+  <data name="miki_command_usage_removecommand" xml:space="preserve">
+    <value>&gt;removecommand &lt;command name&gt;</value>
+  </data>
+  <data name="miki_command_description_redeemkey" xml:space="preserve">
+    <value>Redeem your keys to get donator permissions!</value>
+  </data>
+  <data name="miki_command_description_sellkey" xml:space="preserve">
+    <value>Sell your unwanted keys for a flat sum of mekos!</value>
+  </data>
+  <data name="miki_command_usage_redeemkey" xml:space="preserve">
+    <value>&gt;redeemkey &lt;key&gt;</value>
+  </data>
+  <data name="miki_command_usage_sellkey" xml:space="preserve">
+    <value>&gt;sellkey &lt;key&gt;</value>
+  </data>
+  <data name="error_guild_rival_null" xml:space="preserve">
+    <value>Your guild does not have a rival yet! Use `&gt;guildrival` to find your first rival!</value>
+  </data>
+  <data name="error_command_guildonly" xml:space="preserve">
+    <value>This command can only be used in discord servers!</value>
+  </data>
 </root>

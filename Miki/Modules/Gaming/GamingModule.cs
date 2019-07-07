@@ -15,7 +15,7 @@ namespace Miki.Modules.Overwatch
 	internal class GamingModule
 	{
 		[Command(Name = "osu")]
-		public async Task SendOsuSignatureAsync(EventContext e)
+		public async Task SendOsuSignatureAsync(CommandContext e)
 		{
             e.Arguments.Take(out string username);
 
@@ -31,7 +31,7 @@ namespace Miki.Modules.Overwatch
 		}
 
 		[Command(Name = "ctb")]
-		public async Task SendCatchTheBeatSignatureAsync(EventContext e)
+		public async Task SendCatchTheBeatSignatureAsync(CommandContext e)
 		{
             e.Arguments.Take(out string username);
 
@@ -47,7 +47,7 @@ namespace Miki.Modules.Overwatch
 		}
 
 		[Command(Name = "mania")]
-		public async Task SendManiaSignatureAsync(EventContext e)
+		public async Task SendManiaSignatureAsync(CommandContext e)
 		{
             e.Arguments.Take(out string username);
 
@@ -63,7 +63,7 @@ namespace Miki.Modules.Overwatch
 		}
 
 		[Command(Name = "taiko")]
-		public async Task SendTaikoSignatureAsync(EventContext e)
+		public async Task SendTaikoSignatureAsync(CommandContext e)
 		{
             e.Arguments.Take(out string username);
 

@@ -1,4 +1,5 @@
-﻿using Miki.Accounts.Achievements.Objects;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts.Achievements.Objects;
 using Miki.Bot.Models;
 using Miki.Framework;
 using Miki.Helpers;
@@ -46,8 +47,9 @@ namespace Miki.Accounts.Achievements
 		{
 			long userId = packet.discordUser.Id.ToDbLong();
 
-			using (var context = new MikiContext())
+			using (var scope = MikiApp.Instance.Services.CreateScope())
 			{
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
 				Achievement a = await DatabaseHelpers.GetAchievementAsync(context, userId, Name);
 
 				if (a == null)

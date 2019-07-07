@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Configurations>Debug;Release;Debug Production;Prod</Configurations>
 	<Deterministic>False</Deterministic>
+	<Version>2019.2</Version>
+	<AssemblyVersion>2019.2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -31,11 +33,13 @@
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.0" />
     <PackageReference Include="Miki.Discord.Caching" Version="2.4.4" />
-    <PackageReference Include="Miki.Discord.Gateway.Centralized" Version="0.1.0-beta3" />
-    <PackageReference Include="Miki.Discord.Gateway.Distributed" Version="1.3.3-alpha2" />
-    <PackageReference Include="Miki.Discord.Rest" Version="2.6.1" />
-    <PackageReference Include="Miki.Dsl" Version="1.1.0" />
-    <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.5-alpha1" />
+    <PackageReference Include="Miki.Discord.Gateway" Version="0.1.0" />
+    <PackageReference Include="Miki.Discord.Gateway.Distributed" Version="1.3.4" />
+    <PackageReference Include="Miki.Discord.Rest" Version="2.6.2" />
+    <PackageReference Include="Miki.Dsl" Version="1.2.0" />
+    <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
+    <PackageReference Include="Miki.UrbanDictionary" Version="0.1.0" />
+    <PackageReference Include="MiScript" Version="0.1.2" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Npgsql" Version="4.0.4" />
@@ -48,7 +52,6 @@
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\Miki.Bot.Models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\Miki.Framework\Miki.Framework\Miki.Framework.csproj" />
-    <ProjectReference Include="..\Miki.UrbanDictionary\Miki.UrbanDictionary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

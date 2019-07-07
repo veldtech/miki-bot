@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Miki.API.Leaderboards;
 using Miki.Bot.Models;
 using Miki.BunnyCDN;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -16,6 +17,7 @@ using Miki.Localization;
 using Miki.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -42,13 +44,6 @@ namespace Miki
         public static bool TryFromEnum<T>(this string argument, out T value)
             where T : struct
             => Enum.TryParse(argument ?? "", true, out value);
-
-        public static DateTime UnixToDateTime(long unix)
-        {
-            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            time = time.AddSeconds(unix).ToLocalTime();
-            return time;
-        }
 
         public static string ToTimeString(this TimeSpan time, LocaleInstance instance, bool minified = false)
         {
@@ -135,28 +130,39 @@ namespace Miki
         public static bool IsAll(string input)
             => (input == "all") || (input == "*");
 
-        public static EmbedBuilder ErrorEmbed(this EventContext e, string message)
+        public static EmbedBuilder ErrorEmbed(this ICommandContext e, string message)
             => new LocalizedEmbedBuilder(e.Locale)
                 .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
 				.SetDescription(message)
 				.SetColor(1.0f, 0.0f, 0.0f);
 
-		public static EmbedBuilder ErrorEmbedResource(this EventContext e, string resourceId, params object[] args)
+		public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, string resourceId, params object[] args)
 			=> ErrorEmbed(e, e.Locale.GetString(resourceId, args));
 
-        public static EmbedBuilder ErrorEmbedResource(this EventContext e, IResource resource)
+        public static EmbedBuilder ErrorEmbedResource(this ICommandContext e, IResource resource)
             => ErrorEmbed(e, resource.Get(e.Locale));
 
         public static DateTime MinDbValue 
             => new DateTime(1755, 1, 1, 0, 0, 0);
 
-		public static DiscordEmbed SuccessEmbed(this EventContext e, string message)
+        public static PrefixTrigger GetDefaultPrefixTrigger(this EventSystem es)
+        {
+            return es.GetMessageTriggers()
+                .Where(x => x is PrefixTrigger)
+                .Select(x => x as PrefixTrigger)
+                .Where(x => x.IsDefault)
+                .FirstOrDefault();
+        }
+
+		public static DiscordEmbed SuccessEmbed(this ICommandContext e, string message)
 		    => new EmbedBuilder()
 			{
 				Title = "✅ " + e.Locale.GetString("miki_success_message_generic"),
 				Description = message,
 				Color = new Color(119, 178, 85)
 			}.ToEmbed();
+        public static DiscordEmbed SuccessEmbedResource(this ICommandContext e, string resource, params object[] param)
+            => SuccessEmbed(e, e.Locale.GetString(resource, param));
 
         public static string ToFormattedString(this int val)
             => val.ToString("N0");
@@ -181,7 +187,7 @@ namespace Miki
 			return embed;
 		}
 
-		public static async Task SyncAvatarAsync(IDiscordUser user)
+		public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
 		{
 			PutObjectRequest request = new PutObjectRequest();
 			request.BucketName = "miki-cdn";
@@ -206,12 +212,10 @@ namespace Miki
             await MikiApp.Instance.GetService<BunnyCDNClient>()
                 .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
-            using (var context = new MikiContext())
-			{
-				User u = await User.GetAsync(context, user.Id, user.Username);
-				u.AvatarUrl = u.Id.ToString();
-				await context.SaveChangesAsync();
-			}
+			User u = await User.GetAsync(context, user.Id, user.Username);
+            await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
+            u.AvatarUrl = u.Id.ToString();
+			await context.SaveChangesAsync();
 		}
 
         public static string TakeAll(this IArgumentPack pack)
@@ -222,11 +226,6 @@ namespace Miki
                 allItems.Add(pack.Take());
             }
             return string.Join(" ", allItems);
-        }
-
-        internal static string UserSyncedKey()
-        {
-            throw new NotImplementedException();
         }
     }
 

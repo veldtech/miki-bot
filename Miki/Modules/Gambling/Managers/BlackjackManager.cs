@@ -89,7 +89,7 @@ namespace Miki.Modules.Gambling.Managers
 			return FromContext(context);
 		}
 
-		public EmbedBuilder CreateEmbed(EventContext e)
+		public EmbedBuilder CreateEmbed(MessageContext e)
 		{
 			string explanation = e.Locale.GetString("miki_blackjack_explanation");
 

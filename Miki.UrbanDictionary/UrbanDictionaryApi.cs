@@ -10,7 +10,7 @@ namespace Miki.UrbanDictionary
         private const string BaseURL = "http://api.urbandictionary.com/v0/";
         private const string UserBaseURL = "https://www.urbandictionary.com/";
 
-        private HttpClient client;
+        private readonly HttpClient client;
    
 		public UrbanDictionaryAPI()
 		{

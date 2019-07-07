@@ -218,7 +218,7 @@ namespace Miki.Modules
 		};
 
 		[Command(Name = "confused")]
-		public async Task ConfusedAsync(EventContext e)
+		public async Task ConfusedAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{
@@ -227,7 +227,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "lewd")]
-		public async Task LewdAsync(EventContext e)
+		public async Task LewdAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{
@@ -236,7 +236,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "pout")]
-		public async Task PoutAsync(EventContext e)
+		public async Task PoutAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{
@@ -245,7 +245,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "smug")]
-		public async Task SmugAsync(EventContext e)
+		public async Task SmugAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{
@@ -254,7 +254,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "cry")]
-		public async Task CryAsync(EventContext e)
+		public async Task CryAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{
@@ -263,7 +263,7 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "stare")]
-		public async Task StareAsync(EventContext e)
+		public async Task StareAsync(CommandContext e)
 		{
             await new EmbedBuilder()
 			{

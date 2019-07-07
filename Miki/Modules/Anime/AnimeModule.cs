@@ -16,11 +16,11 @@ namespace Miki.Core.Modules.Anime
 		private readonly AnilistClient anilistClient = new AnilistClient();
 
 		[Command(Name = "getanime")]
-		public async Task GetAnimeAsync(EventContext e)
+		public async Task GetAnimeAsync(CommandContext e)
 			=> await GetMediaAsync(e, false, MediaFormat.MANGA, MediaFormat.NOVEL);
 
 		[Command(Name = "getcharacter")]
-		public async Task GetCharacterAsync(EventContext e)
+		public async Task GetCharacterAsync(CommandContext e)
 		{
 			ICharacter character = null;
 			if (e.Arguments.Take(out int characterId))
@@ -58,11 +58,11 @@ namespace Miki.Core.Modules.Anime
 		}
 
 		[Command(Name = "getmanga")]
-		public async Task GetMangaAsync(EventContext e)
+		public async Task GetMangaAsync(CommandContext e)
 			=> await GetMediaAsync(e, true, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT);
 
 		[Command(Name = "findcharacter")]
-		public async Task FindCharacterAsync(EventContext e)
+		public async Task FindCharacterAsync(CommandContext e)
 		{
             if (!e.Arguments.Take(out string query))
             {
@@ -101,7 +101,7 @@ namespace Miki.Core.Modules.Anime
 		}
 
 		[Command(Name = "findmanga")]
-		public async Task FindMangaAsync(EventContext e)
+		public async Task FindMangaAsync(CommandContext e)
 		{
             if (!e.Arguments.Take(out string query))
             {
@@ -140,7 +140,7 @@ namespace Miki.Core.Modules.Anime
 		}
 
 		[Command(Name = "findanime")]
-		public async Task FindAnimeAsync(EventContext e)
+		public async Task FindAnimeAsync(CommandContext e)
 		{
             if (!e.Arguments.Take(out string query))
             {
@@ -178,7 +178,7 @@ namespace Miki.Core.Modules.Anime
 				.ToEmbed().QueueToChannelAsync(e.Channel);
 		}
 
-		private async Task GetMediaAsync(EventContext e, bool manga, params MediaFormat[] format)
+		private async Task GetMediaAsync(CommandContext e, bool manga, params MediaFormat[] format)
 		{
             IMedia media = null;
             if (e.Arguments.Take(out int mediaId))

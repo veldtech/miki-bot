@@ -1,3 +1,4 @@
+using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -17,7 +18,7 @@ namespace Miki.Modules
 	public class AdminModule
 	{
 		[Command(Name = "ban", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task BanAsync(EventContext e)
+		public async Task BanAsync(CommandContext e)
 		{
 			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
@@ -86,13 +87,13 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "clean", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task CleanAsync(EventContext e)
+		public async Task CleanAsync(CommandContext e)
 		{
-			await PruneAsync(e, 100, (await e.Guild.GetSelfAsync()).Id, null);
+			await PruneAsync(e, (await e.Guild.GetSelfAsync()).Id, null);
 		}
 
 		[Command(Name = "kick", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task KickAsync(EventContext e)
+		public async Task KickAsync(CommandContext e)
 		{
 			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
             
@@ -156,11 +157,12 @@ namespace Miki.Modules
 		}
 
 		[Command(Name = "prune", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task PruneAsync(EventContext e)
+		public async Task PruneAsync(ICommandContext e)
 		{
-			await PruneAsync(e, 100, 0, null);
+			await PruneAsync(e, 0, null);
 		}
-		public async Task PruneAsync(EventContext e, int _amount = 100, ulong _target = 0, string _filter = null)
+
+        public async Task PruneAsync(ICommandContext e, ulong target = 0, string filter = null)
 		{
 			IDiscordGuildUser invoker = await e.Guild.GetSelfAsync();
 			if (!(await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
@@ -180,40 +182,40 @@ namespace Miki.Modules
                 return;
             }
 
-            string filter = _filter;
+
             string args = e.Arguments.Pack.TakeAll();
             string[] argsSplit = args.Split(' ');
-            ulong target = e.message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.message.MentionedUserIds.First())).Id : _target;
+            target = e.Message.MentionedUserIds.Count > 0 ? (await e.Guild.GetMemberAsync(e.Message.MentionedUserIds.First())).Id : target;
 
             if (int.TryParse(argsSplit[0], out int amount))
 			{
 				if (amount < 0)
 				{
                     await Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_negative"))
-						.ToEmbed().QueueToChannelAsync(e.Channel);
-					return;
-				}
-				if (amount > 100)
-				{
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
+                if (amount > 100)
+                {
                     await Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_max"))
-						.ToEmbed().QueueToChannelAsync(e.Channel);
-					return;
-				}
-			}
-			else
-			{
+                        .ToEmbed().QueueToChannelAsync(e.Channel);
+                    return;
+                }
+            }
+            else
+            {
                 await Utils.ErrorEmbed(e, e.Locale.GetString("miki_module_admin_prune_error_parse"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
 
-            if (Regex.IsMatch(args, "\"(.*?)\""))
+            if (Regex.IsMatch(e.Arguments.Pack.TakeAll(), "\"(.*?)\""))
             {
                 Regex regex = new Regex("\"(.*?)\"");
-                filter = regex.Match(args).ToString().Trim('"', ' ');
+                filter = regex.Match(e.Arguments.Pack.TakeAll()).ToString().Trim('"', ' ');
             }
             
-			await e.message.DeleteAsync(); // Delete the calling message before we get the message history.
+			await e.Message.DeleteAsync(); // Delete the calling message before we get the message history.
 
 			IEnumerable<IDiscordMessage> messages = await e.Channel.GetMessagesAsync(amount);
 			List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
@@ -222,7 +224,7 @@ namespace Miki.Modules
 
 			if (amount < 1)
 			{
-				await e.message.DeleteAsync();
+				await e.Message.DeleteAsync();
 
                 await e.ErrorEmbed(e.Locale.GetString("miki_module_admin_prune_no_messages", ">"))
 					.ToEmbed().QueueToChannelAsync(e.Channel);
@@ -270,97 +272,96 @@ namespace Miki.Modules
 				.ThenDelete();
 		}
 
-		[Command(Name = "setevent", 
-			Accessibility = EventAccessibility.ADMINONLY, 
-			Aliases = new string[] { "setcommand" }, 
-			CanBeDisabled = false)]
-		public async Task SetCommandAsync(EventContext e)
-		{
-			if (!e.Arguments.Take(out string commandId))
-			{
-				return;
-			}
+        [Command(Name = "setevent",
+            Accessibility = EventAccessibility.ADMINONLY,
+            Aliases = new string[] { "setcommand" },
+            CanBeDisabled = false)]
+        public async Task SetCommandAsync(CommandContext e)
+        {
+            if (!e.Arguments.Take(out string commandId))
+            {
+                return;
+            }
 
-			Event command = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetCommandById(commandId);
+            Event command = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().GetCommandById(commandId);
 
-			if (command == null)
-			{
+            if (command == null)
+            {
                 await e.ErrorEmbed($"{commandId} is not a valid command")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
 
-			if (!command.CanBeDisabled)
-			{
+            if (!command.CanBeDisabled)
+            {
                 await e.ErrorEmbed(e.Locale.GetString("miki_admin_cannot_disable", $"`{commandId}`"))
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
 
-			if(!e.Arguments.Take(out bool setValue))
-			{
-				return;
-			}
+            if (!e.Arguments.Take(out bool setValue))
+            {
+                return;
+            }
 
-			string localeState = (setValue) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled");
+            string localeState = (setValue) ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled");
 
-			bool global = false;
+            bool global = false;
 
-			using (var context = new MikiContext())
-			{
-                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
+            var context = e.GetService<MikiDbContext>();
 
-                if (e.Arguments.Peek(out string g))
-				{
-                    if (g == "-g")
+            var cache = e.GetService<ICacheClient>();
+
+            if (e.Arguments.Peek(out string g))
+            {
+                if (g == "-g")
+                {
+                    global = true;
+                    var channels = await e.Guild.GetChannelsAsync();
+                    foreach (var c in channels)
                     {
-                        global = true;
-                        var channels = await e.Guild.GetChannelsAsync();
-                        foreach (var c in channels)
-                        {
-                            await command.SetEnabled(context, cache, c.Id, setValue);
-                        }
+                        await command.SetEnabled(context, cache, c.Id, setValue);
                     }
-				}
-				else
-				{
-					await command.SetEnabled(context, cache, e.Channel.Id, setValue);
-				}
+                }
+            }
+            else
+            {
+                await command.SetEnabled(context, cache, e.Channel.Id, setValue);
+            }
 
-				await context.SaveChangesAsync();
-			}
+            await context.SaveChangesAsync();
 
-			string outputDesc = localeState + " " + commandId;
+            string outputDesc = localeState + " " + commandId;
 
-			if (global)
-			{
-				outputDesc += " in every channel.";
-			}
-			else
-			{
-				outputDesc += ".";
-			}
+            if (global)
+            {
+                outputDesc += " in every channel.";
+            }
+            else
+            {
+                outputDesc += ".";
+            }
 
-			await Utils.SuccessEmbed(e, outputDesc)
-				.QueueToChannelAsync(e.Channel);
-		}
+            await Utils.SuccessEmbed(e, outputDesc)
+                .QueueToChannelAsync(e.Channel);
+        }
 
-		[Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
-		public async Task SetModuleAsync(EventContext e)
-		{
-			if (!e.Arguments.Take(out string moduleName))
-			{
-				return;
-			}
+        [Command(Name = "setmodule", Accessibility = EventAccessibility.ADMINONLY, CanBeDisabled = false)]
+        public async Task SetModuleAsync(CommandContext e)
+        {
+            if (!e.Arguments.Take(out string moduleName))
+            {
+                return;
+            }
 
-			Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
+            Module m = e.EventSystem.GetCommandHandler<SimpleCommandHandler>().Modules.FirstOrDefault(x => x.Name == moduleName);
 
-			if (m == null)
-			{
+            if (m == null)
+            {
                 await e.ErrorEmbed($"{moduleName} is not a valid module.")
-					.ToEmbed().QueueToChannelAsync(e.Channel);
-				return;
-			}
+                    .ToEmbed().QueueToChannelAsync(e.Channel);
+                return;
+            }
 
             if (e.Arguments.Take(out bool setValue))
             {
@@ -373,35 +374,34 @@ namespace Miki.Modules
             }
 
             bool global = false;
-            using (var context = new MikiContext())
+            var cache = e.GetService<ICacheClient>();
+            var context = e.GetService<MikiDbContext>();
+
+            if (e.Arguments.Peek(out string g))
             {
-                var cache = (ICacheClient)e.Services.GetService(typeof(ICacheClient));
-                if (e.Arguments.Peek(out string g))
+                if (g == "-g")
                 {
-                    if (g == "-g")
+                    global = true;
+                    var channels = await e.Guild.GetChannelsAsync();
+                    foreach (var c in channels)
                     {
-                        global = true;
-                        var channels = await e.Guild.GetChannelsAsync();
-                        foreach (var c in channels)
-                        {
-                            await m.SetEnabled(context, cache, c.Id, setValue);
-                        }
+                        await m.SetEnabled(context, cache, c.Id, setValue);
                     }
                 }
-                else
-                {
-                    await m.SetEnabled(context, cache, e.Channel.Id, setValue);
-                }
-
-                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await m.SetEnabled(context, cache, e.Channel.Id, setValue);
             }
 
+            await context.SaveChangesAsync();
+
             await e.SuccessEmbed((setValue ? e.Locale.GetString("miki_generic_enabled") : e.Locale.GetString("miki_generic_disabled")) + $" {m.Name}" + ((global) ? " globally" : ""))
-				.QueueToChannelAsync(e.Channel);
-		}
+                .QueueToChannelAsync(e.Channel);
+        }
 
 		[Command(Name = "softban", Accessibility = EventAccessibility.ADMINONLY)]
-		public async Task SoftbanAsync(EventContext e)
+		public async Task SoftbanAsync(CommandContext e)
 		{
 			IDiscordGuildUser currentUser = await e.Guild.GetSelfAsync();
 			if ((await (e.Channel as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.BanMembers))
@@ -412,14 +412,6 @@ namespace Miki.Modules
 				}
 
 				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(argObject, e.Guild);
-
-				string reason = null;
-
-				if (e.Arguments.CanTake)
-				{
-                    reason = e.Arguments.Pack.TakeAll();
-				}
-
 				if (user == null)
 				{
                     await e.ErrorEmbed(e.Locale.GetString("ban_error_user_null"))
@@ -427,7 +419,13 @@ namespace Miki.Modules
 					return;
 				}
 
-				IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
+                string reason = null;
+                if (e.Arguments.CanTake)
+                {
+                    reason = e.Arguments.Pack.TakeAll();
+                }
+
+                IDiscordGuildUser author = await e.Guild.GetMemberAsync(e.Author.Id);
 
 				if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
 				{
