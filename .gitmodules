@@ -1,6 +1,3 @@
-[submodule "Miki.Bot.Models"]
-	path = submodules/Miki.Bot.Models
-	url = https://github.com/mikibot/Miki.Bot.Models
 [submodule "Miki.Framework"]
 	path = submodules/miki.framework
 	url = https://github.com/mikibot/Miki.Framework
@@ -14,3 +11,6 @@
 [submodule "submodules/miki.configuration"]
 	path = submodules/miki.configuration
 	url = https://github.com/mikibot/miki.configuration
+[submodule "submodules/miki.bot.models"]
+	path = submodules/miki.bot.models
+	url = https://github.com/mikibot/miki.bot.models

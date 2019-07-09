@@ -290,18 +290,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Common\Miki.Discord.Common.csproj" />
     <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Rest\Miki.Discord.Rest.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord\Miki.Discord.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Permissions\Miki.Framework.Commands.Permissions.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework\Miki.Framework.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
   </ItemGroup>
