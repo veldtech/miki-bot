@@ -642,7 +642,10 @@ namespace Miki.Modules.AccountsModule
 
                     if (e.Arguments.Take(out int value))
                     {
-                        amount = (short)value;
+                        if (value > 0)
+                        {
+                            amount = (short)value;
+                        }
                     }
                     else if (e.Arguments.Peek(out string arg))
                     {
