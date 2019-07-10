@@ -109,7 +109,7 @@ namespace Miki.Core.Modules.Anime
             }
             e.Arguments.Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, null, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
 
 			if (result.Items.Count == 0)
 			{
@@ -148,7 +148,7 @@ namespace Miki.Core.Modules.Anime
             }
             e.Arguments.Take(out int page);
 
-			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, MediaFormat.MANGA, MediaFormat.NOVEL));
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, null, MediaFormat.MANGA, MediaFormat.NOVEL));
 
 			if (result.Items.Count == 0)
 			{
