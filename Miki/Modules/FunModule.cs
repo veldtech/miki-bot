@@ -744,7 +744,7 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            using (var client = new RestClient(""))
+            using (var client = new RestClient(Global.Config.CdnRegionEndpoint))
             {
                 var authorResponse = await client.SendAsync(new HttpRequestMessage()
                 {
@@ -757,9 +757,15 @@ namespace Miki.Modules
                     await Utils.SyncAvatarAsync(e.Author, cache, context);
                 }
 
-                if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
+                var otherResponse = await client.SendAsync(new HttpRequestMessage()
                 {
-                    await Utils.SyncAvatarAsync(user, cache, context);
+                    Method = new HttpMethod("HEAD"),
+                    RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{user.Id}.png")
+                });
+
+                if (!authorResponse.Success)
+                {
+                    await Utils.SyncAvatarAsync(e.Author, cache, context);
                 }
             }
             Random r = new Random((int)((e.Author.Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
