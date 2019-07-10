@@ -112,7 +112,11 @@ namespace Miki.Modules.Anime
             }
             e.GetArgumentPack().Take(out int page);
 
+<<<<<<< HEAD:src/Miki/Modules/Anime/AnimeModule.cs
 			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.MANGA, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+=======
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, null, MediaFormat.MUSIC, MediaFormat.ONA, MediaFormat.ONE_SHOT, MediaFormat.OVA, MediaFormat.SPECIAL, MediaFormat.TV, MediaFormat.TV_SHORT));
+>>>>>>> e5d2e8b... Fix: anime commands:Miki/Modules/Anime/AnimeModule.cs
 
 			if (result.Items.Count == 0)
 			{
@@ -151,7 +155,11 @@ namespace Miki.Modules.Anime
             }
             e.GetArgumentPack().Take(out int page);
 
+<<<<<<< HEAD:src/Miki/Modules/Anime/AnimeModule.cs
 			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.GetChannel().IsNsfw, MediaType.ANIME, MediaFormat.MANGA, MediaFormat.NOVEL));
+=======
+			ISearchResult<IMediaSearchResult> result = (await anilistClient.SearchMediaAsync(query, page, e.Channel.IsNsfw, null, MediaFormat.MANGA, MediaFormat.NOVEL));
+>>>>>>> e5d2e8b... Fix: anime commands:Miki/Modules/Anime/AnimeModule.cs
 
 			if (result.Items.Count == 0)
 			{
