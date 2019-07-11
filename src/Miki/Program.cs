@@ -9,11 +9,9 @@ using Miki.Cache.StackExchange;
 using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Common.Utils;
 using Miki.Discord.Gateway;
 using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.Arguments;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Filters;
 using Miki.Framework.Commands.Filters.Filters;
@@ -27,14 +25,12 @@ using Miki.Logging;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Serialization.Protobuf;
 using Miki.UrbanDictionary;
-using Newtonsoft.Json;
 using Retsu.Consumer;
 using SharpRaven;
 using SharpRaven.Data;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -74,10 +70,10 @@ namespace Miki
             if (configManager != null)
             {
                 commandBuilder.OnContainerLoaded += (c, sc) =>
-                    {
-                        var config = sc.GetService<ConfigurationManager>();
-                        config.RegisterType(c.Instance.GetType(), c.Instance);
-                    };
+                {
+                    var config = sc.GetService<ConfigurationManager>();
+                    config.RegisterType(c.Instance.GetType(), c.Instance);
+                };
             }
 
             var cmd = commandBuilder.Create(Assembly.GetEntryAssembly());

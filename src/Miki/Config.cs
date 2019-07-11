@@ -100,12 +100,6 @@ namespace Miki
 		[JsonProperty("danbooru_credentials")]
 		public string DanbooruCredentials { get; internal set; } = "";
 
-		[JsonProperty("redis_endpoints")]
-		public string[] RedisEndPoints { get; internal set; }
-
-		[JsonProperty("redis_password")]
-		public string RedisPassword { get; internal set; }
-
 		[JsonProperty("self_hosted")]
 		public bool SelfHosted { get; internal set; }
 
