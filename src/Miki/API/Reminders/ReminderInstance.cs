@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Miki.Core.API.Reminder
+namespace Miki.API.Reminder
 {
 	public class TaskInstance<T>
 	{

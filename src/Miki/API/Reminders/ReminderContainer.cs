@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Miki.Core.API.Reminder
+namespace Miki.API.Reminder
 {
 	public class TaskContainer<T>
 	{

@@ -1,4 +1,4 @@
-﻿using Miki.Core.API.Reminder;
+﻿using Miki.API.Reminder;
 using System;
 using System.Collections.Generic;
 

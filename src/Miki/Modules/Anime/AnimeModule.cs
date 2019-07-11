@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Miki.Core.Modules.Anime
+namespace Miki.Modules.Anime
 {
 	[Module("Anime")]
 	public class AnimeModule
