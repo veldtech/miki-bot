@@ -2202,7 +2202,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
     <value>For your next upgrade. Your guild needs to pay {0} mekos! use `&gt;guildupgrade house` to purchase it.</value>
   </data>
   <data name="error_user_null" xml:space="preserve">
-    <value>User was not loaded from database!</value>
+    <value>User not found!</value>
   </data>
   <data name="error_notifications_setting_not_found" xml:space="preserve">
     <value>The setting has not been found in Miki's configurable notifications! The valid options are: {0}</value>
@@ -2279,5 +2279,8 @@ To read more about the miki scripting language. Check out https://github.com/mik
   </data>
   <data name="permission_set" xml:space="preserve">
     <value>Permissions of {0} set to level {1}!</value>
+  </data>
+  <data name="error_permissions_invalid" xml:space="preserve">
+    <value>You cannot alter a command you do not have permissions for yourself!</value>
   </data>
 </root>

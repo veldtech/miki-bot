@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
@@ -294,6 +295,9 @@ namespace Miki.Modules
             public async Task SetPermissionsAsync(IContext e)
             {
                 var permissions = e.GetStage<PermissionPipelineStage>();
+                var commands = e.GetStage<CommandHandlerStage>();
+
+                var db = e.GetService<DbContext>();
 
                 if (!e.GetArgumentPack().Take(out string permission))
                 {
@@ -301,6 +305,17 @@ namespace Miki.Modules
                 }
 
                 if (!Enum.TryParse<PermissionStatus>(permission, true, out var level))
+                {
+                    // invalid permission level
+                    return;
+                }
+
+                if (!e.GetArgumentPack().Take(out string type))
+                {
+                    return;
+                }
+
+                if (!Enum.TryParse<EntityType>(type, true, out var entityType))
                 {
                     // invalid permission level
                     return;
@@ -314,7 +329,9 @@ namespace Miki.Modules
                 var userObject = await e.GetGuild().FindUserAsync(user);
                 if (userObject == null)
                 {
-                    // User not found
+                    await e.ErrorEmbedResource("error_user_null", user)
+                        .ToEmbed()
+                        .QueueAsync(e.GetChannel());
                     return;
                 }
 
@@ -322,18 +339,25 @@ namespace Miki.Modules
                 {
                     return;
                 }
-
-                var ownPermission = await permissions.GetAllowedForUser(e, e.GetMessage(), commandName);
-                if (!ownPermission)
+                var command = commands.GetCommand(commandName.Replace('.', ' '));
+                if(command as IExecutable == null)
                 {
-                    // You can't do that :)
+                    //invalid command
                     return;
                 }
 
-                // TODO: implement 
-                //await permissions.SetForUserAsync(e, (long)userObject.Id, level);
+                var ownPermission = await permissions.GetAllowedForUser(db, e.GetAuthor(), e.GetChannel(), command as IExecutable);
+                if (!ownPermission)
+                {
+                    await e.ErrorEmbedResource("error_permissions_invalid")
+                        .ToEmbed()
+                        .QueueAsync(e.GetChannel());
+                    return;
+                }
 
-                await e.SuccessEmbedResource("permission_set", userObject, level)
+                await permissions.SetForUserAsync(e, (long)userObject.Id, entityType, commandName, level);
+
+                await e.SuccessEmbedResource("permission_set", userObject.Username, level)
                     .QueueAsync(e.GetChannel());
             }
         }
@@ -381,11 +405,9 @@ namespace Miki.Modules
                     var channels = await e.GetGuild().GetChannelsAsync();
                     foreach (var c in channels)
                     {
+                        // TODO: implement in a better way.
                     }
                 }
-            }
-            else
-            {
             }
 
             await context.SaveChangesAsync();

@@ -394,6 +394,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot alter a command you do not have permissions for yourself!.
+        /// </summary>
+        internal static string error_permissions_invalid {
+            get {
+                return ResourceManager.GetString("error_permissions_invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You do not have any proposals..
         /// </summary>
         internal static string error_proposals_empty {
@@ -502,7 +511,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User was not loaded from database!.
+        ///   Looks up a localized string similar to User not found!.
         /// </summary>
         internal static string error_user_null {
             get {
