@@ -20,22 +20,18 @@ namespace Miki.Accounts
 			Width = width;
 		}
 
-		public async Task<string> Print(int currentValue, IDiscordGuild g, IDiscordGuildChannel c)
+		public string Print(int currentValue)
 		{
 			string output = "";
-
-			IDiscordGuildUser u = await g.GetSelfAsync();
-			if (!(await c.GetPermissionsAsync(u)).HasFlag(GuildPermission.UseExternalEmojis))
-			{
-				return "";
-			}
 
 			int iteration = MaxValue / Width;
 			int currentIteration = iteration;
 
 			for (int i = 0; i < Width; i++)
 			{
-				output += (currentValue >= currentIteration) ? ValueOn.GetAppropriateSection(0, Width - 1, i) : ValueOff.GetAppropriateSection(0, Width - 1, i);
+				output += (currentValue >= currentIteration)
+                    ? ValueOn.GetAppropriateSection(0, Width - 1, i)
+                    : ValueOff.GetAppropriateSection(0, Width - 1, i);
 				currentIteration += iteration;
 			}
 
@@ -52,7 +48,6 @@ namespace Miki.Accounts
 		public EmojiBarSet()
 		{
 		}
-
 		public EmojiBarSet(string start, string mid, string end)
 		{
 			Start = start;

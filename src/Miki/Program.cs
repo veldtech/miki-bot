@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Miki.API;
+using Microsoft.Extensions.DependencyInjection;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Models.User;
 using Miki.BunnyCDN;
@@ -59,10 +59,14 @@ namespace Miki
                 }
             }
 
+            Log.Message("Loading services");
+
             // Start the bot.
             var appBuilder = new MikiAppBuilder();
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
+
+            Log.Message("Building command tree");
 
             var commandBuilder = new CommandTreeBuilder(app);
 
@@ -78,15 +82,23 @@ namespace Miki
 
             var cmd = commandBuilder.Create(Assembly.GetEntryAssembly());
 
+            Log.Message("Building command pipeline");
+
             var commands = BuildPipeline(app, cmd);
-            LoadDiscord(app, commands);
             await LoadFiltersAsync(app, commands);
-            LoadLocales(commands);
 
             if (configManager != null)
             {
                 await LoadConfigAsync(configManager);
             }
+
+            Log.Message("Connecting to Providers");
+
+            LoadDiscord(app, commands);
+
+            Log.Message("Loading Locales");
+
+            LoadLocales(commands);
 
             for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
             {
@@ -95,6 +107,8 @@ namespace Miki
 
             await app.GetService<IGateway>()
                 .StartAsync();
+
+            Log.Message("Ready to receive requests!");
             await Task.Delay(-1);
         }
 
@@ -158,6 +172,29 @@ namespace Miki
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
+            var theme = new LogTheme();
+            theme.SetColor(
+                LogLevel.Information,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Cyan,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Error,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Red,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Warning,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Yellow,
+                    Background = 0
+                });
+
             new LogBuilder()
                 .AddLogEvent((msg, lvl) =>
                 {
@@ -165,7 +202,7 @@ namespace Miki
                         Console.WriteLine(msg);
                 })
                 .SetLogHeader((msg) => $"[{msg}]: ")
-                .SetTheme(new LogTheme())
+                .SetTheme(theme)
                 .Apply();
 
             var cache = new StackExchangeCacheClient(
