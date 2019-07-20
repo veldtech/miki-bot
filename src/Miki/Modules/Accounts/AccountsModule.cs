@@ -286,7 +286,7 @@ namespace Miki.Modules.AccountsModule
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetDescription(account.Title)
-                .SetAuthor(e.GetLocale().GetString(
+                .SetAuthor(locale.GetString(
                     "miki_global_profile_user_header", discordUser.Username), 
                     icon, "https://patreon.com/mikibot")
                 .SetThumbnail(discordUser.GetAvatarUrl());

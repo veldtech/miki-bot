@@ -244,6 +244,7 @@ namespace Miki.Modules
 		{
             var context = e.GetService<MikiDbContext>();
 
+            var locale = e.GetLocale();
             GuildUser g = await context.GuildUsers.FindAsync(e.GetGuild().Id.ToDbLong());
 
 				int rank = await g.GetGlobalRankAsync(context);
@@ -257,14 +258,14 @@ namespace Miki.Modules
 				EmbedBuilder embed = new EmbedBuilder()
 					.SetAuthor(g.Name, e.GetGuild().IconUrl, "https://miki.veld.one")
 					.SetColor(0.1f, 0.6f, 1)
-					.AddInlineField(e.GetLocale().GetString("miki_terms_level"), level.ToFormattedString());
+					.AddInlineField(locale.GetString("miki_terms_level"), level.ToFormattedString());
 
 				if((e.GetGuild().IconUrl ?? "") != "")
 				{
 					embed.SetThumbnail("http://veld.one/assets/img/transparentfuckingimage.png");
 				}
 
-				string expBarString = await expBar.Print(g.Experience, e.GetGuild(), e.GetChannel() as IDiscordGuildChannel);
+				string expBarString = expBar.Print(g.Experience);
 
 				if (string.IsNullOrWhiteSpace(expBarString))
 				{
@@ -277,7 +278,7 @@ namespace Miki.Modules
 
 				embed.AddInlineField(
 					e.GetLocale().GetString("miki_terms_rank"), 
-					"#" + ((rank <= 10) ? $"**{rank.ToFormattedString()}**" : rank.ToFormattedString())
+					"#" + (rank <= 10 ? $"**{rank.ToFormattedString()}**" : rank.ToFormattedString())
 				).AddInlineField(
 					e.GetLocale().GetString("miki_module_general_guildinfo_users"),
 					g.UserCount.ToString()
