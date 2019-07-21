@@ -283,10 +283,17 @@ namespace Miki.Modules
             e.GetArgumentPack().Take(out int amount);
             var context = e.GetService<MikiDbContext>();
 
-            LocalExperience u = await LocalExperience.GetAsync(context, e.GetGuild().Id.ToDbLong(), user.Id.ToDbLong(), user.Username);
+            LocalExperience u = await LocalExperience.GetAsync(
+                context,
+                e.GetGuild().Id,
+                user.Id);
             if (u == null)
             {
-                return;
+                u = await LocalExperience.CreateAsync(
+                    context,
+                    e.GetGuild().Id,
+                    user.Id,
+                    user.Username);
             }
 
             u.Experience = amount;

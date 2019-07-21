@@ -29,7 +29,7 @@ namespace Miki
     {
         public const string EveryonePattern = @"@(everyone|here)";
 
-        public static string EscapeEveryone(string text) 
+        public static string EscapeEveryone(string text)
             => Regex.Replace(text, EveryonePattern, "@\u200b$1");
 
         public static T FromEnum<T>(this string argument, T defaultValue)
@@ -137,84 +137,84 @@ namespace Miki
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
             => new LocalizedEmbedBuilder(e.GetLocale())
                 .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
-				.SetDescription(message)
-				.SetColor(1.0f, 0.0f, 0.0f);
+                .SetDescription(message)
+                .SetColor(1.0f, 0.0f, 0.0f);
 
-		public static EmbedBuilder ErrorEmbedResource(this IContext e, string resourceId, params object[] args)
-			=> ErrorEmbed(e, e.GetLocale().GetString(resourceId, args));
+        public static EmbedBuilder ErrorEmbedResource(this IContext e, string resourceId, params object[] args)
+            => ErrorEmbed(e, e.GetLocale().GetString(resourceId, args));
 
         public static EmbedBuilder ErrorEmbedResource(this IContext e, IResource resource)
             => ErrorEmbed(e, resource.Get(e.GetLocale()));
 
-        public static DateTime MinDbValue 
+        public static DateTime MinDbValue
             => new DateTime(1755, 1, 1, 0, 0, 0);
 
-		public static DiscordEmbed SuccessEmbed(this IContext e, string message)
-		    => new EmbedBuilder()
-			{
-				Title = "✅ " + e.GetLocale().GetString("miki_success_message_generic"),
-				Description = message,
-				Color = new Color(119, 178, 85)
-			}.ToEmbed();
+        public static DiscordEmbed SuccessEmbed(this IContext e, string message)
+            => new EmbedBuilder()
+            {
+                Title = "✅ " + e.GetLocale().GetString("miki_success_message_generic"),
+                Description = message,
+                Color = new Color(119, 178, 85)
+            }.ToEmbed();
         public static DiscordEmbed SuccessEmbedResource(this IContext e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
 
         public static string ToFormattedString(this int val)
             => val.ToString("N0");
 
-		public static string ToFormattedString(this long val)
-		    => val.ToString("N0");
+        public static string ToFormattedString(this long val)
+            => val.ToString("N0");
 
-		public static string RemoveMentions(this string arg, IDiscordGuild guild)
-		{
-			return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
-			{
-				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
-			}, RegexOptions.None);
-		}
+        public static string RemoveMentions(this string arg, IDiscordGuild guild)
+        {
+            return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
+            {
+                return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
+            }, RegexOptions.None);
+        }
 
-		public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
-		{
-			for (int i = 0; i < Math.Min(items.Count, 12); i++)
-			{
-				embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
-			}
-			return embed;
-		}
+        public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
+        {
+            for (int i = 0; i < Math.Min(items.Count, 12); i++)
+            {
+                embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
+            }
+            return embed;
+        }
 
-		public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
-		{
-			PutObjectRequest request = new PutObjectRequest();
-			request.BucketName = "miki-cdn";
-			request.Key = $"avatars/{user.Id}.png";
-			request.ContentType = "image/png";
-			request.CannedACL = new S3CannedACL("public-read");
+        public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
+        {
+            PutObjectRequest request = new PutObjectRequest();
+            request.BucketName = "miki-cdn";
+            request.Key = $"avatars/{user.Id}.png";
+            request.ContentType = "image/png";
+            request.CannedACL = new S3CannedACL("public-read");
 
-			string avatarUrl = user.GetAvatarUrl();
+            string avatarUrl = user.GetAvatarUrl();
 
-			using (var client = new Net.Http.HttpClient(avatarUrl, true))
-			{
-				request.InputStream = await client.GetStreamAsync();
-			}
+            using (var client = new Net.Http.HttpClient(avatarUrl, true))
+            {
+                request.InputStream = await client.GetStreamAsync();
+            }
 
-			var response = await Global.CdnClient.PutObjectAsync(request);
+            var response = await Global.CdnClient.PutObjectAsync(request);
 
-			if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-			{
-				throw new AvatarSyncException();
-			}
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new AvatarSyncException();
+            }
 
             await MikiApp.Instance.GetService<BunnyCDNClient>()
                 .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
-			User u = await User.GetAsync(context, user.Id, user.Username);
+            User u = await User.GetAsync(context, user.Id, user.Username);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
             u.AvatarUrl = u.Id.ToString();
-			await context.SaveChangesAsync();
-		}
+            await context.SaveChangesAsync();
+        }
         public static async Task<bool> HeadAvatarAsync(IDiscordUser user)
         {
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
@@ -226,13 +226,13 @@ namespace Miki
                     Method = new System.Net.Http.HttpMethod("HEAD"),
                 });
                 return response.Success;
-            }   
+            }
         }
 
         public static string TakeAll(this IArgumentPack pack)
         {
             List<string> allItems = new List<string>();
-            while(pack.CanTake)
+            while (pack.CanTake)
             {
                 allItems.Add(pack.Take());
             }
@@ -240,94 +240,94 @@ namespace Miki
         }
     }
 
-	public class MikiRandom : RandomNumberGenerator
-	{
-		private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
+    public class MikiRandom : RandomNumberGenerator
+    {
+        private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
-		public static int Next()
-		{
-			var data = new byte[sizeof(int)];
-			rng.GetBytes(data);
-			return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
-		}
+        public static int Next()
+        {
+            var data = new byte[sizeof(int)];
+            rng.GetBytes(data);
+            return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
+        }
 
-		public static long Next(long maxValue)
-		{
-			return Next(0L, maxValue);
-		}
+        public static long Next(long maxValue)
+        {
+            return Next(0L, maxValue);
+        }
 
-		public static int Next(int maxValue)
-		{
-			return Next(0, maxValue);
-		}
+        public static int Next(int maxValue)
+        {
+            return Next(0, maxValue);
+        }
 
-		public static int Roll(int maxValue)
-		{
-			return Next(0, maxValue) + 1;
-		}
+        public static int Roll(int maxValue)
+        {
+            return Next(0, maxValue) + 1;
+        }
 
-		public static long Next(long minValue, long maxValue)
-		{
-			if (minValue > maxValue)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-			return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-		}
+        public static long Next(long minValue, long maxValue)
+        {
+            if (minValue > maxValue)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
+        }
 
-		public static int Next(int minValue, int maxValue)
-		{
-			if (minValue > maxValue)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-			return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-		}
+        public static int Next(int minValue, int maxValue)
+        {
+            if (minValue > maxValue)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
+        }
 
-		public static double NextDouble()
-		{
-			var data = new byte[sizeof(uint)];
-			rng.GetBytes(data);
-			var randUint = BitConverter.ToUInt32(data, 0);
-			return randUint / (uint.MaxValue + 1.0);
-		}
+        public static double NextDouble()
+        {
+            var data = new byte[sizeof(uint)];
+            rng.GetBytes(data);
+            var randUint = BitConverter.ToUInt32(data, 0);
+            return randUint / (uint.MaxValue + 1.0);
+        }
 
-		public override void GetBytes(byte[] data)
-		{
-			rng.GetBytes(data);
-		}
+        public override void GetBytes(byte[] data)
+        {
+            rng.GetBytes(data);
+        }
 
-		public override void GetNonZeroBytes(byte[] data)
-		{
-			rng.GetNonZeroBytes(data);
-		}
-	}
+        public override void GetNonZeroBytes(byte[] data)
+        {
+            rng.GetNonZeroBytes(data);
+        }
+    }
 
-	public class TimeValue
-	{
-		public int Value { get; set; }
-		public string Identifier { get; set; }
+    public class TimeValue
+    {
+        public int Value { get; set; }
+        public string Identifier { get; set; }
 
-		private readonly bool minified;
+        private readonly bool minified;
 
-		public TimeValue(string i, int v, bool minified = false)
-		{
-			Value = v;
-			if (minified)
-			{
-				Identifier = i[0].ToString();
-			}
-			else
-			{
-				Identifier = i;
-			}
-			this.minified = minified;
-		}
+        public TimeValue(string i, int v, bool minified = false)
+        {
+            Value = v;
+            if (minified)
+            {
+                Identifier = i[0].ToString();
+            }
+            else
+            {
+                Identifier = i;
+            }
+            this.minified = minified;
+        }
 
-		public override string ToString()
-		{
-			if (minified) return Value + Identifier;
-			return Value + " " + Identifier;
-		}
-	}
+        public override string ToString()
+        {
+            if (minified) return Value + Identifier;
+            return Value + " " + Identifier;
+        }
+    }
 }

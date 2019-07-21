@@ -8,9 +8,7 @@ using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Localization;
 using Miki.Logging;
-using Miki.Models;
 using Miki.Modules;
-using StatsdClient;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -147,12 +145,19 @@ namespace Miki.Accounts
                         {
                             using(var scope = MikiApp.Instance.Services.CreateScope())
                             {
+                                var db = scope.ServiceProvider.GetService<DbContext>();
                                 LocalExperience user = await LocalExperience.GetAsync(
-                                    scope.ServiceProvider.GetService<DbContext>(),
+                                    db,
                                     channel.GuildId,
-                                    e.Author.Id,
-                                    e.Author.Username
-                                );
+                                    e.Author.Id);
+                                if(user == null)
+                                {
+                                    user = await LocalExperience.CreateAsync(
+                                        db,
+                                        channel.GuildId,
+                                        e.Author.Id,
+                                        e.Author.Username);
+                                }
 
                                 await cache.UpsertAsync(key, user.Experience);
                                 currentLocalExp = user.Experience;

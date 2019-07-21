@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace Miki.Modules
 {
     [Module("Marriage")]
-	public class MarriageModule
+    public class MarriageModule
     {
         [Command("buymarriageslot")]
         public async Task BuyMarriageSlotAsync(IContext e)
@@ -192,59 +192,59 @@ namespace Miki.Modules
             }
         }
 
-		[Command("declinemarriage")]
-		public async Task DeclineMarriageAsync(IContext e)
-		{
+        [Command("declinemarriage")]
+        public async Task DeclineMarriageAsync(IContext e)
+        {
             var context = e.GetService<MikiDbContext>();
 
             MarriageRepository repository = new MarriageRepository(context);
 
-				var marriages = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
+            var marriages = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
 
-				if (marriages.Count == 0)
-				{
-					// TODO: add no propsoals
-					//throw new LocalizedException("error_proposals_empty");
-					return;
-				}
+            if (marriages.Count == 0)
+            {
+                // TODO: add no propsoals
+                //throw new LocalizedException("error_proposals_empty");
+                return;
+            }
 
-				marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
+            marriages = marriages.OrderByDescending(x => x.Marriage.TimeOfMarriage).ToList();
 
-                if (e.GetArgumentPack().Take(out int selectionId))
+            if (e.GetArgumentPack().Take(out int selectionId))
+            {
+                var m = marriages[selectionId - 1];
+                string otherName = (await MikiApp.Instance
+                    .GetService<DiscordClient>()
+                    .GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())).Username;
+
+                await new EmbedBuilder()
                 {
-                    var m = marriages[selectionId - 1];
-					string otherName = (await MikiApp.Instance
-                        .GetService<DiscordClient>()
-                        .GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())).Username;
+                    Title = $"🔫 You shot down {otherName}!",
+                    Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
+                    Color = new Color(191, 105, 82)
+                }.ToEmbed().QueueAsync(e.GetChannel());
 
-					await new EmbedBuilder()
-					{
-						Title = $"🔫 You shot down {otherName}!",
-						Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
-						Color = new Color(191, 105, 82)
-					}.ToEmbed().QueueAsync(e.GetChannel());
+                m.Remove(context);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                var cache = e.GetService<ICacheClient>();
 
-					m.Remove(context);
-					await context.SaveChangesAsync();
-				}
-				else
-				{
-                    var cache = e.GetService<ICacheClient>();
+                var embed = new EmbedBuilder()
+                {
+                    Title = "💍 Proposals",
+                    Footer = new EmbedFooter()
+                    {
+                        Text = $"Use {e.GetPrefixMatch()}declinemarriage <number> to decline",
+                    },
+                    Color = new Color(154, 170, 180)
+                };
 
-                    var embed = new EmbedBuilder()
-					{
-						Title = "💍 Proposals",
-						Footer = new EmbedFooter()
-						{
-							Text = $"Use {e.GetPrefixMatch()}declinemarriage <number> to decline",
-						},
-						Color = new Color(154, 170, 180)
-					};
-
-                    await BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
-					await embed.ToEmbed().QueueAsync(e.GetChannel());
-				}
-		}
+                await BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
+                await embed.ToEmbed().QueueAsync(e.GetChannel());
+            }
+        }
 
         [Command("divorce")]
         public async Task DivorceAsync(IContext e)
@@ -437,21 +437,21 @@ namespace Miki.Modules
             await embed.ToEmbed().QueueAsync(e.GetChannel());
         }
 
-		private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, List<UserMarriedTo> marriages)
-		{
-			StringBuilder builder = new StringBuilder();
+        private async Task<EmbedBuilder> BuildMarriageEmbedAsync(EmbedBuilder embed, long userId, List<UserMarriedTo> marriages)
+        {
+            StringBuilder builder = new StringBuilder();
             var discord = MikiApp.Instance.GetService<DiscordClient>();
 
             for (int i = 0; i < marriages.Count; i++)
-			{
+            {
                 var user = await discord.GetUserAsync(marriages[i].GetOther(userId).FromDbLong());
 
                 builder.AppendLine($"`{(i + 1).ToString().PadLeft(2)}:` {user.Username}");
-			}
+            }
 
-			embed.Description += "\n\n" + builder.ToString();
+            embed.Description += "\n\n" + builder.ToString();
 
-			return embed;
-		}
-	}
+            return embed;
+        }
+    }
 }

@@ -27,175 +27,175 @@ using System.Threading.Tasks;
 namespace Miki.Modules
 {
     [Module("General")]
-	internal class GeneralModule
-	{
-   		private readonly TaskScheduler<string> _taskScheduler = new TaskScheduler<string>();
+    internal class GeneralModule
+    {
+        private readonly TaskScheduler<string> _taskScheduler = new TaskScheduler<string>();
 
-		[Command("avatar")]
-		public async Task AvatarAsync(IContext e)
-		{
-			if (!e.GetArgumentPack().Take(out string arg))
-			{
-				e.GetChannel().QueueMessage(e.GetAuthor().GetAvatarUrl());
-			}
-			else
-			{
-				if (arg == "-s")
-				{
-					e.GetChannel().QueueMessage(e.GetGuild().IconUrl);
-					return;
-				}
+        [Command("avatar")]
+        public async Task AvatarAsync(IContext e)
+        {
+            if (!e.GetArgumentPack().Take(out string arg))
+            {
+                e.GetChannel().QueueMessage(e.GetAuthor().GetAvatarUrl());
+            }
+            else
+            {
+                if (arg == "-s")
+                {
+                    e.GetChannel().QueueMessage(e.GetGuild().IconUrl);
+                    return;
+                }
 
-				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
-				if (user != null)
-				{
-					e.GetChannel().QueueMessage(user.GetAvatarUrl());
-				}
-			}
-		}
+                IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
+                if (user != null)
+                {
+                    e.GetChannel().QueueMessage(user.GetAvatarUrl());
+                }
+            }
+        }
 
-		[Command("calc", "calculate")]
-		public Task CalculateAsync(IContext e)
-		{
-			try
-			{
-				Expression expression = new Expression(e.GetArgumentPack().Pack.TakeAll());
+        [Command("calc", "calculate")]
+        public Task CalculateAsync(IContext e)
+        {
+            try
+            {
+                Expression expression = new Expression(e.GetArgumentPack().Pack.TakeAll());
 
-				expression.Parameters.Add("pi", Math.PI);
+                expression.Parameters.Add("pi", Math.PI);
 
-				expression.EvaluateFunction += (name, x) =>
-				{
-					if (name == "lerp")
-					{
-						double n = (double)x.Parameters[0].Evaluate();
-						double v = (double)x.Parameters[1].Evaluate();
-						double o = (double)x.Parameters[2].Evaluate();
-						x.Result = (n * (1.0 - o)) + (v * o);
-					}
-				};
+                expression.EvaluateFunction += (name, x) =>
+                {
+                    if (name == "lerp")
+                    {
+                        double n = (double)x.Parameters[0].Evaluate();
+                        double v = (double)x.Parameters[1].Evaluate();
+                        double o = (double)x.Parameters[2].Evaluate();
+                        x.Result = (n * (1.0 - o)) + (v * o);
+                    }
+                };
 
-				object output = expression.Evaluate();
+                object output = expression.Evaluate();
 
-				e.GetChannel().QueueMessage(output.ToString());
-			}
-			catch (Exception ex)
-			{
-				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
-			}
-			return Task.CompletedTask;
-		}
+                e.GetChannel().QueueMessage(output.ToString());
+            }
+            catch (Exception ex)
+            {
+                e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
+            }
+            return Task.CompletedTask;
+        }
 
-		[Command("changelog")]
-		public async Task ChangelogAsync(IContext e)
-		{
-			await Task.Yield();
+        [Command("changelog")]
+        public async Task ChangelogAsync(IContext e)
+        {
+            await Task.Yield();
             await new EmbedBuilder()
-			{
-				Title = "Changelog",
-				Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
-			}.ToEmbed().QueueAsync(e.GetChannel());
-		}
+            {
+                Title = "Changelog",
+                Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
+            }.ToEmbed().QueueAsync(e.GetChannel());
+        }
 
-		[Command("giveaway")]
-		public async Task GiveawayAsync(IContext e)
-		{
-			DiscordEmoji emoji = new DiscordEmoji();
-			emoji.Name = "🎁";
+        [Command("giveaway")]
+        public async Task GiveawayAsync(IContext e)
+        {
+            DiscordEmoji emoji = new DiscordEmoji();
+            emoji.Name = "🎁";
 
             e.GetArgumentPack().Take(out string giveawayText);
 
-			while (!e.GetArgumentPack().Pack.Peek().StartsWith("-"))
-			{
+            while (!e.GetArgumentPack().Pack.Peek().StartsWith("-"))
+            {
                 giveawayText += " " + e.GetArgumentPack().Pack.Take();
-			}
+            }
 
-			var mml = new MMLParser(e.GetArgumentPack().Pack.TakeAll()).Parse();
+            var mml = new MMLParser(e.GetArgumentPack().Pack.TakeAll()).Parse();
 
-			int amount = mml.Get("amount", 1);
-			TimeSpan timeLeft = mml.Get("time", "1h").GetTimeFromString();
+            int amount = mml.Get("amount", 1);
+            TimeSpan timeLeft = mml.Get("time", "1h").GetTimeFromString();
 
-			if (amount > 10)
-			{
+            if (amount > 10)
+            {
                 await e.ErrorEmbed("We can only allow up to 10 picks per giveaway")
-					.ToEmbed().QueueAsync(e.GetChannel());
-				return;
-			}
+                    .ToEmbed().QueueAsync(e.GetChannel());
+                return;
+            }
 
-			giveawayText += ((amount > 1) ? " x " + amount : "");
+            giveawayText += ((amount > 1) ? " x " + amount : "");
 
-			List<IDiscordUser> winners = new List<IDiscordUser>();
+            List<IDiscordUser> winners = new List<IDiscordUser>();
 
-			IDiscordMessage msg = await CreateGiveawayEmbed(e, giveawayText)
-			.AddField("Time", timeLeft.ToTimeString(e.GetLocale()), true)
-			.AddField("React to participate", "good luck", true)
-			.ToEmbed()
+            IDiscordMessage msg = await CreateGiveawayEmbed(e, giveawayText)
+            .AddField("Time", timeLeft.ToTimeString(e.GetLocale()), true)
+            .AddField("React to participate", "good luck", true)
+            .ToEmbed()
             .SendToChannel(e.GetChannel());
 
-			await msg.CreateReactionAsync(emoji);
+            await msg.CreateReactionAsync(emoji);
 
-			int updateTask = -1;
+            int updateTask = -1;
 
-			int task = _taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
-			{
-				msg = await e.GetChannel().GetMessageAsync(msg.Id);
+            int task = _taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
+            {
+                msg = await e.GetChannel().GetMessageAsync(msg.Id);
 
-				if (msg != null)
-				{
-					await msg.DeleteReactionAsync(emoji);
+                if (msg != null)
+                {
+                    await msg.DeleteReactionAsync(emoji);
 
                     await Task.Delay(1000);
 
-					var reactions = await msg.GetReactionsAsync(emoji);
+                    var reactions = await msg.GetReactionsAsync(emoji);
 
-					//do
-					//{
-					//	reactions.AddRange();
-					//	reactionsGained += 100;
-					//} while (reactions.Count == reactionsGained);
+                    //do
+                    //{
+                    //	reactions.AddRange();
+                    //	reactionsGained += 100;
+                    //} while (reactions.Count == reactionsGained);
 
-					// Select random winners
-					for (int i = 0; i < amount; i++)
-					{
-						if (reactions.Count() == 0)
-						{
-							break;
-						}
+                    // Select random winners
+                    for (int i = 0; i < amount; i++)
+                    {
+                        if (reactions.Count() == 0)
+                        {
+                            break;
+                        }
 
-						int index = MikiRandom.Next(reactions.Count());
-						winners.Add(reactions.ElementAtOrDefault(index));
-					}
+                        int index = MikiRandom.Next(reactions.Count());
+                        winners.Add(reactions.ElementAtOrDefault(index));
+                    }
 
-					if (updateTask != -1)
-						_taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
+                    if (updateTask != -1)
+                        _taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
 
-					string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
-					if (string.IsNullOrEmpty(winnerText))
-						winnerText = "nobody!";
+                    string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
+                    if (string.IsNullOrEmpty(winnerText))
+                        winnerText = "nobody!";
 
-					await msg.EditAsync(new EditMessageArgs
-					{
-						Embed = CreateGiveawayEmbed(e, giveawayText)
-							.AddField("Winners", winnerText)
-							.ToEmbed()
-					});
-				}
-			}, "description var", timeLeft);
-		}
+                    await msg.EditAsync(new EditMessageArgs
+                    {
+                        Embed = CreateGiveawayEmbed(e, giveawayText)
+                            .AddField("Winners", winnerText)
+                            .ToEmbed()
+                    });
+                }
+            }, "description var", timeLeft);
+        }
 
-		private EmbedBuilder CreateGiveawayEmbed(IContext e, string text)
-		{
-			return new EmbedBuilder()
-			{
-				Author = new EmbedAuthor()
-				{
-					Name = e.GetAuthor().Username + " is giving away",
-					IconUrl = e.GetAuthor().GetAvatarUrl()
-				},
-				ThumbnailUrl = "https://i.imgur.com/rIDHtwN.png",
-				Description = text,
-				Color = new Color(253, 216, 136),
-			};
-		}
+        private EmbedBuilder CreateGiveawayEmbed(IContext e, string text)
+        {
+            return new EmbedBuilder()
+            {
+                Author = new EmbedAuthor()
+                {
+                    Name = e.GetAuthor().Username + " is giving away",
+                    IconUrl = e.GetAuthor().GetAvatarUrl()
+                },
+                ThumbnailUrl = "https://i.imgur.com/rIDHtwN.png",
+                Description = text,
+                Color = new Color(253, 216, 136),
+            };
+        }
 
         [Command("guildinfo")]
         public async Task GuildInfoAsync(IContext e)
@@ -231,27 +231,27 @@ namespace Miki.Modules
                 },
             };
             builder.AddInlineField(
-                "👑 " + locale.GetString("miki_module_general_guildinfo_owned_by"), 
+                "👑 " + locale.GetString("miki_module_general_guildinfo_owned_by"),
                 $"{owner.Username}#{owner.Discriminator}");
 
             builder.AddInlineField(
-                "👉 " + locale.GetString("miki_label_prefix"), 
+                "👉 " + locale.GetString("miki_label_prefix"),
                 prefix);
 
             builder.AddInlineField(
-                "📺 " + locale.GetString("miki_module_general_guildinfo_channels"), 
+                "📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
                 channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString());
 
             builder.AddInlineField(
-                "🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"), 
+                "🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
                 channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToFormattedString());
 
             builder.AddInlineField(
-                "🙎 " + locale.GetString("miki_module_general_guildinfo_users"), 
+                "🙎 " + locale.GetString("miki_module_general_guildinfo_users"),
                 roles.Count().ToFormattedString());
 
             builder.AddInlineField(
-                "#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"), 
+                "#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"),
                 roles.Count().ToFormattedString());
 
             builder.AddField(
@@ -259,7 +259,7 @@ namespace Miki.Modules
                 string.Join(",", roles.Select(x => $"`{x.Name}`")));
 
             builder.AddField(
-                "😃 " + e.GetLocale().GetString("term_emoji"), 
+                "😃 " + e.GetLocale().GetString("term_emoji"),
                 emojiOutput);
 
             await builder.ToEmbed()
@@ -356,72 +356,72 @@ namespace Miki.Modules
         }
 
         [Command("donate")]
-		public async Task DonateAsync(IContext e)
-		{
+        public async Task DonateAsync(IContext e)
+        {
             await new EmbedBuilder()
-			{
-				Title = "Hi everyone!",
-				Description = e.GetLocale().GetString("miki_module_general_info_donate_string"),
-				Color = new Color(0.8f, 0.4f, 0.4f),
-				ThumbnailUrl = "https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png",
-			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
-			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
-			.ToEmbed().QueueAsync(e.GetChannel());
-		}
+            {
+                Title = "Hi everyone!",
+                Description = e.GetLocale().GetString("miki_module_general_info_donate_string"),
+                Color = new Color(0.8f, 0.4f, 0.4f),
+                ThumbnailUrl = "https://trello-attachments.s3.amazonaws.com/57acf354029527926a15e83d/598763ed8a7735cb8b52cd72/1d168f6025e40b9c6b53c3d4b8e07ccf/xdmemes.png",
+            }.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
+            .AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
+            .ToEmbed().QueueAsync(e.GetChannel());
+        }
 
-		[Command("info", "about")]
+        [Command("info", "about")]
         public async Task InfoAsync(IContext e)
-		{
+        {
             Version v = Assembly.GetEntryAssembly().GetName().Version;
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetAuthor($"Miki {v}")
                 .SetColor(0.6f, 0.6f, 1.0f);
 
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_made_by_header"),
-				e.GetLocale().GetString("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
+            embed.AddField(e.GetLocale().GetString("miki_module_general_info_made_by_header"),
+                e.GetLocale().GetString("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
 
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
-				$"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
-				$"`{"donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) [suggestions](https://suggestions.miki.ai/)");
+            embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
+                $"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
+                $"`{"donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
+                $"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
+                $"`{e.GetLocale().GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
+                $"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
+                $"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) [suggestions](https://suggestions.miki.ai/)");
 
             await embed.ToEmbed().QueueAsync(e.GetChannel());
 
-			await Task.Yield();
-		}
+            await Task.Yield();
+        }
 
-		[Command("invite")]
-		public async Task InviteAsync(IContext e)
-		{
-			e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_invite_message"));
-			(await e.GetAuthor().GetDMChannelAsync()).QueueMessage(e.GetLocale().GetString("miki_module_general_invite_dm")
-				+ "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
-		}
+        [Command("invite")]
+        public async Task InviteAsync(IContext e)
+        {
+            e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_invite_message"));
+            (await e.GetAuthor().GetDMChannelAsync()).QueueMessage(e.GetLocale().GetString("miki_module_general_invite_dm")
+                + "\nhttps://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334");
+        }
 
-		[Command("ping", "lag")]
-		public async Task PingAsync(IContext e)
-		{
+        [Command("ping", "lag")]
+        public async Task PingAsync(IContext e)
+        {
             await new LocalizedEmbedBuilder(e.GetLocale())
-				  .WithTitle(new RawResource("Ping"))
-				  .WithDescription("ping_placeholder")
-				  .Build()
-				  .QueueAsync(e.GetChannel())
-				  .ThenWaitAsync(200)
-				  .ThenAsync(async x =>
-				  {
-					  float ping = (float)(x.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
-					  await new EmbedBuilder()
-						  .SetTitle("Pong - " + Environment.MachineName)
-						  .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
-						  .AddInlineField("Miki", ((int)ping).ToFormattedString() + "ms")
+                  .WithTitle(new RawResource("Ping"))
+                  .WithDescription("ping_placeholder")
+                  .Build()
+                  .QueueAsync(e.GetChannel())
+                  .ThenWaitAsync(200)
+                  .ThenAsync(async x =>
+                  {
+                      float ping = (float)(x.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
+                      await new EmbedBuilder()
+                          .SetTitle("Pong - " + Environment.MachineName)
+                          .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
+                          .AddInlineField("Miki", ((int)ping).ToFormattedString() + "ms")
                           .ToEmbed()
                           .EditAsync(x);
-				  });
-		}
+                  });
+        }
 
         [Command("prefix")]
         class PrefixCommand
@@ -449,7 +449,7 @@ namespace Miki.Modules
                 var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
                 var locale = e.GetLocale();
 
-                if(!e.GetArgumentPack().Take(out string prefix))
+                if (!e.GetArgumentPack().Take(out string prefix))
                 {
 
                 }
@@ -465,7 +465,7 @@ namespace Miki.Modules
                     .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
                     .SetDescription(
                         locale.GetString(
-                            "miki_module_general_prefix_success_message", 
+                            "miki_module_general_prefix_success_message",
                             prefix))
                     .ToEmbed()
                 .QueueAsync(e.GetChannel());
@@ -478,7 +478,7 @@ namespace Miki.Modules
                 var locale = e.GetLocale();
 
                 var trigger = prefixMiddleware.GetDefaultTrigger();
-                   
+
                 await trigger.ChangeForGuildAsync(
                         e.GetService<DbContext>(),
                         e.GetService<ICacheClient>(),
@@ -496,37 +496,37 @@ namespace Miki.Modules
             }
         }
 
-		[Command("stats")]
-		public async Task StatsAsync(IContext e)
-		{
-			var cache = e.GetService<IExtendedCacheClient>();
+        [Command("stats")]
+        public async Task StatsAsync(IContext e)
+        {
+            var cache = e.GetService<IExtendedCacheClient>();
             var locale = e.GetLocale();
 
             await new EmbedBuilder()
-			{
-				Title = "⚙️ Miki stats",
-				Description = e.GetLocale().GetString("stats_description"),
-				Color = new Color(0.3f, 0.8f, 1),
-			}.AddField(
-                $"🖥️ {locale.GetString("discord_servers")}", 
+            {
+                Title = "⚙️ Miki stats",
+                Description = e.GetLocale().GetString("stats_description"),
+                Color = new Color(0.3f, 0.8f, 1),
+            }.AddField(
+                $"🖥️ {locale.GetString("discord_servers")}",
                 (await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)).ToString("N0"))
-			 .AddField(
-                "More info", 
+             .AddField(
+                "More info",
                 "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
-			 .ToEmbed()
+             .ToEmbed()
              .QueueAsync(e.GetChannel());
-		}
+        }
 
-		[Command("whois")]
-		public async Task WhoIsAsync(IContext e)
-		{
+        [Command("whois")]
+        public async Task WhoIsAsync(IContext e)
+        {
             IDiscordGuildUser user;
             var success = e.GetArgumentPack().Take(out string arg);
             if (success)
             {
                 user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
             }
-            else 
+            else
             {
                 user = e.GetAuthor() as IDiscordGuildUser;
             }
@@ -542,25 +542,25 @@ namespace Miki.Modules
                 .Where(x => user.RoleIds.Contains(x.Id))
                 .OrderByDescending(x => x.Position)
                 .Select(x => x.Color)
-                .FirstOrDefault() ?? new Color(0);
+                .FirstOrDefault();
 
-			StringBuilder builder = new StringBuilder();
-			builder.AppendLine($"`User Id___:` {user.Id}");
-			builder.AppendLine($"`Created at:` {user.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")}");
-			builder.AppendLine($"`Joined at_:` {user.JoinedAt.ToString("dd/MM/yyyy HH:mm:ss")}");
-			builder.AppendLine($"`Color Hex_:` {c.ToString()}");
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"`User Id___:` {user.Id}");
+            builder.AppendLine($"`Created at:` {user.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")}");
+            builder.AppendLine($"`Joined at_:` {user.JoinedAt.ToString("dd/MM/yyyy HH:mm:ss")}");
+            builder.AppendLine($"`Color Hex_:` {c.ToString()}");
 
-			embed.AddField(
-				e.CreateResource("miki_module_whois_tag_personal"),
-				new RawResource(builder.ToString())
-			);
+            embed.AddField(
+                e.CreateResource("miki_module_whois_tag_personal"),
+                new RawResource(builder.ToString())
+            );
 
-			string r = string.Join(", ", roles
+            string r = string.Join(", ", roles
                 .Select(x => $"`{x.Name}`"));
             if (string.IsNullOrEmpty(r))
-			{
-				r = "none (yet!)";
-			}
+            {
+                r = "none (yet!)";
+            }
 
             embed.AddField(
                 e.CreateResource("miki_module_general_guildinfo_roles"),
@@ -569,6 +569,6 @@ namespace Miki.Modules
 
             await embed.Build()
                 .QueueAsync(e.GetChannel());
-		}
-	}
+        }
+    }
 }

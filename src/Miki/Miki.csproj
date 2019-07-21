@@ -292,11 +292,11 @@
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\..\submodules\miki.discord\Miki.Discord.Gateway\Miki.Discord.Gateway.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Filters\Miki.Framework.Commands.Filters.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
+    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
   </ItemGroup>
 </Project>

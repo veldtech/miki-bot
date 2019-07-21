@@ -19,14 +19,14 @@ using Miki.Framework.Commands.Nodes;
 
 namespace Miki.Modules
 {
-	[Module("Donator")]
-	internal class DonatorModule
-	{
+    [Module("Donator")]
+    internal class DonatorModule
+    {
         private readonly Net.Http.HttpClient client;
 
-		public DonatorModule()
-		{
-            if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl) 
+        public DonatorModule()
+        {
+            if (!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl)
                 && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
             {
                 client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
@@ -36,7 +36,7 @@ namespace Miki.Modules
             {
                 Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
             }
-		}
+        }
 
         [Command("sellkey")]
         public async Task SellKeyAsync(IContext e)
@@ -108,55 +108,55 @@ namespace Miki.Modules
 
                 if (donatorStatus.KeysRedeemed == 1)
                 {
-                    await achievementManager.UnlockAsync(achievements[0], 
+                    await achievementManager.UnlockAsync(achievements[0],
                         e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 0);
                 }
                 else if (donatorStatus.KeysRedeemed == 5)
                 {
-                    await achievementManager.UnlockAsync(achievements[1], 
+                    await achievementManager.UnlockAsync(achievements[1],
                         e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 1);
                 }
                 else if (donatorStatus.KeysRedeemed == 25)
                 {
-                    await achievementManager.UnlockAsync(achievements[2], 
+                    await achievementManager.UnlockAsync(achievements[2],
                         e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 2);
                 }
             }
         }
 
-		[Command("box")]
+        [Command("box")]
         [PatreonOnly]
         public async Task BoxAsync(IContext e)
-			=> await PerformCall(e, $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={(await GetUrlFromMessageAsync(e))}");
+            => await PerformCall(e, $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={(await GetUrlFromMessageAsync(e))}");
 
-		[Command("disability")]
+        [Command("disability")]
         [PatreonOnly]
         public async Task DisabilityAsync(IContext e)
-			=> await PerformCall(e, "/api/disability?url=" + (await GetUrlFromMessageAsync(e)));
+            => await PerformCall(e, "/api/disability?url=" + (await GetUrlFromMessageAsync(e)));
 
-		[Command("tohru")]
+        [Command("tohru")]
         [PatreonOnly]
         public async Task TohruAsync(IContext e)
-			=> await PerformCall(e, "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+            => await PerformCall(e, "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
-		[Command("truth")]
+        [Command("truth")]
         [PatreonOnly]
         public async Task TruthAsync(IContext e)
-			=> await PerformCall(e, "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+            => await PerformCall(e, "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
-		[Command("trapcard")]
+        [Command("trapcard")]
         [PatreonOnly]
-		public async Task YugiAsync(IContext e)
-			=> await PerformCall(e, $"/api/yugioh?url={(await GetUrlFromMessageAsync(e))}");
+        public async Task YugiAsync(IContext e)
+            => await PerformCall(e, $"/api/yugioh?url={(await GetUrlFromMessageAsync(e))}");
 
-		private async Task<string> GetUrlFromMessageAsync(IContext e)
-		{
-			string url = e.GetMessage().Author.GetAvatarUrl();
+        private async Task<string> GetUrlFromMessageAsync(IContext e)
+        {
+            string url = e.GetMessage().Author.GetAvatarUrl();
 
             if (e.GetMessage().MentionedUserIds.Count > 0)
-			{
-				url = (await e.GetGuild().GetMemberAsync(e.GetMessage().MentionedUserIds.First())).GetAvatarUrl();
-			}
+            {
+                url = (await e.GetGuild().GetMemberAsync(e.GetMessage().MentionedUserIds.First())).GetAvatarUrl();
+            }
 
             if (e.GetMessage().Attachments.Count > 0)
             {
@@ -164,12 +164,12 @@ namespace Miki.Modules
             }
 
             return url;
-		}
+        }
 
         private async Task PerformCall(IContext e, string url)
         {
             Stream s = await client.GetStreamAsync(url);
             await e.GetChannel().SendFileAsync(s, "meme.png");
         }
-	}
+    }
 }

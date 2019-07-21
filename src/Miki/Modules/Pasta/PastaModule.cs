@@ -18,11 +18,11 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("pasta")]
-	public class PastaModule
-	{
-		[Configurable]
-		public ulong PastaReportsChannelId { get; set; } = 0;
+    [Module("pasta")]
+    public class PastaModule
+    {
+        [Configurable]
+        public ulong PastaReportsChannelId { get; set; } = 0;
 
         [Command("mypasta")]
         public async Task MyPasta(IContext e)
@@ -289,17 +289,17 @@ namespace Miki.Modules
                 .ToEmbed().QueueAsync(e.GetChannel());
         }
 
-		[Command("lovedpasta", "lovedpastas", "favouritepastas")]
-		public async Task LovePastaList(IContext e)
-		{
-			await FavouritePastaList(e);
-		}
+        [Command("lovedpasta", "lovedpastas", "favouritepastas")]
+        public async Task LovePastaList(IContext e)
+        {
+            await FavouritePastaList(e);
+        }
 
-		[Command("hatedpasta", "hatedpastas")]
-		public async Task HatePastaList(IContext e)
-		{
-			await FavouritePastaList(e, false);
-		}
+        [Command("hatedpasta", "hatedpastas")]
+        public async Task HatePastaList(IContext e)
+        {
+            await FavouritePastaList(e, false);
+        }
 
         public async Task FavouritePastaList(IContext e, bool lovedPastas = true)
         {
@@ -339,23 +339,23 @@ namespace Miki.Modules
             embed.SetTitle($"{(lovedPastas ? e.GetLocale().GetString("miki_module_pasta_loved_header") : e.GetLocale().GetString("miki_module_pasta_hated_header"))} - {useName}");
             embed.SetDescription(resultString);
             embed.SetFooter(
-                e.GetLocale().GetString("page_index", page + 1, Math.Ceiling(pastaVotes.Count() / totalPerPage)), 
+                e.GetLocale().GetString("page_index", page + 1, Math.Ceiling(pastaVotes.Count() / totalPerPage)),
                 "");
 
             await embed.ToEmbed().QueueAsync(e.GetChannel());
         }
 
-		[Command("lovepasta")]
-		public async Task LovePasta(IContext e)
-		{
-			await VotePasta(e, true).ConfigureAwait(false);
-		}
+        [Command("lovepasta")]
+        public async Task LovePasta(IContext e)
+        {
+            await VotePasta(e, true).ConfigureAwait(false);
+        }
 
-		[Command("hatepasta")]
-		public async Task HatePasta(IContext e)
-		{
-			await VotePasta(e, false).ConfigureAwait(false);
-		}
+        [Command("hatepasta")]
+        public async Task HatePasta(IContext e)
+        {
+            await VotePasta(e, false).ConfigureAwait(false);
+        }
 
         private async Task VotePasta(IContext e, bool vote)
         {
@@ -403,5 +403,5 @@ namespace Miki.Modules
                 await e.SuccessEmbed(e.GetLocale().GetString("miki_module_pasta_vote_success", votecount.Upvotes - votecount.Downvotes)).QueueAsync(e.GetChannel());
             }
         }
-	}
+    }
 }
