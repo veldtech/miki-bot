@@ -147,6 +147,7 @@ namespace Miki.Modules
 				{
 					"loli",
 					"shota",
+                    "cub"
 				}
 			}));
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<DanbooruPost>(new ImageboardConfigurations
@@ -190,7 +191,9 @@ namespace Miki.Modules
 				{
 					"loli",
 					"shota",
-				}
+                    "shortstack",
+                    "larger_male"
+                }
 			}));
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>(new ImageboardConfigurations
 			{
