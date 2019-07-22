@@ -203,7 +203,7 @@ namespace Miki.Modules
 		}
 
         private static string FormatTags(string tags)
-            => string.Join(", ", tags.Split(' ').Select(x => $"`x`"));
+            => string.Join(", ", tags.Split(' ').Select(x => $"`{x}`"));
 
         private static bool IsValid(ILinkable s)
 	        => (s != null) && (!string.IsNullOrWhiteSpace(s.Url));
