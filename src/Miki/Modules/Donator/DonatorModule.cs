@@ -17,7 +17,7 @@ using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Nodes;
 using Miki.Localization.Exceptions;
-using Miki.Modules.Exceptions;
+using Miki.Modules.Donator.Exceptions;
 
 namespace Miki.Modules
 {
