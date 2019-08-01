@@ -19,7 +19,7 @@ using Miki.Framework.Commands.Nodes;
 using Miki.Localization.Exceptions;
 using Miki.Modules.Donator.Exceptions;
 
-namespace Miki.Modules
+namespace Miki.Modules.Donator
 {
     [Module("Donator")]
     internal class DonatorModule
