@@ -57,7 +57,7 @@ namespace Miki.Modules.Donator
 
                 await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e, e.GetLocale().GetString("key_sold_success", 30000))
+                await e.SuccessEmbed(e.GetLocale().GetString("key_sold_success", 30000))
                     .QueueAsync(e.GetChannel());
             }
         }
@@ -77,7 +77,7 @@ namespace Miki.Modules.Donator
             DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
             IsDonator donatorStatus =
                 await context.IsDonator.FindAsync(id) ??
-                (await context.IsDonator.AddAsync(new IsDonator()
+                (await context.IsDonator.AddAsync(new IsDonator
                 {
                     UserId = id
                 })).Entity;
@@ -93,14 +93,13 @@ namespace Miki.Modules.Donator
                 donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
             }
 
-            await new EmbedBuilder()
+            await new EmbedBuilder
                 {
-                    Title = ($"🎉 Congratulations, {e.GetAuthor().Username}"),
+                    Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
                     Color = new Color(226, 46, 68),
                     Description =
-                        ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."
-                        ),
-                    ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
+                        $"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
+                    ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
                 }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
                 .ToEmbed().QueueAsync(e.GetChannel());
 
@@ -132,12 +131,13 @@ namespace Miki.Modules.Donator
         [PatreonOnly]
         public async Task BoxAsync(IContext e)
             => await PerformCall(e,
-                $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={(await GetUrlFromMessageAsync(e))}");
+                    $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
+                .ConfigureAwait(false);
 
         [Command("disability")]
         [PatreonOnly]
         public async Task DisabilityAsync(IContext e)
-            => await PerformCall(e, "/api/disability?url=" + (await GetUrlFromMessageAsync(e)));
+            => await PerformCall(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
 
         [Command("tohru")]
         [PatreonOnly]
@@ -149,12 +149,13 @@ namespace Miki.Modules.Donator
         [PatreonOnly]
         public async Task TruthAsync(IContext e)
             => await PerformCall(e,
-                "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+                    "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
+                .ConfigureAwait(false);
 
         [Command("trapcard")]
         [PatreonOnly]
         public async Task YugiAsync(IContext e)
-            => await PerformCall(e, $"/api/yugioh?url={(await GetUrlFromMessageAsync(e))}");
+            => await PerformCall(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}").ConfigureAwait(false);
 
         private async Task<string> GetUrlFromMessageAsync(IContext e)
         {
