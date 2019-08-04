@@ -14,199 +14,199 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-    [Module("nsfw")]
-    internal class NsfwModule
-    {
-        [Command("gelbooru", "gel")]
-        public async Task RunGelbooru(IContext e)
-        {
-            try
-            {
-                ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+	[Module("nsfw")]
+	internal class NsfwModule
+	{
+		[Command("gelbooru", "gel")]
+		public async Task RunGelbooru(IContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>()
+					.GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-                if (!IsValid(s))
-                {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
-                    return;
-                }
+				if(!IsValid(s))
+				{
+					await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueAsync(e.GetChannel());
+					return;
+				}
 
-                await CreateEmbed(s)
-                    .QueueAsync(e.GetChannel());
-            }
-            catch
-            {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await CreateEmbed(s)
+					.QueueAsync(e.GetChannel());
+			}
+			catch
+			{
+				await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        [Command("danbooru", "dan")]
-        public async Task DanbooruAsync(IContext e)
-        {
-            try
-            {
-                ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+		[Command("danbooru", "dan")]
+		public async Task DanbooruAsync(IContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>()
+					.GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-                if (!IsValid(s))
-                {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
-                    return;
-                }
+				if(!IsValid(s))
+				{
+					await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueAsync(e.GetChannel());
+					return;
+				}
 
-                await CreateEmbed(s)
-                    .QueueAsync(e.GetChannel());
-            }
-            catch
-            {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await CreateEmbed(s)
+					.QueueAsync(e.GetChannel());
+			}
+			catch
+			{
+				await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        [Command("rule34", "r34")]
-        public async Task RunRule34(IContext e)
-        {
-            try
-            {
-                ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+		[Command("rule34", "r34")]
+		public async Task RunRule34(IContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>()
+					.GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-                if (!IsValid(s))
-                {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
-                    return;
-                }
+				if(!IsValid(s))
+				{
+					await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueAsync(e.GetChannel());
+					return;
+				}
 
-                await CreateEmbed(s)
-                    .QueueAsync(e.GetChannel());
-            }
-            catch
-            {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await CreateEmbed(s)
+					.QueueAsync(e.GetChannel());
+			}
+			catch
+			{
+				await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        [Command("e621")]
-        public async Task RunE621(IContext e)
-        {
-            try
-            {
-                ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+		[Command("e621")]
+		public async Task RunE621(IContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>()
+					.GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-                if (!IsValid(s))
-                {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
-                    return;
-                }
+				if(!IsValid(s))
+				{
+					await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueAsync(e.GetChannel());
+					return;
+				}
 
-                await CreateEmbed(s)
-                    .QueueAsync(e.GetChannel());
-            }
-            catch
-            {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await CreateEmbed(s)
+					.QueueAsync(e.GetChannel());
+			}
+			catch
+			{
+				await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        [Command("urban")]
-        public async Task UrbanAsync(IContext e)
-        {
-            if (!e.GetArgumentPack().Pack.CanTake)
-            {
-                return;
-            }
+		[Command("urban")]
+		public async Task UrbanAsync(IContext e)
+		{
+			if(!e.GetArgumentPack().Pack.CanTake)
+			{
+				return;
+			}
 
-            var api = e.GetService<UrbanDictionaryAPI>();
+			var api = e.GetService<UrbanDictionaryAPI>();
 
-            var query = e.GetArgumentPack().Pack.TakeAll();
-            var searchResult = await api.SearchTermAsync(query);
+			var query = e.GetArgumentPack().Pack.TakeAll();
+			var searchResult = await api.SearchTermAsync(query);
 
-            if (searchResult == null)
-            {
-                // TODO (Veld): Something went wrong/No results found.
-                return;
-            }
+			if(searchResult == null)
+			{
+				// TODO (Veld): Something went wrong/No results found.
+				return;
+			}
 
-            UrbanDictionaryEntry entry = searchResult.Entries
-                .FirstOrDefault();
+			UrbanDictionaryEntry entry = searchResult.Entries
+				.FirstOrDefault();
 
-            if (entry != null)
-            {
-                string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
+			if(entry != null)
+			{
+				string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
+					(x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+					);
 
-                string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
+				string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
+					(x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+					);
 
-                await new EmbedBuilder()
-                {
-                    Author = new EmbedAuthor()
-                    {
-                        Name = "📚 " + entry.Term,
-                        Url = "http://www.urbandictionary.com/define.php?term=" + query,
-                    },
-                    Description = e.GetLocale().GetString("miki_module_general_urban_author", entry.Author)
-                }.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-                 .ToEmbed().QueueAsync(e.GetChannel());
-            }
-            else
-            {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await new EmbedBuilder()
+				{
+					Author = new EmbedAuthor()
+					{
+						Name = "📚 " + entry.Term,
+						Url = "http://www.urbandictionary.com/define.php?term=" + query,
+					},
+					Description = e.GetLocale().GetString("miki_module_general_urban_author", entry.Author)
+				}.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
+				 .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
+				 .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
+				 .ToEmbed().QueueAsync(e.GetChannel());
+			}
+			else
+			{
+				await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        [Command("yandere")]
-        public async Task RunYandere(IContext e)
-        {
-            try
-            {
-                ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+		[Command("yandere")]
+		public async Task RunYandere(IContext e)
+		{
+			try
+			{
+				ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>()
+					.GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-                if (!IsValid(s))
-                {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
-                    return;
-                }
+				if(!IsValid(s))
+				{
+					await e.ErrorEmbed("Couldn't find anything with these tags!")
+						.ToEmbed().QueueAsync(e.GetChannel());
+					return;
+				}
 
-                await CreateEmbed(s).QueueAsync(e.GetChannel());
-            }
-            catch
-            {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e.GetChannel());
-            }
-        }
+				await CreateEmbed(s).QueueAsync(e.GetChannel());
+			}
+			catch
+			{
+				await e.ErrorEmbed("Too many tags for this system. sorry :(")
+					.ToEmbed().QueueAsync(e.GetChannel());
+			}
+		}
 
-        private DiscordEmbed CreateEmbed(ILinkable s)
-        {
-            string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
-            return new EmbedBuilder()
-                .SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
-                .AddInlineField("Tags", FormatTags(s.Tags))
-                .AddInlineField("Score", s.Score)
-                .SetImage(s.Url).ToEmbed();
-        }
+		private DiscordEmbed CreateEmbed(ILinkable s)
+		{
+			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
+			return new EmbedBuilder()
+				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
+				.AddInlineField("Tags", FormatTags(s.Tags))
+				.AddInlineField("Score", s.Score)
+				.SetImage(s.Url).ToEmbed();
+		}
 
-        private static string FormatTags(string tags)
-            => string.Join(", ", tags.Split(' ').Select(x => $"`x`"));
+		private static string FormatTags(string tags)
+			=> string.Join(", ", tags.Split(' ').Select(x => $"`x`"));
 
-        private static bool IsValid(ILinkable s)
-            => (s != null) && (!string.IsNullOrWhiteSpace(s.Url));
-    }
+		private static bool IsValid(ILinkable s)
+			=> (s != null) && (!string.IsNullOrWhiteSpace(s.Url));
+	}
 }

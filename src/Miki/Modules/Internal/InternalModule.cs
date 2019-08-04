@@ -4,10 +4,10 @@ using Miki.Modules.Internal.Services;
 
 namespace Miki.Modules
 {
-    [Module("Internal")]
-    public class InternalModule
-    {
-        [Service("datadog")]
-        public DatadogService DatadogService { get; set; }
-    }
+	[Module("Internal")]
+	public class InternalModule
+	{
+		[Service("datadog")]
+		public DatadogService DatadogService { get; set; }
+	}
 }

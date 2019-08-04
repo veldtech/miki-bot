@@ -4,26 +4,26 @@ using System.Threading.Tasks;
 
 namespace Miki.Services
 {
-    public class BlackjackService
-    {
-        private readonly IExtendedCacheClient _cache;
+	public class BlackjackService
+	{
+		private readonly IExtendedCacheClient _cache;
 
-        private string GetSessionKey(ulong channelId)
-            => "sessions:blackjack:" + channelId;
+		private string GetSessionKey(ulong channelId)
+			=> "sessions:blackjack:" + channelId;
 
-        public BlackjackService(IExtendedCacheClient cache)
-        {
-            _cache = cache;
-        }
+		public BlackjackService(IExtendedCacheClient cache)
+		{
+			_cache = cache;
+		}
 
-        public async Task CreateNewAsync(ulong userId, ulong channelId)
-        {
-            if (await _cache.HashExistsAsync(GetSessionKey(channelId), userId.ToString()))
-            {
-                throw new BlackjackSessionExistsException();
-            }
+		public async Task CreateNewAsync(ulong userId, ulong channelId)
+		{
+			if(await _cache.HashExistsAsync(GetSessionKey(channelId), userId.ToString()))
+			{
+				throw new BlackjackSessionExistsException();
+			}
 
-            // TODO (Veld): Finish this service.
-        }
-    }
+			// TODO (Veld): Finish this service.
+		}
+	}
 }

@@ -14,233 +14,233 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements
 {
-    public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
+	public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
 
-    public delegate Task<bool> CheckCommandAchievement(User u, Node e);
+	public delegate Task<bool> CheckCommandAchievement(User u, Node e);
 
-    public class AchievementManager
-    {
-        private static AchievementManager _instance;
+	public class AchievementManager
+	{
+		private static AchievementManager _instance;
 
-        public static AchievementManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new AchievementManager(MikiApp.Instance);
+		public static AchievementManager Instance
+		{
+			get
+			{
+				if(_instance == null)
+					_instance = new AchievementManager(MikiApp.Instance);
 
-                return _instance;
-            }
-        }
+				return _instance;
+			}
+		}
 
-        private readonly MikiApp bot;
-        private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
+		private readonly MikiApp bot;
+		private readonly Dictionary<string, AchievementDataContainer> containers = new Dictionary<string, AchievementDataContainer>();
 
-        public event Func<AchievementPacket, Task> OnAchievementUnlocked;
+		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
 
-        public event Func<CommandPacket, Task> OnCommandUsed;
+		public event Func<CommandPacket, Task> OnCommandUsed;
 
-        public event Func<LevelPacket, Task> OnLevelGained;
+		public event Func<LevelPacket, Task> OnLevelGained;
 
-        public event Func<MessageEventPacket, Task> OnMessage;
+		public event Func<MessageEventPacket, Task> OnMessage;
 
-        public event Func<TransactionPacket, Task> OnTransaction;
+		public event Func<TransactionPacket, Task> OnTransaction;
 
-        public AchievementManager(MikiApp bot)
-        {
-            this.bot = bot;
+		public AchievementManager(MikiApp bot)
+		{
+			this.bot = bot;
 
-            AccountManager.Instance.OnLocalLevelUp += async (u, c, l) =>
-            {
-                LevelPacket p = new LevelPacket()
-                {
-                    discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
-                    discordChannel = c,
-                    level = l,
-                };
-                await OnLevelGained?.Invoke(p);
-            };
+			AccountManager.Instance.OnLocalLevelUp += async (u, c, l) =>
+			{
+				LevelPacket p = new LevelPacket()
+				{
+					discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
+					discordChannel = c,
+					level = l,
+				};
+				await OnLevelGained?.Invoke(p);
+			};
 
-            AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
-            {
-                TransactionPacket p = new TransactionPacket()
-                {
-                    discordUser = msg.Author,
-                    discordChannel = await msg.GetChannelAsync(),
-                    giver = u1,
-                    receiver = u2,
-                    amount = amount
-                };
+			AccountManager.Instance.OnTransactionMade += async (msg, u1, u2, amount) =>
+			{
+				TransactionPacket p = new TransactionPacket()
+				{
+					discordUser = msg.Author,
+					discordChannel = await msg.GetChannelAsync(),
+					giver = u1,
+					receiver = u2,
+					amount = amount
+				};
 
-                await OnTransaction?.Invoke(p);
-            };
-        }
+				await OnTransaction?.Invoke(p);
+			};
+		}
 
-        internal void AddContainer(AchievementDataContainer container)
-        {
-            if (containers.ContainsKey(container.Name))
-            {
-                Log.Warning($"AddContainer cannot add duplicate containers");
-                return;
-            }
+		internal void AddContainer(AchievementDataContainer container)
+		{
+			if(containers.ContainsKey(container.Name))
+			{
+				Log.Warning($"AddContainer cannot add duplicate containers");
+				return;
+			}
 
-            containers.Add(container.Name, container);
-        }
+			containers.Add(container.Name, container);
+		}
 
-        public AchievementDataContainer GetContainerById(string id)
-        {
-            if (containers.ContainsKey(id))
-            {
-                return containers[id];
-            }
+		public AchievementDataContainer GetContainerById(string id)
+		{
+			if(containers.ContainsKey(id))
+			{
+				return containers[id];
+			}
 
-            Log.Warning($"Could not load AchievementContainer {id}");
-            return null;
-        }
+			Log.Warning($"Could not load AchievementContainer {id}");
+			return null;
+		}
 
-        public string PrintAchievements(List<Achievement> achievementNames)
-        {
-            string output = string.Empty;
-            foreach (var a in achievementNames)
-            {
-                if (containers.TryGetValue(a.Name, out var value))
-                {
-                    if (a.Rank < value.Achievements.Count)
-                    {
-                        output += value.Achievements[a.Rank].Icon + " ";
-                    }
-                }
-            }
-            return output;
-        }
+		public string PrintAchievements(List<Achievement> achievementNames)
+		{
+			string output = string.Empty;
+			foreach(var a in achievementNames)
+			{
+				if(containers.TryGetValue(a.Name, out var value))
+				{
+					if(a.Rank < value.Achievements.Count)
+					{
+						output += value.Achievements[a.Rank].Icon + " ";
+					}
+				}
+			}
+			return output;
+		}
 
-        public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordTextChannel channel)
-        {
-            if (achievement as AchievementAchievement == null)
-            {
-                return;
-            }
+		public async Task CallAchievementUnlockEventAsync(IAchievement achievement, IDiscordUser user, IDiscordTextChannel channel)
+		{
+			if(achievement as AchievementAchievement == null)
+			{
+				return;
+			}
 
-            long id = user.Id.ToDbLong();
+			long id = user.Id.ToDbLong();
 
-            using (var scope = MikiApp.Instance.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider
-                    .GetService<MikiDbContext>();
-                int achievementCount = await context.Achievements
-                    .Where(q => q.UserId == id)
-                    .CountAsync();
+			using(var scope = MikiApp.Instance.Services.CreateScope())
+			{
+				var context = scope.ServiceProvider
+					.GetService<MikiDbContext>();
+				int achievementCount = await context.Achievements
+					.Where(q => q.UserId == id)
+					.CountAsync();
 
-                AchievementPacket p = new AchievementPacket()
-                {
-                    discordUser = user,
-                    discordChannel = channel,
-                    achievement = achievement,
-                    count = achievementCount
-                };
+				AchievementPacket p = new AchievementPacket()
+				{
+					discordUser = user,
+					discordChannel = channel,
+					achievement = achievement,
+					count = achievementCount
+				};
 
-                await OnAchievementUnlocked?.Invoke(p);
-            }
-        }
+				await OnAchievementUnlocked?.Invoke(p);
+			}
+		}
 
-        public async Task CallTransactionMadeEventAsync(IDiscordGuildChannel m, User receiver, User giver, int amount)
-        {
-            try
-            {
-                TransactionPacket p = new TransactionPacket();
-                if (m is IDiscordTextChannel tc)
-                {
-                    p.discordChannel = tc;
-                }
-                p.discordUser = await m.GetUserAsync(receiver.Id.FromDbLong());
+		public async Task CallTransactionMadeEventAsync(IDiscordGuildChannel m, User receiver, User giver, int amount)
+		{
+			try
+			{
+				TransactionPacket p = new TransactionPacket();
+				if(m is IDiscordTextChannel tc)
+				{
+					p.discordChannel = tc;
+				}
+				p.discordUser = await m.GetUserAsync(receiver.Id.FromDbLong());
 
-                if (giver != null)
-                {
-                    p.giver = giver;
-                }
+				if(giver != null)
+				{
+					p.giver = giver;
+				}
 
-                p.receiver = receiver;
+				p.receiver = receiver;
 
-                p.amount = amount;
+				p.amount = amount;
 
-                if (OnTransaction != null)
-                {
-                    await OnTransaction?.Invoke(p);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Warning($"Achievement check failed: {e.ToString()}");
-            }
-        }
+				if(OnTransaction != null)
+				{
+					await OnTransaction?.Invoke(p);
+				}
+			}
+			catch(Exception e)
+			{
+				Log.Warning($"Achievement check failed: {e.ToString()}");
+			}
+		}
 
-        /// <summary>
-        /// Unlocks the achievement and if not yet added to the database, It'll add it to the database.
-        /// </summary>
-        /// <param name="context">sql context</param>
-        /// <param name="id">user id</param>
-        /// <param name="r">rank set to (optional)</param>
-        /// <returns></returns>
-        public async Task UnlockAsync(IAchievement achievement, IDiscordTextChannel channel, IDiscordUser user, int r = 0)
-        {
-            long userid = user.Id.ToDbLong();
+		/// <summary>
+		/// Unlocks the achievement and if not yet added to the database, It'll add it to the database.
+		/// </summary>
+		/// <param name="context">sql context</param>
+		/// <param name="id">user id</param>
+		/// <param name="r">rank set to (optional)</param>
+		/// <returns></returns>
+		public async Task UnlockAsync(IAchievement achievement, IDiscordTextChannel channel, IDiscordUser user, int r = 0)
+		{
+			long userid = user.Id.ToDbLong();
 
-            if (await this.UnlockIsValidAsync(achievement, userid, r))
-            {
-                await CallAchievementUnlockEventAsync(achievement, user, channel);
-                await Notification.SendAchievementAsync(achievement, channel, user);
-            }
-        }
-        public async Task UnlockAsync(IAchievement achievement, IDiscordUser user, int r = 0)
-        {
-            long userid = user.Id.ToDbLong();
+			if(await this.UnlockIsValidAsync(achievement, userid, r))
+			{
+				await CallAchievementUnlockEventAsync(achievement, user, channel);
+				await Notification.SendAchievementAsync(achievement, channel, user);
+			}
+		}
+		public async Task UnlockAsync(IAchievement achievement, IDiscordUser user, int r = 0)
+		{
+			long userid = user.Id.ToDbLong();
 
-            if (await UnlockIsValidAsync(achievement, userid, r)
-                .ConfigureAwait(false))
-            {
-                await Notification.SendAchievementAsync(achievement, user);
-            }
-        }
+			if(await UnlockIsValidAsync(achievement, userid, r)
+				.ConfigureAwait(false))
+			{
+				await Notification.SendAchievementAsync(achievement, user);
+			}
+		}
 
-        public async Task<bool> UnlockIsValidAsync(IAchievement achievement, long userId, int newRank)
-        {
-            using (var scope = MikiApp.Instance.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
-                var achievementObject = await DatabaseHelpers.GetAchievementAsync(context, userId, achievement.ParentName);
+		public async Task<bool> UnlockIsValidAsync(IAchievement achievement, long userId, int newRank)
+		{
+			using(var scope = MikiApp.Instance.Services.CreateScope())
+			{
+				var context = scope.ServiceProvider.GetService<MikiDbContext>();
+				var achievementObject = await DatabaseHelpers.GetAchievementAsync(context, userId, achievement.ParentName);
 
-                // If no achievement has been found and want to unlock first
-                if (achievementObject == null && newRank == 0)
-                {
-                    achievementObject = context.Achievements.Add(new Achievement()
-                    {
-                        UserId = userId,
-                        Name = achievement.ParentName,
-                        Rank = 0,
-                    }).Entity;
+				// If no achievement has been found and want to unlock first
+				if(achievementObject == null && newRank == 0)
+				{
+					achievementObject = context.Achievements.Add(new Achievement()
+					{
+						UserId = userId,
+						Name = achievement.ParentName,
+						Rank = 0,
+					}).Entity;
 
-                    await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.Name, achievementObject);
-                    await context.SaveChangesAsync();
-                    return true;
-                }
-                // If achievement we want to unlock is the next achievement
-                if (achievementObject != null)
-                {
-                    if (achievementObject.Rank == newRank - 1)
-                    {
-                        achievementObject.Rank++;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+					await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.Name, achievementObject);
+					await context.SaveChangesAsync();
+					return true;
+				}
+				// If achievement we want to unlock is the next achievement
+				if(achievementObject != null)
+				{
+					if(achievementObject.Rank == newRank - 1)
+					{
+						achievementObject.Rank++;
+					}
+					else
+					{
+						return false;
+					}
 
-                    await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.ParentName, achievementObject);
-                    await context.SaveChangesAsync();
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+					await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.ParentName, achievementObject);
+					await context.SaveChangesAsync();
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 }
