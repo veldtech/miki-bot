@@ -94,11 +94,12 @@ namespace Miki.Accounts
 							foreach(var role in rolesObtained)
 							{
 								var r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
-
-								if(r != null)
+								if(r == null)
 								{
-									await guildUser.AddRoleAsync(r);
+									continue;
 								}
+
+								await guildUser.AddRoleAsync(r);
 							}
 						}
 
@@ -119,8 +120,8 @@ namespace Miki.Accounts
 			var discord = bot.GetService<DiscordClient>();
 
 			//bot.Discord.Update += Client_GuildUpdated;
-			discord.GuildMemberCreate += Client_UserJoined;
-			discord.MessageCreate += CheckAsync;
+			discord.GuildMemberCreate += this.Client_UserJoined;
+			discord.MessageCreate += this.CheckAsync;
 		}
 
 		public async Task CheckAsync(IDiscordMessage e)
@@ -222,8 +223,8 @@ namespace Miki.Accounts
 						{
 							var context = scope.ServiceProvider.GetService<DbContext>();
 							await UpdateGlobalDatabaseAsync(context);
-							await UpdateLocalDatabase(context);
-							await UpdateGuildDatabase(context);
+							await UpdateLocalDatabaseAsync(context);
+							await UpdateGuildDatabaseAsync(context);
 							await context.SaveChangesAsync();
 						}
 					}
@@ -268,7 +269,7 @@ namespace Miki.Accounts
 			await context.Database.ExecuteSqlCommandAsync(query, userParameters.ToArray());
 		}
 
-		public async Task UpdateLocalDatabase(DbContext context)
+		public async Task UpdateLocalDatabaseAsync(DbContext context)
 		{
 			if(experienceQueue.Count == 0)
 				return;
@@ -289,7 +290,7 @@ namespace Miki.Accounts
 			await context.Database.ExecuteSqlCommandAsync(query);
 		}
 
-		public async Task UpdateGuildDatabase(DbContext context)
+		public async Task UpdateGuildDatabaseAsync(DbContext context)
 		{
 			if(experienceQueue.Count == 0)
 				return;
@@ -361,9 +362,9 @@ namespace Miki.Accounts
 
 	public class ExperienceAdded
 	{
-		public long GuildId;
-		public long UserId;
-		public int Experience;
-		public string Name;
-	}
+		public long GuildId { get; set; }
+        public long UserId { get; set; }
+        public int Experience { get; set; }
+        public string Name { get; set; }
+    }
 }

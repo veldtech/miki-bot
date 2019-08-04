@@ -210,7 +210,7 @@ namespace Miki.Modules
 		}
 
 		[Command("setmekos")]
-		public async Task SetMekos(IContext e)
+		public async Task SetMekosAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out string userArg))
 			{
@@ -260,7 +260,7 @@ namespace Miki.Modules
 		}
 
 		[Command("setexp")]
-		public async Task SetExp(IContext e)
+		public async Task SetExperienceAsync(IContext e)
 		{
 			var cache = e.GetService<ICacheClient>();
 

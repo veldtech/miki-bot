@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements.Objects;
-using Miki.Bot.Models;
-using Miki.Framework;
-using Miki.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts.Achievements
+﻿namespace Miki.Accounts.Achievements
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+	using Miki.Accounts.Achievements.Objects;
+	using Miki.Bot.Models;
+	using Miki.Framework;
+	using Miki.Helpers;
+
 	public class AchievementDataContainer
 	{
 		public string Name = Constants.NotDefined;

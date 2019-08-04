@@ -133,37 +133,39 @@ namespace Miki.Modules.Donator
 		[Command("box")]
 		[PatreonOnly]
 		public async Task BoxAsync(IContext e)
-			=> await PerformCall(e,
+			=> await PerformCallAsync(e,
 					$"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
 				.ConfigureAwait(false);
 
 		[Command("disability")]
 		[PatreonOnly]
 		public async Task DisabilityAsync(IContext e)
-			=> await PerformCall(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
+			=> await PerformCallAsync(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
 
 		[Command("tohru")]
 		[PatreonOnly]
 		public async Task TohruAsync(IContext e)
-			=> await PerformCall(e,
+			=> await PerformCallAsync(e,
 				"/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
 		[Command("truth")]
 		[PatreonOnly]
 		public async Task TruthAsync(IContext e)
-			=> await PerformCall(e,
+			=> await PerformCallAsync(e,
 					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
 				.ConfigureAwait(false);
 
 		[Command("trapcard")]
 		[PatreonOnly]
 		public async Task YugiAsync(IContext e)
-			=> await PerformCall(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}").ConfigureAwait(false);
+			=> await PerformCallAsync(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}")
+            .ConfigureAwait(false);
 
 		private async Task<string> GetUrlFromMessageAsync(IContext e)
 		{
-			string url = e.GetMessage().Author.GetAvatarUrl();
+			string url = e.GetAuthor().GetAvatarUrl();
 
+            // TODO(velddev): Refactor this part with new Miki.Framework.Arguments 
 			if(e.GetMessage().MentionedUserIds.Count > 0)
 			{
 				url = (await e.GetGuild().GetMemberAsync(e.GetMessage().MentionedUserIds.First())).GetAvatarUrl();
@@ -177,7 +179,7 @@ namespace Miki.Modules.Donator
 			return url;
 		}
 
-		private async Task PerformCall(IContext e, string url)
+		private async Task PerformCallAsync(IContext e, string url)
 		{
 			Stream s = await client.GetStreamAsync(url);
 			await e.GetChannel().SendFileAsync(s, "meme.png");
