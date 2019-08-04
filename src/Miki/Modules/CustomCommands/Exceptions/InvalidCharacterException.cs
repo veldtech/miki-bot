@@ -1,7 +1,5 @@
 ﻿using Miki.Localization;
 using Miki.Localization.Exceptions;
-using System;
-using System.Runtime.Serialization;
 
 namespace Miki.Modules.CustomCommands
 {

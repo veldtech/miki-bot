@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts.Achievements.Objects
+﻿namespace Miki.Accounts.Achievements.Objects
 {
+    using System;
+    using System.Threading.Tasks;
+
     public class MessageAchievement : IAchievement
     {
         public Func<MessageEventPacket, Task<bool>> CheckMessage;

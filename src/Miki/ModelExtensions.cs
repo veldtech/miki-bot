@@ -5,10 +5,7 @@ using Miki.Bot.Models.Models.User;
 using Miki.Bot.Models.Repositories;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Exceptions;
 using Miki.Framework;
-using Miki.Framework.Events;
-using Miki.Models;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace Miki
 {
-	public static class ModelExtensions
-	{
+    public static class ModelExtensions
+    {
         public static async Task BanAsync(this User user, DbContext context)
         {
             MarriageRepository repository = new MarriageRepository(context);
@@ -41,11 +38,11 @@ namespace Miki
 
             await context.Set<IsBanned>()
                 .AddAsync(new IsBanned
-            {
-                UserId = user.Id,
-                TimeOfBan = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow.AddYears(10)
-            });
+                {
+                    UserId = user.Id,
+                    TimeOfBan = DateTime.UtcNow,
+                    ExpirationDate = DateTime.UtcNow.AddYears(10)
+                });
 
             u.Total_Commands = 0;
             u.Total_Experience = 0;
@@ -56,34 +53,34 @@ namespace Miki
             await context.SaveChangesAsync();
         }
 
-		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
-		{
-			return await MikiApp.Instance
+        public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
+        {
+            return await MikiApp.Instance
                 .GetService<DiscordClient>()
                 .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
-		}
+        }
 
-		public static async Task AddAsync(MikiDbContext context, string id, string text, long creator)
-		{
-			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
-			{
-				throw new Exception("You can't add discord invites!");
-			}
+        public static async Task AddAsync(MikiDbContext context, string id, string text, long creator)
+        {
+            if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
+            {
+                throw new Exception("You can't add discord invites!");
+            }
 
-			GlobalPasta pasta = await context.Pastas.FindAsync(id);
+            GlobalPasta pasta = await context.Pastas.FindAsync(id);
 
-			if (pasta != null)
-			{
-				throw new DuplicatePastaException(pasta);
-			}
+            if (pasta != null)
+            {
+                throw new DuplicatePastaException(pasta);
+            }
 
-			await context.Pastas.AddAsync(new GlobalPasta()
-			{
-				Id = id,
-				Text = text,
-				CreatorId = creator,
-				CreatedAt = DateTime.Now
-			});
-		}
-	}
+            await context.Pastas.AddAsync(new GlobalPasta()
+            {
+                Id = id,
+                Text = text,
+                CreatorId = creator,
+                CreatedAt = DateTime.Now
+            });
+        }
+    }
 }

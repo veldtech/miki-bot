@@ -1,108 +1,99 @@
-﻿using Miki.Accounts.Achievements.Objects;
-using Miki.Bot.Models;
+﻿using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
-using Miki.Discord.Common.Packets.Arguments;
 using Miki.Framework;
-using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Filters;
-using Miki.Framework.Commands.Permissions;
-using Miki.Framework.Commands.Permissions.Attributes;
-using Miki.Framework.Events;
-using Miki.Models;
 using Miki.Net.Http;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("Experimental")]
-	internal class DeveloperModule
-	{
-		[Command("identifyemoji")]
+    [Module("Experimental")]
+    internal class DeveloperModule
+    {
+        [Command("identifyemoji")]
         public async Task IdentifyEmojiAsync(IContext e)
-		{
-			if (DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
-			{
-				await new EmbedBuilder()
-					.SetTitle("Emoji Identified!")
-					.AddInlineField("Name", emote.Name)
-					.AddInlineField("Id", emote.Id.ToString())
-					//.AddInlineField("Created At", emote.ToString())
-					.AddInlineField("Code", "`" + emote.ToString() + "`")
-					//.SetThumbnail(emote.Url)
-					.ToEmbed()
+        {
+            if (DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
+            {
+                await new EmbedBuilder()
+                    .SetTitle("Emoji Identified!")
+                    .AddInlineField("Name", emote.Name)
+                    .AddInlineField("Id", emote.Id.ToString())
+                    //.AddInlineField("Created At", emote.ToString())
+                    .AddInlineField("Code", "`" + emote.ToString() + "`")
+                    //.SetThumbnail(emote.Url)
+                    .ToEmbed()
                     .QueueAsync(e.GetChannel());
-			}
+            }
         }
 
-		[Command("say")]
+        [Command("say")]
         public Task SayAsync(IContext e)
-		{
-			e.GetChannel()
+        {
+            e.GetChannel()
                 .QueueMessage(e.GetArgumentPack().Pack.TakeAll());
-			return Task.CompletedTask;
-		}
+            return Task.CompletedTask;
+        }
 
-		[Command("sayembed")]
+        [Command("sayembed")]
         public async Task SayEmbedAsync(IContext e)
-		{
-			EmbedBuilder b = new EmbedBuilder();
-			string text = e.GetArgumentPack().Pack.TakeAll();
+        {
+            EmbedBuilder b = new EmbedBuilder();
+            string text = e.GetArgumentPack().Pack.TakeAll();
 
-			b.SetDescription(text);
+            b.SetDescription(text);
 
             await b.ToEmbed().QueueAsync(e.GetChannel());
-		}
+        }
 
-		[Command("identifyuser")]
+        [Command("identifyuser")]
         public async Task IdenUserAsync(IContext e)
-		{
+        {
             var api = e.GetService<IApiClient>();
             var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
-			if (user.Id == 0)
-			{
-				await e.GetChannel().SendMessageAsync($"none.");
-			}
+            if (user.Id == 0)
+            {
+                await e.GetChannel().SendMessageAsync($"none.");
+            }
 
-			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
-		}
+            await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+        }
 
-		[Command("identifyguilduser")]
+        [Command("identifyguilduser")]
         public async Task IdenGuildUserAsync(IContext e)
-		{
+        {
             var api = e.GetService<IApiClient>();
             var user = await api.GetGuildUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
 
-			if (user == null)
-			{
-				await e.GetChannel().SendMessageAsync($"none.");
-			}
+            if (user == null)
+            {
+                await e.GetChannel().SendMessageAsync($"none.");
+            }
 
-			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
-		}
+            await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+        }
 
         [Command("showpermissions")]
         public async Task ShowPermissionsAsync(IContext e)
         {
-            if(e.GetArgumentPack().Take(out ulong id))
+            if (e.GetArgumentPack().Take(out ulong id))
             {
                 var member = await e.GetGuild().GetMemberAsync(id);
                 var permissions = await e.GetGuild().GetPermissionsAsync(member);
 
-                string x = "";
+                string x = string.Empty;
 
-                foreach(var z in Enum.GetNames(typeof(GuildPermission)))
+                foreach (var z in Enum.GetNames(typeof(GuildPermission)))
                 {
-                    if(permissions.HasFlag(Enum.Parse<GuildPermission>(z)))
+                    if (permissions.HasFlag(Enum.Parse<GuildPermission>(z)))
                     {
                         x += z + " ";
                     }
@@ -116,7 +107,7 @@ namespace Miki.Modules
         public async Task HasPermissionAsync(IContext e)
         {
             var user = await e.GetGuild().GetSelfAsync();
-            if(await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
+            if (await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
             {
                 e.GetChannel().QueueMessage("Yes!");
             }
@@ -126,19 +117,19 @@ namespace Miki.Modules
             }
         }
 
-		[Command("identifyguildchannel")]
+        [Command("identifyguildchannel")]
         public async Task IdenGuildChannelAsync(IContext e)
-		{
+        {
             var api = e.GetService<IApiClient>();
             var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
-			if (user == null)
-			{
-				await e.GetChannel().SendMessageAsync($"none.");
-			}
+            if (user == null)
+            {
+                await e.GetChannel().SendMessageAsync($"none.");
+            }
 
-			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
-		}
+            await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
+        }
 
         [Command("identifyrole")]
         public async Task IdentifyRoleAsync(IContext e)
@@ -151,7 +142,7 @@ namespace Miki.Modules
                 e.GetChannel().QueueMessage("```" + JsonConvert.SerializeObject(new
                 {
                     role = x,
-                    bot_position = myHierarchy
+                    bot_position = myHierarchy,
                 }) + "```");
             }
         }
@@ -166,40 +157,40 @@ namespace Miki.Modules
 
         [Command("setactivity")]
         public async Task SetGameAsync(IContext e)
-		{
+        {
             if (!e.GetArgumentPack().Take(out string arg))
             {
                 return;
             }
 
-			ActivityType type = arg.FromEnum(ActivityType.Playing);
+            ActivityType type = arg.FromEnum(ActivityType.Playing);
 
             string text = e.GetArgumentPack().Pack.TakeAll();
-			string url = null;
+            string url = null;
 
-			if (type == ActivityType.Streaming)
-				url = "https://twitch.tv/velddev";
+            if (type == ActivityType.Streaming)
+                url = "https://twitch.tv/velddev";
 
-			for (int i = 0; i < Global.Config.ShardCount; i++)
-			{
-				await e.GetService<DiscordClient>()
+            for (int i = 0; i < Global.Config.ShardCount; i++)
+            {
+                await e.GetService<DiscordClient>()
                     .SetGameAsync(i, new DiscordStatus
-				{
-					Game = new Discord.Common.Packets.DiscordActivity
-					{
-						Name = text,
-						Url = url,
-						Type = type
-					},
-					Status = "online",
-					IsAFK = false
-				});
-			}
-		}
+                    {
+                        Game = new Discord.Common.Packets.DiscordActivity
+                        {
+                            Name = text,
+                            Url = url,
+                            Type = type
+                        },
+                        Status = "online",
+                        IsAFK = false
+                    });
+            }
+        }
 
-		[Command("ignore")]
+        [Command("ignore")]
         public Task IgnoreIdAsync(IContext e)
-		{
+        {
             if (e.GetArgumentPack().Take(out ulong id))
             {
                 var userFilter = e.GetService<FilterPipelineStage>()
@@ -208,15 +199,15 @@ namespace Miki.Modules
 
                 e.GetChannel().QueueMessage(":ok_hand:");
             }
-			return Task.CompletedTask;
-		}
+            return Task.CompletedTask;
+        }
 
-		[Command("dev")]
+        [Command("dev")]
         public Task ShowCacheAsync(IContext e)
-		{
-			e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
-			return Task.CompletedTask;
-		}
+        {
+            e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
+            return Task.CompletedTask;
+        }
 
         [Command("setmekos")]
         public async Task SetMekos(IContext e)
@@ -340,5 +331,5 @@ namespace Miki.Modules
                     .BanAsync(context);
             }
         }
-	}
+    }
 }

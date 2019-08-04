@@ -2,11 +2,9 @@
 using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Discord;
-using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Commands.Pipelines;
 using Miki.Framework.Commands.Stages;
 using Miki.Framework.Events;
@@ -16,11 +14,6 @@ using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Modules.CustomCommands.Exceptions;
 using MiScript;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.CustomCommands
@@ -48,20 +41,20 @@ namespace Miki.Modules.CustomCommands
         [GuildOnly, Command("createcommand")]
         public async Task NewCustomCommandAsync(IContext e)
         {
-            if(e.GetArgumentPack().Take(out string commandName))
+            if (e.GetArgumentPack().Take(out string commandName))
             {
-                if(commandName.Contains(' '))
+                if (commandName.Contains(' '))
                 {
                     throw new InvalidCharacterException(" ");
                 }
 
                 var commandHandler = e.GetStage<CommandHandlerStage>();
-                if(commandHandler.GetCommand(commandName) != null)
+                if (commandHandler.GetCommand(commandName) != null)
                 {
                     return;
                 }
 
-                if(!e.GetArgumentPack().CanTake)
+                if (!e.GetArgumentPack().CanTake)
                 {
                     // TODO (Veld): Command has no function body.
                     return;
@@ -87,7 +80,7 @@ namespace Miki.Modules.CustomCommands
 
                     //new Parser(tokens).Parse(context);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex.ToString()}```")
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -105,7 +98,7 @@ namespace Miki.Modules.CustomCommands
                     });
                     await db.SaveChangesAsync();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error(ex);
                 }
@@ -124,7 +117,7 @@ namespace Miki.Modules.CustomCommands
             if (e.GetArgumentPack().Take(out string commandName))
             {
                 var cmd = await context.CustomCommands.FindAsync(guildId, commandName);
-                if(cmd == null)
+                if (cmd == null)
                 {
                     throw new CommandNullException(commandName);
                 }

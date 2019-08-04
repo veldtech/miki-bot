@@ -4,83 +4,83 @@ using System.Collections.Generic;
 
 namespace Miki.API.Imageboards.Objects
 {
-	internal class ImgurPost
-	{
-		[JsonProperty("data")]
-		public List<ImgurImage> Entries { get; set; }
+    internal class ImgurPost
+    {
+        [JsonProperty("data")]
+        public List<ImgurImage> Entries { get; set; }
 
-		[JsonProperty("success")]
-		public string Success { get; set; }
+        [JsonProperty("success")]
+        public string Success { get; set; }
 
-		[JsonProperty("status")]
-		public string Status { get; set; }
-	}
+        [JsonProperty("status")]
+        public string Status { get; set; }
+    }
 
-	public class ImgurImage
-	{
-		[JsonProperty("id")]
-		public string Id;
+    public class ImgurImage
+    {
+        [JsonProperty("id")]
+        public string Id;
 
-		[JsonProperty("title")]
-		public string Title;
+        [JsonProperty("title")]
+        public string Title;
 
-		[JsonProperty("description")]
-		public string Description;
+        [JsonProperty("description")]
+        public string Description;
 
-		[JsonProperty("datetime")]
-		public int TimeCreatedInEpochTime;
+        [JsonProperty("datetime")]
+        public int TimeCreatedInEpochTime;
 
-		public DateTime TimeCreated => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(TimeCreatedInEpochTime);
+        public DateTime TimeCreated => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(TimeCreatedInEpochTime);
 
-		[JsonProperty("type")]
-		public string Type;
+        [JsonProperty("type")]
+        public string Type;
 
-		[JsonProperty("animated")]
-		public bool IsAnimated;
+        [JsonProperty("animated")]
+        public bool IsAnimated;
 
-		[JsonProperty("width")]
-		public int Width;
+        [JsonProperty("width")]
+        public int Width;
 
-		[JsonProperty("height")]
-		public int Height;
+        [JsonProperty("height")]
+        public int Height;
 
-		[JsonProperty("size")]
-		public int SizeInBytes;
+        [JsonProperty("size")]
+        public int SizeInBytes;
 
-		[JsonProperty("views")]
-		public int Views;
+        [JsonProperty("views")]
+        public int Views;
 
-		[JsonProperty("bandwidth")]
-		public int BandWithConsumedInBytes;
+        [JsonProperty("bandwidth")]
+        public int BandWithConsumedInBytes;
 
-		[JsonProperty("section")]
-		public string Section;
+        [JsonProperty("section")]
+        public string Section;
 
-		[JsonProperty("link")]
-		public string Link;
+        [JsonProperty("link")]
+        public string Link;
 
-		[JsonProperty("gifv")]
-		public string LinkGifv;
+        [JsonProperty("gifv")]
+        public string LinkGifv;
 
-		[JsonProperty("mp4")]
-		public string LinkMp4;
+        [JsonProperty("mp4")]
+        public string LinkMp4;
 
-		[JsonProperty("mp4_size")]
-		public int Mp4SizeInBytes;
+        [JsonProperty("mp4_size")]
+        public int Mp4SizeInBytes;
 
-		[JsonProperty("looping")]
-		public bool IsLooping;
+        [JsonProperty("looping")]
+        public bool IsLooping;
 
-		[JsonProperty("favorite")]
-		public bool IsFavourited;
+        [JsonProperty("favorite")]
+        public bool IsFavourited;
 
-		[JsonProperty("nsfw")]
-		public bool? IsNsfw;
+        [JsonProperty("nsfw")]
+        public bool? IsNsfw;
 
-		[JsonProperty("vote")]
-		public string Vote;
+        [JsonProperty("vote")]
+        public string Vote;
 
-		[JsonProperty("in_gallery")]
-		public bool IsInGallery;
-	}
+        [JsonProperty("in_gallery")]
+        public bool IsInGallery;
+    }
 }

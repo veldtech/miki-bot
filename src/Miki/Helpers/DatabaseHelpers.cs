@@ -3,19 +3,16 @@ using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord.Common;
-using Miki.Exceptions;
 using Miki.Framework;
-using Miki.Models;
 using StatsdClient;
-using System;
 using System.Threading.Tasks;
 
 namespace Miki.Helpers
 {
-	public static class DatabaseHelpers
-	{
-		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
-			=> await User.GetAsync(context, discordUser.Id, discordUser.Username);
+    public static class DatabaseHelpers
+    {
+        public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
+            => await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
         public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
         {
@@ -34,48 +31,48 @@ namespace Miki.Helpers
             return achievement;
         }
 
-		internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
-		{
+        internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
+        {
             var cache = MikiApp.Instance.GetService<ICacheClient>();
 
             string key = $"achievement:{userId}:{name}";
-			await cache.UpsertAsync(key, achievement);
-		}
+            await cache.UpsertAsync(key, achievement);
+        }
 
-		public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)
-		{
-			if (amount < 0)
-			{
-				throw new ArgumentLessThanZeroException();
-			}
+        public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentLessThanZeroException();
+            }
 
             // TODO #535: Move to DatadogService
             DogStatsd.Counter("currency.change", amount);
 
-			user.Currency += amount;
+            user.Currency += amount;
 
-			if (channel is IDiscordGuildChannel guildchannel)
-			{
-				await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
-			}
-		}
+            if (channel is IDiscordGuildChannel guildchannel)
+            {
+                await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
+            }
+        }
 
-		public static void RemoveCurrency(this User user, int amount)
-		{
-			if(amount < 0)
-			{
-				throw new ArgumentLessThanZeroException(); 
-			}
+        public static void RemoveCurrency(this User user, int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentLessThanZeroException();
+            }
 
-			if(user.Currency < amount)
-			{
-				throw new InsufficientCurrencyException(user.Currency, (long)amount);
-			}
+            if (user.Currency < amount)
+            {
+                throw new InsufficientCurrencyException(user.Currency, (long)amount);
+            }
 
             // TODO #535: Move to DatadogService
             DogStatsd.Counter("currency.change", -amount);
 
-			user.Currency -= amount;
-		}
-	}
+            user.Currency -= amount;
+        }
+    }
 }

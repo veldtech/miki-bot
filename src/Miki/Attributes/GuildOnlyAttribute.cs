@@ -2,10 +2,6 @@
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
-using Miki.Framework.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Attributes

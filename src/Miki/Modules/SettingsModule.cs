@@ -3,17 +3,12 @@ using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands.Localization;
-using Miki.Framework.Commands.Permissions;
-using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Stages;
-using Miki.Framework.Events;
 using Miki.Localization;
-using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +16,12 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	public enum LevelNotificationsSetting
-	{
-		RewardsOnly = 0,
-		All = 1,
-		None = 2
-	}
+    public enum LevelNotificationsSetting
+    {
+        RewardsOnly = 0,
+        All = 1,
+        None = 2
+    }
 
     public enum AchievementNotificationSetting
     {
@@ -34,9 +29,9 @@ namespace Miki.Modules
         None = 1
     }
 
-	[Module("settings")]
-	internal class SettingsModule
-	{
+    [Module("settings")]
+    internal class SettingsModule
+    {
         private readonly IDictionary<DatabaseSettingId, Enum> _settingOptions = new Dictionary<DatabaseSettingId, Enum>()
         {
             {DatabaseSettingId.LevelUps, (LevelNotificationsSetting)0 },
@@ -161,8 +156,8 @@ namespace Miki.Modules
         }
 
         [Command("showmodule")]
-		public async Task ConfigAsync(IContext e)
-		{
+        public async Task ConfigAsync(IContext e)
+        {
             var cache = e.GetService<ICacheClient>();
             var db = e.GetService<DbContext>();
 
@@ -190,8 +185,8 @@ namespace Miki.Modules
             foreach (Node ev in module.Children.OrderBy((x) => x.Metadata.Identifiers.First()))
             {
                 var state = true;
-                content += (state 
-                    ? "<:iconenabled:341251534522286080>" 
+                content += (state
+                    ? "<:iconenabled:341251534522286080>"
                     : "<:icondisabled:341251533754728458>") + $" {ev.Metadata.Identifiers.First()}\n";
             }
 
@@ -203,9 +198,9 @@ namespace Miki.Modules
                 .QueueAsync(e.GetChannel());
         }
 
-		[Command("setprefix")]
-		public async Task PrefixAsync(IContext e)
-		{
+        [Command("setprefix")]
+        public async Task PrefixAsync(IContext e)
+        {
             var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
 
             if (!e.GetArgumentPack().Take(out string prefix))
@@ -232,17 +227,17 @@ namespace Miki.Modules
                 .QueueAsync(e.GetChannel());
         }
 
-		[Command("syncavatar")]
-		public async Task SyncAvatarAsync(IContext e)
-		{
+        [Command("syncavatar")]
+        public async Task SyncAvatarAsync(IContext e)
+        {
             var context = e.GetService<MikiDbContext>();
             var cache = e.GetService<IExtendedCacheClient>();
             var locale = e.GetLocale();
             await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
 
-			await e.SuccessEmbed(
+            await e.SuccessEmbed(
                 locale.GetString("setting_avatar_updated"))
                 .QueueAsync(e.GetChannel());
-		}
-	}
+        }
+    }
 }

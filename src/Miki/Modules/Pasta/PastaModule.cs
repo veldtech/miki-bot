@@ -8,8 +8,6 @@ using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
-using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

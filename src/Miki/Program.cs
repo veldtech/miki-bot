@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Miki.API;
 using Microsoft.Extensions.DependencyInjection;
+using Miki.API;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Models.User;
 using Miki.BunnyCDN;
@@ -50,7 +50,7 @@ namespace Miki
                 {
                     await new MikiDbContextFactory().CreateDbContext().Database.MigrateAsync();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error("Failed to migrate the database: " + ex.Message);
                     Log.Debug(ex.ToString());
@@ -439,7 +439,7 @@ namespace Miki
                 Log.Error(exception);
                 var sentry = context.GetService<RavenClient>();
                 if (sentry != null)
-                { 
+                {
                     await sentry.CaptureAsync(new SentryEvent(exception));
                 }
             }

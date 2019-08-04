@@ -14,7 +14,7 @@ namespace Miki.Accounts.Achievements.Objects
 
         public async Task<bool> CheckAsync(BasePacket packet)
         {
-            return await CheckCommand(packet as CommandPacket);
+            return await this.CheckCommand(packet as CommandPacket);
         }
     }
 }

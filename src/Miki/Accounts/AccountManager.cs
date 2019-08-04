@@ -6,6 +6,8 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Localization;
 using Miki.Localization;
 using Miki.Logging;
 using Miki.Modules;
@@ -14,124 +16,127 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Localization;
 
 namespace Miki.Accounts
 {
-	public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
+    public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
 
-	public class AccountManager
-	{
-		public static AccountManager Instance { get; } = new AccountManager(MikiApp.Instance);
+    public class AccountManager
+    {
+        public static AccountManager Instance { get; } = new AccountManager(MikiApp.Instance);
 
-		public event LevelUpDelegate OnLocalLevelUp;
+        public event LevelUpDelegate OnLocalLevelUp;
 
-		public event LevelUpDelegate OnGlobalLevelUp;
+        public event LevelUpDelegate OnGlobalLevelUp;
 
-		public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
+        public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
-		private readonly ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue = new ConcurrentDictionary<ulong, ExperienceAdded>();
-		private DateTime lastDbSync = DateTime.MinValue;
+        private readonly ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue 
+            = new ConcurrentDictionary<ulong, ExperienceAdded>();
+        private DateTime lastDbSync = DateTime.MinValue;
 
-		private readonly ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted = new ConcurrentDictionary<ulong, DateTime>();
+        private readonly ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted 
+            = new ConcurrentDictionary<ulong, DateTime>();
 
-		private bool isSyncing = false;
+        private bool isSyncing = false;
 
-		private string GetContextKey(ulong guildid, ulong userid)
-			=> $"user:{guildid}:{userid}:exp";
+        private string GetContextKey(ulong guildid, ulong userid)
+            => $"user:{guildid}:{userid}:exp";
 
-		public AccountManager(MikiApp bot)
-		{
-			OnLocalLevelUp += async (a, e, l) =>
-			{
-				var guild = await (e as IDiscordGuildChannel).GetGuildAsync();
-				long guildId = guild.Id.ToDbLong();
+        public AccountManager(MikiApp bot)
+        {
+            OnLocalLevelUp += async (a, e, l) =>
+            {
+                var guild = await (e as IDiscordGuildChannel).GetGuildAsync();
+                long guildId = guild.Id.ToDbLong();
 
-				List<LevelRole> rolesObtained = new List<LevelRole>();
+                List<LevelRole> rolesObtained = new List<LevelRole>();
 
                 using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<MikiDbContext>();
                     rolesObtained = await context.LevelRoles
-						.Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
-						.ToListAsync();
+                        .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
+                        .ToListAsync();
 
-					var setting = (LevelNotificationsSetting)await Setting
+                    var setting = (LevelNotificationsSetting)await Setting
                         .GetAsync(context, e.Id, DatabaseSettingId.LevelUps);
 
-					if (setting == LevelNotificationsSetting.None)
-						return;
+                    if (setting == LevelNotificationsSetting.None)
+                        return;
 
-					if (setting == LevelNotificationsSetting.RewardsOnly && rolesObtained.Count == 0)
-						return;
+                    if (setting == LevelNotificationsSetting.RewardsOnly && rolesObtained.Count == 0)
+                        return;
 
                     var pipeline = scope.ServiceProvider
                         .GetService<LocalizationPipelineStage>();
 
-					IResourceManager instance = await pipeline
+                    IResourceManager instance = await pipeline
                         .GetLocaleAsync(
-                            scope.ServiceProvider, 
+                            scope.ServiceProvider,
                             (long)e.Id);
 
-					EmbedBuilder embed = new EmbedBuilder()
-					{
-						Title = instance.GetString("miki_accounts_level_up_header"),
-						Description = instance.GetString("miki_accounts_level_up_content", $"{a.Username}#{a.Discriminator}", l),
-						Color = new Color(1, 0.7f, 0.2f)
-					};
+                    EmbedBuilder embed = new EmbedBuilder()
+                    {
+                        Title = instance.GetString("miki_accounts_level_up_header"),
+                        Description = instance.GetString(
+                            "miki_accounts_level_up_content", 
+                            $"{a.Username}#{a.Discriminator}", l),
+                        Color = new Color(1, 0.7f, 0.2f)
+                    };
 
-					if (rolesObtained.Count > 0)
-					{
-						var roles = await guild.GetRolesAsync();
-						var guildUser = await guild.GetMemberAsync(a.Id);
-						if (guildUser != null)
-						{
-							foreach (var role in rolesObtained)
-							{
-								var r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
+                    if (rolesObtained.Count > 0)
+                    {
+                        var roles = await guild.GetRolesAsync();
+                        var guildUser = await guild.GetMemberAsync(a.Id);
+                        if (guildUser != null)
+                        {
+                            foreach (var role in rolesObtained)
+                            {
+                                var r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
 
-								if (r != null)
-								{
-									await guildUser.AddRoleAsync(r);
-								}
-							}
-						}
+                                if (r != null)
+                                {
+                                    await guildUser.AddRoleAsync(r);
+                                }
+                            }
+                        }
 
-						embed.AddInlineField("Rewards", 
-							string.Join("\n", 
+                        embed.AddInlineField("Rewards",
+                            string.Join(
+                                "\n",
                                 rolesObtained
                                     .Select(x => $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId).Name}**")));
-					}
+                    }
 
                     if (e is IDiscordTextChannel tc)
                     {
                         await embed.ToEmbed().QueueAsync(tc);
                     }
-				}
-		   };
+                }
+            };
 
             var discord = bot.GetService<DiscordClient>();
 
             //bot.Discord.Update += Client_GuildUpdated;
             discord.GuildMemberCreate += Client_UserJoined;
             discord.MessageCreate += CheckAsync;
-		}
+        }
 
-		public async Task CheckAsync(IDiscordMessage e)
-		{
-			if (e.Author.IsBot)
-			{
-				return;
-			}
+        public async Task CheckAsync(IDiscordMessage e)
+        {
+            if (e.Author.IsBot)
+            {
+                return;
+            }
 
-			if (isSyncing)
-			{
-				return;
-			}
+            if (isSyncing)
+            {
+                return;
+            }
 
-			try
-			{
+            try
+            {
                 if (await e.GetChannelAsync() is IDiscordGuildChannel channel)
                 {
                     var cache = MikiApp.Instance.GetService<ICacheClient>();
@@ -143,14 +148,14 @@ namespace Miki.Accounts
                         int currentLocalExp = 0;
                         if (!await cache.ExistsAsync(key))
                         {
-                            using(var scope = MikiApp.Instance.Services.CreateScope())
+                            using (var scope = MikiApp.Instance.Services.CreateScope())
                             {
                                 var db = scope.ServiceProvider.GetService<DbContext>();
                                 LocalExperience user = await LocalExperience.GetAsync(
                                     db,
                                     channel.GuildId,
                                     e.Author.Id);
-                                if(user == null)
+                                if (user == null)
                                 {
                                     user = await LocalExperience.CreateAsync(
                                         db,
@@ -205,42 +210,42 @@ namespace Miki.Accounts
                     }
                 }
 
-				if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
-				{
-					isSyncing = true;
-					Log.Message($"Applying Experience for {experienceQueue.Count} users");
-					lastDbSync = DateTime.Now;
+                if (DateTime.Now >= lastDbSync + new TimeSpan(0, 1, 0))
+                {
+                    isSyncing = true;
+                    Log.Message($"Applying Experience for {experienceQueue.Count} users");
+                    lastDbSync = DateTime.Now;
 
-					try
-					{
+                    try
+                    {
                         using (var scope = MikiApp.Instance.Services.CreateScope())
                         {
                             var context = scope.ServiceProvider.GetService<DbContext>();
-                            await UpdateGlobalDatabase(context);
+                            await UpdateGlobalDatabaseAsync(context);
                             await UpdateLocalDatabase(context);
                             await UpdateGuildDatabase(context);
                             await context.SaveChangesAsync();
                         }
                     }
-					catch (Exception ex)
-					{
-						Log.Error(ex.Message + "\n" + ex.StackTrace);
-					}
-					finally
-					{
-						experienceQueue.Clear();
-						isSyncing = false;
-					}
-					Log.Message($"Done Applying!");
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex.ToString());
-			}
-		}
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex.Message + "\n" + ex.StackTrace);
+                    }
+                    finally
+                    {
+                        experienceQueue.Clear();
+                        isSyncing = false;
+                    }
+                    Log.Message($"Done Applying!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+            }
+        }
 
-        public async Task UpdateGlobalDatabase(DbContext context)
+        public async Task UpdateGlobalDatabaseAsync(DbContext context)
         {
             if (experienceQueue.Count == 0)
                 return;
@@ -304,61 +309,61 @@ namespace Miki.Accounts
             await context.Database.ExecuteSqlCommandAsync(query);
         }
 
-		#region Events
+        #region Events
 
-		public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
-		{
-			await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
-		}
+        public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
+        {
+            await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+        }
 
-		public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
-		{
-			await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
-		}
+        public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
+        {
+            await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+        }
 
-		public async Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
-		{
-			await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
-		}
+        public async Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
+        {
+            await OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
+        }
 
-		private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
-		{
-			if (arg1.Name != arg2.Name)
-			{
-                using(var scope = MikiApp.Instance.Services.CreateScope())
+        private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
+        {
+            if (arg1.Name != arg2.Name)
+            {
+                using (var scope = MikiApp.Instance.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetService<MikiDbContext>();
-					GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong());
-					g.Name = arg2.Name;
-					await context.SaveChangesAsync();
-				}
-			}
-		}
+                    GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong());
+                    g.Name = arg2.Name;
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
 
-		private async Task Client_UserJoined(IDiscordGuildUser arg)
-		{
-			await UpdateGuildUserCountAsync(await arg.GetGuildAsync());
-		}
+        private async Task Client_UserJoined(IDiscordGuildUser arg)
+        {
+            await UpdateGuildUserCountAsync(await arg.GetGuildAsync());
+        }
 
-		private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
-		{
+        private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
+        {
             using (var scope = MikiApp.Instance.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<MikiDbContext>();
                 GuildUser g = await context.GuildUsers.FindAsync(guild.Id.ToDbLong());
-				g.UserCount = guild.MemberCount;
-				await context.SaveChangesAsync();
-			}
-		}
+                g.UserCount = guild.MemberCount;
+                await context.SaveChangesAsync();
+            }
+        }
 
-		#endregion Events
-	}
+        #endregion Events
+    }
 
-	public class ExperienceAdded
-	{
-		public long GuildId;
-		public long UserId;
-		public int Experience;
-		public string Name;
-	}
+    public class ExperienceAdded
+    {
+        public long GuildId;
+        public long UserId;
+        public int Experience;
+        public string Name;
+    }
 }

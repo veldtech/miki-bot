@@ -6,14 +6,11 @@ using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
 using Miki.Helpers;
 using Miki.Localization;
-using Miki.Models;
 using Miki.Modules.Gambling.Exceptions;
 using Miki.Modules.Gambling.Managers;
 using System;
@@ -103,7 +100,7 @@ namespace Miki.Modules
         {
             [Command]
             public async Task BlackjackAsync(IContext e)
-            {            
+            {
                 await new EmbedBuilder()
                     .SetTitle("🎲 Blackjack")
                     .SetColor(234, 89, 110)
@@ -130,7 +127,7 @@ namespace Miki.Modules
                 int bet = ValidateBet(e, user);
 
                 user.RemoveCurrency(bet);
-                await context.SaveChangesAsync();       
+                await context.SaveChangesAsync();
 
                 if (await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}"))
                 {
@@ -209,8 +206,8 @@ namespace Miki.Modules
             {
                 var cache = e.GetService<ICacheClient>();
                 BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
-                    cache, 
-                    e.GetChannel().Id, 
+                    cache,
+                    e.GetChannel().Id,
                     e.GetAuthor().Id);
 
                 CardHand Player = bm.GetPlayer(e.GetAuthor().Id);
@@ -230,7 +227,7 @@ namespace Miki.Modules
                             {
                                 if (bm.Worth(Dealer) == bm.Worth(Player))
                                 {
-                                    await OnBlackjackDraw(e, bm);
+                                    await OnBlackjackDrawAsync(e, bm);
                                     return;
                                 }
                                 await OnBlackjackDead(e, bm);
@@ -241,7 +238,7 @@ namespace Miki.Modules
                         {
                             if (bm.Worth(Dealer) == bm.Worth(Player))
                             {
-                                await OnBlackjackDraw(e, bm);
+                                await OnBlackjackDrawAsync(e, bm);
                                 return;
                             }
                             await OnBlackjackDead(e, bm);
@@ -259,7 +256,7 @@ namespace Miki.Modules
                 }
             }
 
-            private async Task OnBlackjackDraw(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackDrawAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -429,13 +426,13 @@ namespace Miki.Modules
         public async Task SlotsAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            if(context == null)
+            if (context == null)
             {
-                
+
             }
 
             User u = await context.Users.FindAsync(e.GetAuthor().Id);
-            int bet = ValidateBet(e, u, 99999);     
+            int bet = ValidateBet(e, u, 99999);
             int moneyReturned = 0;
 
             string[] objects = {
@@ -453,7 +450,7 @@ namespace Miki.Modules
             EmbedBuilder embed = new EmbedBuilder()
                 .SetAuthor(
                     $"{locale.GetString("miki_module_fun_slots_header")} | {e.GetAuthor().Username}",
-                    e.GetAuthor().GetAvatarUrl(), 
+                    e.GetAuthor().GetAvatarUrl(),
                     "https://patreon.com/mikibot");
 
             string[] objectsChosen = {
@@ -553,10 +550,10 @@ namespace Miki.Modules
                     await AchievementManager.Instance
                         .GetContainerById("slots")
                         .CheckAsync(new BasePacket()
-                    {
-                        discordChannel = e.GetChannel() as IDiscordTextChannel,
-                        discordUser = e.GetAuthor()
-                    });
+                        {
+                            discordChannel = e.GetChannel() as IDiscordTextChannel,
+                            discordUser = e.GetAuthor()
+                        });
                 }
             }
 
@@ -709,4 +706,3 @@ namespace Miki.Modules
         }
     }
 }
- 

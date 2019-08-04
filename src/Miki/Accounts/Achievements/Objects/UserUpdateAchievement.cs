@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements.Objects
 {
-	internal class UserUpdateAchievement : IAchievement
-	{
-		public Func<UserUpdatePacket, Task<bool>> CheckUserUpdate;
+    internal class UserUpdateAchievement : IAchievement
+    {
+        public Func<UserUpdatePacket, Task<bool>> CheckUserUpdate;
 
         public string Name { get; set; }
 
@@ -16,8 +16,8 @@ namespace Miki.Accounts.Achievements.Objects
         public int Points { get; set; }
 
         public async Task<bool> CheckAsync(BasePacket packet)
-		{
-			return await CheckUserUpdate(packet as UserUpdatePacket);
-		}
-	}
+        {
+            return await CheckUserUpdate(packet as UserUpdatePacket);
+        }
+    }
 }

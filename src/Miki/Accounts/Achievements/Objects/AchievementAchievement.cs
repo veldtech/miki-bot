@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements.Objects
 {
-	internal class AchievementAchievement : IAchievement
-	{
-		public Func<AchievementPacket, Task<bool>> CheckAchievement;
+    internal class AchievementAchievement : IAchievement
+    {
+        public Func<AchievementPacket, Task<bool>> CheckAchievement;
 
         public string Name { get; set; }
 
@@ -24,5 +24,5 @@ namespace Miki.Accounts.Achievements.Objects
             Log.Warning("Packet was expected to be 'AchievementPacket' was not correct.");
             return false;
         }
-	}
+    }
 }

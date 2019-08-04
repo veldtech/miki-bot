@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
-using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
@@ -11,9 +10,6 @@ using Miki.Framework.Commands.Permissions;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Permissions.Models;
 using Miki.Framework.Commands.Stages;
-using Miki.Framework.Events;
-using Miki.Logging;
-using Miki.Models;
 using Miki.Utility;
 using System;
 using System.Collections.Generic;

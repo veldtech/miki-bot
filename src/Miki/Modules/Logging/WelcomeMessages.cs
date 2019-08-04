@@ -4,11 +4,7 @@ using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
-using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Events;
-using Miki.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +68,8 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(welcomeMessage))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
+                EventMessage leaveMessage = await context.EventMessages
+                    .FindAsync(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.JOINSERVER);
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
@@ -101,7 +98,8 @@ namespace Miki.Modules
 
             if (string.IsNullOrEmpty(leaveMsgString))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
+                EventMessage leaveMessage = await context.EventMessages
+                    .FindAsync(e.GetChannel().Id.ToDbLong(), (short)EventMessageType.LEAVESERVER);
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
@@ -209,9 +207,9 @@ namespace Miki.Modules
         }
     }
 
-	public struct EventMessageObject
-	{
-		public IDiscordTextChannel destinationChannel;
-		public string message;
-	}
+    public struct EventMessageObject
+    {
+        public IDiscordTextChannel destinationChannel;
+        public string message;
+    }
 }

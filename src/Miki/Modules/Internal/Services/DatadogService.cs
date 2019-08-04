@@ -1,17 +1,11 @@
 ﻿using Miki.Accounts;
 using Miki.Accounts.Achievements;
-using Miki.Configuration;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Events;
-using Miki.Logging;
 using StatsdClient;
-using System;
 using System.Threading.Tasks;
 
 namespace Miki.Modules.Internal.Services
@@ -67,7 +61,7 @@ namespace Miki.Modules.Internal.Services
         private void CreateAchievementsMetrics()
         {
             var achievements = AchievementManager.Instance;
-            if(achievements == null)
+            if (achievements == null)
             {
                 return;
             }
@@ -153,5 +147,5 @@ namespace Miki.Modules.Internal.Services
 
             return Task.CompletedTask;
         }
-	}
+    }
 }

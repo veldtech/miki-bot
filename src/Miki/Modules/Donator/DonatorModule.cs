@@ -1,23 +1,18 @@
 ﻿using Miki.Accounts.Achievements;
+using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.Events;
-using Miki.Logging;
-using Miki.Models;
-using Miki.Rest;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Attributes;
 using Miki.Helpers;
+using Miki.Logging;
+using Miki.Modules.Donator.Exceptions;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Bot.Models;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Nodes;
-using Miki.Localization.Exceptions;
-using Miki.Modules.Donator.Exceptions;
 
 namespace Miki.Modules.Donator
 {
@@ -45,7 +40,7 @@ namespace Miki.Modules.Donator
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long) e.GetAuthor().Id;
+            long id = (long)e.GetAuthor().Id;
 
             if (e.GetArgumentPack().Take(out Guid guid))
             {
@@ -67,7 +62,7 @@ namespace Miki.Modules.Donator
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long) e.GetAuthor().Id;
+            long id = (long)e.GetAuthor().Id;
             bool isValidToken = e.GetArgumentPack().Take(out Guid guid);
             if (!isValidToken)
             {
@@ -94,13 +89,13 @@ namespace Miki.Modules.Donator
             }
 
             await new EmbedBuilder
-                {
-                    Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
-                    Color = new Color(226, 46, 68),
-                    Description =
+            {
+                Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
+                Color = new Color(226, 46, 68),
+                Description =
                         $"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
-                    ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
-                }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
+                ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
+            }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
                 .ToEmbed().QueueAsync(e.GetChannel());
 
             context.DonatorKey.Remove(key);
@@ -112,18 +107,26 @@ namespace Miki.Modules.Donator
 
             if (donatorStatus.KeysRedeemed == 1)
             {
-                await achievementManager.UnlockAsync(achievements[0],
-                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 0);
+                await achievementManager.UnlockAsync(
+                    achievements[0],
+                    e.GetChannel() as IDiscordTextChannel,
+                    e.GetAuthor(), 0);
             }
             else if (donatorStatus.KeysRedeemed == 5)
             {
-                await achievementManager.UnlockAsync(achievements[1],
-                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 1);
+                await achievementManager.UnlockAsync(
+                        achievements[1],
+                        e.GetChannel() as IDiscordTextChannel,
+                        e.GetAuthor(),
+                        1)
+                    .ConfigureAwait(false);
             }
             else if (donatorStatus.KeysRedeemed == 25)
             {
-                await achievementManager.UnlockAsync(achievements[2],
-                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 2);
+                await achievementManager.UnlockAsync(
+                    achievements[2],
+                    e.GetChannel() as IDiscordTextChannel,
+                    e.GetAuthor(), 2);
             }
         }
 

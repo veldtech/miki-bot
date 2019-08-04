@@ -1,10 +1,6 @@
 ﻿using Miki.Discord.Common;
 using Miki.Discord.Common.Utils;
-using Miki.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Miki.Utility
@@ -13,14 +9,14 @@ namespace Miki.Utility
     {
         public static async Task<IDiscordUser> FindUserAsync(this IDiscordGuild guild, string userName)
         {
-            if(ulong.TryParse(userName, out var userId))
+            if (ulong.TryParse(userName, out var userId))
             {
                 return await guild.GetMemberAsync(userId);
             }
-            
-            if(Mention.TryParse(userName, out Mention m))
+
+            if (Mention.TryParse(userName, out Mention m))
             {
-                if(m.Type == MentionType.USER
+                if (m.Type == MentionType.USER
                     || m.Type == MentionType.USER_NICKNAME)
                 {
                     return await guild.GetMemberAsync(m.Id);

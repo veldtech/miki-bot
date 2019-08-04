@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
 using Miki.Discord;
-using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using System.Threading.Tasks;

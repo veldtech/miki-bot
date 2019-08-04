@@ -1,5 +1,4 @@
 ﻿using Miki.Localization;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,8 +20,8 @@ namespace Miki.Helpers
     }
 
     public class RawResource : IResource
-	{
-		private readonly string _content;
+    {
+        private readonly string _content;
 
         public RawResource(string content)
         {
@@ -34,5 +33,5 @@ namespace Miki.Helpers
 
         public string Get(IResourceManager instance)
              => _content;
-	}
+    }
 }

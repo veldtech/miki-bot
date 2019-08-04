@@ -4,72 +4,72 @@ using System.Linq;
 
 namespace Miki.Modules.Gambling.Managers
 {
-	internal class RPSManager
-	{
-		public static RPSManager Instance { get; } = new RPSManager();
+    internal class RPSManager
+    {
+        public static RPSManager Instance { get; } = new RPSManager();
 
-		public enum VictoryStatus
-		{
-			DRAW = 0,
-			WIN = 1,
-			LOSE = 2,
-		}
+        public enum VictoryStatus
+        {
+            DRAW = 0,
+            WIN = 1,
+            LOSE = 2,
+        }
 
-		private List<RPSWeapon> weapons = new List<RPSWeapon>();
+        private List<RPSWeapon> weapons = new List<RPSWeapon>();
 
-		public RPSManager()
-		{
-			weapons.Add(new RPSWeapon("scissors", emoji: ":scissors:"));
-			weapons.Add(new RPSWeapon("paper", emoji: ":page_facing_up:"));
-			weapons.Add(new RPSWeapon("rock", emoji: ":full_moon:"));
-			RunTests();
-		}
+        public RPSManager()
+        {
+            weapons.Add(new RPSWeapon("scissors", emoji: ":scissors:"));
+            weapons.Add(new RPSWeapon("paper", emoji: ":page_facing_up:"));
+            weapons.Add(new RPSWeapon("rock", emoji: ":full_moon:"));
+            RunTests();
+        }
 
-		public string[] GetAllWeapons()
-		{
-			return weapons
-				.Select(x => x.Name)
-				.ToArray();
-		}
+        public string[] GetAllWeapons()
+        {
+            return weapons
+                .Select(x => x.Name)
+                .ToArray();
+        }
 
-		public RPSWeapon GetRandomWeapon()
-		{
-			return weapons[MikiRandom.Next(weapons.Count())];
-		}
+        public RPSWeapon GetRandomWeapon()
+        {
+            return weapons[MikiRandom.Next(weapons.Count())];
+        }
 
-		public RPSWeapon Parse(string name)
-		{
-			return weapons
-				.Where(w => w.Name[0] == name[0])
-				.FirstOrDefault();
-		}
+        public RPSWeapon Parse(string name)
+        {
+            return weapons
+                .Where(w => w.Name[0] == name[0])
+                .FirstOrDefault();
+        }
 
-		public void RunTests()
-		{
-			Debug.Assert(CalculateVictory(0, 1) == VictoryStatus.WIN);
-			Debug.Assert(CalculateVictory(1, 2) == VictoryStatus.WIN);
-			Debug.Assert(CalculateVictory(2, 0) == VictoryStatus.WIN);
-			Debug.Assert(CalculateVictory(0, 0) == VictoryStatus.DRAW);
-			Debug.Assert(CalculateVictory(1, 1) == VictoryStatus.DRAW);
-			Debug.Assert(CalculateVictory(2, 2) == VictoryStatus.DRAW);
-			Debug.Assert(CalculateVictory(1, 0) == VictoryStatus.LOSE);
-			Debug.Assert(CalculateVictory(2, 1) == VictoryStatus.LOSE);
-			Debug.Assert(CalculateVictory(0, 2) == VictoryStatus.LOSE);
-		}
+        public void RunTests()
+        {
+            Debug.Assert(CalculateVictory(0, 1) == VictoryStatus.WIN);
+            Debug.Assert(CalculateVictory(1, 2) == VictoryStatus.WIN);
+            Debug.Assert(CalculateVictory(2, 0) == VictoryStatus.WIN);
+            Debug.Assert(CalculateVictory(0, 0) == VictoryStatus.DRAW);
+            Debug.Assert(CalculateVictory(1, 1) == VictoryStatus.DRAW);
+            Debug.Assert(CalculateVictory(2, 2) == VictoryStatus.DRAW);
+            Debug.Assert(CalculateVictory(1, 0) == VictoryStatus.LOSE);
+            Debug.Assert(CalculateVictory(2, 1) == VictoryStatus.LOSE);
+            Debug.Assert(CalculateVictory(0, 2) == VictoryStatus.LOSE);
+        }
 
-		public bool TryParse(string name, out RPSWeapon weapon)
-			=> (weapon = Parse(name)) != null;
+        public bool TryParse(string name, out RPSWeapon weapon)
+            => (weapon = Parse(name)) != null;
 
-		public VictoryStatus CalculateVictory(RPSWeapon player, RPSWeapon cpu)
-		{
-			int playerIndex = weapons.IndexOf(player);
-			int cpuIndex = weapons.IndexOf(cpu);
-			return CalculateVictory(playerIndex, cpuIndex);
-		}
+        public VictoryStatus CalculateVictory(RPSWeapon player, RPSWeapon cpu)
+        {
+            int playerIndex = weapons.IndexOf(player);
+            int cpuIndex = weapons.IndexOf(cpu);
+            return CalculateVictory(playerIndex, cpuIndex);
+        }
 
-		public VictoryStatus CalculateVictory(int player, int cpu)
-		{
-			return (VictoryStatus)((cpu - player + 3) % weapons.Count);
-		}
-	}
+        public VictoryStatus CalculateVictory(int player, int cpu)
+        {
+            return (VictoryStatus)((cpu - player + 3) % weapons.Count);
+        }
+    }
 }
