@@ -16,8 +16,10 @@ using Miki.Bot.Models;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Nodes;
+using Miki.Localization.Exceptions;
+using Miki.Modules.Donator.Exceptions;
 
-namespace Miki.Modules
+namespace Miki.Modules.Donator
 {
     [Module("Donator")]
     internal class DonatorModule
@@ -43,7 +45,7 @@ namespace Miki.Modules
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long)e.GetAuthor().Id;
+            long id = (long) e.GetAuthor().Id;
 
             if (e.GetArgumentPack().Take(out Guid guid))
             {
@@ -55,7 +57,7 @@ namespace Miki.Modules
 
                 await context.SaveChangesAsync();
 
-                await Utils.SuccessEmbed(e, e.GetLocale().GetString("key_sold_success", 30000))
+                await e.SuccessEmbed(e.GetLocale().GetString("key_sold_success", 30000))
                     .QueueAsync(e.GetChannel());
             }
         }
@@ -65,89 +67,95 @@ namespace Miki.Modules
         {
             var context = e.GetService<MikiDbContext>();
 
-            long id = (long)e.GetAuthor().Id;
-            if (e.GetArgumentPack().Take(out Guid guid))
+            long id = (long) e.GetAuthor().Id;
+            bool isValidToken = e.GetArgumentPack().Take(out Guid guid);
+            if (!isValidToken)
             {
-                DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-                IsDonator donatorStatus = await context.IsDonator.FindAsync(id);
+                throw new InvalidKeyFormatException();
+            }
 
-                if (donatorStatus == null)
+            DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
+            IsDonator donatorStatus =
+                await context.IsDonator.FindAsync(id) ??
+                (await context.IsDonator.AddAsync(new IsDonator
                 {
-                    donatorStatus = (await context.IsDonator.AddAsync(new IsDonator()
-                    {
-                        UserId = id
-                    })).Entity;
-                }
+                    UserId = id
+                })).Entity;
 
-                donatorStatus.KeysRedeemed++;
+            donatorStatus.KeysRedeemed++;
 
-                if (donatorStatus.ValidUntil > DateTime.Now)
-                {
-                    donatorStatus.ValidUntil += key.StatusTime;
-                }
-                else
-                {
-                    donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
-                }
+            if (donatorStatus.ValidUntil > DateTime.Now)
+            {
+                donatorStatus.ValidUntil += key.StatusTime;
+            }
+            else
+            {
+                donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
+            }
 
-                await new EmbedBuilder()
+            await new EmbedBuilder
                 {
-                    Title = ($"🎉 Congratulations, {e.GetAuthor().Username}"),
+                    Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
                     Color = new Color(226, 46, 68),
-                    Description = ($"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status."),
-                    ThumbnailUrl = ("https://i.imgur.com/OwwA5fV.png")
+                    Description =
+                        $"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
+                    ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
                 }.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                .ToEmbed().QueueAsync(e.GetChannel());
 
-                context.DonatorKey.Remove(key);
-                await context.SaveChangesAsync();
+            context.DonatorKey.Remove(key);
+            await context.SaveChangesAsync();
 
-                // cheap hack.        
-                var achievementManager = AchievementManager.Instance;
-                var achievements = achievementManager.GetContainerById("donator").Achievements;
+            // cheap hack.        
+            var achievementManager = AchievementManager.Instance;
+            var achievements = achievementManager.GetContainerById("donator").Achievements;
 
-                if (donatorStatus.KeysRedeemed == 1)
-                {
-                    await achievementManager.UnlockAsync(achievements[0],
-                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 0);
-                }
-                else if (donatorStatus.KeysRedeemed == 5)
-                {
-                    await achievementManager.UnlockAsync(achievements[1],
-                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 1);
-                }
-                else if (donatorStatus.KeysRedeemed == 25)
-                {
-                    await achievementManager.UnlockAsync(achievements[2],
-                        e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 2);
-                }
+            if (donatorStatus.KeysRedeemed == 1)
+            {
+                await achievementManager.UnlockAsync(achievements[0],
+                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 0);
+            }
+            else if (donatorStatus.KeysRedeemed == 5)
+            {
+                await achievementManager.UnlockAsync(achievements[1],
+                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 1);
+            }
+            else if (donatorStatus.KeysRedeemed == 25)
+            {
+                await achievementManager.UnlockAsync(achievements[2],
+                    e.GetChannel() as IDiscordTextChannel, e.GetAuthor(), 2);
             }
         }
 
         [Command("box")]
         [PatreonOnly]
         public async Task BoxAsync(IContext e)
-            => await PerformCall(e, $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={(await GetUrlFromMessageAsync(e))}");
+            => await PerformCall(e,
+                    $"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
+                .ConfigureAwait(false);
 
         [Command("disability")]
         [PatreonOnly]
         public async Task DisabilityAsync(IContext e)
-            => await PerformCall(e, "/api/disability?url=" + (await GetUrlFromMessageAsync(e)));
+            => await PerformCall(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
 
         [Command("tohru")]
         [PatreonOnly]
         public async Task TohruAsync(IContext e)
-            => await PerformCall(e, "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+            => await PerformCall(e,
+                "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
 
         [Command("truth")]
         [PatreonOnly]
         public async Task TruthAsync(IContext e)
-            => await PerformCall(e, "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+            => await PerformCall(e,
+                    "/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
+                .ConfigureAwait(false);
 
         [Command("trapcard")]
         [PatreonOnly]
         public async Task YugiAsync(IContext e)
-            => await PerformCall(e, $"/api/yugioh?url={(await GetUrlFromMessageAsync(e))}");
+            => await PerformCall(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}").ConfigureAwait(false);
 
         private async Task<string> GetUrlFromMessageAsync(IContext e)
         {
