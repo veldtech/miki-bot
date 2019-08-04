@@ -233,7 +233,8 @@ namespace Miki.Accounts.Achievements
                     {
                         UserId = userId,
                         Name = achievement.ParentName,
-                        Rank = 0
+                        Rank = 0,
+                        UnlockedAt = DateTime.UtcNow
                     }).Entity;
 
                     await DatabaseHelpers.UpdateCacheAchievementAsync(userId, achievement.Name, achievementObject);
