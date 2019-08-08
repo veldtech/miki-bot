@@ -306,10 +306,19 @@ namespace Miki
             }
 
             // Setup CDN Client
-            app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
             {
-                ServiceURL = config.CdnRegionEndpoint
-            }));
+                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) && !string.IsNullOrWhiteSpace(config.CdnSecretKey) && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
+                {
+                    app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
+                    {
+                        ServiceURL = config.CdnRegionEndpoint
+                    }));
+                }
+                else
+                {
+                    Log.Warning("No CDN Parameters were supplied, ignoring CDN Client");
+                }
+            }
 
             // Setup Discord
             {
