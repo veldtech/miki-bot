@@ -28,11 +28,13 @@ namespace Miki.Modules.Donator
 
         public DonatorModule()
         {
-            if (!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl)
-                && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+            var config = MikiApp.Instance.GetService<Config>();
+
+            if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
+                && !string.IsNullOrWhiteSpace(config.MikiApiKey))
             {
-                client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
             }
             else
             {

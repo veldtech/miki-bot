@@ -5,6 +5,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Common.Packets;
 using Miki.Discord.Common.Packets.Arguments;
+using Miki.Discord.Gateway;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
@@ -180,7 +181,8 @@ namespace Miki.Modules
 			if (type == ActivityType.Streaming)
 				url = "https://twitch.tv/velddev";
 
-			for (int i = 0; i < Global.Config.ShardCount; i++)
+
+			for (int i = 0; i < MikiApp.Instance.GetService<GatewayCluster>().Shards.Count; i++)
 			{
 				await e.GetService<DiscordClient>()
                     .SetGameAsync(i, new DiscordStatus

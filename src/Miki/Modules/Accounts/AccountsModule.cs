@@ -53,11 +53,12 @@ namespace Miki.Modules.AccountsModule
 
         public AccountsModule()
         {
-            if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey) 
-                && !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
+            var config = MikiApp.Instance.GetService<Config>();
+            if(!string.IsNullOrWhiteSpace(config.MikiApiKey) 
+                && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
-                client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
             }
             else
             {

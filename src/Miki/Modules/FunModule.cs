@@ -135,6 +135,8 @@ namespace Miki.Modules
 
 		public FunModule()
 		{
+            var config = MikiApp.Instance.GetService<Config>();
+
 			ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
 			{
 				QueryKey = new Uri("http://e621.net/post/index.json?tags="),
@@ -159,7 +161,7 @@ namespace Miki.Modules
 				SafeTag = "rating:s",
 				NetUseCredentials = true,
 				NetHeaders = {
-					new Tuple<string, string>("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(Global.Config.DanbooruCredentials))}"),
+					new Tuple<string, string>("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(config.DanbooruCredentials))}"),
 				},
 				BlacklistedTags =
 				{
@@ -213,9 +215,9 @@ namespace Miki.Modules
 				}
 			}));
 
-            if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
+            if(!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
-                imageClient = new HttpClient(Global.Config.ImageApiUrl);
+                imageClient = new HttpClient(config.ImageApiUrl);
             }
 		}
 
@@ -751,9 +753,8 @@ namespace Miki.Modules
                 var authorResponse = await client.SendAsync(new System.Net.Http.HttpRequestMessage
                 {
                     Method = new System.Net.Http.HttpMethod("HEAD"),
-                    RequestUri = new Uri($"{Global.Config.CdnRegionEndpoint}/avatars/{e.GetAuthor().Id}.png")
+                    RequestUri = new Uri($"{MikiApp.Instance.GetService<Config>().CdnRegionEndpoint}/avatars/{e.GetAuthor().Id}.png")
                 });
-
 
                 if (!authorResponse.Success)
                 {

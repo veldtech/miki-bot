@@ -11,7 +11,7 @@ namespace Miki
         public MikiDbContext CreateDbContext(params string[] args)
         {
             var builder = new DbContextOptionsBuilder<MikiDbContext>();
-            builder.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models"));
+            builder.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models"));
             return new MikiDbContext(builder.Options);
         }
     }
