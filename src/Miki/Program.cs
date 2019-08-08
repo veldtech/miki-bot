@@ -36,6 +36,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
+using Amazon.S3;
 
 namespace Miki
 {
@@ -303,6 +304,12 @@ namespace Miki
                     Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
                 }
             }
+
+            // Setup CDN Client
+            app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
+            {
+                ServiceURL = config.CdnRegionEndpoint
+            }));
 
             // Setup Discord
             {

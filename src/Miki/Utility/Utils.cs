@@ -197,7 +197,7 @@ namespace Miki
                 request.InputStream = await client.GetStreamAsync();
             }
 
-            var response = await Global.CdnClient.PutObjectAsync(request);
+            var response = await MikiApp.Instance.GetService<AmazonS3Client>().PutObjectAsync(request);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
