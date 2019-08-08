@@ -43,6 +43,8 @@ namespace Miki
     {
         private static async Task Main(string[] args)
         {
+            CreateLogger(); //Generate Logger
+
             // Migrate the database if the program was started with the argument '--migrate' or '-m'.
             if (args.Any(x => x.ToLowerInvariant() == "--migrate" || x.ToLowerInvariant() == "-m"))
             {
@@ -59,12 +61,37 @@ namespace Miki
                 }
             }
 
+            if (args.Any(x=> x.ToLowerInvariant() == "--newconfig" || x.ToLowerInvariant() == "-nc"))
+            {
+                try
+                {
+                    var conf = await InsertNewConfigToDatabaseAsync();
+                    Console.WriteLine("New Config inserted into database with Id: " + conf.Id);
+                    Console.ReadKey();
+                    return;
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("Failed to generate new config: " + ex.Message);
+                    Log.Debug(ex.ToString());
+                    Console.ReadKey();
+                    return;
+                }
+            }
+
             Log.Message("Loading services");
 
             // Start the bot.
             var appBuilder = new MikiAppBuilder();
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
+
+            if(new MikiDbContextFactory().CreateDbContext().Configurations.Count() == 1 && !string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
+            {
+                Log.Message("First Time configuration complete, update configuration in database");
+                Console.ReadKey();
+                return;
+            }
 
             Log.Message("Building command tree");
 
@@ -97,13 +124,68 @@ namespace Miki
             await Task.Delay(-1);
         }
 
-        private static async Task<Config> GetConfigFromDatabase(string configId = null)
+        private static void CreateLogger()
+        {
+            var theme = new LogTheme();
+            theme.SetColor(
+                LogLevel.Information,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Cyan,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Error,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Red,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Warning,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Yellow,
+                    Background = 0
+                });
+
+            new LogBuilder()
+                .AddLogEvent((msg, lvl) =>
+                {
+                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl))
+)
+                        Console.WriteLine(msg);
+                })
+                .SetLogHeader((msg) => $"[{msg}]: ")
+                .SetTheme(theme)
+                .Apply();
+        }
+
+        private static async Task<Config> InsertNewConfigToDatabaseAsync(MikiDbContext context = null)
+        {
+            var dbContext = context ?? new MikiDbContextFactory().CreateDbContext();
+
+            var configuration = new Config();
+
+            await dbContext.Configurations.AddAsync(configuration);
+
+            await dbContext.SaveChangesAsync();
+
+            if(context != null)
+            {
+                Log.Debug("New Config inserted into database with Id: " + configuration.Id);
+            }
+
+            return configuration;
+        }
+
+        private static async Task<Config> GetConfigFromDatabaseAsync(string configId = null)
         {
             var dbContext = new MikiDbContextFactory().CreateDbContext(new string[] { });
 
             Config configuration = null;
 
-            if (await dbContext.Configurations.AnyAsync(x => x.Id.ToString() == configId))
+            if (!string.IsNullOrWhiteSpace(configId) && await dbContext.Configurations.AnyAsync(x => x.Id.ToString() == configId))
             {
                 configuration = await dbContext.Configurations.FirstOrDefaultAsync(x => x.Id.ToString() == configId);
             }
@@ -111,11 +193,7 @@ namespace Miki
             {
                 if (await dbContext.Configurations.CountAsync() == 0)
                 {
-                    configuration = new Config();
-
-                    await dbContext.Configurations.AddAsync(configuration);
-
-                    await dbContext.SaveChangesAsync();
+                    configuration = await InsertNewConfigToDatabaseAsync(dbContext);
                 }
                 else
                 {
@@ -186,43 +264,14 @@ namespace Miki
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
-            var theme = new LogTheme();
-            theme.SetColor(
-                LogLevel.Information,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Cyan,
-                    Background = 0
-                });
-            theme.SetColor(
-                LogLevel.Error,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Red,
-                    Background = 0
-                });
-            theme.SetColor(
-                LogLevel.Warning,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Yellow,
-                    Background = 0
-                });
-            
-            new LogBuilder()
-                .AddLogEvent((msg, lvl) =>
-                {
-                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl))
-)
-                        Console.WriteLine(msg);
-                })
-                .SetLogHeader((msg) => $"[{msg}]: ")
-                .SetTheme(theme)
-                .Apply();
-
-            var config = await GetConfigFromDatabase(Environment.GetEnvironmentVariable("MIKI_CONFIGID") ?? null);
+            var config = await GetConfigFromDatabaseAsync(Environment.GetEnvironmentVariable("MIKI_CONFIGID") ?? null);
 
             app.Services.AddSingleton(config);
+
+            if (string.IsNullOrWhiteSpace(config.Token))
+            {
+                return;
+            }
 
             var cache = new StackExchangeCacheClient(
                 new ProtobufSerializer(),
