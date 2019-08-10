@@ -26,11 +26,8 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.31.5" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.3.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
-<<<<<<< HEAD:Miki/Miki.csproj
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
-=======
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
->>>>>>> 3.0-database:src/Miki/Miki.csproj
     <PackageReference Include="Miki.Anilist" Version="0.6.0" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.0-beta2" />
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.3.0" />
