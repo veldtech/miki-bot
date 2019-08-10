@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Amazon.S3;
+using Microsoft.EntityFrameworkCore;
 using Miki.API;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.Bot.Models;
@@ -258,6 +259,17 @@ namespace Miki
                 else
                 {
                     Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
+                }
+            }
+
+            // Setup Amazon CDN Client
+            {
+                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) && !string.IsNullOrWhiteSpace(config.CdnSecretKey) && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
+                {
+                    app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
+                    {
+                        ServiceURL = config.CdnRegionEndpoint
+                    }));
                 }
             }
 
