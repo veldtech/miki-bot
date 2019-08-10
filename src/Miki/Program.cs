@@ -65,7 +65,7 @@ namespace Miki
             {
                 try
                 {
-                    var conf = await InsertNewConfigToDatabaseAsync();
+                    var conf = await Config.InsertNewConfigAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
                     Console.WriteLine("New Config inserted into database with Id: " + conf.Id);
                     Console.ReadKey();
                     return;
@@ -161,49 +161,6 @@ namespace Miki
                 .Apply();
         }
 
-        private static async Task<Config> InsertNewConfigToDatabaseAsync(MikiDbContext context = null)
-        {
-            var dbContext = context ?? new MikiDbContextFactory().CreateDbContext();
-
-            var configuration = new Config();
-
-            await dbContext.Configurations.AddAsync(configuration);
-
-            await dbContext.SaveChangesAsync();
-
-            if(context != null)
-            {
-                Log.Debug("New Config inserted into database with Id: " + configuration.Id);
-            }
-
-            return configuration;
-        }
-
-        private static async Task<Config> GetConfigFromDatabaseAsync(string configId = null)
-        {
-            var dbContext = new MikiDbContextFactory().CreateDbContext(new string[] { });
-
-            Config configuration = null;
-
-            if (!string.IsNullOrWhiteSpace(configId) && await dbContext.Configurations.AnyAsync(x => x.Id.ToString() == configId))
-            {
-                configuration = await dbContext.Configurations.FirstOrDefaultAsync(x => x.Id.ToString() == configId);
-            }
-            else
-            {
-                if (await dbContext.Configurations.CountAsync() == 0)
-                {
-                    configuration = await InsertNewConfigToDatabaseAsync(dbContext);
-                }
-                else
-                {
-                    configuration = await dbContext.Configurations.FirstOrDefaultAsync();
-                }
-            }
-
-            return configuration;
-        }
-
         private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
             => new CommandPipelineBuilder(app)
                 .UseStage(new CorePipelineStage())
@@ -264,14 +221,14 @@ namespace Miki
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
-            var config = await GetConfigFromDatabaseAsync(Environment.GetEnvironmentVariable("MIKI_CONFIGID") ?? null);
+            var config = await Config.GetOrInsertAsync(Environment.GetEnvironmentVariable("MIKI_CONFIGID") ?? null);
 
-            app.Services.AddSingleton(config);
-
-            if (string.IsNullOrWhiteSpace(config.Token))
+            if(config == null)
             {
                 return;
             }
+
+            app.Services.AddSingleton(config);
 
             var cache = new StackExchangeCacheClient(
                 new ProtobufSerializer(),
@@ -353,7 +310,7 @@ namespace Miki
 
             // Setup miscellanious services
             {
-                app.AddSingletonService(new ConfigurationManager());
+
                 app.AddSingletonService(new BackgroundStore());
 
                 if (!string.IsNullOrWhiteSpace(config.SharpRavenKey))
