@@ -1,8 +1,4 @@
-﻿using Amazon.S3;
-using Newtonsoft.Json;
-using System.IO;
-
-namespace Miki
+﻿namespace Miki
 {
 	public class Constants
 	{
