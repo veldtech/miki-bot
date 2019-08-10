@@ -39,11 +39,14 @@ If you have any questions about the setup process **do not** ask in the support 
 
 5) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
 
-6) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
+6) Modify your Environment Variables as such
 
-```json
-"connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
-```
+| Name | Value |
+| --- | --- |
+| `MIKI_CONNSTRING` | "Server=127.0.0.1;Port=5432;User Id=postgres;Password=SuperSecurePasswordHere;Database=Miki;" |
+| `MIKI_MESSAGEWORKER` | "4" |
+| `MIKI_LOGLEVEL` | "Info" |
+| `MIKI_SELFHOSTED` | "true" |
 
 7) Install the `uuid-ossp` postgres extensions on the `Miki` database.
 
