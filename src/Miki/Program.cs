@@ -221,7 +221,7 @@ namespace Miki
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
-            var config = await Config.GetOrInsertAsync(Environment.GetEnvironmentVariable("MIKI_CONFIGID") ?? null);
+            var config = await Config.GetOrInsertAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr) ?? null, Environment.GetEnvironmentVariable(Constants.ENV_ConfId) ?? null);
 
             if(config == null)
             {
