@@ -43,6 +43,8 @@ namespace Miki
     {
         private static async Task Main(string[] args)
         {
+            CreateLogger(); //Generate Logger
+
             // Migrate the database if the program was started with the argument '--migrate' or '-m'.
             if (args.Any(x => x.ToLowerInvariant() == "--migrate" || x.ToLowerInvariant() == "-m"))
             {
@@ -50,9 +52,27 @@ namespace Miki
                 {
                     await new MikiDbContextFactory().CreateDbContext().Database.MigrateAsync();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error("Failed to migrate the database: " + ex.Message);
+                    Log.Debug(ex.ToString());
+                    Console.ReadKey();
+                    return;
+                }
+            }
+
+            if (args.Any(x => x.ToLowerInvariant() == "--newconfig" || x.ToLowerInvariant() == "-nc"))
+            {
+                try
+                {
+                    var conf = await Config.InsertNewConfigAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
+                    Console.WriteLine("New Config inserted into database with Id: " + conf.Id);
+                    Console.ReadKey();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Failed to generate new config: " + ex.Message);
                     Log.Debug(ex.ToString());
                     Console.ReadKey();
                     return;
@@ -66,19 +86,16 @@ namespace Miki
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
+            if (new MikiDbContextFactory().CreateDbContext().Configurations.Count() == 1 && !string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
+            {
+                Log.Message("First Time configuration complete, update configuration in database");
+                Console.ReadKey();
+                return;
+            }
+
             Log.Message("Building command tree");
 
             var commandBuilder = new CommandTreeBuilder(app);
-
-            var configManager = app.GetService<ConfigurationManager>();
-            if (configManager != null)
-            {
-                commandBuilder.OnContainerLoaded += (c, sc) =>
-                {
-                    var config = sc.GetService<ConfigurationManager>();
-                    config.RegisterType(c.Instance.GetType(), c.Instance);
-                };
-            }
 
             var cmd = commandBuilder.Create(Assembly.GetEntryAssembly());
 
@@ -86,11 +103,6 @@ namespace Miki
 
             var commands = BuildPipeline(app, cmd);
             await LoadFiltersAsync(app, commands);
-
-            if (configManager != null)
-            {
-                await LoadConfigAsync(configManager);
-            }
 
             Log.Message("Connecting to Providers");
 
@@ -100,7 +112,7 @@ namespace Miki
 
             LoadLocales(commands);
 
-            for (int i = 0; i < Global.Config.MessageWorkerCount; i++)
+            for (int i = 0; i < int.Parse(Environment.GetEnvironmentVariable(Constants.ENV_MsgWkr)); i++)
             {
                 MessageBucket.AddWorker();
             }
@@ -110,6 +122,43 @@ namespace Miki
 
             Log.Message("Ready to receive requests!");
             await Task.Delay(-1);
+        }
+
+        private static void CreateLogger()
+        {
+            var theme = new LogTheme();
+            theme.SetColor(
+                LogLevel.Information,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Cyan,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Error,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Red,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Warning,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Yellow,
+                    Background = 0
+                });
+
+            new LogBuilder()
+                .AddLogEvent((msg, lvl) =>
+                {
+                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl))
+)
+                        Console.WriteLine(msg);
+                })
+                .SetLogHeader((msg) => $"[{msg}]: ")
+                .SetTheme(theme)
+                .Apply();
         }
 
         private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
@@ -172,42 +221,18 @@ namespace Miki
 
         public static async Task LoadServicesAsync(MikiAppBuilder app)
         {
-            var theme = new LogTheme();
-            theme.SetColor(
-                LogLevel.Information,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Cyan,
-                    Background = 0
-                });
-            theme.SetColor(
-                LogLevel.Error,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Red,
-                    Background = 0
-                });
-            theme.SetColor(
-                LogLevel.Warning,
-                new LogColor
-                {
-                    Foreground = ConsoleColor.Yellow,
-                    Background = 0
-                });
+            var config = await Config.GetOrInsertAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr) ?? null, Environment.GetEnvironmentVariable(Constants.ENV_ConfId) ?? null);
 
-            new LogBuilder()
-                .AddLogEvent((msg, lvl) =>
-                {
-                    if (lvl >= Global.Config.LogLevel)
-                        Console.WriteLine(msg);
-                })
-                .SetLogHeader((msg) => $"[{msg}]: ")
-                .SetTheme(theme)
-                .Apply();
+            if (config == null)
+            {
+                return;
+            }
+
+            app.Services.AddSingleton(config);
 
             var cache = new StackExchangeCacheClient(
                 new ProtobufSerializer(),
-                await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
+                await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString)
             );
 
             // Setup Redis
@@ -219,16 +244,16 @@ namespace Miki
             // Setup Entity Framework
             {
                 app.Services.AddDbContext<MikiDbContext>(x
-                    => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
                 app.Services.AddDbContext<DbContext, MikiDbContext>(x
-                    => x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
 
             // Setup Miki API
             {
-                if (!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+                if (!string.IsNullOrWhiteSpace(config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(config.MikiApiKey))
                 {
-                    app.AddSingletonService(new MikiApiClient(Global.Config.MikiApiKey));
+                    app.AddSingletonService(new MikiApiClient(config.MikiApiKey));
                 }
                 else
                 {
@@ -238,26 +263,27 @@ namespace Miki
 
             // Setup Discord
             {
-                var api = new DiscordApiClient(Global.Config.Token, cache);
+                var api = new DiscordApiClient(config.Token, cache);
 
                 app.AddSingletonService<IApiClient>(api);
 
                 IGateway gateway = null;
-                if (Global.Config.SelfHosted)
+                if (bool.Parse(Environment.GetEnvironmentVariable(Constants.ENV_SelfHost).ToLowerInvariant()))
                 {
-                    var gatewayConfig = new GatewayProperties();
-                    gatewayConfig.ShardCount = 1;
-                    gatewayConfig.ShardId = 0;
-                    gatewayConfig.Token = Global.Config.Token;
-                    gatewayConfig.Compressed = true;
-                    gatewayConfig.AllowNonDispatchEvents = true;
-                    gateway = new GatewayCluster(gatewayConfig);
+                    gateway = new GatewayCluster(new GatewayProperties
+                    {
+                        ShardCount = 1,
+                        ShardId = 0,
+                        Token = config.Token,
+                        Compressed = true,
+                        AllowNonDispatchEvents = true
+                    });
                 }
                 else
                 {
                     gateway = new RetsuConsumer(new ConsumerConfiguration
                     {
-                        ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
+                        ConnectionString = new Uri(config.RabbitUrl.ToString()),
                         QueueName = "gateway",
                         ExchangeName = "consumer",
                         ConsumerAutoAck = false,
@@ -279,41 +305,23 @@ namespace Miki
             // Setup web services
             {
                 app.AddSingletonService(new UrbanDictionaryAPI());
-                app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
+                app.AddSingletonService(new BunnyCDNClient(config.BunnyCdnKey));
             }
 
             // Setup miscellanious services
             {
-                app.AddSingletonService(new ConfigurationManager());
+
                 app.AddSingletonService(new BackgroundStore());
 
-                if (!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
+                if (!string.IsNullOrWhiteSpace(config.SharpRavenKey))
                 {
-                    app.AddSingletonService(new RavenClient(Global.Config.SharpRavenKey));
+                    app.AddSingletonService(new RavenClient(config.SharpRavenKey));
                 }
                 else
                 {
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
             }
-        }
-
-        public static async Task LoadConfigAsync(ConfigurationManager m)
-        {
-            string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
-
-            if (File.Exists(configFile))
-            {
-                await m.ImportAsync(
-                    new JsonSerializationProvider(),
-                    configFile
-                );
-            }
-
-            await m.ExportAsync(
-                new JsonSerializationProvider(),
-                configFile
-            );
         }
 
         public static void LoadDiscord(MikiApp app, CommandPipeline pipeline)
@@ -439,7 +447,7 @@ namespace Miki
                 Log.Error(exception);
                 var sentry = context.GetService<RavenClient>();
                 if (sentry != null)
-                { 
+                {
                     await sentry.CaptureAsync(new SentryEvent(exception));
                 }
             }
