@@ -1,4 +1,6 @@
-﻿namespace Miki.Modules.Internal.Routines
+﻿using Miki.Bot.Models;
+
+namespace Miki.Modules.Internal.Routines
 {
     using System;
     using Miki.Accounts;
@@ -24,7 +26,7 @@
             DogStatsd.Configure(new StatsdConfig
             {
                 // TODO #534: Change to [Configurable]
-                StatsdServerName = Global.Config.DatadogHost,
+                StatsdServerName = app.GetService<Config>().DatadogHost,
                 StatsdPort = 8125,
                 Prefix = "miki"
             });

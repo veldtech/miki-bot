@@ -198,7 +198,7 @@
                         var bonusExp = MikiRandom.Next(1, 4);
                         currentLocalExp += bonusExp;
 
-                        if (!experienceQueue.ContainsKey(e.Author.Id))
+                        if (!_experienceQueue.ContainsKey(e.Author.Id))
                         {
                             var expObject = new ExperienceAdded()
                             {
@@ -289,10 +289,10 @@
 
             List<string> userParameters = new List<string>();
 
-            for (int i = 0; i < experienceQueue.Values.Count; i++)
+            for (int i = 0; i < _experienceQueue.Values.Count; i++)
             {
-                userQuery.Add($"({experienceQueue.Values.ElementAt(i).UserId}, @p{i}, {experienceQueue.Values.ElementAt(i).Experience})");
-                userParameters.Add(experienceQueue.Values.ElementAt(i).Name ?? "name failed to set?");
+                userQuery.Add($"({_experienceQueue.Values.ElementAt(i).UserId}, @p{i}, {_experienceQueue.Values.ElementAt(i).Experience})");
+                userParameters.Add(_experienceQueue.Values.ElementAt(i).Name ?? "name failed to set?");
             }
 
             string y = $"),upsert as ( update \"dbo\".\"Users\" m set \"Total_Experience\" = \"Total_Experience\" + nv.experience FROM new_values nv WHERE m.\"Id\" = nv.id RETURNING m.*) INSERT INTO \"dbo\".\"Users\"(\"Id\", \"Name\", \"Total_Experience\") SELECT id, name, experience FROM new_values WHERE NOT EXISTS(SELECT * FROM upsert up WHERE up.\"Id\" = new_values.id);";

@@ -1,4 +1,6 @@
-﻿﻿namespace Miki
+﻿﻿using Amazon.S3;
+
+ namespace Miki
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -305,7 +307,10 @@
             {
                 if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) && !string.IsNullOrWhiteSpace(config.CdnSecretKey) && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
                 {
-                    app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
+                    app.AddSingletonService(new AmazonS3Client(
+                        config.CdnAccessKey, 
+                        config.CdnSecretKey, 
+                        new AmazonS3Config()
                     {
                         ServiceURL = config.CdnRegionEndpoint
                     }));
@@ -348,7 +353,7 @@
 			// Setup web services
 			{
 				app.AddSingletonService(new UrbanDictionaryAPI());
-				app.AddSingletonService(new BunnyCDNClient(Global.Config.BunnyCdnKey));
+				app.AddSingletonService(new BunnyCDNClient(config.BunnyCdnKey));
 			}
 
 			// Setup miscellanious services
@@ -371,21 +376,21 @@
 		}
 
 		public static async Task LoadConfigAsync(ConfigurationManager m)
-		{
-			string configFile = Environment.CurrentDirectory + Config.MikiConfigurationFile;
+        {
+            //string configFile = Environment.CurrentDirectory;
 
-			if(File.Exists(configFile))
-			{
-				await m.ImportAsync(
-					new JsonSerializationProvider(),
-					configFile
-				);
-			}
+			//if(File.Exists(configFile))
+			//{
+			//	await m.ImportAsync(
+			//		new JsonSerializationProvider(),
+			//		configFile
+			//	);
+			//}
 
-			await m.ExportAsync(
-				new JsonSerializationProvider(),
-				configFile
-			);
+			//await m.ExportAsync(
+			//	new JsonSerializationProvider(),
+			//	configFile
+			//);
 		}
 
 		public static void LoadDiscord(MikiApp app, CommandPipeline pipeline)

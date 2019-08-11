@@ -513,83 +513,6 @@ namespace Miki.Modules
 				.QueueMessage(e.GetLocale().GetString("miki_module_fun_roll_result", e.GetAuthor().Username, rollResult));
 		}
 
-		[Command("reminder", "remind")]
-		public class ReminderCommand
-		{
-			private readonly API.TaskScheduler<string> reminders;
-
-			public ReminderCommand()
-			{
-				reminders = new API.TaskScheduler<string>();
-			}
-
-			[Command]
-			public async Task RemindAsync(IContext e)
-			{
-				string arguments = e.GetArgumentPack().Pack.TakeAll();
-				string lowercaseArguments = arguments.ToLower().Split(' ')[0];
-
-				if(string.IsNullOrWhiteSpace(lowercaseArguments) || lowercaseArguments.StartsWith("-"))
-				{
-					await HelpReminderAsync(e);
-				}
-				else
-				{
-					await PlaceReminderAsync(e, arguments);
-				}
-			}
-
-			[Command("list")]
-			public async Task ListRemindersAsync(IContext e)
-			{
-				var locale = e.GetLocale();
-				var instances = reminders.GetAllInstances(e.GetAuthor().Id);
-				if(instances?.Count <= 0)
-				{
-					await e.ErrorEmbed(locale.GetString("error_no_reminders"))
-						.ToEmbed()
-						.QueueAsync(e.GetChannel());
-					return;
-				}
-
-				instances = instances.OrderBy(x => x.Id)
-						.ToList();
-
-				EmbedBuilder embed = new EmbedBuilder()
-					.SetTitle($"⏰ {locale.GetString("reminders")}")
-					.SetColor(0.86f, 0.18f, 0.26f);
-
-				foreach(var x in instances)
-				{
-					string tx = x.Context;
-					if(x.Context.Length > 30)
-					{
-						tx = new string(x.Context.Take(27).ToArray()) + "...";
-					}
-					embed.Description +=
-						$"▶ `{x.Id.ToString()} - {tx} : {x.TimeLeft.ToTimeString(locale, true)}`\n";
-				}
-				await embed
-					.ToEmbed()
-					.QueueAsync(e.GetChannel());
-			}
-
-			[Command("clear", "cancel")]
-			public async Task CancelReminderAsync(IContext e)
-			{
-				var locale = e.GetLocale();
-
-				if(e.GetArgumentPack().Take(out string arg))
-				{
-					discordUser = e.GetAuthor(),
-					discordChannel = e.GetChannel() as IDiscordTextChannel
-                });
-			}
-
-			e.GetChannel()
-                .QueueMessage(e.GetLocale().GetString("miki_module_fun_roll_result", e.GetAuthor().Username, rollResult));
-		}
-
         [Command("reminder", "remind")]
         public class ReminderCommand
         {
@@ -606,7 +529,7 @@ namespace Miki.Modules
                 string arguments = e.GetArgumentPack().Pack.TakeAll();
                 string lowercaseArguments = arguments.ToLower().Split(' ')[0];
 
-                if (string.IsNullOrWhiteSpace(lowercaseArguments) || lowercaseArguments.StartsWith("-"))
+                if(string.IsNullOrWhiteSpace(lowercaseArguments) || lowercaseArguments.StartsWith("-"))
                 {
                     await HelpReminderAsync(e);
                 }
@@ -621,7 +544,7 @@ namespace Miki.Modules
             {
                 var locale = e.GetLocale();
                 var instances = reminders.GetAllInstances(e.GetAuthor().Id);
-                if (instances?.Count <= 0)
+                if(instances?.Count <= 0)
                 {
                     await e.ErrorEmbed(locale.GetString("error_no_reminders"))
                         .ToEmbed()
@@ -636,10 +559,10 @@ namespace Miki.Modules
                     .SetTitle($"⏰ {locale.GetString("reminders")}")
                     .SetColor(0.86f, 0.18f, 0.26f);
 
-                foreach (var x in instances)
+                foreach(var x in instances)
                 {
                     string tx = x.Context;
-                    if (x.Context.Length > 30)
+                    if(x.Context.Length > 30)
                     {
                         tx = new string(x.Context.Take(27).ToArray()) + "...";
                     }
@@ -656,11 +579,11 @@ namespace Miki.Modules
             {
                 var locale = e.GetLocale();
 
-                if (e.GetArgumentPack().Take(out string arg))
+                if(e.GetArgumentPack().Take(out string arg))
                 {
-                    if (Utils.IsAll(arg))
+                    if(Utils.IsAll(arg))
                     {
-                        if (reminders.GetAllInstances(e.GetAuthor().Id) is List<TaskInstance<string>> instances)
+                        if(reminders.GetAllInstances(e.GetAuthor().Id) is List<TaskInstance<string>> instances)
                         {
                             instances.ForEach(i => i.Cancel());
                         }
@@ -674,9 +597,9 @@ namespace Miki.Modules
                         return;
                     }
                 }
-                else if (e.GetArgumentPack().Take(out int id))
+                else if(e.GetArgumentPack().Take(out int id))
                 {
-                    if (reminders.CancelReminder(e.GetAuthor().Id, id) is TaskInstance<string> i)
+                    if(reminders.CancelReminder(e.GetAuthor().Id, id) is TaskInstance<string> i)
                     {
                         await new EmbedBuilder()
                             .SetTitle($"⏰ {locale.GetString("reminders")}")
@@ -714,7 +637,7 @@ namespace Miki.Modules
                 int splitIndex = args.ToLower().LastIndexOf(" in ");
                 // TODO: still a bit hacky
 
-                if (splitIndex == -1)
+                if(splitIndex == -1)
                 {
                     await e.ErrorEmbed(e.GetLocale().GetString("error_argument_null", "time"))
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -727,7 +650,7 @@ namespace Miki.Modules
 
                 TimeSpan timeUntilReminder = args.GetTimeFromString();
 
-                if (timeUntilReminder > new TimeSpan(0, 10, 0))
+                if(timeUntilReminder > new TimeSpan(0, 10, 0))
                 {
                     int id = reminders.AddTask(e.GetAuthor().Id, async (context) =>
                     {
@@ -752,6 +675,7 @@ namespace Miki.Modules
                 }
             }
         }
+
 
         [Command("safe")]
 		public async Task DoSafe(IContext e)

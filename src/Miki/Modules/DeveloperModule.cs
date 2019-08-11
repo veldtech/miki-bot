@@ -173,7 +173,7 @@
         [RequiresScope("developer.internal")]
         public async Task SetGameAsync(IContext e)
 		{
-			if(!e.GetArgumentPack().Take(out string arg))
+			/*if(!e.GetArgumentPack().Take(out string arg))
 			{
 				return;
 			}

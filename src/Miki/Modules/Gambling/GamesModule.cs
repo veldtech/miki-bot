@@ -291,7 +291,7 @@
                 }
             }
 
-            private async Task OnBlackjackDraw(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackDrawAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -326,7 +326,7 @@
                     .ConfigureAwait(false);
             }
 
-            private async Task OnBlackjackDead(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackDeadAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -356,7 +356,7 @@
                     }).ConfigureAwait(false);
             }
 
-            private async Task OnBlackjackWin(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackWinAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();

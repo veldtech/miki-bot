@@ -1,3 +1,4 @@
+   
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using Microsoft.EntityFrameworkCore;
@@ -31,461 +32,112 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Miki.Accounts.Achievements.Objects;
-using Miki.Framework.Exceptions;
 using Miki.Services.Achievements;
 
 namespace Miki.Modules.AccountsModule
 {
     [Module("Accounts")]
-	public class AccountsModule
-	{
+    public class AccountsModule
+    {
 
-		[Service("achievements")]
-		public AchievementLoader AchievementsService { get; set; }
+        [Service("achievements")]
+        public AchievementLoader Achievements { get; set; }
 
-		private readonly Net.Http.HttpClient _client;
+        private readonly Net.Http.HttpClient client;
 
-		private readonly EmojiBarSet onBarSet = new EmojiBarSet(
-			"<:mbarlefton:391971424442646534>",
-			"<:mbarmidon:391971424920797185>",
-			"<:mbarrighton:391971424488783875>");
+        private readonly EmojiBarSet onBarSet = new EmojiBarSet(
+            "<:mbarlefton:391971424442646534>",
+            "<:mbarmidon:391971424920797185>",
+            "<:mbarrighton:391971424488783875>");
 
-		private readonly EmojiBarSet offBarSet = new EmojiBarSet(
-			"<:mbarleftoff:391971424824459265>",
-			"<:mbarmidoff:391971424824197123>",
-			"<:mbarrightoff:391971424862208000>");
+        private readonly EmojiBarSet offBarSet = new EmojiBarSet(
+            "<:mbarleftoff:391971424824459265>",
+            "<:mbarmidoff:391971424824197123>",
+            "<:mbarrightoff:391971424862208000>");
 
-		public AccountsModule(
-            AchievementService service)
-		{
-			if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey)
-				&& !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
-			{
-				this._client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-					.AddHeader("Authorization", Global.Config.MikiApiKey);
-			}
-			else
-			{
-				Log.Warning("Image API can not be loaded in AccountsModule");
-			}
+        public AccountsModule()
+        {
+            var config = MikiApp.Instance.Services.GetService<Config>();
 
-			AchievementsService = new AchievementLoader(service);
-		}
+            if(!string.IsNullOrWhiteSpace(config.MikiApiKey)
+                && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
+            {
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
+            }
+            else
+            {
+                Log.Warning("Image API can not be loaded in AccountsModule");
+            }
 
-		[Command("achievements")]
-		public async Task AchievementsAsync(IContext e)
-		{
-			var context = e.GetService<MikiDbContext>();
+          // AchievementsService = new AchievementsService();
+        }
 
-			long id = (long)e.GetAuthor().Id;
-
-			if(e.GetArgumentPack().Take(out string arg))
-			{
-				IDiscordUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
-
-				if(user != null)
-				{
-					id = (long)user.Id;
-				}
-			}
-
-			IDiscordUser discordUser = await e.GetGuild().GetMemberAsync(id.FromDbLong());
-			User u = await User.GetAsync(context, discordUser.Id, discordUser.Username);
-
-			List<Achievement> achievements = await context.Achievements
-				.Where(x => x.UserId == id)
-				.ToListAsync();
-
-			EmbedBuilder embed = new EmbedBuilder()
-				.SetAuthor($"{u.Name} | " + "Achievements", discordUser.GetAvatarUrl(), "https://miki.ai/profiles/ID/achievements");
-
-			embed.SetColor(255, 255, 255);
-
-			StringBuilder leftBuilder = new StringBuilder();
-
-			int totalScore = 0;
-
-			foreach(var a in achievements)
-			{
-				IAchievement metadata = e.GetService<AchievementService>().GetContainerById(a.Name).Achievements[a.Rank];
-				leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
-				totalScore += metadata.Points;
-			}
-
-			if(string.IsNullOrEmpty(leftBuilder.ToString()))
-			{
-				embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
-			}
-			else
-			{
-				embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
-			}
-
-			await embed.ToEmbed().QueueAsync(e.GetChannel());
-		}
-
-		[Command("exp")]
-		public async Task ExpAsync(IContext e)
-		{
-			Stream s = await this._client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
-			if(s == null)
-			{
-				await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
-					.ToEmbed().QueueAsync(e.GetChannel());
-				return;
-			}
-			e.GetChannel()
-				.QueueMessage(stream: s);
-		}
-
-		[Command("leaderboards", "lb", "leaderboard", "top")]
-		public async Task LeaderboardsAsync(IContext e)
-		{
-			LeaderboardsOptions options = new LeaderboardsOptions();
-
-			e.GetArgumentPack().Peek(out string argument);
+        [Command("achievements")]
+        public async Task AchievementsAsync(IContext e)
+        {
+            var context = e.GetService<MikiDbContext>();
 
             long id = (long)e.GetAuthor().Id;
 
-                if (e.GetArgumentPack().Take(out string arg))
-				{
-					IDiscordUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
+            if(e.GetArgumentPack().Take(out string arg))
+            {
+                IDiscordUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
 
-				case "experience":
-				case "exp":
-				{
-					options.Type = LeaderboardsType.EXPERIENCE;
-					e.GetArgumentPack().Skip();
-				}
-				break;
-
-				case "guild":
-				case "guilds":
-				{
-					options.Type = LeaderboardsType.GUILDS;
-					e.GetArgumentPack().Skip();
-				}
-				break;
-
-				default:
-				{
-					options.Type = LeaderboardsType.EXPERIENCE;
-				}
-				break;
-			}
-
-			if(e.GetArgumentPack().Peek(out string localArg))
-			{
-				if(localArg.ToLowerInvariant() == "local")
-				{
-					if(options.Type != LeaderboardsType.PASTA)
-					{
-						id = (long)user.Id;
-					}
-				}
-
-			if(e.GetArgumentPack().Peek(out int index))
-			{
-				options.Offset = Math.Max(0, index - 1) * 12;
-				e.GetArgumentPack().Skip();
-			}
-
-			options.Amount = 12;
-
-			var api = e.GetService<MikiApiClient>();
-
-			LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
-
-			await Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
-				.SetFooter(
-					e.GetLocale().GetString(
-                        "page_index", 
-                        obj.currentPage + 1, 
-                        Math.Ceiling((double)obj.totalPages / 10)))
-				.SetAuthor(
-					"Leaderboards: " + options.Type)
-				.ToEmbed()
-				.QueueAsync(e.GetChannel())
-                .ConfigureAwait(false);
-		}
-
-		[Command("profile")]
-		public async Task ProfileAsync(IContext e)
-		{
-			var args = e.GetArgumentPack();
-			var locale = e.GetLocale();
-
-			var context = e.GetService<MikiDbContext>();
-			long id = 0;
-
-			IDiscordGuildUser self = null;
-			IDiscordUser discordUser = null;
-
-			MarriageRepository repository = new MarriageRepository(context);
-
-			if(args.Take(out string arg))
-			{
-				discordUser = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
-
-				if(discordUser == null)
-				{
-					throw new UserNullException();
-				}
-			}
-			else
-			{
-				discordUser = e.GetAuthor();
-			}
-
-			User account = await User.GetAsync(context, discordUser.Id.ToDbLong(), discordUser.Username);
-			if(account == null)
-			{
-				await e.ErrorEmbed(e.GetLocale().GetString("error_account_null"))
-					.ToEmbed().QueueAsync(e.GetChannel());
-				return;
-			}
-
-			string icon = null;
-			if(await account.IsDonatorAsync(context))
-			{
-				icon = "https://cdn.discordapp.com/emojis/421969679561785354.png";
-			}
-
-			EmbedBuilder embed = new EmbedBuilder()
-				.SetDescription(account.Title)
-				.SetAuthor(
-					locale.GetString(
-						"miki_global_profile_user_header",
-						discordUser.Username),
-					icon,
-					"https://patreon.com/mikibot")
-				.SetThumbnail(discordUser.GetAvatarUrl());
-
-			var infoValueBuilder = new MessageBuilder();
-
-			if(e.GetGuild() != null)
-			{
-				self = await e.GetGuild()
-					.GetSelfAsync();
-
-				LocalExperience localExp = await LocalExperience.GetAsync(
-					context,
-					e.GetGuild().Id,
-					discordUser.Id);
-                if(localExp == null)
+                if(user != null)
                 {
-                    localExp = await LocalExperience.CreateAsync(
-                        context,
-                        e.GetGuild().Id,
-                        discordUser.Id,
-                        discordUser.Username);
+                    id = (long)user.Id;
                 }
+            }
 
-                int rank = await localExp.GetRankAsync(context);
-				int localLevel = User.CalculateLevel(localExp.Experience);
-				int maxLocalExp = User.CalculateLevelExperience(localLevel);
-				int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
+            IDiscordUser discordUser = await e.GetGuild().GetMemberAsync(id.FromDbLong());
+            User u = await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
-				EmojiBar expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
-				infoValueBuilder.AppendText(e.GetLocale().GetString(
-					"miki_module_accounts_information_level",
-					localLevel,
-					localExp.Experience.ToFormattedString(),
-					maxLocalExp.ToFormattedString()));
+            List<Achievement> achievements = await context.Achievements
+                .Where(x => x.UserId == id)
+                .ToListAsync();
 
-				if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
-				{
-					infoValueBuilder.AppendText(
-						expBar.Print(localExp.Experience - minLocalExp));
-				}
+            EmbedBuilder embed = new EmbedBuilder()
+                .SetAuthor($"{u.Name} | " + "Achievements", discordUser.GetAvatarUrl(), "https://miki.ai/profiles/ID/achievements");
 
-				infoValueBuilder.AppendText(locale.GetString(
-					"miki_module_accounts_information_rank",
-					rank.ToFormattedString()));
-			}
-			infoValueBuilder.AppendText(
-				$"Reputation: {account.Reputation:N0}",
-				newLine: false);
+            embed.SetColor(255, 255, 255);
 
-			embed.AddInlineField(locale.GetString("miki_generic_information"), infoValueBuilder.Build());
+            StringBuilder leftBuilder = new StringBuilder();
 
-			int globalLevel = User.CalculateLevel(account.Total_Experience);
-			int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
-			int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
+            int totalScore = 0;
 
-			int? globalRank = await account.GetGlobalRankAsync(context);
+            foreach(var a in achievements)
+            {
+                IAchievement metadata = e.GetService<AchievementService>().GetContainerById(a.Name).Achievements[a.Rank];
+                leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
+                totalScore += metadata.Points;
+            }
 
-			EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
+            if(string.IsNullOrEmpty(leftBuilder.ToString()))
+            {
+                embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
+            }
+            else
+            {
+                embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
+            }
 
-			var globalInfoBuilder = new MessageBuilder()
-				.AppendText(
-					locale.GetString(
-						"miki_module_accounts_information_level",
-						globalLevel.ToFormattedString(),
-						account.Total_Experience.ToFormattedString(),
-						maxGlobalExp.ToFormattedString()));
-			if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis)
-                .ConfigureAwait(false))
-			{
-				globalInfoBuilder.AppendText(
-					globalExpBar.Print(maxGlobalExp - minGlobalExp));
-			}
-
-			var globalInfo = globalInfoBuilder
-				.AppendText(
-					locale.GetString("miki_module_accounts_information_rank",
-						globalRank?.ToFormattedString() ?? "We haven't calculated your rank yet!"),
-						MessageFormatting.Plain,
-						false)
-				.Build();
-
-			embed.AddInlineField(
-				locale.GetString("miki_generic_global_information"),
-				globalInfo);
-
-			embed.AddInlineField(
-				locale.GetString("miki_generic_mekos"),
-				$"{account.Currency:N0} <:mekos:421972155484471296>");
-
-			List<UserMarriedTo> Marriages = (await repository.GetMarriagesAsync(id))
-				.Where(x => !x.Marriage.IsProposing)
-				.ToList();
-
-				EmbedBuilder embed = new EmbedBuilder()
-					.SetAuthor($"{u.Name} | " + "Achievements", discordUser.GetAvatarUrl(), "https://miki.ai/profiles/ID/achievements");
-
-				embed.SetColor(255, 255, 255);
-
-				StringBuilder leftBuilder = new StringBuilder();
-
-				int totalScore = 0;
-
-				foreach (var a in achievements)
-				{
-					IAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
-					leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
-					totalScore += metadata.Points;
-				}
-
-				if (string.IsNullOrEmpty(leftBuilder.ToString()))
-				{
-					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
-				}
-
-				embed.AddInlineField(
-					e.GetLocale().GetString("miki_module_accounts_profile_marriedto"),
-					marriageText);
-			}
-
-			Random r = new Random((int)id - 3);
-			Color c = new Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
-
-			embed.SetColor(c);
-
-			List<Achievement> allAchievements = await context.Achievements.Where(x => x.UserId == id)
-				.ToListAsync();
-
-			string achievements = e.GetLocale()
-				.GetString("miki_placeholder_null");
-
-			if(allAchievements != null
-				&& allAchievements.Count > 0)
-			{
-				achievements = e.GetService<AchievementService>()
-                    .PrintAchievements(allAchievements);
-			}
-
-			embed.AddInlineField(
-				e.GetLocale().GetString("miki_generic_achievements"),
-				achievements);
-
-            await embed.ToEmbed()
-                .QueueAsync(e.GetChannel())
-                .ConfigureAwait(false);
+            await embed.ToEmbed().QueueAsync(e.GetChannel());
         }
 
-		[Command("setbackground")]
-		public async Task SetProfileBackgroundAsync(IContext e)
-		{
-			if(!e.GetArgumentPack().Take(out int backgroundId))
-			{
-				throw new ArgObjectNullException();
-			}
-
-			long userId = e.GetAuthor().Id.ToDbLong();
-
-			var context = e.GetService<MikiDbContext>();
-
-			BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
-			if(bo == null)
-			{
-				throw new BackgroundNotOwnedException();
-			}
-
-			ProfileVisuals v = await ProfileVisuals.GetAsync(userId, context);
-			v.BackgroundId = bo.BackgroundId;
-			await context.SaveChangesAsync();
-
-			await e.SuccessEmbed("Successfully set background.")
-				.QueueAsync(e.GetChannel());
-		}
-
-		[Command("buybackground")]
-		public async Task BuyProfileBackgroundAsync(IContext e)
-		{
-			var backgrounds = e.GetService<BackgroundStore>();
-
-			if(!e.GetArgumentPack().Take(out int id))
-			{
-				e.GetChannel().QueueMessage("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
-			}
-
-			if(id >= backgrounds.Backgrounds.Count || id < 0)
-			{
-				await e.ErrorEmbed("This background does not exist!")
-					.ToEmbed()
-					.QueueAsync(e.GetChannel());
-				return;
-			}
-
-			Background background = backgrounds.Backgrounds[id];
-
-			var embed = new EmbedBuilder()
-				.SetTitle("Buy Background")
-				.SetImage(background.ImageUrl);
-
-			if(background.Price > 0)
-			{
-				embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
-			}
-			else
-			{
-				embed.SetDescription($"This background is not for sale.");
-			}
-
-			if(e.GetArgumentPack().Take(out string confirmation))
-			{
-				if(confirmation.ToLower() == "yes")
-				{
-					embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
-				}
-
-				await embed.ToEmbed().QueueAsync(e.GetChannel());
-		}
-
-		[Command("exp")]
-		public async Task ExpAsync(IContext e)
-		{
-			Stream s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
-			if (s == null)
-			{
-				await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
-					.ToEmbed().QueueAsync(e.GetChannel());
-				return;
-			}
-			e.GetChannel()
+        [Command("exp")]
+        public async Task ExpAsync(IContext e)
+        {
+            Stream s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
+            if(s == null)
+            {
+                await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
+                    .ToEmbed().QueueAsync(e.GetChannel());
+                return;
+            }
+            e.GetChannel()
                 .QueueMessage(stream: s);
-		}
+        }
 
         [Command("leaderboards", "lb", "leaderboard", "top")]
         public async Task LeaderboardsAsync(IContext e)
@@ -494,7 +146,7 @@ namespace Miki.Modules.AccountsModule
 
             e.GetArgumentPack().Peek(out string argument);
 
-            switch (argument?.ToLower() ?? "")
+            switch(argument?.ToLower() ?? "")
             {
                 case "commands":
                 case "cmds":
@@ -553,11 +205,11 @@ namespace Miki.Modules.AccountsModule
                 break;
             }
 
-            if (e.GetArgumentPack().Peek(out string localArg))
+            if(e.GetArgumentPack().Peek(out string localArg))
             {
-                if (localArg.ToLower() == "local")
+                if(localArg.ToLower() == "local")
                 {
-                    if (options.Type != LeaderboardsType.PASTA)
+                    if(options.Type != LeaderboardsType.PASTA)
                     {
                         options.GuildId = e.GetGuild().Id;
                     }
@@ -565,7 +217,7 @@ namespace Miki.Modules.AccountsModule
                 }
             }
 
-            if (e.GetArgumentPack().Peek(out int index))
+            if(e.GetArgumentPack().Peek(out int index))
             {
                 options.Offset = Math.Max(0, index - 1) * 12;
                 e.GetArgumentPack().Skip();
@@ -605,11 +257,11 @@ namespace Miki.Modules.AccountsModule
 
             MarriageRepository repository = new MarriageRepository(context);
 
-            if (args.Take(out string arg))
+            if(args.Take(out string arg))
             {
                 discordUser = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
 
-                if (discordUser == null)
+                if(discordUser == null)
                 {
                     throw new UserNullException();
                 }
@@ -620,7 +272,7 @@ namespace Miki.Modules.AccountsModule
             }
 
             User account = await User.GetAsync(context, discordUser.Id.ToDbLong(), discordUser.Username);
-            if (account == null)
+            if(account == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_account_null"))
                     .ToEmbed().QueueAsync(e.GetChannel());
@@ -628,7 +280,7 @@ namespace Miki.Modules.AccountsModule
             }
 
             string icon = null;
-            if (await account.IsDonatorAsync(context))
+            if(await account.IsDonatorAsync(context))
             {
                 icon = "https://cdn.discordapp.com/emojis/421969679561785354.png";
             }
@@ -638,14 +290,14 @@ namespace Miki.Modules.AccountsModule
                 .SetAuthor(
                     locale.GetString(
                         "miki_global_profile_user_header",
-                        discordUser.Username), 
+                        discordUser.Username),
                     icon,
                     "https://patreon.com/mikibot")
                 .SetThumbnail(discordUser.GetAvatarUrl());
 
             var infoValueBuilder = new MessageBuilder();
 
-            if (e.GetGuild() != null)
+            if(e.GetGuild() != null)
             {
                 self = await e.GetGuild()
                     .GetSelfAsync();
@@ -706,7 +358,7 @@ namespace Miki.Modules.AccountsModule
                         globalLevel.ToFormattedString(),
                         account.Total_Experience.ToFormattedString(),
                         maxGlobalExp.ToFormattedString()));
-            if (await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
+            if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
             {
                 globalInfoBuilder.AppendText(
                     globalExpBar.Print(maxGlobalExp - minGlobalExp));
@@ -721,11 +373,11 @@ namespace Miki.Modules.AccountsModule
                 .Build();
 
             embed.AddInlineField(
-                locale.GetString("miki_generic_global_information"), 
+                locale.GetString("miki_generic_global_information"),
                 globalInfo);
 
             embed.AddInlineField(
-                locale.GetString("miki_generic_mekos"), 
+                locale.GetString("miki_generic_mekos"),
                 $"{account.Currency:N0} <:mekos:421972155484471296>");
 
             List<UserMarriedTo> Marriages = (await repository.GetMarriagesAsync(id))
@@ -736,19 +388,19 @@ namespace Miki.Modules.AccountsModule
 
             int maxCount = Marriages?.Count ?? 0;
 
-            for (int i = 0; i < maxCount; i++)
+            for(int i = 0; i < maxCount; i++)
             {
                 users.Add((await e.GetService<DiscordClient>()
                     .GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
             }
 
-            if (Marriages?.Count > 0)
+            if(Marriages?.Count > 0)
             {
                 List<string> MarriageStrings = new List<string>();
 
-                for (int i = 0; i < maxCount; i++)
+                for(int i = 0; i < maxCount; i++)
                 {
-                    if (Marriages[i].GetOther(id) == 0)
+                    if(Marriages[i].GetOther(id) == 0)
                     {
                         continue;
                     }
@@ -757,7 +409,7 @@ namespace Miki.Modules.AccountsModule
                 }
 
                 string marriageText = string.Join("\n", MarriageStrings);
-                if (string.IsNullOrEmpty(marriageText))
+                if(string.IsNullOrEmpty(marriageText))
                 {
                     marriageText = e.GetLocale().GetString("miki_placeholder_null");
                 }
@@ -778,10 +430,10 @@ namespace Miki.Modules.AccountsModule
             string achievements = e.GetLocale()
                 .GetString("miki_placeholder_null");
 
-            if (allAchievements != null
+            if(allAchievements != null
                 && allAchievements.Count > 0)
             {
-                achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+                achievements = e.GetService<AchievementService>().PrintAchievements(allAchievements);
             }
 
             embed.AddInlineField(
@@ -795,7 +447,7 @@ namespace Miki.Modules.AccountsModule
         [Command("setbackground")]
         public async Task SetProfileBackgroundAsync(IContext e)
         {
-            if (!e.GetArgumentPack().Take(out int backgroundId))
+            if(!e.GetArgumentPack().Take(out int backgroundId))
             {
                 throw new ArgumentNullException("background");
             }
@@ -805,7 +457,7 @@ namespace Miki.Modules.AccountsModule
             var context = e.GetService<MikiDbContext>();
 
             BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
-            if (bo == null)
+            if(bo == null)
             {
                 throw new BackgroundNotOwnedException();
             }
@@ -823,12 +475,12 @@ namespace Miki.Modules.AccountsModule
         {
             var backgrounds = e.GetService<BackgroundStore>();
 
-            if (!e.GetArgumentPack().Take(out int id))
+            if(!e.GetArgumentPack().Take(out int id))
             {
                 e.GetChannel().QueueMessage("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
             }
 
-            if (id >= backgrounds.Backgrounds.Count || id < 0)
+            if(id >= backgrounds.Backgrounds.Count || id < 0)
             {
                 await e.ErrorEmbed("This background does not exist!")
                     .ToEmbed()
@@ -842,7 +494,7 @@ namespace Miki.Modules.AccountsModule
                 .SetTitle("Buy Background")
                 .SetImage(background.ImageUrl);
 
-            if (background.Price > 0)
+            if(background.Price > 0)
             {
                 embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
             }
@@ -851,11 +503,11 @@ namespace Miki.Modules.AccountsModule
                 embed.SetDescription($"This background is not for sale.");
             }
 
-            if (e.GetArgumentPack().Take(out string confirmation))
+            if(e.GetArgumentPack().Take(out string confirmation))
             {
-                if (confirmation.ToLower() == "yes")
+                if(confirmation.ToLower() == "yes")
                 {
-                    if (background.Price > 0)
+                    if(background.Price > 0)
                     {
                         var context = e.GetService<MikiDbContext>();
 
@@ -864,7 +516,7 @@ namespace Miki.Modules.AccountsModule
 
                         BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
 
-                        if (bo == null)
+                        if(bo == null)
                         {
                             user.RemoveCurrency(background.Price);
                             await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
@@ -900,7 +552,7 @@ namespace Miki.Modules.AccountsModule
 
             var x = Regex.Matches(e.GetArgumentPack().Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
 
-            if (x.Count > 0)
+            if(x.Count > 0)
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
                 var hex = x.First().Groups.Last().Value;
@@ -930,7 +582,7 @@ namespace Miki.Modules.AccountsModule
 
             var x = Regex.Matches(e.GetArgumentPack().Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
 
-            if (x.Count > 0)
+            if(x.Count > 0)
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
                 var hex = x.First().Groups.Last().Value;
@@ -951,20 +603,20 @@ namespace Miki.Modules.AccountsModule
             }
         }
 
-		[Command("backgroundsowned")]
-		public async Task BackgroundsOwnedAsync(IContext e)
-		{
+        [Command("backgroundsowned")]
+        public async Task BackgroundsOwnedAsync(IContext e)
+        {
             var context = e.GetService<MikiDbContext>();
 
             List<BackgroundsOwned> backgroundsOwned = await context.BackgroundsOwned.Where(x => x.UserId == e.GetAuthor().Id.ToDbLong())
-					.ToListAsync();
+                    .ToListAsync();
 
-                await new EmbedBuilder()
-					.SetTitle($"{e.GetAuthor().Username}'s backgrounds")
-					.SetDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`")))
-					.ToEmbed()
-					.QueueAsync(e.GetChannel());
-		}
+            await new EmbedBuilder()
+                .SetTitle($"{e.GetAuthor().Username}'s backgrounds")
+                .SetDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`")))
+                .ToEmbed()
+                .QueueAsync(e.GetChannel());
+        }
 
         [Command("rep")]
         public async Task GiveReputationAsync(IContext e)
@@ -977,7 +629,7 @@ namespace Miki.Modules.AccountsModule
 
             var repObject = await cache.GetAsync<ReputationObject>($"user:{giver.Id}:rep");
 
-            if (repObject == null)
+            if(repObject == null)
             {
                 repObject = new ReputationObject()
                 {
@@ -992,7 +644,7 @@ namespace Miki.Modules.AccountsModule
                 );
             }
 
-            if (!e.GetArgumentPack().CanTake)
+            if(!e.GetArgumentPack().CanTake)
             {
                 TimeSpan pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
 
@@ -1022,7 +674,7 @@ namespace Miki.Modules.AccountsModule
                 int totalAmountGiven = 0;
                 bool mentionedSelf = false;
 
-                while (e.GetArgumentPack().CanTake && totalAmountGiven <= repObject.ReputationPointsLeft)
+                while(e.GetArgumentPack().CanTake && totalAmountGiven <= repObject.ReputationPointsLeft)
                 {
                     short amount = 1;
 
@@ -1030,25 +682,25 @@ namespace Miki.Modules.AccountsModule
 
                     var u = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
 
-                    if (u == null)
+                    if(u == null)
                     {
                         throw new UserNullException();
                     }
 
-                    if (e.GetArgumentPack().Take(out int value))
+                    if(e.GetArgumentPack().Take(out int value))
                     {
                         amount = (short)value;
                     }
-                    else if (e.GetArgumentPack().Peek(out string arg))
+                    else if(e.GetArgumentPack().Peek(out string arg))
                     {
-                        if (Utils.IsAll(arg))
+                        if(Utils.IsAll(arg))
                         {
                             amount = (short)(repObject.ReputationPointsLeft - ((short)usersMentioned.Sum(x => x.Value)));
                             e.GetArgumentPack().Skip();
                         }
                     }
 
-                    if (u.Id == e.GetAuthor().Id)
+                    if(u.Id == e.GetAuthor().Id)
                     {
                         mentionedSelf = true;
                         continue;
@@ -1056,7 +708,7 @@ namespace Miki.Modules.AccountsModule
 
                     totalAmountGiven += amount;
 
-                    if (usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+                    if(usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
                     {
                         usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
                     }
@@ -1066,7 +718,7 @@ namespace Miki.Modules.AccountsModule
                     }
                 }
 
-                if (mentionedSelf)
+                if(mentionedSelf)
                 {
                     embed.Footer = new EmbedFooter()
                     {
@@ -1074,20 +726,20 @@ namespace Miki.Modules.AccountsModule
                     };
                 }
 
-                if (usersMentioned.Count == 0)
+                if(usersMentioned.Count == 0)
                 {
                     return;
                 }
                 else
                 {
-                    if (totalAmountGiven <= 0)
+                    if(totalAmountGiven <= 0)
                     {
                         await e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
                             .ToEmbed().QueueAsync(e.GetChannel());
                         return;
                     }
 
-                    if (usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
+                    if(usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
                     {
                         await e.ErrorEmbedResource("error_rep_limit", usersMentioned.Count, usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
                             .ToEmbed().QueueAsync(e.GetChannel());
@@ -1098,7 +750,7 @@ namespace Miki.Modules.AccountsModule
                 embed.Title = (e.GetLocale().GetString("miki_module_accounts_rep_header"));
                 embed.Description = (e.GetLocale().GetString("rep_success"));
 
-                foreach (var u in usersMentioned)
+                foreach(var u in usersMentioned)
                 {
                     User receiver = await DatabaseHelpers.GetUserAsync(context, u.Key);
 
@@ -1132,7 +784,7 @@ namespace Miki.Modules.AccountsModule
 
             User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
 
-            if (user == null)
+            if(user == null)
             {
                 throw new UserNullException();
             }
@@ -1147,12 +799,12 @@ namespace Miki.Modules.AccountsModule
             }.ToEmbed().QueueAsync(e.GetChannel());
         }
 
-        [Command("mekos", "bal", "meko" )]
+        [Command("mekos", "bal", "meko")]
         public async Task ShowMekosAsync(IContext e)
         {
             IDiscordGuildUser member;
 
-            if (e.GetArgumentPack().Take(out string value))
+            if(e.GetArgumentPack().Take(out string value))
             {
                 member = await DiscordExtensions.GetUserAsync(value, e.GetGuild());
             }
@@ -1177,18 +829,18 @@ namespace Miki.Modules.AccountsModule
         [Command("give")]
         public async Task GiveMekosAsync(IContext e)
         {
-            if (e.GetArgumentPack().Take(out string userName))
+            if(e.GetArgumentPack().Take(out string userName))
             {
                 var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
 
-                if (user == null)
+                if(user == null)
                 {
                     await e.ErrorEmbedResource("give_error_no_mention")
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
-                if (!e.GetArgumentPack().Take(out int amount))
+                if(!e.GetArgumentPack().Take(out int amount))
                 {
                     await e.ErrorEmbedResource("give_error_amount_unparsable")
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -1200,11 +852,11 @@ namespace Miki.Modules.AccountsModule
                 User sender = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
                 User receiver = await DatabaseHelpers.GetUserAsync(context, user);
 
-                if (amount <= sender.Currency)
+                if(amount <= sender.Currency)
                 {
                     sender.RemoveCurrency(amount);
 
-                    if (await receiver.IsBannedAsync(context))
+                    if(await receiver.IsBannedAsync(context))
                     {
                         throw new UserNullException();
                     }
@@ -1214,9 +866,9 @@ namespace Miki.Modules.AccountsModule
                     await new EmbedBuilder()
                     {
                         Title = "🔸 transaction",
-                        Description = e.GetLocale().GetString("give_description", 
-                            sender.Name, 
-                            receiver.Name, 
+                        Description = e.GetLocale().GetString("give_description",
+                            sender.Name,
+                            receiver.Name,
                             amount.ToFormattedString()),
                         Color = new Color(255, 140, 0),
                     }.ToEmbed().QueueAsync(e.GetChannel());
@@ -1236,7 +888,7 @@ namespace Miki.Modules.AccountsModule
 
             User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
 
-            if (u == null)
+            if(u == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("user_error_no_account"))
                     .ToEmbed().QueueAsync(e.GetChannel());
@@ -1246,19 +898,19 @@ namespace Miki.Modules.AccountsModule
             int dailyAmount = 100;
             int dailyStreakAmount = 20;
 
-            if (await u.IsDonatorAsync(context))
+            if(await u.IsDonatorAsync(context))
             {
                 dailyAmount *= 2;
                 dailyStreakAmount *= 2;
             }
 
-            if (u.LastDailyTime.AddHours(23) >= DateTime.Now)
+            if(u.LastDailyTime.AddHours(23) >= DateTime.Now)
             {
                 var time = (u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.GetLocale());
 
                 var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
 
-                switch (MikiRandom.Next(2))
+                switch(MikiRandom.Next(2))
                 {
                     case 0:
                     {
@@ -1281,7 +933,7 @@ namespace Miki.Modules.AccountsModule
 
             var cache = e.GetService<ICacheClient>();
 
-            if (await cache.ExistsAsync(redisKey))
+            if(await cache.ExistsAsync(redisKey))
             {
                 streak = await cache.GetAsync<int>(redisKey);
                 streak++;
@@ -1297,7 +949,7 @@ namespace Miki.Modules.AccountsModule
                 .SetDescription(e.GetLocale().GetString("daily_received", $"**{amount.ToFormattedString()}**", $"`{u.Currency.ToFormattedString()}`"))
                 .SetColor(253, 216, 136);
 
-            if (streak > 0)
+            if(streak > 0)
             {
                 embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
             }
@@ -1307,5 +959,5 @@ namespace Miki.Modules.AccountsModule
             await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
             await context.SaveChangesAsync();
         }
-	}
+    }
 }
