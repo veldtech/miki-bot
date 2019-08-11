@@ -1,23 +1,29 @@
-﻿using Miki.Bot.Models;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Framework;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Filters;
-using Miki.Net.Http;
-using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace Miki.Modules
 {
-	[Module("Experimental")]
+    using Miki.Bot.Models;
+    using Miki.Cache;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands.Filters;
+    using Miki.Net.Http;
+    using Newtonsoft.Json;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Framework.Commands.Scopes.Attributes;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Framework.Commands.Scopes;
+    using Miki.Framework.Exceptions;
+
+    [Module("Experimental")]
 	internal class DeveloperModule
 	{
 		[Command("identifyemoji")]
+        [RequiresScope("developer")]
 		public async Task IdentifyEmojiAsync(IContext e)
 		{
 			if(DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
@@ -35,6 +41,7 @@ namespace Miki.Modules
 		}
 
 		[Command("say")]
+        [RequiresScope("developer")]
 		public Task SayAsync(IContext e)
 		{
 			e.GetChannel()
@@ -43,6 +50,7 @@ namespace Miki.Modules
 		}
 
 		[Command("sayembed")]
+        [RequiresScope("developer")]
 		public async Task SayEmbedAsync(IContext e)
 		{
 			EmbedBuilder b = new EmbedBuilder();
@@ -54,6 +62,7 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyuser")]
+        [RequiresScope("developer")]
 		public async Task IdenUserAsync(IContext e)
 		{
 			var api = e.GetService<IApiClient>();
@@ -68,6 +77,7 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyguilduser")]
+        [RequiresScope("developer")]
 		public async Task IdenGuildUserAsync(IContext e)
 		{
 			var api = e.GetService<IApiClient>();
@@ -82,6 +92,7 @@ namespace Miki.Modules
 		}
 
 		[Command("showpermissions")]
+        [RequiresScope("developer")]
 		public async Task ShowPermissionsAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out ulong id))
@@ -104,6 +115,7 @@ namespace Miki.Modules
 		}
 
 		[Command("haspermission")]
+        [RequiresScope("developer")]
 		public async Task HasPermissionAsync(IContext e)
 		{
 			var user = await e.GetGuild().GetSelfAsync();
@@ -118,6 +130,7 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyguildchannel")]
+        [RequiresScope("developer")]
 		public async Task IdenGuildChannelAsync(IContext e)
 		{
 			var api = e.GetService<IApiClient>();
@@ -132,6 +145,7 @@ namespace Miki.Modules
 		}
 
 		[Command("identifyrole")]
+        [RequiresScope("developer")]
 		public async Task IdentifyRoleAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out ulong roleId))
@@ -148,6 +162,7 @@ namespace Miki.Modules
 		}
 
 		[Command("identifybotroles")]
+        [RequiresScope("developer")]
 		public async Task IdentifyBotRolesAsync(IContext e)
 		{
 			var roles = await e.GetGuild().GetRolesAsync();
@@ -156,7 +171,8 @@ namespace Miki.Modules
 		}
 
 		[Command("setactivity")]
-		public async Task SetGameAsync(IContext e)
+        [RequiresScope("developer.internal")]
+        public async Task SetGameAsync(IContext e)
 		{
 			if(!e.GetArgumentPack().Take(out string arg))
 			{
@@ -189,7 +205,8 @@ namespace Miki.Modules
 		}
 
 		[Command("ignore")]
-		public Task IgnoreIdAsync(IContext e)
+        [RequiresScope("developer")]
+        public Task IgnoreIdAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out ulong id))
 			{
@@ -203,14 +220,16 @@ namespace Miki.Modules
 		}
 
 		[Command("dev")]
-		public Task ShowCacheAsync(IContext e)
+        [RequiresScope("developer.internal")]
+        public Task ShowCacheAsync(IContext e)
 		{
 			e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
 		}
 
 		[Command("setmekos")]
-		public async Task SetMekosAsync(IContext e)
+        [RequiresScope("developer")]
+        public async Task SetMekosAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out string userArg))
 			{
@@ -233,7 +252,8 @@ namespace Miki.Modules
 		}
 
 		[Command("changeavatar")]
-		public async Task ChangeAvatarAsync(IContext e)
+        [RequiresScope("developer.internal")]
+        public async Task ChangeAvatarAsync(IContext e)
 		{
 			var s = e.GetMessage().Attachments.FirstOrDefault();
 			var stream = await new HttpClient(s.Url).GetStreamAsync();
@@ -246,7 +266,8 @@ namespace Miki.Modules
 		}
 
 		[Command("createkey")]
-		public async Task CreateKeyAsync(IContext e)
+        [RequiresScope("developer")]
+        public async Task CreateKeyAsync(IContext e)
 		{
 			var context = e.GetService<MikiDbContext>();
 
@@ -260,6 +281,7 @@ namespace Miki.Modules
 		}
 
 		[Command("setexp")]
+        [RequiresScope("developer")]
 		public async Task SetExperienceAsync(IContext e)
 		{
 			var cache = e.GetService<ICacheClient>();
@@ -294,7 +316,8 @@ namespace Miki.Modules
 		}
 
 		[Command("setglobexp")]
-		public async Task SetGlobalExpAsync(IContext e)
+        [RequiresScope("developer")]
+        public async Task SetGlobalExpAsync(IContext e)
 		{
 			if(!e.GetArgumentPack().Take(out string userName))
 			{
@@ -319,7 +342,26 @@ namespace Miki.Modules
 			e.GetChannel().QueueMessage(":ok_hand:");
 		}
 
-		[Command("banuser")]
+        [Command("addscope")]
+        [RequiresScope("developer.internal")]
+        public async Task AddScopeAsync(IContext e)
+        {
+            var scopeStage = e.GetStage<ScopePipelineStage>();
+            e.GetArgumentPack().Take(out string userStr);
+            var user = await DiscordExtensions.GetUserAsync(userStr, e.GetGuild());
+            if(user == null)
+            {
+                throw new ArgObjectNullException();
+            }
+
+            e.GetArgumentPack().Take(out string scope);
+
+            await scopeStage.AddScopeAsync(e.GetService<DbContext>(), user, scope);
+            e.GetChannel().QueueMessage(":ok_hand:");
+        }
+
+        [Command("banuser")]
+        [RequiresScope("developer")]
 		public async Task BanUserAsync(IContext e)
 		{
 			if(e.GetArgumentPack().Take(out string user))

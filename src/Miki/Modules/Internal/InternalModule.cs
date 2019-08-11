@@ -1,13 +1,13 @@
-﻿using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events.Attributes;
-using Miki.Modules.Internal.Services;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
-	[Module("Internal")]
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Events.Attributes;
+    using Miki.Modules.Internal.Routines;
+
+    [Module("Internal")]
 	public class InternalModule
 	{
 		[Service("datadog")]
-		public DatadogService DatadogService { get; set; }
+		public DatadogRoutine DatadogService { get; set; }
 	}
 }

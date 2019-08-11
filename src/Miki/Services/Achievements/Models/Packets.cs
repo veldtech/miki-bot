@@ -23,7 +23,7 @@ namespace Miki.Accounts.Achievements.Objects
 
 	public class UserUpdatePacket : BasePacket
 	{
-		public IDiscordUser userNew;
+		public IDiscordUser UserOld { get; set; }
 	}
 
 	public class TransactionPacket : BasePacket

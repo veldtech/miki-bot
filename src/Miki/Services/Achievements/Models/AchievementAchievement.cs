@@ -1,12 +1,13 @@
 ﻿using Miki.Logging;
 using System;
 using System.Threading.Tasks;
+using Miki.Framework;
 
 namespace Miki.Accounts.Achievements.Objects
 {
 	internal class AchievementAchievement : IAchievement
 	{
-		public Func<AchievementPacket, Task<bool>> CheckAchievement;
+		public Func<AchievementPacket, ValueTask<bool>> CheckAchievement;
 
 		public string Name { get; set; }
 
@@ -15,7 +16,7 @@ namespace Miki.Accounts.Achievements.Objects
 
 		public int Points { get; set; }
 
-		public async Task<bool> CheckAsync(BasePacket packet)
+        public async ValueTask<bool> CheckAsync(BasePacket packet)
 		{
 			if(packet is AchievementPacket p)
 			{

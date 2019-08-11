@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
 using System.Threading.Tasks;
+using Miki.Accounts.Achievements.Objects;
+using Miki.Services.Achievements;
 
 namespace Miki
 {

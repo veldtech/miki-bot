@@ -30,6 +30,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Miki.Services.Achievements;
 
 namespace Miki.Modules
 {
@@ -382,22 +383,24 @@ namespace Miki.Modules
 		public async Task ImgurImageAsync(IContext e)
 		{
 			string title = e.GetArgumentPack().Pack.TakeAll();
-			if(string.IsNullOrEmpty(title))
+            var locale = e.GetLocale();
+            if(string.IsNullOrEmpty(title))
 			{
 				e.GetChannel()
-					.QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
+					.QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
 			var client = new MashapeClient(ImgurClientId, ImgurKey);
 			var endpoint = new GalleryEndpoint(client);
-			var images = await endpoint.SearchGalleryAsync($"title:{title}");
+			var images = await endpoint.SearchGalleryAsync($"title:{title}")
+                .ConfigureAwait(false);
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach(IGalleryItem item in images)
 			{
-				if(item as IGalleryImage != null)
+				if(item is IGalleryImage image)
 				{
-					actualImages.Add(item as IGalleryImage);
+					actualImages.Add(image);
 				}
 			}
 
@@ -409,7 +412,8 @@ namespace Miki.Modules
 			}
 			else
 			{
-				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_fun_image_error_no_image_found"));
+				e.GetChannel()
+                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
@@ -487,7 +491,7 @@ namespace Miki.Modules
 
 			if(rollResult == "1" || rollResult.StartsWith("1 "))
 			{
-				await AchievementManager.Instance
+				await e.GetService<AchievementService>()
 					.GetContainerById("badluck")
 					.CheckAsync(new BasePacket()
 					{

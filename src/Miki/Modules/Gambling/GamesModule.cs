@@ -1,44 +1,46 @@
-﻿using Miki.Accounts.Achievements;
-using Miki.Accounts.Achievements.Objects;
-using Miki.API.Cards.Objects;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Helpers;
-using Miki.Localization;
-using Miki.Modules.Gambling.Exceptions;
-using Miki.Modules.Gambling.Managers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules.Gambling
 {
+    using Miki.Accounts.Achievements.Objects;
+    using Miki.API.Cards.Objects;
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Cache;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Helpers;
+    using Miki.Modules.Gambling.Exceptions;
+    using Miki.Modules.Gambling.Managers;
+    using Miki.Services.Achievements;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     [Module("Gambling")]
     public class GamblingModule
     {
         [Command("rps")]
-        class RPSCommand
+        class RpsCommand
         {
             [Command]
-            public async Task RPSAsync(IContext e)
+            public async Task RpsAsync(IContext e)
             {
                 var context = e.GetService<MikiDbContext>();
-                User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
+                User user = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username)
+                    .ConfigureAwait(false);
 
                 int bet = ValidateBet(e, user, 10000);
 
-                float rewardMultiplier = 1f;
+                const float rewardMultiplier = 1f;
 
                 if(e.GetArgumentPack().Pack.Length < 2)
                 {
                     await e.ErrorEmbed("You need to choose a weapon!")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed()
+                        .QueueAsync(e.GetChannel())
+                        .ConfigureAwait(false);
                 }
 
                 RPSManager rps = RPSManager.Instance;
@@ -49,8 +51,10 @@ namespace Miki.Modules
 
                 if(!rps.TryParse(weapon, out RPSWeapon playerWeapon))
                 {
-                    await resultMessage.SetDescription("Invalid weapon!").ToEmbed()
-                        .QueueAsync(e.GetChannel());
+                    await resultMessage.SetDescription("Invalid weapon!")
+                        .ToEmbed()
+                        .QueueAsync(e.GetChannel())
+                        .ConfigureAwait(false);
                     return;
                 }
 
@@ -64,8 +68,10 @@ namespace Miki.Modules
                     {
                         if(user != null)
                         {
-                            await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.GetChannel());
-                            await context.SaveChangesAsync();
+                            await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.GetChannel())
+                                .ConfigureAwait(false);
+                            await context.SaveChangesAsync()
+                                .ConfigureAwait(false);
                         }
                         resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier)}` mekos! Your new balance is `{user.Currency}`.";
                     }
@@ -76,7 +82,8 @@ namespace Miki.Modules
                         if(user != null)
                         {
                             user.RemoveCurrency(bet);
-                            await context.SaveChangesAsync();
+                            await context.SaveChangesAsync()
+                                .ConfigureAwait(false);
                         }
 
                         resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
@@ -91,7 +98,8 @@ namespace Miki.Modules
                 }
 
                 await resultMessage.ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
             }
         }
 
@@ -109,7 +117,8 @@ namespace Miki.Modules
                         "`>blackjack hit` to draw a card\n" +
                         "`>blackjack stay` to stand")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
             }
 
             [Command("new")]
@@ -118,7 +127,8 @@ namespace Miki.Modules
                 var cache = e.GetService<ICacheClient>();
                 var context = e.GetService<MikiDbContext>();
 
-                var user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
+                var user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong())
+                    .ConfigureAwait(false);
                 if(user == null)
                 {
                     return;
@@ -127,12 +137,16 @@ namespace Miki.Modules
                 int bet = ValidateBet(e, user);
 
                 user.RemoveCurrency(bet);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync()
+                    .ConfigureAwait(false);
 
-                if(await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}"))
+                if(await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}")
+                    .ConfigureAwait(false))
                 {
-                    await e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                    await e.ErrorEmbedResource("blackjack_session_exists")
+                        .ToEmbed()
+                        .QueueAsync(e.GetChannel())
+                        .ConfigureAwait(false);
                     return;
                 }
 
@@ -147,14 +161,17 @@ namespace Miki.Modules
                 dealer.Hand[1].isPublic = false;
 
                 IDiscordMessage message = await manager.CreateEmbed(e)
-                    .ToEmbed().SendToChannel(e.GetChannel());
+                    .ToEmbed()
+                    .SendToChannel(e.GetChannel())
+                    .ConfigureAwait(false);
 
                 manager.MessageId = message.Id;
 
                 await cache.UpsertAsync(
                     $"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}",
                     manager.ToContext(),
-                    TimeSpan.FromHours(24));
+                    TimeSpan.FromHours(24))
+                    .ConfigureAwait(false);
             }
 
             [Command("hit", "draw")]
@@ -163,41 +180,53 @@ namespace Miki.Modules
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
 
-                BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(cache, e.GetChannel().Id, e.GetAuthor().Id);
+                BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
+                        cache, 
+                        e.GetChannel().Id, 
+                        e.GetAuthor().Id)
+                    .ConfigureAwait(false);
 
-                CardHand Player = bm.GetPlayer(e.GetAuthor().Id);
-                CardHand Dealer = bm.GetPlayer(0);
+                CardHand player = bm.GetPlayer(e.GetAuthor().Id);
+                CardHand dealer = bm.GetPlayer(0);
 
-                bm.DealTo(Player);
+                bm.DealTo(player);
 
-                if(bm.Worth(Player) > 21)
+                if(bm.Worth(player) > 21)
                 {
-                    await OnBlackjackDeadAsync(e, bm);
+                    await OnBlackjackDeadAsync(e, bm)
+                        .ConfigureAwait(false);
                 }
                 else
                 {
-                    if(Player.Hand.Count == 5)
+                    if(player.Hand.Count == 5)
                     {
-                        await OnBlackjackHoldAsync(e);
+                        await OnBlackjackHoldAsync(e)
+                            .ConfigureAwait(false);
                         return;
                     }
-                    else if(bm.Worth(Player) == 21 && bm.Worth(Dealer) != 21)
+                    else if(bm.Worth(player) == 21 && bm.Worth(dealer) != 21)
                     {
-                        await OnBlackjackWinAsync(e, bm);
+                        await OnBlackjackWinAsync(e, bm)
+                            .ConfigureAwait(false);
                         return;
                     }
-                    else if(bm.Worth(Dealer) == 21 && bm.Worth(Player) != 21)
+                    else if(bm.Worth(dealer) == 21 && bm.Worth(player) != 21)
                     {
-                        await OnBlackjackDeadAsync(e, bm);
+                        await OnBlackjackDeadAsync(e, bm)
+                            .ConfigureAwait(false);
                         return;
                     }
 
                     await api.EditMessageAsync(e.GetChannel().Id, bm.MessageId, new EditMessageArgs
                     {
                         Embed = bm.CreateEmbed(e).ToEmbed()
-                    });
+                    }).ConfigureAwait(false);
 
-                    await cache.UpsertAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}", bm.ToContext(), TimeSpan.FromHours(24));
+                    await cache.UpsertAsync(
+                            $"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}", 
+                            bm.ToContext(), 
+                            TimeSpan.FromHours(24))
+                        .ConfigureAwait(false);
                 }
             }
 
@@ -206,51 +235,57 @@ namespace Miki.Modules
             {
                 var cache = e.GetService<ICacheClient>();
                 BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
-                    cache,
-                    e.GetChannel().Id,
-                    e.GetAuthor().Id);
+                        cache,
+                        e.GetChannel().Id,
+                        e.GetAuthor().Id)
+                    .ConfigureAwait(false);
 
-                CardHand Player = bm.GetPlayer(e.GetAuthor().Id);
-                CardHand Dealer = bm.GetPlayer(0);
+                CardHand player = bm.GetPlayer(e.GetAuthor().Id);
+                CardHand dealer = bm.GetPlayer(0);
 
-                var charlie = Player.Hand.Count >= 5;
+                var charlie = player.Hand.Count >= 5;
 
-                Dealer.Hand.ForEach(x => x.isPublic = true);
+                dealer.Hand.ForEach(x => x.isPublic = true);
 
                 while(true)
                 {
-                    if(bm.Worth(Dealer) >= Math.Max(bm.Worth(Player), 17))
+                    if(bm.Worth(dealer) >= Math.Max(bm.Worth(player), 17))
                     {
                         if(charlie)
                         {
-                            if(Dealer.Hand.Count == 5)
+                            if(dealer.Hand.Count == 5)
                             {
-                                if(bm.Worth(Dealer) == bm.Worth(Player))
+                                if(bm.Worth(dealer) == bm.Worth(player))
                                 {
-                                    await OnBlackjackDrawAsync(e, bm);
+                                    await OnBlackjackDrawAsync(e, bm)
+                                        .ConfigureAwait(false);
                                     return;
                                 }
-                                await OnBlackjackDeadAsync(e, bm);
+                                await OnBlackjackDeadAsync(e, bm)
+                                    .ConfigureAwait(false);
                                 return;
                             }
                         }
                         else
                         {
-                            if(bm.Worth(Dealer) == bm.Worth(Player))
+                            if(bm.Worth(dealer) == bm.Worth(player))
                             {
-                                await OnBlackjackDrawAsync(e, bm);
+                                await OnBlackjackDrawAsync(e, bm)
+                                    .ConfigureAwait(false);
                                 return;
                             }
-                            await OnBlackjackDeadAsync(e, bm);
+                            await OnBlackjackDeadAsync(e, bm)
+                                .ConfigureAwait(false);
                             return;
                         }
                     }
 
-                    bm.DealTo(Dealer);
+                    bm.DealTo(dealer);
 
-                    if(bm.Worth(Dealer) > 21)
+                    if(bm.Worth(dealer) > 21)
                     {
-                        await OnBlackjackWinAsync(e, bm);
+                        await OnBlackjackWinAsync(e, bm)
+                            .ConfigureAwait(false);
                         return;
                     }
                 }
@@ -261,14 +296,15 @@ namespace Miki.Modules
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
 
-                User user;
                 var context = e.GetService<MikiDbContext>();
 
-                user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
+                User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
                 if(user != null)
                 {
-                    await user.AddCurrencyAsync(bm.Bet, e.GetChannel());
-                    await context.SaveChangesAsync();
+                    await user.AddCurrencyAsync(bm.Bet, e.GetChannel())
+                        .ConfigureAwait(false);
+                    await context.SaveChangesAsync()
+                        .ConfigureAwait(false);
                 }
 
                 await api.EditMessageAsync(e.GetChannel().Id, bm.MessageId,
@@ -284,10 +320,10 @@ namespace Miki.Modules
                             e.GetLocale().GetString("blackjack_draw_description") + "\n" +
                             e.GetLocale().GetString("miki_blackjack_current_balance", user.Currency)
                         ).ToEmbed()
-                    }
-                );
+                    }).ConfigureAwait(false);
 
-                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}");
+                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}")
+                    .ConfigureAwait(false);
             }
 
             private async Task OnBlackjackDeadAsync(IContext e, BlackjackManager bm)
@@ -295,24 +331,29 @@ namespace Miki.Modules
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
 
-                User user;
-                var context = e.GetService<MikiDbContext>();
-                user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
+                var locale = e.GetLocale();
 
-                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}");
+                var context = e.GetService<MikiDbContext>();
+                User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong())
+                    .ConfigureAwait(false);
+
+                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}")
+                    .ConfigureAwait(false);
 
                 await api.EditMessageAsync(e.GetChannel().Id, bm.MessageId,
                     new EditMessageArgs
                     {
                         Embed = bm.CreateEmbed(e)
                                 .SetAuthor(
-                                    e.GetLocale().GetString("miki_blackjack_lose_title") + " | " + e.GetAuthor().Username,
-                                    (await e.GetGuild().GetSelfAsync()).GetAvatarUrl(), "https://patreon.com/mikibot"
-                                )
-                                .SetDescription(e.GetLocale().GetString("miki_blackjack_lose_description") + "\n" + e.GetLocale().GetString("miki_blackjack_new_balance", user.Currency)
-                                ).ToEmbed()
-                    });
-
+                                    e.GetLocale().GetString("miki_blackjack_lose_title") 
+                                    + " | " + e.GetAuthor().Username,
+                                    (await e.GetGuild().GetSelfAsync()).GetAvatarUrl(), 
+                                    "https://patreon.com/mikibot")
+                                .SetDescription(
+                                    locale.GetString("miki_blackjack_lose_description") + "\n" 
+                                    + locale.GetString("miki_blackjack_new_balance", user.Currency))
+                                .ToEmbed()
+                    }).ConfigureAwait(false);
             }
 
             private async Task OnBlackjackWinAsync(IContext e, BlackjackManager bm)
@@ -320,26 +361,35 @@ namespace Miki.Modules
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
 
-                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}");
+                await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}")
+                    .ConfigureAwait(false);
 
-                User user;
                 var context = e.GetService<MikiDbContext>();
 
-                user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
-
+                User user = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username)
+                    .ConfigureAwait(false);
                 if(user != null)
                 {
-                    await user.AddCurrencyAsync(bm.Bet * 2, e.GetChannel());
+                    await user.AddCurrencyAsync(bm.Bet * 2, e.GetChannel())
+                        .ConfigureAwait(false);
 
                     await api.EditMessageAsync(e.GetChannel().Id, bm.MessageId, new EditMessageArgs
                     {
                         Embed = bm.CreateEmbed(e)
-                        .SetAuthor(e.GetLocale().GetString("miki_blackjack_win_title") + " | " + e.GetAuthor().Username, e.GetAuthor().GetAvatarUrl(), "https://patreon.com/mikibot")
-                        .SetDescription(e.GetLocale().GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.GetLocale().GetString("miki_blackjack_new_balance", user.Currency))
-                        .ToEmbed()
-                    });
+                            .SetAuthor(
+                                e.GetLocale().GetString("miki_blackjack_win_title") 
+                                + " | " + e.GetAuthor().Username,
+                                e.GetAuthor().GetAvatarUrl(),
+                                "https://patreon.com/mikibot")
+                            .SetDescription(
+                                e.GetLocale().GetString("miki_blackjack_win_description", bm.Bet * 2)
+                                + "\n" 
+                                + e.GetLocale().GetString("miki_blackjack_new_balance", user.Currency))
+                            .ToEmbed()
+                    }).ConfigureAwait(false);
 
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync()
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -349,13 +399,17 @@ namespace Miki.Modules
         {
             var context = e.GetService<MikiDbContext>();
 
-            User u = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
+            User u = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username)
+                .ConfigureAwait(false);
+
             int bet = ValidateBet(e, u, 10000);
 
             if(e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed("Please pick either `heads` or `tails`!")
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
                 return;
             }
 
@@ -375,7 +429,9 @@ namespace Miki.Modules
             if(pickedSide == -1)
             {
                 await e.ErrorEmbed("This is not a valid option!")
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
                 return;
             }
 
@@ -401,10 +457,12 @@ namespace Miki.Modules
             }
             else
             {
-                await u.AddCurrencyAsync(bet);
+                await u.AddCurrencyAsync(bet)
+                    .ConfigureAwait(false);
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync()
+                .ConfigureAwait(false);
 
             string output = win ? e.GetLocale().GetString("flip_description_win", $"`{bet}`")
                 : e.GetLocale().GetString("flip_description_lose");
@@ -418,8 +476,8 @@ namespace Miki.Modules
                 .SetThumbnail(imageUrl)
                 .ToEmbed();
 
-            await embed.QueueAsync(
-                e.GetChannel() as IDiscordTextChannel);
+            await embed.QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
         }
 
         [Command("slots", "s")]
@@ -428,10 +486,11 @@ namespace Miki.Modules
             var context = e.GetService<MikiDbContext>();
             if(context == null)
             {
-
+                throw new NotSupportedException();
             }
 
-            User u = await context.Users.FindAsync(e.GetAuthor().Id);
+            User u = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username)
+                .ConfigureAwait(false);
             int bet = ValidateBet(e, u, 99999);
             int moneyReturned = 0;
 
@@ -547,13 +606,14 @@ namespace Miki.Modules
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 75f);
 
-                    await AchievementManager.Instance
+                    await e.GetService<AchievementService>()
                         .GetContainerById("slots")
                         .CheckAsync(new BasePacket()
                         {
-                            discordChannel = e.GetChannel() as IDiscordTextChannel,
+                            discordChannel = e.GetChannel(),
                             discordUser = e.GetAuthor()
-                        });
+                        })
+                        .ConfigureAwait(false);
                 }
             }
 
@@ -568,14 +628,20 @@ namespace Miki.Modules
             {
                 embed.AddField(
                     locale.GetString("miki_module_fun_slots_win_header"),
-                    locale.GetString("miki_module_fun_slots_win_amount", moneyReturned, u.Currency + moneyReturned));
-                await u.AddCurrencyAsync(moneyReturned, e.GetChannel());
+                    locale.GetString(
+                        "miki_module_fun_slots_win_amount", 
+                        moneyReturned, 
+                        u.Currency + moneyReturned));
+                await u.AddCurrencyAsync(moneyReturned, e.GetChannel())
+                    .ConfigureAwait(false);
             }
             embed.Description = string.Join(" ", objectsChosen);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync()
+                .ConfigureAwait(false);
             await embed.ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
         }
 
         //[Command(Name = "lottery")]
@@ -665,6 +731,11 @@ namespace Miki.Modules
 
         public static int ValidateBet(IContext e, User user, int maxBet = 1000000)
         {
+            if(e == null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+
             if(user == null)
             {
                 throw new UserNullException();

@@ -1,7 +1,6 @@
-﻿using Miki.Accounts.Achievements.Objects;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Miki.Accounts.Achievements
+namespace Miki.Accounts.Achievements.Objects
 {
 	public interface IAchievement
 	{
@@ -10,6 +9,6 @@ namespace Miki.Accounts.Achievements
 		string Icon { get; set; }
 		int Points { get; set; }
 
-		Task<bool> CheckAsync(BasePacket packet);
+		ValueTask<bool> CheckAsync(BasePacket packet);
 	}
 }

@@ -1,11 +1,13 @@
-﻿using Miki.Localization;
+﻿using System;
 
-namespace Miki.Extensions
+namespace Miki.Extensions.Localization
 {
-	public class HeaderResource : IResource
+    using Miki.Localization;
+
+    public class HeaderResource : IResource
 	{
-		private string _icon;
-		private IResource _resource;
+		private readonly string _icon;
+		private readonly IResource _resource;
 
 		public HeaderResource(string icon, IResource resource)
 		{
@@ -20,6 +22,6 @@ namespace Miki.Extensions
 		public string Get(IResourceManager instance)
 		{
 			return _icon + " " + _resource.Get(instance);
-		}
+        }
 	}
 }

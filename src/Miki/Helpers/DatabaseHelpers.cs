@@ -1,18 +1,18 @@
-﻿using Miki.Accounts.Achievements;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Cache;
-using Miki.Discord.Common;
-using Miki.Framework;
-using StatsdClient;
-using System.Threading.Tasks;
-
-namespace Miki.Helpers
+﻿namespace Miki.Helpers
 {
-	public static class DatabaseHelpers
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Cache;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using StatsdClient;
+    using System.Threading.Tasks;
+
+    public static class DatabaseHelpers
 	{
 		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
-			=> await User.GetAsync(context, discordUser.Id, discordUser.Username);
+			=> await User.GetAsync(context, discordUser.Id, discordUser.Username)
+                .ConfigureAwait(false);
 
 		public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
 		{
@@ -51,10 +51,10 @@ namespace Miki.Helpers
 
 			user.Currency += amount;
 
-			if(channel is IDiscordGuildChannel guildchannel)
-			{
-				await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
-			}
+			//if(channel is IDiscordGuildChannel guildchannel)
+			//{
+			//	await AchievementService.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
+			//}
 		}
 
 		public static void RemoveCurrency(this User user, int amount)

@@ -9,9 +9,9 @@ namespace Miki.Accounts.Achievements.Objects
 		public string Icon { get; set; }
 		public int Points { get; set; }
 
-		public Task<bool> CheckAsync(BasePacket packet)
+		public ValueTask<bool> CheckAsync(BasePacket packet)
 		{
-			return Task.FromResult(true);
+			return new ValueTask<bool>(true);
 		}
 	}
 }

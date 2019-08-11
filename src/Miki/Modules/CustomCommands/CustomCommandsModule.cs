@@ -34,7 +34,7 @@ namespace Miki.Modules.CustomCommands
 					new MentionTrigger())
 				.UseStage(new CustomCommandsHandler())
 				.Build();
-			app.GetService<DiscordClient>()
+			app.GetService<IDiscordClient>()
 				.MessageCreate += pipeline.CheckAsync;
 		}
 
@@ -90,13 +90,15 @@ namespace Miki.Modules.CustomCommands
 				try
 				{
 					var db = e.GetService<DbContext>();
-					await db.Set<CustomCommand>().AddAsync(new CustomCommand
+					await db.Set<CustomCommand>()
+                        .AddAsync(new CustomCommand
 					{
 						CommandName = commandName.ToLowerInvariant(),
 						CommandBody = scriptBody,
 						GuildId = e.GetGuild().Id.ToDbLong()
-					});
-					await db.SaveChangesAsync();
+					}).ConfigureAwait(false);
+					await db.SaveChangesAsync()
+                        .ConfigureAwait(false);
 				}
 				catch(Exception ex)
 				{

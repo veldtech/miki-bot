@@ -48,17 +48,18 @@ namespace Miki.Modules
 				localeStage.LocaleNames.Keys
 					.Select(x => $"`{x}`"));
 
-			await new EmbedBuilder()
-				.SetTitle(locale.GetString("locales_available"))
-				.SetDescription(localeNames)
-				.AddField(
-					"Your language not here?",
-					locale.GetString(
-						"locales_contribute",
-						$"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
-				.ToEmbed()
-				.QueueAsync(e.GetChannel());
-		}
+            await new EmbedBuilder()
+                .SetTitle(locale.GetString("locales_available"))
+                .SetDescription(localeNames)
+                .AddField(
+                    "Your language not here?",
+                    locale.GetString(
+                        "locales_contribute",
+                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                .ToEmbed()
+                .QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
+        }
 
 		[Command("setlocale")]
 		public async Task SetLocale(IContext e)
@@ -68,23 +69,26 @@ namespace Miki.Modules
 			string localeName = e.GetArgumentPack().Pack.TakeAll() ?? "";
 
 			if(!localization.LocaleNames.TryGetValue(localeName, out string langId))
-			{
-				await e.ErrorEmbedResource(
-					"error_language_invalid",
-					localeName,
-					e.GetPrefixMatch()
-				).ToEmbed().QueueAsync(e.GetChannel());
-			}
+            {
+                await e.ErrorEmbedResource(
+                        "error_language_invalid",
+                        localeName,
+                        e.GetPrefixMatch()
+                    ).ToEmbed()
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
+            }
 
-			await localization.SetLocaleForChannelAsync(e, (long)e.GetChannel().Id, langId);
+            await localization.SetLocaleForChannelAsync(e, (long)e.GetChannel().Id, langId)
+                .ConfigureAwait(false);
 
-			await e.SuccessEmbed(
-					e.GetLocale()
-					.GetString(
-						"localization_set",
-						$"`{localeName}`"))
-				.QueueAsync(e.GetChannel());
-		}
+            await e.SuccessEmbed(
+                    e.GetLocale().GetString(
+                        "localization_set",
+                        $"`{localeName}`"))
+                .QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
+        }
 
 		[Command("setnotifications")]
 		public async Task SetupNotifications(IContext e)
@@ -95,12 +99,14 @@ namespace Miki.Modules
 			}
 
 			if(!enumString.TryFromEnum<DatabaseSettingId>(out var value))
-			{
-				await Utils.ErrorEmbedResource(e, new LanguageResource(
-					"error_notifications_setting_not_found",
-					string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
-						.Select(x => $"`{x}`"))))
-					.ToEmbed().QueueAsync(e.GetChannel());
+            {
+                await e.ErrorEmbedResource(
+                        "error_notifications_setting_not_found",
+                        string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
+                            .Select(x => $"`{x}`")))
+                    .ToEmbed()
+                    .QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
 				return;
 			}
 
@@ -115,14 +121,15 @@ namespace Miki.Modules
 
 			if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
 			{
-				await Utils.ErrorEmbedResource(e, new LanguageResource(
-						"error_notifications_type_not_found",
+				await e.ErrorEmbedResource(
+                        "error_notifications_type_not_found",
 						enumValue,
 						value.ToString(),
 						string.Join(", ", Enum.GetNames(@enum.GetType())
-							.Select(x => $"`{x}`"))))
+							.Select(x => $"`{x}`")))
 					.ToEmbed()
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e.GetChannel())
+                    .ConfigureAwait(false);
 				return;
 			}
 
@@ -137,7 +144,8 @@ namespace Miki.Modules
 				{
 					if(attr.StartsWith("-g"))
 					{
-						channels = (await e.GetGuild().GetChannelsAsync())
+						channels = (await e.GetGuild().GetChannelsAsync()
+                                .ConfigureAwait(false))
 							.Where(x => x.Type == ChannelType.GUILDTEXT)
 							.Select(x => x as IDiscordTextChannel)
 							.ToList();
@@ -146,14 +154,18 @@ namespace Miki.Modules
 			}
 
 			foreach(var c in channels)
-			{
-				await Setting.UpdateAsync(context, c.Id, value, (int)type);
-			}
-			await context.SaveChangesAsync();
+            {
+                await Setting.UpdateAsync(context, c.Id, value, (int)type)
+                    .ConfigureAwait(false);
+            }
 
-			await Utils.SuccessEmbed(e, e.GetLocale().GetString("notifications_update_success"))
-				.QueueAsync(e.GetChannel());
-		}
+            await context.SaveChangesAsync()
+                .ConfigureAwait(false);
+
+            await e.SuccessEmbedResource("notifications_update_success")
+                .QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
+        }
 
 		[Command("showmodule")]
 		public async Task ConfigAsync(IContext e)

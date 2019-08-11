@@ -8,15 +8,16 @@ namespace Miki.Modules.Accounts.Services
 {
 	public class ExperienceTrackerService
 	{
-		public ExperienceTrackerService()
+        private readonly AccountService _service;
+
+		public ExperienceTrackerService(AccountService service)
 		{
-			MikiApp.Instance
-				.GetService<DiscordClient>().MessageCreate += Service_MessageReceived;
+			MikiApp.Instance.GetService<DiscordClient>().MessageCreate += MessageReceivedAsync;
+
+            _service = service;
 		}
 
-		public async Task Service_MessageReceived(IDiscordMessage m)
-		{
-			await AccountManager.Instance.CheckAsync(m);
-		}
-	}
+		private Task MessageReceivedAsync(IDiscordMessage m)
+            => _service.CheckAsync(m);
+    }
 }

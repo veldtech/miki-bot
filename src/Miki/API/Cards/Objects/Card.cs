@@ -31,7 +31,7 @@ namespace Miki.API.Cards.Objects
 				return "??";
 			}
 
-			string output = $":{type.ToString().ToLower()}:";
+			string output = $":{type.ToString().ToLowerInvariant()}:";
 
 			switch(value)
 			{

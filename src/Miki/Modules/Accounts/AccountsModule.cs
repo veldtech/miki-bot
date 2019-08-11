@@ -29,6 +29,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Miki.Accounts.Achievements.Objects;
+using Miki.Framework.Exceptions;
+using Miki.Services.Achievements;
 
 namespace Miki.Modules.AccountsModule
 {
@@ -37,9 +40,9 @@ namespace Miki.Modules.AccountsModule
 	{
 
 		[Service("achievements")]
-		public AchievementsService AchievementsService { get; set; }
+		public AchievementLoader AchievementsService { get; set; }
 
-		private readonly Net.Http.HttpClient client;
+		private readonly Net.Http.HttpClient _client;
 
 		private readonly EmojiBarSet onBarSet = new EmojiBarSet(
 			"<:mbarlefton:391971424442646534>",
@@ -51,12 +54,13 @@ namespace Miki.Modules.AccountsModule
 			"<:mbarmidoff:391971424824197123>",
 			"<:mbarrightoff:391971424862208000>");
 
-		public AccountsModule()
+		public AccountsModule(
+            AchievementService service)
 		{
 			if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey)
 				&& !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
 			{
-				client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
+				this._client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
 					.AddHeader("Authorization", Global.Config.MikiApiKey);
 			}
 			else
@@ -64,7 +68,7 @@ namespace Miki.Modules.AccountsModule
 				Log.Warning("Image API can not be loaded in AccountsModule");
 			}
 
-			AchievementsService = new AchievementsService();
+			AchievementsService = new AchievementLoader(service);
 		}
 
 		[Command("achievements")]
@@ -102,7 +106,7 @@ namespace Miki.Modules.AccountsModule
 
 			foreach(var a in achievements)
 			{
-				IAchievement metadata = AchievementManager.Instance.GetContainerById(a.Name).Achievements[a.Rank];
+				IAchievement metadata = e.GetService<AchievementService>().GetContainerById(a.Name).Achievements[a.Rank];
 				leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
 				totalScore += metadata.Points;
 			}
@@ -122,7 +126,7 @@ namespace Miki.Modules.AccountsModule
 		[Command("exp")]
 		public async Task ExpAsync(IContext e)
 		{
-			Stream s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
+			Stream s = await this._client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
 			if(s == null)
 			{
 				await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
@@ -201,7 +205,7 @@ namespace Miki.Modules.AccountsModule
 
 			if(e.GetArgumentPack().Peek(out string localArg))
 			{
-				if(localArg.ToLower() == "local")
+				if(localArg.ToLowerInvariant() == "local")
 				{
 					if(options.Type != LeaderboardsType.PASTA)
 					{
@@ -225,16 +229,15 @@ namespace Miki.Modules.AccountsModule
 
 			await Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
 				.SetFooter(
-					e.GetLocale().GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
-					""
-				)
+					e.GetLocale().GetString(
+                        "page_index", 
+                        obj.currentPage + 1, 
+                        Math.Ceiling((double)obj.totalPages / 10)))
 				.SetAuthor(
-					"Leaderboards: " + options.Type + " (click me!)",
-					null,
-					api.BuildLeaderboardsUrl(options)
-				)
+					"Leaderboards: " + options.Type)
 				.ToEmbed()
-				.QueueAsync(e.GetChannel());
+				.QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
 		}
 
 		[Command("profile")]
@@ -300,16 +303,16 @@ namespace Miki.Modules.AccountsModule
 					context,
 					e.GetGuild().Id,
 					discordUser.Id);
-				if(localExp == null)
-				{
-					localExp = await LocalExperience.CreateAsync(
-						context,
-						e.GetGuild().Id,
-						discordUser.Id,
-						discordUser.Username);
-				}
+                if(localExp == null)
+                {
+                    localExp = await LocalExperience.CreateAsync(
+                        context,
+                        e.GetGuild().Id,
+                        discordUser.Id,
+                        discordUser.Username);
+                }
 
-				int rank = await localExp.GetRankAsync(context);
+                int rank = await localExp.GetRankAsync(context);
 				int localLevel = User.CalculateLevel(localExp.Experience);
 				int maxLocalExp = User.CalculateLevelExperience(localLevel);
 				int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
@@ -352,7 +355,8 @@ namespace Miki.Modules.AccountsModule
 						globalLevel.ToFormattedString(),
 						account.Total_Experience.ToFormattedString(),
 						maxGlobalExp.ToFormattedString()));
-			if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
+			if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis)
+                .ConfigureAwait(false))
 			{
 				globalInfoBuilder.AppendText(
 					globalExpBar.Print(maxGlobalExp - minGlobalExp));
@@ -427,23 +431,25 @@ namespace Miki.Modules.AccountsModule
 			if(allAchievements != null
 				&& allAchievements.Count > 0)
 			{
-				achievements = AchievementManager.Instance.PrintAchievements(allAchievements);
+				achievements = e.GetService<AchievementService>()
+                    .PrintAchievements(allAchievements);
 			}
 
 			embed.AddInlineField(
 				e.GetLocale().GetString("miki_generic_achievements"),
 				achievements);
 
-			await embed.ToEmbed()
-				.QueueAsync(e.GetChannel());
-		}
+            await embed.ToEmbed()
+                .QueueAsync(e.GetChannel())
+                .ConfigureAwait(false);
+        }
 
 		[Command("setbackground")]
 		public async Task SetProfileBackgroundAsync(IContext e)
 		{
 			if(!e.GetArgumentPack().Take(out int backgroundId))
 			{
-				throw new ArgumentNullException("background");
+				throw new ArgObjectNullException();
 			}
 
 			long userId = e.GetAuthor().Id.ToDbLong();

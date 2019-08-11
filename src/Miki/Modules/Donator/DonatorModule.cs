@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Services.Achievements;
 
 namespace Miki.Modules.Donator
 {
@@ -102,32 +103,33 @@ namespace Miki.Modules.Donator
 			await context.SaveChangesAsync();
 
 			// cheap hack.        
-			var achievementManager = AchievementManager.Instance;
+			var achievementManager = e.GetService<AchievementService>();
 			var achievements = achievementManager.GetContainerById("donator").Achievements;
 
-			if(donatorStatus.KeysRedeemed == 1)
-			{
-				await achievementManager.UnlockAsync(
-					achievements[0],
-					e.GetChannel() as IDiscordTextChannel,
-					e.GetAuthor(), 0);
-			}
-			else if(donatorStatus.KeysRedeemed == 5)
-			{
-				await achievementManager.UnlockAsync(
-						achievements[1],
-						e.GetChannel() as IDiscordTextChannel,
-						e.GetAuthor(),
-						1)
-					.ConfigureAwait(false);
-			}
-			else if(donatorStatus.KeysRedeemed == 25)
-			{
-				await achievementManager.UnlockAsync(
-					achievements[2],
-					e.GetChannel() as IDiscordTextChannel,
-					e.GetAuthor(), 2);
-			}
+            // TODO(@velddev): Reimplement donator keys
+			//if(donatorStatus.KeysRedeemed == 1)
+			//{
+			//	await achievementManager.UnlockAsync(
+			//		achievements[0],
+			//		e.GetChannel() as IDiscordTextChannel,
+			//		e.GetAuthor(), 0);
+			//}
+			//else if(donatorStatus.KeysRedeemed == 5)
+			//{
+			//	await achievementManager.UnlockAsync(
+			//			achievements[1],
+			//			e.GetChannel() as IDiscordTextChannel,
+			//			e.GetAuthor(),
+			//			1)
+			//		.ConfigureAwait(false);
+			//}
+			//else if(donatorStatus.KeysRedeemed == 25)
+			//{
+			//	await achievementManager.UnlockAsync(
+			//		achievements[2],
+			//		e.GetChannel() as IDiscordTextChannel,
+			//		e.GetAuthor(), 2);
+			//}
 		}
 
 		[Command("box")]

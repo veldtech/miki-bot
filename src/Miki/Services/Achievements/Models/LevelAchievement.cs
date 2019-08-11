@@ -3,18 +3,18 @@ using System.Threading.Tasks;
 
 namespace Miki.Accounts.Achievements.Objects
 {
-	internal class TransactionAchievement : IAchievement
+	internal class LevelAchievement : IAchievement
 	{
-		public Func<TransactionPacket, Task<bool>> CheckTransaction;
+		public Func<LevelPacket, ValueTask<bool>> CheckLevel;
 
 		public string Name { get; set; }
 		public string ParentName { get; set; }
 		public string Icon { get; set; }
 		public int Points { get; set; }
 
-		public async Task<bool> CheckAsync(BasePacket packet)
+		public async ValueTask<bool> CheckAsync(BasePacket packet)
 		{
-			return await CheckTransaction(packet as TransactionPacket);
+			return await CheckLevel(packet as LevelPacket);
 		}
 	}
 }

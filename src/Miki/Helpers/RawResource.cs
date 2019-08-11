@@ -1,13 +1,13 @@
-﻿using Miki.Localization;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Miki.Helpers
+﻿namespace Miki.Helpers
 {
-	public class IconResource : IResource
+    using Miki.Localization;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class IconResource : IResource
 	{
-		private string _icon;
-		private string _resourceText;
+		private readonly string _icon;
+		private readonly string _resourceText;
 
 		public IconResource(string icon, string resource)
 		{
