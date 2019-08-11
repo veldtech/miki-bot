@@ -87,9 +87,9 @@ namespace Miki
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
-            if (new MikiDbContextFactory().CreateDbContext().Configurations.Count() == 1 && string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
+            if (string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
             {
-                Log.Message("First Time configuration complete, update configuration in database");
+                Log.Error("Token empty, update configuration in database");
                 Console.ReadKey();
                 return;
             }
@@ -124,6 +124,24 @@ namespace Miki
             Log.Message("Ready to receive requests!");
             await Task.Delay(-1);
         }
+
+        private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
+            => new CommandPipelineBuilder(app)
+                .UseStage(new CorePipelineStage())
+                .UseFilters(
+                    new BotFilter(),
+                    new UserFilter()
+                )
+                .UsePrefixes(
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", false),
+                    new MentionTrigger()
+                )
+                .UseLocalization()
+                .UseArgumentPack()
+                .UseCommandHandler(cmdTree)
+                .UsePermissions()
+                .Build();
 
         private static void CreateLogger()
         {
@@ -161,24 +179,6 @@ namespace Miki
                 .SetTheme(theme)
                 .Apply();
         }
-
-        private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
-            => new CommandPipelineBuilder(app)
-                .UseStage(new CorePipelineStage())
-                .UseFilters(
-                    new BotFilter(),
-                    new UserFilter()
-                )
-                .UsePrefixes(
-                    new PrefixTrigger(">", true, true),
-                    new PrefixTrigger("miki.", false),
-                    new MentionTrigger()
-                )
-                .UseLocalization()
-                .UseArgumentPack()
-                .UseCommandHandler(cmdTree)
-                .UsePermissions()
-                .Build();
 
         private static void LoadLocales(CommandPipeline app)
         {
@@ -230,6 +230,11 @@ namespace Miki
             }
 
             app.Services.AddSingleton(config);
+
+            if (string.IsNullOrWhiteSpace(config.Token))
+            {
+                return;
+            }
 
             var cache = new StackExchangeCacheClient(
                 new ProtobufSerializer(),
