@@ -1,4 +1,4 @@
-﻿namespace Miki
+﻿﻿namespace Miki
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -66,13 +66,40 @@
                 }
             }
 
-			Log.Message("Loading services");
+			if (args.Any(x => x.ToLowerInvariant() == "--newconfig" || x.ToLowerInvariant() == "-nc"))
+            {
+                try
+                {
+                    var conf = await Config.InsertNewConfigAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
+                    Console.WriteLine("New Config inserted into database with Id: " + conf.Id);
+                    Console.ReadKey();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Failed to generate new config: " + ex.Message);
+                    Log.Debug(ex.ToString());
+                    Console.ReadKey();
+                    return;
+                }
+            }
+
+            CreateLogger();
+            
+            Log.Message("Loading services");
 
 			// Start the bot.
 			var appBuilder = new MikiAppBuilder();
 			await LoadServicesAsync(appBuilder)
                 .ConfigureAwait(false);
 			MikiApp app = appBuilder.Build();
+
+            if (string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
+            {
+                Log.Error("Token empty, update configuration in database");
+                Console.ReadKey();
+                return;
+            }
 
 			Log.Message("Building command tree");
 
@@ -108,10 +135,10 @@
 
 			LoadLocales(commands);
 
-			for(int i = 0; i < Global.Config.MessageWorkerCount; i++)
-			{
-				MessageBucket.AddWorker();
-			}
+            for (int i = 0; i < int.Parse(Environment.GetEnvironmentVariable(Constants.ENV_MsgWkr)); i++)
+            {
+                MessageBucket.AddWorker();
+            }
 
 			await app.GetService<IGateway>()
 				.StartAsync()
@@ -121,6 +148,44 @@
 			await Task.Delay(-1)
                 .ConfigureAwait(false);
 		}
+
+        private static void CreateLogger()
+        {
+            var theme = new LogTheme();
+            theme.SetColor(
+                LogLevel.Information,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Cyan,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Error,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Red,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Warning,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Yellow,
+                    Background = 0
+                });
+
+            new LogBuilder()
+                .AddLogEvent((msg, lvl) =>
+                {
+                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl)))
+                    {
+                        Console.WriteLine(msg);
+                    }
+                })
+                .SetLogHeader((msg) => $"[{msg}]: ")
+                .SetTheme(theme)
+                .Apply();
+        }
 
 		private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
 			=> new CommandPipelineBuilder(app)
@@ -189,43 +254,26 @@
 
 		public static async Task LoadServicesAsync(MikiAppBuilder app)
 		{
-			var theme = new LogTheme();
-			theme.SetColor(
-				LogLevel.Information,
-				new LogColor
-				{
-					Foreground = ConsoleColor.Cyan,
-					Background = 0
-				});
-			theme.SetColor(
-				LogLevel.Error,
-				new LogColor
-				{
-					Foreground = ConsoleColor.Red,
-					Background = 0
-				});
-			theme.SetColor(
-				LogLevel.Warning,
-				new LogColor
-				{
-					Foreground = ConsoleColor.Yellow,
-					Background = 0
-				});
+			var config = await Config.GetOrInsertAsync(
+                Environment.GetEnvironmentVariable(Constants.ENV_ConStr) ?? null, 
+                Environment.GetEnvironmentVariable(Constants.ENV_ConfId) ?? null);
 
-			new LogBuilder()
-				.AddLogEvent((msg, lvl) =>
-				{
-					if(lvl >= Global.Config.LogLevel)
-						Console.WriteLine(msg);
-				})
-				.SetLogHeader((msg) => $"[{msg}]: ")
-				.SetTheme(theme)
-				.Apply();
+            if (config == null)
+            {
+                return;
+            }
 
-			var cache = new StackExchangeCacheClient(
-				new ProtobufSerializer(),
-				await ConnectionMultiplexer.ConnectAsync(Global.Config.RedisConnectionString)
-			); 
+            app.Services.AddSingleton(config);
+
+            if (string.IsNullOrWhiteSpace(config.Token))
+            {
+                return;
+            }
+
+            var cache = new StackExchangeCacheClient(
+                new ProtobufSerializer(),
+                await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString)
+            );
 
 			// Setup Redis
 			{
@@ -234,52 +282,63 @@
 			}
 
 			// Setup Entity Framework
-			{
-				app.Services.AddDbContext<MikiDbContext>(x
-					=> x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
-				app.Services.AddDbContext<DbContext, MikiDbContext>(x
-					=> x.UseNpgsql(Global.Config.ConnString, b => b.MigrationsAssembly("Miki.Bot.Models")));
-			}
+            {
+                app.Services.AddDbContext<MikiDbContext>(x
+                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
+                app.Services.AddDbContext<DbContext, MikiDbContext>(x
+                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
+            }
 
-			// Setup Miki API
-			{
-				if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiBaseUrl) 
-                   && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
-				{
-					app.AddSingletonService(new MikiApiClient(Global.Config.MikiApiKey));
-				}
-				else
-				{
-					Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
-				}
-			}
+            // Setup Miki API
+            {
+                if (!string.IsNullOrWhiteSpace(config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(config.MikiApiKey))
+                {
+                    app.AddSingletonService(new MikiApiClient(config.MikiApiKey));
+                }
+                else
+                {
+                    Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
+                }
+            }
+
+            // Setup Amazon CDN Client
+            {
+                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) && !string.IsNullOrWhiteSpace(config.CdnSecretKey) && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
+                {
+                    app.AddSingletonService(new AmazonS3Client(config.CdnAccessKey, config.CdnSecretKey, new AmazonS3Config()
+                    {
+                        ServiceURL = config.CdnRegionEndpoint
+                    }));
+                }
+            }
 
 			// Setup Discord
 			{
 				app.AddSingletonService<IApiClient>(
-                    s => new DiscordApiClient(Global.Config.Token, s.GetService<ICacheClient>()));
+                    s => new DiscordApiClient(config.Token, s.GetService<ICacheClient>()));
 
 				IGateway gateway = null;
-				if(Global.Config.SelfHosted)
+                if (bool.Parse(Environment.GetEnvironmentVariable(Constants.ENV_SelfHost).ToLowerInvariant()))
 				{
-					var gatewayConfig = new GatewayProperties();
-					gatewayConfig.ShardCount = 1;
-					gatewayConfig.ShardId = 0;
-					gatewayConfig.Token = Global.Config.Token;
-					gatewayConfig.Compressed = true;
-					gatewayConfig.AllowNonDispatchEvents = true;
-					gateway = new GatewayCluster(gatewayConfig);
+                    gateway = new GatewayCluster(new GatewayProperties
+                    {
+                        ShardCount = 1,
+                        ShardId = 0,
+                        Token = config.Token,
+                        Compressed = true,
+                        AllowNonDispatchEvents = true
+                    });
 				}
 				else
 				{
-					gateway = new RetsuConsumer(new ConsumerConfiguration
-					{
-						ConnectionString = new Uri(Global.Config.RabbitUrl.ToString()),
-						QueueName = "gateway",
-						ExchangeName = "consumer",
-						ConsumerAutoAck = false,
-						PrefetchCount = 25,
-					});
+                    gateway = new RetsuConsumer(new ConsumerConfiguration
+                    {
+                        ConnectionString = new Uri(config.RabbitUrl.ToString()),
+                        QueueName = "gateway",
+                        ExchangeName = "consumer",
+                        ConsumerAutoAck = false,
+                        PrefetchCount = 25,
+                    });
 				}
 				app.AddSingletonService(gateway);
 
@@ -297,14 +356,14 @@
 				app.AddSingletonService(new ConfigurationManager());
 				app.AddSingletonService(new BackgroundStore());
 
-				if(!string.IsNullOrWhiteSpace(Global.Config.SharpRavenKey))
-				{
-					app.AddSingletonService(new RavenClient(Global.Config.SharpRavenKey));
-				}
-				else
-				{
-					Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
-				}
+                if (!string.IsNullOrWhiteSpace(config.SharpRavenKey))
+                {
+                    app.AddSingletonService(new RavenClient(config.SharpRavenKey));
+                }
+                else
+                {
+                    Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
+                }
 
                 app.AddSingletonService<AccountService>();
                 app.AddSingletonService<AchievementService>();

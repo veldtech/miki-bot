@@ -1,14 +1,20 @@
-﻿using Miki.Accounts.Achievements;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts.Achievements;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
-using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Helpers;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Events;
+using Miki.Localization.Exceptions;
 using Miki.Logging;
+using Miki.Models;
 using Miki.Modules.Donator.Exceptions;
+using Miki.Rest;
+using Miki.Helpers;
 using System;
 using System.IO;
 using System.Linq;
@@ -22,18 +28,18 @@ namespace Miki.Modules.Donator
 	{
 		private readonly Net.Http.HttpClient client;
 
-		public DonatorModule()
+		public DonatorModule(Config config)
 		{
-			if(!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl)
-				&& !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
-			{
-				client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-					.AddHeader("Authorization", Global.Config.MikiApiKey);
-			}
-			else
-			{
-				Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
-			}
+            if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
+                && !string.IsNullOrWhiteSpace(config.MikiApiKey))
+            {
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
+            }
+            else
+            {
+                Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
+            }
 		}
 
 		[Command("sellkey")]

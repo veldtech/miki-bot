@@ -9,12 +9,12 @@ namespace Miki.Accounts.Achievements.Objects
 	{
 		public Func<AchievementPacket, ValueTask<bool>> CheckAchievement;
 
-		public string Name { get; set; }
+        public string Name { get; set; }
 
-		public string ParentName { get; set; }
-		public string Icon { get; set; }
+        public string ParentName { get; set; }
+        public string Icon { get; set; }
 
-		public int Points { get; set; }
+        public int Points { get; set; }
 
         public async ValueTask<bool> CheckAsync(BasePacket packet)
 		{

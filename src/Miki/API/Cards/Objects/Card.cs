@@ -16,8 +16,8 @@ namespace Miki.API.Cards.Objects
 		[ProtoMember(3)]
 		public bool isPublic;
 
-		public Card()
-		{ }
+        public Card()
+        { }
 		public Card(CardType t, CardValue v)
 		{
 			type = t;
@@ -26,7 +26,7 @@ namespace Miki.API.Cards.Objects
 
 		public override string ToString()
 		{
-			if(!isPublic)
+			if (!isPublic)
 			{
 				return "??";
 			}
@@ -108,15 +108,14 @@ namespace Miki.API.Cards.Objects
 				break;
 
 				case CardValue.KINGS:
-				{
-					output += "K";
-				}
-				break;
+                {
+                    output += "K";
+                } break;
 
-				default:
-				{
-					throw new InvalidOperationException($"{value} is not a valid card");
-				}
+                default:
+                {
+                    throw new InvalidOperationException($"{value} is not a valid card");
+                }
 			}
 			return output;
 		}

@@ -192,21 +192,20 @@
                         }
                         else
                         {
-                            currentLocalExp = await cache.GetAsync<int>(key)
-                                .ConfigureAwait(false);
+                            currentLocalExp = await cache.GetAsync<int>(key);
                         }
 
-                        int bonusExp = MikiRandom.Next(1, 4);
+                        var bonusExp = MikiRandom.Next(1, 4);
                         currentLocalExp += bonusExp;
 
-                        if(!this._experienceQueue.ContainsKey(e.Author.Id))
+                        if (!experienceQueue.ContainsKey(e.Author.Id))
                         {
-                            ExperienceAdded expObject = new ExperienceAdded
+                            var expObject = new ExperienceAdded()
                             {
                                 UserId = e.Author.Id.ToDbLong(),
                                 GuildId = channel.GuildId.ToDbLong(),
                                 Experience = bonusExp,
-                                Name = e.Author.Username
+                                Name = e.Author.Username,
                             };
 
                             this._experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
@@ -290,15 +289,13 @@
 
             List<string> userParameters = new List<string>();
 
-            for(int i = 0; i < this._experienceQueue.Values.Count; i++)
+            for (int i = 0; i < experienceQueue.Values.Count; i++)
             {
-                userQuery.Add(
-                    $"({this._experienceQueue.Values.ElementAt(i).UserId}, @p{i}, {this._experienceQueue.Values.ElementAt(i).Experience})");
-                userParameters.Add(this._experienceQueue.Values.ElementAt(i).Name ?? "name failed to set?");
+                userQuery.Add($"({experienceQueue.Values.ElementAt(i).UserId}, @p{i}, {experienceQueue.Values.ElementAt(i).Experience})");
+                userParameters.Add(experienceQueue.Values.ElementAt(i).Name ?? "name failed to set?");
             }
 
-            string y =
-                "),upsert as ( update \"dbo\".\"Users\" m set \"Total_Experience\" = \"Total_Experience\" + nv.experience FROM new_values nv WHERE m.\"Id\" = nv.id RETURNING m.*) INSERT INTO \"dbo\".\"Users\"(\"Id\", \"Name\", \"Total_Experience\") SELECT id, name, experience FROM new_values WHERE NOT EXISTS(SELECT * FROM upsert up WHERE up.\"Id\" = new_values.id);";
+            string y = $"),upsert as ( update \"dbo\".\"Users\" m set \"Total_Experience\" = \"Total_Experience\" + nv.experience FROM new_values nv WHERE m.\"Id\" = nv.id RETURNING m.*) INSERT INTO \"dbo\".\"Users\"(\"Id\", \"Name\", \"Total_Experience\") SELECT id, name, experience FROM new_values WHERE NOT EXISTS(SELECT * FROM upsert up WHERE up.\"Id\" = new_values.id);";
 
             string query = x + string.Join(",", userQuery) + y;
 

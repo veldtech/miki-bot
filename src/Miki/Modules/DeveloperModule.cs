@@ -1,5 +1,4 @@
-﻿
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
     using Miki.Bot.Models;
     using Miki.Cache;
@@ -26,7 +25,7 @@ namespace Miki.Modules
         [RequiresScope("developer")]
 		public async Task IdentifyEmojiAsync(IContext e)
 		{
-			if(DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
+			if (DiscordEmoji.TryParse(e.GetArgumentPack().Pack.TakeAll(), out var emote))
 			{
 				await new EmbedBuilder()
 					.SetTitle("Emoji Identified!")
@@ -36,16 +35,16 @@ namespace Miki.Modules
 					.AddInlineField("Code", "`" + emote.ToString() + "`")
 					//.SetThumbnail(emote.Url)
 					.ToEmbed()
-					.QueueAsync(e.GetChannel());
+                    .QueueAsync(e.GetChannel());
 			}
-		}
+        }
 
 		[Command("say")]
         [RequiresScope("developer")]
 		public Task SayAsync(IContext e)
 		{
 			e.GetChannel()
-				.QueueMessage(e.GetArgumentPack().Pack.TakeAll());
+                .QueueMessage(e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
@@ -58,17 +57,17 @@ namespace Miki.Modules
 
 			b.SetDescription(text);
 
-			await b.ToEmbed().QueueAsync(e.GetChannel());
+            await b.ToEmbed().QueueAsync(e.GetChannel());
 		}
 
 		[Command("identifyuser")]
         [RequiresScope("developer")]
 		public async Task IdenUserAsync(IContext e)
 		{
-			var api = e.GetService<IApiClient>();
-			var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
+            var api = e.GetService<IApiClient>();
+            var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
-			if(user.Id == 0)
+			if (user.Id == 0)
 			{
 				await e.GetChannel().SendMessageAsync($"none.");
 			}
@@ -80,10 +79,10 @@ namespace Miki.Modules
         [RequiresScope("developer")]
 		public async Task IdenGuildUserAsync(IContext e)
 		{
-			var api = e.GetService<IApiClient>();
-			var user = await api.GetGuildUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
+            var api = e.GetService<IApiClient>();
+            var user = await api.GetGuildUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
 
-			if(user == null)
+			if (user == null)
 			{
 				await e.GetChannel().SendMessageAsync($"none.");
 			}
@@ -133,10 +132,10 @@ namespace Miki.Modules
         [RequiresScope("developer")]
 		public async Task IdenGuildChannelAsync(IContext e)
 		{
-			var api = e.GetService<IApiClient>();
-			var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
+            var api = e.GetService<IApiClient>();
+            var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
-			if(user == null)
+			if (user == null)
 			{
 				await e.GetChannel().SendMessageAsync($"none.");
 			}
@@ -181,41 +180,41 @@ namespace Miki.Modules
 
 			ActivityType type = arg.FromEnum(ActivityType.Playing);
 
-			string text = e.GetArgumentPack().Pack.TakeAll();
+            string text = e.GetArgumentPack().Pack.TakeAll();
 			string url = null;
 
-			if(type == ActivityType.Streaming)
+			if (type == ActivityType.Streaming)
 				url = "https://twitch.tv/velddev";
 
-			for(int i = 0; i < Global.Config.ShardCount; i++)
+			for (int i = 0; i < Global.Config.ShardCount; i++)
 			{
 				await e.GetService<DiscordClient>()
-					.SetGameAsync(i, new DiscordStatus
+                    .SetGameAsync(i, new DiscordStatus
+				{
+					Game = new Discord.Common.Packets.DiscordActivity
 					{
-						Game = new Discord.Common.Packets.DiscordActivity
-						{
-							Name = text,
-							Url = url,
-							Type = type
-						},
-						Status = "online",
-						IsAFK = false
-					});
-			}
+						Name = text,
+						Url = url,
+						Type = type
+					},
+					Status = "online",
+					IsAFK = false
+				});
+			}*/
 		}
 
 		[Command("ignore")]
         [RequiresScope("developer")]
         public Task IgnoreIdAsync(IContext e)
 		{
-			if(e.GetArgumentPack().Take(out ulong id))
-			{
-				var userFilter = e.GetService<FilterPipelineStage>()
-					.GetFilterOfType<UserFilter>();
-				userFilter.Users.Add((long)id);
+            if (e.GetArgumentPack().Take(out ulong id))
+            {
+                var userFilter = e.GetService<FilterPipelineStage>()
+                    .GetFilterOfType<UserFilter>();
+                userFilter.Users.Add((long)id);
 
-				e.GetChannel().QueueMessage(":ok_hand:");
-			}
+                e.GetChannel().QueueMessage(":ok_hand:");
+            }
 			return Task.CompletedTask;
 		}
 
