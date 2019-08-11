@@ -19,7 +19,7 @@ namespace Miki.Modules.Overwatch.Objects
 		{
 			_achievements = response.achievements;
 
-			if (competitive)
+			if(competitive)
 			{
 				isCompetitive = competitive;
 
@@ -32,7 +32,7 @@ namespace Miki.Modules.Overwatch.Objects
 				_stats = response.stats.quickplay;
 			}
 
-			if (_stats == null)
+			if(_stats == null)
 			{
 				isValid = false;
 				return;

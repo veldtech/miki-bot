@@ -10,7 +10,7 @@ namespace Miki.API
 
 		public int AddTask(ulong sessionId, Action<T> fn, T context, TimeSpan atTime, bool repeated = false)
 		{
-			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
+			if(scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				return container.CreateNewReminder(fn, context, atTime, repeated);
 			}
@@ -25,10 +25,10 @@ namespace Miki.API
 
 		public TaskInstance<T> CancelReminder(ulong sessionId, int reminderId)
 		{
-			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
+			if(scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				var instance = container.GetReminder(reminderId);
-				if (instance != null)
+				if(instance != null)
 				{
 					instance.Cancel();
 					return instance;
@@ -40,7 +40,7 @@ namespace Miki.API
 
 		public TaskInstance<T> GetInstance(ulong sessionId, int id)
 		{
-			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
+			if(scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				return container.GetReminder(id);
 			}
@@ -49,7 +49,7 @@ namespace Miki.API
 
 		public List<TaskInstance<T>> GetAllInstances(ulong sessionId)
 		{
-			if (scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
+			if(scheduledTasks.TryGetValue(sessionId, out TaskContainer<T> container))
 			{
 				return container.GetAllReminders();
 			}

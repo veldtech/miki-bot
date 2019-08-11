@@ -1,8 +1,6 @@
 ﻿using Miki.Bot.Models;
 using Miki.Discord.Common;
 using Miki.Framework.Commands;
-using Miki.Framework.Events;
-using Miki.Models;
 
 namespace Miki.Accounts.Achievements.Objects
 {

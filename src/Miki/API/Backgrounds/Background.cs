@@ -11,7 +11,7 @@ namespace Miki.Models.Objects.Backgrounds
 
 		public BackgroundStore()
 		{
-			if (File.Exists("./resources/backgrounds.json"))
+			if(File.Exists("./resources/backgrounds.json"))
 			{
 				Backgrounds = JsonConvert.DeserializeObject<List<Background>>(File.ReadAllText("./resources/backgrounds.json"));
 			}

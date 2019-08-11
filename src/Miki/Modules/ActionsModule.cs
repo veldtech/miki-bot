@@ -1,9 +1,6 @@
 ﻿using Miki.Discord;
-using Miki.Discord.Common;
 using Miki.Framework;
-using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -11,8 +8,8 @@ namespace Miki.Modules
 	[Module("Actions")]
 	public class ActionsModule
 	{
-        readonly string askImage = "http://i.imgur.com/AHPnL.gif";
-        readonly string[] biteImages = new string[]
+		readonly string askImage = "http://i.imgur.com/AHPnL.gif";
+		readonly string[] biteImages = new string[]
 		{
 			"https://i.imgur.com/FlwJbPh.gif",
 			"https://i.imgur.com/opsXoPC.gif",
@@ -32,7 +29,7 @@ namespace Miki.Modules
 			"https://i.imgur.com/VKgFBJY.gif",
 			"https://i.imgur.com/r9QOkEA.gif"
 		};
-        readonly string[] cakeImages = new string[]
+		readonly string[] cakeImages = new string[]
 		{
 			"http://i.imgur.com/CYyrjRQ.gif",
 			"http://i.imgur.com/3nWbcNT.gif",
@@ -77,7 +74,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/DBAEo1L.gif",
 			"http://i.imgur.com/QSLpOIR.gif"
 		};
-        readonly string[] cuddleImages = new string[]
+		readonly string[] cuddleImages = new string[]
 		{
 			"http://i.imgur.com/xWTyaKY.gif",
 			"http://i.imgur.com/K4lYduH.gif",
@@ -88,8 +85,8 @@ namespace Miki.Modules
 			"http://i.imgur.com/guBWT22.gif",
 			"http://i.imgur.com/Asnv32U.gif"
 		};
-        readonly string[] hugImages = new string[]
-        {
+		readonly string[] hugImages = new string[]
+		{
 			"http://i.imgur.com/FvSnQs8.gif",
 			"http://i.imgur.com/rXEq7oU.gif",
 			"http://i.imgur.com/b6vVMQO.gif",
@@ -114,52 +111,52 @@ namespace Miki.Modules
 			"http://i.imgur.com/xWTyaKY.gif",
 			"http://i.imgur.com/MrEMpE6.gif",
 			"http://i.imgur.com/Y9sMTP4.gif"
-        };
-        readonly string[] glareImages = new string[]
-        {
-            "http://i.imgur.com/ba9Skjf.gif",
-            "http://i.imgur.com/V6oBWDn.gif",
-            "http://i.imgur.com/PWXcVQf.gif",
-            "http://i.imgur.com/nOwOSjA.gif",
-            "http://i.imgur.com/mG2Hm8s.gif",
-            "http://i.imgur.com/iiJCWns.gif",
-            "http://i.imgur.com/onUZvOi.gif",
-            "http://i.imgur.com/cZwkHOB.gif",
-            "http://i.imgur.com/uehetOS.gif",
-            "http://i.imgur.com/MAZIl3c.gif",
-            "http://i.imgur.com/C1u3GwL.gif",
-            "http://i.imgur.com/E7Nnian.gif",
-            "http://i.imgur.com/2RKfil2.gif",
-            "http://i.imgur.com/jcSpVTS.gif",
-            "http://i.imgur.com/r2X5YfC.gif",
-            "http://i.imgur.com/qGQry9o.gif",
-            "http://i.imgur.com/rRMUuQu.gif",
-            "http://i.imgur.com/v47st6k.gif",
-            "http://i.imgur.com/iiJCWns.gif",
-            "http://i.imgur.com/v47st6k.gif",
-            "http://i.imgur.com/VQpxVLE.gif",
-            "http://i.imgur.com/uu8cTZO.gif",
-            "http://i.imgur.com/i4l9F8R.gif",
-            "http://i.imgur.com/BXE2bKM.gif",
-            "http://i.imgur.com/PeVwwzy.gif",
-            "http://i.imgur.com/lvADpDY.gif",
-            "http://i.imgur.com/RovvrqD.gif",
-            "http://i.imgur.com/K40NP62.gif",
-            "http://i.imgur.com/mC3JYtl.gif",
-            "http://i.imgur.com/xQMxKTT.gif",
-            "http://i.imgur.com/2hWR6br.gif",
-            "http://i.imgur.com/UmhwZSk.gif",
-            "http://i.imgur.com/LIgO56g.gif",
-            "http://i.imgur.com/hRz09iS.gif",
-            "http://i.imgur.com/gBZJx5a.gif",
-            "http://i.imgur.com/cq9KBP6.gif",
-            "http://i.imgur.com/gIMc3iL.gif",
-            "http://i.imgur.com/UIUGfOn.gif",
-            "http://i.imgur.com/dNYBTp8.gif",
-            "http://i.imgur.com/xgb3wk2.gif",
-            "http://i.imgur.com/qzPYYsK.gif"
-        };
-        readonly string[] highFiveImages = new string[]
+		};
+		readonly string[] glareImages = new string[]
+		{
+			"http://i.imgur.com/ba9Skjf.gif",
+			"http://i.imgur.com/V6oBWDn.gif",
+			"http://i.imgur.com/PWXcVQf.gif",
+			"http://i.imgur.com/nOwOSjA.gif",
+			"http://i.imgur.com/mG2Hm8s.gif",
+			"http://i.imgur.com/iiJCWns.gif",
+			"http://i.imgur.com/onUZvOi.gif",
+			"http://i.imgur.com/cZwkHOB.gif",
+			"http://i.imgur.com/uehetOS.gif",
+			"http://i.imgur.com/MAZIl3c.gif",
+			"http://i.imgur.com/C1u3GwL.gif",
+			"http://i.imgur.com/E7Nnian.gif",
+			"http://i.imgur.com/2RKfil2.gif",
+			"http://i.imgur.com/jcSpVTS.gif",
+			"http://i.imgur.com/r2X5YfC.gif",
+			"http://i.imgur.com/qGQry9o.gif",
+			"http://i.imgur.com/rRMUuQu.gif",
+			"http://i.imgur.com/v47st6k.gif",
+			"http://i.imgur.com/iiJCWns.gif",
+			"http://i.imgur.com/v47st6k.gif",
+			"http://i.imgur.com/VQpxVLE.gif",
+			"http://i.imgur.com/uu8cTZO.gif",
+			"http://i.imgur.com/i4l9F8R.gif",
+			"http://i.imgur.com/BXE2bKM.gif",
+			"http://i.imgur.com/PeVwwzy.gif",
+			"http://i.imgur.com/lvADpDY.gif",
+			"http://i.imgur.com/RovvrqD.gif",
+			"http://i.imgur.com/K40NP62.gif",
+			"http://i.imgur.com/mC3JYtl.gif",
+			"http://i.imgur.com/xQMxKTT.gif",
+			"http://i.imgur.com/2hWR6br.gif",
+			"http://i.imgur.com/UmhwZSk.gif",
+			"http://i.imgur.com/LIgO56g.gif",
+			"http://i.imgur.com/hRz09iS.gif",
+			"http://i.imgur.com/gBZJx5a.gif",
+			"http://i.imgur.com/cq9KBP6.gif",
+			"http://i.imgur.com/gIMc3iL.gif",
+			"http://i.imgur.com/UIUGfOn.gif",
+			"http://i.imgur.com/dNYBTp8.gif",
+			"http://i.imgur.com/xgb3wk2.gif",
+			"http://i.imgur.com/qzPYYsK.gif"
+		};
+		readonly string[] highFiveImages = new string[]
 		{
 			"http://i.imgur.com/LOoXzd9.gif",
 			"http://i.imgur.com/Kwe6pAn.gif",
@@ -183,7 +180,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/ebQWKZU.gif",
 			"http://i.imgur.com/XYA8ET8.gif"
 		};
-        readonly string[] kissImages = new string[]
+		readonly string[] kissImages = new string[]
 		{
 			"http://i.imgur.com/QIPaYW3.gif",
 			"http://i.imgur.com/wx3WXZu.gif",
@@ -204,17 +201,17 @@ namespace Miki.Modules
 			"http://i.imgur.com/W9htMol.gif",
 			"http://i.imgur.com/IVOBC8p.gif"
 		};
-        readonly string[] lickImages = new string[]
+		readonly string[] lickImages = new string[]
 		{
 			"https://cdn.miki.ai/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
-            "https://cdn.miki.ai/images/2187d457-703a-43a0-93de-3304774f972f.gif",
+			"https://cdn.miki.ai/images/2187d457-703a-43a0-93de-3304774f972f.gif",
 			"https://cdn.miki.ai/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
 			"https://cdn.miki.ai/images/82b45d73-4b6a-4886-b79f-d43282193843.gif",
 			"https://cdn.miki.ai/images/c397769d-7563-43e1-a21e-e89498371bff.gif",
 			"https://cdn.miki.ai/images/f56b349d-507d-46df-849a-584b718c345c.gif",
-            "https://cdn.miki.ai/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
-        };
-        readonly string[] patImages = new string[]
+			"https://cdn.miki.ai/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
+		};
+		readonly string[] patImages = new string[]
 		{
 			"http://i.imgur.com/Y2DrXtT.gif",
 			"http://i.imgur.com/G7b4OnS.gif",
@@ -267,20 +264,20 @@ namespace Miki.Modules
 			"http://i.imgur.com/1mr4NWL.gif",
 			"http://i.imgur.com/wXw7IjY.gif"
 		};
-        readonly string[] pokeImages = new string[]
-        {
-	        "http://i.imgur.com/WG8EKwM.gif",
-	        "http://i.imgur.com/dfoxby7.gif",
-	        "http://i.imgur.com/TzD1Ngz.gif",
-	        "http://i.imgur.com/i1hwvQu.gif",
-	        "http://i.imgur.com/bStOFsM.gif",
-	        "http://i.imgur.com/1PBeB9H.gif",
-	        "http://i.imgur.com/3kerpju.gif",
-	        "http://i.imgur.com/uMBRFjX.gif",
-	        "http://i.imgur.com/YDJFoBV.gif",
-	        "http://i.imgur.com/urC9B1H.gif"
-        };
-        readonly string[] punchImages = new string[]
+		readonly string[] pokeImages = new string[]
+		{
+			"http://i.imgur.com/WG8EKwM.gif",
+			"http://i.imgur.com/dfoxby7.gif",
+			"http://i.imgur.com/TzD1Ngz.gif",
+			"http://i.imgur.com/i1hwvQu.gif",
+			"http://i.imgur.com/bStOFsM.gif",
+			"http://i.imgur.com/1PBeB9H.gif",
+			"http://i.imgur.com/3kerpju.gif",
+			"http://i.imgur.com/uMBRFjX.gif",
+			"http://i.imgur.com/YDJFoBV.gif",
+			"http://i.imgur.com/urC9B1H.gif"
+		};
+		readonly string[] punchImages = new string[]
 		{
 			"http://imgur.com/jVc3GGv.gif",
 			"http://imgur.com/iekwz4h.gif",
@@ -294,106 +291,106 @@ namespace Miki.Modules
 			"http://imgur.com/q7AmR8n.gif",
 			"http://imgur.com/pDohPrm.gif",
 		};
-        readonly string[] slapImages = new string[]
-        {
-	        "http://i.imgur.com/GQtzDsV.gif",
-	        "http://i.imgur.com/rk8eqnt.gif",
-	        "http://i.imgur.com/UnzGS24.gif",
-	        "http://i.imgur.com/CHbRGnV.gif",
-	        "http://i.imgur.com/DvwnC0r.gif",
-	        "http://i.imgur.com/Ksy8dvd.gif",
-	        "http://i.imgur.com/b75B4qM.gif",
-	        "http://i.imgur.com/d9thUdx.gif",
-	        "http://i.imgur.com/iekwz4h.gif",
-	        "http://i.imgur.com/q7AmR8n.gif",
-	        "http://i.imgur.com/pDohPrm.gif",
-        };
+		readonly string[] slapImages = new string[]
+		{
+			"http://i.imgur.com/GQtzDsV.gif",
+			"http://i.imgur.com/rk8eqnt.gif",
+			"http://i.imgur.com/UnzGS24.gif",
+			"http://i.imgur.com/CHbRGnV.gif",
+			"http://i.imgur.com/DvwnC0r.gif",
+			"http://i.imgur.com/Ksy8dvd.gif",
+			"http://i.imgur.com/b75B4qM.gif",
+			"http://i.imgur.com/d9thUdx.gif",
+			"http://i.imgur.com/iekwz4h.gif",
+			"http://i.imgur.com/q7AmR8n.gif",
+			"http://i.imgur.com/pDohPrm.gif",
+		};
 
 		[Command("ask")]
 		public async Task AskAsync(IContext e)
 			=> await QueueAction(e, "asks", askImage)
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
 		[Command("bite")]
 		public async Task BiteAsync(IContext e)
 			=> await QueueAction(e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("cake")]
+		[Command("cake")]
 		public async Task CakeAsync(IContext e)
 			=> await QueueAction(e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("cuddle")]
+		[Command("cuddle")]
 		public async Task CuddleAsync(IContext e)
 			=> await QueueAction(e, "cuddles", cuddleImages[MikiRandom.Next(cuddleImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("glare")]
+		[Command("glare")]
 		public async Task GlareAsync(IContext e)
 			=> await QueueAction(e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("highfive")]
+		[Command("highfive")]
 		public async Task HighFiveAsync(IContext e)
 			=> await QueueAction(e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("hug")]
+		[Command("hug")]
 		public async Task HugAsync(IContext e)
 			=> await QueueAction(e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("poke")]
+		[Command("poke")]
 		public async Task PokeAsync(IContext e)
 			=> await QueueAction(e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("punch")]
+		[Command("punch")]
 		public async Task PunchAsync(IContext e)
 			=> await QueueAction(e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("kiss")]
+		[Command("kiss")]
 		public async Task KissAsync(IContext e)
 			=> await QueueAction(e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("lick")]
+		[Command("lick")]
 		public async Task LickAsync(IContext e)
 			=> await QueueAction(e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("pat",  "pet" )]
+		[Command("pat", "pet")]
 		public async Task PetAsync(IContext e)
 			=> await QueueAction(e, "pats", patImages[MikiRandom.Next(patImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        [Command("slap")]
+		[Command("slap")]
 		public async Task SlapAsync(IContext e)
 			=> await QueueAction(e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
-                .ConfigureAwait(false);
+				.ConfigureAwait(false);
 
-        public async Task QueueAction(IContext e, string action, string imageUrl)
-        {
-            string username = (await e.GetGuild().GetSelfAsync()).Username;
+		public async Task QueueAction(IContext e, string action, string imageUrl)
+		{
+			string username = (await e.GetGuild().GetSelfAsync()).Username;
 
-            EmbedBuilder builder = new EmbedBuilder();
+			EmbedBuilder builder = new EmbedBuilder();
 
-            if (e.GetArgumentPack().CanTake)
-            {
-                builder.SetTitle($"{e.GetAuthor().Username} {action} {e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}");
-            }
-            else
-            {
-                builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
-            }
+			if(e.GetArgumentPack().CanTake)
+			{
+				builder.SetTitle($"{e.GetAuthor().Username} {action} {e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}");
+			}
+			else
+			{
+				builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
+			}
 
-            builder.SetImage(imageUrl);
+			builder.SetImage(imageUrl);
 
-            await builder.ToEmbed()
-                .QueueAsync(e.GetChannel())
-                .ConfigureAwait(false);
-        }
+			await builder.ToEmbed()
+				.QueueAsync(e.GetChannel())
+				.ConfigureAwait(false);
+		}
 	}
 }

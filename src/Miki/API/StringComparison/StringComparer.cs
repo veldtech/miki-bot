@@ -29,19 +29,19 @@ namespace Miki.API.StringComparison
 		{
 			List<StringComparison> differenceHeurList = new List<StringComparison>();
 
-			foreach (string c in allComparableStrings)
+			foreach(string c in allComparableStrings)
 			{
 				int difference = 0;
 
-				for (int i = 0; i < text.Length; i++)
+				for(int i = 0; i < text.Length; i++)
 				{
 					char typedChar = text.ToLower()[i];
 					bool found = false;
-					for (int j = 0; j < c.Length; j++)
+					for(int j = 0; j < c.Length; j++)
 					{
 						char actualChar = c.ToLower()[j];
 
-						if (typedChar == actualChar)
+						if(typedChar == actualChar)
 						{
 							difference += Math.Abs(i - j);
 							found = true;
@@ -49,7 +49,7 @@ namespace Miki.API.StringComparison
 						}
 					}
 
-					if (!found)
+					if(!found)
 					{
 						difference += 15;
 					}

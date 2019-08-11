@@ -1,20 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts.Achievements.Objects
+﻿namespace Miki.Accounts.Achievements.Objects
 {
-    public class MessageAchievement : IAchievement
-    {
-        public Func<MessageEventPacket, Task<bool>> CheckMessage;
+	using System;
+	using System.Threading.Tasks;
 
-        public string Name { get; set; }
-        public string ParentName { get; set; }
-        public string Icon { get; set; }
-        public int Points { get; set; }
+	public class MessageAchievement : IAchievement
+	{
+		public Func<MessageEventPacket, Task<bool>> CheckMessage;
 
-        public async Task<bool> CheckAsync(BasePacket packet)
-        {
-            return await CheckMessage(packet as MessageEventPacket);
-        }
-    }
+		public string Name { get; set; }
+		public string ParentName { get; set; }
+		public string Icon { get; set; }
+		public int Points { get; set; }
+
+		public async Task<bool> CheckAsync(BasePacket packet)
+		{
+			return await CheckMessage(packet as MessageEventPacket);
+		}
+	}
 }

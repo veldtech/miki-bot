@@ -6,14 +6,11 @@ using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
 using Miki.Helpers;
 using Miki.Localization;
-using Miki.Models;
 using Miki.Modules.Gambling.Exceptions;
 using Miki.Modules.Gambling.Managers;
 using System;
@@ -38,7 +35,7 @@ namespace Miki.Modules
 
                 float rewardMultiplier = 1f;
 
-                if (e.GetArgumentPack().Pack.Length < 2)
+                if(e.GetArgumentPack().Pack.Length < 2)
                 {
                     await e.ErrorEmbed("You need to choose a weapon!")
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -50,7 +47,7 @@ namespace Miki.Modules
 
                 e.GetArgumentPack().Take(out string weapon);
 
-                if (!rps.TryParse(weapon, out RPSWeapon playerWeapon))
+                if(!rps.TryParse(weapon, out RPSWeapon playerWeapon))
                 {
                     await resultMessage.SetDescription("Invalid weapon!").ToEmbed()
                         .QueueAsync(e.GetChannel());
@@ -61,11 +58,11 @@ namespace Miki.Modules
 
                 resultMessage.SetDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
 
-                switch (rps.CalculateVictory(playerWeapon, botWeapon))
+                switch(rps.CalculateVictory(playerWeapon, botWeapon))
                 {
                     case RPSManager.VictoryStatus.WIN:
                     {
-                        if (user != null)
+                        if(user != null)
                         {
                             await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.GetChannel());
                             await context.SaveChangesAsync();
@@ -76,7 +73,7 @@ namespace Miki.Modules
 
                     case RPSManager.VictoryStatus.LOSE:
                     {
-                        if (user != null)
+                        if(user != null)
                         {
                             user.RemoveCurrency(bet);
                             await context.SaveChangesAsync();
@@ -103,7 +100,7 @@ namespace Miki.Modules
         {
             [Command]
             public async Task BlackjackAsync(IContext e)
-            {            
+            {
                 await new EmbedBuilder()
                     .SetTitle("🎲 Blackjack")
                     .SetColor(234, 89, 110)
@@ -122,7 +119,7 @@ namespace Miki.Modules
                 var context = e.GetService<MikiDbContext>();
 
                 var user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
-                if (user == null)
+                if(user == null)
                 {
                     return;
                 }
@@ -130,9 +127,9 @@ namespace Miki.Modules
                 int bet = ValidateBet(e, user);
 
                 user.RemoveCurrency(bet);
-                await context.SaveChangesAsync();       
+                await context.SaveChangesAsync();
 
-                if (await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}"))
+                if(await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}"))
                 {
                     await e.ErrorEmbedResource(new LanguageResource("blackjack_session_exists"))
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -173,25 +170,25 @@ namespace Miki.Modules
 
                 bm.DealTo(Player);
 
-                if (bm.Worth(Player) > 21)
+                if(bm.Worth(Player) > 21)
                 {
-                    await OnBlackjackDead(e, bm);
+                    await OnBlackjackDeadAsync(e, bm);
                 }
                 else
                 {
-                    if (Player.Hand.Count == 5)
+                    if(Player.Hand.Count == 5)
                     {
                         await OnBlackjackHoldAsync(e);
                         return;
                     }
-                    else if (bm.Worth(Player) == 21 && bm.Worth(Dealer) != 21)
+                    else if(bm.Worth(Player) == 21 && bm.Worth(Dealer) != 21)
                     {
-                        await OnBlackjackWin(e, bm);
+                        await OnBlackjackWinAsync(e, bm);
                         return;
                     }
-                    else if (bm.Worth(Dealer) == 21 && bm.Worth(Player) != 21)
+                    else if(bm.Worth(Dealer) == 21 && bm.Worth(Player) != 21)
                     {
-                        await OnBlackjackDead(e, bm);
+                        await OnBlackjackDeadAsync(e, bm);
                         return;
                     }
 
@@ -209,8 +206,8 @@ namespace Miki.Modules
             {
                 var cache = e.GetService<ICacheClient>();
                 BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
-                    cache, 
-                    e.GetChannel().Id, 
+                    cache,
+                    e.GetChannel().Id,
                     e.GetAuthor().Id);
 
                 CardHand Player = bm.GetPlayer(e.GetAuthor().Id);
@@ -220,46 +217,46 @@ namespace Miki.Modules
 
                 Dealer.Hand.ForEach(x => x.isPublic = true);
 
-                while (true)
+                while(true)
                 {
-                    if (bm.Worth(Dealer) >= Math.Max(bm.Worth(Player), 17))
+                    if(bm.Worth(Dealer) >= Math.Max(bm.Worth(Player), 17))
                     {
-                        if (charlie)
+                        if(charlie)
                         {
-                            if (Dealer.Hand.Count == 5)
+                            if(Dealer.Hand.Count == 5)
                             {
-                                if (bm.Worth(Dealer) == bm.Worth(Player))
+                                if(bm.Worth(Dealer) == bm.Worth(Player))
                                 {
-                                    await OnBlackjackDraw(e, bm);
+                                    await OnBlackjackDrawAsync(e, bm);
                                     return;
                                 }
-                                await OnBlackjackDead(e, bm);
+                                await OnBlackjackDeadAsync(e, bm);
                                 return;
                             }
                         }
                         else
                         {
-                            if (bm.Worth(Dealer) == bm.Worth(Player))
+                            if(bm.Worth(Dealer) == bm.Worth(Player))
                             {
-                                await OnBlackjackDraw(e, bm);
+                                await OnBlackjackDrawAsync(e, bm);
                                 return;
                             }
-                            await OnBlackjackDead(e, bm);
+                            await OnBlackjackDeadAsync(e, bm);
                             return;
                         }
                     }
 
                     bm.DealTo(Dealer);
 
-                    if (bm.Worth(Dealer) > 21)
+                    if(bm.Worth(Dealer) > 21)
                     {
-                        await OnBlackjackWin(e, bm);
+                        await OnBlackjackWinAsync(e, bm);
                         return;
                     }
                 }
             }
 
-            private async Task OnBlackjackDraw(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackDrawAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -268,7 +265,7 @@ namespace Miki.Modules
                 var context = e.GetService<MikiDbContext>();
 
                 user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
-                if (user != null)
+                if(user != null)
                 {
                     await user.AddCurrencyAsync(bm.Bet, e.GetChannel());
                     await context.SaveChangesAsync();
@@ -293,7 +290,7 @@ namespace Miki.Modules
                 await cache.RemoveAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}");
             }
 
-            private async Task OnBlackjackDead(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackDeadAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -318,7 +315,7 @@ namespace Miki.Modules
 
             }
 
-            private async Task OnBlackjackWin(IContext e, BlackjackManager bm)
+            private async Task OnBlackjackWinAsync(IContext e, BlackjackManager bm)
             {
                 var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
@@ -330,7 +327,7 @@ namespace Miki.Modules
 
                 user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
 
-                if (user != null)
+                if(user != null)
                 {
                     await user.AddCurrencyAsync(bm.Bet * 2, e.GetChannel());
 
@@ -355,7 +352,7 @@ namespace Miki.Modules
             User u = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
             int bet = ValidateBet(e, u, 10000);
 
-            if (e.GetArgumentPack().Pack.Length < 2)
+            if(e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed("Please pick either `heads` or `tails`!")
                     .ToEmbed().QueueAsync(e.GetChannel());
@@ -366,16 +363,16 @@ namespace Miki.Modules
 
             int pickedSide = -1;
 
-            if (char.ToLower(sideParam[0]) == 'h')
+            if(char.ToLower(sideParam[0]) == 'h')
             {
                 pickedSide = 1;
             }
-            else if (char.ToLower(sideParam[0]) == 't')
+            else if(char.ToLower(sideParam[0]) == 't')
             {
                 pickedSide = 0;
             }
 
-            if (pickedSide == -1)
+            if(pickedSide == -1)
             {
                 await e.ErrorEmbed("This is not a valid option!")
                     .ToEmbed().QueueAsync(e.GetChannel());
@@ -385,9 +382,9 @@ namespace Miki.Modules
             string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
             string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
 
-            if (e.GetArgumentPack().Peek(out string bonus))
+            if(e.GetArgumentPack().Peek(out string bonus))
             {
-                if (bonus == "-bonus")
+                if(bonus == "-bonus")
                 {
                     headsUrl = "https://cdn.miki.ai/commands/miki-secret-heads.png";
                     tailsUrl = "https://cdn.miki.ai/commands/miki-secret-tails.png";
@@ -398,7 +395,7 @@ namespace Miki.Modules
             string imageUrl = side == 1 ? headsUrl : tailsUrl;
 
             bool win = (side == pickedSide);
-            if (!win)
+            if(!win)
             {
                 u.RemoveCurrency(bet);
             }
@@ -431,11 +428,11 @@ namespace Miki.Modules
             var context = e.GetService<MikiDbContext>();
             if(context == null)
             {
-                
+
             }
 
             User u = await context.Users.FindAsync(e.GetAuthor().Id);
-            int bet = ValidateBet(e, u, 99999);     
+            int bet = ValidateBet(e, u, 99999);
             int moneyReturned = 0;
 
             string[] objects = {
@@ -453,7 +450,7 @@ namespace Miki.Modules
             EmbedBuilder embed = new EmbedBuilder()
                 .SetAuthor(
                     $"{locale.GetString("miki_module_fun_slots_header")} | {e.GetAuthor().Username}",
-                    e.GetAuthor().GetAvatarUrl(), 
+                    e.GetAuthor().GetAvatarUrl(),
                     "https://patreon.com/mikibot");
 
             string[] objectsChosen = {
@@ -464,9 +461,9 @@ namespace Miki.Modules
 
             Dictionary<string, int> score = new Dictionary<string, int>();
 
-            foreach (string o in objectsChosen)
+            foreach(string o in objectsChosen)
             {
-                if (score.ContainsKey(o))
+                if(score.ContainsKey(o))
                 {
                     score[o]++;
                     continue;
@@ -474,93 +471,93 @@ namespace Miki.Modules
                 score.Add(o, 1);
             }
 
-            if (score.ContainsKey("🍒"))
+            if(score.ContainsKey("🍒"))
             {
-                if (score["🍒"] == 2)
+                if(score["🍒"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 0.25f);
                 }
-                else if (score["🍒"] == 3)
+                else if(score["🍒"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 3f);
                 }
             }
-            if (score.ContainsKey("🍊"))
+            if(score.ContainsKey("🍊"))
             {
-                if (score["🍊"] == 2)
+                if(score["🍊"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 0.5f);
                 }
-                else if (score["🍊"] == 3)
+                else if(score["🍊"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 5f);
                 }
             }
-            if (score.ContainsKey("🍓"))
+            if(score.ContainsKey("🍓"))
             {
-                if (score["🍓"] == 2)
+                if(score["🍓"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 0.75f);
                 }
-                else if (score["🍓"] == 3)
+                else if(score["🍓"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 7f);
                 }
             }
-            if (score.ContainsKey("🍍"))
+            if(score.ContainsKey("🍍"))
             {
-                if (score["🍍"] == 2)
+                if(score["🍍"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 1f);
                 }
-                if (score["🍍"] == 3)
+                if(score["🍍"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 10f);
                 }
             }
-            if (score.ContainsKey("🍇"))
+            if(score.ContainsKey("🍇"))
             {
-                if (score["🍇"] == 2)
+                if(score["🍇"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 2f);
                 }
-                if (score["🍇"] == 3)
+                if(score["🍇"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 15f);
                 }
             }
-            if (score.ContainsKey("🍉"))
+            if(score.ContainsKey("🍉"))
             {
-                if (score["🍉"] == 2)
+                if(score["🍉"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 3f);
                 }
-                if (score["🍉"] == 3)
+                if(score["🍉"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 25f);
                 }
             }
-            if (score.ContainsKey("⭐"))
+            if(score.ContainsKey("⭐"))
             {
-                if (score["⭐"] == 2)
+                if(score["⭐"] == 2)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 7f);
                 }
-                if (score["⭐"] == 3)
+                if(score["⭐"] == 3)
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 75f);
 
                     await AchievementManager.Instance
                         .GetContainerById("slots")
                         .CheckAsync(new BasePacket()
-                    {
-                        discordChannel = e.GetChannel() as IDiscordTextChannel,
-                        discordUser = e.GetAuthor()
-                    });
+                        {
+                            discordChannel = e.GetChannel() as IDiscordTextChannel,
+                            discordUser = e.GetAuthor()
+                        });
                 }
             }
 
-            if (moneyReturned == 0)
+            if(moneyReturned == 0)
             {
                 embed.AddField(
                     locale.GetString("miki_module_fun_slots_lose_header"),
@@ -668,33 +665,33 @@ namespace Miki.Modules
 
         public static int ValidateBet(IContext e, User user, int maxBet = 1000000)
         {
-            if (user == null)
+            if(user == null)
             {
                 throw new UserNullException();
             }
 
-            if (e.GetArgumentPack().Take(out int bet))
+            if(e.GetArgumentPack().Take(out int bet))
             {
             }
-            else if (e.GetArgumentPack().Take(out string arg))
+            else if(e.GetArgumentPack().Take(out string arg))
             {
-                if (IsValidBetAll(arg))
+                if(IsValidBetAll(arg))
                 {
                     bet = Math.Min(user.Currency, maxBet);
                 }
             }
 
-            if (bet <= 0)
+            if(bet <= 0)
             {
                 throw new ArgumentLessThanZeroException();
             }
 
-            if (bet > user.Currency)
+            if(bet > user.Currency)
             {
                 throw new InsufficientCurrencyException(user.Currency, bet);
             }
 
-            if (bet > maxBet)
+            if(bet > maxBet)
             {
                 throw new BetLimitOverflowException();
             }
@@ -709,4 +706,3 @@ namespace Miki.Modules
         }
     }
 }
- 

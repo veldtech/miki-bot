@@ -18,7 +18,7 @@ namespace Miki.API
 		public MikiApiClient(string token)
 		{
 			_client = new HttpClient(_baseUrl);
-            _client.AddHeader("Authorization", "Bearer " + token);
+			_client.AddHeader("Authorization", "Bearer " + token);
 		}
 
 		/// <summary>
@@ -35,17 +35,17 @@ namespace Miki.API
 		/// <param name="options">Leaderboards Options Object</param>
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
 			=> JsonConvert.DeserializeObject<LeaderboardsObject>(
-                (await _client.GetAsync(BuildLeaderboardsRoute(options))).Body);
+				(await _client.GetAsync(BuildLeaderboardsRoute(options))).Body);
 
-        public async Task<UserInventory> GetUserInventoryAsync(long id)
-            => JsonConvert.DeserializeObject<UserInventory>(
-                (await _client.GetAsync($"users/{id}/inventory")).Body);
+		public async Task<UserInventory> GetUserInventoryAsync(long id)
+			=> JsonConvert.DeserializeObject<UserInventory>(
+				(await _client.GetAsync($"users/{id}/inventory")).Body);
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
 				.Append("/leaderboards");
 
-			if (options.GuildId.HasValue)
+			if(options.GuildId.HasValue)
 			{
 				sb.Append($"/{options.GuildId}");
 			}

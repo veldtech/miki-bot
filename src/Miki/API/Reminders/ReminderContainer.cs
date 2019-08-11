@@ -23,14 +23,14 @@ namespace Miki.API.Reminder
 		public int CreateNewReminder(Action<T> fn, T context, TimeSpan at, bool repeated)
 		{
 			int? id = GetRandomKey();
-			if (id == null)
+			if(id == null)
 			{
 				return -1;
 			}
 
 			TaskInstance<T> reminder = new TaskInstance<T>(id.GetValueOrDefault(), this, fn, context);
 
-			if (repeated)
+			if(repeated)
 			{
 				reminder.RepeatReminder = true;
 			}
@@ -50,7 +50,7 @@ namespace Miki.API.Reminder
 
 		public TaskInstance<T> GetReminder(int id)
 		{
-			if (instances.TryGetValue(id, out TaskInstance<T> value))
+			if(instances.TryGetValue(id, out TaskInstance<T> value))
 			{
 				return value;
 			}
@@ -65,12 +65,12 @@ namespace Miki.API.Reminder
 		private int? GetRandomKey()
 		{
 			List<int> freeIds = new List<int>();
-			for (int i = 1; i < 1000; i++)
+			for(int i = 1; i < 1000; i++)
 			{
 				freeIds.Add(i);
 			}
 			freeIds.RemoveAll(x => instances.ContainsKey(x));
-			if (freeIds.Count > 0)
+			if(freeIds.Count > 0)
 			{
 				return freeIds[random.Next(0, freeIds.Count)];
 			}

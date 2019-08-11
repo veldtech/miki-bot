@@ -1,7 +1,4 @@
-﻿using Miki.Discord.Common;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts
+﻿namespace Miki.Accounts
 {
 	internal class EmojiBar
 	{
@@ -27,11 +24,11 @@ namespace Miki.Accounts
 			int iteration = MaxValue / Width;
 			int currentIteration = iteration;
 
-			for (int i = 0; i < Width; i++)
+			for(int i = 0; i < Width; i++)
 			{
 				output += (currentValue >= currentIteration)
-                    ? ValueOn.GetAppropriateSection(0, Width - 1, i)
-                    : ValueOff.GetAppropriateSection(0, Width - 1, i);
+					? ValueOn.GetAppropriateSection(0, Width - 1, i)
+					: ValueOff.GetAppropriateSection(0, Width - 1, i);
 				currentIteration += iteration;
 			}
 

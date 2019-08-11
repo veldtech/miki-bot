@@ -17,9 +17,9 @@ namespace Miki.API.Imageboards
 
 		public static ImageboardProvider<T> GetProvider<T>() where T : BooruPost
 		{
-			if (Providers.ContainsKey(typeof(T)))
+			if(Providers.ContainsKey(typeof(T)))
 			{
-				if (Providers.TryGetValue(typeof(T), out ImageboardProvider<BooruPost> value))
+				if(Providers.TryGetValue(typeof(T), out ImageboardProvider<BooruPost> value))
 				{
 					ImageboardProvider<T> output = new ImageboardProvider<T>(value.Config);
 					return output;

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Miki.Bot.Models;
-using Newtonsoft.Json;
-using System;
 
 namespace Miki
 {

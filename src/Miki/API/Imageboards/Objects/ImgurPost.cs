@@ -19,68 +19,68 @@ namespace Miki.API.Imageboards.Objects
 	public class ImgurImage
 	{
 		[JsonProperty("id")]
-		public string Id;
+        public string Id { get; set; }
 
-		[JsonProperty("title")]
-		public string Title;
+        [JsonProperty("title")]
+		public string Title { get; set; }
 
-		[JsonProperty("description")]
-		public string Description;
+        [JsonProperty("description")]
+		public string Description { get; set; }
 
-		[JsonProperty("datetime")]
-		public int TimeCreatedInEpochTime;
+        [JsonProperty("datetime")]
+		public int TimeCreatedInEpochTime { get; set; }
 
-		public DateTime TimeCreated => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(TimeCreatedInEpochTime);
+        public DateTime TimeCreated => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(TimeCreatedInEpochTime);
 
 		[JsonProperty("type")]
-		public string Type;
+		public string Type { get; set; }
 
-		[JsonProperty("animated")]
-		public bool IsAnimated;
+        [JsonProperty("animated")]
+		public bool IsAnimated { get; set; }
 
-		[JsonProperty("width")]
-		public int Width;
+        [JsonProperty("width")]
+		public int Width { get; set; }
 
-		[JsonProperty("height")]
-		public int Height;
+        [JsonProperty("height")]
+		public int Height { get; set; }
 
-		[JsonProperty("size")]
-		public int SizeInBytes;
+        [JsonProperty("size")]
+		public int SizeInBytes { get; set; }
 
-		[JsonProperty("views")]
-		public int Views;
+        [JsonProperty("views")]
+		public int Views { get; set; }
 
-		[JsonProperty("bandwidth")]
-		public int BandWithConsumedInBytes;
+        [JsonProperty("bandwidth")]
+		public int BandWithConsumedInBytes { get; set; }
 
-		[JsonProperty("section")]
-		public string Section;
+        [JsonProperty("section")]
+		public string Section { get; set; }
 
-		[JsonProperty("link")]
-		public string Link;
+        [JsonProperty("link")]
+		public string Link { get; set; }
 
-		[JsonProperty("gifv")]
-		public string LinkGifv;
+        [JsonProperty("gifv")]
+		public string LinkGifv { get; set; }
 
-		[JsonProperty("mp4")]
-		public string LinkMp4;
+        [JsonProperty("mp4")]
+		public string LinkMp4 { get; set; }
 
-		[JsonProperty("mp4_size")]
-		public int Mp4SizeInBytes;
+        [JsonProperty("mp4_size")]
+		public int Mp4SizeInBytes { get; set; }
 
-		[JsonProperty("looping")]
-		public bool IsLooping;
+        [JsonProperty("looping")]
+		public bool IsLooping { get; set; }
 
-		[JsonProperty("favorite")]
-		public bool IsFavourited;
+        [JsonProperty("favorite")]
+		public bool IsFavourited { get; set; }
 
-		[JsonProperty("nsfw")]
-		public bool? IsNsfw;
+        [JsonProperty("nsfw")]
+		public bool? IsNsfw { get; set; }
 
-		[JsonProperty("vote")]
-		public string Vote;
+        [JsonProperty("vote")]
+		public string Vote { get; set; }
 
-		[JsonProperty("in_gallery")]
-		public bool IsInGallery;
-	}
+        [JsonProperty("in_gallery")]
+		public bool IsInGallery { get; set; }
+    }
 }

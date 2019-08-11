@@ -1,15 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements.Objects;
-using Miki.Bot.Models;
-using Miki.Framework;
-using Miki.Helpers;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts.Achievements
+﻿namespace Miki.Accounts.Achievements
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+	using Miki.Accounts.Achievements.Objects;
+	using Miki.Bot.Models;
+	using Miki.Framework;
+	using Miki.Helpers;
+
 	public class AchievementDataContainer
 	{
 		public string Name = Constants.NotDefined;
@@ -20,7 +19,7 @@ namespace Miki.Accounts.Achievements
 		{
 			AchievementManager.Instance.AddContainer(this);
 
-			foreach (IAchievement d in Achievements)
+			foreach(IAchievement d in Achievements)
 			{
 				d.ParentName = Name;
 			}
@@ -32,7 +31,7 @@ namespace Miki.Accounts.Achievements
 
 			AchievementManager.Instance.AddContainer(this);
 
-			foreach (IAchievement d in Achievements)
+			foreach(IAchievement d in Achievements)
 			{
 				d.ParentName = Name;
 			}
@@ -47,14 +46,14 @@ namespace Miki.Accounts.Achievements
 		{
 			long userId = packet.discordUser.Id.ToDbLong();
 
-			using (var scope = MikiApp.Instance.Services.CreateScope())
+			using(var scope = MikiApp.Instance.Services.CreateScope())
 			{
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+				var context = scope.ServiceProvider.GetService<MikiDbContext>();
 				Achievement a = await DatabaseHelpers.GetAchievementAsync(context, userId, Name);
 
-				if (a == null)
+				if(a == null)
 				{
-					if (await Achievements[0].CheckAsync(packet))
+					if(await Achievements[0].CheckAsync(packet))
 					{
 						await AchievementManager.Instance.UnlockAsync(Achievements[0], packet.discordChannel, packet.discordUser);
 						await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[0], packet.discordUser, packet.discordChannel);
@@ -62,12 +61,12 @@ namespace Miki.Accounts.Achievements
 					return;
 				}
 
-				if (a.Rank >= Achievements.Count - 1)
+				if(a.Rank >= Achievements.Count - 1)
 				{
 					return;
 				}
 
-				if (await Achievements[a.Rank + 1].CheckAsync(packet))
+				if(await Achievements[a.Rank + 1].CheckAsync(packet))
 				{
 					await AchievementManager.Instance.UnlockAsync(Achievements[a.Rank + 1], packet.discordChannel, packet.discordUser, a.Rank + 1);
 					await AchievementManager.Instance.CallAchievementUnlockEventAsync(Achievements[a.Rank + 1], packet.discordUser, packet.discordChannel);
@@ -79,9 +78,9 @@ namespace Miki.Accounts.Achievements
 		{
 			AchievementDataContainer b = new AchievementDataContainer();
 
-			b.Name = Name;
+			b.Name = this.Name;
 
-			foreach (IAchievement a in Achievements)
+			foreach(IAchievement a in Achievements)
 			{
 				b.Achievements.Add(a);
 			}

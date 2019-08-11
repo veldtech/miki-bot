@@ -6,7 +6,6 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
-using Miki.Framework.Events;
 using Miki.Services.Blackjack.Exceptions;
 using ProtoBuf;
 using System;
@@ -83,7 +82,7 @@ namespace Miki.Modules.Gambling.Managers
 		{
 			var context = await client.GetAsync<BlackjackContext>($"miki:blackjack:{channelId}:{userId}");
 
-			if (context == null)
+			if(context == null)
 			{
 				throw new BlackjackSessionNullException();
 			}
@@ -129,13 +128,13 @@ namespace Miki.Modules.Gambling.Managers
 
 			hand.Hand.ForEach(card =>
 			{
-				if (card.isPublic)
+				if(card.isPublic)
 				{
 					x += CardWorth[card.value];
 				}
 			});
 
-			while (x > 21 && aces > 0)
+			while(x > 21 && aces > 0)
 			{
 				x -= 10;
 				aces--;

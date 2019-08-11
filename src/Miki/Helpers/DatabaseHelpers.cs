@@ -3,11 +3,8 @@ using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Cache;
 using Miki.Discord.Common;
-using Miki.Exceptions;
 using Miki.Framework;
-using Miki.Models;
 using StatsdClient;
-using System;
 using System.Threading.Tasks;
 
 namespace Miki.Helpers
@@ -17,44 +14,44 @@ namespace Miki.Helpers
 		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
 			=> await User.GetAsync(context, discordUser.Id, discordUser.Username);
 
-        public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
-        {
-            string key = $"achievement:{userId}:{name}";
+		public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
+		{
+			string key = $"achievement:{userId}:{name}";
 
-            var cache = MikiApp.Instance.GetService<ICacheClient>();
+			var cache = MikiApp.Instance.GetService<ICacheClient>();
 
-            Achievement a = await cache.GetAsync<Achievement>(key);
-            if (a != null)
-            {
-                return context.Attach(a).Entity;
-            }
+			Achievement a = await cache.GetAsync<Achievement>(key);
+			if(a != null)
+			{
+				return context.Attach(a).Entity;
+			}
 
-            Achievement achievement = await context.Achievements.FindAsync(userId, name);
-            await cache.UpsertAsync(key, achievement);
-            return achievement;
-        }
+			Achievement achievement = await context.Achievements.FindAsync(userId, name);
+			await cache.UpsertAsync(key, achievement);
+			return achievement;
+		}
 
 		internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
 		{
-            var cache = MikiApp.Instance.GetService<ICacheClient>();
+			var cache = MikiApp.Instance.GetService<ICacheClient>();
 
-            string key = $"achievement:{userId}:{name}";
+			string key = $"achievement:{userId}:{name}";
 			await cache.UpsertAsync(key, achievement);
 		}
 
 		public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)
 		{
-			if (amount < 0)
+			if(amount < 0)
 			{
 				throw new ArgumentLessThanZeroException();
 			}
 
-            // TODO #535: Move to DatadogService
-            DogStatsd.Counter("currency.change", amount);
+			// TODO #535: Move to DatadogService
+			DogStatsd.Counter("currency.change", amount);
 
 			user.Currency += amount;
 
-			if (channel is IDiscordGuildChannel guildchannel)
+			if(channel is IDiscordGuildChannel guildchannel)
 			{
 				await AchievementManager.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
 			}
@@ -64,7 +61,7 @@ namespace Miki.Helpers
 		{
 			if(amount < 0)
 			{
-				throw new ArgumentLessThanZeroException(); 
+				throw new ArgumentLessThanZeroException();
 			}
 
 			if(user.Currency < amount)
@@ -72,8 +69,8 @@ namespace Miki.Helpers
 				throw new InsufficientCurrencyException(user.Currency, (long)amount);
 			}
 
-            // TODO #535: Move to DatadogService
-            DogStatsd.Counter("currency.change", -amount);
+			// TODO #535: Move to DatadogService
+			DogStatsd.Counter("currency.change", -amount);
 
 			user.Currency -= amount;
 		}
