@@ -87,7 +87,7 @@ namespace Miki
             await LoadServicesAsync(appBuilder);
             MikiApp app = appBuilder.Build();
 
-            if (new MikiDbContextFactory().CreateDbContext().Configurations.Count() == 1 && !string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
+            if (new MikiDbContextFactory().CreateDbContext().Configurations.Count() == 1 && string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
             {
                 Log.Message("First Time configuration complete, update configuration in database");
                 Console.ReadKey();
