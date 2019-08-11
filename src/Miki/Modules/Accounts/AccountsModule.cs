@@ -1,6 +1,7 @@
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts;
 using Miki.Accounts.Achievements;
 using Miki.API;
@@ -53,11 +54,13 @@ namespace Miki.Modules.AccountsModule
 
         public AccountsModule()
         {
-            if(!string.IsNullOrWhiteSpace(Global.Config.MikiApiKey) 
-                && !string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl))
+            var config = MikiApp.Instance.Services.GetService<Config>();
+
+            if(!string.IsNullOrWhiteSpace(config.MikiApiKey) 
+                && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
-                client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
             }
             else
             {
@@ -786,10 +789,11 @@ namespace Miki.Modules.AccountsModule
             user.Name = e.GetAuthor().Username;
             await context.SaveChangesAsync();
 
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.Title = "👌 OKAY";
-            embed.Description = e.GetLocale().GetString("sync_success", "name");
-            await embed.ToEmbed().QueueAsync(e.GetChannel());
+            await new EmbedBuilder()
+            {
+                Title = "👌 OKAY",
+                Description = e.GetLocale().GetString("sync_success", "name")
+            }.ToEmbed().QueueAsync(e.GetChannel());
         }
 
         [Command("mekos", "bal", "meko" )]

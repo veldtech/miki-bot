@@ -167,7 +167,7 @@ namespace Miki.Modules
         [Command("setactivity")]
         public async Task SetGameAsync(IContext e)
 		{
-            if (!e.GetArgumentPack().Take(out string arg))
+            /*if (!e.GetArgumentPack().Take(out string arg))
             {
                 return;
             }
@@ -194,7 +194,7 @@ namespace Miki.Modules
 					Status = "online",
 					IsAFK = false
 				});
-			}
+			}*/
 		}
 
 		[Command("ignore")]

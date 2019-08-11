@@ -1,23 +1,24 @@
-﻿using Miki.Accounts.Achievements;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts.Achievements;
+using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
+using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
 using Miki.Framework.Events;
+using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Models;
+using Miki.Modules.Donator.Exceptions;
 using Miki.Rest;
 using Miki.Helpers;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Bot.Models;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Nodes;
-using Miki.Localization.Exceptions;
-using Miki.Modules.Donator.Exceptions;
 
 namespace Miki.Modules.Donator
 {
@@ -28,11 +29,13 @@ namespace Miki.Modules.Donator
 
         public DonatorModule()
         {
-            if (!string.IsNullOrWhiteSpace(Global.Config.ImageApiUrl)
-                && !string.IsNullOrWhiteSpace(Global.Config.MikiApiKey))
+            var config = MikiApp.Instance.Services.GetService<Config>();
+
+            if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
+                && !string.IsNullOrWhiteSpace(config.MikiApiKey))
             {
-                client = new Net.Http.HttpClient(Global.Config.ImageApiUrl)
-                    .AddHeader("Authorization", Global.Config.MikiApiKey);
+                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                    .AddHeader("Authorization", config.MikiApiKey);
             }
             else
             {
