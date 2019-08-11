@@ -171,9 +171,10 @@ namespace Miki
             new LogBuilder()
                 .AddLogEvent((msg, lvl) =>
                 {
-                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl))
-)
+                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl)))
+                    {
                         Console.WriteLine(msg);
+                    }
                 })
                 .SetLogHeader((msg) => $"[{msg}]: ")
                 .SetTheme(theme)
