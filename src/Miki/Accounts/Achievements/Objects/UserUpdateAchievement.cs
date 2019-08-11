@@ -7,15 +7,15 @@ namespace Miki.Accounts.Achievements.Objects
 	{
 		public Func<UserUpdatePacket, Task<bool>> CheckUserUpdate;
 
-		public string Name { get; set; }
+        public string Name { get; set; }
 
-		public string ParentName { get; set; }
+        public string ParentName { get; set; }
 
-		public string Icon { get; set; }
+        public string Icon { get; set; }
 
-		public int Points { get; set; }
+        public int Points { get; set; }
 
-		public async Task<bool> CheckAsync(BasePacket packet)
+        public async Task<bool> CheckAsync(BasePacket packet)
 		{
 			return await CheckUserUpdate(packet as UserUpdatePacket);
 		}

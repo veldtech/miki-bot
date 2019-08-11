@@ -18,7 +18,7 @@ namespace Miki.API.Cards
 
 		public CardHand AddPlayer(ulong userid)
 		{
-			if(!_hands.ContainsKey(userid))
+			if (!_hands.ContainsKey(userid))
 			{
 				CardHand hand = new CardHand();
 				_hands.Add(userid, hand);
@@ -35,7 +35,7 @@ namespace Miki.API.Cards
 
 		public void DealAll()
 		{
-			foreach(CardHand h in _hands.Values)
+			foreach (CardHand h in _hands.Values)
 			{
 				h.AddToHand(_deck.DrawRandom());
 			}
@@ -43,7 +43,7 @@ namespace Miki.API.Cards
 
 		public void DealTo(ulong userid)
 		{
-			if(_hands.TryGetValue(userid, out CardHand hand))
+			if (_hands.TryGetValue(userid, out CardHand hand))
 			{
 				DealTo(hand);
 			}

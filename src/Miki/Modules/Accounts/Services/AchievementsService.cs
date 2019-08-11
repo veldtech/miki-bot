@@ -1,5 +1,9 @@
 ﻿using Miki.Accounts.Achievements;
 using Miki.Accounts.Achievements.Objects;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
-
+    
 	public class AchievementsService
 	{
-		public AchievementsService()
-		{
-			LoadAchievements();
-		}
+        public AchievementsService()
+        {
+            LoadAchievements();
+        }
 
 		public void LoadAchievements()
 		{
@@ -101,20 +105,20 @@ namespace Miki.Modules.Accounts.Services
 			AchievementDataContainer InfoAchievement = new AchievementDataContainer(x =>
 			{
 				x.Name = "info";
-				x.Achievements = new List<IAchievement>()
-				{
-					new CommandAchievement()
-					{
-						Name = "Informed",
-						Icon = "📚",
+                x.Achievements = new List<IAchievement>()
+                {
+                    new CommandAchievement()
+                    {
+                        Name = "Informed",
+                        Icon = "📚",
 
-						CheckCommand = async (p) =>
-						{
-							await Task.Yield();
-							return p.command.Metadata.Identifiers.Contains("info");
-						},
-						Points = 5
-					},
+                        CheckCommand = async (p) =>
+                        {
+                            await Task.Yield();
+                            return p.command.Metadata.Identifiers.Contains("info");
+                        },
+                        Points = 5
+                    },
 				};
 			});
 			AchievementDataContainer LonelyAchievement = new AchievementDataContainer(x =>
@@ -147,7 +151,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "📝",
 						CheckCommand = (p) =>
 						{
-							return Task.FromResult(p.command.Metadata.Identifiers.Contains("createpasta"));
+                            return Task.FromResult(p.command.Metadata.Identifiers.Contains("createpasta"));
 						},
 						Points = 5,
 					}
@@ -164,7 +168,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "😱",
 						CheckCommand = async (p) =>
 						{
-							return false;
+                            return false;
 							//return await MikiApp.Instance.GetService<EventSystem>().GetCommandHandler<SimpleCommandHandler>().GetUserAccessibility(p.message, p.discordChannel as IDiscordGuildChannel) < p.command.Accessibility;
 						},
 						Points = 5
@@ -245,10 +249,10 @@ namespace Miki.Modules.Accounts.Services
 					{
 						Name = "Oh shit! Waddup",
 						Icon = "🐸",
-						CheckCommand = async (p) =>
-						{
-							return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("dat boi");
-						},
+                        CheckCommand = async (p) =>
+                        {
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Contains("dat boi");
+                        },
 						Points = 5
 					}
 				};
@@ -281,7 +285,7 @@ namespace Miki.Modules.Accounts.Services
 						Icon = "⛵",
 						CheckCommand = async (p) =>
 						{
-							return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Split(' ').Contains("poi");
+                            return p.command.Metadata.Identifiers.Contains("pasta") && p.message.Content.Split(' ').Contains("poi");
 						},
 						Points = 5,
 					}
@@ -414,20 +418,20 @@ namespace Miki.Modules.Accounts.Services
 				await AchievementAchievements.CheckAsync(pa);
 			};
 
-			#endregion Achievement Achievements
+            #endregion Achievement Achievements
 
-			#region Command Achievements
+            #region Command Achievements
 
-			AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
-			AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += InfoAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += LonelyAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += ChefAchievement.CheckAsync;
+            AchievementManager.Instance.OnCommandUsed += NoPermissionAchievement.CheckAsync;
 
-			#endregion Command Achievements
+            #endregion Command Achievements
 
-			#region Level Achievements
+            #region Level Achievements
 
-			AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
+            AchievementManager.Instance.OnLevelGained += LevelAchievement.CheckAsync;
 
 			#endregion Level Achievements
 

@@ -1,5 +1,9 @@
-﻿using Miki.Framework;
+﻿using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Events;
+using Miki.Modules.Overwatch.API;
 using Miki.Modules.Overwatch.Objects;
 using System.Collections.Generic;
 using System.IO;
@@ -15,13 +19,13 @@ namespace Miki.Modules.Overwatch
 		[Command("osu")]
 		public async Task SendOsuSignatureAsync(IContext e)
 		{
-			e.GetArgumentPack().Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
-			using(WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&countryrank");
 
-				using(MemoryStream mem = new MemoryStream(data))
+				using (MemoryStream mem = new MemoryStream(data))
 				{
 					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
@@ -31,13 +35,13 @@ namespace Miki.Modules.Overwatch
 		[Command("ctb")]
 		public async Task SendCatchTheBeatSignatureAsync(IContext e)
 		{
-			e.GetArgumentPack().Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
-			using(WebClient webClient = new WebClient())
+			using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=2&countryrank");
 
-				using(MemoryStream mem = new MemoryStream(data))
+				using (MemoryStream mem = new MemoryStream(data))
 				{
 					await e.GetChannel().SendFileAsync(mem, $"{username}.png");
 				}
@@ -47,13 +51,13 @@ namespace Miki.Modules.Overwatch
 		[Command("mania")]
 		public async Task SendManiaSignatureAsync(IContext e)
 		{
-			e.GetArgumentPack().Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
-			using(WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=3&countryrank");
 
-				using(MemoryStream mem = new MemoryStream(data))
+				using (MemoryStream mem = new MemoryStream(data))
 				{
 					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
@@ -63,13 +67,13 @@ namespace Miki.Modules.Overwatch
 		[Command("taiko")]
 		public async Task SendTaikoSignatureAsync(IContext e)
 		{
-			e.GetArgumentPack().Take(out string username);
+            e.GetArgumentPack().Take(out string username);
 
-			using(WebClient webClient = new WebClient())
+            using (WebClient webClient = new WebClient())
 			{
 				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=1&countryrank");
 
-				using(MemoryStream mem = new MemoryStream(data))
+				using (MemoryStream mem = new MemoryStream(data))
 				{
 					await e.GetChannel().SendFileAsync(mem, $"sig.png");
 				}
@@ -88,7 +92,7 @@ namespace Miki.Modules.Overwatch
 			return regions.OrderByDescending(x =>
 			{
 				float? value;
-				if(compo)
+				if (compo)
 				{
 					value = x?.heroes?.playtime?.competitive?.Sum(y => y.Value);
 				}

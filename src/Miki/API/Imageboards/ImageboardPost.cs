@@ -1,5 +1,6 @@
 ﻿using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Objects;
+using Miki.Rest;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Miki.API.Imageboards
 
 			List<string> tags = new List<string>();
 
-			switch(r)
+			switch (r)
 			{
 				case ImageRating.EXPLICIT:
 				{
@@ -58,7 +59,7 @@ namespace Miki.API.Imageboards
 			}
 			tags.AddRange(command);
 
-			if(nsfw)
+			if (nsfw)
 			{
 				RemoveBannedTerms(Config, tags);
 				AddBannedTerms(Config, tags);
@@ -66,21 +67,21 @@ namespace Miki.API.Imageboards
 
 			string outputTags = GetTags(tags.ToArray());
 
-			using(var c = new Net.Http.HttpClient(Config.QueryKey + outputTags))
+			using (var c = new Net.Http.HttpClient(Config.QueryKey + outputTags))
 			{
-				if(Config.NetUseCredentials)
+				if (Config.NetUseCredentials)
 				{
 					//c.UseDefaultCredentials = true;
 					Config.NetHeaders.ForEach(x => c.Headers.Add(x.Item1, x.Item2));
 				}
 
-				var request = await c.GetAsync();
+                var request = await c.GetAsync();
 
-				var b = JsonConvert.DeserializeObject<List<T>>(request.Body);
+                var b = JsonConvert.DeserializeObject<List<T>>(request.Body);
 
-				if(request.Success)
+				if (request.Success)
 				{
-					if(b.Any())
+					if (b.Any())
 					{
 						return b[MikiRandom.Next(0, b.Count)];
 					}
@@ -103,19 +104,19 @@ namespace Miki.API.Imageboards
 		{
 			List<string> output = new List<string>();
 
-			for(int i = 0; i < tags.Length; i++)
+			for (int i = 0; i < tags.Length; i++)
 			{
-				if(tags[i] == "awoo")
+				if (tags[i] == "awoo")
 				{
 					output.Add("inubashiri_momiji");
 					continue;
 				}
-				if(tags[i] == "miki")
+				if (tags[i] == "miki")
 				{
 					output.Add("sf-a2_miki");
 					continue;
 				}
-				if(!string.IsNullOrWhiteSpace(tags[i]))
+				if (!string.IsNullOrWhiteSpace(tags[i]))
 				{
 					output.Add(tags[i]);
 				}

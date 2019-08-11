@@ -1,4 +1,9 @@
-﻿namespace Miki.Modules.Moderation
+﻿using Miki.Discord.Common;
+using Miki.Framework.Events;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace Miki.Modules.Moderation
 {
 	// todo: reimplmenent with better regex or customizability
 	//[Module("Moderation")]

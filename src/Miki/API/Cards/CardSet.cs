@@ -16,9 +16,9 @@ namespace Miki.API.Cards
 		{
 			CardSet set = new CardSet();
 
-			foreach(CardType type in Enum.GetValues(typeof(CardType)))
+			foreach (CardType type in Enum.GetValues(typeof(CardType)))
 			{
-				foreach(CardValue value in Enum.GetValues(typeof(CardValue)))
+				foreach (CardValue value in Enum.GetValues(typeof(CardValue)))
 				{
 					set.Deck.Add(new Card(type, value));
 				}

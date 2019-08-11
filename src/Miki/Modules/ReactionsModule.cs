@@ -1,6 +1,9 @@
 ﻿using Miki.Discord;
+using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
+using Miki.Framework.Events;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -47,7 +50,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/VyabzAv.jpg"
 		};
 
-		readonly string[] lewd = new string[]
+        readonly string[] lewd = new string[]
 		{
 			"http://i.imgur.com/eG42EVs.png",
 			"http://i.imgur.com/8shK3jh.png",
@@ -72,7 +75,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/jlTqATG.gif"
 		};
 
-		readonly string[] poutImages = new string[]
+        readonly string[] poutImages = new string[]
 		{
 			"http://i.imgur.com/hsjBcz1.jpg",
 			"http://i.imgur.com/oJSVNzT.jpg",
@@ -88,7 +91,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/uTB2HIY.png"
 		};
 
-		readonly string[] smugImages = new string[]
+        readonly string[] smugImages = new string[]
 		{
 			"http://i.imgur.com/zUwqrhM.png",
 			"http://i.imgur.com/TYqPh89.jpg",
@@ -123,7 +126,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/baiMBP6.png"
 		};
 
-		readonly string[] cryImages = new string[]
+        readonly string[] cryImages = new string[]
 		{
 			"http://i.imgur.com/TTUBf2r.gif",
 			"http://i.imgur.com/TP6dYGh.gif",
@@ -210,7 +213,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/31WnXZ7.gif"
 		};
 
-		readonly string[] stareImages = new string[]
+        readonly string[] stareImages = new string[]
 		{
 			"http://i.imgur.com/Bp9vfcf.gif",
 			"http://i.imgur.com/7nFd5ve.gif",
@@ -220,7 +223,7 @@ namespace Miki.Modules
 		[Command("confused")]
 		public async Task ConfusedAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = confusedImages[MikiRandom.Next(0, confusedImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
@@ -229,7 +232,7 @@ namespace Miki.Modules
 		[Command("lewd")]
 		public async Task LewdAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
@@ -238,7 +241,7 @@ namespace Miki.Modules
 		[Command("pout")]
 		public async Task PoutAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = poutImages[MikiRandom.Next(0, poutImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
@@ -247,7 +250,7 @@ namespace Miki.Modules
 		[Command("smug")]
 		public async Task SmugAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = smugImages[MikiRandom.Next(0, smugImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
@@ -256,7 +259,7 @@ namespace Miki.Modules
 		[Command("cry")]
 		public async Task CryAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = cryImages[MikiRandom.Next(0, cryImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());
@@ -265,7 +268,7 @@ namespace Miki.Modules
 		[Command("stare")]
 		public async Task StareAsync(IContext e)
 		{
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 			{
 				ImageUrl = stareImages[MikiRandom.Next(0, stareImages.Length)]
 			}.ToEmbed().QueueAsync(e.GetChannel());

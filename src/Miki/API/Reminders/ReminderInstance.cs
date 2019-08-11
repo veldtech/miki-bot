@@ -45,10 +45,10 @@ namespace Miki.API.Reminder
 				do
 				{
 					await RunTask();
-				} while(RepeatReminder && !cancellationToken.IsCancellationRequested);
+				} while (RepeatReminder && !cancellationToken.IsCancellationRequested);
 				parent.RemoveReminder(Id);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Log.Error(e);
 			}

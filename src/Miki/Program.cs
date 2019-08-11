@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Miki.API;
 using Microsoft.Extensions.DependencyInjection;
-using Miki.API;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Models.User;
 using Miki.BunnyCDN;

@@ -1,4 +1,6 @@
 ﻿using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Events;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -57,7 +59,7 @@ namespace Miki.Modules.Logging.Interpreter
 			public TokenMatch Match(string text)
 			{
 				Match m = Regex.Match(text, query);
-				if(m.Success)
+				if (m.Success)
 				{
 					return new TokenMatch()
 					{
@@ -103,7 +105,7 @@ namespace Miki.Modules.Logging.Interpreter
 
 			public bool Accept(QueryTokenType t)
 			{
-				if(Current.type == t)
+				if (Current.type == t)
 				{
 					Next();
 					return true;
@@ -122,10 +124,10 @@ namespace Miki.Modules.Logging.Interpreter
 			string currentText = text;
 			List<Token> allTokens = new List<Token>();
 
-			while(!string.IsNullOrWhiteSpace(currentText))
+			while (!string.IsNullOrWhiteSpace(currentText))
 			{
 				TokenMatch m = GetMatch(currentText);
-				if(m != null)
+				if (m != null)
 				{
 					currentText = m.remainingText;
 
@@ -145,10 +147,10 @@ namespace Miki.Modules.Logging.Interpreter
 
 		public TokenMatch GetMatch(string text)
 		{
-			foreach(RegexToken t in tokens)
+			foreach (RegexToken t in tokens)
 			{
 				TokenMatch m = t.Match(text);
-				if(m != null)
+				if (m != null)
 				{
 					return m;
 				}

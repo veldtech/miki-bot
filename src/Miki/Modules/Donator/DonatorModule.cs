@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts.Achievements;
 using Miki.Bot.Models;
 using Miki.Discord;
@@ -15,8 +15,6 @@ using Miki.Models;
 using Miki.Modules.Donator.Exceptions;
 using Miki.Rest;
 using Miki.Helpers;
-using Miki.Logging;
-using Miki.Modules.Donator.Exceptions;
 using System;
 using System.IO;
 using System.Linq;
