@@ -23,7 +23,9 @@
             : this(parent, null)
 		{
         }
-        internal AchievementDataContainer(AchievementService parent, Action<AchievementDataContainer> instance)
+        internal AchievementDataContainer(
+            AchievementService parent, 
+            Action<AchievementDataContainer> instance)
         {
             this.Service = parent;
 

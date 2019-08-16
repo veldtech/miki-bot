@@ -33,7 +33,9 @@ namespace Miki.Services.Achievements
 
 		public event Func<TransactionPacket, Task> OnTransaction;
 
-		public AchievementService(AccountService service)
+		public AchievementService(
+            AccountService service,
+            AchievementRepository achievements)
 		{
             service.OnLocalLevelUp += async (u, c, l) =>
 			{
