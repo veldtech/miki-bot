@@ -286,33 +286,33 @@ namespace Miki.Modules
             var cache = e.GetService<ICacheClient>();
             var api = e.GetService<IApiClient>();
 
+            await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
+
             User user;
             var context = e.GetService<MikiDbContext>();
 
             user = await context.Users.FindAsync(e.Author.Id.ToDbLong());
             if (user != null)
             {
+                await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
+                    new EditMessageArgs
+                    {
+                        embed = bm.CreateEmbed(e)
+                            .SetAuthor(
+                                e.Locale.GetString("blackjack_draw_title") + " | " + e.Author.Username,
+                                e.Author.GetAvatarUrl(),
+                                "https://patreon.com/mikibot"
+                            )
+                            .SetDescription(
+                                e.Locale.GetString("blackjack_draw_description") + "\n" +
+                                e.Locale.GetString("miki_blackjack_current_balance", user.Currency)
+                            ).ToEmbed()
+                    }
+                );
+
                 await user.AddCurrencyAsync(bm.Bet, e.Channel);
                 await context.SaveChangesAsync();
             }
-
-            await api.EditMessageAsync(e.Channel.Id, bm.MessageId,
-                new EditMessageArgs
-                {
-                    embed = bm.CreateEmbed(e)
-                   .SetAuthor(
-                        e.Locale.GetString("blackjack_draw_title") + " | " + e.Author.Username,
-                        e.Author.GetAvatarUrl(),
-                        "https://patreon.com/mikibot"
-                    )
-                   .SetDescription(
-                        e.Locale.GetString("blackjack_draw_description") + "\n" +
-                        e.Locale.GetString("miki_blackjack_current_balance", user.Currency)
-                    ).ToEmbed()
-                }
-            );
-
-            await cache.RemoveAsync($"miki:blackjack:{e.Channel.Id}:{e.Author.Id}");
         }
 
         private async Task OnBlackjackDead(CommandContext e, BlackjackManager bm)
@@ -354,16 +354,15 @@ namespace Miki.Modules
 
             if (user != null)
             {
-                await user.AddCurrencyAsync(bm.Bet * 2, e.Channel);
-
                 await api.EditMessageAsync(e.Channel.Id, bm.MessageId, new EditMessageArgs
                 {
                     embed = bm.CreateEmbed(e)
-                    .SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
-                    .SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
-                    .ToEmbed()
+                        .SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
+                        .SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
+                        .ToEmbed()
                 });
 
+                await user.AddCurrencyAsync(bm.Bet * 2, e.Channel);
                 await context.SaveChangesAsync();
             }
         }
