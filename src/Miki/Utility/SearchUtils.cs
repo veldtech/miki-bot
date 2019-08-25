@@ -11,6 +11,50 @@ namespace Miki.Utility
 {
     public static class SearchUtils
     {
+        public static async Task<IDiscordRole> FindRoleAsync(
+            this IDiscordGuild guild,
+            string resource)
+        {
+            if(ulong.TryParse(resource, out var roleId))
+            {
+                return await guild.GetRoleAsync(roleId);
+            }
+
+            if(Mention.TryParse(resource, out Mention m))
+            {
+                if(m.Type == MentionType.ROLE)
+                {
+                    return await guild.GetRoleAsync(m.Id);
+                }
+                return null;
+            }
+
+            var channels = await guild.GetRolesAsync();
+            return channels.FirstOrDefault(x => x.Name.ToLowerInvariant() == resource);
+        }
+
+        public static async Task<IDiscordChannel> FindChannelAsync(
+            this IDiscordGuild guild,
+            string resource)
+        {
+            if (ulong.TryParse(resource, out var channelId))
+            {
+                return await guild.GetChannelAsync(channelId);
+            }
+
+            if (Mention.TryParse(resource, out Mention m))
+            {
+                if (m.Type == MentionType.CHANNEL)
+                {
+                    return await guild.GetChannelAsync(m.Id);
+                }
+                return null;
+            }
+
+            var channels = await guild.GetChannelsAsync();
+            return channels.FirstOrDefault(x => x.Name.ToLowerInvariant() == resource);
+        }
+
         public static async Task<IDiscordUser> FindUserAsync(
             this IDiscordGuild guild, 
             string userName)
@@ -31,7 +75,8 @@ namespace Miki.Utility
             }
 
             var members = await guild.GetMembersAsync();
-            return members.FirstOrDefault(x => (x.Nickname?.ToLowerInvariant()) == userName.ToLowerInvariant()
+            return members.FirstOrDefault(
+                x => x.Nickname?.ToLowerInvariant() == userName.ToLowerInvariant() 
                 || x.Username.ToLowerInvariant() == userName.ToLowerInvariant());
         }
     }

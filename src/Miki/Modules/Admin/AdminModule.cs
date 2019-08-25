@@ -391,12 +391,7 @@ namespace Miki.Modules
                     return;
                 }
 
-                if(!e.GetArgumentPack().Take(out string resource))
-                {
-                    return;
-                }
-
-                Entity entity = await GetEntityAsync(e, entityType, resource);
+                Entity entity = await GetEntityAsync(e, entityType);
 
                 await permissions.SetForUserAsync(e, entity.Id, entityType, commandName, level);
 
@@ -404,13 +399,17 @@ namespace Miki.Modules
                     .QueueAsync(e.GetChannel());
             }
 
-            private async Task<Entity> GetEntityAsync(IContext e, EntityType type, string resource)
+            private async ValueTask<Entity> GetEntityAsync(IContext e, EntityType type)
             {
                 var entity = new Entity();
                 switch(type)
                 {
                     case EntityType.User:
                     {
+                        if (e.GetArgumentPack().Take(out string resource))
+                        {
+                            return null;
+                        }
                         var userObject = await e.GetGuild().FindUserAsync(resource);
                         if(userObject == null)
                         {
@@ -419,25 +418,51 @@ namespace Miki.Modules
 
                         entity.Id = (long)userObject.Id;
                         entity.Resource = userObject.Username;
-                    }
-                        break;
+                    } break;
 
                     case EntityType.Channel:
                     {
-                        if(!Mention.TryParse(resource, out var mention))
+                        if(e.GetArgumentPack().Take(out string resource))
                         {
-                            throw new ArgumentException(nameof(mention));
+                            return null;
                         }
 
-                        if (mention.Type != MentionType.CHANNEL)
+                        var channel = await e.GetGuild().FindChannelAsync(resource);
+
+                        entity.Id = (long)channel.Id;
+                        entity.Resource = (await e.GetGuild().GetChannelAsync(channel.Id)).Name;
+                    } break;
+
+                    case EntityType.Role:
+                    {
+                        if(e.GetArgumentPack().Take(out string resource))
                         {
-                            throw new InvalidMentionTypeException(MentionType.CHANNEL, mention.Type);
+                            return null;
                         }
 
-                        entity.Id = (long)mention.Id;
-                        entity.Resource = (await e.GetGuild().GetChannelAsync(mention.Id)).Name;
-                    }
-                        break;
+                        var role = await e.GetGuild().FindRoleAsync(resource);
+
+                        entity.Id = (long)role.Id;
+                        entity.Resource = (await e.GetGuild().GetChannelAsync(role.Id)).Name;
+                    } break;
+
+                    case EntityType.Guild:
+                    {
+                        entity = new Entity
+                        {
+                            Id = (long) e.GetGuild().Id,
+                            Resource = e.GetGuild().Name
+                        };
+                    } break;
+
+                    case EntityType.Global:
+                    {
+                        entity = new Entity
+                        {
+                            Id = 0L,
+                            Resource = "globally"
+                        };
+                    } break;
 
                     default:
                     {
