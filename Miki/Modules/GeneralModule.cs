@@ -58,26 +58,35 @@ namespace Miki.Modules
 
 		[Command(Name = "avatar")]
 		public async Task AvatarAsync(CommandContext e)
-		{
-			if (!e.Arguments.Take(out string arg))
-			{
-				e.Channel.QueueMessage(e.Author.GetAvatarUrl());
-			}
-			else
-			{
+        {
+            string avatarUrl = e.Author.GetAvatarUrl();
+            string avatarResource = e.Author.Username;
+
+			if (e.Arguments.Take(out string arg))
+            {
 				if (arg == "-s")
 				{
-					e.Channel.QueueMessage(e.Guild.IconUrl);
+					avatarUrl = e.Guild.IconUrl;
+                    avatarResource = e.Guild.Name;
 					return;
 				}
 
 				IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.Guild);
 				if (user != null)
 				{
-					e.Channel.QueueMessage(user.GetAvatarUrl());
-				}
+					avatarUrl = user.GetAvatarUrl();
+                    avatarResource = user.Username;
+                }
 			}
-		}
+
+            await new EmbedBuilder()
+                .SetTitle($"🖼 Avatar for {avatarResource}")
+                .SetThumbnail(avatarUrl)
+                .SetColor(215, 158, 132)
+                .AddInlineField("Full image", $"[click here]({avatarUrl})")
+                .ToEmbed()
+                .QueueToChannelAsync(e.Channel);
+        }
 
 		[Command(Name = "calc", Aliases = new string[] { "calculate" })]
 		public Task CalculateAsync(CommandContext e)

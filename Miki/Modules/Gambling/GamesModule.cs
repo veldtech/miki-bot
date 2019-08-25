@@ -305,7 +305,7 @@ namespace Miki.Modules
                             )
                             .SetDescription(
                                 e.Locale.GetString("blackjack_draw_description") + "\n" +
-                                e.Locale.GetString("miki_blackjack_current_balance", user.Currency)
+                                e.Locale.GetString("miki_blackjack_current_balance", user.Currency + bm.Bet)
                             ).ToEmbed()
                     }
                 );
@@ -358,7 +358,7 @@ namespace Miki.Modules
                 {
                     embed = bm.CreateEmbed(e)
                         .SetAuthor(e.Locale.GetString("miki_blackjack_win_title") + " | " + e.Author.Username, e.Author.GetAvatarUrl(), "https://patreon.com/mikibot")
-                        .SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency))
+                        .SetDescription(e.Locale.GetString("miki_blackjack_win_description", bm.Bet * 2) + "\n" + e.Locale.GetString("miki_blackjack_new_balance", user.Currency + (bm.Bet * 2)))
                         .ToEmbed()
                 });
 
