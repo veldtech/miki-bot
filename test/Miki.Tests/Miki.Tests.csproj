@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\" />
+    <Folder Include="Modules\Gambling\" />
   </ItemGroup>
 
   <ItemGroup>

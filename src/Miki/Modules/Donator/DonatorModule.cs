@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -27,8 +26,9 @@ namespace Miki.Modules.Donator
 	internal class DonatorModule
 	{
 		private readonly Net.Http.HttpClient client;
+        private readonly AchievementService achievements;
 
-		public DonatorModule(Config config)
+		public DonatorModule(Config config, AchievementService achievementService)
 		{
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
                 && !string.IsNullOrWhiteSpace(config.MikiApiKey))
@@ -40,7 +40,9 @@ namespace Miki.Modules.Donator
             {
                 Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
             }
-		}
+
+            this.achievements = achievementService;
+        }
 
 		[Command("sellkey")]
 		public async Task SellKeyAsync(IContext e)
@@ -110,7 +112,7 @@ namespace Miki.Modules.Donator
 
 			// cheap hack.        
 			var achievementManager = e.GetService<AchievementService>();
-			var achievements = achievementManager.GetContainerById("donator").Achievements;
+			var achievements = achievementManager.GetAchievement("donator").Entries;
 
             // TODO(@velddev): Reimplement donator keys
 			//if(donatorStatus.KeysRedeemed == 1)

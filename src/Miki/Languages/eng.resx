@@ -2286,4 +2286,7 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="error_key_format_invalid" xml:space="preserve">
     <value>That does not look like a key to me, are you sure you copied it correctly?</value>
   </data>
+  <data name="errors_mention_type_invalid" xml:space="preserve">
+    <value>I thought you were going to give me a {0} mention, but I read your mention as a {1} mention.</value>
+  </data>
 </root>

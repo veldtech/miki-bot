@@ -78,7 +78,7 @@ namespace Miki.Modules.Internal.Routines
                 DogStatsd.Increment(
                     "achievements.gained", tags: new[]
                     {
-                        $"achievement:{achievement.achievement.Name}"
+                        $"achievement:{achievement.Id}"
                     });
                 return Task.CompletedTask;
             };

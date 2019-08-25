@@ -2,8 +2,6 @@ using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements;
-using Miki.Accounts.Achievements.Objects;
 using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
@@ -19,12 +17,8 @@ using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Localization;
-using Miki.Framework.Events;
 using Miki.Framework.Extension;
-using Miki.Models;
 using Miki.Net.Http;
-using Miki.Rest;
 using NCalc;
 using Newtonsoft.Json;
 using System;
@@ -35,6 +29,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Miki.Services.Achievements;
 
 namespace Miki.Modules
@@ -499,18 +494,18 @@ namespace Miki.Modules
 			}
 
 			if (rollResult == "1" || rollResult.StartsWith("1 "))
-			{
-				await e.GetService<AchievementService>()
-					.GetContainerById("badluck")
-					.CheckAsync(new BasePacket()
-					{
-						discordUser = e.GetAuthor(),
-						discordChannel = e.GetChannel() as IDiscordTextChannel
-					});
-			}
+            {
+                var dbContext = e.GetService<DbContext>();
+                var achievements = e.GetService<AchievementService>();
+                var badLuckAchievement = achievements.GetAchievement("badluck");
+                await achievements.UnlockAsync(dbContext, badLuckAchievement, e.GetAuthor().Id);
+            }
 
 			e.GetChannel()
-				.QueueMessage(e.GetLocale().GetString("miki_module_fun_roll_result", e.GetAuthor().Username, rollResult));
+				.QueueMessage(e.GetLocale().GetString(
+                    "miki_module_fun_roll_result", 
+                    e.GetAuthor().Username, 
+                    rollResult));
 		}
 
         [Command("reminder", "remind")]

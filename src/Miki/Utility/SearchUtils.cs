@@ -11,7 +11,9 @@ namespace Miki.Utility
 {
     public static class SearchUtils
     {
-        public static async Task<IDiscordUser> FindUserAsync(this IDiscordGuild guild, string userName)
+        public static async Task<IDiscordUser> FindUserAsync(
+            this IDiscordGuild guild, 
+            string userName)
         {
             if(ulong.TryParse(userName, out var userId))
             {
@@ -29,7 +31,7 @@ namespace Miki.Utility
             }
 
             var members = await guild.GetMembersAsync();
-            return members.FirstOrDefault(x => (x.Nickname?.ToLowerInvariant() ?? null) == userName.ToLowerInvariant()
+            return members.FirstOrDefault(x => (x.Nickname?.ToLowerInvariant()) == userName.ToLowerInvariant()
                 || x.Username.ToLowerInvariant() == userName.ToLowerInvariant());
         }
     }

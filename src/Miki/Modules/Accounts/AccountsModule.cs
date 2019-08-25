@@ -4,7 +4,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.Accounts;
-using Miki.Accounts.Achievements;
 using Miki.API;
 using Miki.API.Leaderboards;
 using Miki.Bot.Models;
@@ -31,7 +30,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Miki.Accounts.Achievements.Objects;
 using Miki.Services.Achievements;
 
 namespace Miki.Modules.AccountsModule
@@ -105,11 +103,16 @@ namespace Miki.Modules.AccountsModule
             StringBuilder leftBuilder = new StringBuilder();
 
             int totalScore = 0;
+            var achievementService = e.GetService<AchievementService>();
 
             foreach(var a in achievements)
             {
-                IAchievement metadata = e.GetService<AchievementService>().GetContainerById(a.Name).Achievements[a.Rank];
-                leftBuilder.AppendLine(metadata.Icon + " | `" + metadata.Name.PadRight(15) + $"{metadata.Points.ToString().PadLeft(3)} pts` | 📅 {a.UnlockedAt.ToShortDateString()}");
+                AchievementEntry metadata = achievementService.GetAchievement(a.Name).Entries[a.Rank];
+                // TODO: Clean up or turn into resource.
+                leftBuilder.AppendLine(
+                    metadata.Icon + " | `" + metadata.ResourceName.PadRight(15) 
+                    + $"{metadata.Points.ToString().PadLeft(3)} pts`" 
+                    + " | 📅 {a.UnlockedAt.ToShortDateString()}");
                 totalScore += metadata.Points;
             }
 

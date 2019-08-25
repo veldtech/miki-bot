@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts.Achievements.Objects;
 using Miki.Bot.Models;
 using Miki.Discord.Common;
 using Miki.Framework;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Accounts;
+using Miki.Bot.Models.Repositories;
 
 namespace Miki.Services.Achievements
 {
@@ -20,169 +20,85 @@ namespace Miki.Services.Achievements
 
 	public class AchievementService
 	{
-        private readonly Dictionary<string, AchievementDataContainer> _containers
-            = new Dictionary<string, AchievementDataContainer>();
+        private readonly Dictionary<string, AchievementObject> _containers
+            = new Dictionary<string, AchievementObject>();
 
-		public event Func<AchievementPacket, Task> OnAchievementUnlocked;
+        private readonly AchievementRepository _repository;
 
-		public event Func<CommandPacket, Task> OnCommandUsed;
-
-		public event Func<LevelPacket, Task> OnLevelGained;
-
-		public event Func<MessageEventPacket, Task> OnMessage;
-
-		public event Func<TransactionPacket, Task> OnTransaction;
+		public event Func<AchievementObject, Task> OnAchievementUnlocked;
 
 		public AchievementService(
             AccountService service,
             AchievementRepository achievements)
 		{
-            service.OnLocalLevelUp += async (u, c, l) =>
-			{
-				LevelPacket p = new LevelPacket()
-				{
-					discordUser = await (c as IDiscordGuildChannel).GetUserAsync(u.Id),
-					discordChannel = c,
-					level = l,
-				};
-				await OnLevelGained?.Invoke(p);
-			};
+            _repository = achievements;
+        }
+        
+        public void AddAchievement(AchievementObject @object)
+        {
+            if (_containers.ContainsKey(@object.Id))
+            {
+                throw new ArgumentException(
+                    "Achievement with name " + @object.Id + " already exists.");
+            }
+            _containers.Add(@object.Id, @object);
+        }
 
-            service.OnTransactionMade += async (msg, u1, u2, amount) =>
-			{
-				TransactionPacket p = new TransactionPacket()
-				{
-					discordUser = msg.Author,
-					discordChannel = await msg.GetChannelAsync(),
-					giver = u1,
-					receiver = u2,
-					amount = amount
-				};
+        public AchievementObject GetAchievementOrDefault(string id)
+            => _containers.TryGetValue(id, out var achievement) 
+                ? achievement 
+                : null;
 
-				await OnTransaction?.Invoke(p);
-			};
-		}
+        public AchievementObject GetAchievement(string id) 
+            => GetAchievementOrDefault(id) 
+               ?? throw new InvalidOperationException("Achievement not found");
 
-        public AchievementDataContainer GetContainerById(string id)
+        public string PrintAchievements(List<Achievement> achievements)
 		{
-			if(this._containers.ContainsKey(id))
-			{
-				return this._containers[id];
-			}
-
-			Log.Warning($"Could not load AchievementContainer {id}");
-			return null;
-		}
-
-		public string PrintAchievements(List<Achievement> achievementNames)
-		{
-            if(achievementNames == null 
-               || !achievementNames.Any())
+            if(achievements == null 
+               || !achievements.Any())
             {
                 return string.Empty;
             }
 
             string output = string.Empty;
-            foreach(var a in achievementNames)
+            foreach(var a in achievements)
             {
                 if(!this._containers.TryGetValue(a.Name, out var value))
                 {
                     continue;
                 }
 
-                if(a.Rank < value.Achievements.Count)
+                if(a.Rank < value.Entries.Count())
                 {
-                    output += value.Achievements[a.Rank].Icon + " ";
+                    output += value.Entries.ElementAt(a.Rank).Icon + " ";
                 }
             }
 			return output;
 		}
 
-        public async Task CallAchievementUnlockEventAsync(
-            DbContext context,
-            IAchievement achievement, 
-            IDiscordUser user,
-            IDiscordTextChannel channel)
+        public async Task UnlockAsync(DbContext context, AchievementObject achievement, ulong userId, int rank = 0)
         {
-            if(context == null)
+            if (achievement.Entries.Count >= rank)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentOutOfRangeException(nameof(rank));
             }
 
-            if(!(achievement is AchievementAchievement))
+            var currentAchievement = await _repository.GetAsync(achievement.Id, (long)userId);
+            if (currentAchievement.Rank >= rank)
             {
-                // Ignore event if this achievement was gained from this event.
                 return;
             }
 
-            long id = (long)user.Id;
-
-            int achievementCount = await context
-                .Set<Achievement>()
-                .Where(q => q.UserId == id)
-                .CountAsync()
-                .ConfigureAwait(false);
-
-            AchievementPacket p = new AchievementPacket()
+            await _repository.AddAsync(new Achievement
             {
-                discordUser = user,
-                discordChannel = channel,
-                achievement = achievement,
-                count = achievementCount
-            };
+                Name = achievement.Id,
+                Rank = (short) rank,
+                UnlockedAt = DateTime.UtcNow,
+                UserId = (long) userId
+            });
 
-            if(this.OnAchievementUnlocked != null)
-            {
-                await this.OnAchievementUnlocked.Invoke(p)
-                    .ConfigureAwait(false);
-            }
-        }
-
-        public async Task CallTransactionMadeEventAsync(IDiscordGuildChannel m, User receiver, User giver, int amount)
-		{
-			try
-			{
-				TransactionPacket p = new TransactionPacket();
-				if(m is IDiscordTextChannel tc)
-				{
-					p.discordChannel = tc;
-				}
-				p.discordUser = await m.GetUserAsync(receiver.Id.FromDbLong());
-
-				if(giver != null)
-				{
-					p.giver = giver;
-				}
-
-				p.receiver = receiver;
-
-				p.amount = amount;
-
-				if(OnTransaction != null)
-				{
-					await OnTransaction?.Invoke(p);
-				}
-			}
-			catch(Exception e)
-			{
-				Log.Warning($"Achievement check failed: {e.ToString()}");
-			}
-		}
-
-        public void AddAchievement(string name, params IAchievement[] achievements)
-        {
-            if(!achievements.Any())
-            {
-                throw new ArgumentNullException(nameof(achievements));
-            }
-
-            var a = new AchievementDataContainer(this)
-            {
-                Name = name
-            };
-
-            a.Achievements.AddRange(achievements);
-            this._containers.Add(name, a);
+            await context.SaveChangesAsync();
         }
     }
 }

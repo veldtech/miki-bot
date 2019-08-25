@@ -1,6 +1,5 @@
 ﻿namespace Miki.Modules.Gambling
 {
-    using Miki.Accounts.Achievements.Objects;
     using Miki.API.Cards.Objects;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
@@ -606,14 +605,10 @@
                 {
                     moneyReturned = (int)Math.Ceiling(bet * 75f);
 
-                    await e.GetService<AchievementService>()
-                        .GetContainerById("slots")
-                        .CheckAsync(new BasePacket()
-                        {
-                            discordChannel = e.GetChannel(),
-                            discordUser = e.GetAuthor()
-                        })
-                        .ConfigureAwait(false);
+                    var achievements = e.GetService<AchievementService>();
+                    var slotsAchievement = achievements.GetAchievement("slots");
+                    await achievements.UnlockAsync(context, slotsAchievement, e.GetAuthor().Id);
+
                 }
             }
 

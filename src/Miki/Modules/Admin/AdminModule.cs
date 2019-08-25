@@ -17,15 +17,24 @@ using Miki.Models;
 using Miki.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord.Common.Utils;
+using Miki.Framework.Commands.Permissions.Exceptions;
+using Miki.Modules.Admin.Exceptions;
 
 namespace Miki.Modules
 {
     [Module("Admin")]
     public class AdminModule
     {
+        #region resource uris
+        private const string PruneErrorNoMessages = "miki_module_admin_prune_no_messages";
+        private const string PruneSuccess = "miki_module_admin_prune_success";
+        #endregion
         [Command("ban")]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task BanAsync(IContext e)
@@ -253,9 +262,7 @@ namespace Miki.Modules
                 await e.GetMessage()
                     .DeleteAsync();
 
-                await e.ErrorEmbed(locale.GetString(
-                        "miki_module_admin_prune_no_messages",
-                        e.GetPrefixMatch()))
+                await e.ErrorEmbed(locale.GetString(PruneErrorNoMessages, e.GetPrefixMatch()))
                     .ToEmbed()
                     .QueueAsync(e.GetChannel());
                 return;
@@ -280,7 +287,7 @@ namespace Miki.Modules
                     .DeleteMessagesAsync(deleteMessages.ToArray());
             }
 
-            await e.SuccessEmbedResource("miki_module_admin_prune_success", deleteMessages.Count)
+            await e.SuccessEmbedResource(PruneSuccess, deleteMessages.Count)
                 .QueueAsync(e.GetChannel())
                 .ThenWaitAsync(5000)
                 .ThenDeleteAsync();
@@ -289,76 +296,155 @@ namespace Miki.Modules
         [Command("permissions")]
         public class PermissionsCommand
         {
-            [Command("set")]
+            private const string PermissionSet = "permission_set";
+
+            [Command("allow")]
             [RequiresPipelineStage(typeof(PermissionPipelineStage))]
             [DefaultPermission(PermissionStatus.Deny)]
-            public async Task SetPermissionsAsync(IContext e)
+            public Task AllowPermissionsAsync(IContext e)
+            {
+                return SetPermissionsAsync(e, PermissionStatus.Allow);
+            }
+
+            [Command("deny")]
+            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
+            [DefaultPermission(PermissionStatus.Deny)]
+            public Task DenyPermissionsAsync(IContext e)
+            {
+                return SetPermissionsAsync(e, PermissionStatus.Deny);
+            }
+
+            [Command("reset")]
+            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
+            [DefaultPermission(PermissionStatus.Deny)]
+            public Task ResetPermissionsAsync(IContext e)
+            {
+                return SetPermissionsAsync(e, PermissionStatus.Default);
+            }
+
+            [Command("list")]
+            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
+            [DefaultPermission(PermissionStatus.Deny)]
+            public async Task ListPermissionsAsync(IContext e)
+            {
+                var db = e.GetService<DbContext>();
+                var permissions = e.GetStage<PermissionPipelineStage>();
+                var allPermissions = await permissions.GetPermissionsForChannelAsync(
+                    db, 
+                    (long)e.GetChannel().Id);
+                if (!allPermissions.Any())
+                {
+                    await e.GetChannel()
+                        .SendMessageAsync("empty");
+                    return;
+                }
+
+                await e.GetChannel()
+                    .SendMessageAsync(
+                        string.Join(
+                            "\n",
+                            allPermissions.Select(x => $"{x.Status} {x.CommandName} for {x.Type} {x.EntityId}")));
+            }
+
+            private class Entity
+            {
+                public long Id { get; set; }
+                public string Resource { get; set; }
+            }
+
+            private async Task SetPermissionsAsync(IContext e, PermissionStatus level)
             {
                 var permissions = e.GetStage<PermissionPipelineStage>();
                 var commands = e.GetStage<CommandHandlerStage>();
 
                 var db = e.GetService<DbContext>();
 
-                if (!e.GetArgumentPack().Take(out string permission))
-                {
-                    return;
-                }
-
-                if (!Enum.TryParse<PermissionStatus>(permission, true, out var level))
-                {
-                    // invalid permission level
-                    return;
-                }
-
-                if (!e.GetArgumentPack().Take(out string type))
-                {
-                    return;
-                }
-
-                if (!Enum.TryParse<EntityType>(type, true, out var entityType))
-                {
-                    // invalid permission level
-                    return;
-                }
-
-                if (!e.GetArgumentPack().Take(out string user))
-                {
-                    return;
-                }
-
-                var userObject = await e.GetGuild().FindUserAsync(user);
-                if (userObject == null)
-                {
-                    await e.ErrorEmbedResource("error_user_null", user)
-                        .ToEmbed()
-                        .QueueAsync(e.GetChannel());
-                    return;
-                }
-
-                if (!e.GetArgumentPack().Take(out string commandName))
+                if(!e.GetArgumentPack().Take(out string commandName))
                 {
                     return;
                 }
                 var command = commands.GetCommand(commandName.Replace('.', ' '));
-                if (command as IExecutable == null)
+                if(!(command is IExecutable executable))
                 {
                     //invalid command
                     return;
                 }
 
-                var ownPermission = await permissions.GetAllowedForUser(db, e.GetAuthor(), e.GetChannel(), command as IExecutable);
-                if (!ownPermission)
+                var ownPermission = await permissions.GetAllowedForUser(
+                    db, 
+                    e.GetAuthor(),
+                    e.GetChannel(),
+                    executable);
+                if(!ownPermission)
                 {
-                    await e.ErrorEmbedResource("error_permissions_invalid")
-                        .ToEmbed()
-                        .QueueAsync(e.GetChannel());
+                    throw new PermissionUnauthorizedException();
+                }
+
+                if(!e.GetArgumentPack().Take(out string type))
+                {
                     return;
                 }
 
-                await permissions.SetForUserAsync(e, (long)userObject.Id, entityType, commandName, level);
+                if(!Enum.TryParse<EntityType>(type, true, out var entityType))
+                {
+                    // invalid permission level
+                    return;
+                }
 
-                await e.SuccessEmbedResource("permission_set", userObject.Username, level)
+                if(!e.GetArgumentPack().Take(out string resource))
+                {
+                    return;
+                }
+
+                Entity entity = await GetEntityAsync(e, entityType, resource);
+
+                await permissions.SetForUserAsync(e, entity.Id, entityType, commandName, level);
+
+                await e.SuccessEmbedResource(PermissionSet, entity.Resource, level)
                     .QueueAsync(e.GetChannel());
+            }
+
+            private async Task<Entity> GetEntityAsync(IContext e, EntityType type, string resource)
+            {
+                var entity = new Entity();
+                switch(type)
+                {
+                    case EntityType.User:
+                    {
+                        var userObject = await e.GetGuild().FindUserAsync(resource);
+                        if(userObject == null)
+                        {
+                            throw new UserNullException();
+                        }
+
+                        entity.Id = (long)userObject.Id;
+                        entity.Resource = userObject.Username;
+                    }
+                        break;
+
+                    case EntityType.Channel:
+                    {
+                        if(!Mention.TryParse(resource, out var mention))
+                        {
+                            throw new ArgumentException(nameof(mention));
+                        }
+
+                        if (mention.Type != MentionType.CHANNEL)
+                        {
+                            throw new InvalidMentionTypeException(MentionType.CHANNEL, mention.Type);
+                        }
+
+                        entity.Id = (long)mention.Id;
+                        entity.Resource = (await e.GetGuild().GetChannelAsync(mention.Id)).Name;
+                    }
+                        break;
+
+                    default:
+                    {
+                        throw new NotSupportedException();
+                    }
+                }
+                return entity;
             }
         }
 
@@ -418,7 +504,7 @@ namespace Miki.Modules
                 outputDesc += " in every channel";
             }
 
-            await Utils.SuccessEmbed(e, outputDesc)
+            await e.SuccessEmbed(outputDesc)
                 .QueueAsync(e.GetChannel());
         }
 

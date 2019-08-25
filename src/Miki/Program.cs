@@ -1,4 +1,5 @@
 ﻿﻿using Amazon.S3;
+ using Miki.Bot.Models.Repositories;
 
  namespace Miki
 {
@@ -179,7 +180,8 @@
             new LogBuilder()
                 .AddLogEvent((msg, lvl) =>
                 {
-                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), Environment.GetEnvironmentVariable(Constants.ENV_LogLvl)))
+                    if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), 
+                            Environment.GetEnvironmentVariable(Constants.ENV_LogLvl)))
                     {
                         Console.WriteLine(msg);
                     }
@@ -286,14 +288,21 @@
 			// Setup Entity Framework
             {
                 app.Services.AddDbContext<MikiDbContext>(x
-                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
+                    => x.UseNpgsql(
+                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr), 
+                        b => b.MigrationsAssembly("Miki.Bot.Models")));
                 app.Services.AddDbContext<DbContext, MikiDbContext>(x
-                    => x.UseNpgsql(Environment.GetEnvironmentVariable(Constants.ENV_ConStr), b => b.MigrationsAssembly("Miki.Bot.Models")));
+                    => x.UseNpgsql(
+                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr), 
+                        b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
+
+            app.Services.AddTransient<AchievementRepository>();
 
             // Setup Miki API
             {
-                if (!string.IsNullOrWhiteSpace(config.MikiApiBaseUrl) && !string.IsNullOrWhiteSpace(config.MikiApiKey))
+                if (!string.IsNullOrWhiteSpace(config.MikiApiBaseUrl) 
+                    && !string.IsNullOrWhiteSpace(config.MikiApiKey))
                 {
                     app.AddSingletonService(new MikiApiClient(config.MikiApiKey));
                 }
@@ -305,7 +314,9 @@
 
             // Setup Amazon CDN Client
             {
-                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) && !string.IsNullOrWhiteSpace(config.CdnSecretKey) && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
+                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) 
+                   && !string.IsNullOrWhiteSpace(config.CdnSecretKey) 
+                   && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
                 {
                     app.AddSingletonService(new AmazonS3Client(
                         config.CdnAccessKey, 
