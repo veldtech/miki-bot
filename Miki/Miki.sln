@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki", "Miki.csproj", "{154
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Arguments", "..\Miki.Framework\Miki.Framework.Arguments\Miki.Framework.Arguments.csproj", "{09A3A767-E8C2-46AC-89C3-384F7495050B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Retsu.Consumer", "..\..\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj", "{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miki.Framework.Commands", "..\Miki.Framework\Miki.Framework.Commands\Miki.Framework.Commands\Miki.Framework.Commands.csproj", "{9CCB5344-4E1A-4098-8627-39105E66E5E1}"
 EndProject
 Global
@@ -65,14 +63,6 @@ Global
 		{09A3A767-E8C2-46AC-89C3-384F7495050B}.Prod|Any CPU.Build.0 = Debug|Any CPU
 		{09A3A767-E8C2-46AC-89C3-384F7495050B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09A3A767-E8C2-46AC-89C3-384F7495050B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Prod|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Prod|Any CPU.Build.0 = Debug|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EB8C3DD-916D-4427-AA56-4B64E4578FDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Debug Production|Any CPU.ActiveCfg = Debug|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Debug Production|Any CPU.Build.0 = Debug|Any CPU
 		{9CCB5344-4E1A-4098-8627-39105E66E5E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
