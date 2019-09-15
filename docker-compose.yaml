@@ -1,46 +1,8 @@
 version: "3.5"
 services:
-  miki_postgres:
-    container_name: miki_postgres
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_DB: Miki
-      POSTGRES_USER: Veld
-    networks:
-      - mikinet
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg-data
-      - ./config.sql:/docker-entrypoint-initdb.d/init.sql
-  miki_redis:
-    container_name: miki_redis
-    image: redis
-    command: ["redis-server", "--appendonly", "yes"]
-    restart: always
-    networks:
-      - mikinet
-    volumes:
-      - redis-data
-  miki_bot:
-    container_name: miki_bot
+  miki:
+    container_name: miki
     build:
       context: .
       dockerfile: Dockerfile
-    networks:
-      - mikinet
-    depends_on:
-      - miki_postgres
-      - miki_redis
-    environment:
-      BOT_TOKEN: "YOUR_BOT_TOKEN_HERE"
-    volumes:
-      - ./selfhost.json:/app/miki/settings.json
-      - ./selfhost.json:/app/Miki/miki/settings.json
-networks:
-  mikinet:
-    name: mikinet
-volumes:
-  pg-data:
-  redis-data:
+    network_mode: "host"
