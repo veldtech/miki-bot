@@ -313,3 +313,4 @@ __pycache__/
 .vs/Miki/v15/.suo
 Miki/App.config
 settings.json
+.env
