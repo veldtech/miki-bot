@@ -12,3 +12,4 @@ RUN mkdir -p /app
 RUN cp -r $BUILD_FOLDER/* /app
 
 ENTRYPOINT ["dotnet", "/app/Miki.dll"]
+

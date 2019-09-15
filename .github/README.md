@@ -22,35 +22,25 @@ Support server: https://discord.gg/39Xpj7K<br>
 
 
 ## Installation Steps:
-
 1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
 
 2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
 
-3) Add your bot token in Miki/miki/settings.json.
+3) Add your bot token in Miki/miki/settings.json
 
-4) Download [Redis](https://redis.io/download) and get that running too.
+#### Important:
+Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
 
-5) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
+If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you.
 
-6) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
+1. Download docker and docker-compose. [For Windows users](https://docs.docker.com/docker-for-windows/install/),
+[For Mac users](https://docs.docker.com/docker-for-mac/install/), and if you're on Linux you already know what you're doing.
 
-```json
-"connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
-```
+2. Add your bot token in `selfhost.json` under "token"
 
-7) Install the `uuid-ossp` postgres extensions on the `Miki` database.
+3. `docker-compose up -d miki_postgres`
 
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-```
-
-8) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
-
-    * Tools -> NuGet Package Manager -> Package Manager Console
-    
-9) Run Miki. 🎉
-
+<<<<<<< HEAD
 
 #### Important:
 Currently the Miki API is __private__, meaning you won't have access to the leaderboards until the API is released publicly. More information will be available [here](https://github.com/mikibot/miki/wiki/API-Leaderboards) when that happens.
@@ -63,8 +53,6 @@ If you have any questions about the setup process **do not** ask in the support 
 2. `docker-compose up -d miki_postgres`
 
 3. `docker build -t miki_bot . --network=mikinet`
-
-4. `docker-compose -d up`
 
 These steps are only required **once** for installation. After that 
 you can just do `docker-compose -d up` and `docker-compose down`
