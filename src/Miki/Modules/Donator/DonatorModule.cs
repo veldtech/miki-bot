@@ -1,18 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Bot.Models;
+﻿using Miki.Bot.Models;
 using Miki.Discord;
-using Miki.Discord.Common;
 using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Events;
-using Miki.Localization.Exceptions;
 using Miki.Logging;
-using Miki.Models;
 using Miki.Modules.Donator.Exceptions;
-using Miki.Rest;
 using Miki.Helpers;
 using System;
 using System.IO;
@@ -56,7 +49,7 @@ namespace Miki.Modules.Donator
 				DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
 				User u = await User.GetAsync(context, id, e.GetAuthor().Username);
 
-				await u.AddCurrencyAsync(30000, e.GetChannel());
+				u.AddCurrency(30000);
 				context.DonatorKey.Remove(key);
 
 				await context.SaveChangesAsync();

@@ -2,19 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <Configurations>Debug;Release;Debug Production;Prod</Configurations>
 	  <Deterministic>False</Deterministic>
 	  <Version>2019.2</Version>
 	  <AssemblyVersion>2019.2.0.0</AssemblyVersion>
-	  <LangVersion>7.3</LangVersion>
+	  <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>CA1822</NoWarn>
-    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Prod|AnyCPU'">
@@ -25,7 +24,10 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.31.5" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="3.3.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Miki.Anilist" Version="0.6.0" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.0-beta2" />
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.3.0" />
@@ -37,8 +39,7 @@
     <PackageReference Include="MiScript" Version="0.1.2" />
     <PackageReference Include="NCalc.NetCore" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.8" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+    <PackageReference Include="Npgsql" Version="4.1.0-preview2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="SharpRaven" Version="2.4.0" />
   </ItemGroup>
@@ -284,6 +285,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Modules\Gambling\Managers\RPS\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
@@ -294,7 +296,6 @@
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Scopes\Miki.Framework.Commands.Scopes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Services\Miki.Framework.Services.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />

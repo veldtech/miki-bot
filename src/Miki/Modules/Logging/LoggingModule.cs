@@ -1,23 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Events;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules.Logging
 {
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     [Module("eventmessages")]
-    public class EventMessageModule
+    public class LoggingModule
     {
         /*
          * -u   = user's name
@@ -29,7 +24,7 @@ namespace Miki.Modules
 		 * -uc  = user count
          */
 
-        public EventMessageModule()
+        public LoggingModule()
         {
             //m.UserJoinGuild = async (user) =>
             //{

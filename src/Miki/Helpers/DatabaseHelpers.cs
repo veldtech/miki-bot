@@ -1,5 +1,6 @@
 ﻿namespace Miki.Helpers
 {
+    using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Cache;
@@ -18,7 +19,7 @@
         {
             string key = $"achievement:{userId}:{name}";
 
-            var cache = MikiApp.Instance.GetService<ICacheClient>();
+            var cache = MikiApp.Instance.Services.GetService<ICacheClient>();
 
             Achievement a = await cache.GetAsync<Achievement>(key);
             if (a != null)
@@ -33,13 +34,15 @@
 
 		internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
 		{
-            var cache = MikiApp.Instance.GetService<ICacheClient>();
+            var cache = MikiApp.Instance.Services.GetService<ICacheClient>();
 
             string key = $"achievement:{userId}:{name}";
 			await cache.UpsertAsync(key, achievement);
 		}
 
-		public static async Task AddCurrencyAsync(this User user, int amount, IDiscordChannel channel = null, User fromUser = null)
+		public static void AddCurrency(
+            this User user, 
+            int amount)
 		{
 			if (amount < 0)
 			{
@@ -50,12 +53,7 @@
             DogStatsd.Counter("currency.change", amount);
 
 			user.Currency += amount;
-
-			//if(channel is IDiscordGuildChannel guildchannel)
-			//{
-			//	await AchievementService.Instance.CallTransactionMadeEventAsync(guildchannel, user, fromUser, amount);
-			//}
-		}
+        }
 
 		public static void RemoveCurrency(this User user, int amount)
 		{
@@ -66,7 +64,7 @@
 
 			if(user.Currency < amount)
 			{
-				throw new InsufficientCurrencyException(user.Currency, (long)amount);
+				throw new InsufficientCurrencyException(user.Currency, amount);
 			}
 
             // TODO #535: Move to DatadogService

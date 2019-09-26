@@ -1,31 +1,25 @@
-﻿    using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Localization;
-using Miki.Framework.Commands.Permissions;
-using Miki.Framework.Commands.Permissions.Attributes;
-using Miki.Framework.Commands.Stages;
-using Miki.Framework.Events;
-using Miki.Localization;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
-	public enum LevelNotificationsSetting
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Cache;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands.Localization;
+    using Miki.Framework.Commands.Stages;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    public enum LevelNotificationsSetting
 	{
 		RewardsOnly = 0,
 		All = 1,
-		None = 2
+		NONE = 2
 	}
 
     public enum AchievementNotificationSetting

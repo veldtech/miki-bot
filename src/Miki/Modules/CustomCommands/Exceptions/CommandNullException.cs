@@ -9,13 +9,13 @@ namespace Miki.Modules.CustomCommands.Exceptions
     public class CommandNullException : LocalizedException
     {
         public override IResource LocaleResource 
-            => new LanguageResource("error_command_null", _commandName);
+            => new LanguageResource("error_command_null", commandName);
 
-        private string _commandName;
+        private readonly string commandName;
 
         public CommandNullException(string commandName)
         {
-            _commandName = commandName;
+            this.commandName = commandName;
         }
     }
 }

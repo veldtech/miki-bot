@@ -13,6 +13,7 @@ namespace Miki.Modules.Internal.Routines
     using Miki.Framework.Commands.Nodes;
     using Miki.Logging;
     using Miki.Services.Achievements;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class DatadogRoutine
 	{
@@ -26,16 +27,16 @@ namespace Miki.Modules.Internal.Routines
             DogStatsd.Configure(new StatsdConfig
             {
                 // TODO #534: Change to [Configurable]
-                StatsdServerName = app.GetService<Config>().DatadogHost,
+                StatsdServerName = app.Services.GetService<Config>().DatadogHost,
                 StatsdPort = 8125,
                 Prefix = "miki"
             });
             
-            CreateAccountMetrics(app.GetService<AccountService>());
+            CreateAccountMetrics(app.Services.GetService<AccountService>());
 
-            CreateAchievementsMetrics(app.GetService<AchievementService>());
+            CreateAchievementsMetrics(app.Services.GetService<AchievementService>());
 
-            CreateEventSystemMetrics(app.GetService<CommandPipeline>());
+            CreateEventSystemMetrics(app.Services.GetService<CommandPipeline>());
 
             CreateDiscordMetrics();
 
@@ -85,8 +86,7 @@ namespace Miki.Modules.Internal.Routines
         }
 		private void CreateDiscordMetrics()
 		{
-			var discord = MikiApp.Instance
-				.GetService<DiscordClient>();
+			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
 			if(discord == null)
 			{
 				return;
@@ -121,8 +121,8 @@ namespace Miki.Modules.Internal.Routines
 
         private void CreateHttpMetrics()
 		{
-			var discordHttpClient = MikiApp.Instance
-			   .GetService<DiscordApiClient>()?.RestClient;
+			var discordHttpClient = MikiApp.Instance.Services
+                .GetService<DiscordApiClient>().RestClient;
 			if(discordHttpClient == null)
 			{
 				return;

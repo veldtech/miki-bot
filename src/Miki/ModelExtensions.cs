@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Models.User;
@@ -58,8 +59,7 @@ namespace Miki
 
 		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
 		{
-			return await MikiApp.Instance
-                .GetService<DiscordClient>()
+			return await MikiApp.Instance.Services.GetService<DiscordClient>()
                 .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
 		}
 

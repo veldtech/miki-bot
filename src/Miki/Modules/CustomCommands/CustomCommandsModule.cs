@@ -1,38 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Miki.Attributes;
-using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Commands.Pipelines;
-using Miki.Framework.Commands.Stages;
-using Miki.Framework.Events;
-using Miki.Framework.Events.Triggers;
-using Miki.Logging;
-using Miki.Modules.CustomCommands.CommandHandlers;
-using Miki.Modules.CustomCommands.Exceptions;
-using MiScript;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Modules.CustomCommands
+﻿namespace Miki.Modules.CustomCommands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Attributes;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands.Stages;
+    using Miki.Framework.Events;
+    using Miki.Framework.Events.Triggers;
+    using Miki.Logging;
+    using Miki.Modules.CustomCommands.CommandHandlers;
+    using Miki.Modules.CustomCommands.Exceptions;
+    using MiScript;
+    using MiScript.Models;
+    using MiScript.Parser;
+
     [Module("CustomCommands")]
     public class CustomCommandsModule
     {
-        private readonly Tokenizer _tokenizer = new Tokenizer();
+        private readonly Tokenizer tokenizer = new Tokenizer();
 
 		public CustomCommandsModule(MikiApp app)
 		{
-			var pipeline = new CommandPipelineBuilder(app)
+			var pipeline = new CommandPipelineBuilder(app.Services)
 				.UseStage(new CorePipelineStage())
 				.UseArgumentPack()
 				.UsePrefixes(
@@ -41,8 +38,8 @@ namespace Miki.Modules.CustomCommands
 					new MentionTrigger())
 				.UseStage(new CustomCommandsHandler())
 				.Build();
-			app.GetService<IDiscordClient>()
-				.MessageCreate += pipeline.CheckAsync;
+			app.Services.GetService<IDiscordClient>()
+				.MessageCreate += pipeline.ExecuteAsync;
 		}
 
         [GuildOnly, Command("createcommand")]
@@ -71,25 +68,25 @@ namespace Miki.Modules.CustomCommands
 
                 try
                 {
-                    //var tokens = _tokenizer.Tokenize(scriptBody);
-                    //var values = tokens.Where(x => x.TokenType == Tokens.Argument)
-                    //    .Select(x => x.Value);
+                    var tokens = tokenizer.Tokenize(scriptBody).ToList();
+                    var values = tokens.Where(x => x.TokenType == Tokens.Argument)
+                        .Select(x => x.Value);
 
-                    //var context = new Dictionary<string, object>();
-                    //foreach(var v in values)
-                    //{
-                    //    if(context.ContainsKey(v))
-                    //    {
-                    //        continue;
-                    //    }
-                    //    context.Add(v, "");
-                    //}
+                    var context = new Dictionary<string, object>();
+                    foreach(var v in values)
+                    {
+                        if(context.ContainsKey(v))
+                        {
+                            continue;
+                        }
+                        context.Add(v, "");
+                    }
 
-                    //new Parser(tokens).Parse(context);
+                    new Parser(tokens).Parse(context);
                 }
                 catch(Exception ex)
                 {
-                    await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex.ToString()}```")
+                    await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex}```")
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }

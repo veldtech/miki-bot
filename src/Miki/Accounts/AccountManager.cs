@@ -71,7 +71,7 @@
 
                     switch(setting)
                     {
-                        case LevelNotificationsSetting.None:
+                        case LevelNotificationsSetting.NONE:
                         case LevelNotificationsSetting.RewardsOnly when rolesObtained.Count == 0:
                             return;
                         case LevelNotificationsSetting.All:
@@ -158,7 +158,7 @@
                 if(await e.GetChannelAsync()
                     .ConfigureAwait(false) is IDiscordGuildChannel channel)
                 {
-                    ICacheClient cache = MikiApp.Instance.GetService<ICacheClient>();
+                    ICacheClient cache = MikiApp.Instance.Services.GetService<ICacheClient>();
 
                     string key = this.GetContextKey(channel.GuildId, e.Author.Id);
 

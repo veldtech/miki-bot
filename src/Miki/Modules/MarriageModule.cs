@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Bot.Models.Repositories;
@@ -234,7 +235,7 @@ namespace Miki.Modules
 			if(e.GetArgumentPack().Take(out int selectionId))
 			{
 				var m = marriages[selectionId - 1];
-				string otherName = (await MikiApp.Instance
+				string otherName = (await MikiApp.Instance.Services
 					.GetService<DiscordClient>()
 					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())).Username;
 
@@ -287,8 +288,8 @@ namespace Miki.Modules
 			if(e.GetArgumentPack().Take(out int selectionId))
 			{
 				var m = marriages[selectionId - 1];
-				var otherUser = await MikiApp.Instance
-					.GetService<DiscordClient>()
+				var otherUser = await MikiApp.Instance.Services
+                    .GetService<DiscordClient>()
 					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong());
 
 				await new EmbedBuilder
@@ -424,8 +425,8 @@ namespace Miki.Modules
 			foreach(UserMarriedTo p in proposals)
 			{
 				long id = p.GetOther(e.GetAuthor().Id.ToDbLong());
-				string u = (await MikiApp.Instance
-					.GetService<DiscordClient>()
+				string u = (await MikiApp.Instance.Services
+                    .GetService<DiscordClient>()
 					.GetUserAsync(id.FromDbLong())).Username;
 				proposalNames.Add($"{u} [{id}]");
 			}
@@ -486,7 +487,7 @@ namespace Miki.Modules
             IReadOnlyList<UserMarriedTo> marriages)
 		{
 			StringBuilder builder = new StringBuilder();
-			var discord = MikiApp.Instance.GetService<DiscordClient>();
+			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
 
 			for(int i = 0; i < marriages.Count; i++)
             {

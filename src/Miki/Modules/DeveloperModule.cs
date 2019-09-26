@@ -169,40 +169,6 @@
 			e.GetChannel().QueueMessage($"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
 		}
 
-		[Command("setactivity")]
-        [RequiresScope("developer.internal")]
-        public async Task SetGameAsync(IContext e)
-		{
-			/*if(!e.GetArgumentPack().Take(out string arg))
-			{
-				return;
-			}
-
-			ActivityType type = arg.FromEnum(ActivityType.Playing);
-
-            string text = e.GetArgumentPack().Pack.TakeAll();
-			string url = null;
-
-			if (type == ActivityType.Streaming)
-				url = "https://twitch.tv/velddev";
-
-			for (int i = 0; i < Global.Config.ShardCount; i++)
-			{
-				await e.GetService<DiscordClient>()
-                    .SetGameAsync(i, new DiscordStatus
-				{
-					Game = new Discord.Common.Packets.DiscordActivity
-					{
-						Name = text,
-						Url = url,
-						Type = type
-					},
-					Status = "online",
-					IsAFK = false
-				});
-			}*/
-		}
-
 		[Command("ignore")]
         [RequiresScope("developer")]
         public Task IgnoreIdAsync(IContext e)

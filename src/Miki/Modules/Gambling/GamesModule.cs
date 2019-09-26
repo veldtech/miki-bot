@@ -1,4 +1,6 @@
-﻿namespace Miki.Modules.Gambling
+﻿using Miki.Services.Rps;
+
+namespace Miki.Modules.Gambling
 {
     using Miki.API.Cards.Objects;
     using Miki.Bot.Models;
@@ -27,8 +29,13 @@
             public async Task RpsAsync(IContext e)
             {
                 var context = e.GetService<MikiDbContext>();
+
                 User user = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username)
                     .ConfigureAwait(false);
+                if (user == null)
+                {
+                    return;
+                }
 
                 int bet = ValidateBet(e, user, 10000);
 
@@ -42,13 +49,13 @@
                         .ConfigureAwait(false);
                 }
 
-                RPSManager rps = RPSManager.Instance;
+                var rps = e.GetService<RpsService>();
                 EmbedBuilder resultMessage = new EmbedBuilder()
                     .SetTitle("Rock, Paper, Scissors!");
 
                 e.GetArgumentPack().Take(out string weapon);
 
-                if (!rps.TryParse(weapon, out RPSWeapon playerWeapon))
+                if (!rps.TryParse(weapon, out RpsWeapon playerWeapon))
                 {
                     await resultMessage.SetDescription("Invalid weapon!")
                         .ToEmbed()
@@ -57,45 +64,36 @@
                     return;
                 }
 
-                RPSWeapon botWeapon = rps.GetRandomWeapon();
+                RpsWeapon botWeapon = rps.GetRandomWeapon();
 
                 resultMessage.SetDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
 
                 switch (rps.CalculateVictory(playerWeapon, botWeapon))
                 {
-                    case RPSManager.VictoryStatus.WIN:
+                    case RpsService.VictoryStatus.WIN:
                     {
-                        if (user != null)
-                        {
-                            await user.AddCurrencyAsync((int)(bet * rewardMultiplier), e.GetChannel())
-                                .ConfigureAwait(false);
-                            await context.SaveChangesAsync()
-                                .ConfigureAwait(false);
-                        }
-                        resultMessage.Description += $"\n\nYou won `{(int)(bet * rewardMultiplier)}` mekos! Your new balance is `{user.Currency}`.";
-                    }
-                    break;
+                        user.AddCurrency((int) (bet * rewardMultiplier));
+                        await context.SaveChangesAsync()
+                            .ConfigureAwait(false);
+                        resultMessage.Description += $"\n\nYou won `{(int) (bet * rewardMultiplier)}` " 
+                                                     + $"mekos! Your new balance is `{user.Currency}`.";
+                    } break;
 
-                    case RPSManager.VictoryStatus.LOSE:
+                    case RpsService.VictoryStatus.LOSE:
                     {
-                        if (user != null)
-                        {
-                            user.RemoveCurrency(bet);
-                            await context.SaveChangesAsync()
-                                .ConfigureAwait(false);
-                        }
+                        user.RemoveCurrency(bet);
+                        await context.SaveChangesAsync()
+                            .ConfigureAwait(false);
 
-                        resultMessage.Description += $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
-                    }
-                    break;
+                        resultMessage.Description +=
+                            $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
+                    } break;
 
-                    case RPSManager.VictoryStatus.DRAW:
+                    case RpsService.VictoryStatus.DRAW:
                     {
-                        resultMessage.Description += $"\n\nIt's a draw! no mekos were lost!.";
-                    }
-                    break;
+                        resultMessage.Description += "\n\nIt's a draw! no mekos were lost!.";
+                    } break;
                 }
-
                 await resultMessage.ToEmbed()
                     .QueueAsync(e.GetChannel())
                     .ConfigureAwait(false);
@@ -300,8 +298,7 @@
                 User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
                 if(user != null)
                 {
-                    await user.AddCurrencyAsync(bm.Bet, e.GetChannel())
-                        .ConfigureAwait(false);
+                    user.AddCurrency(bm.Bet);
                     await context.SaveChangesAsync()
                         .ConfigureAwait(false);
                 }
@@ -344,8 +341,8 @@
                     {
                         Embed = bm.CreateEmbed(e)
                                 .SetAuthor(
-                                    e.GetLocale().GetString("miki_blackjack_lose_title") 
-                                    + " | " + e.GetAuthor().Username,
+                                    e.GetLocale().GetString("miki_blackjack_lose_title") + 
+                                    " | " + e.GetAuthor().Username,
                                     (await e.GetGuild().GetSelfAsync()).GetAvatarUrl(), 
                                     "https://patreon.com/mikibot")
                                 .SetDescription(
@@ -369,9 +366,7 @@
                     .ConfigureAwait(false);
                 if(user != null)
                 {
-                    await user.AddCurrencyAsync(bm.Bet * 2, e.GetChannel())
-                        .ConfigureAwait(false);
-
+                    user.AddCurrency(bm.Bet * 2);
                     await api.EditMessageAsync(e.GetChannel().Id, bm.MessageId, new EditMessageArgs
                     {
                         Embed = bm.CreateEmbed(e)
@@ -456,8 +451,7 @@
             }
             else
             {
-                await u.AddCurrencyAsync(bet)
-                    .ConfigureAwait(false);
+                u.AddCurrency(bet);
             }
 
             await context.SaveChangesAsync()
@@ -627,8 +621,7 @@
                         "miki_module_fun_slots_win_amount", 
                         moneyReturned, 
                         u.Currency + moneyReturned));
-                await u.AddCurrencyAsync(moneyReturned, e.GetChannel())
-                    .ConfigureAwait(false);
+                u.AddCurrency(moneyReturned);
             }
             embed.Description = string.Join(" ", objectsChosen);
 

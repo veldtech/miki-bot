@@ -1,5 +1,6 @@
 ﻿﻿using Amazon.S3;
  using Miki.Bot.Models.Repositories;
+ using Miki.Services.Rps;
 
  namespace Miki
 {
@@ -64,7 +65,6 @@
                 {
                     Log.Error("Failed to migrate the database: " + ex.Message);
                     Log.Debug(ex.ToString());
-                    Console.ReadKey();
                     return;
                 }
             }
@@ -73,84 +73,28 @@
             {
                 try
                 {
-                    var conf = await Config.InsertNewConfigAsync(Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
-                    Console.WriteLine("New Config inserted into database with Id: " + conf.Id);
-                    Console.ReadKey();
+                    var conf = await Config.InsertNewConfigAsync(
+                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
+
+                    Console.WriteLine($"New Config inserted into database with Id '{conf.Id}'.");
                     return;
                 }
                 catch (Exception ex)
                 {
                     Log.Error("Failed to generate new config: " + ex.Message);
                     Log.Debug(ex.ToString());
-                    Console.ReadKey();
                     return;
                 }
             }
 
             CreateLogger();
-            
-            Log.Message("Loading services");
 
-			// Start the bot.
-			var appBuilder = new MikiAppBuilder();
-			await LoadServicesAsync(appBuilder)
-                .ConfigureAwait(false);
-			MikiApp app = appBuilder.Build();
+            Config c = await Config.GetOrInsertAsync(
+                Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
 
-            if (string.IsNullOrWhiteSpace(app.GetService<Config>().Token))
-            {
-                Log.Error("Token empty, update configuration in database");
-                Console.ReadKey();
-                return;
-            }
-
-			Log.Message("Building command tree");
-
-			var commandBuilder = new CommandTreeBuilder(app);
-
-			var configManager = app.GetService<ConfigurationManager>();
-			if(configManager != null)
-			{
-				commandBuilder.OnContainerLoaded += (c, sc) =>
-				{
-					var config = sc.GetService<ConfigurationManager>();
-					config.RegisterType(c.Instance.GetType(), c.Instance);
-				};
-			}
-
-			var cmd = commandBuilder.Create(Assembly.GetEntryAssembly());
-
-			Log.Message("Building command pipeline");
-
-			var commands = BuildPipeline(app, cmd);
-			await LoadFiltersAsync(app, commands);
-
-			if(configManager != null)
-			{
-				await LoadConfigAsync(configManager);
-			}
-
-			Log.Message("Connecting to Providers");
-
-			LoadDiscord(app, commands);
-
-			Log.Message("Loading Locales");
-
-			LoadLocales(commands);
-
-            for (int i = 0; i < int.Parse(Environment.GetEnvironmentVariable(Constants.ENV_MsgWkr)); i++)
-            {
-                MessageBucket.AddWorker();
-            }
-
-			await app.GetService<IGateway>()
-				.StartAsync()
-                .ConfigureAwait(false);
-
-			Log.Message("Ready to receive requests!");
-			await Task.Delay(-1)
-                .ConfigureAwait(false);
-		}
+            await new MikiBotApp(c)
+                .StartAsync();
+        }
 
         private static void CreateLogger()
         {
@@ -191,26 +135,7 @@
                 .Apply();
         }
 
-		private static CommandPipeline BuildPipeline(MikiApp app, CommandTree cmdTree)
-			=> new CommandPipelineBuilder(app)
-				.UseStage(new CorePipelineStage())
-				.UseFilters(
-					new BotFilter(),
-					new UserFilter()
-				)
-				.UsePrefixes(
-					new PrefixTrigger(">", true, true),
-					new PrefixTrigger("miki.", false),
-					new MentionTrigger()
-				)
-				.UseLocalization()
-				.UseArgumentPack()
-				.UseCommandHandler(cmdTree)
-				.UsePermissions()
-                .UseScopes()
-				.Build();
-
-		private static void LoadLocales(CommandPipeline app)
+        private static void LoadLocales(CommandPipeline app)
 		{
 
 			var locale = app.PipelineStages
@@ -256,204 +181,21 @@
 			locale.SetDefaultLanguage("eng");
 		}
 
-		public static async Task LoadServicesAsync(MikiAppBuilder app)
-		{
-			var config = await Config.GetOrInsertAsync(
-                Environment.GetEnvironmentVariable(Constants.ENV_ConStr) ?? null, 
-                Environment.GetEnvironmentVariable(Constants.ENV_ConfId) ?? null);
-
-            if (config == null)
-            {
-                return;
-            }
-
-            app.Services.AddSingleton(config);
-
-            if (string.IsNullOrWhiteSpace(config.Token))
-            {
-                return;
-            }
-
-            var cache = new StackExchangeCacheClient(
-                new ProtobufSerializer(),
-                await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString)
-            );
-
-			// Setup Redis
-			{
-				app.AddSingletonService<ICacheClient>(cache);
-				app.AddSingletonService<IExtendedCacheClient>(cache);
-			}
-
-			// Setup Entity Framework
-            {
-                app.Services.AddDbContext<MikiDbContext>(x
-                    => x.UseNpgsql(
-                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr), 
-                        b => b.MigrationsAssembly("Miki.Bot.Models")));
-                app.Services.AddDbContext<DbContext, MikiDbContext>(x
-                    => x.UseNpgsql(
-                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr), 
-                        b => b.MigrationsAssembly("Miki.Bot.Models")));
-            }
-
-            app.Services.AddTransient<AchievementRepository>();
-
-            // Setup Miki API
-            {
-                if (!string.IsNullOrWhiteSpace(config.MikiApiBaseUrl) 
-                    && !string.IsNullOrWhiteSpace(config.MikiApiKey))
-                {
-                    app.AddSingletonService(new MikiApiClient(config.MikiApiKey));
-                }
-                else
-                {
-                    Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
-                }
-            }
-
-            // Setup Amazon CDN Client
-            {
-                if(!string.IsNullOrWhiteSpace(config.CdnAccessKey) 
-                   && !string.IsNullOrWhiteSpace(config.CdnSecretKey) 
-                   && !string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
-                {
-                    app.AddSingletonService(new AmazonS3Client(
-                        config.CdnAccessKey, 
-                        config.CdnSecretKey, 
-                        new AmazonS3Config()
-                    {
-                        ServiceURL = config.CdnRegionEndpoint
-                    }));
-                }
-            }
-
-			// Setup Discord
-			{
-				app.AddSingletonService<IApiClient>(
-                    s => new DiscordApiClient(config.Token, s.GetService<ICacheClient>()));
-
-				IGateway gateway = null;
-                if (bool.Parse(Environment.GetEnvironmentVariable(Constants.ENV_SelfHost).ToLowerInvariant()))
-				{
-                    gateway = new GatewayCluster(new GatewayProperties
-                    {
-                        ShardCount = 1,
-                        ShardId = 0,
-                        Token = config.Token,
-                        Compressed = true,
-                        AllowNonDispatchEvents = true
-                    });
-				}
-				else
-				{
-                    gateway = new RetsuConsumer(new ConsumerConfiguration
-                    {
-                        ConnectionString = new Uri(config.RabbitUrl.ToString()),
-                        QueueName = "gateway",
-                        ExchangeName = "consumer",
-                        ConsumerAutoAck = false,
-                        PrefetchCount = 25,
-                    });
-				}
-				app.AddSingletonService(gateway);
-
-				app.AddSingletonService<IDiscordClient, DiscordClient>();
-			}
-
-			// Setup web services
-			{
-				app.AddSingletonService(new UrbanDictionaryAPI());
-				app.AddSingletonService(new BunnyCDNClient(config.BunnyCdnKey));
-			}
-
-			// Setup miscellanious services
-			{
-				app.AddSingletonService(new ConfigurationManager());
-				app.AddSingletonService(new BackgroundStore());
-
-                if (!string.IsNullOrWhiteSpace(config.SharpRavenKey))
-                {
-                    app.AddSingletonService(new RavenClient(config.SharpRavenKey));
-                }
-                else
-                {
-                    Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
-                }
-
-                app.AddSingletonService<AccountService>();
-                app.AddSingletonService<AchievementService>();
-            }
-		}
-
-		public static async Task LoadConfigAsync(ConfigurationManager m)
-        {
-            //string configFile = Environment.CurrentDirectory;
-
-			//if(File.Exists(configFile))
-			//{
-			//	await m.ImportAsync(
-			//		new JsonSerializationProvider(),
-			//		configFile
-			//	);
-			//}
-
-			//await m.ExportAsync(
-			//	new JsonSerializationProvider(),
-			//	configFile
-			//);
-		}
-
-		public static void LoadDiscord(MikiApp app, CommandPipeline pipeline)
+        public static void LoadDiscord(MikiApp app, CommandPipeline pipeline)
 		{
             if(app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
-            var discord = app.GetService<IDiscordClient>();
+            var discord = app.Services.GetService<IDiscordClient>();
 
 			if(pipeline != null)
 			{
-				discord.MessageCreate += pipeline.CheckAsync;
+				discord.MessageCreate += pipeline.ExecuteAsync;
 				pipeline.CommandError += OnErrorAsync;
 			}
 			discord.GuildJoin += Client_JoinedGuild;
 			discord.UserUpdate += Client_UserUpdated;
-        }
-
-		public static async Task LoadFiltersAsync(MikiApp app, CommandPipeline pipeline)
-		{
-			var filters = pipeline.PipelineStages
-				.OfType<FilterPipelineStage>()
-				.FirstOrDefault();
-			if(filters == null)
-			{
-				Log.Warning("Filters not set up in command pipeline.");
-				return;
-			}
-
-			var userFilter = filters
-				.GetFilterOfType<UserFilter>();
-			if(userFilter == null)
-			{
-				Log.Warning("User filter not set up in command pipeline.");
-				return;
-			}
-
-            using(var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider
-                    .GetService<MikiDbContext>();
-
-                List<IsBanned> bannedUsers = await context.IsBanned
-                    .Where(x => x.ExpirationDate > DateTime.UtcNow)
-                    .ToListAsync();
-
-                foreach(var u in bannedUsers)
-                {
-                    userFilter.Users.Add(u.UserId);
-                }
-            }
         }
 
         private static async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
@@ -527,7 +269,7 @@
 		{
 			if(exception is LocalizedException botEx)
 			{
-				await Utils.ErrorEmbedResource(context, botEx.LocaleResource)
+				await context.ErrorEmbedResource(botEx.LocaleResource)
 					.ToEmbed()
                     .QueueAsync(context.GetChannel());
 			}

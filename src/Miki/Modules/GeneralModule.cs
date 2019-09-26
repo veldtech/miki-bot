@@ -297,28 +297,36 @@
 		public async Task HelpAsync(IContext e)
 		{
 			var commandHandler = e.GetStage<CommandHandlerStage>();
-			if(e.GetArgumentPack().Take(out string arg))
+            var locale = e.GetLocale();
+
+            if(e.GetArgumentPack().Take(out string arg))
 			{
 				var command = commandHandler.GetCommand(new ArgumentPack(arg.Split(' ')));
 				string prefix = e.GetPrefixMatch();
 
 				if(command == null)
 				{
-					var helpListEmbed = new EmbedBuilder();
-					helpListEmbed.Title = e.GetLocale().GetString("miki_module_help_error_null_header");
-					helpListEmbed.Description = e.GetLocale().GetString("miki_module_help_error_null_message", prefix);
-					helpListEmbed.Color = new Color(0.6f, 0.6f, 1.0f);
+                    var helpListEmbed = new EmbedBuilder
+                    {
+                        Title = locale.GetString("miki_module_help_error_null_header"),
+                        Description = locale.GetString("miki_module_help_error_null_message", prefix),
+                        Color = new Color(0.6f, 0.6f, 1.0f)
+                    };
 
-					var firstModule = commandHandler.Modules.OfType<NodeModule>().First();
+                    var firstModule = commandHandler.Modules.OfType<NodeModule>().First();
 					var root = (firstModule.Parent as NodeRoot);
 
-					var allExecutables = await root.GetAllExecutableAsync(e)
-                        .ConfigureAwait(false);
+                    List<Node> nodes = new List<Node>();
+                    await foreach (var x in root.GetAllExecutableAsync(e))
+                    {
+                        nodes.Add(x);
+                    }
 
-                    var comparer = new API.StringComparison.StringComparer(allExecutables.SelectMany(node => node.Metadata.Identifiers));
+                    var comparer = new API.StringComparison.StringComparer(
+                        nodes.SelectMany(node => node.Metadata.Identifiers));
 					var best = comparer.GetBest(arg);
 
-					helpListEmbed.AddField(e.GetLocale().GetString("miki_module_help_didyoumean"), best.text);
+					helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
 					await helpListEmbed.ToEmbed()
 						.QueueAsync(e.GetChannel())
@@ -374,10 +382,14 @@
 				.Modules.OfType<NodeModule>())
 			{
 				var id = nodeModule.Metadata.Identifiers.First();
-				var executables = await nodeModule.GetAllExecutableAsync(e)
-                    .ConfigureAwait(false);
-                var commandNames = string.Join(", ", executables
-					.Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
+
+                List<Node> nodes = new List<Node>();
+                await foreach (var node in nodeModule.GetAllExecutableAsync(e))
+                {
+                    nodes.Add(node);
+                }
+                var commandNames = string.Join(", ", nodes
+                    .Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
 
 				if(!string.IsNullOrEmpty(commandNames))
 				{

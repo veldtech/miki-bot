@@ -1,30 +1,28 @@
-using Amazon.S3;
-using Amazon.S3.Model;
-using Miki.API.Leaderboards;
-using Miki.Bot.Models;
-using Miki.BunnyCDN;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Exceptions;
-using Miki.Framework;
-using Miki.Framework.Arguments;
-using Miki.Framework.Commands;
-using Miki.Framework.Events;
-using Miki.Framework.Language;
-using Miki.Helpers;
-using Miki.Localization;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 namespace Miki
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Amazon.S3;
+    using Amazon.S3.Model;
+    using Microsoft.Extensions.DependencyInjection;
+    using Miki.API.Leaderboards;
+    using Miki.Bot.Models;
+    using Miki.BunnyCDN;
+    using Miki.Cache;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+    using Miki.Exceptions;
+    using Miki.Framework;
+    using Miki.Framework.Arguments;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Language;
+    using Miki.Helpers;
+    using Miki.Localization;
+
     public static class Utils
     {
         public const string EveryonePattern = @"@(everyone|here)";
@@ -197,14 +195,14 @@ namespace Miki
                 request.InputStream = await client.GetStreamAsync();
             }
 
-            var response = await MikiApp.Instance.GetService<AmazonS3Client>().PutObjectAsync(request);
+            var response = await MikiApp.Instance.Services.GetService<AmazonS3Client>().PutObjectAsync(request);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new AvatarSyncException();
             }
 
-            await MikiApp.Instance.GetService<BunnyCDNClient>()
+            await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
                 .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
             User u = await User.GetAsync(context, user.Id, user.Username);

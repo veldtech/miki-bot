@@ -1,44 +1,40 @@
-   
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.Accounts;
-using Miki.API;
-using Miki.API.Leaderboards;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Bot.Models.Repositories;
-using Miki.Cache;
-using Miki.Common.Builders;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Exceptions;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events.Attributes;
-using Miki.Helpers;
-using Miki.Logging;
-using Miki.Models.Objects.Backgrounds;
-using Miki.Modules.Accounts.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Miki.Services.Achievements;
-
-namespace Miki.Modules.AccountsModule
+namespace Miki.Modules.Accounts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using Miki.Accounts;
+    using Miki.API;
+    using Miki.API.Leaderboards;
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Bot.Models.Repositories;
+    using Miki.Cache;
+    using Miki.Common.Builders;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+    using Miki.Exceptions;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Helpers;
+    using Miki.Logging;
+    using Miki.Models.Objects.Backgrounds;
+    using Miki.Modules.Accounts.Services;
+    using Miki.Services.Achievements;
+
     [Module("Accounts")]
     public class AccountsModule
     {
 
-        [Service("achievements")]
+        //[Service("achievements")]
         public AchievementLoader Achievements { get; set; }
 
         private readonly Net.Http.HttpClient client;
@@ -503,7 +499,7 @@ namespace Miki.Modules.AccountsModule
             }
             else
             {
-                embed.SetDescription($"This background is not for sale.");
+                embed.SetDescription("This background is not for sale.");
             }
 
             if(e.GetArgumentPack().Take(out string confirmation))
@@ -558,20 +554,22 @@ namespace Miki.Modules.AccountsModule
             if(x.Count > 0)
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
-                var hex = x.First().Groups.Last().Value;
+                var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
 
                 visuals.BackgroundColor = hex;
                 user.RemoveCurrency(250);
                 await context.SaveChangesAsync();
 
-                await e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
+                await e.SuccessEmbed("Your foreground color has been successfully " +
+                                     $"changed to `{hex}`")
                     .QueueAsync(e.GetChannel());
             }
             else
             {
                 await new EmbedBuilder()
                     .SetTitle("🖌 Setting a background color!")
-                    .SetDescription("Changing your background color costs 250 mekos. use `>setbackcolor (e.g. #00FF00)` to purchase")
+                    .SetDescription("Changing your background color costs 250 mekos. " +
+                                    "use `>setbackcolor (e.g. #00FF00)` to purchase")
                     .ToEmbed().QueueAsync(e.GetChannel());
             }
         }
@@ -588,7 +586,7 @@ namespace Miki.Modules.AccountsModule
             if(x.Count > 0)
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
-                var hex = x.First().Groups.Last().Value;
+                var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
 
                 visuals.ForegroundColor = hex;
                 user.RemoveCurrency(250);
@@ -601,7 +599,8 @@ namespace Miki.Modules.AccountsModule
             {
                 await new EmbedBuilder()
                     .SetTitle("🖌 Setting a foreground color!")
-                    .SetDescription("Changing your foreground(text) color costs 250 mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
+                    .SetDescription("Changing your foreground(text) color costs 250 " +
+                                    "mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
                     .ToEmbed().QueueAsync(e.GetChannel());
             }
         }
@@ -711,9 +710,9 @@ namespace Miki.Modules.AccountsModule
 
                     totalAmountGiven += amount;
 
-                    if(usersMentioned.Keys.Where(x => x.Id == u.Id).Count() > 0)
+                    if(usersMentioned.Keys.Any(x => x.Id == u.Id))
                     {
-                        usersMentioned[usersMentioned.Keys.Where(x => x.Id == u.Id).First()] += amount;
+                        usersMentioned[usersMentioned.Keys.First(x => x.Id == u.Id)] += amount;
                     }
                     else
                     {
@@ -744,7 +743,10 @@ namespace Miki.Modules.AccountsModule
 
                     if(usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
                     {
-                        await e.ErrorEmbedResource("error_rep_limit", usersMentioned.Count, usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
+                        await e.ErrorEmbedResource(
+                                "error_rep_limit", 
+                                usersMentioned.Count, 
+                                usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
                             .ToEmbed().QueueAsync(e.GetChannel());
                         return;
                     }
@@ -761,7 +763,7 @@ namespace Miki.Modules.AccountsModule
 
                     embed.AddInlineField(
                         receiver.Name,
-                        string.Format("{0} => {1} (+{2})", (receiver.Reputation - u.Value).ToFormattedString(), receiver.Reputation.ToFormattedString(), u.Value)
+                        $"{(receiver.Reputation - u.Value):N0} => {receiver.Reputation:N0} (+{u.Value})"
                     );
                 }
 
@@ -823,7 +825,7 @@ namespace Miki.Modules.AccountsModule
             await new EmbedBuilder()
             {
                 Title = "🔸 Mekos",
-                Description = e.GetLocale().GetString("miki_user_mekos", user.Name, user.Currency.ToFormattedString()),
+                Description = e.GetLocale().GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")),
                 Color = new Color(1f, 0.5f, 0.7f)
             }.ToEmbed().QueueAsync(e.GetChannel());
             await context.SaveChangesAsync();
@@ -832,18 +834,18 @@ namespace Miki.Modules.AccountsModule
         [Command("give")]
         public async Task GiveMekosAsync(IContext e)
         {
-            if(e.GetArgumentPack().Take(out string userName))
+            if (e.GetArgumentPack().Take(out string userName))
             {
                 var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
 
-                if(user == null)
+                if (user == null)
                 {
                     await e.ErrorEmbedResource("give_error_no_mention")
                         .ToEmbed().QueueAsync(e.GetChannel());
                     return;
                 }
 
-                if(!e.GetArgumentPack().Take(out int amount))
+                if (!e.GetArgumentPack().Take(out int amount))
                 {
                     await e.ErrorEmbedResource("give_error_amount_unparsable")
                         .ToEmbed().QueueAsync(e.GetChannel());
@@ -855,32 +857,25 @@ namespace Miki.Modules.AccountsModule
                 User sender = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
                 User receiver = await DatabaseHelpers.GetUserAsync(context, user);
 
-                if(amount <= sender.Currency)
+                if(await receiver.IsBannedAsync(context))
                 {
-                    sender.RemoveCurrency(amount);
-
-                    if(await receiver.IsBannedAsync(context))
-                    {
-                        throw new UserNullException();
-                    }
-
-                    await receiver.AddCurrencyAsync(amount);
-
-                    await new EmbedBuilder()
-                    {
-                        Title = "🔸 transaction",
-                        Description = e.GetLocale().GetString("give_description",
-                            sender.Name,
-                            receiver.Name,
-                            amount.ToFormattedString()),
-                        Color = new Color(255, 140, 0),
-                    }.ToEmbed().QueueAsync(e.GetChannel());
-                    await context.SaveChangesAsync();
+                    throw new UserNullException();
                 }
-                else
+
+                sender.RemoveCurrency(amount);
+                receiver.AddCurrency(amount);
+
+                await new EmbedBuilder()
                 {
-                    throw new InsufficientCurrencyException(sender.Currency, amount);
-                }
+                    Title = "🔸 transaction",
+                    Description = e.GetLocale().GetString(
+                        "give_description",
+                        sender.Name,
+                        receiver.Name,
+                        amount.ToFormattedString()),
+                    Color = new Color(255, 140, 0),
+                }.ToEmbed().QueueAsync(e.GetChannel());
+                await context.SaveChangesAsync();
             }
         }
 
@@ -944,12 +939,15 @@ namespace Miki.Modules.AccountsModule
 
             int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
 
-            await u.AddCurrencyAsync(amount);
+            u.AddCurrency(amount);
             u.LastDailyTime = DateTime.Now;
 
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
-                .SetDescription(e.GetLocale().GetString("daily_received", $"**{amount.ToFormattedString()}**", $"`{u.Currency.ToFormattedString()}`"))
+                .SetDescription(e.GetLocale().GetString(
+                    "daily_received", 
+                    $"**{amount:N0}**", 
+                    $"`{u.Currency.ToFormattedString()}`"))
                 .SetColor(253, 216, 136);
 
             if(streak > 0)

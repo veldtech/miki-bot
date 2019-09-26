@@ -105,7 +105,7 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            await user.AddCurrencyAsync(mekosGained, e.GetChannel());
+            user.AddCurrency(mekosGained);
 
             await new EmbedBuilder()
                 .SetTitle(e.GetLocale().GetString("miki_terms_weekly"))

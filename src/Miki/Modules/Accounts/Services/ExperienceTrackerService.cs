@@ -1,21 +1,19 @@
-﻿using Miki.Accounts;
-using Miki.Cache;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
-using Miki.Framework.Commands.Nodes;
-using Miki.Framework.Events;
-using System.Threading.Tasks;
 
 namespace Miki.Modules.Accounts.Services
 {
-	public class ExperienceTrackerService
+    public class ExperienceTrackerService
 	{
         private readonly AccountService _service;
 
 		public ExperienceTrackerService(AccountService service)
 		{
-			MikiApp.Instance.GetService<DiscordClient>().MessageCreate += MessageReceivedAsync;
+			MikiApp.Instance.Services.GetService<DiscordClient>().MessageCreate += MessageReceivedAsync;
 
             _service = service;
 		}
