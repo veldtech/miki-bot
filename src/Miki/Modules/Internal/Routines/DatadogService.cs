@@ -1,19 +1,19 @@
-﻿using Miki.Bot.Models;
-
-namespace Miki.Modules.Internal.Routines
+﻿namespace Miki.Modules.Internal.Routines
 {
     using System;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
+    using Miki.Bot.Models;
     using Miki.Discord;
+    using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using StatsdClient;
-    using System.Threading.Tasks;
     using Miki.Framework.Commands.Nodes;
     using Miki.Logging;
     using Miki.Services.Achievements;
-    using Microsoft.Extensions.DependencyInjection;
+    using StatsdClient;
 
     public class DatadogRoutine
 	{
@@ -116,7 +116,7 @@ namespace Miki.Modules.Internal.Routines
                 return;
             }
 
-            system.CommandProcessed += OnCommandProcessed;
+            system.OnExecuted += OnCommandProcessed;
         }
 
         private void CreateHttpMetrics()
@@ -137,19 +137,30 @@ namespace Miki.Modules.Internal.Routines
 			};
 		}
 
-        private Task OnCommandProcessed(IContext arg)
+        private ValueTask OnCommandProcessed(IExecutionResult<IDiscordMessage> arg)
         {
-            if(!(arg.Executable is Node ev))
+            if(!(arg.Context.Executable is Node ev))
             {
-                return Task.CompletedTask;
+                return default;
             }
 
-            DogStatsd.Counter("commands.count", 1, 1, new[] {
-                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
-                $"commandname:{ev.ToString().ToLowerInvariant()}"
-            });
-
-            return Task.CompletedTask;
+            if(!arg.Success)
+            {
+                DogStatsd.Counter("commands.error", 1, 1, new[]
+                {
+                    $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                    $"commandname:{ev.ToString().ToLowerInvariant()}"
+                });
+            }
+            else
+            {
+                DogStatsd.Counter("commands.count", 1, 1, new[] 
+                {
+                    $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                    $"commandname:{ev.ToString().ToLowerInvariant()}"
+                });
+            }
+            return default;
         }
     }
 }

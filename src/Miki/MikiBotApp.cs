@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-
-namespace Miki
+﻿namespace Miki
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Resources;
+    using System.Threading.Tasks;
     using Amazon.S3;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +25,11 @@ namespace Miki
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Filters;
     using Miki.Framework.Commands.Filters.Filters;
+    using Miki.Framework.Commands.Localization;
     using Miki.Framework.Events;
     using Miki.Framework.Events.Triggers;
+    using Miki.Localization;
+    using Miki.Localization.Exceptions;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Serialization;
@@ -34,6 +39,7 @@ namespace Miki
     using Miki.UrbanDictionary;
     using Retsu.Consumer;
     using SharpRaven;
+    using SharpRaven.Data;
     using StackExchange.Redis;
 
     public class MikiBotApp : MikiApp
@@ -46,12 +52,15 @@ namespace Miki
         }
 
         public override ProviderCollection ConfigureProviders(
-            IServiceProvider services, 
-            IAsyncExecutor<IDiscordMessage> pipeline)
+            IServiceProvider services,
+            IAsyncEventingExecutor<IDiscordMessage> pipeline)
         {
             var discordClient = services.GetService<IDiscordClient>();
-            
+            discordClient.UserUpdate += Client_UserUpdated;
+            discordClient.GuildJoin += Client_JoinedGuild;
+
             discordClient.MessageCreate += pipeline.ExecuteAsync;
+            pipeline.OnExecuted += LogErrors;
 
             return new ProviderCollection()
                 .Add(ProviderAdapter.Factory(
@@ -59,8 +68,31 @@ namespace Miki
                     discordClient.Gateway.StopAsync));
         }
 
-        public override IAsyncExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider collection)
-            => new CommandPipelineBuilder(collection)
+        private async ValueTask LogErrors(IExecutionResult<IDiscordMessage> arg)
+        {   
+            if(!arg.Success)
+            {
+                if(arg.Error is LocalizedException botEx)
+                {
+                    await arg.Context.ErrorEmbedResource(botEx.LocaleResource)
+                        .ToEmbed()
+                        .QueueAsync(arg.Context.GetChannel());
+                }
+                else
+                {
+                    Log.Error(arg.Error);
+                    var sentry = arg.Context.GetService<RavenClient>();
+                    if(sentry != null)
+                    {
+                        await sentry.CaptureAsync(new SentryEvent(arg.Error));
+                    }
+                }
+            }
+        }
+
+        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider collection)
+        {
+            var pipeline = new CommandPipelineBuilder(collection)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
                     new BotFilter(),
@@ -73,9 +105,14 @@ namespace Miki
                 .UseArgumentPack()
                 .UseCommandHandler(
                     new CommandTreeBuilder(collection).Create(Assembly.GetExecutingAssembly()))
-                .UsePermissions()   
+                .UsePermissions()
                 .UseScopes()
                 .Build();
+
+            LoadLocales(pipeline);
+
+            return pipeline;
+        }
 
         public override void Configure(ServiceCollection serviceCollection)
         {
@@ -190,5 +227,119 @@ namespace Miki
             }
 
         }
+
+        private static void LoadLocales(CommandPipeline app)
+        {
+
+            var locale = app.PipelineStages
+                .OfType<LocalizationPipelineStage>()
+                .FirstOrDefault();
+            if(locale == null)
+            {
+                Log.Warning("No localization loaded, and therefore no locales need to be loaded.");
+                return;
+            }
+
+            const string nameSpace = "Miki.Languages";
+            var typeList = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.IsClass
+                            && t.Namespace == nameSpace);
+
+            foreach(var t in typeList)
+            {
+                try
+                {
+                    string languageName = t.Name.ToLowerInvariant();
+
+                    ResourceManager resources = new ResourceManager(
+                        $"Miki.Languages.{languageName}",
+                        t.Assembly);
+
+                    IResourceManager resourceManager = new ResxResourceManager(
+                        resources);
+
+                    locale.LoadLanguage(
+                        languageName,
+                        resourceManager,
+                        resourceManager.GetString("current_language_name"));
+                }
+                catch(Exception ex)
+                {
+                    Log.Error($"Language {t.Name} did not load correctly");
+                    Log.Debug(ex.ToString());
+                }
+            }
+
+            locale.SetDefaultLanguage("eng");
+        }
+
+        private static async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
+        {
+            using(var scope = MikiApp.Instance.Services.CreateScope())
+            {
+                if(oldUser.AvatarId != newUser.AvatarId)
+                {
+                    await Utils.SyncAvatarAsync(newUser,
+                            scope.ServiceProvider.GetService<IExtendedCacheClient>(),
+                            scope.ServiceProvider.GetService<MikiDbContext>())
+                        .ConfigureAwait(false);
+                }
+            }
+        }
+
+        private static async Task Client_JoinedGuild(IDiscordGuild arg)
+        {
+            using(var scope = MikiApp.Instance.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<DbContext>();
+
+                IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync()
+                    .ConfigureAwait(false);
+                if(defaultChannel != null)
+                {
+                    var locale = scope.ServiceProvider.GetService<LocalizationPipelineStage>();
+                    IResourceManager i = await locale.GetLocaleAsync(
+                            scope.ServiceProvider,
+                            (long)defaultChannel.Id)
+                        .ConfigureAwait(false);
+                    (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
+                }
+
+                List<string> allArgs = new List<string>();
+                List<object> allParams = new List<object>();
+                List<object> allExpParams = new List<object>();
+
+                try
+                {
+                    var members = await arg.GetMembersAsync();
+                    for(int i = 0; i < members.Count(); i++)
+                    {
+                        allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+
+                        allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                        allParams.Add(members.ElementAt(i).Username);
+
+                        allExpParams.Add(arg.Id.ToDbLong());
+                        allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    }
+
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                        allParams);
+
+                    await context.Database.ExecuteSqlCommandAsync(
+                        $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                        allExpParams);
+
+                    await context.SaveChangesAsync();
+                }
+                catch(Exception e)
+                {
+                    Log.Error(e.ToString());
+                }
+            }
+        }
+
     }
 }
