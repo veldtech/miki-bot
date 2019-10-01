@@ -26,6 +26,8 @@
 
         public LoggingModule()
         {
+            
+
             //m.UserJoinGuild = async (user) =>
             //{
             //    IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();

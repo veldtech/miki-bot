@@ -10,34 +10,32 @@ namespace Miki
 {
 	internal class Notification
 	{
-		public static async ValueTask SendAchievementAsync(AchievementObject d, int rank, IDiscordTextChannel channel, IDiscordUser user)
+		public static async ValueTask SendAchievementAsync(
+            AchievementObject d, int rank, IDiscordTextChannel channel, IDiscordUser user)
 		    => await SendAchievementAsync(d.Entries[rank], channel, user);
 
         public static async Task SendAchievementAsync(
-            AchievementEntry d, 
-            IDiscordTextChannel channel, 
-            IDiscordUser user)
+            AchievementEntry d, IDiscordTextChannel channel, IDiscordUser user)
         {
             if(channel is IDiscordGuildChannel)
             {
-                using (var scope = MikiApp.Instance.Services.CreateScope())
+                using var scope = MikiApp.Instance.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService<MikiDbContext>();
+                var achievementSetting = await Setting.GetAsync(
+                    context,
+                    channel.Id,
+                    DatabaseSettingId.Achievements);
+                if(achievementSetting != 0)
                 {
-                    var context = scope.ServiceProvider.GetService<MikiDbContext>();
-                    var achievementSetting = await Setting.GetAsync(
-                        context, 
-                        channel.Id, 
-                        DatabaseSettingId.Achievements);
-                    if (achievementSetting != 0)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
             await CreateAchievementEmbed(d, user)
                 .QueueAsync(channel);
         }
 
-		private static DiscordEmbed CreateAchievementEmbed(AchievementEntry baseAchievement, IDiscordUser user)
+		private static DiscordEmbed CreateAchievementEmbed(
+            AchievementEntry baseAchievement, IDiscordUser user)
 		{
 			return new EmbedBuilder()
 				.SetTitle("🎉 Achievement Unlocked")

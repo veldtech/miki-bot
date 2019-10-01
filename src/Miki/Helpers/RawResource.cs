@@ -1,6 +1,6 @@
 ﻿namespace Miki.Helpers
 {
-    using Miki.Localization;
+    using Miki.Localization.Models;
     using System.Collections.Generic;
     using System.Linq;
 

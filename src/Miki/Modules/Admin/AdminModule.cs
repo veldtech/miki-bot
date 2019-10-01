@@ -1,33 +1,27 @@
-using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands.Permissions;
-using Miki.Framework.Commands.Permissions.Attributes;
-using Miki.Framework.Commands.Permissions.Models;
-using Miki.Framework.Commands.Stages;
-using Miki.Framework.Events;
-using Miki.Logging;
-using Miki.Models;
-using Miki.Utility;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Miki.Bot.Models.Exceptions;
-using Miki.Discord.Common.Utils;
-using Miki.Framework.Commands.Permissions.Exceptions;
-using Miki.Modules.Admin.Exceptions;
-
 namespace Miki.Modules.Admin
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Utils;
+    using Miki.Discord.Rest;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands.Permissions;
+    using Miki.Framework.Commands.Permissions.Attributes;
+    using Miki.Framework.Commands.Permissions.Exceptions;
+    using Miki.Framework.Commands.Permissions.Models;
+    using Miki.Framework.Commands.Stages;
+    using Miki.Localization;
+    using Miki.Utility;
+
     [Module("Admin")]
     public class AdminModule
     {
@@ -336,10 +330,10 @@ namespace Miki.Modules.Admin
             public async Task ListPermissionsAsync(IContext e)
             {
                 var db = e.GetService<DbContext>();
-                var permissions = e.GetStage<PermissionPipelineStage>();
+                var permissions = e.GetService<PermissionService>();
 
                 List<long> idList = new List<long>();
-                if (e.GetAuthor() is IDiscordGuildUser gm)
+                if(e.GetAuthor() is IDiscordGuildUser gm)
                 {
                     idList.AddRange(gm.RoleIds.Select(x => (long)x));
                 }
@@ -347,9 +341,9 @@ namespace Miki.Modules.Admin
                 idList.Add((long)e.GetChannel().Id);
                 idList.Add((long)e.GetAuthor().Id);
 
-                var allPermissions = await permissions
-                    .ListPermissionsAsync(db, (long)e.GetGuild().Id, idList.ToArray());
-                if (!allPermissions.Any())
+                var allPermissions = await permissions.ListPermissionsAsync(
+                    (long)e.GetGuild().Id, idList.ToArray());
+                if(!allPermissions.Any())
                 {
                     await e.GetChannel()
                         .SendMessageAsync("empty");
@@ -361,10 +355,10 @@ namespace Miki.Modules.Admin
                     .SetColor(180, 180, 90)
                     .SetDescription(
                         string.Join(
-                            "\n",
-                            allPermissions.Select(x
+                            "\n", allPermissions.Select(x
                                 => $"{GetStatusEmoji(x.Status)} {x.CommandName} for {x.Type} {x.EntityId}")))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e.GetChannel());
             }
 
             private string GetStatusEmoji(PermissionStatus status)
@@ -390,7 +384,7 @@ namespace Miki.Modules.Admin
 
             private async Task SetPermissionsAsync(IContext e, PermissionStatus level)
             {
-                var permissions = e.GetStage<PermissionPipelineStage>();
+                var permissions = e.GetService<PermissionService>();
                 var commands = e.GetStage<CommandHandlerStage>();
 
                 var db = e.GetService<DbContext>();
@@ -406,19 +400,23 @@ namespace Miki.Modules.Admin
                     return;
                 }
 
-                var ownPermission = await permissions.GetAllowedForUser(
-                    db, 
-                    e.GetAuthor(),
-                    e.GetChannel(),
-                    executable);
-                if(!ownPermission)
+                var ownPermission = await permissions.GetPriorityPermissionAsync(e);
+                if(ownPermission.Status == PermissionStatus.Deny)
                 {
                     throw new PermissionUnauthorizedException();
                 }
 
                 Entity entity = await GetEntityAsync(e);
 
-                await permissions.SetForUserAsync(e, entity.Id, entity.Type, command.ToString(), level);
+                await permissions.SetPermissionAsync(new Permission
+                {
+                    EntityId = entity.Id,
+                    Type = entity.Type,
+                    CommandName = command.ToString(),
+                    Status = level,
+                    GuildId = (long)e.GetGuild().Id
+                });
+                await db.SaveChangesAsync();
 
                 await e.SuccessEmbedResource(PermissionSet, entity.Resource, level)
                     .QueueAsync(e.GetChannel());

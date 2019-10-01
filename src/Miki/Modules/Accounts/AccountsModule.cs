@@ -21,6 +21,7 @@ namespace Miki.Modules.Accounts
     using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Exceptions;
+    using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;

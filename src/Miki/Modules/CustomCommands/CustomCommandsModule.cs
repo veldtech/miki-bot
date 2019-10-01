@@ -29,17 +29,18 @@
 
 		public CustomCommandsModule(MikiApp app)
 		{
-			var pipeline = new CommandPipelineBuilder(app.Services)
-				.UseStage(new CorePipelineStage())
-				.UseArgumentPack()
-				.UsePrefixes(
-					new PrefixTrigger(">", true, true),
-					new PrefixTrigger("miki.", true),
-					new MentionTrigger())
-				.UseStage(new CustomCommandsHandler())
-				.Build();
-			app.Services.GetService<IDiscordClient>()
-				.MessageCreate += pipeline.ExecuteAsync;
+            var pipeline = new CommandPipelineBuilder(app.Services)
+                .UseStage(new CorePipelineStage())
+                .UsePrefixes(
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", true),
+                    new MentionTrigger())
+                .UseStage(new FetchDataStage())               
+                .UseArgumentPack()
+                .UseStage(new CustomCommandsHandler())
+                .Build();
+			//app.Services.GetService<IDiscordClient>()
+			//	.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
 		}
 
         [GuildOnly, Command("createcommand")]

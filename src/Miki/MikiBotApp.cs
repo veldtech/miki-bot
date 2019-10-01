@@ -10,6 +10,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
+    using Miki.Adapters;
     using Miki.API;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Repositories;
@@ -26,15 +27,21 @@
     using Miki.Framework.Commands.Filters;
     using Miki.Framework.Commands.Filters.Filters;
     using Miki.Framework.Commands.Localization;
+    using Miki.Framework.Commands.Permissions;
+    using Miki.Framework.Commands.Permissions.Models;
+    using Miki.Framework.Commands.Stages;
     using Miki.Framework.Events;
     using Miki.Framework.Events.Triggers;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
+    using Miki.Patterns.Repositories;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services.Achievements;
+    using Miki.Services.Localization;
     using Miki.Services.Rps;
     using Miki.UrbanDictionary;
     using Retsu.Consumer;
@@ -57,9 +64,9 @@
         {
             var discordClient = services.GetService<IDiscordClient>();
             discordClient.UserUpdate += Client_UserUpdated;
-            discordClient.GuildJoin += Client_JoinedGuild;
+            discordClient.GuildJoin += Client_JoinedGuild;  
 
-            discordClient.MessageCreate += pipeline.ExecuteAsync;
+            discordClient.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
             pipeline.OnExecuted += LogErrors;
 
             return new ProviderCollection()
@@ -90,9 +97,15 @@
             }
         }
 
-        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider collection)
+        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider services)
         {
-            var pipeline = new CommandPipelineBuilder(collection)
+            LoadLocales(services); // TODO(velddev): Find a better place to load this.
+
+            var commandTree = new CommandTreeBuilder(services)
+                .AddCommandBuildStep(new ConfigurationManagerAdapter())
+                .Create(Assembly.GetExecutingAssembly());
+
+            return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
                     new BotFilter(),
@@ -101,17 +114,13 @@
                     new PrefixTrigger(">", true, true),
                     new PrefixTrigger("miki.", false),
                     new MentionTrigger())
+                .UseStage(new FetchDataStage())
                 .UseLocalization()
                 .UseArgumentPack()
-                .UseCommandHandler(
-                    new CommandTreeBuilder(collection).Create(Assembly.GetExecutingAssembly()))
+                .UseCommandHandler(commandTree)
                 .UsePermissions()
                 .UseScopes()
                 .Build();
-
-            LoadLocales(pipeline);
-
-            return pipeline;
         }
 
         public override void Configure(ServiceCollection serviceCollection)
@@ -127,6 +136,7 @@
 
             // Setup Entity Framework
             {
+                // TODO(velddev): Remove constant environment fetch.
                 var connString = Environment.GetEnvironmentVariable(Constants.ENV_ConStr);
                 if(connString == null)
                 {
@@ -140,6 +150,8 @@
             }
 
             serviceCollection.AddScoped<AchievementRepository>();
+            serviceCollection.AddSingleton<
+                IAsyncRepository<Permission>, EntityRepository<Permission>>();
 
             // Setup Miki API
             {
@@ -224,27 +236,20 @@
                 serviceCollection.AddSingleton<AccountService>();
                 serviceCollection.AddSingleton<AchievementService>();
                 serviceCollection.AddSingleton<RpsService>();
+                serviceCollection.AddSingleton<ILocalizationService, LocalizationService>();
+                serviceCollection.AddSingleton<PermissionService>();
             }
 
         }
 
-        private static void LoadLocales(CommandPipeline app)
+        private static void LoadLocales(IServiceProvider services)
         {
-
-            var locale = app.PipelineStages
-                .OfType<LocalizationPipelineStage>()
-                .FirstOrDefault();
-            if(locale == null)
-            {
-                Log.Warning("No localization loaded, and therefore no locales need to be loaded.");
-                return;
-            }
-
+            var localizationService = services.GetRequiredService<ILocalizationService>();
+            
             const string nameSpace = "Miki.Languages";
             var typeList = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(t => t.IsClass
-                            && t.Namespace == nameSpace);
+                .Where(t => t.IsClass && t.Namespace == nameSpace);
 
             foreach(var t in typeList)
             {
@@ -255,14 +260,10 @@
                     ResourceManager resources = new ResourceManager(
                         $"Miki.Languages.{languageName}",
                         t.Assembly);
+                    
+                    IResourceManager resourceManager = new ResxResourceManager(resources);
 
-                    IResourceManager resourceManager = new ResxResourceManager(
-                        resources);
-
-                    locale.LoadLanguage(
-                        languageName,
-                        resourceManager,
-                        resourceManager.GetString("current_language_name"));
+                    localizationService.AddLocale(new Locale(languageName, resourceManager));
                 }
                 catch(Exception ex)
                 {
@@ -270,74 +271,66 @@
                     Log.Debug(ex.ToString());
                 }
             }
-
-            locale.SetDefaultLanguage("eng");
         }
 
-        private static async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
+        private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
         {
-            using(var scope = MikiApp.Instance.Services.CreateScope())
+            using var scope = Services.CreateScope();
+            if(oldUser.AvatarId != newUser.AvatarId)
             {
-                if(oldUser.AvatarId != newUser.AvatarId)
-                {
-                    await Utils.SyncAvatarAsync(newUser,
-                            scope.ServiceProvider.GetService<IExtendedCacheClient>(),
-                            scope.ServiceProvider.GetService<MikiDbContext>())
-                        .ConfigureAwait(false);
-                }
+                await Utils.SyncAvatarAsync(newUser,
+                        scope.ServiceProvider.GetService<IExtendedCacheClient>(),
+                        scope.ServiceProvider.GetService<MikiDbContext>())
+                    .ConfigureAwait(false);
             }
         }
 
-        private static async Task Client_JoinedGuild(IDiscordGuild arg)
+        private async Task Client_JoinedGuild(IDiscordGuild arg)
         {
-            using(var scope = MikiApp.Instance.Services.CreateScope())
+            using var scope = Services.CreateScope();
+            var context = scope.ServiceProvider.GetService<DbContext>();
+
+            IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync()
+                .ConfigureAwait(false);
+            if(defaultChannel != null)
             {
-                var context = scope.ServiceProvider.GetService<DbContext>();
-
-                IDiscordChannel defaultChannel = await arg.GetDefaultChannelAsync()
+                var locale = scope.ServiceProvider.GetService<ILocalizationService>();
+                Locale i = await locale.GetLocaleAsync((long)defaultChannel.Id)
                     .ConfigureAwait(false);
-                if(defaultChannel != null)
+                (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
+            }
+
+            List<string> allArgs = new List<string>();
+            List<object> allParams = new List<object>();
+            List<object> allExpParams = new List<object>();
+
+            try
+            {
+                var members = await arg.GetMembersAsync();
+                for(int i = 0; i < members.Count(); i++)
                 {
-                    var locale = scope.ServiceProvider.GetService<LocalizationPipelineStage>();
-                    IResourceManager i = await locale.GetLocaleAsync(
-                            scope.ServiceProvider,
-                            (long)defaultChannel.Id)
-                        .ConfigureAwait(false);
-                    (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
+                    allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+
+                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allParams.Add(members.ElementAt(i).Username);
+
+                    allExpParams.Add(arg.Id.ToDbLong());
+                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
                 }
 
-                List<string> allArgs = new List<string>();
-                List<object> allParams = new List<object>();
-                List<object> allExpParams = new List<object>();
+                await context.Database.ExecuteSqlCommandAsync(
+                    $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                    allParams);
 
-                try
-                {
-                    var members = await arg.GetMembersAsync();
-                    for(int i = 0; i < members.Count(); i++)
-                    {
-                        allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
+                await context.Database.ExecuteSqlCommandAsync(
+                    $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                    allExpParams);
 
-                        allParams.Add(members.ElementAt(i).Id.ToDbLong());
-                        allParams.Add(members.ElementAt(i).Username);
-
-                        allExpParams.Add(arg.Id.ToDbLong());
-                        allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
-                    }
-
-                    await context.Database.ExecuteSqlCommandAsync(
-                        $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
-                        allParams);
-
-                    await context.Database.ExecuteSqlCommandAsync(
-                        $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
-                        allExpParams);
-
-                    await context.SaveChangesAsync();
-                }
-                catch(Exception e)
-                {
-                    Log.Error(e.ToString());
-                }
+                await context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                Log.Error(e.ToString());
             }
         }
 

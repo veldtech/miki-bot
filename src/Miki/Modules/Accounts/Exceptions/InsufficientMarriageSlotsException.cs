@@ -1,14 +1,9 @@
-﻿using Miki.Bot.Models;
-using Miki.Localization;
-using Miki.Localization.Exceptions;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Exceptions
+﻿namespace Miki.Exceptions
 {
-	class InsufficientMarriageSlotsException : UserException
+    using Miki.Bot.Models;
+    using Miki.Localization.Models;
+
+    class InsufficientMarriageSlotsException : UserException
 	{
 		public override IResource LocaleResource
 			=> new LanguageResource("error_marriageslots_insufficient", _user.Name);

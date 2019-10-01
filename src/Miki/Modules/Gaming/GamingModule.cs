@@ -21,64 +21,48 @@ namespace Miki.Modules.Overwatch
 		{
             e.GetArgumentPack().Take(out string username);
 
-            using (WebClient webClient = new WebClient())
-			{
-				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&countryrank");
+            using WebClient webClient = new WebClient();
+            byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&countryrank");
 
-				using (MemoryStream mem = new MemoryStream(data))
-				{
-					await e.GetChannel().SendFileAsync(mem, $"sig.png");
-				}
-			}
-		}
+            using MemoryStream mem = new MemoryStream(data);
+            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+        }
 
 		[Command("ctb")]
 		public async Task SendCatchTheBeatSignatureAsync(IContext e)
 		{
             e.GetArgumentPack().Take(out string username);
 
-			using (WebClient webClient = new WebClient())
-			{
-				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=2&countryrank");
+            using WebClient webClient = new WebClient();
+            byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=2&countryrank");
 
-				using (MemoryStream mem = new MemoryStream(data))
-				{
-					await e.GetChannel().SendFileAsync(mem, $"{username}.png");
-				}
-			}
-		}
+            using MemoryStream mem = new MemoryStream(data);
+            await e.GetChannel().SendFileAsync(mem, $"{username}.png");
+        }
 
 		[Command("mania")]
 		public async Task SendManiaSignatureAsync(IContext e)
 		{
             e.GetArgumentPack().Take(out string username);
 
-            using (WebClient webClient = new WebClient())
-			{
-				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=3&countryrank");
+            using WebClient webClient = new WebClient();
+            byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=3&countryrank");
 
-				using (MemoryStream mem = new MemoryStream(data))
-				{
-					await e.GetChannel().SendFileAsync(mem, $"sig.png");
-				}
-			}
-		}
+            using MemoryStream mem = new MemoryStream(data);
+            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+        }
 
 		[Command("taiko")]
 		public async Task SendTaikoSignatureAsync(IContext e)
 		{
             e.GetArgumentPack().Take(out string username);
 
-            using (WebClient webClient = new WebClient())
-			{
-				byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=1&countryrank");
+            using WebClient webClient = new WebClient();
+            byte[] data = webClient.DownloadData($"http://lemmmy.pw/osusig/sig.php?colour=pink&uname={username}&mode=1&countryrank");
 
-				using (MemoryStream mem = new MemoryStream(data))
-				{
-					await e.GetChannel().SendFileAsync(mem, $"sig.png");
-				}
-			}
-		}
+            using MemoryStream mem = new MemoryStream(data);
+            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+        }
 
 		public OverwatchRegion GetBestRegion(OverwatchUserResponse u, bool compo)
 		{

@@ -22,6 +22,7 @@ namespace Miki
     using Miki.Framework.Language;
     using Miki.Helpers;
     using Miki.Localization;
+    using Miki.Localization.Models;
 
     public static class Utils
     {
@@ -44,7 +45,7 @@ namespace Miki
             where T : struct
             => Enum.TryParse(argument ?? "", true, out value);
 
-        public static string ToTimeString(this TimeSpan time, IResourceManager instance, bool minified = false)
+        public static string ToTimeString(this TimeSpan time, Locale instance, bool minified = false)
         {
             List<TimeValue> t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
@@ -217,14 +218,12 @@ namespace Miki
                 return false;
             }
 
-            using (var client = new Net.Http.HttpClient($"https://cdn.miki.ai/avatars/{user.Id}.png"))
+            using var client = new Net.Http.HttpClient($"https://cdn.miki.ai/avatars/{user.Id}.png");
+            var response = await client.SendAsync(new System.Net.Http.HttpRequestMessage
             {
-                var response = await client.SendAsync(new System.Net.Http.HttpRequestMessage
-                {
-                    Method = new System.Net.Http.HttpMethod("HEAD"),
-                });
-                return response.Success;
-            }
+                Method = new System.Net.Http.HttpMethod("HEAD"),
+            });
+            return response.Success;
         }
 
         public static string TakeAll(this IArgumentPack pack)

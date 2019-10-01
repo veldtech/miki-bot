@@ -4,6 +4,7 @@ using Miki.Discord.Rest;
 using Miki.Framework;
 using Miki.Framework.Commands.Attributes;
 using Miki.Framework.Commands;
+using Miki.Localization;
 using Miki.Logging;
 using Miki.Modules.Donator.Exceptions;
 using Miki.Helpers;

@@ -1,9 +1,9 @@
-﻿using Miki.Localization;
-using Miki.Localization.Exceptions;
-
-namespace Miki.Exceptions
+﻿namespace Miki.Exceptions
 {
-	public class BackgroundOwnedException : LocalizedException
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
+    public class BackgroundOwnedException : LocalizedException
 	{
 		public override IResource LocaleResource
 			=> new LanguageResource("error_background_owned");

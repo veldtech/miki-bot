@@ -4,6 +4,7 @@ using System.Text;
 using Miki.Discord.Common.Utils;
 using Miki.Localization;
 using Miki.Localization.Exceptions;
+using Miki.Localization.Models;
 
 namespace Miki.Modules.Admin.Exceptions
 {

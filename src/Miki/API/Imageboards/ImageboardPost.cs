@@ -67,28 +67,26 @@ namespace Miki.API.Imageboards
 
 			string outputTags = GetTags(tags.ToArray());
 
-			using (var c = new Net.Http.HttpClient(Config.QueryKey + outputTags))
-			{
-				if (Config.NetUseCredentials)
-				{
-					//c.UseDefaultCredentials = true;
-					Config.NetHeaders.ForEach(x => c.Headers.Add(x.Item1, x.Item2));
-				}
+            using var c = new Net.Http.HttpClient(Config.QueryKey + outputTags);
+            if(Config.NetUseCredentials)
+            {
+                //c.UseDefaultCredentials = true;
+                Config.NetHeaders.ForEach(x => c.Headers.Add(x.Item1, x.Item2));
+            }
 
-                var request = await c.GetAsync();
+            var request = await c.GetAsync();
 
-                var b = JsonConvert.DeserializeObject<List<T>>(request.Body);
+            var b = JsonConvert.DeserializeObject<List<T>>(request.Body);
 
-				if (request.Success)
-				{
-					if (b.Any())
-					{
-						return b[MikiRandom.Next(0, b.Count)];
-					}
-				}
-				return default;
-			}
-		}
+            if(request.Success)
+            {
+                if(b.Any())
+                {
+                    return b[MikiRandom.Next(0, b.Count)];
+                }
+            }
+            return default;
+        }
 
 		protected static void AddBannedTerms(ImageboardConfigurations config, List<string> tags)
 		{

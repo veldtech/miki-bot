@@ -12,6 +12,7 @@ namespace Miki.Modules.Gambling
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
     using Miki.Helpers;
+    using Miki.Localization;
     using Miki.Modules.Gambling.Exceptions;
     using Miki.Modules.Gambling.Managers;
     using Miki.Services.Achievements;

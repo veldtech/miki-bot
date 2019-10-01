@@ -18,12 +18,10 @@
 			{
                 try
                 {
-                    using(var context = new MikiDbContextFactory()
-                        .CreateDbContext())
-                    {
-                        await context.Database.MigrateAsync()
-                            .ConfigureAwait(false);
-                    }
+                    using var context = new MikiDbContextFactory()
+                        .CreateDbContext();
+                    await context.Database.MigrateAsync()
+                        .ConfigureAwait(false);
                 }
                 catch(Exception ex)
                 {

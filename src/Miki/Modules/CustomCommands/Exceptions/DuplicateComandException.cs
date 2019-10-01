@@ -1,10 +1,8 @@
-﻿using Miki.Localization;
-using Miki.Localization.Exceptions;
-using System;
-using System.Runtime.Serialization;
-
-namespace Miki.Modules.CustomCommands
+﻿namespace Miki.Modules.CustomCommands
 {
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
     public class DuplicateComandException : LocalizedException
     {
         public override IResource LocaleResource 

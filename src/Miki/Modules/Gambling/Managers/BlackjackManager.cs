@@ -1,22 +1,23 @@
-﻿using Miki.API.Cards;
-using Miki.API.Cards.Enums;
-using Miki.API.Cards.Objects;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Events;
-using Miki.Services.Blackjack.Exceptions;
-using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Modules.Gambling.Managers
+﻿namespace Miki.Modules.Gambling.Managers
 {
-	[ProtoContract]
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.API.Cards;
+    using Miki.API.Cards.Enums;
+    using Miki.API.Cards.Objects;
+    using Miki.Cache;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Localization;
+    using Miki.Services.Blackjack.Exceptions;
+    using ProtoBuf;
+
+
+    [ProtoContract]
 	public class BlackjackContext
 	{
 		[ProtoMember(1)]

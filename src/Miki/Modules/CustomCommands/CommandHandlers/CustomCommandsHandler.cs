@@ -62,7 +62,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             return context;
         }
 
-        public async Task CheckAsync(IDiscordMessage data, IMutableContext e, Func<Task> next)
+        public async ValueTask CheckAsync(IDiscordMessage data, IMutableContext e, Func<ValueTask> next)
         {
             if (e == null)
             {
@@ -74,7 +74,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 return;
             }
 
-            var channel = await e.GetMessage().GetChannelAsync();
+            var channel = e.GetChannel();
             if (!(channel is IDiscordGuildChannel guildChannel))
             {
                 return;
@@ -90,7 +90,9 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             string commandName = args.FirstOrDefault()
                 .ToLowerInvariant();
 
-            var cachePackage = await cache.HashGetAsync<ScriptPackage>(CommandCacheKey, commandName + ":" + guild.Id);
+            var cachePackage = await cache.HashGetAsync<ScriptPackage>(
+                CommandCacheKey, 
+                commandName + ":" + guild.Id);
             if (cachePackage != null)
             {
                 tokens = ScriptPacker.Unpack(cachePackage);
@@ -110,8 +112,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if (tokens != null)
             {
                 var context = CreateContext(e);
-                e.GetChannel()
-                    .QueueMessage(new Parser(tokens).Parse(context));
+                e.GetChannel().QueueMessage(new Parser(tokens).Parse(context));
             }
         }
     }

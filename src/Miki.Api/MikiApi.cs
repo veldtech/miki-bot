@@ -1,15 +1,15 @@
-﻿using Miki.Api.Models;
-using Miki.API.Leaderboards;
-using Miki.Net.Http;
-using Miki.Rest;
-using Newtonsoft.Json;
-using System;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.API
+﻿namespace Miki.API
 {
-	public class MikiApiClient : IDisposable
+    using Miki.Api.Models;
+    using Miki.API.Leaderboards;
+    using Miki.Net.Http;
+    using Miki.Rest;
+    using Newtonsoft.Json;
+    using System;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    public class MikiApiClient : IDisposable
 	{
 		private readonly HttpClient _client;
 

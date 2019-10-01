@@ -1,5 +1,6 @@
 using Miki.Localization;
 using Miki.Localization.Exceptions;
+using Miki.Localization.Models;
 
 namespace Miki.Modules.Donator.Exceptions
 {

@@ -2,6 +2,7 @@
 namespace Miki.Extensions.Localization
 {
     using Miki.Localization;
+    using Miki.Localization.Models;
     using System;
 
     public class HeaderResource : IResource

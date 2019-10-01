@@ -17,30 +17,27 @@
 
     public class DatadogRoutine
 	{
-        public void Install(NodeModule _, MikiApp app)
+        public DatadogRoutine(
+            AccountService accounts,
+            AchievementService achievements,
+            CommandPipeline commandPipeline,
+            Config config,
+            IDiscordClient discordClient,
+            DiscordApiClient discordApiClient)
         {
-            if(app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
             DogStatsd.Configure(new StatsdConfig
             {
                 // TODO #534: Change to [Configurable]
-                StatsdServerName = app.Services.GetService<Config>().DatadogHost,
+                StatsdServerName = config.DatadogHost,
                 StatsdPort = 8125,
                 Prefix = "miki"
             });
-            
-            CreateAccountMetrics(app.Services.GetService<AccountService>());
 
-            CreateAchievementsMetrics(app.Services.GetService<AchievementService>());
-
-            CreateEventSystemMetrics(app.Services.GetService<CommandPipeline>());
-
-            CreateDiscordMetrics();
-
-            CreateHttpMetrics();
+            CreateAccountMetrics(accounts);
+            CreateAchievementsMetrics(achievements);
+            CreateEventSystemMetrics(commandPipeline);
+            CreateDiscordMetrics(discordClient);
+            CreateHttpMetrics(discordApiClient);
 
             Log.Message("Datadog set up!");
         }
@@ -84,7 +81,7 @@
                 return Task.CompletedTask;
             };
         }
-		private void CreateDiscordMetrics()
+		private void CreateDiscordMetrics(IDiscordClient client)
 		{
 			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
 			if(discord == null)
@@ -109,7 +106,7 @@
 			};
 		}
 
-        private void CreateEventSystemMetrics(CommandPipeline system)
+        private void CreateEventSystemMetrics(IAsyncEventingExecutor<IDiscordMessage> system)
         {
             if(system == null)
             {
@@ -119,16 +116,14 @@
             system.OnExecuted += OnCommandProcessed;
         }
 
-        private void CreateHttpMetrics()
+        private void CreateHttpMetrics(DiscordApiClient client)
 		{
-			var discordHttpClient = MikiApp.Instance.Services
-                .GetService<DiscordApiClient>().RestClient;
-			if(discordHttpClient == null)
+			if(client == null)
 			{
 				return;
 			}
 
-			discordHttpClient.OnRequestComplete += (method, url) =>
+            client.RestClient.OnRequestComplete += (method, url) =>
 			{
 				DogStatsd.Histogram("discord.http.requests", 1, 1, new[] {
 					$"http_method:{method}",

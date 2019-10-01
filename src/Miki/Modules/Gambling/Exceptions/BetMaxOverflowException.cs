@@ -1,11 +1,8 @@
-﻿using Miki.Localization;
-using Miki.Localization.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Modules.Gambling.Exceptions
+﻿namespace Miki.Modules.Gambling.Exceptions
 {
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
     public class BetLimitOverflowException : LocalizedException
     {
         public override IResource LocaleResource

@@ -1,40 +1,41 @@
-using Imgur.API.Authentication.Impl;
-using Imgur.API.Endpoints.Impl;
-using Imgur.API.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.API.Imageboards;
-using Miki.API.Imageboards.Enums;
-using Miki.API.Imageboards.Interfaces;
-using Miki.API.Imageboards.Objects;
-using Miki.API.Reminder;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Cache;
-using Miki.Common.Builders;
-using Miki.Configuration;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Extension;
-using Miki.Net.Http;
-using NCalc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Services.Achievements;
-
 namespace Miki.Modules
 {
-	[Module("fun")]
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Imgur.API.Authentication.Impl;
+    using Imgur.API.Endpoints.Impl;
+    using Imgur.API.Models;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using Miki.API.Imageboards;
+    using Miki.API.Imageboards.Enums;
+    using Miki.API.Imageboards.Interfaces;
+    using Miki.API.Imageboards.Objects;
+    using Miki.API.Reminder;
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Cache;
+    using Miki.Common.Builders;
+    using Miki.Configuration;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Extension;
+    using Miki.Localization;
+    using Miki.Net.Http;
+    using Miki.Services.Achievements;
+    using NCalc;
+    using Newtonsoft.Json;
+
+    [Module("fun")]
 	public class FunModule
 	{
 		/// <summary>
@@ -267,7 +268,7 @@ namespace Miki.Modules
 		[Command("cat")]
 		public async Task CatAsync(IContext e)
 		{
-			WebClient c = new WebClient();
+			using WebClient c = new WebClient();
 			byte[] b = c.DownloadData("http://aws.random.cat/meow");
 			string str = Encoding.Default.GetString(b);
 			CatImage cat = JsonConvert.DeserializeObject<CatImage>(str);

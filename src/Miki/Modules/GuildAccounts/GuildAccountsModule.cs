@@ -1,24 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Miki.Accounts;
-using Miki.Attributes;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Discord;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Language;
-using Miki.Helpers;
-using Miki.Localization;
-using Miki.Modules.GuildAccounts.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Accounts;
+    using Miki.Attributes;
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Discord;
+    using Miki.Discord.Rest;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Language;
+    using Miki.Helpers;
+    using Miki.Localization;
+    using Miki.Localization.Models;
+
     [Module("Guild_Accounts")]
 	public class GuildAccountsModule
 	{
