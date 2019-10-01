@@ -99,13 +99,16 @@ namespace Miki.Modules
 
 				expression.EvaluateFunction += (name, x) =>
 				{
-					if (name == "lerp")
-					{
-						double n = (double)x.Parameters[0].Evaluate();
-						double v = (double)x.Parameters[1].Evaluate();
-						double o = (double)x.Parameters[2].Evaluate();
-						x.Result = (n * (1.0 - o)) + (v * o);
-					}
+                    switch(name)
+                    {
+                        case "lerp":
+                        {
+                            double n = (double) x.Parameters[0].Evaluate();
+                            double v = (double) x.Parameters[1].Evaluate();
+                            double o = (double) x.Parameters[2].Evaluate();
+                            x.Result = (n * (1.0 - o)) + (v * o);
+                        } break;
+                    }
 				};
 
 				object output = expression.Evaluate();
@@ -114,7 +117,9 @@ namespace Miki.Modules
 			}
 			catch (Exception ex)
 			{
-				e.Channel.QueueMessage(e.Locale.GetString("miki_module_general_calc_error") + "\n```" + ex.Message + "```");
+				e.Channel.QueueMessage(
+                    e.Locale.GetString("miki_module_general_calc_error") 
+                    + "\n```" + ex.Message + "```");
 			}
 			return Task.CompletedTask;
 		}
@@ -132,9 +137,11 @@ namespace Miki.Modules
 
 		[Command(Name = "giveaway")]
 		public async Task GiveawayAsync(CommandContext e)
-		{
-			DiscordEmoji emoji = new DiscordEmoji();
-			emoji.Name = "🎁";
+        {
+            DiscordEmoji emoji = new DiscordEmoji
+            {
+                Name = "🎁",
+            };
 
             e.Arguments.Take(out string giveawayText);
 
@@ -166,56 +173,52 @@ namespace Miki.Modules
 
 			await msg.CreateReactionAsync(emoji);
 
-			int updateTask = -1;
-
-			int task = taskScheduler.AddTask(e.Author.Id, async (desc) =>
+			taskScheduler.AddTask(e.Author.Id, async (desc) =>
 			{
 				msg = await e.Channel.GetMessageAsync(msg.Id);
+                if (msg == null)
+                {
+                    return;
+                }
 
-				if (msg != null)
-				{
-					await msg.DeleteReactionAsync(emoji);
+                await msg.DeleteReactionAsync(emoji);
 
-                    await Task.Delay(1000);
+                await Task.Delay(1000);
 
-					var reactions = await msg.GetReactionsAsync(emoji);
+                var reactions = await msg.GetReactionsAsync(emoji);
 
-					//do
-					//{
-					//	reactions.AddRange();
-					//	reactionsGained += 100;
-					//} while (reactions.Count == reactionsGained);
+                //do
+                //{
+                //	reactions.AddRange();
+                //	reactionsGained += 100;
+                //} while (reactions.Count == reactionsGained);
 
-					// Select random winners
-					for (int i = 0; i < amount; i++)
-					{
-						if (reactions.Count == 0)
-						{
-							break;
-						}
+                // Select random winners
+                for (int i = 0; i < amount; i++)
+                {
+                    if (reactions.Count == 0)
+                    {
+                        break;
+                    }
 
-						int index = MikiRandom.Next(reactions.Count);
-						winners.Add(reactions[index]);
-					}
+                    int index = MikiRandom.Next(reactions.Count);
+                    winners.Add(reactions[index]);
+                }
 
-					if (updateTask != -1)
-						taskScheduler.CancelReminder(e.Author.Id, updateTask);
+                string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
+                if (string.IsNullOrEmpty(winnerText))
+                    winnerText = "nobody!";
 
-					string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
-					if (string.IsNullOrEmpty(winnerText))
-						winnerText = "nobody!";
-
-					await msg.EditAsync(new EditMessageArgs
-					{
-						embed = CreateGiveawayEmbed(e, giveawayText)
-							.AddField("Winners", winnerText)
-							.ToEmbed()
-					});
-				}
-			}, "description var", timeLeft);
+                await msg.EditAsync(new EditMessageArgs
+                {
+                    embed = CreateGiveawayEmbed(e, giveawayText)
+                        .AddField("Winners", winnerText)
+                        .ToEmbed()
+                });
+            }, "description var", timeLeft);
 		}
 
-		private EmbedBuilder CreateGiveawayEmbed(CommandContext e, string text)
+		private EmbedBuilder CreateGiveawayEmbed(ICommandContext e, string text)
 		{
 			return new EmbedBuilder()
 			{
@@ -231,7 +234,7 @@ namespace Miki.Modules
 		}
 
         [Command(Name = "guildinfo")]
-        public async Task GuildInfoAsync(CommandContext e)
+        public async Task GuildInfoAsync(ICommandContext e)
         {
             IDiscordGuildUser owner = await e.Guild.GetOwnerAsync();
 

@@ -19,7 +19,6 @@ using Miki.Framework.Events;
 using Miki.Framework.Events.Attributes;
 using Miki.Helpers;
 using Miki.Logging;
-using Miki.Models;
 using Miki.Models.Objects.Backgrounds;
 using Miki.Modules.Accounts.Services;
 using Miki.Rest;
@@ -32,7 +31,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Miki.Modules.AccountsModule
+namespace Miki.Modules.Accounts
 {
 	[Module("Accounts")]
 	public class AccountsModule
