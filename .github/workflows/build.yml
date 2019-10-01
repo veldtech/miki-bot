@@ -1,4 +1,4 @@
-name: ASP.NET Core CI
+name: Build ubuntu18.04-release
 
 on: [push]
 
@@ -9,9 +9,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: checkout submodules
+      run: git submodule update --init
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 2.2.108
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet publish Miki/Miki.csproj --configuration Release
