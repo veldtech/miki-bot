@@ -311,7 +311,7 @@
         [RequiresScope("developer.internal")]
         public async Task AddScopeAsync(IContext e)
         {
-            var scopeStage = e.GetStage<ScopePipelineStage>();
+            var scopeStage = e.GetService<ScopePipelineStage>();
             e.GetArgumentPack().Take(out string userStr);
             var user = await DiscordExtensions.GetUserAsync(userStr, e.GetGuild());
             if(user == null)

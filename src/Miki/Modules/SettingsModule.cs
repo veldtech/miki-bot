@@ -1,5 +1,7 @@
 ﻿namespace Miki.Modules
 {
+    using Miki.Framework.Commands.Localization.Models.Exceptions;
+    using Miki.Framework.Commands.Prefixes;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,10 +14,8 @@
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Commands.Localization;
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Stages;
     using Miki.Localization;
 
     public enum LevelNotificationsSetting
@@ -33,14 +33,15 @@
 
 	[Module("settings")]
 	internal class SettingsModule
-	{
-		private readonly IDictionary<DatabaseSettingId, Enum> _settingOptions = new Dictionary<DatabaseSettingId, Enum>()
-		{
-			{DatabaseSettingId.LevelUps, (LevelNotificationsSetting)0 },
-			{DatabaseSettingId.Achievements, (AchievementNotificationSetting)0 }
-		};
+    {
+        private readonly IDictionary<DatabaseSettingId, Enum> settingOptions 
+            = new Dictionary<DatabaseSettingId, Enum>
+            {
+                {DatabaseSettingId.LevelUps, (LevelNotificationsSetting) 0},
+                {DatabaseSettingId.Achievements, (AchievementNotificationSetting) 0}
+            };
 
-        private readonly Dictionary<string, string> languageNames = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> languageNames = new Dictionary<string, string>
         {
             { "arabic", "ara" },
             { "bulgarian", "bul" },
@@ -73,10 +74,8 @@
 		[Command("listlocale")]
 		public async Task ListLocaleAsync(IContext e)
 		{
-			var localeStage = e.GetService<LocalizationPipelineStage>();
 			var locale = e.GetLocale();
-
-			var localeNames = string.Join(",", languageNames.Keys.Select(x => $"`{x}`"));
+            var localeNames = string.Join(", ", languageNames.Keys.Select(x => $"`{x}`"));
 
             await new EmbedBuilder()
                 .SetTitle(locale.GetString("locales_available"))
@@ -103,8 +102,17 @@
                 localeIso = langId;
             }
 
-            await service.SetLocaleAsync((long)e.GetChannel().Id, localeIso)
-                .ConfigureAwait(false);
+            try
+            {
+                await service.SetLocaleAsync((long) e.GetChannel().Id, localeIso)
+                    .ConfigureAwait(false);
+            }
+            catch (LocaleNotFoundException)
+            {
+                await e.ErrorEmbedResource("error_locale_not_found", localeIso)
+                    .ToEmbed().QueueAsync(e.GetChannel());
+                return;
+            }
 
             var newLocale = await service.GetLocaleAsync((long)e.GetChannel().Id);
 
@@ -136,7 +144,7 @@
 				return;
 			}
 
-			if(!_settingOptions.TryGetValue(value, out var @enum))
+			if(!settingOptions.TryGetValue(value, out var @enum))
 			{
 				return;
 			}
@@ -193,59 +201,15 @@
                 .ConfigureAwait(false);
         }
 
-		[Command("showmodule")]
-		public async Task ConfigAsync(IContext e)
-		{
-            var cache = e.GetService<ICacheClient>();
-            var db = e.GetService<DbContext>();
-
-            var commandHandler = e.GetStage<CommandHandlerStage>();
-
-            string args = e.GetArgumentPack().Pack.TakeAll();
-
-            var module = commandHandler.Modules
-                .Where(x => x is NodeContainer)
-                .Select(x => x as NodeContainer)
-                .FirstOrDefault(x => x.Metadata.Identifiers
-                    .Any(y => y.ToLowerInvariant() == args.ToLowerInvariant()));
-
-            if (module != null)
-            {
-                // No module found
-                return;
-            }
-
-            EmbedBuilder embed = new EmbedBuilder()
-                .SetTitle(args.ToUpperInvariant());
-
-            string content = "";
-
-            foreach (Node ev in module.Children.OrderBy((x) => x.Metadata.Identifiers.First()))
-            {
-                var state = true;
-                content += (state 
-                    ? "<:iconenabled:341251534522286080>" 
-                    : "<:icondisabled:341251533754728458>") + $" {ev.Metadata.Identifiers.First()}\n";
-            }
-
-            embed.AddInlineField("Events", content);
-
-            content = "";
-
-            await embed.ToEmbed()
-                .QueueAsync(e.GetChannel());
-        }
-
 		[Command("setprefix")]
 		public async Task PrefixAsync(IContext e)
 		{
-            var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
-
             if (!e.GetArgumentPack().Take(out string prefix))
             {
                 return;
             }
 
+            var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
             await prefixMiddleware.GetDefaultTrigger()
                 .ChangeForGuildAsync(
                     e.GetService<DbContext>(),

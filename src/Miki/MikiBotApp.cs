@@ -1,4 +1,7 @@
-﻿namespace Miki
+﻿using Miki.Framework.Commands.Prefixes;
+using Miki.Framework.Commands.Prefixes.Triggers;
+
+namespace Miki
 {
     using System;
     using System.Collections.Generic;
@@ -25,8 +28,6 @@
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Filters;
-    using Miki.Framework.Commands.Filters.Filters;
-    using Miki.Framework.Commands.Localization;
     using Miki.Framework.Commands.Permissions;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Framework.Commands.Stages;
@@ -101,23 +102,16 @@
         {
             LoadLocales(services); // TODO(velddev): Find a better place to load this.
 
-            var commandTree = new CommandTreeBuilder(services)
-                .AddCommandBuildStep(new ConfigurationManagerAdapter())
-                .Create(Assembly.GetExecutingAssembly());
-
             return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
                     new BotFilter(),
                     new UserFilter())
-                .UsePrefixes(
-                    new PrefixTrigger(">", true, true),
-                    new PrefixTrigger("miki.", false),
-                    new MentionTrigger())
+                .UsePrefixes()
                 .UseStage(new FetchDataStage())
                 .UseLocalization()
                 .UseArgumentPack()
-                .UseCommandHandler(commandTree)
+                .UseCommandHandler()
                 .UsePermissions()
                 .UseScopes()
                 .Build();
@@ -149,9 +143,9 @@
                     x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
 
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+
             serviceCollection.AddScoped<AchievementRepository>();
-            serviceCollection.AddSingleton<
-                IAsyncRepository<Permission>, EntityRepository<Permission>>();
 
             // Setup Miki API
             {
@@ -187,7 +181,7 @@
                 serviceCollection.AddSingleton<IApiClient>(
                     s => new DiscordApiClient(Config.Token, s.GetService<ICacheClient>()));
 
-                IGateway gateway = null;
+                IGateway gateway;
                 if(bool.Parse(Environment.GetEnvironmentVariable(Constants.ENV_SelfHost).ToLowerInvariant()))
                 {
                     gateway = new GatewayCluster(new GatewayProperties
@@ -238,7 +232,20 @@
                 serviceCollection.AddSingleton<RpsService>();
                 serviceCollection.AddSingleton<ILocalizationService, LocalizationService>();
                 serviceCollection.AddSingleton<PermissionService>();
+
+                serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
+                {
+                    new PrefixTrigger(">", true, true),
+                    new PrefixTrigger("miki.", false),
+                    new MentionTrigger()
+                });
+                serviceCollection.AddSingleton<PrefixService<IDiscordMessage>>();
             }
+
+            serviceCollection.AddSingleton(x =>
+                new CommandTreeBuilder(x)
+                    .AddCommandBuildStep(new ConfigurationManagerAdapter())
+                    .Create(Assembly.GetExecutingAssembly()));
 
         }
 

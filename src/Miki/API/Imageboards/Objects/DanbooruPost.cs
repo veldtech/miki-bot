@@ -28,13 +28,13 @@ namespace Miki.API.Imageboards.Objects
 		public string Rating { get; set; }
 
 		[JsonProperty("image_width")]
-		private string ImageWidth { set { Width = value; } }
+		private string imageWidth { set => Width = value; }
 
 		[JsonProperty("image_height")]
-		private string ImageHeight { set { Height = value; } }
+		private string imageHeight { set => Height = value; }
 
 		[JsonProperty("tag_string")]
-		private string TagString { set { Tags = value; } }
+		private string tagString { set => Tags = value; }
 
 		[JsonProperty("is_note_locked")]
 		public bool IsNoteLocked { get; set; }

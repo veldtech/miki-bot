@@ -18,7 +18,6 @@ namespace Miki.Modules.Admin
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Exceptions;
     using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Stages;
     using Miki.Localization;
     using Miki.Utility;
 
@@ -300,8 +299,11 @@ namespace Miki.Modules.Admin
         {
             private const string PermissionSet = "permission_set";
 
+            private const string DisabledEmoji = "<:icon_disabled:627870695799652362>";
+            private const string EnabledEmoji = "<:icon_enabled:627870695807778821>";
+            private const string DefaultEmoji = "<:icon_default:627870695493337089>";
+
             [Command("allow")]
-            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
             [DefaultPermission(PermissionStatus.Deny)]
             public Task AllowPermissionsAsync(IContext e)
             {
@@ -309,7 +311,6 @@ namespace Miki.Modules.Admin
             }
 
             [Command("deny")]
-            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
             [DefaultPermission(PermissionStatus.Deny)]
             public Task DenyPermissionsAsync(IContext e)
             {
@@ -317,7 +318,6 @@ namespace Miki.Modules.Admin
             }
 
             [Command("reset")]
-            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
             [DefaultPermission(PermissionStatus.Deny)]
             public Task ResetPermissionsAsync(IContext e)
             {
@@ -325,12 +325,10 @@ namespace Miki.Modules.Admin
             }
 
             [Command("list")]
-            [RequiresPipelineStage(typeof(PermissionPipelineStage))]
-            [DefaultPermission(PermissionStatus.Deny)]
+            [DefaultPermission(PermissionStatus.Allow)]
             public async Task ListPermissionsAsync(IContext e)
             {
-                var db = e.GetService<DbContext>();
-                var permissions = e.GetService<PermissionService>();
+               var permissions = e.GetService<PermissionService>();
 
                 List<long> idList = new List<long>();
                 if(e.GetAuthor() is IDiscordGuildUser gm)
@@ -343,6 +341,18 @@ namespace Miki.Modules.Admin
 
                 var allPermissions = await permissions.ListPermissionsAsync(
                     (long)e.GetGuild().Id, idList.ToArray());
+                if (e.GetArgumentPack().Take(out string commandName))
+                {
+                    var commandTree = e.GetService<CommandTree>();
+                    var command = commandTree.GetCommand(commandName);
+                    if (command != null)
+                    {
+                        allPermissions = allPermissions
+                            .Where(x => x.CommandName == command.ToString())
+                            .ToList();
+                    }
+                }
+
                 if(!allPermissions.Any())
                 {
                     await e.GetChannel()
@@ -350,13 +360,18 @@ namespace Miki.Modules.Admin
                     return;
                 }
 
+                allPermissions = allPermissions.Where(x => x.Status != PermissionStatus.Default)
+                    .OrderBy(x => x.CommandName)
+                    .ThenBy(x => x.Status)
+                    .ToList();
+
                 await new EmbedBuilder()
                     .SetTitle("⚡ Your permissions")
                     .SetColor(180, 180, 90)
                     .SetDescription(
                         string.Join(
-                            "\n", allPermissions.Select(x
-                                => $"{GetStatusEmoji(x.Status)} {x.CommandName} for {x.Type} {x.EntityId}")))
+                            "\n", 
+                            allPermissions.Select(x => $"{GetStatusEmoji(x.Status)} {x.CommandName} for {x.Type} {x.EntityId}")))
                     .ToEmbed()
                     .QueueAsync(e.GetChannel());
             }
@@ -366,13 +381,14 @@ namespace Miki.Modules.Admin
                 switch (status)
                 {
                     case PermissionStatus.Allow:
-                        return "✅";
+                        return EnabledEmoji;
                     case PermissionStatus.Default:
+                        return DefaultEmoji;
                     case PermissionStatus.Deny:
-                        return "❌";
+                        return DisabledEmoji;
+                    default:
+                        return "";
                 }
-
-                return "";
             }
 
             private class Entity
@@ -385,9 +401,7 @@ namespace Miki.Modules.Admin
             private async Task SetPermissionsAsync(IContext e, PermissionStatus level)
             {
                 var permissions = e.GetService<PermissionService>();
-                var commands = e.GetStage<CommandHandlerStage>();
-
-                var db = e.GetService<DbContext>();
+                var commands = e.GetService<CommandTree>();
 
                 if(!e.GetArgumentPack().Take(out string commandName))
                 {
@@ -416,7 +430,6 @@ namespace Miki.Modules.Admin
                     Status = level,
                     GuildId = (long)e.GetGuild().Id
                 });
-                await db.SaveChangesAsync();
 
                 await e.SuccessEmbedResource(PermissionSet, entity.Resource, level)
                     .QueueAsync(e.GetChannel());
@@ -593,7 +606,7 @@ namespace Miki.Modules.Admin
 
             commandId = commandId.Replace('.', ' ');
 
-            var handler = e.GetStage<CommandHandlerStage>();
+            var handler = e.GetService<CommandTree>();
 
             var command = handler.GetCommand(commandId);
             if (command == null)
@@ -641,7 +654,7 @@ namespace Miki.Modules.Admin
                 .QueueAsync(e.GetChannel());
         }
 
-        [Command("softban")]
+        [Command("softban")] // softban ulong, softban string, so
         public async Task SoftbanAsync(IContext e)
         {
             IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();
@@ -716,5 +729,6 @@ namespace Miki.Modules.Admin
 
     internal class InvalidEntityException : Exception
     {
+
     }
 }

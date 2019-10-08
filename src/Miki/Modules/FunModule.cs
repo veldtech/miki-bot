@@ -335,7 +335,7 @@ namespace Miki.Modules
             string url;
             do
 			{
-				url = (await new Net.Http.HttpClient("https://random.dog/woof").GetAsync("")).Body;
+				url = (await new HttpClient("https://random.dog/woof").GetAsync()).Body;
 			} while (string.IsNullOrEmpty(url) || url.ToLower().EndsWith("mp4"));
 
 			await new EmbedBuilder()

@@ -1,4 +1,8 @@
-﻿namespace Miki.Modules
+﻿using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Prefixes;
+
+namespace Miki.Modules
 {
     using Microsoft.EntityFrameworkCore;
     using Miki.API;
@@ -13,7 +17,6 @@
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Nodes;
-    using Miki.Framework.Commands.Stages;
     using Miki.Framework.Extension;
     using Miki.Framework.Language;
     using Miki.Helpers;
@@ -237,7 +240,7 @@
 			var context = e.GetService<MikiDbContext>();
 			var cache = e.GetService<ICacheClient>();
 
-			string prefix = await e.GetStage<PipelineStageTrigger>()
+			string prefix = await e.GetService<PrefixService<IDiscordMessage>>()
 				.GetDefaultTrigger()
 				.GetForGuildAsync(context, cache, guild.Id)
                 .ConfigureAwait(false);
@@ -294,10 +297,9 @@
         }
 
 		[Command("help")]
-		[RequiresPipelineStage(typeof(CommandHandlerStage))]
 		public async Task HelpAsync(IContext e)
 		{
-			var commandHandler = e.GetStage<CommandHandlerStage>();
+			var commandHandler = e.GetService<CommandTree>();
             var locale = e.GetLocale();
 
             if(e.GetArgumentPack().Take(out string arg))
@@ -314,7 +316,7 @@
                         Color = new Color(0.6f, 0.6f, 1.0f)
                     };
 
-                    var firstModule = commandHandler.Modules.OfType<NodeModule>().First();
+                    var firstModule = commandHandler.Root.Children.OfType<NodeModule>().First();
 					var root = (firstModule.Parent as NodeRoot);
 
                     List<Node> nodes = new List<Node>();
@@ -379,8 +381,7 @@
 
             var embedBuilder = new EmbedBuilder();
 
-			foreach(var nodeModule in commandHandler
-				.Modules.OfType<NodeModule>())
+			foreach(var nodeModule in commandHandler.Root.Children.OfType<NodeModule>())
 			{
 				var id = nodeModule.Metadata.Identifiers.First();
 
@@ -486,9 +487,9 @@
 			[Command]
 			public async Task PrefixHelpAsync(IContext e)
 			{
-				var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
+				var prefixService = e.GetService<PrefixService<IDiscordMessage>>();
 
-				var prefix = await prefixMiddleware.GetDefaultTrigger()
+				var prefix = await prefixService.GetDefaultTrigger()
 					.GetForGuildAsync(
 						e.GetService<MikiDbContext>(),
 						e.GetService<ICacheClient>(),
@@ -503,9 +504,10 @@
 			}
 
 			[Command("set")]
+            [DefaultPermission(PermissionStatus.Deny)]
 			public async Task SetPrefixAsync(IContext e)
 			{
-				var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
+				var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
 				var locale = e.GetLocale();
 
 				if(!e.GetArgumentPack().Take(out string prefix))
@@ -533,9 +535,10 @@
             }
 
 			[Command("reset")]
+            [DefaultPermission(PermissionStatus.Deny)]
 			public async Task ResetPrefixAsync(IContext e)
 			{
-				var prefixMiddleware = e.GetStage<PipelineStageTrigger>();
+				var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
 				var locale = e.GetLocale();
 
 				var trigger = prefixMiddleware.GetDefaultTrigger();

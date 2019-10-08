@@ -296,9 +296,9 @@
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Prefixes\Miki.Framework.Commands.Prefixes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Scopes\Miki.Framework.Commands.Scopes.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands\Miki.Framework.Commands.csproj" />
+    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Routines\Miki.Framework.Routines.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
     <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Commands.Localization\Miki.Framework.Commands.Localization.csproj" />
-    <ProjectReference Include="..\Miki.Framework.Routines\Miki.Framework.Routines.csproj" />
   </ItemGroup>
 </Project>

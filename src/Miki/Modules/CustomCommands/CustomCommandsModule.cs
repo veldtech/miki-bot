@@ -31,17 +31,14 @@
 		{
             var pipeline = new CommandPipelineBuilder(app.Services)
                 .UseStage(new CorePipelineStage())
-                .UsePrefixes(
-                    new PrefixTrigger(">", true, true),
-                    new PrefixTrigger("miki.", true),
-                    new MentionTrigger())
+                .UsePrefixes()
                 .UseStage(new FetchDataStage())               
                 .UseArgumentPack()
                 .UseStage(new CustomCommandsHandler())
                 .Build();
-			//app.Services.GetService<IDiscordClient>()
-			//	.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
-		}
+            app.Services.GetService<IDiscordClient>()
+                .MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
+        }
 
         [GuildOnly, Command("createcommand")]
         public async Task NewCustomCommandAsync(IContext e)
@@ -53,7 +50,7 @@
                     throw new InvalidCharacterException(" ");
                 }
 
-                var commandHandler = e.GetStage<CommandHandlerStage>();
+                var commandHandler = e.GetService<CommandTree>();
                 if(commandHandler.GetCommand(commandName) != null)
                 {
                     return;
