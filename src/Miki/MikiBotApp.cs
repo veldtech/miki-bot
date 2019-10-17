@@ -1,7 +1,4 @@
-﻿using Miki.Framework.Commands.Prefixes;
-using Miki.Framework.Commands.Prefixes.Triggers;
-
-namespace Miki
+﻿namespace Miki
 {
     using System;
     using System.Collections.Generic;
@@ -10,6 +7,8 @@ namespace Miki
     using System.Resources;
     using System.Threading.Tasks;
     using Amazon.S3;
+    using Framework.Commands.Localization.Models;
+    using Framework.Commands.Localization.Services;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -29,22 +28,21 @@ namespace Miki
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Filters;
     using Miki.Framework.Commands.Permissions;
-    using Miki.Framework.Commands.Permissions.Models;
+    using Miki.Framework.Commands.Prefixes;
+    using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Framework.Commands.Stages;
-    using Miki.Framework.Events;
     using Miki.Framework.Events.Triggers;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
-    using Miki.Patterns.Repositories;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services.Achievements;
-    using Miki.Services.Localization;
     using Miki.Services.Rps;
     using Miki.UrbanDictionary;
+    using Patterns.Repositories;
     using Retsu.Consumer;
     using SharpRaven;
     using SharpRaven.Data;
@@ -146,6 +144,9 @@ namespace Miki
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
             serviceCollection.AddScoped<AchievementRepository>();
+
+            serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, EntityRepository<ChannelLanguage>>();
+            serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, CachedRepository<ChannelLanguage>>();
 
             // Setup Miki API
             {
