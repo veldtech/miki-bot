@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Miki.Services.Blackjack.Exceptions
 {
-    public class BlackjackSessionExistsException : LocalizedException
+    public class DuplicateSessionException : LocalizedException
     {
         public override IResource LocaleResource 
             => new LanguageResource("error_blackjack_session_exists");

@@ -31,9 +31,9 @@ namespace Miki.Modules
     using System.Threading.Tasks;
 
     [Module("General")]
-	internal class GeneralModule
+	public class GeneralModule
 	{
-		private readonly TaskScheduler<string> _taskScheduler = new TaskScheduler<string>();
+		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
         // TODO(@velddev): turn into seperate generated string.
         private const string InviteUrl = "https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334";
@@ -43,13 +43,13 @@ namespace Miki.Modules
 		{
 			if(!e.GetArgumentPack().Take(out string arg))
 			{
-				e.GetChannel().QueueMessage(e.GetAuthor().GetAvatarUrl());
+				e.GetChannel().QueueMessage(e, e.GetAuthor().GetAvatarUrl());
 			}
 			else
 			{
 				if(arg == "-s")
 				{
-					e.GetChannel().QueueMessage(e.GetGuild().IconUrl);
+					e.GetChannel().QueueMessage(e, e.GetGuild().IconUrl);
 					return;
 				}
 
@@ -57,7 +57,7 @@ namespace Miki.Modules
                     .ConfigureAwait(false);
 				if(user != null)
 				{
-					e.GetChannel().QueueMessage(user.GetAvatarUrl());
+					e.GetChannel().QueueMessage(e, user.GetAvatarUrl());
 				}
 			}
 		}
@@ -86,29 +86,27 @@ namespace Miki.Modules
 
 				object output = expression.Evaluate();
 
-				e.GetChannel().QueueMessage(output.ToString());
+				e.GetChannel().QueueMessage(e, output.ToString());
 			}
 			catch(Exception ex)
 			{
 				e.GetChannel()
-                    .QueueMessage(
+                    .QueueMessage(e,
                         locale.GetString("miki_module_general_calc_error") 
                         + "\n```" + ex.Message + "```");
 			}
 			return Task.CompletedTask;
 		}
 
-		[Command("changelog")]
-		public async Task ChangelogAsync(IContext e)
-		{
-			await Task.Yield();
-			await new EmbedBuilder()
-			{
-				Title = "Changelog",
-				Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
-			}.ToEmbed()
-                .QueueAsync(e.GetChannel())
-                .ConfigureAwait(false);
+        [Command("changelog")]
+        public Task ChangelogAsync(IContext e)
+        {
+            return new EmbedBuilder
+                {
+                    Title = "Changelog",
+                    Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
+                }.ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("giveaway")]
@@ -135,7 +133,7 @@ namespace Miki.Modules
 			{
 				await e.ErrorEmbed("We can only allow up to 10 picks per giveaway")
 					.ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
                 return;
 			}
@@ -156,7 +154,7 @@ namespace Miki.Modules
 
 			int updateTask = -1;
 
-			int task = _taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
+			int task = taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
 			{
 				msg = await e.GetChannel().GetMessageAsync(msg.Id)
                     .ConfigureAwait(false);
@@ -191,7 +189,7 @@ namespace Miki.Modules
 					}
 
 					if(updateTask != -1)
-						_taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
+						taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
 
 					string winnerText = string.Join("\n", winners.Select(x => x.Username + "#" + x.Discriminator).ToArray());
 					if(string.IsNullOrEmpty(winnerText))
@@ -245,10 +243,10 @@ namespace Miki.Modules
 				.GetForGuildAsync(context, cache, guild.Id)
                 .ConfigureAwait(false);
 
-            var roles = await e.GetGuild().GetRolesAsync()
-                .ConfigureAwait(false);
-            var channels = await e.GetGuild().GetChannelsAsync()
-                .ConfigureAwait(false);
+            var roles = (await e.GetGuild().GetRolesAsync().ConfigureAwait(false))
+                .ToList();
+            var channels = (await e.GetGuild().GetChannelsAsync().ConfigureAwait(false))
+                .ToList();
 
             var builder = new EmbedBuilder()
 			{
@@ -292,7 +290,7 @@ namespace Miki.Modules
 				emojiOutput);
 
             await builder.ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -332,7 +330,7 @@ namespace Miki.Modules
 					helpListEmbed.AddField(locale.GetString("miki_module_help_didyoumean"), best.text);
 
 					await helpListEmbed.ToEmbed()
-						.QueueAsync(e.GetChannel())
+						.QueueAsync(e, e.GetChannel())
                         .ConfigureAwait(false);
                 }
 				else
@@ -365,7 +363,7 @@ namespace Miki.Modules
 						e.GetLocale().GetString("miki_command_usage_" + commandId.ToLower()) ?? e.GetLocale().GetString("miki_placeholder_null"));
 
 					await explainedHelpEmbed.ToEmbed()
-                        .QueueAsync(e.GetChannel())
+                        .QueueAsync(e, e.GetChannel())
                         .ConfigureAwait(false);
                 }
 				return;
@@ -376,7 +374,7 @@ namespace Miki.Modules
 				Description = e.GetLocale().GetString("miki_module_general_help_dm"),
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.ToEmbed()
-				.QueueAsync(e.GetChannel())
+				.QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
 
             var embedBuilder = new EmbedBuilder();
@@ -401,6 +399,7 @@ namespace Miki.Modules
 
 			await embedBuilder.ToEmbed()
 				.QueueAsync(
+                    e,
                     await e.GetAuthor().GetDMChannelAsync().ConfigureAwait(false), 
                     "Join our support server: https://discord.gg/39Xpj7K")
                 .ConfigureAwait(false);
@@ -418,7 +417,7 @@ namespace Miki.Modules
 			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
 			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
 			.ToEmbed()
-            .QueueAsync(e.GetChannel())
+            .QueueAsync(e, e.GetChannel())
             .ConfigureAwait(false);
         }
 
@@ -443,7 +442,7 @@ namespace Miki.Modules
 				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) [suggestions](https://suggestions.miki.ai/)");
 
 			await embed.ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
 
 			await Task.Yield();
@@ -452,36 +451,38 @@ namespace Miki.Modules
 		[Command("invite")]
 		public async Task InviteAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_general_invite_message"));
+			e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_general_invite_message"));
             var dmChannel = await e.GetAuthor().GetDMChannelAsync()
                     .ConfigureAwait(false);
-            dmChannel.QueueMessage(
+            dmChannel.QueueMessage(e,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
                 + "\n" + InviteUrl);
         }
 
-		[Command("ping", "lag")]
-		public async Task PingAsync(IContext e)
-		{
-			await new LocalizedEmbedBuilder(e.GetLocale())
-				  .WithTitle(new RawResource("Ping"))
-				  .WithDescription("ping_placeholder")
-				  .Build()
-				  .QueueAsync(e.GetChannel())
-				  .ThenWaitAsync(200)
-				  .ThenAsync(x =>
-				  {
-					  float ping = (float)(x.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
-					  return new EmbedBuilder()
-						  .SetTitle("Pong - " + Environment.MachineName)
-						  .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f), Math.Min(ping / 1000, 1f)))
-						  .AddInlineField("Miki", ((int)ping).ToFormattedString() + "ms")
-						  .ToEmbed()
-						  .EditAsync(x);
-				  }).ConfigureAwait(false);
-		}
+        [Command("ping", "lag")]
+        public Task PingAsync(IContext e)
+        {
+            return new LocalizedEmbedBuilder(e.GetLocale())
+                .WithTitle(new RawResource("Ping"))
+                .WithDescription("ping_placeholder")
+                .Build()
+                .QueueAsync(e,
+                    e.GetChannel(),
+                    modifier: x => x.ThenWait(200)
+                        .Then(y =>
+                        {
+                            float ping = (float) (y.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
+                            return new EmbedBuilder()
+                                .SetTitle("Pong - " + Environment.MachineName)
+                                .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f),
+                                    Math.Min(ping / 1000, 1f)))
+                                .AddInlineField("Miki", ((int) ping).ToFormattedString() + "ms")
+                                .ToEmbed()
+                                .EditAsync(y);
+                        }));
+        }
 
-		[Command("prefix")]
+        [Command("prefix")]
 		public class PrefixCommand
 		{
 			[Command]
@@ -499,7 +500,7 @@ namespace Miki.Modules
 				await new LocalizedEmbedBuilder(e.GetLocale())
 					.WithTitle("miki_module_general_prefix_help_header")
 					.WithDescription("prefix_info", prefix)
-					.Build().QueueAsync(e.GetChannel())
+					.Build().QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 			}
 
@@ -512,7 +513,7 @@ namespace Miki.Modules
 
 				if(!e.GetArgumentPack().Take(out string prefix))
 				{
-
+                    return;
 				}
 
 				await prefixMiddleware.GetDefaultTrigger()
@@ -530,7 +531,7 @@ namespace Miki.Modules
                             "miki_module_general_prefix_success_message",
                             prefix))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
             }
 
@@ -557,7 +558,7 @@ namespace Miki.Modules
                             "miki_module_general_prefix_success_message",
                             trigger.DefaultValue))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
             }
 		}
@@ -583,7 +584,7 @@ namespace Miki.Modules
                     "More info",
                     "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
                 .ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -642,7 +643,7 @@ namespace Miki.Modules
 			);
 
 			await embed.Build()
-				.QueueAsync(e.GetChannel())
+				.QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 	}

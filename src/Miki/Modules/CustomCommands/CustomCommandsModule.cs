@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore;
     using Miki.Attributes;
@@ -85,7 +86,7 @@
                 catch(Exception ex)
                 {
                     await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex}```")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
@@ -108,7 +109,7 @@
 				}
 
                 await e.SuccessEmbed($"Created script '>{commandName}'")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -130,7 +131,7 @@
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbedResource("ok_command_deleted", commandName)
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             else
             {

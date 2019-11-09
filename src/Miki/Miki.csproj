@@ -285,7 +285,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\Gambling\Managers\RPS\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

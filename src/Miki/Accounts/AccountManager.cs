@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
@@ -127,7 +128,10 @@
                 }
 
                 await embed.ToEmbed()
-                    .QueueAsync(e)
+                    .QueueAsync(
+                        scope.ServiceProvider.GetService<MessageWorker>(),
+                        scope.ServiceProvider.GetService<IDiscordClient>(),
+                        e)
                     .ConfigureAwait(false);
             };
 
@@ -289,7 +293,7 @@
 
             string query = x + string.Join(",", userQuery) + y;
 
-            await context.Database.ExecuteSqlCommandAsync(query, userParameters.ToArray());
+            await context.Database.ExecuteSqlRawAsync(query, userParameters);
         }
 
         public async Task UpdateLocalDatabaseAsync(DbContext context)
@@ -314,7 +318,7 @@
             string query = x + string.Join(",", userQuery) + y;
 
 
-            await context.Database.ExecuteSqlCommandAsync(query);
+            await context.Database.ExecuteSqlRawAsync(query);
         }
 
         public async Task UpdateGuildDatabaseAsync(DbContext context)
@@ -338,7 +342,7 @@
 
             string query = x + string.Join(",", userQuery) + y;
 
-            await context.Database.ExecuteSqlCommandAsync(query);
+            await context.Database.ExecuteSqlRawAsync(query);
         }
 
         #region Events

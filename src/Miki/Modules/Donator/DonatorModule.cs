@@ -16,7 +16,9 @@ using Miki.Services.Achievements;
 
 namespace Miki.Modules.Donator
 {
-	[Module("Donator")]
+    using Framework.Extension;
+
+    [Module("Donator")]
 	internal class DonatorModule
 	{
 		private readonly Net.Http.HttpClient client;
@@ -56,7 +58,7 @@ namespace Miki.Modules.Donator
 				await context.SaveChangesAsync();
 
 				await e.SuccessEmbed(e.GetLocale().GetString("key_sold_success", 30000))
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -99,7 +101,7 @@ namespace Miki.Modules.Donator
 						$"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
 				ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
 			}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
-				.ToEmbed().QueueAsync(e.GetChannel());
+				.ToEmbed().QueueAsync(e, e.GetChannel());
 
 			context.DonatorKey.Remove(key);
 			await context.SaveChangesAsync();

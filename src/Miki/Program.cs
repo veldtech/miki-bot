@@ -18,7 +18,7 @@
 			{
                 try
                 {
-                    using var context = new MikiDbContextFactory()
+                    await using var context = new MikiDbContextFactory()
                         .CreateDbContext();
                     await context.Database.MigrateAsync()
                         .ConfigureAwait(false);
@@ -36,7 +36,7 @@
                 try
                 {
                     var conf = await Config.InsertNewConfigAsync(
-                        Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
+                        Environment.GetEnvironmentVariable(Constants.EnvConStr));
 
                     Console.WriteLine($"New Config inserted into database with Id '{conf.Id}'.");
                     return;
@@ -52,9 +52,7 @@
             CreateLogger();
 
             Config c = await Config.GetOrInsertAsync(
-                Environment.GetEnvironmentVariable(Constants.ENV_ConStr));
-
-            MessageBucket.AddWorker();
+                Environment.GetEnvironmentVariable(Constants.EnvConStr));
 
             await new MikiBotApp(c)
                 .StartAsync();
@@ -89,7 +87,7 @@
                 .AddLogEvent((msg, lvl) =>
                 {
                     if (lvl >= (LogLevel)Enum.Parse(typeof(LogLevel), 
-                            Environment.GetEnvironmentVariable(Constants.ENV_LogLvl)))
+                            Environment.GetEnvironmentVariable(Constants.EnvLogLevel)))
                     {
                         Console.WriteLine(msg);
                     }

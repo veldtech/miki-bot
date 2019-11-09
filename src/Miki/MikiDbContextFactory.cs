@@ -10,10 +10,15 @@
     {
         public MikiDbContext CreateDbContext(params string[] args)
         {
+            var connectionString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Cannot create database context without connection string.");
+            }
+
             var builder = new DbContextOptionsBuilder<MikiDbContext>();
-            builder.UseNpgsql(
-                Environment.GetEnvironmentVariable(Constants.ENV_ConStr), 
-                b => b.MigrationsAssembly("Miki.Bot.Models"));
+            builder.UseNpgsql(connectionString, b => b.MigrationsAssembly("Miki.Bot.Models"));
             return new MikiDbContext(builder.Options);
         }
     }

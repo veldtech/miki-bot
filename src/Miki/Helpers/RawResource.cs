@@ -6,32 +6,32 @@
 
     public class IconResource : IResource
 	{
-		private readonly string _icon;
-		private readonly string _resourceText;
+		private readonly string icon;
+		private readonly string resourceText;
 
         public IconResource(string icon, string resource)
         {
-            _icon = icon;
-            _resourceText = resource;
+            this.icon = icon;
+            resourceText = resource;
         }
 
         public string Get(IResourceManager instance)
-            => _icon + " " + instance.GetString(_resourceText);
+            => icon + " " + instance.GetString(resourceText);
     }
 
     public class RawResource : IResource
 	{
-		private readonly string _content;
+		private readonly string content;
 
         public RawResource(string content)
         {
-            _content = content;
+            this.content = content;
         }
         public RawResource(IEnumerable<char> content)
             : this(new string(content.ToArray()))
         { }
 
         public string Get(IResourceManager instance)
-             => _content;
+             => content;
 	}
 }

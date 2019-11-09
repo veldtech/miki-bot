@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Framework.Extension;
 
     [Module("eventmessages")]
     public class LoggingModule
@@ -73,19 +74,19 @@
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No welcome message found! To set one use: `>setwelcomemessage <message>`")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
                 await e.SuccessEmbed($"Deleted your welcome message")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             else
             {
                 await SetMessageAsync(context, welcomeMessage, EventMessageType.JOINSERVER, e.GetChannel().Id);
                 await e.SuccessEmbed($"Your new welcome message is set to: ```{welcomeMessage}```")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
@@ -102,20 +103,20 @@
                 if (leaveMessage == null)
                 {
                     await e.ErrorEmbed($"No leave message found! To set one use: `>setleavemessage <message>`")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 context.EventMessages.Remove(leaveMessage);
                 await e.SuccessEmbed($"Deleted your leave message")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
 
             }
             else
             {
                 await SetMessageAsync(context, leaveMsgString, EventMessageType.LEAVESERVER, e.GetChannel().Id);
                 await e.SuccessEmbed($"Your new leave message is set to: ```{leaveMsgString}```")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             await context.SaveChangesAsync();
         }
@@ -128,10 +129,10 @@
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
                 EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
-                e.GetChannel().QueueMessage(msg.message ?? "No message set in this channel");
+                e.GetChannel().QueueMessage(e, msg.message ?? "No message set in this channel");
                 return;
             }
-            e.GetChannel().QueueMessage($"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage(e, $"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)

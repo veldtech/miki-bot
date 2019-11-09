@@ -55,7 +55,15 @@
 			user.Currency += amount;
         }
 
-		public static void RemoveCurrency(this User user, int amount)
+        /// <summary>
+        /// Starts a transaction and removes an <paramref name="amount"/> of 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="amount"></param>
+        /// <exception cref="ArgumentLessThanZeroException"></exception>
+        /// <exception cref="InsufficientCurrencyException"></exception>
+        /// <see cref="AddCurrency(User, int)"/>
+        public static void RemoveCurrency(this User user, int amount)
 		{
 			if(amount < 0)
 			{

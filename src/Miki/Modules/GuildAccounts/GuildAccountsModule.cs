@@ -1,23 +1,24 @@
-﻿namespace Miki.Modules
+﻿namespace Miki.Modules.GuildAccounts
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Attributes;
+    using Bot.Models;
+    using Bot.Models.Exceptions;
+    using Discord;
+    using Discord.Rest;
+    using Framework;
+    using Framework.Commands;
+    using Framework.Commands.Attributes;
+    using Framework.Extension;
+    using Framework.Language;
+    using Helpers;
+    using Localization;
+    using Localization.Models;
     using Microsoft.EntityFrameworkCore;
     using Miki.Accounts;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord;
-    using Miki.Discord.Rest;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Language;
-    using Miki.Helpers;
-    using Miki.Localization;
-    using Miki.Localization.Models;
 
     [Module("Guild_Accounts")]
 	public class GuildAccountsModule
@@ -59,7 +60,7 @@
                         "miki_guildweekly_insufficient_exp",
                         thisGuild.MinimalExperienceToGetRewards.ToString("N0")))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
             if (timer == null)
@@ -81,7 +82,7 @@
                         "guildweekly_error_timer_running",
                         (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(e.GetLocale())))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -91,7 +92,7 @@
                 await new EmbedBuilder()
                     .SetTitle(e.GetLocale().GetString("miki_terms_weekly"))
                     .SetDescription(e.GetLocale().GetString("guildweekly_error_low_level"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -110,7 +111,7 @@
             await new EmbedBuilder()
                 .SetTitle(e.GetLocale().GetString("miki_terms_weekly"))
                 .AddInlineField("Mekos", mekosGained.ToFormattedString())
-                .ToEmbed().QueueAsync(e.GetChannel());
+                .ToEmbed().QueueAsync(e, e.GetChannel());
 
             timer.Value = DateTime.Now;
             await database.SaveChangesAsync();
@@ -129,7 +130,7 @@
             {
                 await e.ErrorEmbed(locale.GetString("guild_error_null"))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -143,7 +144,7 @@
                 await new EmbedBuilder()
                     .SetTitle(locale.GetString("miki_terms_rival"))
                     .SetDescription(locale.GetString("guildnewrival_error_timer_running"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -157,7 +158,7 @@
             {
                 await e.ErrorEmbed(locale.GetString("guildnewrival_error_matchmaking_failed"))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -178,7 +179,7 @@
                     "guildnewrival_success",
                     rivalGuild.Name))
                 .ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("guildbank")]
@@ -196,7 +197,7 @@
                           new LanguageResource("guildbank_info_help"),
                           new LanguageResource("guildbank_info_help_description", e.GetPrefixMatch()),
                           true
-                      ).Build().QueueAsync(e.GetChannel());
+                      ).Build().QueueAsync(e, e.GetChannel());
 
             [Command("balance", "bal")]
             public async Task GuildBankBalance(IContext e)
@@ -221,7 +222,7 @@
                         new LanguageResource("guildbank_contributed", "{0}"),
                         new StringResource(account.TotalDeposited.ToFormattedString())
                     ).Build()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
 
             public async Task GuildBankDepositAsync(IContext e)
@@ -252,7 +253,7 @@
                     .SetDescription(locale.GetString("guildbank_deposit_title", e.GetAuthor().Username, totalDeposited.ToFormattedString()))
                     .SetColor(new Color(255, 255, 255))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -309,7 +310,7 @@
 				}
 
                 await embed.ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
 		}
 
 		[GuildOnly, Command("guildconfig")]
@@ -334,7 +335,7 @@
                                     await new EmbedBuilder()
 										.SetTitle(e.GetLocale().GetString("miki_terms_config"))
 										.SetDescription(e.GetLocale().GetString("guildconfig_expneeded", value.ToFormattedString()))
-										.ToEmbed().QueueAsync(e.GetChannel());
+										.ToEmbed().QueueAsync(e, e.GetChannel());
 								}
 							}
 						}
@@ -351,7 +352,7 @@
                                 await new EmbedBuilder()
                                     .SetTitle(e.GetLocale().GetString("miki_terms_config"))
                                     .SetDescription(resourceString)
-                                    .ToEmbed().QueueAsync(e.GetChannel());
+                                    .ToEmbed().QueueAsync(e, e.GetChannel());
                             }
 						}
 						break;
@@ -364,7 +365,7 @@
 					{
 						Title = e.GetLocale().GetString("guild_settings"),
 						Description = e.GetLocale().GetString("miki_command_description_guildconfig")
-					}.ToEmbed().QueueAsync(e.GetChannel());
+					}.ToEmbed().QueueAsync(e, e.GetChannel());
 				}
 		}
 
@@ -387,7 +388,7 @@
 						await context.SaveChangesAsync();
 
                         await e.SuccessEmbed("Upgraded your guild house!")
-							.QueueAsync(e.GetChannel());
+							.QueueAsync(e, e.GetChannel());
 					} break;
 
 					default:
@@ -397,7 +398,7 @@
 							.SetDescription("Guild upgrades are a list of things you can upgrade for your guild to get more rewards! To purchase one of the upgrades, use `>guildupgrade <upgrade name>` an example would be `>guildupgrade house`")
 							.AddField("Upgrades",
 								$"`house` - Upgrades weekly rewards (costs: {guildUser.GuildHouseUpgradePrice.ToFormattedString()})")
-							.ToEmbed().QueueAsync(e.GetChannel());
+							.ToEmbed().QueueAsync(e, e.GetChannel());
 					} break;
 				}
 		}
@@ -416,7 +417,7 @@
 					.SetDescription(e.GetLocale().GetString("guildhouse_buy", guildUser.GuildHouseUpgradePrice.ToFormattedString()))
 					.AddInlineField("Current weekly bonus", $"x{guildUser.GuildHouseMultiplier}")
 					.AddInlineField("Current house level", e.GetLocale().GetString($"guildhouse_rank_{guildUser.GuildHouseLevel}"))
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 	}
 }

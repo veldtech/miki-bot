@@ -9,6 +9,7 @@
     using Amazon.S3;
     using Framework.Commands.Localization.Models;
     using Framework.Commands.Localization.Services;
+    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -82,7 +83,7 @@
                 {
                     await arg.Context.ErrorEmbedResource(botEx.LocaleResource)
                         .ToEmbed()
-                        .QueueAsync(arg.Context.GetChannel());
+                        .QueueAsync(arg.Context, arg.Context.GetChannel());
                 }
                 else
                 {
@@ -117,6 +118,7 @@
 
         public override void Configure(ServiceCollection serviceCollection)
         {
+            serviceCollection.AddSingleton(new MessageWorker());
             serviceCollection.AddSingleton(Config);
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             serviceCollection.AddSingleton<IConnectionMultiplexer>(
@@ -129,7 +131,7 @@
             // Setup Entity Framework
             {
                 // TODO(velddev): Remove constant environment fetch.
-                var connString = Environment.GetEnvironmentVariable(Constants.ENV_ConStr);
+                var connString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
                 if(connString == null)
                 {
                     throw new InvalidOperationException("Connection string cannot be null");
@@ -143,7 +145,8 @@
 
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            serviceCollection.AddScoped<AchievementRepository>();
+            serviceCollection.AddScoped(x => new AchievementRepository.Factory()
+                .Build(x.GetRequiredService<DbContext>()));
 
             serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, EntityRepository<ChannelLanguage>>();
             serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, CachedRepository<ChannelLanguage>>();
@@ -183,7 +186,9 @@
                     s => new DiscordApiClient(Config.Token, s.GetService<ICacheClient>()));
 
                 IGateway gateway;
-                if(bool.Parse(Environment.GetEnvironmentVariable(Constants.ENV_SelfHost).ToLowerInvariant()))
+                if (bool.TryParse(
+                        Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost)
+                    && selfHost)
                 {
                     gateway = new GatewayCluster(new GatewayProperties
                     {
@@ -205,6 +210,7 @@
                         PrefetchCount = 25,
                     });
                 }
+
                 serviceCollection.AddSingleton(gateway);
 
                 serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
@@ -232,6 +238,7 @@
                 serviceCollection.AddSingleton<AchievementService>();
                 serviceCollection.AddSingleton<RpsService>();
                 serviceCollection.AddSingleton<ILocalizationService, LocalizationService>();
+                serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
                 serviceCollection.AddSingleton<PermissionService>();
 
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
@@ -305,7 +312,9 @@
                 var locale = scope.ServiceProvider.GetService<ILocalizationService>();
                 Locale i = await locale.GetLocaleAsync((long)defaultChannel.Id)
                     .ConfigureAwait(false);
-                (defaultChannel as IDiscordTextChannel).QueueMessage(i.GetString("miki_join_message"));
+                (defaultChannel as IDiscordTextChannel).QueueMessage(
+                    scope.ServiceProvider.GetService<MessageWorker>(), 
+                    message: i.GetString("miki_join_message"));
             }
 
             List<string> allArgs = new List<string>();
@@ -326,11 +335,11 @@
                     allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
                 }
 
-                await context.Database.ExecuteSqlCommandAsync(
+                await context.Database.ExecuteSqlRawAsync(
                     $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
                     allParams);
 
-                await context.Database.ExecuteSqlCommandAsync(
+                await context.Database.ExecuteSqlRawAsync(
                     $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
                     allExpParams);
 

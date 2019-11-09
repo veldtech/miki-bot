@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
+    using Discord.Common.Packets.API;
+    using Framework.Extension;
+
     public class CustomCommandsHandler : IPipelineStage
     {
         const string CommandCacheKey = "customcommands";
@@ -112,7 +115,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if (tokens != null)
             {
                 var context = CreateContext(e);
-                e.GetChannel().QueueMessage(new Parser(tokens).Parse(context));
+                e.GetChannel().QueueMessage(e, new Parser(tokens).Parse(context));
             }
         }
     }

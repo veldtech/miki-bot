@@ -5,6 +5,7 @@ namespace Miki.Modules
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
@@ -52,7 +53,7 @@ namespace Miki.Modules
 
 				embed.Color = new Color(1f, 0.6f, 0.4f);
 				await embed.ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
                 return;
 			}
@@ -66,7 +67,7 @@ namespace Miki.Modules
 			{
 				Color = new Color(0.4f, 1f, 0.6f),
 				Description = e.GetLocale().GetString("buymarriageslot_success", user.MarriageSlots),
-			}.ToEmbed().QueueAsync(e.GetChannel())
+			}.ToEmbed().QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
 
             await context.SaveChangesAsync()
@@ -87,7 +88,7 @@ namespace Miki.Modules
             {
                 await e.ErrorEmbed("Please mention someone else than yourself.")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -118,7 +119,7 @@ namespace Miki.Modules
 
 				if(marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
 				{
-					e.GetChannel().QueueMessage($"You can not accept your own responses!");
+					e.GetChannel().QueueMessage(e, $"You can not accept your own responses!");
 					return;
 				}
 
@@ -134,14 +135,14 @@ namespace Miki.Modules
 						Title = ("❤️ Happily married"),
 						Color = new Color(190, 25, 49),
 						Description = ($"Much love to { e.GetAuthor().Username } and { user.Username } in their future adventures together!")
-					}.ToEmbed().QueueAsync(e.GetChannel())
+					}.ToEmbed().QueueAsync(e, e.GetChannel())
                         .ConfigureAwait(false);
                 }
 				else
 				{
 					await e.ErrorEmbed("You're already married to this person. you doofus!")
 						.ToEmbed()
-                        .QueueAsync(e.GetChannel())
+                        .QueueAsync(e, e.GetChannel())
                         .ConfigureAwait(false);
                 }
 			}
@@ -149,7 +150,7 @@ namespace Miki.Modules
 			{
 				await e.ErrorEmbed("This user hasn't proposed to you!")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
             }
 		}
@@ -185,7 +186,7 @@ namespace Miki.Modules
 					Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
 					Color = new Color(231, 90, 112)
 				}.ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 
 				m.Remove(context);
@@ -208,7 +209,7 @@ namespace Miki.Modules
                     .ConfigureAwait(false);
 
                 await embed.ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
             }
 		}
@@ -243,7 +244,7 @@ namespace Miki.Modules
 					Title = $"🔫 You shot down {otherName}!",
 					Description = $"Aww, don't worry {otherName}. There is plenty of fish in the sea!",
 					Color = new Color(191, 105, 82)
-				}.ToEmbed().QueueAsync(e.GetChannel());
+				}.ToEmbed().QueueAsync(e, e.GetChannel());
 
 				m.Remove(context);
 				await context.SaveChangesAsync();
@@ -263,7 +264,7 @@ namespace Miki.Modules
 				};
 
 				await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
-				await embed.ToEmbed().QueueAsync(e.GetChannel());
+				await embed.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -296,7 +297,7 @@ namespace Miki.Modules
 					Title = $"🔔 {e.GetLocale().GetString("miki_module_accounts_divorce_header")}",
 					Description = e.GetLocale().GetString("miki_module_accounts_divorce_content", e.GetAuthor().Username, otherUser.Username),
 					Color = new Color(0.6f, 0.4f, 0.1f)
-				}.ToEmbed().QueueAsync(e.GetChannel());
+				}.ToEmbed().QueueAsync(e, e.GetChannel());
 
 				m.Remove(context);
 				await context.SaveChangesAsync();
@@ -318,7 +319,7 @@ namespace Miki.Modules
                 await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages)
                     .ConfigureAwait(false);
                 await embed.ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
             }
 		}
@@ -336,13 +337,13 @@ namespace Miki.Modules
 
 			if(user == null)
 			{
-				e.GetChannel().QueueMessage("Couldn't find this person..");
+				e.GetChannel().QueueMessage(e, "Couldn't find this person..");
 				return;
 			}
 
 			if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
 			{
-				e.GetChannel().QueueMessage("(´・ω・`)");
+				e.GetChannel().QueueMessage(e, "(´・ω・`)");
 				return;
 			}
 
@@ -364,7 +365,7 @@ namespace Miki.Modules
             {
                 await e.ErrorEmbed("This person has been banned.")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -373,7 +374,7 @@ namespace Miki.Modules
             {
                 await e.ErrorEmbedResource("miki_module_accounts_marry_error_null")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -382,7 +383,7 @@ namespace Miki.Modules
             {
                 await e.ErrorEmbedResource("miki_module_accounts_marry_error_exists")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -402,7 +403,7 @@ namespace Miki.Modules
 				.AddInlineField("❌ To decline", ">declinemarriage @user")
 				.SetFooter("Take your time though! This proposal won't disappear", "")
 				.ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -476,7 +477,7 @@ namespace Miki.Modules
 				embed.SetFooter(e.GetLocale().GetString("page_footer", page + 1, pageCount));
 			}
 			await embed.ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 

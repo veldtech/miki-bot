@@ -7,6 +7,7 @@ namespace Miki.Modules.Accounts
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -122,7 +123,7 @@ namespace Miki.Modules.Accounts
                 embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
             }
 
-            await embed.ToEmbed().QueueAsync(e.GetChannel());
+            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         [Command("exp")]
@@ -132,11 +133,11 @@ namespace Miki.Modules.Accounts
             if(s == null)
             {
                 await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
             e.GetChannel()
-                .QueueMessage(stream: s);
+                .QueueMessage(e, stream: s);
         }
 
         [Command("leaderboards", "lb", "leaderboard", "top")]
@@ -240,7 +241,7 @@ namespace Miki.Modules.Accounts
                     api.BuildLeaderboardsUrl(options)
                 )
                 .ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("profile")]
@@ -275,7 +276,7 @@ namespace Miki.Modules.Accounts
             if(account == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_account_null"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -441,7 +442,7 @@ namespace Miki.Modules.Accounts
                 achievements);
 
             await embed.ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("setbackground")]
@@ -467,7 +468,7 @@ namespace Miki.Modules.Accounts
             await context.SaveChangesAsync();
 
             await e.SuccessEmbed("Successfully set background.")
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("buybackground")]
@@ -477,14 +478,14 @@ namespace Miki.Modules.Accounts
 
             if(!e.GetArgumentPack().Take(out int id))
             {
-                e.GetChannel().QueueMessage("Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
+                e.GetChannel().QueueMessage(e, "Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
             }
 
             if(id >= backgrounds.Backgrounds.Count || id < 0)
             {
                 await e.ErrorEmbed("This background does not exist!")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -528,7 +529,7 @@ namespace Miki.Modules.Accounts
                             await context.SaveChangesAsync();
 
                             await e.SuccessEmbed("Background purchased!")
-                                .QueueAsync(e.GetChannel());
+                                .QueueAsync(e, e.GetChannel());
 
                         }
                         else
@@ -541,7 +542,7 @@ namespace Miki.Modules.Accounts
             }
 
             await embed.ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("setbackcolor")]
@@ -563,7 +564,7 @@ namespace Miki.Modules.Accounts
 
                 await e.SuccessEmbed("Your foreground color has been successfully " +
                                      $"changed to `{hex}`")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             else
             {
@@ -571,7 +572,7 @@ namespace Miki.Modules.Accounts
                     .SetTitle("🖌 Setting a background color!")
                     .SetDescription("Changing your background color costs 250 mekos. " +
                                     "use `>setbackcolor (e.g. #00FF00)` to purchase")
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -594,7 +595,7 @@ namespace Miki.Modules.Accounts
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
             else
             {
@@ -602,7 +603,7 @@ namespace Miki.Modules.Accounts
                     .SetTitle("🖌 Setting a foreground color!")
                     .SetDescription("Changing your foreground(text) color costs 250 " +
                                     "mekos. use `>setfrontcolor (e.g. #00FF00)` to purchase")
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -618,7 +619,7 @@ namespace Miki.Modules.Accounts
                 .SetTitle($"{e.GetAuthor().Username}'s backgrounds")
                 .SetDescription(string.Join(",", backgroundsOwned.Select(x => $"`{x.BackgroundId}`")))
                 .ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("rep")]
@@ -665,7 +666,7 @@ namespace Miki.Modules.Accounts
                         e.GetLocale().GetString("miki_module_accounts_rep_remaining"),
                         repObject.ReputationPointsLeft.ToString())
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
             else
@@ -738,7 +739,7 @@ namespace Miki.Modules.Accounts
                     if(totalAmountGiven <= 0)
                     {
                         await e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
-                            .ToEmbed().QueueAsync(e.GetChannel());
+                            .ToEmbed().QueueAsync(e, e.GetChannel());
                         return;
                     }
 
@@ -748,7 +749,7 @@ namespace Miki.Modules.Accounts
                                 "error_rep_limit", 
                                 usersMentioned.Count, 
                                 usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
-                            .ToEmbed().QueueAsync(e.GetChannel());
+                            .ToEmbed().QueueAsync(e, e.GetChannel());
                         return;
                     }
                 }
@@ -777,7 +778,7 @@ namespace Miki.Modules.Accounts
                 );
 
                 await embed.AddInlineField(e.GetLocale().GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft.ToString())
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
 
                 await context.SaveChangesAsync();
             }
@@ -802,7 +803,7 @@ namespace Miki.Modules.Accounts
             {
                 Title = "👌 OKAY",
                 Description = e.GetLocale().GetString("sync_success", "name")
-            }.ToEmbed().QueueAsync(e.GetChannel());
+            }.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         [Command("mekos", "bal", "meko")]
@@ -828,7 +829,7 @@ namespace Miki.Modules.Accounts
                 Title = "🔸 Mekos",
                 Description = e.GetLocale().GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")),
                 Color = new Color(1f, 0.5f, 0.7f)
-            }.ToEmbed().QueueAsync(e.GetChannel());
+            }.ToEmbed().QueueAsync(e, e.GetChannel());
             await context.SaveChangesAsync();
         }
 
@@ -842,14 +843,14 @@ namespace Miki.Modules.Accounts
                 if (user == null)
                 {
                     await e.ErrorEmbedResource("give_error_no_mention")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 if (!e.GetArgumentPack().Take(out int amount))
                 {
                     await e.ErrorEmbedResource("give_error_amount_unparsable")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
@@ -875,7 +876,7 @@ namespace Miki.Modules.Accounts
                         receiver.Name,
                         amount.ToFormattedString()),
                     Color = new Color(255, 140, 0),
-                }.ToEmbed().QueueAsync(e.GetChannel());
+                }.ToEmbed().QueueAsync(e, e.GetChannel());
                 await context.SaveChangesAsync();
             }
         }
@@ -890,7 +891,7 @@ namespace Miki.Modules.Accounts
             if(u == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("user_error_no_account"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -903,9 +904,9 @@ namespace Miki.Modules.Accounts
                 dailyStreakAmount *= 2;
             }
 
-            if(u.LastDailyTime.AddHours(23) >= DateTime.Now)
+            if(u.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
             {
-                var time = (u.LastDailyTime.AddHours(23) - DateTime.Now).ToTimeString(e.GetLocale());
+                var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
 
                 var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
 
@@ -923,7 +924,7 @@ namespace Miki.Modules.Accounts
                     break;
                 }
                 await builder.ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -941,7 +942,7 @@ namespace Miki.Modules.Accounts
             int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
 
             u.AddCurrency(amount);
-            u.LastDailyTime = DateTime.Now;
+            u.LastDailyTime = DateTime.UtcNow;
 
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
@@ -956,7 +957,7 @@ namespace Miki.Modules.Accounts
                 embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
             }
 
-            await embed.ToEmbed().QueueAsync(e.GetChannel());
+            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
 
             await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
             await context.SaveChangesAsync();

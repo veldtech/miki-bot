@@ -13,6 +13,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Miki.Framework.Commands.Scopes.Attributes;
     using Microsoft.EntityFrameworkCore;
     using Miki.Framework.Commands.Scopes;
@@ -35,7 +36,7 @@
 					.AddInlineField("Code", "`" + emote.ToString() + "`")
 					//.SetThumbnail(emote.Url)
 					.ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
 			}
         }
 
@@ -44,7 +45,7 @@
 		public Task SayAsync(IContext e)
 		{
 			e.GetChannel()
-                .QueueMessage(e.GetArgumentPack().Pack.TakeAll());
+                .QueueMessage(e, e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
 
@@ -57,7 +58,7 @@
 
 			b.SetDescription(text);
 
-            await b.ToEmbed().QueueAsync(e.GetChannel());
+            await b.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("identifyuser")]
@@ -109,7 +110,7 @@
 					}
 				}
 
-				e.GetChannel().QueueMessage(x);
+				e.GetChannel().QueueMessage(e, x);
 			}
 		}
 
@@ -120,11 +121,11 @@
 			var user = await e.GetGuild().GetSelfAsync();
 			if(await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
 			{
-				e.GetChannel().QueueMessage("Yes!");
+				e.GetChannel().QueueMessage(e, "Yes!");
 			}
 			else
 			{
-				e.GetChannel().QueueMessage($"No!");
+				e.GetChannel().QueueMessage(e, $"No!");
 			}
 		}
 
@@ -152,7 +153,7 @@
 				var x = await e.GetGuild().GetRoleAsync(roleId);
 				var myHierarchy = await (await e.GetGuild().GetSelfAsync()).GetHierarchyAsync();
 
-				e.GetChannel().QueueMessage("```" + JsonConvert.SerializeObject(new
+				e.GetChannel().QueueMessage(e, "```" + JsonConvert.SerializeObject(new
 				{
 					role = x,
 					bot_position = myHierarchy,
@@ -166,7 +167,7 @@
 		{
 			var roles = await e.GetGuild().GetRolesAsync();
 			var self = await e.GetGuild().GetSelfAsync();
-			e.GetChannel().QueueMessage($"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
+			e.GetChannel().QueueMessage(e, $"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
 		}
 
 		[Command("ignore")]
@@ -179,7 +180,7 @@
                     .GetFilterOfType<UserFilter>();
                 userFilter.Users.Add((long)id);
 
-                e.GetChannel().QueueMessage(":ok_hand:");
+                e.GetChannel().QueueMessage(e, ":ok_hand:");
             }
 			return Task.CompletedTask;
 		}
@@ -188,7 +189,7 @@
         [RequiresScope("developer.internal")]
         public Task ShowCacheAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage("Yes, this is Veld, my developer.");
+			e.GetChannel().QueueMessage(e, "Yes, this is Veld, my developer.");
 			return Task.CompletedTask;
 		}
 
@@ -211,7 +212,7 @@
 					}
 					u.Currency = value;
 					await context.SaveChangesAsync();
-					e.GetChannel().QueueMessage(":ok_hand:");
+					e.GetChannel().QueueMessage(e, ":ok_hand:");
 				}
 			}
 		}
@@ -242,7 +243,7 @@
 			})).Entity;
 
 			await context.SaveChangesAsync();
-			e.GetChannel().QueueMessage($"key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
+			e.GetChannel().QueueMessage(e, $"key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
 		}
 
 		[Command("setexp")]
@@ -277,7 +278,7 @@
 			u.Experience = amount;
 			await context.SaveChangesAsync();
 			await cache.UpsertAsync($"user:{e.GetGuild().Id}:{e.GetAuthor().Id}:exp", u.Experience);
-			e.GetChannel().QueueMessage(":ok_hand:");
+			e.GetChannel().QueueMessage(e, ":ok_hand:");
 		}
 
 		[Command("setglobexp")]
@@ -304,7 +305,7 @@
 			}
 			u.Total_Experience = amount;
 			await context.SaveChangesAsync();
-			e.GetChannel().QueueMessage(":ok_hand:");
+			e.GetChannel().QueueMessage(e, ":ok_hand:");
 		}
 
         [Command("addscope")]
@@ -322,7 +323,7 @@
             e.GetArgumentPack().Take(out string scope);
 
             await scopeStage.AddScopeAsync(e.GetService<DbContext>(), user, scope);
-            e.GetChannel().QueueMessage(":ok_hand:");
+            e.GetChannel().QueueMessage(e, ":ok_hand:");
         }
 
         [Command("banuser")]

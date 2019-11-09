@@ -15,37 +15,37 @@ using Miki.Bot.Models.Repositories;
 
 namespace Miki.Services.Achievements
 {
-	public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
+    using Patterns.Repositories;
+
+    public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
     public delegate Task<bool> CheckCommandAchievement(User u, Node e);
 
 	public class AchievementService
 	{
-        private readonly Dictionary<string, AchievementObject> _containers
+        private readonly Dictionary<string, AchievementObject> containers
             = new Dictionary<string, AchievementObject>();
 
-        private readonly AchievementRepository _repository;
+        private readonly IAsyncRepository<Achievement> repository;
 
 		public event Func<AchievementObject, Task> OnAchievementUnlocked;
 
-		public AchievementService(
-            AccountService service,
-            AchievementRepository achievements)
+		public AchievementService(IAsyncRepository<Achievement> achievements)
 		{
-            _repository = achievements;
+            repository = achievements;
         }
         
         public void AddAchievement(AchievementObject @object)
         {
-            if (_containers.ContainsKey(@object.Id))
+            if (containers.ContainsKey(@object.Id))
             {
                 throw new ArgumentException(
                     "Achievement with name " + @object.Id + " already exists.");
             }
-            _containers.Add(@object.Id, @object);
+            containers.Add(@object.Id, @object);
         }
 
         public AchievementObject GetAchievementOrDefault(string id)
-            => _containers.TryGetValue(id, out var achievement) 
+            => containers.TryGetValue(id, out var achievement) 
                 ? achievement 
                 : null;
 
@@ -55,8 +55,7 @@ namespace Miki.Services.Achievements
 
         public string PrintAchievements(List<Achievement> achievements)
 		{
-            if(achievements == null 
-               || !achievements.Any())
+            if(achievements == null || !achievements.Any())
             {
                 return string.Empty;
             }
@@ -64,12 +63,12 @@ namespace Miki.Services.Achievements
             string output = string.Empty;
             foreach(var a in achievements)
             {
-                if(!this._containers.TryGetValue(a.Name, out var value))
+                if(!this.containers.TryGetValue(a.Name, out var value))
                 {
                     continue;
                 }
 
-                if(a.Rank < value.Entries.Count())
+                if(a.Rank < value.Entries.Count)
                 {
                     output += value.Entries.ElementAt(a.Rank).Icon + " ";
                 }
@@ -77,20 +76,21 @@ namespace Miki.Services.Achievements
 			return output;
 		}
 
-        public async Task UnlockAsync(DbContext context, AchievementObject achievement, ulong userId, int rank = 0)
+        public async Task UnlockAsync(
+            DbContext context, AchievementObject achievement, ulong userId, int rank = 0)
         {
             if (achievement.Entries.Count >= rank)
             {
                 throw new ArgumentOutOfRangeException(nameof(rank));
             }
 
-            var currentAchievement = await _repository.GetAsync(achievement.Id, (long)userId);
+            var currentAchievement = await repository.GetAsync(achievement.Id, (long)userId);
             if (currentAchievement.Rank >= rank)
             {
                 return;
             }
 
-            await _repository.AddAsync(new Achievement
+            await repository.AddAsync(new Achievement
             {
                 Name = achievement.Id,
                 Rank = (short) rank,
@@ -99,6 +99,11 @@ namespace Miki.Services.Achievements
             });
 
             await context.SaveChangesAsync();
+
+            if (OnAchievementUnlocked != null)
+            {
+                await OnAchievementUnlocked(achievement);
+            }
         }
     }
 }

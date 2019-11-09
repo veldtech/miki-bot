@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Cache;
@@ -86,7 +87,7 @@
                         "locales_contribute",
                         $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
                 .ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -110,7 +111,7 @@
             catch (LocaleNotFoundException)
             {
                 await e.ErrorEmbedResource("error_locale_not_found", localeIso)
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
@@ -120,7 +121,7 @@
                     newLocale.GetString(
                         "localization_set", 
                         $"`{languageNames.FirstOrDefault(x => x.Value == localeIso).Key}`"))
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -139,7 +140,7 @@
                         string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
                             .Select(x => $"`{x}`")))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel())
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -162,7 +163,7 @@
 						string.Join(", ", Enum.GetNames(@enum.GetType())
 							.Select(x => $"`{x}`")))
 					.ToEmbed()
-					.QueueAsync(e.GetChannel())
+					.QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 				return;
 			}
@@ -197,7 +198,7 @@
                 .ConfigureAwait(false);
 
             await e.SuccessEmbedResource("notifications_update_success")
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
@@ -226,7 +227,7 @@
                     locale.GetString("miki_module_general_prefix_success_message", prefix))
                 .AddField("Warning", "This command has been replaced with `>prefix set`.")
                 .ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
         }
 
 		[Command("syncavatar")]
@@ -239,7 +240,7 @@
 
 			await e.SuccessEmbed(
                 locale.GetString("setting_avatar_updated"))
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
 		}
 	}
 }

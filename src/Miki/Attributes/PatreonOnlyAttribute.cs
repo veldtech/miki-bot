@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Miki
 {
+    using Framework.Extension;
+
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
         public override async Task<bool> CheckAsync(IContext e)
@@ -25,7 +27,7 @@ namespace Miki
             }.AddField("Already donated?", "Make sure to join the Miki Support server and claim your donator status!")
              .AddField("Where do I donate?", "You can find our patreon at https://patreon.com/mikibot")
              .ToEmbed()
-             .QueueAsync(e.GetChannel());
+             .QueueAsync(e, e.GetChannel());
         }
     }
 }

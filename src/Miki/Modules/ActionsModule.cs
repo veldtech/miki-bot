@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("Actions")]
+    using Framework.Extension;
+
+    [Module("Actions")]
 	public class ActionsModule
 	{
         readonly string askImage = "http://i.imgur.com/AHPnL.gif";
@@ -392,7 +394,7 @@ namespace Miki.Modules
             builder.SetImage(imageUrl);
 
             await builder.ToEmbed()
-                .QueueAsync(e.GetChannel())
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 	}

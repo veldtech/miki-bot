@@ -1,22 +1,22 @@
-﻿using Miki.API.Imageboards;
-using Miki.API.Imageboards.Enums;
-using Miki.API.Imageboards.Interfaces;
-using Miki.API.Imageboards.Objects;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
-using Miki.UrbanDictionary;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Miki.Localization;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
-	[Module("nsfw")]
+    using Miki.API.Imageboards;
+    using Miki.API.Imageboards.Enums;
+    using Miki.API.Imageboards.Interfaces;
+    using Miki.API.Imageboards.Objects;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.UrbanDictionary;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Miki.Localization;
+    using Framework.Extension;
+
+    [Module("nsfw")]
 	internal class NsfwModule
 	{
 		[Command("gelbooru", "gel")]
@@ -30,17 +30,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e.GetChannel());
+						.ToEmbed().QueueAsync(e, e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e, e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -55,17 +55,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e.GetChannel());
+						.ToEmbed().QueueAsync(e, e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e, e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -80,17 +80,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e.GetChannel());
+						.ToEmbed().QueueAsync(e, e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e, e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -105,17 +105,17 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e.GetChannel());
+						.ToEmbed().QueueAsync(e, e.GetChannel());
 					return;
 				}
 
                 await CreateEmbed(s)
-					.QueueAsync(e.GetChannel());
+					.QueueAsync(e, e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 
@@ -162,12 +162,12 @@ namespace Miki.Modules
                 }.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
                  .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
                  .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-                 .ToEmbed().QueueAsync(e.GetChannel());
+                 .ToEmbed().QueueAsync(e, e.GetChannel());
             }
             else
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
-                    .ToEmbed().QueueAsync(e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -182,16 +182,16 @@ namespace Miki.Modules
 				if (!IsValid(s))
 				{
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e.GetChannel());
+						.ToEmbed().QueueAsync(e, e.GetChannel());
 					return;
 				}
 
-                await CreateEmbed(s).QueueAsync(e.GetChannel());
+                await CreateEmbed(s).QueueAsync(e, e.GetChannel());
 			}
 			catch
 			{
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
 

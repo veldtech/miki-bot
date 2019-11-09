@@ -226,7 +226,7 @@ namespace Miki.Modules
 		{
 			string output = e.GetLocale().GetString("miki_module_fun_8ball_result",
 				e.GetAuthor().Username, e.GetLocale().GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
-			e.GetChannel().QueueMessage(output);
+			e.GetChannel().QueueMessage(e, output);
 			return Task.CompletedTask;
 		}
 
@@ -262,7 +262,7 @@ namespace Miki.Modules
 				.SetTitle("🐦 Birbs!")
 				.SetColor(0.8f, 0.4f, 0.4f)
 				.SetImage(bird[MikiRandom.Next(0, bird.Length)])
-				.ToEmbed().QueueAsync(e.GetChannel());
+				.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("cat")]
@@ -278,7 +278,7 @@ namespace Miki.Modules
 				.SetColor(0.8f, 0.6f, 0.4f)
 				.SetImage(cat.File)
 				.ToEmbed()
-				.QueueAsync(e.GetChannel());
+				.QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("compliment")]
@@ -318,14 +318,14 @@ namespace Miki.Modules
 				" a lot, is that weird?",
 			};
 
-			e.GetChannel().QueueMessage(I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
+			e.GetChannel().QueueMessage(e, I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
 			return Task.CompletedTask;
 		}
 
 		[Command("cage")]
 		public Task CageAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage("http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
+			e.GetChannel().QueueMessage(e, "http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
 			return Task.CompletedTask;
 		}
 
@@ -342,7 +342,7 @@ namespace Miki.Modules
 				.SetTitle("🐶 Doggo!")
 				.SetColor(0.8f, 0.8f, 0.8f)
 				.SetImage("https://random.dog/{url}")
-				.ToEmbed().QueueAsync(e.GetChannel());
+				.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("gif")]
@@ -354,7 +354,7 @@ namespace Miki.Modules
 			if (string.IsNullOrEmpty(title))
 			{
 				e.GetChannel()
-                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
+                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -375,12 +375,12 @@ namespace Miki.Modules
 				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
 				e.GetChannel()
-                    .QueueMessage(i.Link);
+                    .QueueMessage(e, i.Link);
 			}
 			else
 			{
 				e.GetChannel()
-                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
+                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
@@ -392,7 +392,7 @@ namespace Miki.Modules
             if(string.IsNullOrEmpty(title))
 			{
 				e.GetChannel()
-					.QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
+					.QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
 				return;
 			}
 
@@ -413,12 +413,12 @@ namespace Miki.Modules
 			{
 				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
 
-				e.GetChannel().QueueMessage(i.Link);
+				e.GetChannel().QueueMessage(e, i.Link);
 			}
 			else
 			{
 				e.GetChannel()
-                    .QueueMessage(locale.GetString("miki_module_fun_image_error_no_image_found"));
+                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
 			}
 		}
 
@@ -429,19 +429,19 @@ namespace Miki.Modules
 
             if (string.IsNullOrWhiteSpace(args))
 			{
-				e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_fun_pick_no_arg"));
+				e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_fun_pick_no_arg"));
 				return Task.CompletedTask;
 			}
 			string[] choices = args.Split(',');
 
-			e.GetChannel().QueueMessage(e.GetLocale().GetString("miki_module_fun_pick", new object[] { e.GetAuthor().Username, choices[MikiRandom.Next(0, choices.Length)] }));
+			e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_fun_pick", new object[] { e.GetAuthor().Username, choices[MikiRandom.Next(0, choices.Length)] }));
 			return Task.CompletedTask;
 		}
 
 		[Command("pun")]
 		public Task PunAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e.GetLocale().GetString(puns[MikiRandom.Next(0, puns.Length)]));
+			e.GetChannel().QueueMessage(e, e.GetLocale().GetString(puns[MikiRandom.Next(0, puns.Length)]));
 			return Task.CompletedTask;
 		}
 
@@ -503,7 +503,7 @@ namespace Miki.Modules
             }
 
 			e.GetChannel()
-				.QueueMessage(e.GetLocale().GetString(
+				.QueueMessage(e, e.GetLocale().GetString(
                     "miki_module_fun_roll_result", 
                     e.GetAuthor().Username, 
                     rollResult));
@@ -544,7 +544,7 @@ namespace Miki.Modules
                 {
                     await e.ErrorEmbed(locale.GetString("error_no_reminders"))
                         .ToEmbed()
-                        .QueueAsync(e.GetChannel());
+                        .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
@@ -567,7 +567,7 @@ namespace Miki.Modules
                 }
                 await embed
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
 
             [Command("clear", "cancel")]
@@ -589,7 +589,7 @@ namespace Miki.Modules
                             .SetColor(0.86f, 0.18f, 0.26f)
                             .SetDescription(locale.GetString("reminder_cancelled_all"))
                             .ToEmbed()
-                            .QueueAsync(e.GetChannel());
+                            .QueueAsync(e, e.GetChannel());
                         return;
                     }
                 }
@@ -602,13 +602,13 @@ namespace Miki.Modules
                             .SetColor(0.86f, 0.18f, 0.26f)
                             .SetDescription(locale.GetString("reminder_cancelled", $"`{i.Context}`"))
                             .ToEmbed()
-                            .QueueAsync(e.GetChannel());
+                            .QueueAsync(e, e.GetChannel());
                         return;
                     }
                 }
                 await e.ErrorEmbed(locale.GetString("error_reminder_null"))
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
 
             private async Task HelpReminderAsync(IContext e)
@@ -625,7 +625,7 @@ namespace Miki.Modules
                         $"`{prefix}{locale.GetString("reminder_help_clear")}` - {locale.GetString("reminder_desc_clear")}\n" +
                         $"`{prefix}{locale.GetString("reminder_help_list")}` - {locale.GetString("reminder_desc_list")}\n")
                     .ToEmbed()
-                    .QueueAsync(e.GetChannel());
+                    .QueueAsync(e, e.GetChannel());
             }
 
             private async Task PlaceReminderAsync(IContext e, string args)
@@ -636,7 +636,7 @@ namespace Miki.Modules
                 if(splitIndex == -1)
                 {
                     await e.ErrorEmbed(e.GetLocale().GetString("error_argument_null", "time"))
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
 
                 string reminderText = new string(args
@@ -655,19 +655,19 @@ namespace Miki.Modules
                             .SetDescription(new MessageBuilder()
                                 .AppendText(context)
                                 .BuildWithBlockCode())
-                            .ToEmbed().QueueAsync(e.GetAuthor().GetDMChannelAsync().Result);
+                            .ToEmbed().QueueAsync(e, e.GetAuthor().GetDMChannelAsync().Result);
                     }, reminderText, timeUntilReminder);
 
                     await new EmbedBuilder()
                         .SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
                         .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\nYour reminder code is `{id}`")
                         .SetColor(255, 220, 93)
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
                 else
                 {
                     await e.ErrorEmbed("Sorry, but I can only remind you something after 10 minutes.")
-                        .ToEmbed().QueueAsync(e.GetChannel());
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
             }
         }
@@ -711,7 +711,7 @@ namespace Miki.Modules
 
 						default:
 						{
-							e.GetChannel().QueueMessage("I do not support this image host :(");
+							e.GetChannel().QueueMessage(e, "I do not support this image host :(");
 						}
 						break;
 					}
@@ -730,11 +730,11 @@ namespace Miki.Modules
 			if (s == null)
 			{
 				await e.ErrorEmbed("We couldn't find an image with these tags!")
-					.ToEmbed().QueueAsync(e.GetChannel());
+					.ToEmbed().QueueAsync(e, e.GetChannel());
 				return;
 			}
 
-            e.GetChannel().QueueMessage(s.Url);
+            e.GetChannel().QueueMessage(e, s.Url);
 		}
 
 		[Command("ship")]
@@ -834,7 +834,7 @@ namespace Miki.Modules
 			await new EmbedBuilder()
 				.SetImage(images[MikiRandom.Next(0, images.Length)])
 				.ToEmbed()
-                .QueueAsync(e.GetChannel());
+                .QueueAsync(e, e.GetChannel());
 		}
 	}
 }

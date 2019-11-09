@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using System.Threading.Tasks;
-using Miki.Services.Achievements;
-
-namespace Miki
+﻿namespace Miki
 {
-	internal class Notification
+    using Microsoft.Extensions.DependencyInjection;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using System.Threading.Tasks;
+    using Miki.Services.Achievements;
+    using Framework.Extension;
+
+    internal class Notification
 	{
 		public static async ValueTask SendAchievementAsync(
             AchievementObject d, int rank, IDiscordTextChannel channel, IDiscordUser user)
@@ -17,9 +18,9 @@ namespace Miki
         public static async Task SendAchievementAsync(
             AchievementEntry d, IDiscordTextChannel channel, IDiscordUser user)
         {
+            using var scope = MikiApp.Instance.Services.CreateScope();
             if(channel is IDiscordGuildChannel)
             {
-                using var scope = MikiApp.Instance.Services.CreateScope();
                 var context = scope.ServiceProvider.GetService<MikiDbContext>();
                 var achievementSetting = await Setting.GetAsync(
                     context,
@@ -31,7 +32,10 @@ namespace Miki
                 }
             }
             await CreateAchievementEmbed(d, user)
-                .QueueAsync(channel);
+                .QueueAsync(
+                    scope.ServiceProvider.GetService<IMessageWorker<IDiscordMessage>>(),
+                    scope.ServiceProvider.GetService<IDiscordClient>(),
+                    channel);
         }
 
 		private static DiscordEmbed CreateAchievementEmbed(
