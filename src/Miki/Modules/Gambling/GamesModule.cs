@@ -57,7 +57,7 @@ namespace Miki.Modules.Gambling
 
                 e.GetArgumentPack().Take(out string weapon);
 
-                if (!rps.TryParse(weapon, out RpsWeapon playerWeapon))
+                if (!RpsWeapon.TryParse(weapon, out RpsWeapon playerWeapon))
                 {
                     await resultMessage.SetDescription("Invalid weapon!")
                         .ToEmbed()
@@ -603,7 +603,7 @@ namespace Miki.Modules.Gambling
 
                     var achievements = e.GetService<AchievementService>();
                     var slotsAchievement = achievements.GetAchievement("slots");
-                    await achievements.UnlockAsync(context, slotsAchievement, e.GetAuthor().Id);
+                    await achievements.UnlockAsync(e, slotsAchievement, e.GetAuthor().Id);
 
                 }
             }

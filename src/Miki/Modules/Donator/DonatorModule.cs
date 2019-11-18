@@ -16,15 +16,16 @@ using Miki.Services.Achievements;
 
 namespace Miki.Modules.Donator
 {
+    using Attributes;
     using Framework.Extension;
+    using Services;
 
     [Module("Donator")]
 	internal class DonatorModule
 	{
 		private readonly Net.Http.HttpClient client;
-        private readonly AchievementService achievements;
 
-		public DonatorModule(Config config, AchievementService achievementService)
+		public DonatorModule(Config config)
 		{
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
                 && !string.IsNullOrWhiteSpace(config.MikiApiKey))
@@ -36,28 +37,30 @@ namespace Miki.Modules.Donator
             {
                 Log.Warning("Disabled Donator module due to missing configuration parameters for MikiAPI.");
             }
-
-            this.achievements = achievementService;
         }
 
 		[Command("sellkey")]
 		public async Task SellKeyAsync(IContext e)
 		{
-			var context = e.GetService<MikiDbContext>();
+			var unit = e.GetService<IUnitOfWork>();
+            var keyRepository = unit.GetRepository<DonatorKey>();
+
+            var userService = e.GetService<IUserService>();
 
 			long id = (long)e.GetAuthor().Id;
 
 			if(e.GetArgumentPack().Take(out Guid guid))
 			{
-				DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-				User u = await User.GetAsync(context, id, e.GetAuthor().Username);
+				DonatorKey key = await DonatorKey.GetKeyAsync(keyRepository, guid);
+				User user = await userService.GetUserAsync(id);
 
-				u.AddCurrency(30000);
-				context.DonatorKey.Remove(key);
+				user.AddCurrency(30000);
+                await keyRepository.DeleteAsync(key);
 
-				await context.SaveChangesAsync();
+				await unit.CommitAsync();
 
-				await e.SuccessEmbed(e.GetLocale().GetString("key_sold_success", 30000))
+				await e.SuccessEmbed(
+                        e.GetLocale().GetString("key_sold_success", 30000))
 					.QueueAsync(e, e.GetChannel());
 			}
 		}
@@ -65,24 +68,30 @@ namespace Miki.Modules.Donator
 		[Command("redeemkey")]
 		public async Task RedeemKeyAsync(IContext e)
 		{
-			var context = e.GetService<MikiDbContext>();
+			var unit = e.GetService<IUnitOfWork>();
 
-			long id = (long)e.GetAuthor().Id;
-			bool isValidToken = e.GetArgumentPack().Take(out Guid guid);
-			if(!isValidToken)
+            var donatorRepository = unit.GetRepository<IsDonator>();
+            var keyRepository = unit.GetRepository<DonatorKey>();
+
+            long id = (long)e.GetAuthor().Id;
+			if(!e.GetArgumentPack().Take(out Guid guid))
 			{
 				throw new InvalidKeyFormatException();
 			}
 
-			DonatorKey key = await DonatorKey.GetKeyAsync(context, guid);
-			IsDonator donatorStatus =
-				await context.IsDonator.FindAsync(id) ??
-				(await context.IsDonator.AddAsync(new IsDonator
-				{
-					UserId = id
-				})).Entity;
+			DonatorKey key = await DonatorKey.GetKeyAsync(keyRepository, guid);
 
-			donatorStatus.KeysRedeemed++;
+            IsDonator donatorStatus = await donatorRepository.GetAsync(id);
+            if (donatorStatus == null)
+            {
+                donatorStatus = new IsDonator
+                {
+                    UserId = id
+                };
+                await donatorRepository.AddAsync(donatorStatus);
+            }
+
+            donatorStatus.KeysRedeemed++;
 
 			if(donatorStatus.ValidUntil > DateTime.Now)
 			{
@@ -98,43 +107,32 @@ namespace Miki.Modules.Donator
 				Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
 				Color = new Color(226, 46, 68),
 				Description =
-						$"You have successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
+						$"You've' successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
 				ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
 			}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
 				.ToEmbed().QueueAsync(e, e.GetChannel());
 
-			context.DonatorKey.Remove(key);
-			await context.SaveChangesAsync();
+			await keyRepository.DeleteAsync(key);
+			await unit.CommitAsync();
 
-			// cheap hack.        
 			var achievementManager = e.GetService<AchievementService>();
-			var achievements = achievementManager.GetAchievement("donator").Entries;
-
-            // TODO(@velddev): Reimplement donator keys
-			//if(donatorStatus.KeysRedeemed == 1)
-			//{
-			//	await achievementManager.UnlockAsync(
-			//		achievements[0],
-			//		e.GetChannel() as IDiscordTextChannel,
-			//		e.GetAuthor(), 0);
-			//}
-			//else if(donatorStatus.KeysRedeemed == 5)
-			//{
-			//	await achievementManager.UnlockAsync(
-			//			achievements[1],
-			//			e.GetChannel() as IDiscordTextChannel,
-			//			e.GetAuthor(),
-			//			1)
-			//		.ConfigureAwait(false);
-			//}
-			//else if(donatorStatus.KeysRedeemed == 25)
-			//{
-			//	await achievementManager.UnlockAsync(
-			//		achievements[2],
-			//		e.GetChannel() as IDiscordTextChannel,
-			//		e.GetAuthor(), 2);
-			//}
-		}
+			var donatorAchievement = achievementManager.GetAchievement("donator");
+            if (donatorStatus.KeysRedeemed >= 1
+                && donatorStatus.KeysRedeemed < 5)
+            {
+                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id);
+            }
+            else if (donatorStatus.KeysRedeemed >= 5
+                     && donatorStatus.KeysRedeemed < 25)
+            {
+                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id, 1)
+                    .ConfigureAwait(false);
+            }
+            else if (donatorStatus.KeysRedeemed >= 25)
+            {
+                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id, 2);
+            }
+        }
 
 		[Command("box")]
 		[PatreonOnly]

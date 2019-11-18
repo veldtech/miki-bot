@@ -1,14 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using System.Threading.Tasks;
-
-namespace Miki
+﻿namespace Miki.Attributes
 {
+    using System.Threading.Tasks;
+    using Bot.Models;
+    using Discord;
+    using Framework;
+    using Framework.Commands;
     using Framework.Extension;
+    using Microsoft.EntityFrameworkCore;
 
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {

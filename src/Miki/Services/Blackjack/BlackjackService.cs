@@ -169,6 +169,15 @@
 
             return worth;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is BlackjackSession session)
+            {
+                return session.context == context;
+            }
+            return false;
+        }
     }
 
     public enum BlackjackState

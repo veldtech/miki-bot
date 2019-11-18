@@ -166,28 +166,30 @@ namespace Miki
 
         public static string RemoveMentions(this string arg, IDiscordGuild guild)
         {
-            return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
-            {
-                return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username;
-            }, RegexOptions.None);
+            return Regex.Replace(arg, 
+                "<@!?(\\d+)>", 
+                m => guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username, 
+                RegexOptions.None);
         }
 
         public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
         {
             for (int i = 0; i < Math.Min(items.Count, 12); i++)
             {
-                embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, string.Format("{0:n0}", items[i].Value));
+                embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
             }
             return embed;
         }
 
         public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
         {
-            PutObjectRequest request = new PutObjectRequest();
-            request.BucketName = "miki-cdn";
-            request.Key = $"avatars/{user.Id}.png";
-            request.ContentType = "image/png";
-            request.CannedACL = new S3CannedACL("public-read");
+            PutObjectRequest request = new PutObjectRequest
+            {
+                BucketName = "miki-cdn",
+                Key = $"avatars/{user.Id}.png",
+                ContentType = "image/png",
+                CannedACL = new S3CannedACL("public-read")
+            };
 
             string avatarUrl = user.GetAvatarUrl();
 

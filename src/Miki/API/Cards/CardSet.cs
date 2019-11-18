@@ -6,12 +6,11 @@ using System.Collections.Generic;
 
 namespace Miki.API.Cards
 {
-	[ProtoContract]
-	public class CardSet
-	{
-		[ProtoMember(1)]
-		public List<Card> Deck = new List<Card>();
+    using System.Collections;
 
+    [ProtoContract]
+	public class CardSet : List<Card>
+	{
 		public static CardSet CreateStandard()
 		{
 			CardSet set = new CardSet();
@@ -20,20 +19,19 @@ namespace Miki.API.Cards
 			{
 				foreach (CardValue value in Enum.GetValues(typeof(CardValue)))
 				{
-					set.Deck.Add(new Card(type, value));
+					set.Add(new Card(type, value));
 				}
 			}
-
-			return set;
+            return set;
 		}
 
 		public Card DrawRandom(bool isPublic = true)
 		{
-			int rn = MikiRandom.Next(0, Deck.Count);
-			Card card = Deck[rn];
-			Deck.RemoveAt(rn);
+			int rn = MikiRandom.Next(0, Count);
+			Card card = this[rn];
+			this.RemoveAt(rn);
 			card.isPublic = isPublic;
 			return card;
 		}
-	}
+    }
 }

@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Miki\Miki.csproj" />
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
-    <ProjectReference Include="..\..\submodules\miki.framework\Miki.Framework.Tests\Miki.Framework.Tests.csproj" />
   </ItemGroup>
 
 </Project>

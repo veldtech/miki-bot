@@ -1,37 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.Bot.Models;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Helpers;
-using Miki.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Miki.Accounts;
-using Miki.Bot.Models.Repositories;
-
-namespace Miki.Services.Achievements
+﻿namespace Miki.Services.Achievements
 {
+    using Miki.Bot.Models;
+    using Miki.Discord.Common;
+    using Miki.Framework.Commands;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Framework;
     using Patterns.Repositories;
 
-    public delegate Task<bool> CheckUserUpdateAchievement(IDiscordUser ub, IDiscordUser ua);
-    public delegate Task<bool> CheckCommandAchievement(User u, Node e);
+    public delegate Task<bool> CheckUserUpdateAchievement(
+        IDiscordUser userBefore, IDiscordUser userAfter);
+    public delegate Task<bool> CheckCommandAchievement(User user, Node command);
 
 	public class AchievementService
 	{
         private readonly Dictionary<string, AchievementObject> containers
             = new Dictionary<string, AchievementObject>();
 
+        private readonly IUnitOfWork unitOfWork;
         private readonly IAsyncRepository<Achievement> repository;
 
-		public event Func<AchievementObject, Task> OnAchievementUnlocked;
+		public event Func<IContext, AchievementEntry, Task> OnAchievementUnlocked;
 
-		public AchievementService(IAsyncRepository<Achievement> achievements)
-		{
-            repository = achievements;
+		public AchievementService(IUnitOfWork unitOfWork, IRepositoryFactory<Achievement> factory)
+        {
+            this.unitOfWork = unitOfWork;
+            repository = unitOfWork.GetRepository(factory);
         }
         
         public void AddAchievement(AchievementObject @object)
@@ -39,7 +35,7 @@ namespace Miki.Services.Achievements
             if (containers.ContainsKey(@object.Id))
             {
                 throw new ArgumentException(
-                    "Achievement with name " + @object.Id + " already exists.");
+                    $"Achievement with name '{@object.Id}' already exists.");
             }
             containers.Add(@object.Id, @object);
         }
@@ -76,16 +72,20 @@ namespace Miki.Services.Achievements
 			return output;
 		}
 
-        public async Task UnlockAsync(
-            DbContext context, AchievementObject achievement, ulong userId, int rank = 0)
+        public Task UnlockAsync(IContext context, string achievementName, ulong userId, int rank = 0)
         {
-            if (achievement.Entries.Count >= rank)
+            var achievement = GetAchievement(achievementName);
+            return UnlockAsync(context, achievement, userId, rank);  
+        }
+        public async Task UnlockAsync(IContext context, AchievementObject achievement, ulong userId, int rank = 0)
+        {
+            if (rank >= achievement.Entries.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(rank));
             }
 
-            var currentAchievement = await repository.GetAsync(achievement.Id, (long)userId);
-            if (currentAchievement.Rank >= rank)
+            var currentAchievement = await repository.GetAsync((long)userId, achievement.Id);
+            if ((currentAchievement?.Rank ?? -1) >= rank)
             {
                 return;
             }
@@ -98,11 +98,11 @@ namespace Miki.Services.Achievements
                 UserId = (long) userId
             });
 
-            await context.SaveChangesAsync();
+            await unitOfWork.CommitAsync();
 
             if (OnAchievementUnlocked != null)
             {
-                await OnAchievementUnlocked(achievement);
+                await OnAchievementUnlocked(context, achievement.Entries[rank]);
             }
         }
     }

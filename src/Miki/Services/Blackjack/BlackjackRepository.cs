@@ -19,16 +19,23 @@
         }
 
         /// <inheritdoc />
-        public ValueTask<BlackjackContext> GetAsync(params object[] id)
+        public async ValueTask<BlackjackContext> GetAsync(params object[] id)
         {
             if (id.Length != 2)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            return new ValueTask<BlackjackContext>(
+            var context = await new ValueTask<BlackjackContext>(
                 cache.HashGetAsync<BlackjackContext>(
                     SessionKey, 
                     GetInstanceKey((ulong)id[0], (ulong)id[1])));
+            if (context != null)
+            {
+                context.ChannelId = (ulong) id[0];
+                context.UserId = (ulong) id[1];
+            }
+
+            return context;
         }
 
         /// <inheritdoc />

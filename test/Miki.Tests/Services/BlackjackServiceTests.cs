@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Cache;
@@ -27,10 +28,26 @@
         [Fact]
         public async Task CreateSession()
         {
-            var session = await Service.CreateNewAsync(
-                0L, 1L, 0L, 0);
-            var context = await Repository.GetAsync(0, 0);
-            Assert.Equal(session, new BlackjackSession(context));
+            var session = await Service.CreateNewAsync(2UL, 1UL, 0UL, 0);
+            var context = await Repository.GetAsync(0UL, 1UL);
+
+            Assert.Equal(session.Deck.Count, context.Deck.Count);
+            Assert.Equal(session.Players.Count, context.Hands.Count);
+            Assert.Equal(session.Bet, context.Bet);
+            Assert.Equal(
+                session.GetHandWorth(session.Players[0]),
+                session.GetHandWorth(context.Hands[0]));
+        }
+
+        [Fact]
+        public async Task DrawCard()
+        {
+            var session = await Service.CreateNewAsync(2UL, 1UL, 0UL, 0);
+
+            Service.DrawCard(session, 1UL);
+
+            Assert.NotEmpty(session.Players[1UL].Hand);
+            Assert.DoesNotContain(session.Players[1UL].Hand.First(), session.Deck);
         }
     }
 }

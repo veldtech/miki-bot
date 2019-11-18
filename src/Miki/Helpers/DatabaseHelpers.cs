@@ -8,34 +8,45 @@
     using Miki.Framework;
     using StatsdClient;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
 
     public static class DatabaseHelpers
 	{
 		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
-			=> await User.GetAsync(context, discordUser.Id, discordUser.Username)
+			=> await User.GetAsync(
+                    context, 
+                    discordUser.Id, 
+                    discordUser.Username)
                 .ConfigureAwait(false);
 
-        public static async Task<Achievement> GetAchievementAsync(MikiDbContext context, long userId, string name)
+        public static async Task<Achievement> GetAchievementAsync(
+            IContext context, long userId, string name)
         {
             string key = $"achievement:{userId}:{name}";
 
-            var cache = MikiApp.Instance.Services.GetService<ICacheClient>();
+            var cache = context.GetService<ICacheClient>();
+            var database = context.GetService<DbContext>();
 
             Achievement a = await cache.GetAsync<Achievement>(key);
             if (a != null)
             {
-                return context.Attach(a).Entity;
+                return database.Attach(a).Entity;
             }
 
-            Achievement achievement = await context.Achievements.FindAsync(userId, name);
-            await cache.UpsertAsync(key, achievement);
+            Achievement achievement = await database.Set<Achievement>()
+                .FindAsync(userId, name);
+            if (achievement != null)
+            {
+                await cache.UpsertAsync(key, achievement);
+            }
+
             return achievement;
         }
 
-		internal static async Task UpdateCacheAchievementAsync(long userId, string name, Achievement achievement)
+		internal static async Task UpdateCacheAchievementAsync(
+            long userId, string name, Achievement achievement)
 		{
             var cache = MikiApp.Instance.Services.GetService<ICacheClient>();
-
             string key = $"achievement:{userId}:{name}";
 			await cache.UpsertAsync(key, achievement);
 		}

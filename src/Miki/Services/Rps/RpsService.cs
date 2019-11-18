@@ -33,19 +33,7 @@
 		{
 			return weapons[MikiRandom.Next(weapons.Count())];
 		}
-
-		public RpsWeapon Parse(string name)
-		{
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException();
-            }
-			return weapons.FirstOrDefault(w => w.Name[0] == name[0]);
-		}
-
-		public bool TryParse(string name, out RpsWeapon weapon)
-			=> (weapon = Parse(name)) != null;
-
+        
 		public VictoryStatus CalculateVictory(RpsWeapon player, RpsWeapon cpu)
 		{
 			int playerIndex = weapons.IndexOf(player);

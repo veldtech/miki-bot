@@ -48,8 +48,8 @@
                 .QueueMessage(e, e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
-
-		[Command("sayembed")]
+        
+        [Command("sayembed")]
         [RequiresScope("developer")]
 		public async Task SayEmbedAsync(IContext e)
 		{
@@ -278,7 +278,7 @@
 			u.Experience = amount;
 			await context.SaveChangesAsync();
 			await cache.UpsertAsync($"user:{e.GetGuild().Id}:{e.GetAuthor().Id}:exp", u.Experience);
-			e.GetChannel().QueueMessage(e, ":ok_hand:");
+			e.GetChannel().QueueMessage(e, null, ":ok_hand:");
 		}
 
 		[Command("setglobexp")]

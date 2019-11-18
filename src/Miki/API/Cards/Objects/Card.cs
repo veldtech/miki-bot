@@ -1,10 +1,10 @@
-﻿using Miki.API.Cards.Enums;
-using ProtoBuf;
-using System;
-
-namespace Miki.API.Cards.Objects
+﻿namespace Miki.API.Cards.Objects
 {
-	[ProtoContract]
+    using Miki.API.Cards.Enums;
+    using ProtoBuf;
+    using System;
+
+    [ProtoContract]
 	public class Card
 	{
 		[ProtoMember(1)]

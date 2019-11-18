@@ -7,7 +7,7 @@
     using System.Resources;
     using System.Threading.Tasks;
     using Amazon.S3;
-    using Framework.Commands.Localization.Models;
+    using Discord.Internal;
     using Framework.Commands.Localization.Services;
     using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
@@ -43,7 +43,6 @@
     using Miki.Services.Achievements;
     using Miki.Services.Rps;
     using Miki.UrbanDictionary;
-    using Patterns.Repositories;
     using Retsu.Consumer;
     using SharpRaven;
     using SharpRaven.Data;
@@ -145,18 +144,15 @@
 
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            serviceCollection.AddScoped(x => new AchievementRepository.Factory()
-                .Build(x.GetRequiredService<DbContext>()));
-
-            serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, EntityRepository<ChannelLanguage>>();
-            serviceCollection.AddScoped<IAsyncRepository<ChannelLanguage>, CachedRepository<ChannelLanguage>>();
+            serviceCollection.AddScoped<
+                IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
 
             // Setup Miki API
             {
                 if(!string.IsNullOrWhiteSpace(Config.MikiApiBaseUrl)
                     && !string.IsNullOrWhiteSpace(Config.MikiApiKey))
                 {
-                    serviceCollection.AddSingleton(new MikiApiClient(Config.MikiApiKey));
+                    serviceCollection.AddScoped(x => new MikiApiClient(Config.MikiApiKey));
                 }
                 else
                 {
@@ -212,7 +208,6 @@
                 }
 
                 serviceCollection.AddSingleton(gateway);
-
                 serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
             }
 
@@ -249,12 +244,53 @@
                 });
                 serviceCollection.AddSingleton<PrefixService<IDiscordMessage>>();
             }
-
             serviceCollection.AddSingleton(x =>
                 new CommandTreeBuilder(x)
                     .AddCommandBuildStep(new ConfigurationManagerAdapter())
                     .Create(Assembly.GetExecutingAssembly()));
 
+        }
+
+        public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
+        {
+            DiscordMessage message = new DiscordMessage(
+                new Discord.Common.Packets.API.DiscordMessagePacket
+                {
+                    Author = new Discord.Common.Packets.DiscordUserPacket
+                    {
+                        Avatar = user.AvatarId,
+                        Discriminator = user.Discriminator,
+                        Id = user.Id,
+                        Username = user.Username,
+                        IsBot = user.IsBot
+                    },
+                    ChannelId = channel.Id,
+                    GuildId = (channel as IDiscordGuildChannel)?.GuildId,
+                    Content = "no content",
+                    Member = user is IDiscordGuildUser a
+                        ? new Discord.Common.Packets.DiscordGuildMemberPacket
+                        {
+                            JoinedAt = a.JoinedAt.ToUnixTimeSeconds(),
+                            GuildId = a.GuildId,
+                            Nickname = a.Nickname,
+                            Roles = a.RoleIds.ToList(),
+                        } : null,
+                },
+                Services.GetService<IDiscordClient>());
+            return CreateFromMessageAsync(message);
+        }
+
+        /// <summary>
+        /// Hacky temp function
+        /// </summary>
+        public async Task<IContext> CreateFromMessageAsync(IDiscordMessage message)
+        {
+            var context = new ContextObject(Services);
+            await new CorePipelineStage()
+                .CheckAsync(message, context, () => default);
+            await new FetchDataStage()
+                .CheckAsync(message, context, () => default);
+            return context;
         }
 
         private static void LoadLocales(IServiceProvider services)
@@ -323,8 +359,8 @@
 
             try
             {
-                var members = await arg.GetMembersAsync();
-                for(int i = 0; i < members.Count(); i++)
+                var members = (await arg.GetMembersAsync()).ToList();
+                for(int i = 0; i < members.Count; i++)
                 {
                     allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 

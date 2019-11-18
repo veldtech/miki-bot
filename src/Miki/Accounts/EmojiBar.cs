@@ -1,16 +1,13 @@
-﻿using Miki.Discord.Common;
-using System.Threading.Tasks;
-
-namespace Miki.Accounts
+﻿namespace Miki.Accounts
 {
 	internal class EmojiBar
 	{
-		public EmojiBarSet ValueOn = new EmojiBarSet();
-		public EmojiBarSet ValueOff = new EmojiBarSet();
+		public EmojiBarSet ValueOn;
+		public EmojiBarSet ValueOff;
 
-		public int MaxValue = 99999;
+		public int MaxValue;
 
-		public int Width = 10;
+		public int Width;
 
 		public EmojiBar(int value, EmojiBarSet charOn, EmojiBarSet charOff, int width = 10)
 		{

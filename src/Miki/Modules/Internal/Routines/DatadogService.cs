@@ -71,12 +71,12 @@
                 return;
             }
 
-            service.OnAchievementUnlocked += (achievement) =>
+            service.OnAchievementUnlocked += (ctx, achievement) =>
             {
                 DogStatsd.Increment(
                     "achievements.gained", tags: new[]
                     {
-                        $"achievement:{achievement.Id}"
+                        $"achievement:{achievement.ResourceName}"
                     });
                 return Task.CompletedTask;
             };

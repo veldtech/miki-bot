@@ -10,49 +10,16 @@
 
     public class Program
 	{
-		private static async Task Main(string[] args)
+		private static async Task Main()
         {
-			// Migrate the database if the program was started with the argument '--migrate' or '-m'.
-			if(args.Any(x => x.ToLowerInvariant() == "--migrate" 
-                             || x.ToLowerInvariant() == "-m"))
-			{
-                try
-                {
-                    await using var context = new MikiDbContextFactory()
-                        .CreateDbContext();
-                    await context.Database.MigrateAsync()
-                        .ConfigureAwait(false);
-                }
-                catch(Exception ex)
-                {
-                    Log.Error("Failed to migrate the database: " + ex.Message);
-                    Log.Debug(ex.ToString());
-                    return;
-                }
-            }
-
-			if (args.Any(x => x.ToLowerInvariant() == "--newconfig" || x.ToLowerInvariant() == "-nc"))
-            {
-                try
-                {
-                    var conf = await Config.InsertNewConfigAsync(
-                        Environment.GetEnvironmentVariable(Constants.EnvConStr));
-
-                    Console.WriteLine($"New Config inserted into database with Id '{conf.Id}'.");
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Failed to generate new config: " + ex.Message);
-                    Log.Debug(ex.ToString());
-                    return;
-                }
-            }
-
             CreateLogger();
 
-            Config c = await Config.GetOrInsertAsync(
-                Environment.GetEnvironmentVariable(Constants.EnvConStr));
+            Config c;
+            await using(ConfigService service = new ConfigService(
+                new MikiDbContextFactory().CreateDbContext()))
+            {
+                c = await service.GetOrInsertAsync();
+            }
 
             await new MikiBotApp(c)
                 .StartAsync();
@@ -92,7 +59,7 @@
                         Console.WriteLine(msg);
                     }
                 })
-                .SetLogHeader((msg) => $"[{msg}]: ")
+                .SetLogHeader(msg => $"[{msg}]: ")
                 .SetTheme(theme)
                 .Apply();
         }

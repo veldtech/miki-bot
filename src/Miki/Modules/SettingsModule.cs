@@ -93,11 +93,11 @@
 
 		[Command("setlocale")]
         [DefaultPermission(PermissionStatus.Deny)]
-		public async Task SetLocale(IContext e)
+		public async Task SetLocaleAsync(IContext e)
 		{
-			var service = e.GetService<ILocalizationService>();
+            var service = e.GetService<ILocalizationService>();
 
-			string localeIso = e.GetArgumentPack().Pack.TakeAll() ?? "";
+            string localeIso = e.GetArgumentPack().Pack.TakeAll() ?? "";
 			if(languageNames.TryGetValue(localeIso, out string langId))
             {
                 localeIso = langId;
@@ -117,10 +117,9 @@
 
             var newLocale = await service.GetLocaleAsync((long)e.GetChannel().Id);
 
-            await e.SuccessEmbed(
-                    newLocale.GetString(
-                        "localization_set", 
-                        $"`{languageNames.FirstOrDefault(x => x.Value == localeIso).Key}`"))
+            var localeName = languageNames.FirstOrDefault(x => x.Value == localeIso).Key;
+
+            await e.SuccessEmbed(newLocale.GetString("localization_set", localeName))
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
@@ -133,12 +132,12 @@
 				// TODO(velddev): Handle error.
 			}
 
+            var enumNames= string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
+                .Select(x => $"`{x}`"));
+
 			if(!enumString.TryFromEnum<DatabaseSettingId>(out var value))
             {
-                await e.ErrorEmbedResource(
-                        "error_notifications_setting_not_found",
-                        string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
-                            .Select(x => $"`{x}`")))
+                await e.ErrorEmbedResource("error_notifications_setting_not_found", enumNames)
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
@@ -154,14 +153,15 @@
 			{
 			}
 
-			if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
+            var enumValueNames = string.Join(", ", Enum.GetNames(@enum.GetType())
+                .Select(x => $"`{x}`"));
+            if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
 			{
 				await e.ErrorEmbedResource(
-                        "error_notifications_type_not_found",
-						enumValue,
-						value.ToString(),
-						string.Join(", ", Enum.GetNames(@enum.GetType())
-							.Select(x => $"`{x}`")))
+                        "error_notifications_type_not_found", 
+                        enumValue, 
+                        value.ToString(), 
+                        enumValueNames)
 					.ToEmbed()
 					.QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);

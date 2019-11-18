@@ -229,13 +229,7 @@ namespace Miki.Modules
 			IDiscordGuildUser owner = await guild.GetOwnerAsync()
                 .ConfigureAwait(false);
 
-            string emojiOutput = "none (yet!)";
-			//if (guild.getemoji.Count() > 0)
-			//{
-			//    emojiOutput = string.Join(",", emojiNames);
-			//}
-
-			var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<MikiDbContext>();
 			var cache = e.GetService<ICacheClient>();
 
 			string prefix = await e.GetService<PrefixService<IDiscordMessage>>()
@@ -271,23 +265,19 @@ namespace Miki.Modules
 
 			builder.AddInlineField(
 				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
-				channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToFormattedString());
+				channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString("N0"));
 
 			builder.AddInlineField(
 				"🙎 " + locale.GetString("miki_module_general_guildinfo_users"),
-				roles.Count().ToFormattedString());
+				roles.Count().ToString("N0"));
 
 			builder.AddInlineField(
 				"#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"),
-				roles.Count().ToFormattedString());
+				roles.Count().ToString("N0"));
 
 			builder.AddField(
 				"📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
 				string.Join(",", roles.Select(x => $"`{x.Name}`")));
-
-			builder.AddField(
-				"😃 " + e.GetLocale().GetString("term_emoji"),
-				emojiOutput);
 
             await builder.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
@@ -451,10 +441,11 @@ namespace Miki.Modules
 		[Command("invite")]
 		public async Task InviteAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_general_invite_message"));
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString("miki_module_general_invite_message"));
             var dmChannel = await e.GetAuthor().GetDMChannelAsync()
                     .ConfigureAwait(false);
             dmChannel.QueueMessage(e,
+                null,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
                 + "\n" + InviteUrl);
         }
@@ -474,9 +465,12 @@ namespace Miki.Modules
                             float ping = (float) (y.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
                             return new EmbedBuilder()
                                 .SetTitle("Pong - " + Environment.MachineName)
-                                .SetColor(Color.Lerp(new Color(0.0f, 1.0f, 0.0f), new Color(1.0f, 0.0f, 0.0f),
-                                    Math.Min(ping / 1000, 1f)))
-                                .AddInlineField("Miki", ((int) ping).ToFormattedString() + "ms")
+                                .SetColor(
+                                    Color.Lerp(
+                                        new Color(0.0f, 1.0f, 0.0f), 
+                                        new Color(1.0f, 0.0f, 0.0f), 
+                                        Math.Min(ping / 1000, 1f)))
+                                .AddInlineField("Miki", ping.ToString("N0") + "ms")
                                 .ToEmbed()
                                 .EditAsync(y);
                         }));

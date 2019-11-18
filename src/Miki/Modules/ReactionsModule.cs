@@ -1,19 +1,15 @@
-﻿using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
+    using Miki.Discord;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using System.Threading.Tasks;
     using Framework.Extension;
 
     [Module("reactions")]
 	public class ReactionsModule
 	{
-		readonly string[] confusedImages = new string[]
+		readonly string[] confusedImages = new[]
 		{
 			"http://i.imgur.com/RCotXAK.png",
 			"http://i.imgur.com/yN5cwQq.jpg",
@@ -52,7 +48,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/VyabzAv.jpg"
 		};
 
-        readonly string[] lewd = new string[]
+        readonly string[] lewd = new[]
 		{
 			"http://i.imgur.com/eG42EVs.png",
 			"http://i.imgur.com/8shK3jh.png",
@@ -77,7 +73,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/jlTqATG.gif"
 		};
 
-        readonly string[] poutImages = new string[]
+        readonly string[] poutImages = new[]
 		{
 			"http://i.imgur.com/hsjBcz1.jpg",
 			"http://i.imgur.com/oJSVNzT.jpg",
@@ -128,7 +124,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/baiMBP6.png"
 		};
 
-        readonly string[] cryImages = new string[]
+        readonly string[] cryImages = new[]
 		{
 			"http://i.imgur.com/TTUBf2r.gif",
 			"http://i.imgur.com/TP6dYGh.gif",

@@ -20,11 +20,93 @@ namespace Miki.Modules
     using Miki.Framework.Commands.Attributes;
     using Miki.Helpers;
     using Miki.Localization;
+    using Services.Achievements;
 
     [Module("Marriage")]
 	public class MarriageModule
-	{
-		[Command("buymarriageslot")]
+    {
+        [Command("acceptmarriage")]
+        public async Task AcceptMarriageAsync(IContext e)
+        {
+            IDiscordUser user = await DiscordExtensions.GetUserAsync(e.GetArgumentPack().Pack.TakeAll(), e.GetGuild());
+
+            if(user == null)
+            {
+                throw new UserNullException();
+            }
+
+            if(user.Id == e.GetAuthor().Id)
+            {
+                await e.ErrorEmbed("Please mention someone else than yourself.")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var context = e.GetService<MikiDbContext>();
+
+            MarriageRepository repository = new MarriageRepository(context);
+
+            User accepter = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor())
+                .ConfigureAwait(false);
+
+            User asker = await DatabaseHelpers.GetUserAsync(context, user)
+                .ConfigureAwait(false);
+
+            UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
+
+            if(marriage != null)
+            {
+                if(accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
+                {
+                    throw new InsufficientMarriageSlotsException(accepter);
+                }
+
+                if(asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
+                {
+                    throw new InsufficientMarriageSlotsException(asker);
+                }
+
+                if(marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
+                {
+                    e.GetChannel().QueueMessage(e, $"You can not accept your own responses!");
+                    return;
+                }
+
+                if(marriage.Marriage.IsProposing)
+                {
+                    marriage.Marriage.AcceptProposal();
+
+                    await context.SaveChangesAsync()
+                        .ConfigureAwait(false);
+
+                    await new EmbedBuilder()
+                    {
+                        Title = ("❤️ Happily married"),
+                        Color = new Color(190, 25, 49),
+                        Description = ($"Much love to { e.GetAuthor().Username } and { user.Username } in their future adventures together!")
+                    }.ToEmbed().QueueAsync(e, e.GetChannel())
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    await e.ErrorEmbed("You're already married to this person. you doofus!")
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel())
+                        .ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await e.ErrorEmbed("This user hasn't proposed to you!")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
+                    .ConfigureAwait(false);
+            }
+        }
+
+        [Command("buymarriageslot")]
 		public async Task BuyMarriageSlotAsync(IContext e)
 		{
 			var context = e.GetService<MikiDbContext>();
@@ -48,7 +130,7 @@ namespace Miki.Modules
 				if(limit == 10 && !isDonator)
 				{
 					embed.AddField("Pro tip!", "Donators get 5 more slots!")
-						.SetFooter("Check `>donate` for more information!");
+						.SetFooter("Want more? Consider donating!", "https://patreon.com/mikibot");
 				}
 
 				embed.Color = new Color(1f, 0.6f, 0.4f);
@@ -73,87 +155,6 @@ namespace Miki.Modules
             await context.SaveChangesAsync()
                 .ConfigureAwait(false);
         }
-
-		[Command("acceptmarriage")]
-		public async Task AcceptMarriageAsync(IContext e)
-		{
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(e.GetArgumentPack().Pack.TakeAll(), e.GetGuild());
-
-			if(user == null)
-			{
-				throw new UserNullException();
-			}
-
-			if(user.Id == e.GetAuthor().Id)
-            {
-                await e.ErrorEmbed("Please mention someone else than yourself.")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-				return;
-			}
-
-			var context = e.GetService<MikiDbContext>();
-
-			MarriageRepository repository = new MarriageRepository(context);
-
-			User accepter = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor())
-                .ConfigureAwait(false);
-
-            User asker = await DatabaseHelpers.GetUserAsync(context, user)
-                .ConfigureAwait(false);
-
-            UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
-
-			if(marriage != null)
-			{
-				if(accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
-				{
-					throw new InsufficientMarriageSlotsException(accepter);
-				}
-
-				if(asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
-				{
-					throw new InsufficientMarriageSlotsException(asker);
-				}
-
-				if(marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
-				{
-					e.GetChannel().QueueMessage(e, $"You can not accept your own responses!");
-					return;
-				}
-
-				if(marriage.Marriage.IsProposing)
-				{
-					marriage.Marriage.AcceptProposal();
-
-                    await context.SaveChangesAsync()
-                        .ConfigureAwait(false);
-
-					await new EmbedBuilder()
-					{
-						Title = ("❤️ Happily married"),
-						Color = new Color(190, 25, 49),
-						Description = ($"Much love to { e.GetAuthor().Username } and { user.Username } in their future adventures together!")
-					}.ToEmbed().QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-				else
-				{
-					await e.ErrorEmbed("You're already married to this person. you doofus!")
-						.ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-			}
-			else
-			{
-				await e.ErrorEmbed("This user hasn't proposed to you!")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-            }
-		}
 
 		[Command("cancelmarriage")]
 		public async Task CancelMarriageAsync(IContext e)
@@ -304,8 +305,6 @@ namespace Miki.Modules
 			}
 			else
 			{
-				var cache = e.GetService<ICacheClient>();
-
 				var embed = new EmbedBuilder()
 				{
 					Title = "💍 Marriages",
@@ -337,13 +336,13 @@ namespace Miki.Modules
 
 			if(user == null)
 			{
-				e.GetChannel().QueueMessage(e, "Couldn't find this person..");
+				e.GetChannel().QueueMessage(e, null, "Couldn't find this person..");
 				return;
 			}
 
 			if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
 			{
-				e.GetChannel().QueueMessage(e, "(´・ω・`)");
+				e.GetChannel().QueueMessage(e, null, "(´・ω・`)");
 				return;
 			}
 
@@ -363,20 +362,16 @@ namespace Miki.Modules
             if(await mentionedPerson.IsBannedAsync(context)
                 .ConfigureAwait(false))
             {
-                await e.ErrorEmbed("This person has been banned.")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-				return;
+                throw new UserBannedException(mentionedPerson);
 			}
 
 			if(receiverId == askerId)
             {
-                await e.ErrorEmbedResource("miki_module_accounts_marry_error_null")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-				return;
+                var achievements = e.GetService<AchievementService>();
+                await achievements.UnlockAsync(e,
+                    achievements.GetAchievement("fa"),
+                    e.GetAuthor().Id);
+                return;
 			}
 
 			if(await repository.ExistsAsync(receiverId, askerId))

@@ -14,8 +14,7 @@ namespace Miki.Modules
 	public class ActionsModule
 	{
         readonly string askImage = "http://i.imgur.com/AHPnL.gif";
-        readonly string[] biteImages = new string[]
-		{
+        readonly string[] biteImages = {
 			"https://i.imgur.com/FlwJbPh.gif",
 			"https://i.imgur.com/opsXoPC.gif",
 			"https://i.imgur.com/OJBdmxz.gif",
@@ -34,8 +33,7 @@ namespace Miki.Modules
 			"https://i.imgur.com/VKgFBJY.gif",
 			"https://i.imgur.com/r9QOkEA.gif"
 		};
-        readonly string[] cakeImages = new string[]
-		{
+        readonly string[] cakeImages = {
 			"http://i.imgur.com/CYyrjRQ.gif",
 			"http://i.imgur.com/3nWbcNT.gif",
 			"http://i.imgur.com/AhOVdff.gif",
@@ -79,8 +77,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/DBAEo1L.gif",
 			"http://i.imgur.com/QSLpOIR.gif"
 		};
-        readonly string[] cuddleImages = new string[]
-		{
+        readonly string[] cuddleImages = {
 			"http://i.imgur.com/xWTyaKY.gif",
 			"http://i.imgur.com/K4lYduH.gif",
 			"http://i.imgur.com/8kLQ55E.gif",
@@ -90,8 +87,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/guBWT22.gif",
 			"http://i.imgur.com/Asnv32U.gif"
 		};
-        readonly string[] hugImages = new string[]
-        {
+        readonly string[] hugImages = {
 			"http://i.imgur.com/FvSnQs8.gif",
 			"http://i.imgur.com/rXEq7oU.gif",
 			"http://i.imgur.com/b6vVMQO.gif",
@@ -117,8 +113,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/MrEMpE6.gif",
 			"http://i.imgur.com/Y9sMTP4.gif"
         };
-        readonly string[] glareImages = new string[]
-        {
+        readonly string[] glareImages = {
             "http://i.imgur.com/ba9Skjf.gif",
             "http://i.imgur.com/V6oBWDn.gif",
             "http://i.imgur.com/PWXcVQf.gif",
@@ -161,8 +156,7 @@ namespace Miki.Modules
             "http://i.imgur.com/xgb3wk2.gif",
             "http://i.imgur.com/qzPYYsK.gif"
         };
-        readonly string[] highFiveImages = new string[]
-		{
+        readonly string[] highFiveImages = {
 			"http://i.imgur.com/LOoXzd9.gif",
 			"http://i.imgur.com/Kwe6pAn.gif",
 			"http://i.imgur.com/JeWzGGl.gif",
@@ -185,8 +179,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/ebQWKZU.gif",
 			"http://i.imgur.com/XYA8ET8.gif"
 		};
-        readonly string[] kissImages = new string[]
-		{
+        readonly string[] kissImages = {
 			"http://i.imgur.com/QIPaYW3.gif",
 			"http://i.imgur.com/wx3WXZu.gif",
 			"http://i.imgur.com/ZzIQwHP.gif",
@@ -206,8 +199,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/W9htMol.gif",
 			"http://i.imgur.com/IVOBC8p.gif"
 		};
-        readonly string[] lickImages = new string[]
-		{
+        readonly string[] lickImages = {
 			"https://cdn.miki.ai/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
             "https://cdn.miki.ai/images/2187d457-703a-43a0-93de-3304774f972f.gif",
 			"https://cdn.miki.ai/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
@@ -216,8 +208,7 @@ namespace Miki.Modules
 			"https://cdn.miki.ai/images/f56b349d-507d-46df-849a-584b718c345c.gif",
             "https://cdn.miki.ai/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
         };
-        readonly string[] patImages = new string[]
-		{
+        readonly string[] patImages = {
 			"http://i.imgur.com/Y2DrXtT.gif",
 			"http://i.imgur.com/G7b4OnS.gif",
 			"http://i.imgur.com/nQqH0Xa.gif",
@@ -269,8 +260,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/1mr4NWL.gif",
 			"http://i.imgur.com/wXw7IjY.gif"
 		};
-        readonly string[] pokeImages = new string[]
-        {
+        readonly string[] pokeImages = {
 	        "http://i.imgur.com/WG8EKwM.gif",
 	        "http://i.imgur.com/dfoxby7.gif",
 	        "http://i.imgur.com/TzD1Ngz.gif",
@@ -282,8 +272,7 @@ namespace Miki.Modules
 	        "http://i.imgur.com/YDJFoBV.gif",
 	        "http://i.imgur.com/urC9B1H.gif"
         };
-        readonly string[] punchImages = new string[]
-		{
+        readonly string[] punchImages = {
 			"http://imgur.com/jVc3GGv.gif",
 			"http://imgur.com/iekwz4h.gif",
 			"http://imgur.com/AbRmlAo.gif",
@@ -296,8 +285,7 @@ namespace Miki.Modules
 			"http://imgur.com/q7AmR8n.gif",
 			"http://imgur.com/pDohPrm.gif",
 		};
-        readonly string[] slapImages = new string[]
-        {
+        readonly string[] slapImages = {
 	        "http://i.imgur.com/GQtzDsV.gif",
 	        "http://i.imgur.com/rk8eqnt.gif",
 	        "http://i.imgur.com/UnzGS24.gif",

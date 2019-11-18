@@ -7,7 +7,9 @@ namespace Miki.Modules.Accounts
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Api.Models;
     using Framework.Extension;
+    using Localization.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -35,9 +37,9 @@ namespace Miki.Modules.Accounts
     [Module("Accounts")]
     public class AccountsModule
     {
-
-        //[Service("achievements")]
+        public AchievementService  AchievementService { get; set; }
         public AchievementLoader Achievements { get; set; }
+        public ExperienceTrackerService ExperienceService { get; set; }
 
         private readonly Net.Http.HttpClient client;
 
@@ -51,11 +53,11 @@ namespace Miki.Modules.Accounts
             "<:mbarmidoff:391971424824197123>",
             "<:mbarrightoff:391971424862208000>");
 
-        public AccountsModule()
+        public AccountsModule(MikiApp app)
         {
-            var config = MikiApp.Instance.Services.GetService<Config>();
+            var config = app.Services.GetService<Config>();
 
-            if(!string.IsNullOrWhiteSpace(config.MikiApiKey)
+            if (!string.IsNullOrWhiteSpace(config.MikiApiKey)
                 && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 client = new Net.Http.HttpClient(config.ImageApiUrl)
@@ -66,13 +68,180 @@ namespace Miki.Modules.Accounts
                 Log.Warning("Image API can not be loaded in AccountsModule");
             }
 
-          // AchievementsService = new AchievementsService();
+            var accountsService = app.Services.GetService<AccountService>();
+            accountsService.OnLocalLevelUp += OnUserLevelUp;
+            accountsService.OnLocalLevelUp += OnLevelUpAchievements;
+
+            AchievementService = app.Services.GetService<AchievementService>();
+            Achievements = new AchievementLoader(AchievementService);
+
+
+            var service = app.Services.GetService<AchievementService>();
+            service.OnAchievementUnlocked += this.OnAchievementUnlocked;
+
+            ExperienceService = new ExperienceTrackerService(
+                app.Services.GetService<IDiscordClient>(),
+                accountsService);
+        }
+
+        private async Task OnLevelUpAchievements(IDiscordUser user, IDiscordTextChannel channel, int level)
+        {
+            var achievements = AchievementService.GetAchievement("levelachievements");
+
+            int achievementToUnlock = -1;
+            if(level >= 3 && level < 5)
+            {
+                achievementToUnlock = 0;
+            }
+            else if(level >= 5 && level < 10)
+            {
+                achievementToUnlock = 1;
+            }
+            else if(level >= 10 && level < 20)
+            {
+                achievementToUnlock = 2;
+            }
+            else if(level >= 20 && level < 30)
+            {
+                achievementToUnlock = 3;
+            }
+            else if(level >= 30 && level < 50)
+            {
+                achievementToUnlock = 4;
+            }
+            else if(level >= 50 && level < 100)
+            {
+                achievementToUnlock = 5;
+            }
+            else if (level >= 100 && level < 150)
+            {
+                achievementToUnlock = 6;
+            }
+            else if (level >= 150)
+            {
+                achievementToUnlock = 7;
+            }
+
+            if(achievementToUnlock != -1)
+            {
+                if (MikiApp.Instance is MikiBotApp instance)
+                {
+                    await AchievementService.UnlockAsync(
+                        await instance.CreateFromUserChannelAsync(user, channel),
+                        achievements,
+                        user.Id,
+                        achievementToUnlock);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Notification for local user level ups.
+        /// </summary>
+        private async Task OnUserLevelUp(IDiscordUser user, IDiscordTextChannel channel, int level)
+        {
+            using var scope = MikiApp.Instance.Services.CreateScope();
+            var context = scope.ServiceProvider.GetService<MikiDbContext>();
+            
+            var service = scope.ServiceProvider
+                .GetService<ILocalizationService>();
+
+            Locale instance = await service.GetLocaleAsync((long)channel.Id)
+                .ConfigureAwait(false);
+
+            EmbedBuilder embed = new EmbedBuilder
+            {
+                Title = instance.GetString("miki_accounts_level_up_header"),
+                Description = instance.GetString(
+                    "miki_accounts_level_up_content",
+                    $"{user.Username}#{user.Discriminator}",
+                    level),
+                Color = new Color(1, 0.7f, 0.2f)
+            };
+
+            if(channel is IDiscordGuildChannel guildChannel)
+            {
+                IDiscordGuild guild = await guildChannel.GetGuildAsync()
+                    .ConfigureAwait(false);
+                long guildId = guild.Id.ToDbLong();
+
+                List<LevelRole> rolesObtained = await context.LevelRoles
+                    .Where(p => p.GuildId == guildId 
+                                && p.RequiredLevel == level 
+                                && p.Automatic)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                var notificationSetting = await Setting.GetAsync(
+                        context, channel.Id, DatabaseSettingId.LevelUps)
+                    .ConfigureAwait(false);
+
+                switch((LevelNotificationsSetting)notificationSetting)
+                {
+                    case LevelNotificationsSetting.NONE:
+                    case LevelNotificationsSetting.RewardsOnly when rolesObtained.Count == 0:
+                        return;
+                    case LevelNotificationsSetting.All:
+                        break;
+
+                    default:
+                        throw new InvalidOperationException();
+                }
+
+                if(rolesObtained.Count > 0)
+                {
+                    List<IDiscordRole> roles = (await guild.GetRolesAsync().ConfigureAwait(false))
+                        .ToList();
+
+                    IDiscordGuildUser guildUser = await guild.GetMemberAsync(user.Id)
+                        .ConfigureAwait(false);
+                    if(guildUser != null)
+                    {
+                        foreach(LevelRole role in rolesObtained)
+                        {
+                            IDiscordRole r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
+                            if(r == null)
+                            {
+                                continue;
+                            }
+
+                            await guildUser.AddRoleAsync(r)
+                                .ConfigureAwait(false);
+                        }
+                    }
+
+                    var rewards = string.Join("\n", rolesObtained
+                        .Select(x => $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId)?.Name}**"));
+
+                    embed.AddInlineField("Rewards", rewards);
+                }
+            }
+
+            await embed.ToEmbed()
+                .QueueAsync(
+                    scope.ServiceProvider.GetService<MessageWorker>(),
+                    scope.ServiceProvider.GetService<IDiscordClient>(),
+                    channel)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Notification for user achievements
+        /// </summary>
+        private Task OnAchievementUnlocked(IContext ctx, AchievementEntry arg)
+        {
+            return new EmbedBuilder()
+                .SetTitle($"{arg.Icon} Achievement Unlocked!")
+                .SetDescription($"{ctx.GetAuthor().Username} has unlocked {arg.ResourceName}")
+                .ToEmbed()
+                .QueueAsync(ctx, ctx.GetChannel());
         }
 
         [Command("achievements")]
         public async Task AchievementsAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
+            var locale = e.GetLocale();
 
             long id = (long)e.GetAuthor().Id;
 
@@ -114,14 +283,11 @@ namespace Miki.Modules.Accounts
                 totalScore += metadata.Points;
             }
 
-            if(string.IsNullOrEmpty(leftBuilder.ToString()))
-            {
-                embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), "None, yet.");
-            }
-            else
-            {
-                embed.AddInlineField("Total Pts: " + totalScore.ToFormattedString(), leftBuilder.ToString());
-            }
+            embed.AddInlineField(
+                "Total Pts: " + totalScore.ToFormattedString(),
+                string.IsNullOrEmpty(leftBuilder.ToString())
+                    ? locale.GetString("miki_placeholder_null")
+                    : leftBuilder.ToString());
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
         }
@@ -230,11 +396,12 @@ namespace Miki.Modules.Accounts
 
             LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
 
-            await Utils.RenderLeaderboards(new EmbedBuilder(), obj.items, obj.currentPage * 12)
+            await Utils.RenderLeaderboards(new EmbedBuilder(), obj.Items, obj.CurrentPage * 12)
                 .SetFooter(
-                    e.GetLocale().GetString("page_index", obj.currentPage + 1, Math.Ceiling((double)obj.totalPages / 10)),
-                    ""
-                )
+                    e.GetLocale().GetString(
+                        "page_index", 
+                        obj.CurrentPage + 1, 
+                        Math.Ceiling((double)obj.TotalPages / 10)))
                 .SetAuthor(
                     "Leaderboards: " + options.Type + " (click me!)",
                     null,
@@ -251,17 +418,13 @@ namespace Miki.Modules.Accounts
             var locale = e.GetLocale();
 
             var context = e.GetService<MikiDbContext>();
-            long id = 0;
 
-            IDiscordGuildUser self = null;
-            IDiscordUser discordUser = null;
+            IDiscordGuildUser self = await e.GetGuild().GetSelfAsync();
 
-            MarriageRepository repository = new MarriageRepository(context);
-
+            IDiscordUser discordUser;
             if(args.Take(out string arg))
             {
                 discordUser = await DiscordExtensions.GetUserAsync(arg, e.GetGuild());
-
                 if(discordUser == null)
                 {
                     throw new UserNullException();
@@ -272,12 +435,11 @@ namespace Miki.Modules.Accounts
                 discordUser = e.GetAuthor();
             }
 
-            User account = await User.GetAsync(context, discordUser.Id.ToDbLong(), discordUser.Username);
+            User account = await User.GetAsync(
+                context, discordUser.Id.ToDbLong(), discordUser.Username);
             if(account == null)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_account_null"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                return;
+                throw new UserNullException();
             }
 
             string icon = null;
@@ -288,21 +450,13 @@ namespace Miki.Modules.Accounts
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetDescription(account.Title)
-                .SetAuthor(
-                    locale.GetString(
-                        "miki_global_profile_user_header",
-                        discordUser.Username),
-                    icon,
-                    "https://patreon.com/mikibot")
+                .SetAuthor(locale.GetString("miki_global_profile_user_header", discordUser.Username),
+                    icon, "https://patreon.com/mikibot")
                 .SetThumbnail(discordUser.GetAvatarUrl());
 
             var infoValueBuilder = new MessageBuilder();
-
             if(e.GetGuild() != null)
             {
-                self = await e.GetGuild()
-                    .GetSelfAsync();
-
                 LocalExperience localExp = await LocalExperience.GetAsync(
                     context,
                     e.GetGuild().Id,
@@ -353,12 +507,11 @@ namespace Miki.Modules.Accounts
             EmojiBar globalExpBar = new EmojiBar(maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
             var globalInfoBuilder = new MessageBuilder()
-                .AppendText(
-                    locale.GetString(
-                        "miki_module_accounts_information_level",
-                        globalLevel.ToFormattedString(),
-                        account.Total_Experience.ToFormattedString(),
-                        maxGlobalExp.ToFormattedString()));
+                .AppendText(locale.GetString(
+                    "miki_module_accounts_information_level",
+                    globalLevel.ToFormattedString(),
+                    account.Total_Experience.ToFormattedString(),
+                    maxGlobalExp.ToFormattedString()));
             if(await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
             {
                 globalInfoBuilder.AppendText(
@@ -381,35 +534,36 @@ namespace Miki.Modules.Accounts
                 locale.GetString("miki_generic_mekos"),
                 $"{account.Currency:N0} <:mekos:421972155484471296>");
 
-            List<UserMarriedTo> Marriages = (await repository.GetMarriagesAsync(id))
+            MarriageRepository repository = new MarriageRepository(context);
+            List<UserMarriedTo> marriages = (await repository.GetMarriagesAsync((long)discordUser.Id))
                 .Where(x => !x.Marriage.IsProposing)
                 .ToList();
 
             List<string> users = new List<string>();
 
-            int maxCount = Marriages?.Count ?? 0;
+            int maxCount = marriages.Count;
 
             for(int i = 0; i < maxCount; i++)
             {
                 users.Add((await e.GetService<DiscordClient>()
-                    .GetUserAsync(Marriages[i].GetOther(id).FromDbLong())).Username);
+                    .GetUserAsync(marriages[i].GetOther((long)discordUser.Id).FromDbLong())).Username);
             }
 
-            if(Marriages?.Count > 0)
+            if(marriages.Count > 0)
             {
-                List<string> MarriageStrings = new List<string>();
+                List<string> marriageStrings = new List<string>();
 
                 for(int i = 0; i < maxCount; i++)
                 {
-                    if(Marriages[i].GetOther(id) == 0)
+                    if(marriages[i].GetOther((long)discordUser.Id) == 0)
                     {
                         continue;
                     }
-                    MarriageStrings.Add(
-                        $"💕 {users[i]} (_{Marriages[i].Marriage.TimeOfMarriage.ToShortDateString()}_)");
+                    marriageStrings.Add(
+                        $"💕 {users[i]} (_{marriages[i].Marriage.TimeOfMarriage.ToShortDateString()}_)");
                 }
 
-                string marriageText = string.Join("\n", MarriageStrings);
+                string marriageText = string.Join("\n", marriageStrings);
                 if(string.IsNullOrEmpty(marriageText))
                 {
                     marriageText = e.GetLocale().GetString("miki_placeholder_null");
@@ -420,29 +574,24 @@ namespace Miki.Modules.Accounts
                     marriageText);
             }
 
-            Random r = new Random((int)id - 3);
+            Random r = new Random((int)(discordUser.Id - 3));
             Color c = new Color((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
 
             embed.SetColor(c);
 
-            List<Achievement> allAchievements = await context.Achievements.Where(x => x.UserId == id)
+            List<Achievement> allAchievements = await context.Achievements
+                .Where(x => x.UserId == (long)discordUser.Id)
                 .ToListAsync();
 
-            string achievements = e.GetLocale()
-                .GetString("miki_placeholder_null");
-
+            string achievements = e.GetLocale().GetString("miki_placeholder_null");
             if(allAchievements != null
                 && allAchievements.Count > 0)
             {
                 achievements = e.GetService<AchievementService>().PrintAchievements(allAchievements);
             }
 
-            embed.AddInlineField(
-                e.GetLocale().GetString("miki_generic_achievements"),
-                achievements);
-
-            await embed.ToEmbed()
-                .QueueAsync(e, e.GetChannel());
+            embed.AddInlineField(e.GetLocale().GetString("miki_generic_achievements"), achievements);
+            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         [Command("setbackground")]

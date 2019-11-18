@@ -14,7 +14,6 @@
     using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Framework;
-    using Miki.Framework.Commands;
     using Miki.Localization;
     using Miki.Localization.Models;
     using Miki.Logging;
@@ -25,10 +24,7 @@
     public class AccountService
     {
         public event LevelUpDelegate OnLocalLevelUp;
-
         public event LevelUpDelegate OnGlobalLevelUp;
-
-        public event Func<IDiscordMessage, User, User, int, Task> OnTransactionMade;
 
         private readonly ConcurrentDictionary<ulong, ExperienceAdded> experienceQueue
             = new ConcurrentDictionary<ulong, ExperienceAdded>();
@@ -52,89 +48,6 @@
                 throw new InvalidOperationException();
             }
 
-            this.OnLocalLevelUp += async (a, e, l) =>
-            {
-                IDiscordGuild guild = await ((IDiscordGuildChannel)e).GetGuildAsync()
-                    .ConfigureAwait(false);
-                long guildId = guild.Id.ToDbLong();
-
-                using var scope = MikiApp.Instance.Services.CreateScope();
-                MikiDbContext context = scope.ServiceProvider.GetService<MikiDbContext>();
-                List<LevelRole> rolesObtained = await context.LevelRoles
-                    .Where(p => p.GuildId == guildId && p.RequiredLevel == l && p.Automatic)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-
-                LevelNotificationsSetting setting = (LevelNotificationsSetting)await Setting
-                    .GetAsync(context, e.Id, DatabaseSettingId.LevelUps)
-                    .ConfigureAwait(false);
-
-                switch(setting)
-                {
-                    case LevelNotificationsSetting.NONE:
-                    case LevelNotificationsSetting.RewardsOnly when rolesObtained.Count == 0:
-                        return;
-                    case LevelNotificationsSetting.All:
-                        break;
-
-                    default:
-                        throw new InvalidOperationException();
-                }
-
-                var service = scope.ServiceProvider
-                    .GetService<ILocalizationService>();
-
-                Locale instance = await service.GetLocaleAsync((long)e.Id)
-                    .ConfigureAwait(false);
-
-                EmbedBuilder embed = new EmbedBuilder
-                {
-                    Title = instance.GetString("miki_accounts_level_up_header"),
-                    Description = instance.GetString(
-                        "miki_accounts_level_up_content",
-                        $"{a.Username}#{a.Discriminator}",
-                        l),
-                    Color = new Color(1, 0.7f, 0.2f)
-                };
-
-                if(rolesObtained.Count > 0)
-                {
-                    List<IDiscordRole> roles = (await guild.GetRolesAsync().ConfigureAwait(false))
-                        .ToList();
-
-                    IDiscordGuildUser guildUser = await guild.GetMemberAsync(a.Id)
-                        .ConfigureAwait(false);
-                    if(guildUser != null)
-                    {
-                        foreach(LevelRole role in rolesObtained)
-                        {
-                            IDiscordRole r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
-                            if(r == null)
-                            {
-                                continue;
-                            }
-
-                            await guildUser.AddRoleAsync(r)
-                                .ConfigureAwait(false);
-                        }
-                    }
-
-                    embed.AddInlineField("Rewards",
-                        string.Join(
-                            "\n",
-                            rolesObtained
-                                .Select(x =>
-                                    $"New Role: **{roles.FirstOrDefault(z => z.Id.ToDbLong() == x.RoleId)?.Name}**")));
-                }
-
-                await embed.ToEmbed()
-                    .QueueAsync(
-                        scope.ServiceProvider.GetService<MessageWorker>(),
-                        scope.ServiceProvider.GetService<IDiscordClient>(),
-                        e)
-                    .ConfigureAwait(false);
-            };
-
             //discord.guildUpdate += Client_GuildUpdated;
             client.GuildMemberCreate += this.Client_UserJoined;
             client.MessageCreate += this.CheckAsync;
@@ -154,67 +67,48 @@
 
             try
             {
-                if(await e.GetChannelAsync()
-                    .ConfigureAwait(false) is IDiscordGuildChannel channel)
+                var channel = await e.GetChannelAsync().ConfigureAwait(false);
+                if(channel is IDiscordGuildChannel guildChannel)
                 {
                     ICacheClient cache = MikiApp.Instance.Services.GetService<ICacheClient>();
 
-                    string key = this.GetContextKey(channel.GuildId, e.Author.Id);
+                    string key = this.GetContextKey(guildChannel.GuildId, e.Author.Id);
 
-                    if(this.lastTimeExpGranted.GetOrAdd(e.Author.Id, DateTime.Now).AddMinutes(1) < DateTime.Now)
+                    if(this.lastTimeExpGranted
+                           .GetOrAdd(e.Author.Id, DateTime.Now)
+                           .AddMinutes(1) < DateTime.Now)
                     {
-                        int currentLocalExp;
-                        if(!await cache.ExistsAsync(key).ConfigureAwait(false))
+                        int currentLocalExp = await cache.GetAsync<int>(key);
+                        if(currentLocalExp == 0)
                         {
+                            // TODO: remove MikiApp.Instance
                             using var scope = MikiApp.Instance.Services.CreateScope();
                             DbContext db = scope.ServiceProvider.GetService<DbContext>();
-                            LocalExperience user = await LocalExperience.GetAsync(
-                                    db,
-                                    channel.GuildId,
-                                    e.Author.Id)
-                                .ConfigureAwait(false);
-                            if(user == null)
-                            {
-                                user = await LocalExperience.CreateAsync(
-                                        db,
-                                        channel.GuildId,
-                                        e.Author.Id,
-                                        e.Author.Username)
-                                    .ConfigureAwait(false);
-                            }
+                            
+                            var expProfile = await GetOrCreateExperienceProfile(
+                                db, e.Author as IDiscordGuildUser);
 
-                            await cache.UpsertAsync(key, user.Experience)
+                            await cache.UpsertAsync(key, expProfile.Experience)
                                 .ConfigureAwait(false);
-                            currentLocalExp = user.Experience;
-                        }
-                        else
-                        {
-                            currentLocalExp = await cache.GetAsync<int>(key);
+                            currentLocalExp = expProfile.Experience;
                         }
 
                         var bonusExp = MikiRandom.Next(1, 4);
                         currentLocalExp += bonusExp;
 
-                        if (!experienceQueue.ContainsKey(e.Author.Id))
+                        var expObject = new ExperienceAdded()
                         {
-                            var expObject = new ExperienceAdded()
-                            {
-                                UserId = e.Author.Id.ToDbLong(),
-                                GuildId = channel.GuildId.ToDbLong(),
-                                Experience = bonusExp,
-                                Name = e.Author.Username,
-                            };
+                            UserId = e.Author.Id.ToDbLong(),
+                            GuildId = guildChannel.GuildId.ToDbLong(),
+                            Experience = bonusExp,
+                            Name = e.Author.Username,
+                        };
 
-                            this.experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
-                            {
-                                eo.Experience += expObject.Experience;
-                                return eo;
-                            });
-                        }
-                        else
+                        this.experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
                         {
-                            this.experienceQueue[e.Author.Id].Experience += bonusExp;
-                        }
+                            eo.Experience += expObject.Experience;
+                            return eo;
+                        });
 
                         int level = User.CalculateLevel(currentLocalExp);
 
@@ -224,7 +118,8 @@
                                 .ConfigureAwait(false);
                         }
 
-                        this.lastTimeExpGranted.AddOrUpdate(e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
+                        this.lastTimeExpGranted.AddOrUpdate(
+                            e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
 
                         await cache.UpsertAsync(key, currentLocalExp)
                             .ConfigureAwait(false);
@@ -242,15 +137,11 @@
                         using var scope = MikiApp.Instance.Services.CreateScope();
                         var context = scope.ServiceProvider.GetService<DbContext>();
 
-                        await this.UpdateGlobalDatabaseAsync(context)
-                            .ConfigureAwait(false);
-                        await this.UpdateLocalDatabaseAsync(context)
-                            .ConfigureAwait(false);
-                        await this.UpdateGuildDatabaseAsync(context)
-                            .ConfigureAwait(false);
-
-                        await context.SaveChangesAsync()
-                            .ConfigureAwait(false);
+                        var _ = Task.WhenAll(
+                                UpdateGlobalDatabaseAsync(context),
+                                UpdateLocalDatabaseAsync(context),
+                                UpdateGuildDatabaseAsync(context))
+                            .ContinueWith(x => context.SaveChangesAsync());
                     }
                     catch(Exception ex)
                     {
@@ -269,6 +160,21 @@
             {
                 Log.Error(ex.ToString());
             }
+        }
+
+        private async Task<LocalExperience> GetOrCreateExperienceProfile(
+            DbContext ctx, IDiscordGuildUser user)
+        {
+            LocalExperience newProfile = await LocalExperience.GetAsync(
+                    ctx, user.GuildId, user.Id)
+                .ConfigureAwait(false);
+            if(newProfile == null)
+            {
+                return await LocalExperience.CreateAsync(ctx, user.GuildId, user.Id, user.Username)
+                    .ConfigureAwait(false);
+            }
+
+            return newProfile;
         }
 
         public async Task UpdateGlobalDatabaseAsync(DbContext context)
@@ -349,29 +255,30 @@
 
         public async Task LevelUpLocalAsync(IDiscordMessage e, int l)
         {
-            await this.OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+            if (OnLocalLevelUp != null)
+            {
+                await OnLocalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+            }
         }
 
         public async Task LevelUpGlobalAsync(IDiscordMessage e, int l)
         {
-            await this.OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+            if (OnGlobalLevelUp != null)
+            {
+                await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
+            }
         }
 
-        public Task LogTransactionAsync(IDiscordMessage msg, User receiver, User fromUser, int amount)
+        private async Task Client_GuildUpdated(IDiscordGuild before, IDiscordGuild after)
         {
-            return this.OnTransactionMade.Invoke(msg, receiver, fromUser, amount);
-        }
-
-        private async Task Client_GuildUpdated(IDiscordGuild arg1, IDiscordGuild arg2)
-        {
-            if(arg1.Name != arg2.Name)
+            if(before.Name != after.Name)
             {
                 using var scope = MikiApp.Instance.Services.CreateScope();
                 var context = scope.ServiceProvider.GetService<MikiDbContext>();
 
-                GuildUser g = await context.GuildUsers.FindAsync(arg1.Id.ToDbLong())
+                GuildUser g = await context.GuildUsers.FindAsync(before.Id.ToDbLong())
                     .ConfigureAwait(false);
-                g.Name = arg2.Name;
+                g.Name = after.Name;
 
                 await context.SaveChangesAsync()
                     .ConfigureAwait(false);

@@ -219,6 +219,8 @@ namespace Miki.Modules
             {
                 imageClient = new HttpClient(config.ImageApiUrl);
             }
+
+
 		}
 
 		[Command("8ball")]
@@ -490,20 +492,19 @@ namespace Miki.Modules
 					}
 
 					Expression evaluation = new Expression(fullExpression);
-					rollResult = evaluation.Evaluate().ToString() + $" `{fullExpression}`";
+					rollResult = evaluation.Evaluate() + $" `{fullExpression}`";
 				}
 			}
 
 			if (rollResult == "1" || rollResult.StartsWith("1 "))
             {
-                var dbContext = e.GetService<DbContext>();
                 var achievements = e.GetService<AchievementService>();
                 var badLuckAchievement = achievements.GetAchievement("badluck");
-                await achievements.UnlockAsync(dbContext, badLuckAchievement, e.GetAuthor().Id);
+                await achievements.UnlockAsync(e, badLuckAchievement, e.GetAuthor().Id);
             }
 
 			e.GetChannel()
-				.QueueMessage(e, e.GetLocale().GetString(
+				.QueueMessage(e, null, e.GetLocale().GetString(
                     "miki_module_fun_roll_result", 
                     e.GetAuthor().Username, 
                     rollResult));
