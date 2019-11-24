@@ -98,7 +98,8 @@
 
         public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider services)
         {
-            LoadLocales(services); // TODO(velddev): Find a better place to load this.
+            LoadLocales(services);
+            // TODO(velddev): Find a better place to load this.
 
             return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
@@ -253,6 +254,7 @@
 
         public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
         {
+            // TODO (velddev): Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
                 new Discord.Common.Packets.API.DiscordMessagePacket
                 {
@@ -285,6 +287,7 @@
         /// </summary>
         public async Task<IContext> CreateFromMessageAsync(IDiscordMessage message)
         {
+            // TODO (velddev): Resolve this in a better way.
             var context = new ContextObject(Services);
             await new CorePipelineStage()
                 .CheckAsync(message, context, () => default);
