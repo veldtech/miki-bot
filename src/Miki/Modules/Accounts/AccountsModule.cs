@@ -1033,30 +1033,29 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
-            var context = e.GetService<MikiDbContext>();
-
+            MikiDbContext context = e.GetService<MikiDbContext>();
             User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
 
-            if(u == null)
+            if(u == null) // Check it the user exists.
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("user_error_no_account"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
+            /* Base variables */
             int dailyAmount = 100;
             int dailyStreakAmount = 20;
 
-            if(await u.IsDonatorAsync(context))
+            if (await u.IsDonatorAsync(context)) // Check donator status.
             {
                 dailyAmount *= 2;
                 dailyStreakAmount *= 2;
             }
 
-            if(u.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
+            if(u.LastDailyTime.AddHours(23) >= DateTime.UtcNow) // Check last claim time.
             {
                 var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
-
                 var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
 
                 switch(MikiRandom.Next(2))
@@ -1077,39 +1076,51 @@ namespace Miki.Modules.Accounts
                 return;
             }
 
-            int streak = 0;
+            /* Streak check. */
+            DailyStreak dailyStreak = await DailyStreak.GetAsync(context, u.Id);
+            ICacheClient cache = e.GetService<ICacheClient>();
             string redisKey = $"user:{e.GetAuthor().Id}:daily";
 
-            var cache = e.GetService<ICacheClient>();
-
-            if(await cache.ExistsAsync(redisKey))
+            if (await cache.ExistsAsync(redisKey)) // Check if the user had a cached streak and migrate to database.
             {
-                streak = await cache.GetAsync<int>(redisKey);
-                streak++;
+                dailyStreak.CurrentStreak = await cache.GetAsync<int>(redisKey);
+                await cache.RemoveAsync(redisKey);
             }
 
-            int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
+            if (DateTime.UtcNow <= dailyStreak.LastStreakTime.AddHours(48)) // Check if they where within the 48 hour timelimit.
+            {
+                dailyStreak.CurrentStreak++;
+                dailyStreak.LastStreakTime = DateTime.UtcNow;
+            } else // Else Reset their streak.
+            {
+                dailyStreak.CurrentStreak = 0;
+                dailyStreak.LastStreakTime = DateTime.UtcNow;
+            }
 
-            u.AddCurrency(amount);
+            /* Final amount and update balance. */
+            int finalAmount = dailyAmount + (dailyStreakAmount * Math.Min(100, (int)dailyStreak.CurrentStreak));
+
+            u.AddCurrency(finalAmount);
             u.LastDailyTime = DateTime.UtcNow;
 
+            /* Save database */
+            await context.SaveChangesAsync();
+
+            /* Notify user. */
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
-                    $"**{amount:N0}**", 
+                    $"**{finalAmount:N0}**", 
                     $"`{u.Currency.ToFormattedString()}`"))
                 .SetColor(253, 216, 136);
 
-            if(streak > 0)
+            if(dailyStreak.CurrentStreak > 0)
             {
-                embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
+                embed.AddInlineField("Streak!", $"You're on a {dailyStreak.CurrentStreak.ToFormattedString()} day daily streak!");
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
-
-            await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
-            await context.SaveChangesAsync();
         }
     }
 }

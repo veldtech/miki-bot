@@ -18,6 +18,7 @@
     using Microsoft.EntityFrameworkCore;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Exceptions;
+    using Miki.Helpers;
 
     [Module("Experimental")]
 	internal class DeveloperModule
@@ -339,5 +340,44 @@
 					.BanAsync(context);
 			}
 		}
-	}
+
+        [Command("dailyedit")]
+        [RequiresScope("developer")]
+        public class DailyEditCommand
+        {
+            [Command("resettimer")]
+            [RequiresScope("developer")]
+            public async Task ResetDailyAsync(IContext e)
+            {
+                MikiDbContext context = e.GetService<MikiDbContext>();
+                User targetUser = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
+
+                targetUser.LastDailyTime = DateTime.UtcNow.AddHours(-23);
+                await context.SaveChangesAsync();
+
+                EmbedBuilder message = new EmbedBuilder()
+                    .SetTitle("💰 Daily")
+                    .SetDescription("You have reset your daily!");
+
+                await message.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+
+            [Command("resetstreaktimer")]
+            [RequiresScope("developer")]
+            public async Task ResetStreakTimerAsync(IContext e)
+            {
+                MikiDbContext context = e.GetService<MikiDbContext>();
+                DailyStreak dailyStreak = await DailyStreak.GetAsync(context, (long)e.GetAuthor().Id);
+
+                dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
+                await context.SaveChangesAsync();
+
+                EmbedBuilder message = new EmbedBuilder()
+                    .SetTitle("💰 Daily")
+                    .SetDescription("You have reset your streak timer, you can increase your streak again today!");
+
+                await message.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+        }
+    }
 }
