@@ -10,6 +10,8 @@
 
     public class UserService : IUserService
     {
+        private readonly IAsyncRepository<DailyStreak> dailyStreaksRepository;
+        private readonly IAsyncRepository<IsDonator> donatorRepository;
         private readonly IAsyncRepository<IsBanned> bannedRepository;
         private readonly IAsyncRepository<User> repository;
         private readonly IUnitOfWork unitOfWork;
@@ -19,6 +21,9 @@
             this.unitOfWork = unitOfWork;
             this.repository = unitOfWork.GetRepository<User>();
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
+            this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
+            this.dailyStreaksRepository = unitOfWork.GetRepository<DailyStreak>();
+            Console.WriteLine("Should be working!");
         }
 
         /// <inheritdoc />
@@ -44,6 +49,28 @@
         }
 
         /// <inheritdoc />
+        public async ValueTask<bool> UserIsDonator(long userId)
+        {
+            var donatorRecord = await donatorRepository.GetAsync(userId);
+            if (donatorRecord == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <inheritdoc />
+        public async ValueTask<DailyStreak> GetDailyStreakAsync(long userId)
+        {
+            var dailyStreakRecord = await dailyStreaksRepository.GetAsync(userId);
+            if (dailyStreakRecord == null)
+            {
+                return null;
+            }
+            return dailyStreakRecord;
+        }
+
+        /// <inheritdoc />
         public ValueTask SaveAsync()
         {
             return unitOfWork.CommitAsync();
@@ -61,6 +88,10 @@
         ValueTask<User> GetUserAsync(long userId);
 
         ValueTask<bool> UserIsBanned(long userId);
+
+        ValueTask<bool> UserIsDonator(long userId);
+
+        ValueTask<DailyStreak> GetDailyStreakAsync(long userId);
 
         ValueTask SaveAsync();
     }

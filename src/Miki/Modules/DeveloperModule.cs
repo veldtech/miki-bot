@@ -19,6 +19,7 @@
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Exceptions;
     using Miki.Helpers;
+    using Miki.Services;
 
     [Module("Experimental")]
 	internal class DeveloperModule
@@ -346,16 +347,16 @@
         public class DailyEditCommand
         {
             [Command("resettimer")]
-            [RequiresScope("developer")]
+            //[RequiresScope("developer")]
             public async Task ResetDailyAsync(IContext e)
             {
-                MikiDbContext context = e.GetService<MikiDbContext>();
-                User targetUser = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
+                var userService = e.GetService<IUserService>();
+                var targetUser = await userService.GetUserAsync((long)e.GetAuthor().Id);
 
                 targetUser.LastDailyTime = DateTime.UtcNow.AddHours(-23);
-                await context.SaveChangesAsync();
+                await userService.SaveAsync();
 
-                EmbedBuilder message = new EmbedBuilder()
+                var message = new EmbedBuilder()
                     .SetTitle("💰 Daily")
                     .SetDescription("You have reset your daily!");
 
@@ -363,14 +364,14 @@
             }
 
             [Command("resetstreaktimer")]
-            [RequiresScope("developer")]
+            //[RequiresScope("developer")]
             public async Task ResetStreakTimerAsync(IContext e)
             {
-                MikiDbContext context = e.GetService<MikiDbContext>();
-                DailyStreak dailyStreak = await DailyStreak.GetAsync(context, (long)e.GetAuthor().Id);
+                var userService = e.GetService<IUserService>();
+                var dailyStreak = await userService.GetDailyStreakAsync((long)e.GetAuthor().Id);
 
                 dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
-                await context.SaveChangesAsync();
+                await userService.SaveAsync();
 
                 EmbedBuilder message = new EmbedBuilder()
                     .SetTitle("💰 Daily")

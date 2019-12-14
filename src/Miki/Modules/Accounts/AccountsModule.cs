@@ -33,6 +33,7 @@ namespace Miki.Modules.Accounts
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
+    using Miki.Services;
 
     [Module("Accounts")]
     public class AccountsModule
@@ -1033,29 +1034,24 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
-            MikiDbContext context = e.GetService<MikiDbContext>();
-            User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
+            var userService = e.GetService<UserService>();
+            var user = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+            var dailyStreak = await userService.GetDailyStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
 
-            if(u == null) // Check it the user exists.
+            if(user == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("user_error_no_account"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
-            /* Base variables */
-            int dailyAmount = 100;
-            int dailyStreakAmount = 20;
+            const int dailyAmount = 100;
+            const int dailyStreakAmount = 20;
+            int donatorMultiplier = await userService.UserIsDonator((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2:1;
 
-            if (await u.IsDonatorAsync(context)) // Check donator status.
+            if(user.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
             {
-                dailyAmount *= 2;
-                dailyStreakAmount *= 2;
-            }
-
-            if(u.LastDailyTime.AddHours(23) >= DateTime.UtcNow) // Check last claim time.
-            {
-                var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                var time = (user.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
                 var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
 
                 switch(MikiRandom.Next(2))
@@ -1076,48 +1072,43 @@ namespace Miki.Modules.Accounts
                 return;
             }
 
-            /* Streak check. */
-            DailyStreak dailyStreak = await DailyStreak.GetAsync(context, u.Id);
             ICacheClient cache = e.GetService<ICacheClient>();
-            string redisKey = $"user:{e.GetAuthor().Id}:daily";
+            string redisKey = $"user:{user.Id}:daily";
 
-            if (await cache.ExistsAsync(redisKey)) // Check if the user had a cached streak and migrate to database.
+            if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
             {
-                dailyStreak.CurrentStreak = await cache.GetAsync<int>(redisKey);
+                dailyStreak.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
                 await cache.RemoveAsync(redisKey);
             }
 
-            if (DateTime.UtcNow <= dailyStreak.LastStreakTime.AddHours(48)) // Check if they where within the 48 hour timelimit.
+            if (DateTime.UtcNow <= dailyStreak.LastStreakTime.AddHours(48))
             {
                 dailyStreak.CurrentStreak++;
                 dailyStreak.LastStreakTime = DateTime.UtcNow;
-            } else // Else Reset their streak.
+            } else
             {
                 dailyStreak.CurrentStreak = 0;
                 dailyStreak.LastStreakTime = DateTime.UtcNow;
             }
 
-            /* Final amount and update balance. */
-            int finalAmount = dailyAmount + (dailyStreakAmount * Math.Min(100, (int)dailyStreak.CurrentStreak));
+            int finalAmount = (dailyAmount * donatorMultiplier) + ((dailyStreakAmount * donatorMultiplier) * Math.Min(100, (int)dailyStreak.CurrentStreak));
 
-            u.AddCurrency(finalAmount);
-            u.LastDailyTime = DateTime.UtcNow;
+            user.AddCurrency(finalAmount);
+            user.LastDailyTime = DateTime.UtcNow;
 
-            /* Save database */
-            await context.SaveChangesAsync();
+            await userService.SaveAsync();
 
-            /* Notify user. */
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
                     $"**{finalAmount:N0}**", 
-                    $"`{u.Currency.ToFormattedString()}`"))
+                    $"`{user.Currency.ToFormattedString()}`"))
                 .SetColor(253, 216, 136);
 
             if(dailyStreak.CurrentStreak > 0)
             {
-                embed.AddInlineField("Streak!", $"You're on a {dailyStreak.CurrentStreak.ToFormattedString()} day daily streak!");
+                embed.AddInlineField("Streak!", $"You're on a {dailyStreak.CurrentStreak:N0} day daily streak!");
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
