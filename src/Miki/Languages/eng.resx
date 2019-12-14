@@ -741,7 +741,7 @@ Fuzzy</comment>
   <data name="miki_module_general_urban_rating" xml:space="preserve">
     <value>Rating</value>
   </data>
-  <data name="miki_module_help_didyoumean" xml:space="preserve">
+  <data name="miki_common_suggestion" xml:space="preserve">
     <value>Did you mean?</value>
   </data>
   <data name="miki_module_help_error_null_header" xml:space="preserve">
@@ -2237,7 +2237,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_miscript_parse" xml:space="preserve">
     <value>An unknown parsing exception occured with message: "{0}"</value>
   </data>
-  <data name="String1" xml:space="preserve">
+  <data name="error_custom_command_exists" xml:space="preserve">
     <value>A command with the name {0} already exists!</value>
   </data>
   <data name="ok_command_deleted" xml:space="preserve">
@@ -2288,5 +2288,15 @@ To read more about the miki scripting language. Check out https://github.com/mik
   </data>
   <data name="errors_mention_type_invalid" xml:space="preserve">
     <value>I thought you were going to give me a {0} mention, but I read your mention as a {1} mention.</value>
+  </data>
+  <data name="common_success" xml:space="preserve">
+    <value>Congratulations, {0}!</value>
+  </data>
+  <data name="key_redeem_success" xml:space="preserve">
+    <value>You've' successfully redeemed a donator key, I've given you {0} days of donator status.</value>
+  </data>
+  <data name="error_argument_missing" xml:space="preserve">
+    <value>We're missing the {0} from you, consult the documentation for help.</value>
+    <comment>{0} should always be a verb</comment>
   </data>
 </root>

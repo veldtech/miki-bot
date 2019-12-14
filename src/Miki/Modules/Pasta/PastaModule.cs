@@ -20,6 +20,8 @@ using Miki.Localization;
 namespace Miki.Modules
 {
     using Framework.Extension;
+    using Miki.Modules.Accounts.Services;
+    using Miki.Services.Achievements;
 
     [Module("pasta")]
     public class PastaModule
@@ -37,7 +39,7 @@ namespace Miki.Modules
 
             long userId;
             string userName;
-            if (e.GetMessage().MentionedUserIds.Count() > 0)
+            if (e.GetMessage().MentionedUserIds.Any())
             {
                 userId = e.GetMessage().MentionedUserIds.First().ToDbLong();
                 userName = (await e.GetGuild().GetMemberAsync(userId.FromDbLong())).Username;
@@ -97,7 +99,10 @@ namespace Miki.Modules
             e.GetArgumentPack().Take(out string id);
             string text = e.GetArgumentPack().Pack.TakeAll();
 
-            if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(
+                text, 
+                "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", 
+                RegexOptions.IgnoreCase))
             {
                 throw new PastaInviteException();
             }
@@ -110,6 +115,9 @@ namespace Miki.Modules
 
             await e.SuccessEmbed(e.GetLocale().GetString("miki_module_pasta_create_success", id))
                 .QueueAsync(e, e.GetChannel());
+
+            var a = e.GetService<AchievementService>();
+            await a.UnlockAsync(e, a.GetAchievement(AchievementIds.CreatePastaId), e.GetAuthor().Id);
         }
 
         [Command("deletepasta")]

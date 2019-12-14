@@ -142,6 +142,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Congratulations, {0}!.
+        /// </summary>
+        internal static string common_success {
+            get {
+                return ResourceManager.GetString("common_success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I couldn&apos;t find any content for this pasta. Please specify what you want to make..
         /// </summary>
         internal static string createpasta_error_no_content {
@@ -192,6 +201,15 @@ namespace Miki.Languages {
         internal static string error_argument_less_than_zero {
             get {
                 return ResourceManager.GetString("error_argument_less_than_zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We&apos;re missing the {0} from you, consult the documentation for help..
+        /// </summary>
+        internal static string error_argument_missing {
+            get {
+                return ResourceManager.GetString("error_argument_missing", resourceCulture);
             }
         }
         
@@ -273,6 +291,15 @@ namespace Miki.Languages {
         internal static string error_command_null {
             get {
                 return ResourceManager.GetString("error_command_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A command with the name {0} already exists!.
+        /// </summary>
+        internal static string error_custom_command_exists {
+            get {
+                return ResourceManager.GetString("error_custom_command_exists", resourceCulture);
             }
         }
         
@@ -949,6 +976,15 @@ namespace Miki.Languages {
         internal static string infopasta_rating {
             get {
                 return ResourceManager.GetString("infopasta_rating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve&apos; successfully redeemed a donator key, I&apos;ve given you {0} days of donator status..
+        /// </summary>
+        internal static string key_redeem_success {
+            get {
+                return ResourceManager.GetString("key_redeem_success", resourceCulture);
             }
         }
         
@@ -3325,6 +3361,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Did you mean?.
+        /// </summary>
+        internal static string miki_common_suggestion {
+            get {
+                return ResourceManager.GetString("miki_common_suggestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can&apos;t use this command with no arguments. Please specify a bet amount..
         /// </summary>
         internal static string miki_error_gambling_no_arg {
@@ -5233,15 +5278,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Did you mean?.
-        /// </summary>
-        internal static string miki_module_help_didyoumean {
-            get {
-                return ResourceManager.GetString("miki_module_help_didyoumean", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command not found..
         /// </summary>
         internal static string miki_module_help_error_null_header {
@@ -5976,15 +6012,6 @@ namespace Miki.Languages {
         internal static string stats_description {
             get {
                 return ResourceManager.GetString("stats_description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A command with the name {0} already exists!.
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

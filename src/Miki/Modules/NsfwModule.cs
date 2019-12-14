@@ -15,109 +15,27 @@
     using System.Threading.Tasks;
     using Miki.Localization;
     using Framework.Extension;
+    using Miki.Modules.Accounts.Services;
+    using Miki.Services.Achievements;
 
     [Module("nsfw")]
 	internal class NsfwModule
 	{
 		[Command("gelbooru", "gel")]
-		public async Task RunGelbooru(IContext e)
-		{
-			try
-			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<GelbooruPost>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
+		public Task RunGelbooru(IContext e)
+            => RunNsfwAsync<GelbooruPost>(e);
 
-				if (!IsValid(s))
-				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e, e.GetChannel());
-					return;
-				}
+        [Command("danbooru", "dan")]
+		public Task DanbooruAsync(IContext e)
+            => RunNsfwAsync<DanbooruPost>(e);
 
-                await CreateEmbed(s)
-					.QueueAsync(e, e.GetChannel());
-			}
-			catch
-			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e, e.GetChannel());
-			}
-		}
+        [Command("rule34", "r34")]
+		public Task RunRule34(IContext e)
+            => RunNsfwAsync<Rule34Post>(e);
 
-		[Command("danbooru", "dan")]
-		public async Task DanbooruAsync(IContext e)
-		{
-			try
-			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<DanbooruPost>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
-
-				if (!IsValid(s))
-				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e, e.GetChannel());
-					return;
-				}
-
-                await CreateEmbed(s)
-					.QueueAsync(e, e.GetChannel());
-			}
-			catch
-			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e, e.GetChannel());
-			}
-		}
-
-		[Command("rule34", "r34")]
-		public async Task RunRule34(IContext e)
-		{
-			try
-			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<Rule34Post>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
-
-				if (!IsValid(s))
-				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e, e.GetChannel());
-					return;
-				}
-
-                await CreateEmbed(s)
-					.QueueAsync(e, e.GetChannel());
-			}
-			catch
-			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e, e.GetChannel());
-			}
-		}
-
-		[Command("e621")]
-		public async Task RunE621(IContext e)
-		{
-			try
-			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<E621Post>()
-                    .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
-
-				if (!IsValid(s))
-				{
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e, e.GetChannel());
-					return;
-				}
-
-                await CreateEmbed(s)
-					.QueueAsync(e, e.GetChannel());
-			}
-			catch
-			{
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e, e.GetChannel());
-			}
-		}
+        [Command("e621")]
+		public Task RunE621(IContext e)
+            => RunNsfwAsync<E621Post>(e);
 
         [Command("urban")]
         public async Task UrbanAsync(IContext e)
@@ -172,30 +90,47 @@
         }
 
         [Command("yandere")]
-		public async Task RunYandere(IContext e)
-		{
-			try
-			{
-				ILinkable s = await ImageboardProviderPool.GetProvider<YanderePost>()
+        public Task RunYandere(IContext e) 
+            => RunNsfwAsync<YanderePost>(e);
+
+        private async Task RunNsfwAsync<T>(IContext e)
+            where T : BooruPost, ILinkable
+        {
+            try
+            {
+                ILinkable s = await ImageboardProviderPool.GetProvider<T>()
                     .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
 
-				if (!IsValid(s))
-				{
+                if(!IsValid(s))
+                {
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-						.ToEmbed().QueueAsync(e, e.GetChannel());
-					return;
-				}
+                        .ToEmbed().QueueAsync(e, e.GetChannel());
+                    return;
+                }
 
-                await CreateEmbed(s).QueueAsync(e, e.GetChannel());
-			}
-			catch
-			{
+                await CreateEmbed(s)
+                    .QueueAsync(e, e.GetChannel());
+            }
+            catch
+            {
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-					.ToEmbed().QueueAsync(e, e.GetChannel());
-			}
-		}
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            await UnlockLewdAchievementAsync(e, e.GetService<AchievementService>());
+        }
 
-		private DiscordEmbed CreateEmbed(ILinkable s)
+        private ValueTask UnlockLewdAchievementAsync(IContext e, AchievementService service)
+        {
+            if(MikiRandom.Next(100) == 50)
+            {
+                return new ValueTask(service.UnlockAsync(e,
+                    service.GetAchievementOrDefault(AchievementIds.LewdId),
+                    e.GetAuthor().Id));
+            }
+            return default;
+        }
+
+        private DiscordEmbed CreateEmbed(ILinkable s)
 		{
 			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
 			return new EmbedBuilder()
@@ -206,7 +141,7 @@
 		}
 
         private static string FormatTags(string tags)
-            => string.Join(", ", tags.Split(' ').Select(x => $"`x`"));
+            => string.Join(", ", tags.Split(' ').Select(x => $"`{x}`"));
 
         private static bool IsValid(ILinkable s)
 	        => (s != null) && (!string.IsNullOrWhiteSpace(s.Url));

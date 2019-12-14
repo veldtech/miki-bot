@@ -32,14 +32,15 @@ namespace Miki.Modules.Accounts
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
+    using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
 
     [Module("Accounts")]
     public class AccountsModule
     {
         public AchievementService  AchievementService { get; set; }
         public AchievementLoader Achievements { get; set; }
-        public ExperienceTrackerService ExperienceService { get; set; }
 
         private readonly Net.Http.HttpClient client;
 
@@ -68,25 +69,60 @@ namespace Miki.Modules.Accounts
                 Log.Warning("Image API can not be loaded in AccountsModule");
             }
 
+            var discordClient = app.Services.GetService<IDiscordClient>();
             var accountsService = app.Services.GetService<AccountService>();
+            AchievementService = app.Services.GetService<AchievementService>();
+
+            discordClient.MessageCreate += (msg) => OnMessageCreate(app, AchievementService, msg);
+
             accountsService.OnLocalLevelUp += OnUserLevelUp;
             accountsService.OnLocalLevelUp += OnLevelUpAchievements;
 
-            AchievementService = app.Services.GetService<AchievementService>();
             Achievements = new AchievementLoader(AchievementService);
+            AchievementService.OnAchievementUnlocked += SendAchievementNotification;
+            AchievementService.OnAchievementUnlocked += CheckAchievementUnlocks;
+        }
 
+        private async Task OnMessageCreate(MikiApp app, AchievementService service, IDiscordMessage arg)
+        {
+            if(app is MikiBotApp botApp)
+            {
+                var ctx = await botApp.CreateFromMessageAsync(arg);
+                switch(arg.Content.ToLowerInvariant())
+                {
+                    case "here come dat boi":
+                    {
+                        var a = service.GetAchievement(AchievementIds.FrogId);
+                        await service.UnlockAsync(ctx, a, arg.Author.Id);
+                    }
+                        break;
 
-            var service = app.Services.GetService<AchievementService>();
-            service.OnAchievementUnlocked += this.OnAchievementUnlocked;
+                    case "( ͡° ͜ʖ ͡°)":
+                    {
+                        var a = service.GetAchievement(AchievementIds.LennyId);
+                        await service.UnlockAsync(ctx, a, arg.Author.Id);
+                    }
+                        break;
 
-            ExperienceService = new ExperienceTrackerService(
-                app.Services.GetService<IDiscordClient>(),
-                accountsService);
+                    case "poi":
+                    {
+                        var a = service.GetAchievement(AchievementIds.ShipId);
+                        await service.UnlockAsync(ctx, a, arg.Author.Id);
+                    }
+                        break;
+                }
+
+                if(MikiRandom.Next(0, 10000000000) == 5234210)
+                {
+                    var a = service.GetAchievement(AchievementIds.LuckId);
+                    await service.UnlockAsync(ctx, a, arg.Author.Id);
+                }
+            }
         }
 
         private async Task OnLevelUpAchievements(IDiscordUser user, IDiscordTextChannel channel, int level)
         {
-            var achievements = AchievementService.GetAchievement("levelachievements");
+            var achievements = AchievementService.GetAchievement(AchievementIds.LevellingId);
 
             int achievementToUnlock = -1;
             if(level >= 3 && level < 5)
@@ -228,13 +264,51 @@ namespace Miki.Modules.Accounts
         /// <summary>
         /// Notification for user achievements
         /// </summary>
-        private Task OnAchievementUnlocked(IContext ctx, AchievementEntry arg)
+        private Task SendAchievementNotification(IContext ctx, AchievementEntry arg)
         {
             return new EmbedBuilder()
                 .SetTitle($"{arg.Icon} Achievement Unlocked!")
                 .SetDescription($"{ctx.GetAuthor().Username} has unlocked {arg.ResourceName}")
                 .ToEmbed()
                 .QueueAsync(ctx, ctx.GetChannel());
+        }
+
+        private async Task CheckAchievementUnlocks(IContext ctx, AchievementEntry arg)
+        {
+            var service = ctx.GetService<AchievementService>();
+            var achievements = (await service.GetUnlockedAchievementsAsync((long) ctx.GetAuthor().Id))
+                .ToList();
+            var achievementCount = achievements.Count();
+            var achievementObject = service.GetAchievement(AchievementIds.AchievementsId);
+
+            var currentAchievements = achievements
+                .Where(x => x.Name == achievementObject.Id)
+                .ToList();
+
+
+            if(achievementCount >= 3
+               && currentAchievements.FirstOrDefault(x => x.Rank == 0) == null)
+            {
+                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id);
+            }
+
+            if(achievementCount >= 5
+               && currentAchievements.FirstOrDefault(x => x.Rank == 1) == null)
+            {
+                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 1);
+            }
+
+            if(achievementCount >= 12
+               && currentAchievements.FirstOrDefault(x => x.Rank == 2) == null)
+            {
+                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 2);
+            }
+
+            if(achievementCount >= 25
+               && currentAchievements.FirstOrDefault(x => x.Rank == 3) == null)
+            {
+                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 3);
+            }
         }
 
         [Command("achievements")]
@@ -983,50 +1057,39 @@ namespace Miki.Modules.Accounts
         }
 
         [Command("give")]
-        public async Task GiveMekosAsync(IContext e)
+        public Task GiveMekosAsync(IContext e)
+            => e.GetGuild().FindUserAsync(e)
+                .AndThen(ThrowOnUserNull)
+                .Map(receiver => new TransactionRequest.Builder()
+                    .WithReceiver((long)receiver.Id)
+                    .WithSender((long)e.GetAuthor().Id)
+                    .WithAmount(e.GetArgumentPack().TakeRequired<int>())
+                    .Build())
+                .Map(request => e.GetService<TransactionService>()
+                    .CreateTransactionAsync(request))
+                .Unwrap()
+                .AndThen(transaction => CreateTransactionEmbed(e, transaction)
+                    .QueueAsync(e, e.GetChannel()));
+                    
+
+        public DiscordEmbed CreateTransactionEmbed(IContext context, TransactionResponse transaction)
         {
-            if (e.GetArgumentPack().Take(out string userName))
+            return new EmbedBuilder()
+                .SetTitle("🔸 transaction")
+                .SetDescription(context.GetLocale().GetString(
+                    "give_description",
+                    transaction.Sender.Name,
+                    transaction.Receiver.Name,
+                    transaction.Amount.ToString("N0")))
+                .SetColor(255, 140, 0)
+                .ToEmbed();
+        }
+
+        private void ThrowOnUserNull(IDiscordGuildUser user)
+        {
+            if(user == null)
             {
-                var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-
-                if (user == null)
-                {
-                    await e.ErrorEmbedResource("give_error_no_mention")
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
-                }
-
-                if (!e.GetArgumentPack().Take(out int amount))
-                {
-                    await e.ErrorEmbedResource("give_error_amount_unparsable")
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
-                }
-
-                var context = e.GetService<MikiDbContext>();
-
-                User sender = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
-                User receiver = await DatabaseHelpers.GetUserAsync(context, user);
-
-                if(await receiver.IsBannedAsync(context))
-                {
-                    throw new UserNullException();
-                }
-
-                sender.RemoveCurrency(amount);
-                receiver.AddCurrency(amount);
-
-                await new EmbedBuilder()
-                {
-                    Title = "🔸 transaction",
-                    Description = e.GetLocale().GetString(
-                        "give_description",
-                        sender.Name,
-                        receiver.Name,
-                        amount.ToFormattedString()),
-                    Color = new Color(255, 140, 0),
-                }.ToEmbed().QueueAsync(e, e.GetChannel());
-                await context.SaveChangesAsync();
+                throw new UserNullException();
             }
         }
 

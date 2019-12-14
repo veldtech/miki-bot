@@ -137,7 +137,7 @@
                         using var scope = MikiApp.Instance.Services.CreateScope();
                         var context = scope.ServiceProvider.GetService<DbContext>();
 
-                        var _ = Task.WhenAll(
+                        var _ = await Task.WhenAll(
                                 UpdateGlobalDatabaseAsync(context),
                                 UpdateLocalDatabaseAsync(context),
                                 UpdateGuildDatabaseAsync(context))

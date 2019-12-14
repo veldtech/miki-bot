@@ -28,7 +28,7 @@
         [Fact]
         public async Task CreateSession()
         {
-            var session = await Service.CreateNewAsync(2UL, 1UL, 0UL, 0);
+            var session = await Service.NewSessionAsync(2UL, 1UL, 0UL, 0);
             var context = await Repository.GetAsync(0UL, 1UL);
 
             Assert.Equal(session.Deck.Count, context.Deck.Count);
@@ -42,7 +42,7 @@
         [Fact]
         public async Task DrawCard()
         {
-            var session = await Service.CreateNewAsync(2UL, 1UL, 0UL, 0);
+            var session = await Service.NewSessionAsync(2UL, 1UL, 0UL, 0);
 
             Service.DrawCard(session, 1UL);
 

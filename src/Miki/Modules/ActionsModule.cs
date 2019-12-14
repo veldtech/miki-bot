@@ -1,20 +1,16 @@
-﻿using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
-using System.Threading.Tasks;
-
-namespace Miki.Modules
+﻿namespace Miki.Modules
 {
+    using Miki.Discord;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using System.Threading.Tasks;
     using Framework.Extension;
 
     [Module("Actions")]
 	public class ActionsModule
 	{
-        readonly string askImage = "http://i.imgur.com/AHPnL.gif";
-        readonly string[] biteImages = {
+        private readonly string askImage = "http://i.imgur.com/AHPnL.gif";
+        private readonly string[] biteImages = {
 			"https://i.imgur.com/FlwJbPh.gif",
 			"https://i.imgur.com/opsXoPC.gif",
 			"https://i.imgur.com/OJBdmxz.gif",
@@ -33,7 +29,7 @@ namespace Miki.Modules
 			"https://i.imgur.com/VKgFBJY.gif",
 			"https://i.imgur.com/r9QOkEA.gif"
 		};
-        readonly string[] cakeImages = {
+        private readonly string[] cakeImages = {
 			"http://i.imgur.com/CYyrjRQ.gif",
 			"http://i.imgur.com/3nWbcNT.gif",
 			"http://i.imgur.com/AhOVdff.gif",
@@ -77,7 +73,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/DBAEo1L.gif",
 			"http://i.imgur.com/QSLpOIR.gif"
 		};
-        readonly string[] cuddleImages = {
+        private readonly string[] cuddleImages = {
 			"http://i.imgur.com/xWTyaKY.gif",
 			"http://i.imgur.com/K4lYduH.gif",
 			"http://i.imgur.com/8kLQ55E.gif",
@@ -87,7 +83,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/guBWT22.gif",
 			"http://i.imgur.com/Asnv32U.gif"
 		};
-        readonly string[] hugImages = {
+        private readonly string[] hugImages = {
 			"http://i.imgur.com/FvSnQs8.gif",
 			"http://i.imgur.com/rXEq7oU.gif",
 			"http://i.imgur.com/b6vVMQO.gif",
@@ -113,7 +109,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/MrEMpE6.gif",
 			"http://i.imgur.com/Y9sMTP4.gif"
         };
-        readonly string[] glareImages = {
+        private readonly string[] glareImages = {
             "http://i.imgur.com/ba9Skjf.gif",
             "http://i.imgur.com/V6oBWDn.gif",
             "http://i.imgur.com/PWXcVQf.gif",
@@ -156,7 +152,7 @@ namespace Miki.Modules
             "http://i.imgur.com/xgb3wk2.gif",
             "http://i.imgur.com/qzPYYsK.gif"
         };
-        readonly string[] highFiveImages = {
+        private readonly string[] highFiveImages = {
 			"http://i.imgur.com/LOoXzd9.gif",
 			"http://i.imgur.com/Kwe6pAn.gif",
 			"http://i.imgur.com/JeWzGGl.gif",
@@ -179,7 +175,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/ebQWKZU.gif",
 			"http://i.imgur.com/XYA8ET8.gif"
 		};
-        readonly string[] kissImages = {
+        private readonly string[] kissImages = {
 			"http://i.imgur.com/QIPaYW3.gif",
 			"http://i.imgur.com/wx3WXZu.gif",
 			"http://i.imgur.com/ZzIQwHP.gif",
@@ -199,7 +195,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/W9htMol.gif",
 			"http://i.imgur.com/IVOBC8p.gif"
 		};
-        readonly string[] lickImages = {
+        private readonly string[] lickImages = {
 			"https://cdn.miki.ai/images/5112e59f-798d-4085-b947-a44dc03f6517.gif",
             "https://cdn.miki.ai/images/2187d457-703a-43a0-93de-3304774f972f.gif",
 			"https://cdn.miki.ai/images/165eb268-7772-47d9-9e06-4f8c4b6fb1d0.gif",
@@ -208,7 +204,7 @@ namespace Miki.Modules
 			"https://cdn.miki.ai/images/f56b349d-507d-46df-849a-584b718c345c.gif",
             "https://cdn.miki.ai/images/f38d5382-120b-4b26-9269-e1218eed4308.gif"
         };
-        readonly string[] patImages = {
+        private readonly string[] patImages = {
 			"http://i.imgur.com/Y2DrXtT.gif",
 			"http://i.imgur.com/G7b4OnS.gif",
 			"http://i.imgur.com/nQqH0Xa.gif",
@@ -260,7 +256,7 @@ namespace Miki.Modules
 			"http://i.imgur.com/1mr4NWL.gif",
 			"http://i.imgur.com/wXw7IjY.gif"
 		};
-        readonly string[] pokeImages = {
+        private readonly string[] pokeImages = {
 	        "http://i.imgur.com/WG8EKwM.gif",
 	        "http://i.imgur.com/dfoxby7.gif",
 	        "http://i.imgur.com/TzD1Ngz.gif",
@@ -272,7 +268,7 @@ namespace Miki.Modules
 	        "http://i.imgur.com/YDJFoBV.gif",
 	        "http://i.imgur.com/urC9B1H.gif"
         };
-        readonly string[] punchImages = {
+        private readonly string[] punchImages = {
 			"http://imgur.com/jVc3GGv.gif",
 			"http://imgur.com/iekwz4h.gif",
 			"http://imgur.com/AbRmlAo.gif",
@@ -285,7 +281,7 @@ namespace Miki.Modules
 			"http://imgur.com/q7AmR8n.gif",
 			"http://imgur.com/pDohPrm.gif",
 		};
-        readonly string[] slapImages = {
+        private readonly string[] slapImages = {
 	        "http://i.imgur.com/GQtzDsV.gif",
 	        "http://i.imgur.com/rk8eqnt.gif",
 	        "http://i.imgur.com/UnzGS24.gif",
@@ -301,23 +297,19 @@ namespace Miki.Modules
 
 		[Command("ask")]
 		public async Task AskAsync(IContext e)
-			=> await QueueAction(e, 
-                    "asks", 
-                    askImage)
+			=> await QueueAction(e, "asks", askImage)
                 .ConfigureAwait(false);
 
 		[Command("bite")]
 		public async Task BiteAsync(IContext e)
-			=> await QueueAction(e, 
-                    "bites", 
-                    biteImages[MikiRandom.Next(biteImages.Length)])
+			=> await QueueAction(
+                    e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("cake")]
 		public async Task CakeAsync(IContext e)
-			=> await QueueAction(e, 
-                    "feeds", 
-                    cakeImages[MikiRandom.Next(cakeImages.Length)])
+			=> await QueueAction(
+                    e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("cuddle")]
@@ -329,65 +321,56 @@ namespace Miki.Modules
 
         [Command("glare")]
 		public async Task GlareAsync(IContext e)
-			=> await QueueAction(e, 
-                    "glares at", 
-                    glareImages[MikiRandom.Next(glareImages.Length)])
+			=> await QueueAction(
+                    e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("highfive")]
 		public async Task HighFiveAsync(IContext e)
-			=> await QueueAction(e, 
-                    "high-fives",
-                    highFiveImages[MikiRandom.Next(highFiveImages.Length)])
+			=> await QueueAction(
+                    e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("hug")]
 		public async Task HugAsync(IContext e)
-			=> await QueueAction(e, 
-                    "hugs", 
-                    hugImages[MikiRandom.Next(hugImages.Length)])
+			=> await QueueAction(
+                    e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("poke")]
 		public async Task PokeAsync(IContext e)
-			=> await QueueAction(e, 
-                    "pokes", 
-                    pokeImages[MikiRandom.Next(pokeImages.Length)])
+			=> await QueueAction(
+                    e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("punch")]
 		public async Task PunchAsync(IContext e)
-			=> await QueueAction(e, 
-                    "punches", 
-                    punchImages[MikiRandom.Next(punchImages.Length)])
+			=> await QueueAction(
+                    e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("kiss")]
 		public async Task KissAsync(IContext e)
-			=> await QueueAction(e, 
-                    "kisses", 
-                    kissImages[MikiRandom.Next(kissImages.Length)])
+			=> await QueueAction(
+                    e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("lick")]
 		public async Task LickAsync(IContext e)
-			=> await QueueAction(e, 
-                    "licks", 
-                    lickImages[MikiRandom.Next(lickImages.Length)])
+			=> await QueueAction(
+                    e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("pat",  "pet" )]
 		public async Task PetAsync(IContext e)
-			=> await QueueAction(e, 
-                    "pats", 
-                    patImages[MikiRandom.Next(patImages.Length)])
+			=> await QueueAction(
+                    e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("slap")]
 		public async Task SlapAsync(IContext e)
-			=> await QueueAction(e, 
-                    "slaps", 
-                    slapImages[MikiRandom.Next(slapImages.Length)])
+			=> await QueueAction(
+                    e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
         public async Task QueueAction(IContext e, string action, string imageUrl)

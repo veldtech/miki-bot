@@ -7,41 +7,46 @@
     using API.Cards;
     using API.Cards.Enums;
     using API.Cards.Objects;
+    using Miki.Framework;
+    using Miki.Utility;
     using Patterns.Repositories;
 
     public class BlackjackService
     {
+        private readonly IUnitOfWork unit;
         private readonly IAsyncRepository<BlackjackContext> repository;
+        private readonly TransactionService transactionService;
 
         private const ulong DealerId = 0;
 
         public BlackjackService(
-            IAsyncRepository<BlackjackContext> repository)
+            IUnitOfWork unit,
+            TransactionService transactionService,
+            IRepositoryFactory<BlackjackContext> factory = null)
         {
-            this.repository = repository;
+            this.unit = unit;
+            this.repository = unit.GetRepository(factory);
+            this.transactionService = transactionService;
         }
 
-        public async Task<BlackjackSession> CreateNewAsync(
-            ulong messageId, ulong userId, ulong channelId, int bet)
+        public async Task<BlackjackSession> NewSessionAsync(
+            ulong messageId,
+            ulong userId,
+            ulong channelId,
+            int bet)
         {
-            var context = new BlackjackContext
-            {
-                Bet = bet,
-                Deck = CardSet.CreateStandard(),
-                Hands = new Dictionary<ulong, CardHand>
-                {
-                    { userId, new CardHand() },
-                    { DealerId, new CardHand() }
-                },
-                ChannelId = channelId,
-                UserId = userId,
-                MessageId = messageId,
-            };
-            await repository.AddAsync(context);
-            return new BlackjackSession(context);
+            return await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(bet)
+                        .WithReceiver((long)DealerId)
+                        .WithSender((long)userId)
+                        .Build())
+                .Map(context => ConstructContext(bet, userId, channelId, messageId))
+                    .AndThen(context => repository.AddAsync(context))
+                    .AndThen(x => unit.CommitAsync())
+                .Map(context => new BlackjackSession(context));
         }
 
-        /// <inheritdoc />
         public BlackjackState DrawCard(BlackjackSession session, ulong playerId)
         {
             if(!session.Players.TryGetValue(playerId, out var currentPlayer))
@@ -56,7 +61,6 @@
             return BlackjackState.NONE;
         }
 
-        /// <inheritdoc />
         public BlackjackState Stand(BlackjackSession session, ulong playerId)
         {
             if(!session.Players.TryGetValue(playerId, out var currentPlayer))
@@ -110,6 +114,23 @@
             }
         }
 
+        private BlackjackContext ConstructContext(
+            int bet, ulong userId, ulong channelId, ulong messageId)
+        {
+            return new BlackjackContext
+            {
+                Bet = bet,
+                Deck = CardSet.CreateStandard(),
+                Hands = new Dictionary<ulong, CardHand>
+                {
+                    {userId, new CardHand()},
+                    {DealerId, new CardHand()}
+                },
+                ChannelId = channelId,
+                UserId = userId,
+                MessageId = messageId,
+            };
+        }
     }
 
     public class BlackjackSession
@@ -133,13 +154,10 @@
         };
         private const ulong DealerId = 0;
 
-        /// <inheritdoc />
         public int Bet => context.Bet;
 
-        /// <inheritdoc />
         public IDictionary<ulong, CardHand> Players => context.Hands;
 
-        /// <inheritdoc />
         public CardSet Deck => context.Deck;
 
         public BlackjackSession(BlackjackContext context)

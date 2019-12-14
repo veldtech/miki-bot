@@ -23,6 +23,7 @@ namespace Miki
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Models;
+    using System.Linq;
 
     public static class Utils
     {
@@ -125,6 +126,18 @@ namespace Miki
                 return text;
             }
             return "";
+        }
+
+        /// <summary>
+        /// Gets the root of an exception
+        /// </summary>
+        public static Exception GetRootException(this Exception e)
+        {
+            if(e.InnerException != null)
+            {
+                return e.InnerException.GetRootException();
+            }
+            return e;
         }
 
         public static IDiscordUser GetAuthor(this IContext c)
@@ -280,8 +293,12 @@ namespace Miki
             {
                 throw new ArgumentOutOfRangeException();
             }
+
             return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
         }
+
+        public static T Of<T>(IEnumerable<T> collection) 
+            => collection.ElementAt(Next(collection.Count()));
 
         public static double NextDouble()
         {

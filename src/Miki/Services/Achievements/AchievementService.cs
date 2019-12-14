@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Framework;
+    using Microsoft.EntityFrameworkCore;
     using Patterns.Repositories;
 
     public delegate Task<bool> CheckUserUpdateAchievement(
@@ -49,6 +50,15 @@
             => GetAchievementOrDefault(id) 
                ?? throw new InvalidOperationException("Achievement not found");
 
+        public async Task<IEnumerable<Achievement>> GetUnlockedAchievementsAsync(long userId)
+        {
+            return await (await repository.ListAsync())
+                .AsQueryable()
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+        }
+
         public string PrintAchievements(List<Achievement> achievements)
 		{
             if(achievements == null || !achievements.Any())
@@ -72,12 +82,14 @@
 			return output;
 		}
 
-        public Task UnlockAsync(IContext context, string achievementName, ulong userId, int rank = 0)
+        public Task UnlockAsync(
+            IContext context, string achievementName, ulong userId, int rank = 0)
         {
             var achievement = GetAchievement(achievementName);
             return UnlockAsync(context, achievement, userId, rank);  
         }
-        public async Task UnlockAsync(IContext context, AchievementObject achievement, ulong userId, int rank = 0)
+        public async Task UnlockAsync(
+            IContext context, AchievementObject achievement, ulong userId, int rank = 0)
         {
             if (rank >= achievement.Entries.Count)
             {

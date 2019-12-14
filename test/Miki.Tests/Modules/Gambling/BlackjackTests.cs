@@ -20,8 +20,8 @@
             Mock.Setup(x => x.GetContext<IDiscordTextChannel>(FetchDataStage.ChannelArgumentKey))
                 .Returns(new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
 
-            //var command = new GamblingModule.BlackjackCommand();
-            //await command.BlackjackAsync(Mock.Object);
+            var command = new GamblingModule.BlackjackCommand();
+            await command.BlackjackAsync(Mock.Object);
 
             Assert.True(Worker.TryGetMessage(out var response));
             Assert.NotNull(response.Arguments.Properties.Embed);
