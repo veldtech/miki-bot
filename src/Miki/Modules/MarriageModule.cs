@@ -20,6 +20,7 @@ namespace Miki.Modules
     using Miki.Framework.Commands.Attributes;
     using Miki.Helpers;
     using Miki.Localization;
+    using Miki.Modules.Accounts.Services;
     using Services.Achievements;
 
     [Module("Marriage")]
@@ -252,8 +253,6 @@ namespace Miki.Modules
 			}
 			else
 			{
-				var cache = e.GetService<ICacheClient>();
-
 				var embed = new EmbedBuilder()
 				{
 					Title = "💍 Proposals",
@@ -263,8 +262,7 @@ namespace Miki.Modules
 					},
 					Color = new Color(154, 170, 180)
 				};
-
-				await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
+                await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
 				await embed.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
@@ -359,17 +357,11 @@ namespace Miki.Modules
 			long askerId = currentUser.Id;
 			long receiverId = mentionedPerson.Id;
 
-            if(await mentionedPerson.IsBannedAsync(context)
-                .ConfigureAwait(false))
-            {
-                throw new UserBannedException(mentionedPerson);
-			}
-
 			if(receiverId == askerId)
             {
                 var achievements = e.GetService<AchievementService>();
                 await achievements.UnlockAsync(e,
-                    achievements.GetAchievement("fa"),
+                    achievements.GetAchievement(AchievementIds.MarrySelfId),
                     e.GetAuthor().Id);
                 return;
 			}

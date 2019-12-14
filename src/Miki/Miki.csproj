@@ -34,7 +34,6 @@
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.0.0" />
     <PackageReference Include="Miki.Framework.Arguments" Version="2.0.0" />
     <PackageReference Include="Miki.Framework.Commands" Version="2.0.0" />
     <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.0.0" />

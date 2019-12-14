@@ -40,6 +40,7 @@
     using Miki.Models.Objects.Backgrounds;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
+    using Miki.Services;
     using Miki.Services.Achievements;
     using Miki.Services.Rps;
     using Miki.UrbanDictionary;
@@ -78,7 +79,7 @@
         {   
             if(!arg.Success)
             {
-                if(arg.Error is LocalizedException botEx)
+                if(arg.Error.GetRootException() is LocalizedException botEx)
                 {
                     await arg.Context.ErrorEmbedResource(botEx.LocaleResource)
                         .ToEmbed()
@@ -118,7 +119,6 @@
 
         public override void Configure(ServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(new MessageWorker());
             serviceCollection.AddSingleton(Config);
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             serviceCollection.AddSingleton<IConnectionMultiplexer>(
@@ -142,7 +142,7 @@
                 serviceCollection.AddDbContext<DbContext, MikiDbContext>(
                     x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
-
+            
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
             serviceCollection.AddScoped<
@@ -230,12 +230,14 @@
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
 
+                serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();
                 serviceCollection.AddSingleton<AchievementService>();
-                serviceCollection.AddSingleton<RpsService>();
-                serviceCollection.AddSingleton<ILocalizationService, LocalizationService>();
+                serviceCollection.AddScoped<RpsService>();
+                serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
                 serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
-                serviceCollection.AddSingleton<PermissionService>();
+                serviceCollection.AddScoped<PermissionService>();
+                serviceCollection.AddScoped<TransactionService>();
 
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {
@@ -254,7 +256,7 @@
 
         public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
         {
-            // TODO (velddev): Resolve this in a better way.
+            // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
                 new Discord.Common.Packets.API.DiscordMessagePacket
                 {
@@ -375,11 +377,13 @@
                 }
 
                 await context.Database.ExecuteSqlRawAsync(
-                    $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                    $"INSERT INTO dbo.\"Users\" (\"Id\", \"Name\") VALUES {string.Join(",", allArgs)} "
+                    + "ON CONFLICT DO NOTHING",
                     allParams);
 
                 await context.Database.ExecuteSqlRawAsync(
-                    $"INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
+                    "INSERT INTO dbo.\"LocalExperience\" (\"ServerId\", \"UserId\") "
+                    + $"VALUES {string.Join(",", allArgs)} ON CONFLICT DO NOTHING",
                     allExpParams);
 
                 await context.SaveChangesAsync();

@@ -3,8 +3,10 @@ namespace Miki.Modules.Admin
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using System.Reflection;
     using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
@@ -19,7 +21,11 @@ namespace Miki.Modules.Admin
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Exceptions;
     using Miki.Framework.Commands.Permissions.Models;
+    using Miki.Framework.Commands.Scopes.Attributes;
     using Miki.Localization;
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+    using Miki.Modules.Admin.Exceptions;
     using Miki.Utility;
 
     [Module("Admin")]
@@ -253,29 +259,31 @@ namespace Miki.Modules.Admin
             await e.GetMessage()
                 .DeleteAsync(); // Delete the calling message before we get the message history.
 
-            IEnumerable<IDiscordMessage> messages = await e.GetChannel()
-                .GetMessagesAsync(amount);
+            List<IDiscordMessage> messages = (await e.GetChannel().GetMessagesAsync(amount)).ToList();
             List<IDiscordMessage> deleteMessages = new List<IDiscordMessage>();
 
             amount = messages.Count();
 
             if (amount < 1)
             {
-                await e.GetMessage()
-                    .DeleteAsync();
+                await e.GetMessage().DeleteAsync();
 
                 await e.ErrorEmbed(locale.GetString(PruneErrorNoMessages, e.GetPrefixMatch()))
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
             for (int i = 0; i < amount; i++)
             {
-                if (target != 0 && messages.ElementAt(i)?.Author.Id != target)
+                if(target != 0 && messages[i]?.Author.Id != target)
+                {
                     continue;
+                }
 
-                if (filter != null && messages.ElementAt(i)?.Content.IndexOf(filter) < 0)
+                if(filter != null && messages[i]?.Content.IndexOf(filter) < 0)
+                {
                     continue;
+                }
+
 
                 if (messages.ElementAt(i).Timestamp.AddDays(14) > DateTime.Now)
                 {
@@ -295,7 +303,7 @@ namespace Miki.Modules.Admin
                     modifier: x => x.ThenWait(5000).ThenDelete());
         }
 
-        [Command("permissions")]
+        [Command("permissions", "perms")]
         public class PermissionsCommand
         {
             private const string PermissionSet = "permission_set";
@@ -323,6 +331,33 @@ namespace Miki.Modules.Admin
             public Task ResetPermissionsAsync(IContext e)
             {
                 return SetPermissionsAsync(e, PermissionStatus.Default);
+            }
+
+            [Command("check")]
+            [RequiresScope("developer")]
+            public Task CheckPermissionsAsync(IContext e)
+            {
+                return e.GetGuild()
+                    .FindUserAsync(e)
+                    .Map(x =>
+                    {
+                        var ids = new List<long>();
+                        ids.AddRange(x.RoleIds.Select(x => (long)x));
+                        ids.Add((long)x.Id);
+                        ids.Add((long)e.GetChannel().Id);
+                        ids.Add((long)e.GetGuild().Id);
+                        return ids;
+                    })
+                    .Map(x =>
+                    {
+                        var service = e.GetService<PermissionService>();
+                        e.GetArgumentPack().Take(out string command);
+                        return service.GetPriorityPermissionAsync(
+                                (long)e.GetGuild().Id, command, x.ToArray())
+                            .AsTask();
+                    })
+                    .FlatMap(permission => e.GetChannel()
+                        .SendMessageAsync(permission?.ToString() ?? "none"));
             }
 
             [Command("list")]
@@ -366,15 +401,40 @@ namespace Miki.Modules.Admin
                     .ThenBy(x => x.Status)
                     .ToList();
 
+                StringBuilder description = new StringBuilder();
+
+                foreach(var p in allPermissions)
+                {
+                    description.Append($"{GetStatusEmoji(p.Status)} {p.CommandName} for {p.Type} ");
+                    description.Append(await GetEntityName(e, p));
+                    description.Append("\n");
+                }
+
                 await new EmbedBuilder()
                     .SetTitle("⚡ Your permissions")
                     .SetColor(180, 180, 90)
-                    .SetDescription(
-                        string.Join(
-                            "\n", 
-                            allPermissions.Select(x => $"{GetStatusEmoji(x.Status)} {x.CommandName} for {x.Type} {x.EntityId}")))
+                    .SetDescription(description.ToString())
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
+            }
+
+            private async Task<string> GetEntityName(IContext context, Permission p)
+            {
+                switch(p.Type)
+                {
+                    case EntityType.User:
+                        return context.GetAuthor().Username;
+                    case EntityType.Channel:
+                        return (await context.GetGuild().GetChannelAsync((ulong)p.EntityId)).Name;
+                    case EntityType.Role:
+                        return (await context.GetGuild().GetRoleAsync((ulong)p.EntityId)).Name;
+                    case EntityType.Guild:
+                        return context.GetGuild().Name;
+                    case EntityType.Global:
+                        return "";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             private string GetStatusEmoji(PermissionStatus status)
@@ -409,10 +469,9 @@ namespace Miki.Modules.Admin
                     return;
                 }
                 var command = commands.GetCommand(commandName.Replace('.', ' '));
-                if(!(command is IExecutable executable))
+                if(!(command is IExecutable))
                 {
-                    //invalid command
-                    return;
+                    throw new InvalidEntityException("command");
                 }
 
                 var ownPermission = await permissions.GetPriorityPermissionAsync(e);
@@ -455,92 +514,45 @@ namespace Miki.Modules.Admin
                 return null;
             }
 
-            private async ValueTask<Entity> GetEntityFromType(IContext e, EntityType type)
-            {
-                var entity = new Entity
+            private Task<Entity> GetEntityFromType(IContext e, EntityType type)
+                => type switch
                 {
-                    Type = type
+                    EntityType.User => e.GetGuild()
+                        .FindUserAsync(e)
+                        .Map(x => new Entity
+                        {
+                            Id = (long)x.Id,
+                            Resource = x.Username,
+                            Type = EntityType.User
+                        }),
+
+                    EntityType.Channel => e.GetGuild()
+                        .FindChannelAsync(e)
+                        .Map(x => new Entity
+                        {
+                            Id = (long)x.Id,
+                            Resource = x.Name,
+                            Type = EntityType.Channel
+                        }),
+
+                    EntityType.Role => e.GetGuild()
+                        .FindRoleAsync(e)
+                        .Map(x => new Entity
+                        {
+                            Id = (long)x.Id,
+                            Resource = x.Name,
+                            Type = EntityType.Role
+                        }),
+
+                    EntityType.Guild => Task.FromResult(new Entity
+                    {
+                        Id = (long)e.GetGuild().Id,
+                        Resource = e.GetGuild().Name,
+                        Type = EntityType.Guild
+                    }),
+
+                    _ => throw new NotSupportedException(),
                 };
-                switch(type)
-                {
-                    case EntityType.User:
-                    {
-                        if(!e.GetArgumentPack().Take(out string resource))
-                        {
-                            return null;
-                        }
-                        var user = await e.GetGuild().FindUserAsync(resource);
-                        if(user == null)
-                        {
-                            throw new InvalidEntityException();
-                        }
-
-                        entity.Id = (long)user.Id;
-                        entity.Resource = user.Username;
-                    }
-                    break;
-
-                    case EntityType.Channel:
-                    {
-                        if(!e.GetArgumentPack().Take(out string resource))
-                        {
-                            return null;
-                        }
-
-                        var channel = await e.GetGuild().FindChannelAsync(resource);
-                        if(channel == null)
-                        {
-                            throw new InvalidEntityException();
-                        }
-                        entity.Id = (long)channel.Id;
-                        entity.Resource = (await e.GetGuild().GetChannelAsync(channel.Id)).Name;
-                    }
-                    break;
-
-                    case EntityType.Role:
-                    {
-                        if(!e.GetArgumentPack().Take(out string resource))
-                        {
-                            return null;
-                        }
-
-                        var role = await e.GetGuild().FindRoleAsync(resource);
-                        if (role == null)
-                        {
-                            throw new InvalidEntityException();
-                        }
-                        entity.Id = (long)role.Id;
-                        entity.Resource = role.Name;
-                    }
-                    break;
-
-                    case EntityType.Guild:
-                    {
-                        entity = new Entity
-                        {
-                            Id = (long)e.GetGuild().Id,
-                            Resource = e.GetGuild().Name
-                        };
-                    }
-                    break;
-
-                    case EntityType.Global:
-                    {
-                        entity = new Entity
-                        {
-                            Id = 0L,
-                            Resource = "globally"
-                        };
-                    }
-                    break;
-
-                    default:
-                    {
-                        throw new NotSupportedException();
-                    }
-                }
-                return entity;
-            }
 
             private async ValueTask<Entity> GetEntityFromMention(IContext e, Mention mention)
             {
@@ -557,7 +569,7 @@ namespace Miki.Modules.Admin
                         var user = await e.GetGuild().GetMemberAsync(mention.Id);
                         if (user == null)
                         {
-                            throw new InvalidEntityException();
+                            throw new InvalidEntityException("member");
                         }
 
                         entity.Resource = user.Username;
@@ -569,7 +581,7 @@ namespace Miki.Modules.Admin
                         var channel = await e.GetGuild().GetChannelAsync(mention.Id);
                         if(channel == null)
                         {
-                            throw new InvalidEntityException();
+                            throw new InvalidEntityException("channel");
                         }
 
                         entity.Resource = channel.Name;
@@ -581,7 +593,7 @@ namespace Miki.Modules.Admin
                         var role = await e.GetGuild().GetRoleAsync(mention.Id);
                         if(role == null)
                         {
-                            throw new InvalidEntityException();
+                            throw new InvalidEntityException("role");
                         }
 
                         entity.Resource = role.Name;
@@ -726,10 +738,5 @@ namespace Miki.Modules.Admin
                     .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
-    }
-
-    internal class InvalidEntityException : Exception
-    {
-
     }
 }

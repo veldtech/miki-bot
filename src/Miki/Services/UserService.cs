@@ -38,6 +38,12 @@
         }
 
         /// <inheritdoc />
+        public ValueTask UpdateUserAsync(User user)
+        {
+            return repository.EditAsync(user);
+        }
+
+        /// <inheritdoc />
         public async ValueTask<bool> UserIsBanned(long userId)
         {
             var banRecord = await bannedRepository.GetAsync(userId);
@@ -86,6 +92,8 @@
     public interface IUserService : IDisposable
     {
         ValueTask<User> GetUserAsync(long userId);
+
+        ValueTask UpdateUserAsync(User user);
 
         ValueTask<bool> UserIsBanned(long userId);
 

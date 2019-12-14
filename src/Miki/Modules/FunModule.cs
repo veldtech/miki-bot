@@ -30,6 +30,7 @@ namespace Miki.Modules
     using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Extension;
     using Miki.Localization;
+    using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services.Achievements;
     using NCalc;
@@ -131,97 +132,18 @@ namespace Miki.Modules
 
         private readonly HttpClient imageClient;
 
-        private readonly Config config;
+        private readonly string cdnEndpoint;
 
-		public FunModule()
+		public FunModule(MikiApp bot)
         {
-            config = MikiApp.Instance.Services.GetService<Config>();
+            var config = bot.Services.GetService<Config>();
 
-            ImageboardProviderPool.AddProvider(new ImageboardProvider<E621Post>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("http://e621.net/post/index.json?tags="),
-				ExplicitTag = "rating:e",
-				QuestionableTag = "rating:q",
-				SafeTag = "rating:s",
-				NetUseCredentials = true,
-				NetHeaders = new List<Tuple<string, string>>() {
-					new Tuple<string, string>("User-Agent", "MikiBot"),
-				},
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<DanbooruPost>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("https://danbooru.donmai.us/posts.json?tags="),
-				ExplicitTag = "rating:e",
-				QuestionableTag = "rating:q",
-				SafeTag = "rating:s",
-				NetUseCredentials = true,
-				NetHeaders = {
-					new Tuple<string, string>("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(config.DanbooruCredentials))}"),
-				},
-				BlacklistedTags =
-				{
-					"loli",
-					"shota"
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<GelbooruPost>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="),
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<SafebooruPost>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="),
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<Rule34Post>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="),
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<KonachanPost>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("https://konachan.com/post.json?tags="),
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-			ImageboardProviderPool.AddProvider(new ImageboardProvider<YanderePost>(new ImageboardConfigurations
-			{
-				QueryKey = new Uri("https://yande.re/post.json?tags="),
-				BlacklistedTags =
-				{
-					"loli",
-					"shota",
-				}
-			}));
-
+            cdnEndpoint = config.CdnRegionEndpoint;
             if(!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 imageClient = new HttpClient(config.ImageApiUrl);
             }
-
-
-		}
+        }
 
 		[Command("8ball")]
 		public Task EightBallAsync(IContext e)
@@ -320,14 +242,18 @@ namespace Miki.Modules
 				" a lot, is that weird?",
 			};
 
-			e.GetChannel().QueueMessage(e, I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
+			e.GetChannel().QueueMessage(e, null,
+                I_LIKE[MikiRandom.Next(0, I_LIKE.Length)] 
+                + BODY_PART[MikiRandom.Next(0, BODY_PART.Length)] 
+                + SUFFIX[MikiRandom.Next(0, SUFFIX.Length)]);
 			return Task.CompletedTask;
 		}
 
 		[Command("cage")]
 		public Task CageAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e, "http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
+			e.GetChannel().QueueMessage(e, null, 
+                "http://www.placecage.com/c/" + MikiRandom.Next(100, 1500) + "/" + MikiRandom.Next(100, 1500));
 			return Task.CompletedTask;
 		}
 
@@ -354,9 +280,10 @@ namespace Miki.Modules
 
             string title = e.GetArgumentPack().Pack.TakeAll();
 			if (string.IsNullOrEmpty(title))
-			{
-				e.GetChannel()
-                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
+            {
+                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
 				return;
 			}
 
@@ -366,24 +293,24 @@ namespace Miki.Modules
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
-				if (item as IGalleryImage != null)
+				if (item is IGalleryImage galleryItem)
 				{
-					actualImages.Add(item as IGalleryImage);
+					actualImages.Add(galleryItem);
 				}
 			}
 
 			if (actualImages.Count > 0)
 			{
-				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
+				IGalleryImage i = MikiRandom.Of(actualImages);
 
-				e.GetChannel()
-                    .QueueMessage(e, i.Link);
+				e.GetChannel().QueueMessage(e, null, i.Link);
 			}
 			else
 			{
-				e.GetChannel()
-                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
-			}
+                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+            }
 		}
 
 		[Command("img")]
@@ -393,10 +320,11 @@ namespace Miki.Modules
             var locale = e.GetLocale();
             if(string.IsNullOrEmpty(title))
 			{
-				e.GetChannel()
-					.QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
-				return;
-			}
+                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+                return;
+            }
 
 			var client = new MashapeClient(ImgurClientId, ImgurKey);
 			var endpoint = new GalleryEndpoint(client);
@@ -413,37 +341,40 @@ namespace Miki.Modules
 
 			if (actualImages.Count > 0)
 			{
-				IGalleryImage i = actualImages[MikiRandom.Next(0, actualImages.Count)];
+				IGalleryImage i = MikiRandom.Of(actualImages);
 
-				e.GetChannel().QueueMessage(e, i.Link);
+				e.GetChannel().QueueMessage(e, null, i.Link);
 			}
 			else
 			{
-				e.GetChannel()
-                    .QueueMessage(e, locale.GetString("miki_module_fun_image_error_no_image_found"));
-			}
+                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+            }
 		}
 
 		[Command("pick")]
-		public Task PickAsync(IContext e)
+		public async Task PickAsync(IContext e)
 		{
             string args = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrWhiteSpace(args))
 			{
-				e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_fun_pick_no_arg"));
-				return Task.CompletedTask;
-			}
+                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+                return;
+            }
 			string[] choices = args.Split(',');
 
-			e.GetChannel().QueueMessage(e, e.GetLocale().GetString("miki_module_fun_pick", new object[] { e.GetAuthor().Username, choices[MikiRandom.Next(0, choices.Length)] }));
-			return Task.CompletedTask;
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString(
+                "miki_module_fun_pick", e.GetAuthor().Username, MikiRandom.Of(choices)));
 		}
 
 		[Command("pun")]
 		public Task PunAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e, e.GetLocale().GetString(puns[MikiRandom.Next(0, puns.Length)]));
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString(MikiRandom.Of(puns)));
 			return Task.CompletedTask;
 		}
 
@@ -499,7 +430,7 @@ namespace Miki.Modules
 			if (rollResult == "1" || rollResult.StartsWith("1 "))
             {
                 var achievements = e.GetService<AchievementService>();
-                var badLuckAchievement = achievements.GetAchievement("badluck");
+                var badLuckAchievement = achievements.GetAchievement(AchievementIds.UnluckyId);
                 await achievements.UnlockAsync(e, badLuckAchievement, e.GetAuthor().Id);
             }
 
@@ -688,31 +619,36 @@ namespace Miki.Modules
 					{
 						case "safebooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<SafebooruPost>()
+                                .GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "gelbooru":
 						{
-							s = await ImageboardProviderPool.GetProvider<GelbooruPost>().GetPostAsync(tags, ImageRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<GelbooruPost>()
+                                .GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "konachan":
 						{
-							s = await ImageboardProviderPool.GetProvider<KonachanPost>().GetPostAsync(tags, ImageRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<KonachanPost>()
+                                .GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						case "e621":
 						{
-							s = await ImageboardProviderPool.GetProvider<E621Post>().GetPostAsync(tags, ImageRating.SAFE);
+							s = await ImageboardProviderPool.GetProvider<E621Post>()
+                                .GetPostAsync(tags, ImageRating.SAFE);
 						}
 						break;
 
 						default:
-						{
-							e.GetChannel().QueueMessage(e, "I do not support this image host :(");
+                        {
+                            await e.ErrorEmbed("I do not support this image host :(")
+                                .ToEmbed().QueueAsync(e, e.GetChannel());
 						}
 						break;
 					}
@@ -735,7 +671,7 @@ namespace Miki.Modules
 				return;
 			}
 
-            e.GetChannel().QueueMessage(e, s.Url);
+            e.GetChannel().QueueMessage(e, null, s.Url);
 		}
 
 		[Command("ship")]
@@ -758,7 +694,7 @@ namespace Miki.Modules
                 var authorResponse = await client.SendAsync(new System.Net.Http.HttpRequestMessage
                 {
                     Method = new System.Net.Http.HttpMethod("HEAD"),
-                    RequestUri = new Uri($"{config.CdnRegionEndpoint}/avatars/{e.GetAuthor().Id}.png")
+                    RequestUri = new Uri($"{cdnEndpoint}/avatars/{e.GetAuthor().Id}.png")
                 });
 
 
@@ -783,8 +719,7 @@ namespace Miki.Modules
 		[Command("greentext","green", "gt")]
 		public async Task GreentextAsync(IContext e)
 		{
-			string[] images = new string[]
-			{
+			string[] images = {
 				"http://i.imgur.com/J2DLbV4.png",
 				"http://i.imgur.com/H0kDub9.jpg",
 				"http://i.imgur.com/pBOG489.jpg",
@@ -833,7 +768,7 @@ namespace Miki.Modules
 			};
 
 			await new EmbedBuilder()
-				.SetImage(images[MikiRandom.Next(0, images.Length)])
+				.SetImage(MikiRandom.Of(images))
 				.ToEmbed()
                 .QueueAsync(e, e.GetChannel());
 		}

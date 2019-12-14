@@ -18,12 +18,14 @@ namespace Miki.Modules.Donator
 {
     using Attributes;
     using Framework.Extension;
+    using Miki.Modules.Accounts.Services;
     using Services;
 
     [Module("Donator")]
 	internal class DonatorModule
 	{
 		private readonly Net.Http.HttpClient client;
+        private const int KeyBuybackPrice = 30000;
 
 		public DonatorModule(Config config)
 		{
@@ -54,13 +56,13 @@ namespace Miki.Modules.Donator
 				DonatorKey key = await DonatorKey.GetKeyAsync(keyRepository, guid);
 				User user = await userService.GetUserAsync(id);
 
-				user.AddCurrency(30000);
+				user.AddCurrency(KeyBuybackPrice);
                 await keyRepository.DeleteAsync(key);
 
 				await unit.CommitAsync();
 
 				await e.SuccessEmbed(
-                        e.GetLocale().GetString("key_sold_success", 30000))
+                        e.GetLocale().GetString("key_sold_success", KeyBuybackPrice))
 					.QueueAsync(e, e.GetChannel());
 			}
 		}
@@ -72,6 +74,7 @@ namespace Miki.Modules.Donator
 
             var donatorRepository = unit.GetRepository<IsDonator>();
             var keyRepository = unit.GetRepository<DonatorKey>();
+            var locale = e.GetLocale();
 
             long id = (long)e.GetAuthor().Id;
 			if(!e.GetArgumentPack().Take(out Guid guid))
@@ -104,11 +107,10 @@ namespace Miki.Modules.Donator
 
 			await new EmbedBuilder
 			{
-				Title = $"🎉 Congratulations, {e.GetAuthor().Username}",
+				Title = $"🎉 {locale.GetString("common_success", e.GetAuthor().Username)}",
 				Color = new Color(226, 46, 68),
-				Description =
-						$"You've' successfully redeemed a donator key, I've given you **{key.StatusTime.TotalDays}** days of donator status.",
-				ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
+				Description = locale.GetString("key_redeem_success", $"**{key.StatusTime.TotalDays}**"),
+                ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
 			}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
 				.ToEmbed().QueueAsync(e, e.GetChannel());
 
@@ -116,7 +118,7 @@ namespace Miki.Modules.Donator
 			await unit.CommitAsync();
 
 			var achievementManager = e.GetService<AchievementService>();
-			var donatorAchievement = achievementManager.GetAchievement("donator");
+			var donatorAchievement = achievementManager.GetAchievement(AchievementIds.DonatorId);
             if (donatorStatus.KeysRedeemed >= 1
                 && donatorStatus.KeysRedeemed < 5)
             {
