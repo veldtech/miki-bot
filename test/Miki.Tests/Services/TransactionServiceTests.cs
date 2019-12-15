@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Tests.Services
+﻿namespace Miki.Tests.Services
 {
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -63,7 +59,7 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task TransferTest()
+        public async Task TransferTest()    
         {
             var unit = NewContext();
             var userService = new UserService(unit);

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Miki.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using Xunit;
 

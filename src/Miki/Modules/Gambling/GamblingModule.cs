@@ -17,6 +17,7 @@ namespace Miki.Modules.Gambling
     using Miki.Services.Rps;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Framework.Extension;
     using Miki.Modules.Accounts.Services;
@@ -125,39 +126,29 @@ namespace Miki.Modules.Gambling
             [Command("new")]
             public async Task BlackjackNewAsync(IContext e)
             {
-                var cache = e.GetService<ICacheClient>();
-                using var userService = e.GetService<IUserService>();
+                var blackjackService = e.GetService<BlackjackService>();
 
-                var user = await userService.GetUserAsync(e.GetAuthor().Id.ToDbLong())
-                    .ConfigureAwait(false);
-                if(user == null)
+                int? bet;
+                using(var userService = e.GetService<IUserService>())
                 {
-                    return;
+                    var user = await userService.GetUserAsync((long)e.GetAuthor().Id);
+                    bet = ValidateBet(e, user);
                 }
 
-                int bet = ValidateBet(e, user);
+                var session = await blackjackService.NewSessionAsync(
+                    e.GetMessage().Id,
+                    e.GetAuthor().Id,
+                    e.GetChannel().Id,
+                    bet.GetValueOrDefault());
 
-                user.RemoveCurrency(bet);
+                blackjackService.DrawCard(session, BlackjackService.DealerId);
+                blackjackService.DrawCard(session, BlackjackService.DealerId);
 
-                if(await cache.ExistsAsync($"miki:blackjack:{e.GetChannel().Id}:{e.GetAuthor().Id}")
-                    .ConfigureAwait(false))
-                {
-                    await e.ErrorEmbedResource("blackjack_session_exists")
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                    return;
-                }
+                blackjackService.DrawCard(session, e.GetAuthor().Id);
+                blackjackService.DrawCard(session, e.GetAuthor().Id);
 
-                e.GetService<BlackjackService>();
-
-                CardHand dealer = manager.AddPlayer(0);
-                _ = manager.AddPlayer(e.GetAuthor().Id);
-
-                manager.DealAll();
-                manager.DealAll();
-
-                dealer.Hand[1].isPublic = false;
+                session.Players[BlackjackService.DealerId]
+                    .Hand[^0].isPublic = false;
 
                 IDiscordMessage message = await manager.CreateEmbed(e)
                     .ToEmbed()
@@ -178,8 +169,8 @@ namespace Miki.Modules.Gambling
             [Command("hit", "draw")]
             public async Task OnBlackjackHitAsync(IContext e)
             {
-                var cache = e.GetService<ICacheClient>();
                 var api = e.GetService<IApiClient>();
+                var blackjackService = e.GetService<BlackjackService>();
 
                 BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
                         cache,
@@ -234,12 +225,7 @@ namespace Miki.Modules.Gambling
             [Command("stay", "stand")]
             public async Task OnBlackjackHoldAsync(IContext e)
             {
-                var cache = e.GetService<ICacheClient>();
-                BlackjackManager bm = await BlackjackManager.FromCacheClientAsync(
-                        cache,
-                        e.GetChannel().Id,
-                        e.GetAuthor().Id)
-                    .ConfigureAwait(false);
+                var blackjackService = e.GetService<BlackjackService>();
 
                 CardHand player = bm.GetPlayer(e.GetAuthor().Id);
                 CardHand dealer = bm.GetPlayer(0);
@@ -389,6 +375,13 @@ namespace Miki.Modules.Gambling
                     await context.SaveChangesAsync()
                         .ConfigureAwait(false);
                 }
+            }
+
+            private async DiscordEmbed NewLoadingEmbed()
+            {
+                // TODO: Move to resources.
+                new EmbedBuilder()
+                    .SetTitle("")
             }
         }
 
@@ -721,37 +714,21 @@ namespace Miki.Modules.Gambling
         //	}
         //}
 
-        public static int ValidateBet(IContext e, User user, int maxBet = 1000000)
+        public static int ValidateBet(
+            [NotNull] IContext e, 
+            [NotNull] User user, 
+            int maxBet = 1000000)
         {
-            if(e == null)
-            {
-                throw new ArgumentNullException(nameof(e));
-            }
-
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
-            if (e.GetArgumentPack().Take(out int bet))
+            var args = e.GetArgumentPack();
+            if (args.Take(out int bet))
             {
             }
-            else if (e.GetArgumentPack().Take(out string arg))
+            else if (args.Take(out string arg))
             {
                 if (IsValidBetAll(arg))
                 {
                     bet = Math.Min(user.Currency, maxBet);
                 }
-            }
-
-            if (bet <= 0)
-            {
-                throw new ArgumentLessThanZeroException();
-            }
-
-            if (bet > user.Currency)
-            {
-                throw new InsufficientCurrencyException(user.Currency, bet);
             }
 
             if (bet > maxBet)

@@ -79,20 +79,18 @@ namespace Miki.Utility
             return Task.FromException<IDiscordRole>(new InvalidEntityException("role"));
         }
 
-        public static AsyncResult<IDiscordRole> FindRoleByName(IDiscordGuild guild, string id)
+        public static Task<IDiscordRole> FindRoleByName(IDiscordGuild guild, string id)
             => guild.GetRolesAsync().Map(y => y.FirstOrDefault(x => x.Name.ToLowerInvariant() == id));
 
-        public static AsyncResult<IDiscordGuildChannel> FindChannelById(IDiscordGuild guild, string id)
-            => new AsyncResult<IDiscordGuildChannel>(() =>
+        public static async Task<IDiscordGuildChannel> FindChannelById(IDiscordGuild guild, string id)
+        {
+            if(ulong.TryParse(id, out var channelId))
             {
-                if(ulong.TryParse(id, out var channelId))
+                return await guild.GetChannelAsync(channelId);
+            }
 
-                {
-                    return guild.GetChannelAsync(channelId);
-                }
-
-                return Task.FromException<IDiscordGuildChannel>(new InvalidEntityException("id"));
-            });
+            throw new InvalidEntityException("id");
+        }
 
         public static Task<IDiscordGuildChannel> FindChannelByMention(IDiscordGuild guild, string id)
         {
@@ -110,31 +108,29 @@ namespace Miki.Utility
             => guild.GetChannelsAsync()
                 .Map(y => y.FirstOrDefault(x => x.Name.ToLowerInvariant() == id));
 
-        public static Task<IDiscordGuildUser> FindUserById(IDiscordGuild guild, string id)
+        public static async Task<IDiscordGuildUser> FindUserById(IDiscordGuild guild, string id)
         {
             if(ulong.TryParse(id, out ulong userId))
             {
-                return guild.GetMemberAsync(userId);
+                return await guild.GetMemberAsync(userId);
             }
 
-            return Task.FromException<IDiscordGuildUser>(new InvalidEntityException("id"));
+            throw new InvalidEntityException("id");
         }
 
-        public static Task<IDiscordGuildUser> FindUserByMention(IDiscordGuild guild, string id)
-            => new AsyncResult<IDiscordGuildUser>(() =>
+        public static async Task<IDiscordGuildUser> FindUserByMention(IDiscordGuild guild, string id)
+        {
+            if(Mention.TryParse(id, out var mention))
             {
-                if(Mention.TryParse(id, out var mention))
+                if(mention.Type == MentionType.USER
+                   || mention.Type == MentionType.USER_NICKNAME)
                 {
-                    if(mention.Type == MentionType.USER
-                       || mention.Type == MentionType.USER_NICKNAME)
-                    {
-                        return guild.GetMemberAsync(mention.Id);
-                    }
+                    return await guild.GetMemberAsync(mention.Id);
                 }
+            }
 
-                return Task.FromException<IDiscordGuildUser>(
-                    new InvalidEntityException("user"));
-            });
+            throw new InvalidEntityException("user");
+        }
 
         public static Task<IDiscordGuildUser> FindUserByName(IDiscordGuild guild, string name)
             => guild.GetMembersAsync()

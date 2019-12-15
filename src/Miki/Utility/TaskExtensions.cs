@@ -76,6 +76,15 @@
             return new Tuple<T1, T2>(t1, t2);
         }
 
+        public static async Task<TOut> Map<TOut>(
+            this Task result,
+            Func<Task<TOut>> func)
+        {
+            ThrowOnFaultyTask(result);
+            await result;
+            return await func();
+        }
+
         public static async Task<TOut> Map<TIn, TOut>(
             this Task<TIn> result,
             Func<TIn, TOut> func)
@@ -114,6 +123,12 @@
             });
         }
         public static Task<TResult> AndThen<TResult>(
+            this ValueTask<TResult> result,
+            Action<TResult> func)
+        {
+            return AndThen(result.AsTask(), func);
+        }
+        public static Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Action<TResult> func)
         {
@@ -142,6 +157,13 @@
                 func(x);
                 return x;
             });
+        }
+
+        public static Task<TResult> AndThen<TResult>(
+            this ValueTask<TResult> result,
+            Func<TResult, Task> func)
+        {
+            return AndThen(result.AsTask(), func);
         }
 
         public static async Task<TResult> OrElse<TResult>(

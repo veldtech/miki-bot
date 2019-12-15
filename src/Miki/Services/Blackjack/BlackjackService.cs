@@ -7,25 +7,24 @@
     using API.Cards;
     using API.Cards.Enums;
     using API.Cards.Objects;
-    using Miki.Framework;
+    using Miki.Cache;
+    using Miki.Services.Blackjack.Exceptions;
+    using Miki.Services.Transactions;
     using Miki.Utility;
     using Patterns.Repositories;
 
     public class BlackjackService
     {
-        private readonly IUnitOfWork unit;
         private readonly IAsyncRepository<BlackjackContext> repository;
-        private readonly TransactionService transactionService;
+        private readonly ITransactionService transactionService;
 
-        private const ulong DealerId = 0;
+        public const ulong DealerId = 0;
 
         public BlackjackService(
-            IUnitOfWork unit,
-            TransactionService transactionService,
-            IRepositoryFactory<BlackjackContext> factory = null)
+            IExtendedCacheClient cache,
+            ITransactionService transactionService)
         {
-            this.unit = unit;
-            this.repository = unit.GetRepository(factory);
+            this.repository = new BlackjackRepository(cache);
             this.transactionService = transactionService;
         }
 
@@ -35,16 +34,26 @@
             ulong channelId,
             int bet)
         {
-            return await transactionService.CreateTransactionAsync(
+            return await AssertBlackjackSessionEmpty(userId, channelId)
+                .Map(() => transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(bet)
                         .WithReceiver((long)DealerId)
                         .WithSender((long)userId)
-                        .Build())
+                        .Build()))
                 .Map(context => ConstructContext(bet, userId, channelId, messageId))
                     .AndThen(context => repository.AddAsync(context))
-                    .AndThen(x => unit.CommitAsync())
                 .Map(context => new BlackjackSession(context));
+        }
+
+        public Task<BlackjackSession> LoadSessionAsync(
+            ulong userId,
+            ulong channelId)
+        {
+            return repository.GetAsync(channelId, userId)
+                .AndThen(session => RuntimeAssert.NotNull(
+                    session, new BlackjackSessionNullException()))
+                .Map(session => new BlackjackSession(session));
         }
 
         public BlackjackState DrawCard(BlackjackSession session, ulong playerId)
@@ -55,7 +64,7 @@
             }
             currentPlayer.AddToHand(session.Deck.DrawRandom());
             if(session.GetHandWorth(currentPlayer) > 21)
-            {
+            { // TODO: write test that makes player fail.
                 return BlackjackState.LOSE;
             }
             return BlackjackState.NONE;
@@ -131,6 +140,15 @@
                 MessageId = messageId,
             };
         }
+
+        private async Task AssertBlackjackSessionEmpty(ulong userId, ulong channelId)
+        {
+            var session = await repository.GetAsync(channelId, userId);
+            if(session != null)
+            {
+                throw new DuplicateSessionException();
+            }
+        }
     }
 
     public class BlackjackSession
@@ -200,6 +218,9 @@
 
     public enum BlackjackState
     {
-        NONE, WIN, LOSE, DRAW
+        NONE, 
+        WIN, 
+        LOSE, 
+        DRAW
     }
 }

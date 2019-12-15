@@ -5,6 +5,8 @@
     using System.Threading.Tasks;
     using Cache;
     using Exceptions;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Framework;
     using Patterns.Repositories;
 
     public class BlackjackRepository : IAsyncRepository<BlackjackContext>

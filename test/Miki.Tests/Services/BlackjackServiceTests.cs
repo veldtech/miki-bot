@@ -1,53 +1,74 @@
 ﻿namespace Miki.Tests.Services
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
-    using Cache;
     using Cache.InMemory;
     using Miki.Services.Blackjack;
-    using Patterns.Repositories;
+    using Miki.Services.Blackjack.Exceptions;
+    using Miki.Services.Transactions;
+    using Moq;
     using Serialization.Protobuf;
     using Xunit;
 
-    public class BlackjackServiceTests
+    public class BlackjackServiceTests : BaseEntityTest<TransactionContext>
     {
-        public IAsyncRepository<BlackjackContext> Repository { get; }
         public BlackjackService Service { get; }
 
+        public const ulong ValidUser = 1UL;
+
         public BlackjackServiceTests()
+            : base(x => new TransactionContext(x))
         {
             var cache = new InMemoryCacheClient(
                 new ProtobufSerializer());
-            Repository = new BlackjackRepository(cache);
-            Service = new BlackjackService(Repository);
+            var mock = Mock.Of<ITransactionService>();
+            Service = new BlackjackService(cache, mock);
         }
 
         [Fact]
         public async Task CreateSession()
         {
-            var session = await Service.NewSessionAsync(2UL, 1UL, 0UL, 0);
-            var context = await Repository.GetAsync(0UL, 1UL);
+            var session = await Service.NewSessionAsync(2UL, ValidUser, 0UL, 10);
+            Assert.Equal(52, session.Deck.Count);
+            Assert.Equal(2, session.Players.Count);
+            Assert.Equal(10, session.Bet);
+        }
 
-            Assert.Equal(session.Deck.Count, context.Deck.Count);
-            Assert.Equal(session.Players.Count, context.Hands.Count);
-            Assert.Equal(session.Bet, context.Bet);
-            Assert.Equal(
-                session.GetHandWorth(session.Players[0]),
-                session.GetHandWorth(context.Hands[0]));
+        [Fact]
+        public async Task CreateDuplicateSession()
+        {
+            await Service.NewSessionAsync(2UL, ValidUser, 0UL, 10);
+            await Assext.ThrowsRootAsync<DuplicateSessionException>(
+                () => Service.NewSessionAsync(2UL, ValidUser, 0UL, 10));
         }
 
         [Fact]
         public async Task DrawCard()
         {
-            var session = await Service.NewSessionAsync(2UL, 1UL, 0UL, 0);
+            var session = await Service.NewSessionAsync(2UL, ValidUser, 0UL, 0);
 
-            Service.DrawCard(session, 1UL);
+            Service.DrawCard(session, ValidUser);
 
-            Assert.NotEmpty(session.Players[1UL].Hand);
-            Assert.DoesNotContain(session.Players[1UL].Hand.First(), session.Deck);
+            Assert.NotEmpty(session.Players[ValidUser].Hand);
+            Assert.DoesNotContain(session.Players[ValidUser].Hand.First(), session.Deck);
+        }
+
+        [Fact]
+        public async Task LoadSession()
+        {
+            // values are 1UL because 0UL is a reserved value for the dealer hand.
+            await Service.NewSessionAsync(1UL, ValidUser, 1UL, 100);
+
+            var session = await Service.LoadSessionAsync(ValidUser, 1UL);
+            Assert.NotNull(session);
+            Assert.Equal(100, session.Bet);
+        }
+
+        [Fact]
+        public async Task LoadNullSession()
+        {
+            await Assext.ThrowsRootAsync<BlackjackSessionNullException>(
+                () => Service.LoadSessionAsync(ValidUser, 1UL));
         }
     }
 }
