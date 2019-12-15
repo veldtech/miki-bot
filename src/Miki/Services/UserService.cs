@@ -2,19 +2,21 @@
 {
     using System;
     using System.Threading.Tasks;
+
     using Bot.Models;
     using Bot.Models.Exceptions;
     using Bot.Models.Models.User;
+
     using Framework;
+
     using Patterns.Repositories;
 
     public class UserService : IUserService
     {
-        private readonly IAsyncRepository<DailyStreak> dailyStreaksRepository;
-        private readonly IAsyncRepository<IsDonator> donatorRepository;
-        private readonly IAsyncRepository<IsBanned> bannedRepository;
-        private readonly IAsyncRepository<User> repository;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IAsyncRepository<User> repository;
+        private readonly IAsyncRepository<IsBanned> bannedRepository;
+        private readonly IAsyncRepository<IsDonator> donatorRepository;
 
         public UserService(IUnitOfWork unitOfWork)
         {
@@ -22,8 +24,6 @@
             this.repository = unitOfWork.GetRepository<User>();
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
             this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
-            this.dailyStreaksRepository = unitOfWork.GetRepository<DailyStreak>();
-            Console.WriteLine("Should be working!");
         }
 
         /// <inheritdoc />
@@ -38,13 +38,7 @@
         }
 
         /// <inheritdoc />
-        public ValueTask UpdateUserAsync(User user)
-        {
-            return repository.EditAsync(user);
-        }
-
-        /// <inheritdoc />
-        public async ValueTask<bool> UserIsBanned(long userId)
+        public async ValueTask<bool> UserIsBannedAsync(long userId)
         {
             var banRecord = await bannedRepository.GetAsync(userId);
             if (banRecord == null)
@@ -55,7 +49,7 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<bool> UserIsDonator(long userId)
+        public async ValueTask<bool> UserIsDonatorAsync(long userId)
         {
             var donatorRecord = await donatorRepository.GetAsync(userId);
             if (donatorRecord == null)
@@ -66,27 +60,16 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<DailyStreak> GetDailyStreakAsync(long userId)
-        {
-            var dailyStreakRecord = await dailyStreaksRepository.GetAsync(userId);
-            if (dailyStreakRecord == null)
-            {
-                return null;
-            }
-            return dailyStreakRecord;
-        }
+        public ValueTask UpdateUserAsync(User user)
+            => repository.EditAsync(user);
 
         /// <inheritdoc />
         public ValueTask SaveAsync()
-        {
-            return unitOfWork.CommitAsync();
-        }
+            => unitOfWork.CommitAsync();
 
         /// <inheritdoc />
         public void Dispose()
-        {
-            unitOfWork?.Dispose();
-        }
+            => unitOfWork?.Dispose();
     }
 
     public interface IUserService : IDisposable
@@ -95,11 +78,9 @@
 
         ValueTask UpdateUserAsync(User user);
 
-        ValueTask<bool> UserIsBanned(long userId);
+        ValueTask<bool> UserIsBannedAsync(long userId);
 
-        ValueTask<bool> UserIsDonator(long userId);
-
-        ValueTask<DailyStreak> GetDailyStreakAsync(long userId);
+        ValueTask<bool> UserIsDonatorAsync(long userId);
 
         ValueTask SaveAsync();
     }

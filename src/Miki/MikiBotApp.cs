@@ -6,12 +6,17 @@
     using System.Reflection;
     using System.Resources;
     using System.Threading.Tasks;
+
     using Amazon.S3;
+
     using Discord.Internal;
+
     using Framework.Commands.Localization.Services;
     using Framework.Extension;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+
     using Miki.Accounts;
     using Miki.Adapters;
     using Miki.API;
@@ -44,9 +49,12 @@
     using Miki.Services.Achievements;
     using Miki.Services.Rps;
     using Miki.UrbanDictionary;
+
     using Retsu.Consumer;
+
     using SharpRaven;
     using SharpRaven.Data;
+
     using StackExchange.Redis;
 
     public class MikiBotApp : MikiApp
@@ -231,6 +239,7 @@
                 }
 
                 serviceCollection.AddScoped<IUserService, UserService>();
+                serviceCollection.AddScoped<IStreakService, StreakService>();
                 serviceCollection.AddSingleton<AccountService>();
                 serviceCollection.AddSingleton<AchievementService>();
                 serviceCollection.AddScoped<RpsService>();

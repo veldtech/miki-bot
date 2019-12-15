@@ -7,11 +7,16 @@ namespace Miki.Modules.Accounts
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+
     using Api.Models;
+
     using Framework.Extension;
+
     using Localization.Models;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+
     using Miki.Accounts;
     using Miki.API;
     using Miki.API.Leaderboards;
@@ -24,11 +29,11 @@ namespace Miki.Modules.Accounts
     using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Exceptions;
-    using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
     using Miki.Helpers;
+    using Miki.Localization;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
@@ -1096,9 +1101,11 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
-            var userService = e.GetService<UserService>();
+            var userService = e.GetService<IUserService>();
             var user = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
             var dailyStreak = await userService.GetDailyStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+
+            await userService.UpdateUserAsync(user).ConfigureAwait(false);
 
             if(user == null)
             {
@@ -1109,7 +1116,7 @@ namespace Miki.Modules.Accounts
 
             const int dailyAmount = 100;
             const int dailyStreakAmount = 20;
-            int donatorMultiplier = await userService.UserIsDonator((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2:1;
+            int donatorMultiplier = await userService.UserIsDonatorAsync((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2:1;
 
             if(user.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
             {
@@ -1158,7 +1165,7 @@ namespace Miki.Modules.Accounts
             user.AddCurrency(finalAmount);
             user.LastDailyTime = DateTime.UtcNow;
 
-            await userService.SaveAsync();
+            await userService.SaveAsync().ConfigureAwait(false);
 
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")

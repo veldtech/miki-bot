@@ -1,25 +1,27 @@
 ﻿namespace Miki.Modules
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Framework.Extension;
+
+    using Microsoft.EntityFrameworkCore;
+
     using Miki.Bot.Models;
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets;
     using Miki.Framework;
     using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Filters;
-    using Miki.Net.Http;
-    using Newtonsoft.Json;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Framework.Extension;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Microsoft.EntityFrameworkCore;
     using Miki.Framework.Commands.Scopes;
+    using Miki.Framework.Commands.Scopes.Attributes;
     using Miki.Framework.Exceptions;
-    using Miki.Helpers;
+    using Miki.Net.Http;
     using Miki.Services;
+
+    using Newtonsoft.Json;
 
     [Module("Experimental")]
 	internal class DeveloperModule
@@ -351,10 +353,12 @@
             public async Task ResetDailyAsync(IContext e)
             {
                 var userService = e.GetService<IUserService>();
-                var targetUser = await userService.GetUserAsync((long)e.GetAuthor().Id);
+                var targetUser = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+
+                await userService.UpdateUserAsync(targetUser).ConfigureAwait(false);
 
                 targetUser.LastDailyTime = DateTime.UtcNow.AddHours(-23);
-                await userService.SaveAsync();
+                await userService.SaveAsync().ConfigureAwait(false);
 
                 var message = new EmbedBuilder()
                     .SetTitle("💰 Daily")
@@ -367,11 +371,13 @@
             //[RequiresScope("developer")]
             public async Task ResetStreakTimerAsync(IContext e)
             {
-                var userService = e.GetService<IUserService>();
-                var dailyStreak = await userService.GetDailyStreakAsync((long)e.GetAuthor().Id);
+                var streakService = e.GetService<IStreakService>();
+                var dailyStreak = await streakService.GetStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+
+                await streakService.UpdateStreakAsync(dailyStreak).ConfigureAwait(false);
 
                 dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
-                await userService.SaveAsync();
+                await streakService.SaveAsync().ConfigureAwait(false);
 
                 EmbedBuilder message = new EmbedBuilder()
                     .SetTitle("💰 Daily")
