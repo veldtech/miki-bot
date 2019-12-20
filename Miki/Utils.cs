@@ -174,7 +174,7 @@ namespace Miki
 		{
 			return Regex.Replace(arg, "<@!?(\\d+)>", (m) =>
 			{
-				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value))?.Result?.Username ?? "{Invalid User}";
+				return guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value))?.Result?.Username ?? arg;
 			}, RegexOptions.None);
 		}
 
