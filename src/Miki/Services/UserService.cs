@@ -6,6 +6,7 @@
     using Bot.Models.Exceptions;
     using Bot.Models.Models.User;
     using Framework;
+    using Miki.Discord.Common;
     using Patterns.Repositories;
 
     public class UserService : IUserService
@@ -19,6 +20,20 @@
             this.unitOfWork = unitOfWork;
             this.repository = unitOfWork.GetRepository<User>();
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
+        }
+
+        public async ValueTask<User> CreateUserAsync(long userId, string userName)
+        {
+            var user = new User
+            {
+                Id = userId,
+                DateCreated = DateTime.UtcNow,
+                Name = userName,
+                MarriageSlots = 1,
+            };
+            await repository.AddAsync(user);
+            await unitOfWork.CommitAsync();
+            return user;
         }
 
         /// <inheritdoc />
@@ -58,12 +73,13 @@
         /// <inheritdoc />
         public void Dispose()
         {
-            unitOfWork?.Dispose();
         }
     }
 
     public interface IUserService : IDisposable
     {
+        ValueTask<User> CreateUserAsync(long userId, string userName);
+
         ValueTask<User> GetUserAsync(long userId);
 
         ValueTask UpdateUserAsync(User user);

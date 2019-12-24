@@ -129,10 +129,10 @@
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
                 EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
-                e.GetChannel().QueueMessage(e, msg.message ?? "No message set in this channel");
+                e.GetChannel().QueueMessage(e, null, msg.message ?? "No message set in this channel");
                 return;
             }
-            e.GetChannel().QueueMessage(e, $"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage(e, null, $"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)

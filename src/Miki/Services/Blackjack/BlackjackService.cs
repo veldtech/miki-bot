@@ -42,7 +42,7 @@
                         .WithSender((long)userId)
                         .Build()))
                 .Map(context => ConstructContext(bet, userId, channelId, messageId))
-                    .AndThen(context => repository.AddAsync(context))
+                    .AndThen(AddSessionAsync)
                 .Map(context => new BlackjackSession(context));
         }
 
@@ -56,17 +56,39 @@
                 .Map(session => new BlackjackSession(session));
         }
 
+        private ValueTask AddSessionAsync(BlackjackContext ctx)
+        {
+            return repository.AddAsync(ctx);
+        }
+
+        public ValueTask SyncSessionAsync(BlackjackContext ctx)
+        {
+            return repository.EditAsync(ctx);
+        }
+
+        public ValueTask EndSessionAsync(BlackjackSession session)
+        {
+            if(session == null)
+            {
+                throw new BlackjackSessionNullException();
+            }
+            return repository.DeleteAsync(session.GetContext());
+        }
+
         public BlackjackState DrawCard(BlackjackSession session, ulong playerId)
         {
             if(!session.Players.TryGetValue(playerId, out var currentPlayer))
             {
                 throw new InvalidOperationException();
             }
+
             currentPlayer.AddToHand(session.Deck.DrawRandom());
             if(session.GetHandWorth(currentPlayer) > 21)
-            { // TODO: write test that makes player fail.
+            {
+                // TODO: write test that makes player fail.
                 return BlackjackState.LOSE;
             }
+
             return BlackjackState.NONE;
         }
 
@@ -114,7 +136,7 @@
                     }
                 }
 
-                dealer.AddToHand(session.Deck.DrawRandom());
+                DrawCard(session, DealerId);
 
                 if(session.GetHandWorth(dealer) > 21)
                 {
@@ -177,6 +199,7 @@
         public IDictionary<ulong, CardHand> Players => context.Hands;
 
         public CardSet Deck => context.Deck;
+        public ulong MessageId => context.MessageId;
 
         public BlackjackSession(BlackjackContext context)
         {
@@ -194,8 +217,13 @@
 
         public int GetHandWorth(CardHand hand)
         {
-            int aces = hand.Hand.Count(c => c.value == CardValue.ACES);
-            int worth = hand.Hand.Sum(card => CardWorth[card.value]);
+            int aces = hand.Hand
+                .Count(c => c.value == CardValue.ACES
+                            && c.isPublic);
+            int worth = hand.Hand
+                .Sum(card => card.isPublic
+                    ? CardWorth[card.value]
+                    : 0);
 
             while(worth > 21 && aces > 0)
             {
@@ -206,6 +234,11 @@
             return worth;
         }
 
+        public BlackjackContext GetContext()
+        {
+            return context;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is BlackjackSession session)
@@ -213,6 +246,14 @@
                 return session.context == context;
             }
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(
+                context.UserId,
+                context.MessageId,
+                context.ChannelId);
         }
     }
 

@@ -1,5 +1,8 @@
 ﻿namespace Miki.Helpers
 {
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
@@ -7,18 +10,9 @@
     using Miki.Discord.Common;
     using Miki.Framework;
     using StatsdClient;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
 
     public static class DatabaseHelpers
 	{
-		public static async Task<User> GetUserAsync(MikiDbContext context, IDiscordUser discordUser)
-			=> await User.GetAsync(
-                    context, 
-                    discordUser.Id, 
-                    discordUser.Username)
-                .ConfigureAwait(false);
-
         public static async Task<Achievement> GetAchievementAsync(
             IContext context, long userId, string name)
         {

@@ -2299,4 +2299,7 @@ To read more about the miki scripting language. Check out https://github.com/mik
     <value>We're missing the {0} from you, consult the documentation for help.</value>
     <comment>{0} should always be a verb</comment>
   </data>
+  <data name="error_daily_claimed" xml:space="preserve">
+    <value>You already claimed your daily today! Please wait another {0} before using it again.</value>
+  </data>
 </root>

@@ -27,12 +27,12 @@
             {
                 throw new ArgumentOutOfRangeException();
             }
-            var context = await new ValueTask<BlackjackContext>(
-                cache.HashGetAsync<BlackjackContext>(
-                    SessionKey, 
-                    GetInstanceKey((ulong)id[0], (ulong)id[1])));
+            var key = GetInstanceKey((ulong)id[0], (ulong)id[1]);
+            var context = await cache.HashGetAsync<BlackjackContext>(SessionKey, key);
+            Logging.Log.Debug($"GET - {SessionKey}: {key}");
             if (context != null)
             {
+
                 context.ChannelId = (ulong) id[0];
                 context.UserId = (ulong) id[1];
             }
@@ -55,10 +55,10 @@
             {
                 throw new DuplicateSessionException();
             }
-            await cache.HashUpsertAsync(
-                SessionKey, 
-                GetInstanceKey(entity.ChannelId, entity.UserId), 
-                entity);
+            var key = GetInstanceKey(entity.ChannelId, entity.UserId);
+
+            Logging.Log.Debug($"ADD - {SessionKey}: {key}");
+            await cache.HashUpsertAsync(SessionKey, key, entity);
         }
 
         /// <inheritdoc />
@@ -69,18 +69,17 @@
             {
                 throw new BlackjackSessionNullException();
             }
-            await cache.HashUpsertAsync(
-                SessionKey,
-                GetInstanceKey(entity.ChannelId, entity.UserId),
-                entity);
+            var key = GetInstanceKey(entity.ChannelId, entity.UserId);
+            Logging.Log.Debug($"MUT - {SessionKey}: {key}");
+            await cache.HashUpsertAsync(SessionKey, key, entity);
         }
 
         /// <inheritdoc />
-        public ValueTask DeleteAsync(BlackjackContext entity)
+        public async ValueTask DeleteAsync(BlackjackContext entity)
         {
-            return new ValueTask(cache.HashDeleteAsync(
-                SessionKey,
-                GetInstanceKey(entity.ChannelId, entity.UserId)));
+            var key = GetInstanceKey(entity.ChannelId, entity.UserId);
+            Logging.Log.Debug($"MUT - {SessionKey}: {key}");
+            await cache.HashDeleteAsync(SessionKey, key);
         }
 
         private string GetInstanceKey(ulong channelId, ulong userId)

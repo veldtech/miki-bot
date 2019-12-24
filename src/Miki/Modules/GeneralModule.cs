@@ -49,13 +49,13 @@
 		{
 			if(!e.GetArgumentPack().Take(out string arg))
 			{
-				e.GetChannel().QueueMessage(e, e.GetAuthor().GetAvatarUrl());
+				e.GetChannel().QueueMessage(e, null, e.GetAuthor().GetAvatarUrl());
 			}
 			else
 			{
 				if(arg == "-s")
 				{
-					e.GetChannel().QueueMessage(e, e.GetGuild().IconUrl);
+					e.GetChannel().QueueMessage(e, null, e.GetGuild().IconUrl);
 					return;
 				}
 
@@ -63,7 +63,7 @@
                     .ConfigureAwait(false);
 				if(user != null)
 				{
-					e.GetChannel().QueueMessage(e, user.GetAvatarUrl());
+					e.GetChannel().QueueMessage(e, null, user.GetAvatarUrl());
 				}
 			}
 		}

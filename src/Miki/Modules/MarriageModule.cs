@@ -21,6 +21,9 @@ namespace Miki.Modules
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
+    using Miki.Services;
+    using Miki.Services.Transactions;
+    using Miki.Utility;
     using Services.Achievements;
 
     [Module("Marriage")]
@@ -29,7 +32,9 @@ namespace Miki.Modules
         [Command("acceptmarriage")]
         public async Task AcceptMarriageAsync(IContext e)
         {
-            IDiscordUser user = await DiscordExtensions.GetUserAsync(e.GetArgumentPack().Pack.TakeAll(), e.GetGuild());
+			var userService = e.GetService<IUserService>();
+
+            IDiscordUser user = await e.GetGuild().FindUserAsync(e);
 
             if(user == null)
             {
@@ -49,11 +54,11 @@ namespace Miki.Modules
 
             MarriageRepository repository = new MarriageRepository(context);
 
-            User accepter = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor())
-                .ConfigureAwait(false);
+			User accepter = await userService.GetOrCreateUserAsync(e.GetAuthor())
+				.ConfigureAwait(false);
 
-            User asker = await DatabaseHelpers.GetUserAsync(context, user)
-                .ConfigureAwait(false);
+			User asker = await userService.GetOrCreateUserAsync(user)
+				.ConfigureAwait(false);
 
             UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
 
@@ -71,7 +76,7 @@ namespace Miki.Modules
 
                 if(marriage.ReceiverId != e.GetAuthor().Id.ToDbLong())
                 {
-                    e.GetChannel().QueueMessage(e, $"You can not accept your own responses!");
+                    e.GetChannel().QueueMessage(e, null, $"You can not accept your own responses!");
                     return;
                 }
 
@@ -111,11 +116,14 @@ namespace Miki.Modules
 		public async Task BuyMarriageSlotAsync(IContext e)
 		{
 			var context = e.GetService<MikiDbContext>();
+			var userService = e.GetService<IUserService>();
+			var transactionService = e.GetService<ITransactionService>();
 
-			User user = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor())
+			User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
 
             int limit = 10;
+			// TODO: Add IsDonator into User service
 			bool isDonator = await user.IsDonatorAsync(context)
                 .ConfigureAwait(false);
 
@@ -144,16 +152,19 @@ namespace Miki.Modules
 			int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
 			user.MarriageSlots++;
-			user.RemoveCurrency(costForUpgrade);
+			await transactionService.CreateTransactionAsync(
+				new TransactionRequest.Builder()
+					.WithAmount(costForUpgrade)
+					.WithReceiver(0L)
+					.WithSender(user.Id)
+					.Build())
+				.ConfigureAwait(false);
 
 			await new EmbedBuilder()
 			{
 				Color = new Color(0.4f, 1f, 0.6f),
 				Description = e.GetLocale().GetString("buymarriageslot_success", user.MarriageSlots),
 			}.ToEmbed().QueueAsync(e, e.GetChannel())
-                .ConfigureAwait(false);
-
-            await context.SaveChangesAsync()
                 .ConfigureAwait(false);
         }
 
@@ -324,6 +335,7 @@ namespace Miki.Modules
 		[Command("marry")]
 		public async Task MarryAsync(IContext e)
 		{
+			var userService = e.GetService<IUserService>();
 			if(!e.GetArgumentPack().Take(out string args))
 			{
 				return;
@@ -348,11 +360,11 @@ namespace Miki.Modules
 
 			MarriageRepository repository = new MarriageRepository(context);
 
-            User mentionedPerson = await User.GetAsync(context, user.Id.ToDbLong(), user.Username)
+			User mentionedPerson = await userService.GetOrCreateUserAsync(user)
                 .ConfigureAwait(false);
 
-            User currentUser = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor())
-                .ConfigureAwait(false);
+            User currentUser = await userService.GetOrCreateUserAsync(e.GetAuthor())
+				.ConfigureAwait(false);
 
 			long askerId = currentUser.Id;
 			long receiverId = mentionedPerson.Id;

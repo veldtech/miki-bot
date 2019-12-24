@@ -24,6 +24,7 @@ namespace Miki
     using Miki.Localization;
     using Miki.Localization.Models;
     using System.Linq;
+    using Miki.Services;
 
     public static class Utils
     {
@@ -194,7 +195,11 @@ namespace Miki
             return embed;
         }
 
-        public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
+        public static async Task SyncAvatarAsync(
+            IDiscordUser user, 
+            IExtendedCacheClient cache, 
+            IUserService context, 
+            AmazonS3Client s3Service)
         {
             PutObjectRequest request = new PutObjectRequest
             {
@@ -211,7 +216,7 @@ namespace Miki
                 request.InputStream = await client.GetStreamAsync();
             }
 
-            var response = await MikiApp.Instance.Services.GetService<AmazonS3Client>().PutObjectAsync(request);
+            var response = await s3Service.PutObjectAsync(request);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -221,10 +226,12 @@ namespace Miki
             await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
                 .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
-            User u = await User.GetAsync(context, user.Id, user.Username);
+            User u = await context.GetOrCreateUserAsync(user);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
             u.AvatarUrl = u.Id.ToString();
-            await context.SaveChangesAsync();
+
+            await context.UpdateUserAsync(u);
+            await context.SaveAsync();
         }
         public static async Task<bool> HeadAvatarAsync(IDiscordUser user)
         {

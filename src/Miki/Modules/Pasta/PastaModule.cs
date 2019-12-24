@@ -210,7 +210,7 @@ namespace Miki.Modules
             pasta.TimesUsed++;
 
             var sanitizedText = Utils.EscapeEveryone(pasta.Text);
-            e.GetChannel().QueueMessage(e, sanitizedText);
+            e.GetChannel().QueueMessage(e, null, sanitizedText);
             await context.SaveChangesAsync();
 
         }

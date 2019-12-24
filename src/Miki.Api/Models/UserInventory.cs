@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Api.Models
+﻿namespace Miki.Api.Models
 {
+    using System.Collections.Generic;
+
     public class UserInventory
     {
         public List<UserItem> Items { get; set; }

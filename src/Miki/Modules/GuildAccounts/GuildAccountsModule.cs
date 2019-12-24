@@ -19,6 +19,8 @@
     using Localization.Models;
     using Microsoft.EntityFrameworkCore;
     using Miki.Accounts;
+    using Miki.Services;
+    using Miki.Utility;
 
     [Module("Guild_Accounts")]
 	public class GuildAccountsModule
@@ -228,18 +230,15 @@
             public async Task GuildBankDepositAsync(IContext e)
             {
                 var context = e.GetService<DbContext>();
+                var userService = e.GetService<IUserService>();
                 var locale = e.GetLocale();
 
                 var guildUser = await context.Set<GuildUser>()
                     .SingleOrDefaultAsync(x => x.Id == (long)e.GetGuild().Id);
 
-                if (!e.GetArgumentPack().Take(out int totalDeposited))
-                {
-                    // TODO: No mekos deposit error
-                    return;
-                }
+                int totalDeposited = e.GetArgumentPack().TakeRequired<int>();
 
-                User user = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username);
+                User user = await userService.GetOrCreateUserAsync(e.GetAuthor());
 
                 user.RemoveCurrency(totalDeposited);
                 guildUser.Currency += totalDeposited;

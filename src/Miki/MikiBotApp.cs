@@ -42,7 +42,9 @@
     using Miki.Serialization.Protobuf;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Services.Blackjack;
     using Miki.Services.Rps;
+    using Miki.Services.Transactions;
     using Miki.UrbanDictionary;
     using Retsu.Consumer;
     using SharpRaven;
@@ -143,7 +145,7 @@
                     x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
             
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
 
             serviceCollection.AddScoped<
                 IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
@@ -229,15 +231,16 @@
                 {
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
+                serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
 
                 serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();
-                serviceCollection.AddSingleton<AchievementService>();
+                serviceCollection.AddScoped<AchievementService>();
                 serviceCollection.AddScoped<RpsService>();
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
-                serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
                 serviceCollection.AddScoped<PermissionService>();
-                serviceCollection.AddScoped<TransactionService>();
+                serviceCollection.AddScoped<ITransactionService, TransactionService>();
+                serviceCollection.AddScoped<BlackjackService>();
 
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {
@@ -336,7 +339,8 @@
             {
                 await Utils.SyncAvatarAsync(newUser,
                         scope.ServiceProvider.GetService<IExtendedCacheClient>(),
-                        scope.ServiceProvider.GetService<MikiDbContext>())
+                        scope.ServiceProvider.GetService<IUserService>(),
+                        scope.ServiceProvider.GetService<AmazonS3Client>())
                     .ConfigureAwait(false);
             }
         }

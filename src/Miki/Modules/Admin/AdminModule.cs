@@ -206,7 +206,7 @@ namespace Miki.Modules.Admin
             if (!(await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
             {
                 e.GetChannel()
-                    .QueueMessage(e, e.GetLocale().GetString("miki_module_admin_prune_error_no_access"));
+                    .QueueMessage(e, null, locale.GetString("miki_module_admin_prune_error_no_access"));
                 return;
             }
 
@@ -215,7 +215,7 @@ namespace Miki.Modules.Admin
                 await new EmbedBuilder()
                     .SetTitle("♻ Prune")
                     .SetColor(119, 178, 85)
-                    .SetDescription(e.GetLocale().GetString("miki_module_admin_prune_no_arg"))
+                    .SetDescription(locale.GetString("miki_module_admin_prune_no_arg"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -356,7 +356,7 @@ namespace Miki.Modules.Admin
                                 (long)e.GetGuild().Id, command, x.ToArray())
                             .AsTask();
                     })
-                    .FlatMap(permission => e.GetChannel()
+                    .Map(permission => e.GetChannel()
                         .SendMessageAsync(permission?.ToString() ?? "none"));
             }
 

@@ -14,6 +14,14 @@ namespace Miki.API.Cards.Objects
 			Hand.Add(card);
 		}
 
+		public void ShowAll()
+		{
+			foreach(var card in Hand)
+			{
+				card.isPublic = true;
+			}
+		}
+
 		public string Print()
 		{
 			string output = "";

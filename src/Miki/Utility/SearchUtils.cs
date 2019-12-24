@@ -43,13 +43,19 @@ namespace Miki.Utility
 
         public static Task<IDiscordGuildUser> FindUserAsync(
             this IDiscordGuild guild,
+            string argument)
+        {
+            return FindUserById(guild, argument)
+                .OrElse(() => FindUserByMention(guild, argument))
+                .OrElse(() => FindUserByName(guild, argument));
+        }
+        public static Task<IDiscordGuildUser> FindUserAsync(
+            this IDiscordGuild guild,
             IContext context)
         {
             if(context.GetArgumentPack().Take(out string resource))
             {
-                return FindUserById(guild, resource)
-                    .OrElse(() => FindUserByMention(guild, resource))
-                    .OrElse(() => FindUserByName(guild, resource));
+                return guild.FindUserAsync(resource);
             }
 
             throw new InvalidEntityException("user");

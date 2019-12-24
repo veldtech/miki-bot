@@ -8,6 +8,7 @@ namespace Miki.Modules
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Amazon.S3;
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
     using Imgur.API.Models;
@@ -32,6 +33,7 @@ namespace Miki.Modules
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
+    using Miki.Services;
     using Miki.Services.Achievements;
     using NCalc;
     using Newtonsoft.Json;
@@ -150,7 +152,7 @@ namespace Miki.Modules
 		{
 			string output = e.GetLocale().GetString("miki_module_fun_8ball_result",
 				e.GetAuthor().Username, e.GetLocale().GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
-			e.GetChannel().QueueMessage(e, output);
+			e.GetChannel().QueueMessage(e, null, output);
 			return Task.CompletedTask;
 		}
 
@@ -678,7 +680,8 @@ namespace Miki.Modules
 		public async Task ShipAsync(IContext e)
 		{
             var cache = e.GetService<IExtendedCacheClient>();
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<IUserService>();
+			var s3Client = e.GetService<AmazonS3Client>();
 
             e.GetArgumentPack().Take(out string shipPartner);
 
@@ -700,12 +703,12 @@ namespace Miki.Modules
 
                 if (!authorResponse.Success)
                 {
-                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
+                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client);
                 }
 
                 if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
                 {
-                    await Utils.SyncAvatarAsync(user, cache, context);
+                    await Utils.SyncAvatarAsync(user, cache, context, s3Client);
                 }
             }
             Random r = new Random((int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));

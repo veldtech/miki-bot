@@ -1,42 +1,57 @@
-﻿namespace Miki.Services
+﻿namespace Miki.Services.Transactions
 {
     using System;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
     using Miki.Utility;
 
-    public class TransactionService
+    public class TransactionService : ITransactionService
     {
         public Func<TransactionResponse, Task> TransactionComplete { get; set; }
         public Func<TransactionRequest, Exception, Task> TransactionFailed { get; set; }
 
         private readonly IUserService service;
 
-        public TransactionService(
-            IUserService service)
+        public TransactionService(IUserService service)
         {
             this.service = service;
         }
 
-        public Task<TransactionResponse> CreateTransactionAsync(TransactionRequest transaction)
+        public async Task<TransactionResponse> CreateTransactionAsync(TransactionRequest transaction)
         {
-            return service.GetUserAsync(transaction.Receiver)
-                .Merge(() => service.GetUserAsync(transaction.Sender))
-                .Map(x => TransferAsync(x.Item1, x.Item2, transaction.Amount))
-                    .Unwrap()
-                    .AndThen(() => service.SaveAsync())
-                    .AndThen(CallTransactionComplete)
-                .UnwrapErrorAsync(x => CallTransactionFailed(transaction, x));
+            var receiver = await service.GetUserAsync(transaction.Receiver);
+            var sender = await service.GetUserAsync(transaction.Sender);
+
+            try
+            {
+                var response = await TransferAsync(receiver, sender, transaction.Amount);
+                await CommitAsync();
+                await CallTransactionComplete(response);
+                return response;
+            }
+            catch(Exception e)
+            {
+                await CallTransactionFailed(transaction, e);
+                throw;
+            }
+        }
+
+        private ValueTask CommitAsync()
+        {
+            return service.SaveAsync();
         }
 
         public async Task<TransactionResponse> TransferAsync(User receiver, User sender, long amount)
         {
+            if(amount <= 0)
+            {
+                throw new ArgumentLessThanZeroException();
+            }
+
             if(sender.Currency < amount)
             {
-                throw new InsufficientCurrencyException(receiver.Currency, amount);
+                throw new InsufficientCurrencyException(sender.Currency, amount);
             }
 
             if(receiver.Id == sender.Id)

@@ -304,6 +304,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You already claimed your daily today! Please wait another {0} before using it again..
+        /// </summary>
+        internal static string error_daily_claimed {
+            get {
+                return ResourceManager.GetString("error_daily_claimed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an unknown error..
         /// </summary>
         internal static string error_default {

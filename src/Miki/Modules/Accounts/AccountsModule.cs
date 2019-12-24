@@ -34,6 +34,7 @@ namespace Miki.Modules.Accounts
     using Miki.Modules.Accounts.Services;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Services.Transactions;
     using Miki.Utility;
 
     [Module("Accounts")]
@@ -315,9 +316,10 @@ namespace Miki.Modules.Accounts
         public async Task AchievementsAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
+            var userService = e.GetService<IUserService>();
             var locale = e.GetLocale();
 
-            long id = (long)e.GetAuthor().Id;
+            IDiscordUser selectedUser = e.GetAuthor();
 
             if(e.GetArgumentPack().Take(out string arg))
             {
@@ -325,15 +327,15 @@ namespace Miki.Modules.Accounts
 
                 if(user != null)
                 {
-                    id = (long)user.Id;
+                    selectedUser = user;
                 }
             }
 
-            IDiscordUser discordUser = await e.GetGuild().GetMemberAsync(id.FromDbLong());
-            User u = await User.GetAsync(context, discordUser.Id, discordUser.Username);
+            IDiscordUser discordUser = await e.GetGuild().GetMemberAsync(selectedUser.Id);
+            User u = await userService.GetOrCreateUserAsync(selectedUser);
 
             List<Achievement> achievements = await context.Achievements
-                .Where(x => x.UserId == id)
+                .Where(x => x.UserId == selectedUser.Id.ToDbLong())
                 .ToListAsync();
 
             EmbedBuilder embed = new EmbedBuilder()
@@ -492,6 +494,7 @@ namespace Miki.Modules.Accounts
             var locale = e.GetLocale();
 
             var context = e.GetService<MikiDbContext>();
+            var userService = e.GetService<IUserService>();
 
             IDiscordGuildUser self = await e.GetGuild().GetSelfAsync();
 
@@ -509,12 +512,7 @@ namespace Miki.Modules.Accounts
                 discordUser = e.GetAuthor();
             }
 
-            User account = await User.GetAsync(
-                context, discordUser.Id.ToDbLong(), discordUser.Username);
-            if(account == null)
-            {
-                throw new UserNullException();
-            }
+            User account = await userService.GetOrCreateUserAsync(discordUser);
 
             string icon = null;
             if(await account.IsDonatorAsync(context))
@@ -619,7 +617,7 @@ namespace Miki.Modules.Accounts
 
             for(int i = 0; i < maxCount; i++)
             {
-                users.Add((await e.GetService<DiscordClient>()
+                users.Add((await e.GetService<IDiscordClient>()
                     .GetUserAsync(marriages[i].GetOther((long)discordUser.Id).FromDbLong())).Username);
             }
 
@@ -671,15 +669,15 @@ namespace Miki.Modules.Accounts
         [Command("setbackground")]
         public async Task SetProfileBackgroundAsync(IContext e)
         {
+            var context = e.GetService<MikiDbContext>();
+
             if(!e.GetArgumentPack().Take(out int backgroundId))
             {
                 throw new ArgumentNullException("background");
             }
 
             long userId = e.GetAuthor().Id.ToDbLong();
-
-            var context = e.GetService<MikiDbContext>();
-
+                       
             BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
             if(bo == null)
             {
@@ -690,6 +688,7 @@ namespace Miki.Modules.Accounts
             v.BackgroundId = bo.BackgroundId;
             await context.SaveChangesAsync();
 
+            // TODO: redo embed.
             await e.SuccessEmbed("Successfully set background.")
                 .QueueAsync(e, e.GetChannel());
         }
@@ -698,10 +697,11 @@ namespace Miki.Modules.Accounts
         public async Task BuyProfileBackgroundAsync(IContext e)
         {
             var backgrounds = e.GetService<BackgroundStore>();
+            var transactionService = e.GetService<ITransactionService>();
 
             if(!e.GetArgumentPack().Take(out int id))
             {
-                e.GetChannel().QueueMessage(e, "Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
+                e.GetChannel().QueueMessage(e, null, "Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
             }
 
             if(id >= backgrounds.Backgrounds.Count || id < 0)
@@ -720,7 +720,8 @@ namespace Miki.Modules.Accounts
 
             if(background.Price > 0)
             {
-                embed.SetDescription($"This background for your profile will cost {background.Price.ToFormattedString()} mekos, Type `>buybackground {id} yes` to buy.");
+                embed.SetDescription(
+                    $"This background for your profile will cost {background.Price:N0} mekos, Type `>buybackground {id} yes` to buy.");
             }
             else
             {
@@ -729,38 +730,43 @@ namespace Miki.Modules.Accounts
 
             if(e.GetArgumentPack().Take(out string confirmation))
             {
-                if(confirmation.ToLower() == "yes")
+                if(confirmation.ToLower() != "yes")
                 {
-                    if(background.Price > 0)
-                    {
-                        var context = e.GetService<MikiDbContext>();
-
-                        User user = await User.GetAsync(context, e.GetAuthor().Id, e.GetAuthor().Username);
-                        long userId = (long)e.GetAuthor().Id;
-
-                        BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, background.Id);
-
-                        if(bo == null)
-                        {
-                            user.RemoveCurrency(background.Price);
-                            await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
-                            {
-                                UserId = e.GetAuthor().Id.ToDbLong(),
-                                BackgroundId = background.Id,
-                            });
-
-                            await context.SaveChangesAsync();
-
-                            await e.SuccessEmbed("Background purchased!")
-                                .QueueAsync(e, e.GetChannel());
-
-                        }
-                        else
-                        {
-                            throw new BackgroundOwnedException();
-                        }
-                    }
                     return;
+                }
+
+                if(background.Price > 0)
+                {
+                    var context = e.GetService<MikiDbContext>();
+
+                    long userId = (long)e.GetAuthor().Id;
+
+                    var hasBackground = await context.BackgroundsOwned
+                        .AnyAsync(x => x.BackgroundId == background.Id && x.UserId == userId);
+
+                    if(!hasBackground)
+                    {
+                        await transactionService.CreateTransactionAsync(
+                            new TransactionRequest.Builder()
+                                .WithAmount(background.Price)
+                                .WithReceiver(0L)
+                                .WithSender(userId)
+                                .Build());
+
+                        await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
+                        {
+                            UserId = e.GetAuthor().Id.ToDbLong(),
+                            BackgroundId = background.Id,
+                        });
+
+                        await context.SaveChangesAsync();
+                        await e.SuccessEmbed("Background purchased!")
+                            .QueueAsync(e, e.GetChannel());
+                    }
+                    else
+                    {
+                        throw new BackgroundOwnedException();
+                    }
                 }
             }
 
@@ -771,10 +777,12 @@ namespace Miki.Modules.Accounts
         [Command("setbackcolor")]
         public async Task SetProfileBackColorAsync(IContext e)
         {
+            var transactionService = e.GetService<ITransactionService>();
             var context = e.GetService<MikiDbContext>();
-            User user = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
 
-            var x = Regex.Matches(e.GetArgumentPack().Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
+            var x = Regex.Matches(
+                e.GetArgumentPack().Pack.TakeAll().ToUpper(), 
+                "(#)?([A-F0-9]{6})");
 
             if(x.Count > 0)
             {
@@ -782,7 +790,13 @@ namespace Miki.Modules.Accounts
                 var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
 
                 visuals.BackgroundColor = hex;
-                user.RemoveCurrency(250);
+                await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(250)
+                        .WithReceiver(0L)
+                        .WithSender((long)e.GetAuthor().Id)
+                        .Build());
+
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbed("Your foreground color has been successfully " +
@@ -802,11 +816,12 @@ namespace Miki.Modules.Accounts
         [Command("setfrontcolor")]
         public async Task SetProfileForeColorAsync(IContext e)
         {
+            var transactionService = e.GetService<ITransactionService>();
             var context = e.GetService<MikiDbContext>();
 
-            User user = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
-
-            var x = Regex.Matches(e.GetArgumentPack().Pack.TakeAll().ToUpper(), "(#)?([A-F0-9]{6})");
+            var x = Regex.Matches(
+                e.GetArgumentPack().Pack.TakeAll().ToUpper(), 
+                "(#)?([A-F0-9]{6})");
 
             if(x.Count > 0)
             {
@@ -814,7 +829,12 @@ namespace Miki.Modules.Accounts
                 var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
 
                 visuals.ForegroundColor = hex;
-                user.RemoveCurrency(250);
+                await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(250)
+                        .WithReceiver(0L)
+                        .WithSender((long)e.GetAuthor().Id)
+                        .Build());
                 await context.SaveChangesAsync();
 
                 await e.SuccessEmbed($"Your foreground color has been successfully changed to `{hex}`")
@@ -835,8 +855,9 @@ namespace Miki.Modules.Accounts
         {
             var context = e.GetService<MikiDbContext>();
 
-            List<BackgroundsOwned> backgroundsOwned = await context.BackgroundsOwned.Where(x => x.UserId == e.GetAuthor().Id.ToDbLong())
-                    .ToListAsync();
+            List<BackgroundsOwned> backgroundsOwned = await context.BackgroundsOwned
+                .Where(x => x.UserId == e.GetAuthor().Id.ToDbLong())
+                .ToListAsync();
 
             await new EmbedBuilder()
                 .SetTitle($"{e.GetAuthor().Username}'s backgrounds")
@@ -980,9 +1001,10 @@ namespace Miki.Modules.Accounts
                 embed.Title = (e.GetLocale().GetString("miki_module_accounts_rep_header"));
                 embed.Description = (e.GetLocale().GetString("rep_success"));
 
+                var userService = e.GetService<IUserService>();
                 foreach(var u in usersMentioned)
                 {
-                    User receiver = await DatabaseHelpers.GetUserAsync(context, u.Key);
+                    User receiver = await userService.GetOrCreateUserAsync(u.Key);
 
                     receiver.Reputation += u.Value;
 
@@ -1010,50 +1032,42 @@ namespace Miki.Modules.Accounts
         [Command("syncname")]
         public async Task SyncNameAsync(IContext e)
         {
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<IUserService>();
+            var locale = e.GetLocale();
 
-            User user = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
-
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
+            User user = await context.GetOrCreateUserAsync(e.GetAuthor());
             user.Name = e.GetAuthor().Username;
-            await context.SaveChangesAsync();
+
+            await context.SaveAsync();
 
             await new EmbedBuilder()
             {
                 Title = "👌 OKAY",
-                Description = e.GetLocale().GetString("sync_success", "name")
+                Description = locale.GetString("sync_success", "name")
             }.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         [Command("mekos", "bal", "meko")]
         public async Task ShowMekosAsync(IContext e)
         {
-            IDiscordGuildUser member;
+            var userService = e.GetService<IUserService>();
+            var locale = e.GetLocale();
 
+            IDiscordUser member = e.GetAuthor();
             if(e.GetArgumentPack().Take(out string value))
             {
-                member = await DiscordExtensions.GetUserAsync(value, e.GetGuild());
-            }
-            else
-            {
-                member = await e.GetGuild().GetMemberAsync(e.GetAuthor().Id);
+                member = await e.GetGuild().FindUserAsync(value);
             }
 
-            var context = e.GetService<MikiDbContext>();
-
-            User user = await User.GetAsync(context, member.Id.ToDbLong(), member.Username);
+            User user = await userService.GetOrCreateUserAsync(member);
 
             await new EmbedBuilder()
-            {
-                Title = "🔸 Mekos",
-                Description = e.GetLocale().GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")),
-                Color = new Color(1f, 0.5f, 0.7f)
-            }.ToEmbed().QueueAsync(e, e.GetChannel());
-            await context.SaveChangesAsync();
+                .SetTitle("🔸 Mekos")
+                .SetDescription(
+                    locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")))
+                .SetColor(1f, 0.5f, 0.7f)
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("give")]
@@ -1065,9 +1079,8 @@ namespace Miki.Modules.Accounts
                     .WithSender((long)e.GetAuthor().Id)
                     .WithAmount(e.GetArgumentPack().TakeRequired<int>())
                     .Build())
-                .Map(request => e.GetService<TransactionService>()
+                .Map(request => e.GetService<ITransactionService>()
                     .CreateTransactionAsync(request))
-                .Unwrap()
                 .AndThen(transaction => CreateTransactionEmbed(e, transaction)
                     .QueueAsync(e, e.GetChannel()));
                     
@@ -1097,15 +1110,10 @@ namespace Miki.Modules.Accounts
         public async Task GetDailyAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
+            var userService = e.GetService<IUserService>();
+            var transactionService = e.GetService<ITransactionService>();
 
-            User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
-
-            if(u == null)
-            {
-                await e.ErrorEmbed(e.GetLocale().GetString("user_error_no_account"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                return;
-            }
+            User u = await userService.GetOrCreateUserAsync(e.GetAuthor());
 
             int dailyAmount = 100;
             int dailyStreakAmount = 20;
@@ -1120,18 +1128,22 @@ namespace Miki.Modules.Accounts
             {
                 var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
 
-                var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
+                var builder = e.ErrorEmbedResource("error_daily_claimed", $"`time`");
 
                 switch(MikiRandom.Next(2))
                 {
                     case 0:
                     {
-                        builder.AddInlineField("Appreciate Miki?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!");
+                        builder.AddInlineField(
+                            "Appreciate Miki?", 
+                            "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!");
                     }
                     break;
                     case 1:
                     {
-                        builder.AddInlineField("Appreciate Miki?", "Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!");
+                        builder.AddInlineField(
+                            "Appreciate Miki?", 
+                            "Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!");
                     }
                     break;
                 }
@@ -1153,7 +1165,12 @@ namespace Miki.Modules.Accounts
 
             int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
 
-            u.AddCurrency(amount);
+            await transactionService.CreateTransactionAsync(
+                new TransactionRequest.Builder()
+                    .WithAmount(amount)
+                    .WithReceiver(u.Id)
+                    .WithSender(0L)
+                    .Build());
             u.LastDailyTime = DateTime.UtcNow;
 
             var embed = new EmbedBuilder()
@@ -1161,7 +1178,7 @@ namespace Miki.Modules.Accounts
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
                     $"**{amount:N0}**", 
-                    $"`{u.Currency.ToFormattedString()}`"))
+                    $"`{(u.Currency + amount):N0}`"))
                 .SetColor(253, 216, 136);
 
             if(streak > 0)

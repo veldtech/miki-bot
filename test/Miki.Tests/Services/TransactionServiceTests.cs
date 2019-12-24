@@ -5,6 +5,7 @@
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Services;
+    using Miki.Services.Transactions;
     using Xunit;
 
     public class TransactionContext : DbContext

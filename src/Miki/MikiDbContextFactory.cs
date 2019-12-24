@@ -10,7 +10,6 @@
         public MikiDbContext CreateDbContext(params string[] args)
         {
             var connectionString = Environment.GetEnvironmentVariable("MIKI_CONNSTRING");
-            Console.WriteLine(connectionString);
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException(
