@@ -72,6 +72,8 @@ namespace Miki.Modules.Accounts
 
             var discordClient = app.Services.GetService<IDiscordClient>();
             var accountsService = app.Services.GetService<AccountService>();
+            var transactionService = app.Services.GetService<TransactionEvents>();
+
             AchievementService = app.Services.GetService<AchievementService>();
 
             discordClient.MessageCreate += (msg) => OnMessageCreate(app, AchievementService, msg);
@@ -79,9 +81,18 @@ namespace Miki.Modules.Accounts
             accountsService.OnLocalLevelUp += OnUserLevelUp;
             accountsService.OnLocalLevelUp += OnLevelUpAchievements;
 
+            transactionService.OnTransactionComplete += OnTransactionComplete; 
+
             Achievements = new AchievementLoader(AchievementService);
+
             AchievementService.OnAchievementUnlocked += SendAchievementNotification;
             AchievementService.OnAchievementUnlocked += CheckAchievementUnlocks;
+        }
+
+        public Task OnTransactionComplete(TransactionResponse e)
+        {
+            Log.Message($"{e.Amount}: {e.Sender} -> {e.Receiver}.");
+            return Task.CompletedTask;
         }
 
         private async Task OnMessageCreate(MikiApp app, AchievementService service, IDiscordMessage arg)
@@ -183,18 +194,17 @@ namespace Miki.Modules.Accounts
             var service = scope.ServiceProvider
                 .GetService<ILocalizationService>();
 
-            Locale instance = await service.GetLocaleAsync((long)channel.Id)
+            Locale locale = await service.GetLocaleAsync((long)channel.Id)
                 .ConfigureAwait(false);
 
-            EmbedBuilder embed = new EmbedBuilder
-            {
-                Title = instance.GetString("miki_accounts_level_up_header"),
-                Description = instance.GetString(
+            EmbedBuilder embed = new EmbedBuilder()
+                .SetTitle(locale.GetString("miki_accounts_level_up_header"))
+                .SetDescription(locale.GetString(
                     "miki_accounts_level_up_content",
                     $"{user.Username}#{user.Discriminator}",
-                    level),
-                Color = new Color(1, 0.7f, 0.2f)
-            };
+                    level))
+                .SetColor(1, 0.7f, 0.2f);
+
 
             if(channel is IDiscordGuildChannel guildChannel)
             {

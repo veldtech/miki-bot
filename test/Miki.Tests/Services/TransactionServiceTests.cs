@@ -65,7 +65,7 @@
             var unit = NewContext();
             var userService = new UserService(unit);
 
-            var service = new TransactionService(userService);
+            var service = new TransactionService(userService, null);
             await service.CreateTransactionAsync(new TransactionRequest(1L, 2L, 10));
 
             var user1 = await userService.GetUserAsync(1L);
@@ -83,7 +83,7 @@
             var unit = NewContext();
             var userService = new UserService(unit);
 
-            var service = new TransactionService(userService);
+            var service = new TransactionService(userService, null);
             await Assext.ThrowsRootAsync<InsufficientCurrencyException>(
                 async () => await service.CreateTransactionAsync(new TransactionRequest(2L, 1L, 10)));
         }
@@ -94,7 +94,7 @@
             var unit = NewContext();
             var userService = new UserService(unit);
 
-            var service = new TransactionService(userService);
+            var service = new TransactionService(userService, null);
             await Assext.ThrowsRootAsync<UserNullException>(
                 async () => await service.CreateTransactionAsync(new TransactionRequest(1L, 1L, 10)));
         }

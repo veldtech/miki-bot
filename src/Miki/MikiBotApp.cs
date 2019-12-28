@@ -232,6 +232,7 @@
                     Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
                 }
                 serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
+                serviceCollection.AddSingleton<TransactionEvents>();
 
                 serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();

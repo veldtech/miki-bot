@@ -1,6 +1,7 @@
 ﻿namespace Miki.Services.Transactions
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
@@ -11,10 +12,12 @@
         public Func<TransactionResponse, Task> TransactionComplete { get; set; }
         public Func<TransactionRequest, Exception, Task> TransactionFailed { get; set; }
 
+        private readonly TransactionEvents events;
         private readonly IUserService service;
 
-        public TransactionService(IUserService service)
+        public TransactionService(IUserService service, [Optional] TransactionEvents events)
         {
+            this.events = events;
             this.service = service;
         }
 
@@ -27,12 +30,18 @@
             {
                 var response = await TransferAsync(receiver, sender, transaction.Amount);
                 await CommitAsync();
-                await CallTransactionComplete(response);
+                if(events != null)
+                {
+                    await events.CallTransactionCompleted(response);
+                }
                 return response;
             }
             catch(Exception e)
             {
-                await CallTransactionFailed(transaction, e);
+                if(events != null)
+                {
+                    await events.CallTransactionFailed(transaction, e);
+                }
                 throw;
             }
         }
@@ -66,24 +75,6 @@
             await service.UpdateUserAsync(receiver);
 
             return new TransactionResponse(sender, receiver, amount);
-        }
-
-        private async Task CallTransactionComplete(TransactionResponse transaction)
-        {
-            if(TransactionComplete == null)
-            {
-                return;
-            }
-            await TransactionComplete(transaction);
-        }
-
-        private async Task CallTransactionFailed(TransactionRequest transaction, Exception e)
-        {
-            if(TransactionFailed == null)
-            {
-                return;
-            }
-            await TransactionFailed(transaction, e);
         }
     }
 
