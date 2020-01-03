@@ -17,3 +17,5 @@ jobs:
         dotnet-version: 3.0.101
     - name: Build with dotnet
       run: dotnet publish src/Miki/Miki.csproj --configuration Release
+    - name: Run tests with dotnet
+      run: dotnet test test/Miki.Tests/Miki.Tests.csproj
