@@ -1,8 +1,6 @@
 ﻿using Miki.Configuration;
 using Miki.Discord.Common;
-using Miki.Framework;
 using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
@@ -29,4 +27,4 @@ namespace Miki.Modules
 			return Task.CompletedTask;
 		}
 	}
-}
+} 

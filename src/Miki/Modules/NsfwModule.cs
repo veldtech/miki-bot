@@ -131,14 +131,13 @@
         }
 
         private DiscordEmbed CreateEmbed(ILinkable s)
-		{
-			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
-			return new EmbedBuilder()
-				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
-				.AddInlineField("Tags", FormatTags(s.Tags))
-				.AddInlineField("Score", s.Score)
-				.SetImage(s.Url).ToEmbed();
-		}
+            => new EmbedBuilder()
+                .SetColor(216, 88, 140)
+                .SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", "https://miki.ai")
+                .AddInlineField("🗒 Tags", FormatTags(s.Tags))
+                .AddInlineField("⬆ Score", s.Score)
+                .AddInlineField("🔗 Source", $"[click here]({s.Url})")
+                .SetImage(s.Url).ToEmbed();
 
         private static string FormatTags(string tags)
             => string.Join(", ", tags.Split(' ').Select(x => $"`{x}`"));

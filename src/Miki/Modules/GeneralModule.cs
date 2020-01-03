@@ -31,6 +31,8 @@
     using Miki.Attributes;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
+    using Miki.Bot.Models.Exceptions;
 
     [Module("General")]
 	public class GeneralModule
@@ -45,28 +47,39 @@
 
 
         [Command("avatar")]
-		public async Task AvatarAsync(IContext e)
-		{
-			if(!e.GetArgumentPack().Take(out string arg))
-			{
-				e.GetChannel().QueueMessage(e, null, e.GetAuthor().GetAvatarUrl());
-			}
-			else
-			{
-				if(arg == "-s")
-				{
-					e.GetChannel().QueueMessage(e, null, e.GetGuild().IconUrl);
-					return;
-				}
+        public async Task AvatarAsync(IContext e)
+        {
+            if(!e.GetArgumentPack().Take(out string arg))
+            {
+            }
 
-                IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild())
+            string avatarResource = e.GetAuthor().Username;
+            string avatarUrl = e.GetAuthor().GetAvatarUrl();
+
+            if(arg == "-s")
+            {
+                avatarResource = e.GetGuild().Name;
+                avatarUrl = e.GetGuild().IconUrl;
+            }
+            else
+            {
+                IDiscordGuildUser user = await e.GetGuild()
+                    .FindUserAsync(arg)
                     .ConfigureAwait(false);
-				if(user != null)
-				{
-					e.GetChannel().QueueMessage(e, null, user.GetAvatarUrl());
-				}
-			}
-		}
+                if(user == null)
+                {
+                    throw new UserNullException();
+                }
+            }
+
+            await new EmbedBuilder()
+                .SetTitle($"🖼 Avatar for {avatarResource}")
+                .SetThumbnail(avatarUrl)
+                .SetColor(215, 158, 132)
+                .AddInlineField("Full image", $"[click here]({avatarUrl})")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
+        }
 
         [Command("calc", "calculate")]
         public Task CalculateAsync(IContext e)
@@ -103,11 +116,10 @@
         [Command("changelog")]
         public Task ChangelogAsync(IContext e)
         {
-            return new EmbedBuilder
-                {
-                    Title = "Changelog",
-                    Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
-                }.ToEmbed()
+            return new EmbedBuilder()
+                .SetTitle("Changelog")
+                .SetDescription("Check out my changelog blog [here](https://blog.miki.ai/)!")
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
 

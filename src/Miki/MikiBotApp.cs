@@ -184,10 +184,11 @@
                 serviceCollection.AddSingleton<IApiClient>(
                     s => new DiscordApiClient(Config.Token, s.GetService<ICacheClient>()));
 
+
+                bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
+
                 IGateway gateway;
-                if (bool.TryParse(
-                        Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost)
-                    && selfHost)
+                if(selfHost)
                 {
                     gateway = new GatewayCluster(new GatewayProperties
                     {
