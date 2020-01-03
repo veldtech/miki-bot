@@ -16,4 +16,4 @@ jobs:
       with:
         dotnet-version: 2.2.108
     - name: Build with dotnet
-      run: dotnet publish Miki/Miki.csproj --configuration Release
+      run: dotnet publish src/Miki/Miki.csproj --configuration Release
