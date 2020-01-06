@@ -38,6 +38,7 @@
     using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
+    using Miki.Modules.Accounts.Services;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services;
@@ -237,7 +238,10 @@
 
                 serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();
+
+                serviceCollection.AddSingleton<AchievementCollection>();
                 serviceCollection.AddScoped<AchievementService>();
+
                 serviceCollection.AddScoped<RpsService>();
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
                 serviceCollection.AddScoped<PermissionService>();

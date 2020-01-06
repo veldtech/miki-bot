@@ -10,6 +10,7 @@
     using Framework;
     using Microsoft.EntityFrameworkCore;
     using Patterns.Repositories;
+    using Miki.Modules.Accounts.Services;
 
     public delegate Task<bool> CheckUserUpdateAchievement(
         IDiscordUser userBefore, IDiscordUser userAfter);
@@ -17,32 +18,24 @@
 
 	public class AchievementService
 	{
-        private readonly Dictionary<string, AchievementObject> containers
-            = new Dictionary<string, AchievementObject>();
-
         private readonly IUnitOfWork unitOfWork;
         private readonly IAsyncRepository<Achievement> repository;
+        private readonly AchievementCollection achievementCollection;
 
 		public event Func<IContext, AchievementEntry, Task> OnAchievementUnlocked;
 
-		public AchievementService(IUnitOfWork unitOfWork, IRepositoryFactory<Achievement> factory)
+		public AchievementService(
+            IUnitOfWork unitOfWork, 
+            AchievementCollection achievementCollection,
+            IRepositoryFactory<Achievement> factory)
         {
+            this.achievementCollection = achievementCollection;
             this.unitOfWork = unitOfWork;
             repository = unitOfWork.GetRepository(factory);
         }
         
-        public void AddAchievement(AchievementObject @object)
-        {
-            if (containers.ContainsKey(@object.Id))
-            {
-                throw new ArgumentException(
-                    $"Achievement with name '{@object.Id}' already exists.");
-            }
-            containers.Add(@object.Id, @object);
-        }
-
         public AchievementObject GetAchievementOrDefault(string id)
-            => containers.TryGetValue(id, out var achievement) 
+            => achievementCollection.TryGetAchievement(id, out var achievement) 
                 ? achievement 
                 : null;
 
@@ -69,7 +62,7 @@
             string output = string.Empty;
             foreach(var a in achievements)
             {
-                if(!this.containers.TryGetValue(a.Name, out var value))
+                if(!achievementCollection.TryGetAchievement(a.Name, out var value))
                 {
                     continue;
                 }

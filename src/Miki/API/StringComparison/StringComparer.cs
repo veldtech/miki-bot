@@ -6,7 +6,7 @@ namespace Miki.API.StringComparison
 {
 	public class StringComparer
 	{
-		private List<string> allComparableStrings = new List<string>();
+		private readonly List<string> allComparableStrings = new List<string>();
 
 		public StringComparer(params string[] stringList)
 		{

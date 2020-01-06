@@ -16,7 +16,7 @@
         {}
 
         public Result(Exception exception)
-            : this(default(T), exception)
+            : this(default, exception)
         {}
 
         protected Result(T value, Exception exception)

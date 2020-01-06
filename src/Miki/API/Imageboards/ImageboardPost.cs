@@ -1,14 +1,14 @@
-﻿using Miki.API.Imageboards.Enums;
-using Miki.API.Imageboards.Objects;
-using Miki.Rest;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Miki.API.Imageboards
 {
+	using Miki.API.Imageboards.Enums;
+	using Miki.API.Imageboards.Objects;
+	using Miki.Rest;
+	using Newtonsoft.Json;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading.Tasks;
+
 	public class ImageboardProvider<T> where T : BooruPost
 	{
 		public ImageboardConfigurations Config = new ImageboardConfigurations();

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Miki.Bot.Models;
-
-namespace Miki.Services.Achievements
+﻿namespace Miki.Services.Achievements
 {
+    using System;
+    using System.Collections.Generic;
+    using Miki.Bot.Models;
+
     public class AchievementObject
     {
         public string Id { get; private set; }

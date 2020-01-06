@@ -81,9 +81,8 @@
                 return Task.CompletedTask;
             };
         }
-		private void CreateDiscordMetrics(IDiscordClient client)
+		private void CreateDiscordMetrics(IDiscordClient discord)
 		{
-			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
 			if(discord == null)
 			{
 				return;
@@ -94,7 +93,8 @@
 				DogStatsd.Increment("messages.received");
 				return Task.CompletedTask;
 			};
-			discord.GuildJoin += (newGuild) =>
+			
+            discord.GuildJoin += (newGuild) =>
 			{
 				DogStatsd.Increment("guilds.joined");
 				return Task.CompletedTask;

@@ -1,8 +1,8 @@
-﻿using Miki.API.Imageboards.Interfaces;
-using Newtonsoft.Json;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
+	using Miki.API.Imageboards.Interfaces;
+	using Newtonsoft.Json;
+
 	public class CatImage : ILinkable
 	{
 		public string Url => File;
