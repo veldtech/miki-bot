@@ -1,10 +1,10 @@
-﻿using Miki.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Miki.Models.Objects.Backgrounds
+﻿namespace Miki.Models.Objects.Backgrounds
 {
+	using Miki.Logging;
+	using Newtonsoft.Json;
+	using System.Collections.Generic;
+	using System.IO;
+
 	public class BackgroundStore
 	{
 		public List<Background> Backgrounds { get; private set; } = new List<Background>();

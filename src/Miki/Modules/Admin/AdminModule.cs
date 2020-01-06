@@ -420,21 +420,15 @@ namespace Miki.Modules.Admin
 
             private async Task<string> GetEntityName(IContext context, Permission p)
             {
-                switch(p.Type)
+                return p.Type switch
                 {
-                    case EntityType.User:
-                        return context.GetAuthor().Username;
-                    case EntityType.Channel:
-                        return (await context.GetGuild().GetChannelAsync((ulong)p.EntityId)).Name;
-                    case EntityType.Role:
-                        return (await context.GetGuild().GetRoleAsync((ulong)p.EntityId)).Name;
-                    case EntityType.Guild:
-                        return context.GetGuild().Name;
-                    case EntityType.Global:
-                        return "";
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    EntityType.User     => context.GetAuthor().Username,
+                    EntityType.Channel  => (await context.GetGuild().GetChannelAsync((ulong)p.EntityId)).Name,
+                    EntityType.Role     => (await context.GetGuild().GetRoleAsync((ulong)p.EntityId)).Name,
+                    EntityType.Guild    => context.GetGuild().Name,
+                    EntityType.Global   => "",
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
             }
 
             private string GetStatusEmoji(PermissionStatus status)

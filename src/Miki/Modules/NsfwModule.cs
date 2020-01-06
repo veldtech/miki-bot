@@ -123,9 +123,8 @@
         {
             if(MikiRandom.Next(100) == 50)
             {
-                return new ValueTask(service.UnlockAsync(e,
-                    service.GetAchievementOrDefault(AchievementIds.LewdId),
-                    e.GetAuthor().Id));
+                var lewdAchievement = service.GetAchievementOrDefault(AchievementIds.LewdId);
+                return new ValueTask(service.UnlockAsync(e, lewdAchievement, e.GetAuthor().Id));
             }
             return default;
         }

@@ -1,25 +1,22 @@
-using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Configuration;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Rest;
-using Miki.Exceptions;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Events;
-using Miki.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Miki.Localization;
-
 namespace Miki.Modules
 {
-    using Framework.Extension;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Configuration;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+    using Miki.Exceptions;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Extension;
+    using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
 

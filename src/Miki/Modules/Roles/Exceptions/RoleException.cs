@@ -1,16 +1,13 @@
-﻿using Miki.Discord.Common;
-using Miki.Localization;
-using Miki.Localization.Exceptions;
-using Miki.Localization.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Modules.Roles.Exceptions
+﻿namespace Miki.Modules.Roles.Exceptions
 {
+    using Miki.Discord.Common;
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
     public class RoleException : LocalizedException
     {
-        public override IResource LocaleResource => new LanguageResource("error_default");
+        public override IResource LocaleResource 
+            => new LanguageResource("error_default");
 
         protected IDiscordRole _role;
 

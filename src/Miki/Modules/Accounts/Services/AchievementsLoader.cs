@@ -1,6 +1,8 @@
 ﻿
 namespace Miki.Modules.Accounts.Services
 {
+    using System;
+    using System.Collections.Generic;
     using Miki.Services.Achievements;
 
     public class AchievementIds
@@ -29,50 +31,72 @@ namespace Miki.Modules.Accounts.Services
         public static string LewdId { get; set; } = "lewd";
     }
 
-    public class AchievementLoader
+    public class AchievementCollection
     {
-        public AchievementLoader(AchievementService service)
+        private readonly Dictionary<string, AchievementObject> containers
+            = new Dictionary<string, AchievementObject>();
+
+        public AchievementCollection()
         {
-            LoadAchievements(service);
+            LoadAchievements();
         }
 
-        private void LoadAchievements(AchievementService service)
+        public void AddAchievement(AchievementObject @object)
         {
-            service.AddAchievement(
+            if(containers.ContainsKey(@object.Id))
+            {
+                throw new ArgumentException(
+                    $"Achievement with name '{@object.Id}' already exists.");
+            }
+            containers.Add(@object.Id, @object);
+        }
+
+        public AchievementObject GetAchievementOrDefault(string achievementId)
+        {
+            if(TryGetAchievement(achievementId, out var value))
+            {
+                return value;
+            }
+            return null;
+        }
+
+        private void LoadAchievements()
+        {
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.AchievementsId)
                     .AddEntry("Underachiever", "🖍")
                     .AddEntry("Achiever", "✏️")
                     .AddEntry("Completionist", "🖊️")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LotteryWinId)
                     .AddEntry("Celebrator", "🍺")
                     .AddEntry("Absolute Madman", "🍸")
                     .AddEntry("Pop da champagne", "🍾")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.ReadInfoId)
                     .AddEntry("Informed", "📚")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.MarrySelfId)
                     .AddEntry("Lonely", "😭")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.CreatePastaId)
                     .AddEntry("Chef", "📝")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.InvalidPermsId)
                     .AddEntry("NO! Don't touch that!", "😱")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LevellingId)
                     .AddEntry("Novice", "🎟")
                     .AddEntry("Intermediate", "🎫")
@@ -84,27 +108,27 @@ namespace Miki.Modules.Accounts.Services
                     .AddEntry("Epic", "🌸")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.FrogId)
                     .AddEntry("Oh shit! Waddup", "🐸")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LennyId)
                     .AddEntry("Lenny", "😏")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.ShipId)
                     .AddEntry("Shipgirl", "⛵")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LuckId)
                     .AddEntry("Lucky", "🍀")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.CurrencyId)
                     .AddEntry("Loaded", "💵")
                     .AddEntry("Rich", "💸")
@@ -113,49 +137,61 @@ namespace Miki.Modules.Accounts.Services
                     .AddEntry("Billionaire", "🏦")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.VoteId)
                     .AddEntry("Helper", "✉")
                     .AddEntry("Voter", "🗳")
                     .AddEntry("Elector", "🗃")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.SlotsId)
                     .AddEntry("Jackpot", "🎰")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.UnluckyId)
                     .AddEntry("Unlucky", "🎲")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.StaffId)
                     .AddEntry("Contributor", "⭐")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.DeveloperId)
                     .AddEntry("Developer", "🌟")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.BugtesterId)
                     .AddEntry("Glitch", "👾")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.DonatorId)
                     .AddEntry("Donator", "💖")
                     .AddEntry("Supporter", "💘")
                     .AddEntry("Sponsor", "💟")
                     .Build());
 
-            service.AddAchievement(
+            AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LewdId)
                     .AddEntry("Lewd", "💋")
                     .Build());
+        }
+
+        public bool TryGetAchievement(string achievementId, out AchievementObject @object)
+        {
+            if(containers.ContainsKey(achievementId))
+            {
+                @object = containers[achievementId];
+                return true;
+            }
+
+            @object = null;
+            return false;
         }
     }
 }

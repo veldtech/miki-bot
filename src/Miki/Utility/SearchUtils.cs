@@ -1,14 +1,10 @@
-﻿using Miki.Discord.Common;
-using Miki.Discord.Common.Utils;
-using Miki.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Utility
+﻿namespace Miki.Utility
 {
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Utils;
+    using Miki.Framework;
     using Miki.Modules.Admin.Exceptions;
 
     public static class SearchUtils

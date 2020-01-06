@@ -4,35 +4,31 @@ namespace Miki.Modules.Overwatch.Objects
 {
 	public class OverwatchUserContext
 	{
-		public OverwatchAchievements Achievements => _achievements;
-		public Dictionary<string, float> PlayTime => _playTime;
-		public OverwatchGamemode Stats => _stats;
-
-		private OverwatchAchievements _achievements = new OverwatchAchievements();
-		private Dictionary<string, float> _playTime = new Dictionary<string, float>();
-		private OverwatchGamemode _stats = new OverwatchGamemode();
+        public OverwatchAchievements Achievements { get; } = new OverwatchAchievements();
+        public Dictionary<string, float> PlayTime { get; } = new Dictionary<string, float>();
+        public OverwatchGamemode Stats { get; } = new OverwatchGamemode();
 
 		public bool isCompetitive = false;
 		public bool isValid = true;
 
 		public OverwatchUserContext(bool competitive, OverwatchRegion response)
 		{
-			_achievements = response.achievements;
+			Achievements = response.achievements;
 
 			if (competitive)
 			{
 				isCompetitive = competitive;
 
-				_playTime = response.heroes.playtime.competitive;
-				_stats = response.stats.competitive;
+				PlayTime = response.heroes.playtime.competitive;
+				Stats = response.stats.competitive;
 			}
 			else
 			{
-				_playTime = response.heroes.playtime.quickplay;
-				_stats = response.stats.quickplay;
+				PlayTime = response.heroes.playtime.quickplay;
+				Stats = response.stats.quickplay;
 			}
 
-			if (_stats == null)
+			if (Stats == null)
 			{
 				isValid = false;
 				return;
