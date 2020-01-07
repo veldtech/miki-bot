@@ -48,8 +48,7 @@
     using Miki.Services.Transactions;
     using Miki.UrbanDictionary;
     using Retsu.Consumer;
-    using SharpRaven;
-    using SharpRaven.Data;
+    using Sentry;
     using StackExchange.Redis;
 
     public class MikiBotApp : MikiApp
@@ -91,10 +90,10 @@
                 else
                 {
                     Log.Error(arg.Error);
-                    var sentry = arg.Context.GetService<RavenClient>();
+                    var sentry = arg.Context.GetService<ISentryClient>();
                     if(sentry != null)
                     {
-                        await sentry.CaptureAsync(new SentryEvent(arg.Error));
+                        sentry.CaptureEvent(new SentryEvent(arg.Error));
                     }
                 }
             }
@@ -227,7 +226,11 @@
 
                 if(!string.IsNullOrWhiteSpace(Config.SharpRavenKey))
                 {
-                    serviceCollection.AddSingleton(new RavenClient(Config.SharpRavenKey));
+                    serviceCollection.AddSingleton<ISentryClient>(new SentryClient(
+                        new SentryOptions
+                        {
+                            Dsn = new Dsn(Config.SharpRavenKey)
+                        }));
                 }
                 else
                 {
