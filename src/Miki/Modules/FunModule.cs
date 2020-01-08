@@ -362,7 +362,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrWhiteSpace(args))
 			{
-                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                await e.ErrorEmbedResource("error_argument_missing", "choice")
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
