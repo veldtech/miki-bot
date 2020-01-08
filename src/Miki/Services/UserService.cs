@@ -12,6 +12,7 @@
     public class UserService : IUserService
     {
         private readonly IAsyncRepository<IsBanned> bannedRepository;
+        private readonly IAsyncRepository<IsDonator> donatorRepository;
         private readonly IAsyncRepository<User> repository;
         private readonly IUnitOfWork unitOfWork;
 
@@ -20,8 +21,8 @@
             this.unitOfWork = unitOfWork;
             this.repository = unitOfWork.GetRepository<User>();
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
+            this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
         }
-
         public async ValueTask<User> CreateUserAsync(long userId, string userName)
         {
             var user = new User
@@ -53,8 +54,19 @@
             return repository.EditAsync(user);
         }
 
+        public async ValueTask<bool> UserIsDonatorAsync(long userId)
+        {
+            var donatorStatus = await donatorRepository.GetAsync(userId);
+            if(donatorStatus == null)
+            {
+                return false;
+            }
+
+            return donatorStatus.ValidUntil > DateTime.UtcNow;
+        }
+
         /// <inheritdoc />
-        public async ValueTask<bool> UserIsBanned(long userId)
+        public async ValueTask<bool> UserIsBannedAsync(long userId)
         {
             var banRecord = await bannedRepository.GetAsync(userId);
             if (banRecord == null)
@@ -84,7 +96,9 @@
 
         ValueTask UpdateUserAsync(User user);
 
-        ValueTask<bool> UserIsBanned(long userId);
+        ValueTask<bool> UserIsDonatorAsync(long userId);
+
+        ValueTask<bool> UserIsBannedAsync(long userId);
 
         ValueTask SaveAsync();
     }

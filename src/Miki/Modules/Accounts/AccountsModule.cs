@@ -919,7 +919,6 @@ namespace Miki.Modules.Accounts
                         repObject.ReputationPointsLeft.ToString())
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
-                return;
             }
             else
             {
@@ -1020,6 +1019,8 @@ namespace Miki.Modules.Accounts
                         receiver.Name,
                         $"{(receiver.Reputation - u.Value):N0} => {receiver.Reputation:N0} (+{u.Value})"
                     );
+
+                    context.Update(receiver);
                 }
 
                 repObject.ReputationPointsLeft -= (short)usersMentioned.Sum(x => x.Value);
@@ -1091,7 +1092,6 @@ namespace Miki.Modules.Accounts
                     .CreateTransactionAsync(request))
                 .AndThen(transaction => CreateTransactionEmbed(e, transaction)
                     .QueueAsync(e, e.GetChannel()));
-                    
 
         public DiscordEmbed CreateTransactionEmbed(IContext context, TransactionResponse transaction)
         {
@@ -1117,7 +1117,6 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
-            var context = e.GetService<MikiDbContext>();
             var userService = e.GetService<IUserService>();
             var transactionService = e.GetService<ITransactionService>();
 
@@ -1126,7 +1125,7 @@ namespace Miki.Modules.Accounts
             int dailyAmount = 100;
             int dailyStreakAmount = 20;
 
-            if(await u.IsDonatorAsync(context))
+            if(await userService.UserIsDonatorAsync(u.Id))
             {
                 dailyAmount *= 2;
                 dailyStreakAmount *= 2;
@@ -1136,7 +1135,7 @@ namespace Miki.Modules.Accounts
             {
                 var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
 
-                var builder = e.ErrorEmbedResource("error_daily_claimed", $"`time`");
+                var builder = e.ErrorEmbedResource("error_daily_claimed", $"`{time}`");
 
                 switch(MikiRandom.Next(2))
                 {
@@ -1171,6 +1170,10 @@ namespace Miki.Modules.Accounts
                 streak++;
             }
 
+            u.LastDailyTime = DateTime.UtcNow;
+            await userService.UpdateUserAsync(u);
+            await userService.SaveAsync();
+
             int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
 
             await transactionService.CreateTransactionAsync(
@@ -1179,7 +1182,6 @@ namespace Miki.Modules.Accounts
                     .WithReceiver(u.Id)
                     .WithSender(0L)
                     .Build());
-            u.LastDailyTime = DateTime.UtcNow;
 
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
@@ -1189,6 +1191,7 @@ namespace Miki.Modules.Accounts
                     $"`{(u.Currency + amount):N0}`"))
                 .SetColor(253, 216, 136);
 
+
             if(streak > 0)
             {
                 embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
@@ -1197,7 +1200,6 @@ namespace Miki.Modules.Accounts
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
 
             await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
-            await context.SaveChangesAsync();
         }
     }
 }
