@@ -49,26 +49,29 @@
         [Command("avatar")]
         public async Task AvatarAsync(IContext e)
         {
-            if(!e.GetArgumentPack().Take(out string arg))
-            {
-            }
-
+            
             string avatarResource = e.GetAuthor().Username;
             string avatarUrl = e.GetAuthor().GetAvatarUrl();
 
-            if(arg == "-s")
+            if(e.GetArgumentPack().Take(out string arg))
             {
-                avatarResource = e.GetGuild().Name;
-                avatarUrl = e.GetGuild().IconUrl;
-            }
-            else
-            {
-                IDiscordGuildUser user = await e.GetGuild()
-                    .FindUserAsync(arg)
-                    .ConfigureAwait(false);
-                if(user == null)
+                if(arg == "-s")
                 {
-                    throw new UserNullException();
+                    avatarResource = e.GetGuild().Name;
+                    avatarUrl = e.GetGuild().IconUrl;
+                }
+                else
+                {
+                    IDiscordGuildUser user = await e.GetGuild()
+                        .FindUserAsync(arg)
+                        .ConfigureAwait(false);
+                    if(user == null)
+                    {
+                        throw new UserNullException();
+                    }
+
+                    avatarResource = user.Username;
+                    avatarUrl = user.GetAvatarUrl();
                 }
             }
 
