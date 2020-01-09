@@ -12,7 +12,6 @@ namespace Miki.Modules
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
     using Imgur.API.Models;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.API.Imageboards;
     using Miki.API.Imageboards.Enums;
@@ -52,6 +51,8 @@ namespace Miki.Modules
 		/// </summary>
 		[Configurable]
 		public string ImgurClientId { get; set; } = "";
+
+		const string eightBallEmoji = "<:8ball:664615434061873182>";
 
 		private readonly string[] puns =
 		{
@@ -150,10 +151,18 @@ namespace Miki.Modules
 		[Command("8ball")]
 		public Task EightBallAsync(IContext e)
 		{
-			string output = e.GetLocale().GetString("miki_module_fun_8ball_result",
-				e.GetAuthor().Username, e.GetLocale().GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
-			e.GetChannel().QueueMessage(e, null, output);
-			return Task.CompletedTask;
+			var locale = e.GetLocale();
+
+			string output = locale.GetString("miki_module_fun_8ball_result",
+				e.GetAuthor().Username, 
+				$"`{locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)])}`");
+
+			return new EmbedBuilder()
+				.SetTitle($"{eightBallEmoji}  8ball")
+				.SetDescription(output)
+				.SetColor(0, 0, 0)
+				.ToEmbed()
+				.QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("bird", "birb")]

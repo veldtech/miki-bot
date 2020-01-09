@@ -4225,7 +4225,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🎱 {0}, your question has been answered `{1}`.
+        ///   Looks up a localized string similar to {0}, your question has been answered {1}.
         /// </summary>
         internal static string miki_module_fun_8ball_result {
             get {
