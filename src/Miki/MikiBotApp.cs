@@ -241,6 +241,7 @@
 
                 serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();
+                serviceCollection.AddScoped<PastaService>();
 
                 serviceCollection.AddSingleton<AchievementCollection>();
                 serviceCollection.AddScoped<AchievementService>();

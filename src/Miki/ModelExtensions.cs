@@ -10,6 +10,7 @@ using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Events;
 using Miki.Models;
+using Miki.Services.Pasta.Exceptions;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -61,29 +62,6 @@ namespace Miki
 		{
 			return await MikiApp.Instance.Services.GetService<DiscordClient>()
                 .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
-		}
-
-		public static async Task AddAsync(MikiDbContext context, string id, string text, long creator)
-		{
-			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
-			{
-				throw new Exception("You can't add discord invites!");
-			}
-
-			GlobalPasta pasta = await context.Pastas.FindAsync(id);
-
-			if (pasta != null)
-			{
-				throw new DuplicatePastaException(pasta);
-			}
-
-			await context.Pastas.AddAsync(new GlobalPasta()
-			{
-				Id = id,
-				Text = text,
-				CreatorId = creator,
-				CreatedAt = DateTime.Now
-			});
 		}
 	}
 }

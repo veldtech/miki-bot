@@ -196,6 +196,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot {0} this!.
+        /// </summary>
+        internal static string error_action_unauthorized {
+            get {
+                return ResourceManager.GetString("error_action_unauthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can not use an amount less than zero!.
         /// </summary>
         internal static string error_argument_less_than_zero {
