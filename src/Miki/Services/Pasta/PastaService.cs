@@ -90,7 +90,7 @@ namespace Miki.Services
         public async ValueTask<GlobalPasta> GetPastaAsync(string tag)
         {
             var pasta = await GetPastaOrDefaultAsync(tag);
-            if(tag == null)
+            if(pasta == null)
             {
                 throw new PastaNotFoundException();
             }

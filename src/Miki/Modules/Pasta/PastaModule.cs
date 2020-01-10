@@ -22,9 +22,89 @@ namespace Miki.Modules
     using Miki.Services.Achievements;
     using Miki.Utility;
 
-    [Module("pasta")]
+    [Module("pastas")]
     public class PastaModule
     {
+        [Command("createpasta")]
+        public async Task CreatePasta(IContext e)
+        {
+            var locale = e.GetLocale();
+
+            if(e.GetArgumentPack().Pack.Length < 2)
+            {
+                await e.ErrorEmbed(
+                    locale.GetString("createpasta_error_no_content"))
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
+                return;
+            }
+
+            var id = e.GetArgumentPack().TakeRequired<string>();
+            var text = e.GetArgumentPack().Pack.TakeAll();
+
+            if(Regex.IsMatch(
+                text,
+                "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)",
+                RegexOptions.IgnoreCase))
+            {
+                throw new PastaInviteException();
+            }
+
+            var pastaService = e.GetService<PastaService>();
+
+            await pastaService.CreatePastaAsync(id, text, (long)e.GetAuthor().Id);
+
+            await e.SuccessEmbed(
+                locale.GetString("miki_module_pasta_create_success", id))
+                .QueueAsync(e, e.GetChannel());
+
+            var a = e.GetService<AchievementService>();
+            await a.UnlockAsync(e, a.GetAchievement(AchievementIds.CreatePastaId), e.GetAuthor().Id);
+        }
+
+        [Command("deletepasta")]
+        public async Task DeletePasta(IContext e)
+        {
+            string pastaArg = e.GetArgumentPack().Pack.TakeAll();
+
+            if(string.IsNullOrWhiteSpace(pastaArg))
+            {
+                await e.ErrorEmbed(
+                        e.GetLocale().GetString("miki_module_pasta_error_specify",
+                        e.GetLocale().GetString("miki_module_pasta_error_specify")))
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                return;
+            }
+
+            var context = e.GetService<PastaService>();
+            await context.DeletePastaAsync(pastaArg, (long)e.GetAuthor().Id);
+
+            await e.SuccessEmbed(
+                e.GetLocale().GetString("miki_module_pasta_delete_success", pastaArg))
+                .QueueAsync(e, e.GetChannel());
+
+        }
+
+        [Command("editpasta")]
+        public async Task EditPasta(IContext e)
+        {
+            if(e.GetArgumentPack().Pack.Length < 2)
+            {
+                await e.ErrorEmbed(
+                        e.GetLocale().GetString("miki_module_pasta_error_specify",
+                        e.GetLocale().GetString("miki_module_pasta_error_specify_edit")))
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                return;
+            }
+
+            var context = e.GetService<PastaService>();
+
+            var tag = e.GetArgumentPack().TakeRequired<string>();
+            var body = e.GetArgumentPack().Pack.TakeAll();
+
+            await context.UpdatePastaAsync(tag, body, (long)e.GetAuthor().Id);
+        }
+
         [Command("mypasta")]
         public async Task MyPasta(IContext e)
         {
@@ -32,6 +112,7 @@ namespace Miki.Modules
             {
                 page--;
             }
+
 
             long userId;
             string userName;
@@ -80,86 +161,6 @@ namespace Miki.Modules
 
             await e.ErrorEmbed(e.GetLocale().GetString("mypasta_error_no_pastas"))
                 .ToEmbed().QueueAsync(e, e.GetChannel());
-        }
-
-        [Command("createpasta")]
-        public async Task CreatePasta(IContext e)
-        {
-            var locale = e.GetLocale();
-
-            if (e.GetArgumentPack().Pack.Length < 2)
-            {
-                await e.ErrorEmbed(
-                    locale.GetString("createpasta_error_no_content"))
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel());
-                return;
-            }
-
-            var id = e.GetArgumentPack().TakeRequired<string>();
-            var text = e.GetArgumentPack().Pack.TakeAll();
-
-            if (Regex.IsMatch(
-                text, 
-                "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", 
-                RegexOptions.IgnoreCase))
-            {
-                throw new PastaInviteException();
-            }
-
-            var pastaService = e.GetService<PastaService>();
-
-            await pastaService.CreatePastaAsync(id, text, (long)e.GetAuthor().Id);
-       
-            await e.SuccessEmbed(
-                locale.GetString("miki_module_pasta_create_success", id))
-                .QueueAsync(e, e.GetChannel());
-
-            var a = e.GetService<AchievementService>();
-            await a.UnlockAsync(e, a.GetAchievement(AchievementIds.CreatePastaId), e.GetAuthor().Id);
-        }
-
-        [Command("deletepasta")]
-        public async Task DeletePasta(IContext e)
-        {
-            string pastaArg = e.GetArgumentPack().Pack.TakeAll();
-
-            if(string.IsNullOrWhiteSpace(pastaArg))
-            {
-                await e.ErrorEmbed(
-                        e.GetLocale().GetString("miki_module_pasta_error_specify", 
-                        e.GetLocale().GetString("miki_module_pasta_error_specify")))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                return;
-            }
-
-            var context = e.GetService<PastaService>();
-            await context.DeletePastaAsync(pastaArg, (long)e.GetAuthor().Id);
-
-            await e.SuccessEmbed(
-                e.GetLocale().GetString("miki_module_pasta_delete_success", pastaArg))
-                .QueueAsync(e, e.GetChannel());
-
-        }
-
-        [Command("editpasta")]
-        public async Task EditPasta(IContext e)
-        {
-            if (e.GetArgumentPack().Pack.Length < 2)
-            {
-                await e.ErrorEmbed(
-                        e.GetLocale().GetString("miki_module_pasta_error_specify", 
-                        e.GetLocale().GetString("miki_module_pasta_error_specify_edit")))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                return;
-            }
-            
-            var context = e.GetService<PastaService>();
-
-            var tag = e.GetArgumentPack().TakeRequired<string>();
-            var body = e.GetArgumentPack().Pack.TakeAll();
-
-            await context.UpdatePastaAsync(tag, body, (long)e.GetAuthor().Id);
         }
 
         [Command("pasta")]
