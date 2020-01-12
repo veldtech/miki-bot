@@ -1,5 +1,6 @@
 ﻿namespace Miki.Tests.Attributes
 {
+    using System;
     using System.Threading.Tasks;
     using Miki.Attributes;
     using Miki.Discord.Common;
@@ -15,6 +16,13 @@
         public PatreonOnlyTests()
         {
 
+        }
+
+        [Fact]
+        public async Task IsPatronNullTest()
+        {
+            PatreonOnlyAttribute attribute = new PatreonOnlyAttribute();
+            Assert.False(await attribute.CheckAsync(Mock.Object));
         }
 
         [Fact]

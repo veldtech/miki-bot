@@ -14,6 +14,10 @@
         public override async Task<bool> CheckAsync(IContext e)
         {
             var context = e.GetService<IUserService>();
+            if(context == null)
+            {
+                return false;
+            }
             return await context.UserIsDonatorAsync((long)e.GetAuthor().Id);
         }
 
