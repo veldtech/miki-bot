@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
@@ -9,6 +11,82 @@ using Miki.Services.Pasta.Exceptions;
 
 namespace Miki.Services
 {
+    public interface IPaginated<T> 
+        where T : class
+    {
+        int PageIndex { get; }
+        IReadOnlyList<T> Items { get; }
+          int PageCount { get; }
+     
+        Task<IPaginated<T>> GetNextPageAsync();
+        Task<IPaginated<T>> GetPreviousPageAsync();
+
+    }
+
+    public struct PageInfo
+    {
+        public PageInfo(int index, int count)
+        {
+            pageCount = count;
+            pageIndex = index;
+        }
+
+        public int pageIndex;
+        public int pageCount;
+    }
+
+    public class PastaSearchResult : IPaginated<GlobalPasta>
+    {
+        private readonly PastaService service;
+        private readonly PageInfo pageInfo;
+        private readonly Expression<Func<GlobalPasta, bool>> whereFunc;
+
+        public PastaSearchResult(
+            PastaService service,
+            PageInfo pageInfo,
+            IEnumerable<GlobalPasta> items,
+            Expression<Func<GlobalPasta, bool>> whereFunc) 
+        {
+            this.service = service;
+            this.pageInfo = pageInfo;
+            this.whereFunc = whereFunc;
+
+            Items = items.ToList();
+        }
+
+        public int PageIndex => pageInfo.pageIndex;
+
+        public IReadOnlyList<GlobalPasta> Items { get; private set; }
+
+        public int PageCount => pageInfo.pageCount;
+
+        public async Task<IPaginated<GlobalPasta>> GetNextPageAsync()
+        {
+            if(pageInfo.pageIndex == pageInfo.pageCount)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return await service.SearchPastaAsync(
+                whereFunc,
+                pageInfo.pageIndex * Items.Count,
+                Items.Count * pageInfo.pageIndex); 
+        }
+
+        public async Task<IPaginated<GlobalPasta>> GetPreviousPageAsync()
+        {
+            if(pageInfo.pageIndex == pageInfo.pageCount)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return await service.SearchPastaAsync(
+                whereFunc,
+                pageInfo.pageIndex * Items.Count,
+                (Items.Count * pageInfo.pageIndex) - Items.Count);
+        }
+    }
+
     public class PastaService
     {
         private readonly IUnitOfWork unit;
@@ -147,6 +225,32 @@ namespace Miki.Services
                 .CountAsync();
 
             return new VoteCount(up, down);
+        }
+
+        public async ValueTask<IPaginated<GlobalPasta>> SearchPastaAsync(
+            Expression<Func<GlobalPasta, bool>> where,
+            int amount,
+            int offset)
+        {
+            var query = (await repository.ListAsync())
+                .AsQueryable();
+
+            var result = await query
+                .Where(where)
+                .Skip(offset)
+                .Take(amount)
+                .ToListAsync();
+            
+            var count = await query.Where(where)
+                .CountAsync();
+
+            return new PastaSearchResult(
+                this,
+                new PageInfo(
+                    1 + (int)Math.Ceiling((double)offset / amount),
+                    (int)Math.Ceiling((double)count / amount)),
+                result,
+                where);
         }
     }
 }

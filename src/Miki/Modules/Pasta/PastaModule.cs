@@ -108,59 +108,44 @@ namespace Miki.Modules
         [Command("mypasta")]
         public async Task MyPasta(IContext e)
         {
-            if (e.GetArgumentPack().Take(out int page))
+            var locale = e.GetLocale();
+
+            if(e.GetArgumentPack().Take(out int page))
             {
                 page--;
             }
 
+            long userId = (long)e.GetAuthor().Id;
+            string userName = e.GetAuthor().Username;
 
-            long userId;
-            string userName;
-            if (e.GetMessage().MentionedUserIds.Any())
+            var context = e.GetService<PastaService>();
+            var result = await context.SearchPastaAsync(x => x.CreatorId == userId, 25, page);
+
+            if(result.PageIndex > result.PageCount)
             {
-                userId = e.GetMessage().MentionedUserIds.First().ToDbLong();
-                userName = (await e.GetGuild().GetMemberAsync(userId.FromDbLong())).Username;
-            }
-            else
-            {
-                userId = e.GetAuthor().Id.ToDbLong();
-                userName = e.GetAuthor().Username;
-            }
-
-            var context = e.GetService<MikiDbContext>();
-
-            var pastasFound = await context.Pastas.Where(x => x.CreatorId == userId)
-                .OrderByDescending(x => x.Id)
-                .Skip(page * 25)
-                .Take(25)
-                .ToListAsync();
-
-            var totalCount = await context.Pastas.Where(x => x.CreatorId == userId)
-                .CountAsync();
-
-            if (page * 25 > totalCount)
-            {
-                await e.ErrorEmbed(e.GetLocale().GetString("pasta_error_out_of_index"))
+                await e.ErrorEmbed(locale.GetString("pasta_error_out_of_index"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
-            if (pastasFound?.Count > 0)
+            if(!result.Items?.Any() ?? false)
             {
-                string resultString = "";
-
-                pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
-
-                await new EmbedBuilder()
-                    .SetTitle(e.GetLocale().GetString("mypasta_title", userName))
-                    .SetDescription(resultString)
-                    .SetFooter(e.GetLocale().GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()), null)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                await e.ErrorEmbed(locale.GetString("mypasta_error_no_pastas"))
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
-            await e.ErrorEmbed(e.GetLocale().GetString("mypasta_error_no_pastas"))
-                .ToEmbed().QueueAsync(e, e.GetChannel());
+
+            string resultString = string.Join(
+                " ", result.Items.Select(x => $"`{x.Id}`"));
+
+            await new EmbedBuilder()
+                .SetTitle(locale.GetString("mypasta_title", userName))
+                .SetDescription(resultString)
+                .SetFooter(locale.GetString("page_index", result.PageIndex, result.PageCount), null)
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("pasta")]
@@ -235,44 +220,50 @@ namespace Miki.Modules
         }
 
         [Command("searchpasta")]
-        public async Task SearchPasta(IContext e)
+        public async Task SearchPastaAsync(IContext e)
         {
+            var locale = e.GetLocale();
+
             if (!e.GetArgumentPack().Take(out string query))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("searchpasta_error_no_arg"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                await e.ErrorEmbed(locale.GetString("searchpasta_error_no_arg"))
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
             e.GetArgumentPack().Take(out int page);
 
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<PastaService>();
 
-            var pastasFound = await context.Pastas.Where(x => x.Id.ToLower().Contains(query.ToLower()))
-                    .OrderByDescending(x => x.Id)
-                    .Skip(25 * page)
-                    .Take(25)
-                    .ToListAsync();
+            var pastasFound = await context.SearchPastaAsync(
+                x => x.Id.Contains(query),
+                25,
+                page * 25);
 
-            var totalCount = await context.Pastas.Where(x => x.Id.Contains(query))
-                .CountAsync();
-
-            if (pastasFound?.Count > 0)
+            if (!pastasFound.Items?.Any() ?? false)
             {
-                string resultString = "";
-
-                pastasFound.ForEach(x => { resultString += "`" + x.Id + "` "; });
-
-                await new EmbedBuilder
-                {
-                    Title = e.GetLocale().GetString("miki_module_pasta_search_header"),
-                    Description = resultString
-                }.SetFooter(e.GetLocale().GetString("page_index", page + 1, (Math.Ceiling((double)totalCount / 25)).ToString()))
+                await e.ErrorEmbed(
+                    locale.GetString(
+                        "miki_module_pasta_search_error_no_results", 
+                        query))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
 
-            await e.ErrorEmbed(e.GetLocale().GetString("miki_module_pasta_search_error_no_results", query))
-                .ToEmbed().QueueAsync(e, e.GetChannel());
+            string resultString = string.Join(
+                " ", pastasFound.Items.Select(x => $"`{x.Id}`"));
+
+            await new EmbedBuilder
+            {
+                Title = locale.GetString("miki_module_pasta_search_header"),
+                Description = resultString
+            }.SetFooter(locale.GetString(
+                    "page_index", 
+                    pastasFound.PageIndex, 
+                    pastasFound.PageCount))
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
+            return;
         }
 
         [Command("lovedpasta", "lovedpastas", "favouritepastas")]
@@ -287,17 +278,24 @@ namespace Miki.Modules
             await FavouritePastaList(e, false);
         }
 
+        // TODO: refactor
         public async Task FavouritePastaList(IContext e, bool lovedPastas = true)
         {
+            var locale = e.GetLocale();
+
             IDiscordUser targetUser = e.GetAuthor();
             float totalPerPage = 25f;
 
             e.GetArgumentPack().Take(out int page);
 
             var context = e.GetService<MikiDbContext>();
+            var service = e.GetService<PastaService>();
 
             long authorId = targetUser.Id.ToDbLong();
-            List<PastaVote> pastaVotes = await context.Votes.Where(x => x.UserId == authorId && x.PositiveVote == lovedPastas).ToListAsync();
+            List<PastaVote> pastaVotes = await context.Votes
+                .Where(x => x.UserId == authorId 
+                    && x.PositiveVote == lovedPastas)
+                .ToListAsync();
 
             int maxPage = (int)Math.Floor(pastaVotes.Count() / totalPerPage);
             page = page > maxPage ? maxPage : page;
@@ -305,11 +303,16 @@ namespace Miki.Modules
 
             if (pastaVotes.Count() <= 0)
             {
-                string loveString = (lovedPastas ? e.GetLocale().GetString("miki_module_pasta_loved") : e.GetLocale().GetString("miki_module_pasta_hated"));
-                string errorString = e.GetLocale().GetString("miki_module_pasta_favlist_self_none", loveString);
+                string loveString = lovedPastas 
+                    ? locale.GetString("miki_module_pasta_loved") 
+                    : locale.GetString("miki_module_pasta_hated");
+
+                string errorString = locale.GetString(
+                    "miki_module_pasta_favlist_self_none", loveString);
                 if (e.GetMessage().MentionedUserIds.Count() >= 1)
                 {
-                    errorString = e.GetLocale().GetString("miki_module_pasta_favlist_mention_none", loveString);
+                    errorString = locale.GetString(
+                        "miki_module_pasta_favlist_mention_none", loveString);
                 }
                 await Utils.ErrorEmbed(e, errorString).ToEmbed()
                     .QueueAsync(e, e.GetChannel());
@@ -317,18 +320,28 @@ namespace Miki.Modules
             }
 
             EmbedBuilder embed = new EmbedBuilder();
-            List<PastaVote> neededPastas = pastaVotes.Skip((int)totalPerPage * page).Take((int)totalPerPage).ToList();
+            List<PastaVote> neededPastas = pastaVotes
+                .Skip((int)totalPerPage * page)
+                .Take((int)totalPerPage)
+                .ToList();
 
             string resultString = string.Join(" ", neededPastas.Select(x => $"`{x.Id}`"));
 
-            string useName = string.IsNullOrEmpty(targetUser.Username) ? targetUser.Username : targetUser.Username;
-            embed.SetTitle($"{(lovedPastas ? e.GetLocale().GetString("miki_module_pasta_loved_header") : e.GetLocale().GetString("miki_module_pasta_hated_header"))} - {useName}");
-            embed.SetDescription(resultString);
-            embed.SetFooter(
-                e.GetLocale().GetString("page_index", page + 1, Math.Ceiling(pastaVotes.Count() / totalPerPage)),
-                "");
+            string useName = targetUser.Username;
+            string titleResource = lovedPastas
+                ? locale.GetString("miki_module_pasta_loved_header")
+                : locale.GetString("miki_module_pasta_hated_header");
 
-            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
+            await embed.SetTitle($"{titleResource} - {useName}")
+                .SetDescription(resultString)
+                .SetFooter(
+                    locale.GetString(
+                        "page_index", 
+                        page + 1, 
+                        Math.Ceiling(pastaVotes.Count() / totalPerPage)),
+                    "")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("lovepasta")]

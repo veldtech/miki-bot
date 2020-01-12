@@ -103,6 +103,19 @@
         }
 
         [Fact]
+        public async Task SearchPastaTest()
+        {
+            var unit = NewContext();
+            var service = new PastaService(unit);
+
+            var result = await service.SearchPastaAsync(x => true, 12, 0);
+            Assert.Equal(1, result.PageIndex);
+            Assert.Equal(1, result.PageCount);
+
+            Assert.Equal(1, result.Items.Count);
+        }
+
+        [Fact]
         public async Task VotePastaAsync()
         {
             using(var unit = NewContext())
