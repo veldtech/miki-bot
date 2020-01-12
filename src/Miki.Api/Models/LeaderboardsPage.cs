@@ -2,8 +2,9 @@
 {
 	using Newtonsoft.Json;
 	using System.Collections.Generic;
+    using Miki.Api.Models;
 
-	internal class LeaderboardsPage
+    internal class LeaderboardsPage
 	{
 		[JsonProperty("currentPage")]
 		public int CurrentPage { get; set; }

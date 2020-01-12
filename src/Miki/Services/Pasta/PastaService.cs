@@ -11,29 +11,7 @@ using Miki.Services.Pasta.Exceptions;
 
 namespace Miki.Services
 {
-    public interface IPaginated<T> 
-        where T : class
-    {
-        int PageIndex { get; }
-        IReadOnlyList<T> Items { get; }
-          int PageCount { get; }
-     
-        Task<IPaginated<T>> GetNextPageAsync();
-        Task<IPaginated<T>> GetPreviousPageAsync();
-
-    }
-
-    public struct PageInfo
-    {
-        public PageInfo(int index, int count)
-        {
-            pageCount = count;
-            pageIndex = index;
-        }
-
-        public int pageIndex;
-        public int pageCount;
-    }
+    using Miki.Bot.Models.Models.Core;
 
     public class PastaSearchResult : IPaginated<GlobalPasta>
     {
@@ -54,36 +32,36 @@ namespace Miki.Services
             Items = items.ToList();
         }
 
-        public int PageIndex => pageInfo.pageIndex;
+        public int PageIndex => pageInfo.PageIndex;
 
         public IReadOnlyList<GlobalPasta> Items { get; private set; }
 
-        public int PageCount => pageInfo.pageCount;
+        public int PageCount => pageInfo.PageCount;
 
         public async Task<IPaginated<GlobalPasta>> GetNextPageAsync()
         {
-            if(pageInfo.pageIndex == pageInfo.pageCount)
+            if(pageInfo.PageIndex == pageInfo.PageCount)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
             return await service.SearchPastaAsync(
                 whereFunc,
-                pageInfo.pageIndex * Items.Count,
-                Items.Count * pageInfo.pageIndex); 
+                pageInfo.PageIndex * Items.Count,
+                Items.Count * pageInfo.PageIndex); 
         }
 
         public async Task<IPaginated<GlobalPasta>> GetPreviousPageAsync()
         {
-            if(pageInfo.pageIndex == pageInfo.pageCount)
+            if(pageInfo.PageIndex == pageInfo.PageCount)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
             return await service.SearchPastaAsync(
                 whereFunc,
-                pageInfo.pageIndex * Items.Count,
-                (Items.Count * pageInfo.pageIndex) - Items.Count);
+                pageInfo.PageIndex * Items.Count,
+                (Items.Count * pageInfo.PageIndex) - Items.Count);
         }
     }
 

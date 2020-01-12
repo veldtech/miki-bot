@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Miki.API.Reminder
+﻿namespace Miki.API.Reminder
 {
-	public class TaskContainer<T>
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class TaskContainer<T>
 	{
 		public ulong Id { get; set; }
 
-		private Dictionary<int, TaskInstance<T>> instances = new Dictionary<int, TaskInstance<T>>();
-
-		private Random random = new Random();
+		private readonly Dictionary<int, TaskInstance<T>> instances = new Dictionary<int, TaskInstance<T>>();
 
 		/// <summary>
 		/// Creates a new reminder
@@ -72,7 +70,7 @@ namespace Miki.API.Reminder
 			freeIds.RemoveAll(x => instances.ContainsKey(x));
 			if (freeIds.Count > 0)
 			{
-				return freeIds[random.Next(0, freeIds.Count)];
+				return freeIds[MikiRandom.Of(freeIds)];
 			}
 			return null;
 		}

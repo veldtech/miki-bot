@@ -8,7 +8,6 @@ namespace Miki
     using Amazon.S3;
     using Amazon.S3.Model;
     using Microsoft.Extensions.DependencyInjection;
-    using Miki.API.Leaderboards;
     using Miki.Bot.Models;
     using Miki.BunnyCDN;
     using Miki.Cache;
@@ -24,6 +23,7 @@ namespace Miki
     using Miki.Localization;
     using Miki.Localization.Models;
     using System.Linq;
+    using Miki.Api.Models;
     using Miki.Services;
 
     public static class Utils

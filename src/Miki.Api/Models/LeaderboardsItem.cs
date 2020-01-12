@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace Miki.API.Leaderboards
+﻿namespace Miki.Api.Models
 {
-	public class LeaderboardsItem
+    using Newtonsoft.Json;
+
+    public class LeaderboardsItem
 	{
 		[JsonProperty("id")]
 		public long Id { get; set; }

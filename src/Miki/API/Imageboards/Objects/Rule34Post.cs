@@ -1,9 +1,9 @@
-﻿using Miki.API.Imageboards.Interfaces;
-using Newtonsoft.Json;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	internal class Rule34Post : BooruPost, ILinkable
+    using Miki.API.Imageboards.Interfaces;
+    using Newtonsoft.Json;
+
+    internal class Rule34Post : BooruPost, ILinkable
 	{
 		public string Url => $"http://img.rule34.xxx/images/{Directory}/{Image}";
 		public string SourceUrl => "";

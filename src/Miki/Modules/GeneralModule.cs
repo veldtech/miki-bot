@@ -647,7 +647,7 @@
                 .ConfigureAwait(false);
             if(roles == null)
             {
-                throw new NullReferenceException($"argument '{nameof(roles)}' is null.");
+                throw new ArgumentMissingException(nameof(roles));
             }
 
             Color c = roles.Where(x => x.Color != 0)
