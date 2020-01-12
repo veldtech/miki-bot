@@ -116,7 +116,7 @@
         }
 
         [Fact]
-        public async Task VotePastaAsync()
+        public async Task VotePastaTest()
         {
             using(var unit = NewContext())
             {
@@ -142,7 +142,7 @@
         }
 
         [Fact]
-        public async Task GetVotesAsync()
+        public async Task GetVotesTest()
         {
             using var unit = NewContext();
             var service = new PastaService(unit);
