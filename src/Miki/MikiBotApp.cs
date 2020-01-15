@@ -252,8 +252,6 @@
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddScoped<BlackjackService>();
 
-                serviceCollection.AddSingleton<LoggingEvents>();
-
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {
                     new PrefixTrigger(">", true, true),
