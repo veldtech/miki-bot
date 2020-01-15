@@ -18,6 +18,7 @@
     using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Modules;
+    using Sentry;
 
     public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
 
@@ -132,9 +133,10 @@
                     Log.Message($"Applying Experience for {this.experienceQueue.Count} users");
                     this.lastDbSync = DateTime.Now;
 
+                    using var scope = MikiApp.Instance.Services.CreateScope();
+
                     try
                     {
-                        using var scope = MikiApp.Instance.Services.CreateScope();
                         var context = scope.ServiceProvider.GetService<DbContext>();
 
                         var _ = await Task.WhenAll(
@@ -146,6 +148,8 @@
                     catch(Exception ex)
                     {
                         Log.Error(ex.Message + "\n" + ex.StackTrace);
+                        var sentryClient = scope.ServiceProvider.GetService<ISentryClient>();
+                        sentryClient.CaptureException(ex);
                     }
                     finally
                     {
