@@ -247,6 +247,7 @@
 		}
 
 		[Command("guildinfo")]
+        [GuildOnly]
 		public async Task GuildInfoAsync(IContext e)
 		{
 			var guild = e.GetGuild();
