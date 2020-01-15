@@ -650,8 +650,9 @@
                 throw new ArgumentMissingException(nameof(roles));
             }
 
+            roles = roles.Where(x => user.RoleIds.Contains(x.Id));
+
             Color c = roles.Where(x => x.Color != 0)
-				.Where(x => user.RoleIds.Contains(x.Id))
 				.OrderByDescending(x => x.Position)
 				.Select(x => x.Color)
 				.FirstOrDefault();

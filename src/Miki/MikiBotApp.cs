@@ -252,6 +252,7 @@
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddScoped<BlackjackService>();
 
+
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {
                     new PrefixTrigger(">", true, true),
