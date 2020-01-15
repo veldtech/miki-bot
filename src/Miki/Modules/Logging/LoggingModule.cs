@@ -11,7 +11,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Framework.Extension;
-    using Microsoft.Extensions.DependencyInjection;
 
     [Module("eventmessages")]
     public class LoggingModule

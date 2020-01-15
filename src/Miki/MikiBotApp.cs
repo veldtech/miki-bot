@@ -23,6 +23,8 @@
     using Miki.Configuration;
     using Miki.Discord;
     using Miki.Discord.Common;
+    using Miki.Discord.Common.Packets;
+    using Miki.Discord.Common.Packets.API;
     using Miki.Discord.Gateway;
     using Miki.Discord.Rest;
     using Miki.Framework;
@@ -39,6 +41,7 @@
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
+    using Miki.Modules.Logging;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services;
@@ -91,10 +94,7 @@
                 {
                     Log.Error(arg.Error);
                     var sentry = arg.Context.GetService<ISentryClient>();
-                    if(sentry != null)
-                    {
-                        sentry.CaptureEvent(new SentryEvent(arg.Error));
-                    }
+                    sentry?.CaptureEvent(new SentryEvent(arg.Error));
                 }
             }
         }
@@ -252,6 +252,8 @@
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddScoped<BlackjackService>();
 
+                serviceCollection.AddSingleton<LoggingEvents>();
+
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {
                     new PrefixTrigger(">", true, true),
@@ -260,20 +262,20 @@
                 });
                 serviceCollection.AddSingleton<PrefixService<IDiscordMessage>>();
             }
+
             serviceCollection.AddSingleton(x =>
                 new CommandTreeBuilder(x)
                     .AddCommandBuildStep(new ConfigurationManagerAdapter())
                     .Create(Assembly.GetExecutingAssembly()));
-
         }
 
         public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
         {
             // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
-                new Discord.Common.Packets.API.DiscordMessagePacket
+                new DiscordMessagePacket
                 {
-                    Author = new Discord.Common.Packets.DiscordUserPacket
+                    Author = new DiscordUserPacket
                     {
                         Avatar = user.AvatarId,
                         Discriminator = user.Discriminator,
@@ -285,7 +287,7 @@
                     GuildId = (channel as IDiscordGuildChannel)?.GuildId,
                     Content = "no content",
                     Member = user is IDiscordGuildUser a
-                        ? new Discord.Common.Packets.DiscordGuildMemberPacket
+                        ? new DiscordGuildMemberPacket
                         {
                             JoinedAt = a.JoinedAt.ToUnixTimeSeconds(),
                             GuildId = a.GuildId,

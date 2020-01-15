@@ -227,6 +227,7 @@
                     .QueueAsync(e, e.GetChannel());
             }
 
+            [Command("deposit", "dep")]
             public async Task GuildBankDepositAsync(IContext e)
             {
                 var context = e.GetService<DbContext>();
@@ -243,7 +244,12 @@
                 user.RemoveCurrency(totalDeposited);
                 guildUser.Currency += totalDeposited;
 
+                await userService.UpdateUserAsync(user);
+                // TODO: abstractify to a service
+                context.Update(guildUser);
+
                 BankAccount account = await BankAccount.GetAsync(context, e.GetAuthor().Id, e.GetGuild().Id);
+                context.Update(account);
                 account.Deposit(totalDeposited);
                 await context.SaveChangesAsync();
 
