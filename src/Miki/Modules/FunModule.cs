@@ -18,6 +18,7 @@ namespace Miki.Modules
     using Miki.API.Imageboards.Interfaces;
     using Miki.API.Imageboards.Objects;
     using Miki.API.Reminder;
+    using Miki.API.Reminders;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Cache;
@@ -455,11 +456,11 @@ namespace Miki.Modules
         [Command("reminder", "remind")]
         public class ReminderCommand
         {
-            private readonly API.TaskScheduler<string> reminders;
+            private readonly TaskScheduler<string> reminders;
 
             public ReminderCommand()
             {
-                reminders = new API.TaskScheduler<string>();
+                reminders = new TaskScheduler<string>();
             }
 
             [Command]

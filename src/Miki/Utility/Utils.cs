@@ -172,12 +172,6 @@ namespace Miki
         public static DiscordEmbed SuccessEmbedResource(this IContext e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
 
-        public static string ToFormattedString(this int val)
-            => val.ToString("N0");
-
-        public static string ToFormattedString(this long val)
-            => val.ToString("N0");
-
         public static string RemoveMentions(this string arg, IDiscordGuild guild)
         {
             return Regex.Replace(arg, 

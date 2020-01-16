@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	internal class ImgurPost
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    
+    internal class ImgurPost
 	{
 		[JsonProperty("data")]
 		public List<ImgurImage> Entries { get; set; }

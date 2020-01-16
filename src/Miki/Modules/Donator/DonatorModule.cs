@@ -1,25 +1,24 @@
-﻿using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands;
-using Miki.Localization;
-using Miki.Logging;
-using Miki.Modules.Donator.Exceptions;
-using Miki.Helpers;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Miki.Services.Achievements;
-
-namespace Miki.Modules.Donator
+﻿namespace Miki.Modules.Donator
 {
-    using Attributes;
-    using Framework.Extension;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Discord.Rest;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands;
+    using Miki.Localization;
+    using Miki.Logging;
+    using Miki.Modules.Donator.Exceptions;
+    using Miki.Helpers;
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Attributes;
+    using Miki.Framework.Extension;
     using Miki.Modules.Accounts.Services;
-    using Services;
+    using Miki.Services;
+    using Miki.Services.Achievements;
 
     [Module("Donator")]
 	internal class DonatorModule

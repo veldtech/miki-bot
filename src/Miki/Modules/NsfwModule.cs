@@ -40,7 +40,7 @@
         [Command("urban")]
         public async Task UrbanAsync(IContext e)
         {
-            if (!e.GetArgumentPack().Pack.CanTake)
+            if(!e.GetArgumentPack().Pack.CanTake)
             {
                 return;
             }
@@ -50,7 +50,7 @@
             var query = e.GetArgumentPack().Pack.TakeAll();
             var searchResult = await api.SearchTermAsync(query);
 
-            if (searchResult == null)
+            if(searchResult == null)
             {
                 // TODO (Veld): Something went wrong/No results found.
                 return;
@@ -59,34 +59,36 @@
             UrbanDictionaryEntry entry = searchResult.Entries
                 .FirstOrDefault();
 
-            if (entry != null)
-            {
-                string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                await new EmbedBuilder()
-                {
-                    Author = new EmbedAuthor()
-                    {
-                        Name = "📚 " + entry.Term,
-                        Url = "http://www.urbandictionary.com/define.php?term=" + query,
-                    },
-                    Description = e.GetLocale().GetString("miki_module_general_urban_author", entry.Author)
-                }.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-                 .ToEmbed().QueueAsync(e, e.GetChannel());
-            }
-            else
+            if(entry == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+                return;
             }
+
+            string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+            );
+
+            string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+            );
+
+            await new EmbedBuilder()
+                .SetAuthor("📚 " + entry.Term, null,
+                    "http://www.urbandictionary.com/define.php?term=" + query)
+                .SetDescription(e.GetLocale()
+                    .GetString("miki_module_general_urban_author", entry.Author))
+                .AddField(
+                    e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
+                .AddField(
+                    e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
+                .AddField(
+                    e.GetLocale().GetString("miki_module_general_urban_rating"),
+                    $"👍 {entry.ThumbsUp:N0} - 👎 {entry.ThumbsDown:N0}", true)
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("yandere")]

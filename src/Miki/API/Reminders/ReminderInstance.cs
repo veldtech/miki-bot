@@ -7,8 +7,8 @@ namespace Miki.API.Reminder
 {
 	public class TaskInstance<T>
 	{
-		private TaskContainer<T> parent;
-		private CancellationTokenSource cancellationToken;
+		private readonly TaskContainer<T> parent;
+		private readonly CancellationTokenSource cancellationToken;
 
 		public readonly T Context;
 

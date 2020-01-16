@@ -357,7 +357,7 @@ namespace Miki.Modules.Accounts
             }
 
             embed.AddInlineField(
-                "Total Pts: " + totalScore.ToFormattedString(),
+                $"Total Pts: {totalScore:N0}",
                 string.IsNullOrEmpty(leftBuilder.ToString())
                     ? locale.GetString("miki_placeholder_null")
                     : leftBuilder.ToString());
@@ -557,8 +557,8 @@ namespace Miki.Modules.Accounts
                     infoValueBuilder.AppendText(e.GetLocale().GetString(
                         "miki_module_accounts_information_level",
                         localLevel,
-                        localExp.Experience.ToFormattedString(),
-                        maxLocalExp.ToFormattedString()));
+                        localExp.Experience.ToString("N0"),
+                        maxLocalExp.ToString("N0")));
 
 
                     if(self == null
@@ -570,7 +570,7 @@ namespace Miki.Modules.Accounts
 
                     infoValueBuilder.AppendText(locale.GetString(
                         "miki_module_accounts_information_rank",
-                        rank.ToFormattedString()));
+                        rank.ToString("N0")));
                 }
 
                 infoValueBuilder.AppendText(
@@ -610,7 +610,7 @@ namespace Miki.Modules.Accounts
                     .AppendText(
                         locale.GetString(
                             "miki_module_accounts_information_rank",
-                            globalRank?.ToFormattedString() ?? "We haven't calculated your rank yet!"),
+                            globalRank?.ToString("N0") ?? "We haven't calculated your rank yet!"),
                         MessageFormatting.Plain, false)
                     .Build();
 
@@ -1212,7 +1212,7 @@ namespace Miki.Modules.Accounts
 
             if(streak > 0)
             {
-                embed.AddInlineField("Streak!", $"You're on a {streak.ToFormattedString()} day daily streak!");
+                embed.AddInlineField("Streak!", $"You're on a {streak:N0} day daily streak!");
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());

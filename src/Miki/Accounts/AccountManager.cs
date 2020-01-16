@@ -49,7 +49,6 @@
                 throw new InvalidOperationException();
             }
 
-            //discord.guildUpdate += Client_GuildUpdated;
             client.GuildMemberCreate += this.Client_UserJoined;
             client.MessageCreate += this.CheckAsync;
         }

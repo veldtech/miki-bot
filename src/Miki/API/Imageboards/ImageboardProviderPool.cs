@@ -1,10 +1,10 @@
-﻿using Miki.API.Imageboards.Objects;
-using System;
-using System.Collections.Generic;
-
-namespace Miki.API.Imageboards
+﻿namespace Miki.API.Imageboards
 {
-	public static class ImageboardProviderPool
+    using Miki.API.Imageboards.Objects;
+    using System;
+    using System.Collections.Generic;
+    
+    public static class ImageboardProviderPool
 	{
 		private static readonly Dictionary<Type, ImageboardProvider<BooruPost>> Providers = new Dictionary<Type, ImageboardProvider<BooruPost>>();
 

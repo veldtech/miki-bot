@@ -6,9 +6,9 @@ namespace Miki.API.Imageboards.Objects
 	internal class SafebooruPost : BooruPost, ILinkable
 	{
 		public string Url =>
-			$"https://safebooru.org/{ ((Sample) ? "samples" : "images")}/{Directory}/{((Sample) ? "sample_" : "")}{Image}";
+			$"https://safebooru.org/{((IsSample) ? "samples" : "images")}/{Directory}/{((IsSample) ? "sample_" : "")}{Image}";
 
-		public string SourceUrl => $"https://safebooru.org/{ ((Sample) ? "samples" : "images")}/{Directory}";
+		public string SourceUrl => $"https://safebooru.org/{ ((IsSample) ? "samples" : "images")}/{Directory}";
 		public string Provider => "Safebooru";
 
 		[JsonProperty("directory")]
@@ -36,7 +36,7 @@ namespace Miki.API.Imageboards.Objects
 		public string Rating { get; set; }
 
 		[JsonProperty("sample")]
-		public bool Sample { get; set; }
+		public bool IsSample { get; set; }
 
 		[JsonProperty("sample_height")]
 		public int SampleHeight { get; set; }

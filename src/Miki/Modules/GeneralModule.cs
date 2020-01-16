@@ -28,6 +28,7 @@
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
+    using Miki.API.Reminders;
     using Miki.Attributes;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
@@ -288,7 +289,7 @@
 
 			builder.AddInlineField(
 				"📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
-				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString());
+				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString("N0"));
 
 			builder.AddInlineField(
 				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
