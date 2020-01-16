@@ -29,7 +29,8 @@
                 throw new ArgumentNullException();
             }
 
-            return weapons.FirstOrDefault(x => char.ToLower(x.Name[0]) == char.ToLower(name[0]));
+            return weapons.FirstOrDefault(
+                x => char.ToLower(x.Name[0]) == char.ToLower(name[0]));
         }
 
         public static bool TryParse(string name, out RpsWeapon weapon)

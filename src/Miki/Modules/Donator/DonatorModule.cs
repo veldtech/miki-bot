@@ -19,6 +19,7 @@
     using Miki.Modules.Accounts.Services;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
 
     [Module("Donator")]
 	internal class DonatorModule

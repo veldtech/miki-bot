@@ -35,6 +35,7 @@ namespace Miki.Modules
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
     using NCalc;
     using Newtonsoft.Json;
 

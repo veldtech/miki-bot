@@ -3,6 +3,7 @@ namespace Miki.Tests
 {
     using System;
     using System.Threading.Tasks;
+    using Miki.Utility;
     using Xunit;
 
     public static class Assext

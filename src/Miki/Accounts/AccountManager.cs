@@ -18,6 +18,7 @@
     using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Modules;
+    using Miki.Utility;
     using Sentry;
 
     public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);

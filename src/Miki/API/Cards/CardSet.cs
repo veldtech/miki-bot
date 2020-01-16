@@ -5,7 +5,8 @@
     using ProtoBuf;
     using System;
     using System.Collections.Generic;
-    
+    using Miki.Utility;
+
     [ProtoContract]
 	public class CardSet : List<Card>
 	{

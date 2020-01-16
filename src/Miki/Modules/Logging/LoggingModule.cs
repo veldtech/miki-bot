@@ -11,6 +11,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Framework.Extension;
+    using Miki.Utility;
 
     [Module("eventmessages")]
     public class LoggingModule

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Miki.Utility;
 
     public class TaskContainer<T>
 	{
@@ -67,10 +68,11 @@
 			{
 				freeIds.Add(i);
 			}
+
 			freeIds.RemoveAll(x => instances.ContainsKey(x));
-			if (freeIds.Count > 0)
+			if (freeIds.Any())
 			{
-				return freeIds[MikiRandom.Of(freeIds)];
+				return MikiRandom.Of(freeIds);
 			}
 			return null;
 		}

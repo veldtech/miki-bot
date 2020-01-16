@@ -19,6 +19,7 @@
     using Miki.Logging;
     using Miki.Modules.CustomCommands.CommandHandlers;
     using Miki.Modules.CustomCommands.Exceptions;
+    using Miki.Utility;
     using MiScript;
     using MiScript.Models;
     using MiScript.Parser;

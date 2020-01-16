@@ -1,13 +1,13 @@
-namespace Miki
+namespace Miki.Utility
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
     using Amazon.S3.Model;
     using Microsoft.Extensions.DependencyInjection;
+    using Miki.Api.Models;
     using Miki.Bot.Models;
     using Miki.BunnyCDN;
     using Miki.Cache;
@@ -22,8 +22,6 @@ namespace Miki
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Models;
-    using System.Linq;
-    using Miki.Api.Models;
     using Miki.Services;
 
     public static class Utils
@@ -145,7 +143,8 @@ namespace Miki
             => c.GetMessage().Author;
 
         public static bool IsAll(string input)
-            => (input == "all") || (input == "*");
+            => (input.ToLowerInvariant() == "all") 
+               || (input == "*");
 
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
             => new LocalizedEmbedBuilder(e.GetLocale())
@@ -253,73 +252,6 @@ namespace Miki
         }
     }
 
-    public class MikiRandom : RandomNumberGenerator
-    {
-        private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
-
-        public static int Next()
-        {
-            var data = new byte[sizeof(int)];
-            rng.GetBytes(data);
-            return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
-        }
-
-        public static long Next(long maxValue)
-        {
-            return Next(0L, maxValue);
-        }
-
-        public static int Next(int maxValue)
-        {
-            return Next(0, maxValue);
-        }
-
-        public static int Roll(int maxValue)
-        {
-            return Next(0, maxValue) + 1;
-        }
-
-        public static long Next(long minValue, long maxValue)
-        {
-            if (minValue > maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-        }
-
-        public static int Next(int minValue, int maxValue)
-        {
-            if (minValue > maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-        }
-
-        public static T Of<T>(IEnumerable<T> collection) 
-            => collection.ElementAt(Next(collection.Count()));
-
-        public static double NextDouble()
-        {
-            var data = new byte[sizeof(uint)];
-            rng.GetBytes(data);
-            var randUint = BitConverter.ToUInt32(data, 0);
-            return randUint / (uint.MaxValue + 1.0);
-        }
-
-        public override void GetBytes(byte[] data)
-        {
-            rng.GetBytes(data);
-        }
-
-        public override void GetNonZeroBytes(byte[] data)
-        {
-            rng.GetNonZeroBytes(data);
-        }
-    }
-
     public class TimeValue
     {
         public int Value { get; set; }
@@ -330,14 +262,9 @@ namespace Miki
         public TimeValue(string i, int v, bool minified = false)
         {
             Value = v;
-            if (minified)
-            {
-                Identifier = i[0].ToString();
-            }
-            else
-            {
-                Identifier = i;
-            }
+            Identifier = minified 
+                ? i[0].ToString() 
+                : i;
             this.minified = minified;
         }
 

@@ -50,6 +50,7 @@
     using Miki.Services.Rps;
     using Miki.Services.Transactions;
     using Miki.UrbanDictionary;
+    using Miki.Utility;
     using Retsu.Consumer;
     using Sentry;
     using StackExchange.Redis;

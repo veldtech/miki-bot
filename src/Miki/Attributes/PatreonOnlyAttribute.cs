@@ -8,6 +8,7 @@
     using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Miki.Services;
+    using Miki.Utility;
 
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
