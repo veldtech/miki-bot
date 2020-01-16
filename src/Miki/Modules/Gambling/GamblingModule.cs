@@ -43,6 +43,12 @@ namespace Miki.Modules.Gambling
                     .ConfigureAwait(false);
 
                 int bet = ValidateBet(e, user, 10000);
+                await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithReceiver(0L)
+                        .WithSender((long)e.GetAuthor().Id)
+                        .WithAmount(bet)
+                        .Build());
 
                 const float rewardMultiplier = 1f;
 
@@ -89,12 +95,6 @@ namespace Miki.Modules.Gambling
 
                     case RpsService.VictoryStatus.LOSE:
                     {
-                        await transactionService.CreateTransactionAsync(
-                            new TransactionRequest.Builder()
-                                .WithAmount((int)(bet * rewardMultiplier))
-                                .WithReceiver(0L)
-                                .WithSender((long)e.GetAuthor().Id)
-                                .Build());
                         resultMessage.Description +=
                             $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
                     } break;
@@ -133,11 +133,9 @@ namespace Miki.Modules.Gambling
             {
                 var blackjackService = e.GetService<BlackjackService>();
 
-                int? bet;
                 var userService = e.GetService<IUserService>();     
                 var user = await userService.GetOrCreateUserAsync(e.GetAuthor());
-                bet = ValidateBet(e, user);
-                
+                int bet = ValidateBet(e, user);
 
                 var message = await e.GetChannel()
                     .SendMessageAsync(null, embed: NewLoadingEmbed())
@@ -146,10 +144,7 @@ namespace Miki.Modules.Gambling
                 try
                 {
                     var session = await blackjackService.NewSessionAsync(
-                        message.Id,
-                        e.GetAuthor().Id,
-                        e.GetChannel().Id,
-                        bet.GetValueOrDefault())
+                        message.Id, e.GetAuthor().Id, e.GetChannel().Id, bet)
                         .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
                         .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
                         .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
@@ -397,6 +392,13 @@ namespace Miki.Modules.Gambling
 
             int bet = ValidateBet(e, u, 10000);
 
+            await transactionService.CreateTransactionAsync(
+                new TransactionRequest.Builder()
+                    .WithReceiver(AppProps.Currency.BankId)
+                    .WithSender((long)e.GetAuthor().Id)
+                    .WithAmount(bet)
+                    .Build());
+
             if (e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed("Please pick either `heads` or `tails`!")
@@ -445,21 +447,12 @@ namespace Miki.Modules.Gambling
 
             bool win = (side == pickedSide);
 
-            if (!win)
-            {
-               await transactionService.CreateTransactionAsync(
-                    new TransactionRequest.Builder()
-                        .WithReceiver(0L)
-                        .WithSender((long)e.GetAuthor().Id)
-                        .WithAmount(bet)
-                        .Build());
-            }
-            else
+            if (win)
             {
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithReceiver((long)e.GetAuthor().Id)
-                        .WithSender(0L)
+                        .WithSender(AppProps.Currency.BankId)
                         .WithAmount(bet)
                         .Build());
             }
@@ -491,6 +484,13 @@ namespace Miki.Modules.Gambling
                 .ConfigureAwait(false);
             int bet = ValidateBet(e, u, 99999);
             int moneyReturned = 0;
+
+            await transactionService.CreateTransactionAsync(
+                new TransactionRequest.Builder()
+                    .WithAmount(bet)
+                    .WithReceiver(AppProps.Currency.BankId)
+                    .WithSender((long)e.GetAuthor().Id)
+                    .Build());
 
             string[] objects = {
                 "🍒", "🍒", "🍒", "🍒", "🍒", "🍒", "🍒",
@@ -607,7 +607,6 @@ namespace Miki.Modules.Gambling
                     var achievements = e.GetService<AchievementService>();
                     var slotsAchievement = achievements.GetAchievement(AchievementIds.SlotsId);
                     await achievements.UnlockAsync(e, slotsAchievement, e.GetAuthor().Id);
-
                 }
             }
 
@@ -615,14 +614,7 @@ namespace Miki.Modules.Gambling
             {
                 embed.AddField(
                     locale.GetString("miki_module_fun_slots_lose_header"),
-                    locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
-
-                await transactionService.CreateTransactionAsync(
-                    new TransactionRequest.Builder()
-                        .WithAmount(bet)
-                        .WithReceiver(0L)
-                        .WithSender((long)e.GetAuthor().Id)
-                        .Build());
+                    locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency));
             }
             else
             {
@@ -636,7 +628,7 @@ namespace Miki.Modules.Gambling
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(moneyReturned)
-                        .WithSender(0L)
+                        .WithSender(AppProps.Currency.BankId)
                         .WithReceiver((long)e.GetAuthor().Id)
                         .Build());
             }

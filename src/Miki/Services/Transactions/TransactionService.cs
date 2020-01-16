@@ -51,7 +51,7 @@
             return service.SaveAsync();
         }
 
-        public async Task<TransactionResponse> TransferAsync(User receiver, User sender, long amount)
+        private async Task<TransactionResponse> TransferAsync(User receiver, User sender, long amount)
         {
             if(amount <= 0)
             {

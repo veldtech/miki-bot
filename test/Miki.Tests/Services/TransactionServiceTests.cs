@@ -62,19 +62,26 @@
         [Fact]
         public async Task TransferTest()    
         {
-            var unit = NewContext();
-            var userService = new UserService(unit);
+            await using(var unit = NewContext())
+            {
+                var userService = new UserService(unit);
 
-            var service = new TransactionService(userService, null);
-            await service.CreateTransactionAsync(new TransactionRequest(1L, 2L, 10));
+                var service = new TransactionService(userService, null);
+                await service.CreateTransactionAsync(new TransactionRequest(1L, 2L, 10));
+            }
 
-            var user1 = await userService.GetUserAsync(1L);
-            Assert.NotNull(user1);
-            Assert.Equal(0, user1.Currency);
+            await using(var unit = NewContext())
+            {
+                var userService = new UserService(unit);
 
-            var user2 = await userService.GetUserAsync(2L);
-            Assert.NotNull(user2);
-            Assert.Equal(10, user2.Currency);
+                var user1 = await userService.GetUserAsync(1L);
+                Assert.NotNull(user1);
+                Assert.Equal(0, user1.Currency);
+
+                var user2 = await userService.GetUserAsync(2L);
+                Assert.NotNull(user2);
+                Assert.Equal(10, user2.Currency);
+            }
         }
 
         [Fact]

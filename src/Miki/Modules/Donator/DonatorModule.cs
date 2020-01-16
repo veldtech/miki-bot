@@ -148,24 +148,25 @@
 		public async Task DisabilityAsync(IContext e)
 			=> await PerformCallAsync(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
 
-		[Command("tohru")]
-		[PatreonOnly]
-		public async Task TohruAsync(IContext e)
-			=> await PerformCallAsync(e,
-				"/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+        [Command("tohru")]
+        [PatreonOnly]
+        public async Task TohruAsync(IContext e)
+            => await PerformCallAsync(e,
+                    "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
+                .ConfigureAwait(false);
 
 		[Command("truth")]
 		[PatreonOnly]
 		public async Task TruthAsync(IContext e)
 			=> await PerformCallAsync(e,
 					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
-				.ConfigureAwait(false);
+				    .ConfigureAwait(false);
 
 		[Command("trapcard")]
 		[PatreonOnly]
 		public async Task YugiAsync(IContext e)
 			=> await PerformCallAsync(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}")
-            .ConfigureAwait(false);
+                .ConfigureAwait(false);
 
 		private async Task<string> GetUrlFromMessageAsync(IContext e)
 		{

@@ -26,5 +26,10 @@ namespace Miki
             public static string ExpBarOffEnd 
                 => "<:mbarrightoff:391971424862208000>";
         }
+
+        public class Currency
+        {
+            public static long BankId => 0L;
+        }
     }                 
 }
