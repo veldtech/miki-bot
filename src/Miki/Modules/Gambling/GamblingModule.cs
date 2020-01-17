@@ -384,6 +384,7 @@ namespace Miki.Modules.Gambling
         [Command("flip")]
         public async Task FlipAsync(IContext e)
         {
+            var locale = e.GetLocale();
             var transactionService = e.GetService<ITransactionService>();
             var userService = e.GetService<IUserService>();
 
@@ -453,18 +454,22 @@ namespace Miki.Modules.Gambling
                     new TransactionRequest.Builder()
                         .WithReceiver((long)e.GetAuthor().Id)
                         .WithSender(AppProps.Currency.BankId)
-                        .WithAmount(bet)
+                        .WithAmount(bet * 2)
                         .Build());
             }
 
             string output = win 
-                ? e.GetLocale().GetString("flip_description_win", $"`{bet}`")
-                : e.GetLocale().GetString("flip_description_lose");
+                ? locale.GetString("flip_description_win", $"`{bet}`")
+                : locale.GetString("flip_description_lose");
 
-            output += "\n" + e.GetLocale().GetString("miki_blackjack_new_balance", u.Currency + (win ? bet : -bet));
+            output += "\n" + e.GetLocale().GetString(
+                          "miki_blackjack_new_balance",
+                          u.Currency + (win ? bet : -bet));
 
             DiscordEmbed embed = new EmbedBuilder()
-                .SetAuthor(e.GetLocale().GetString("flip_header") + " | " + e.GetAuthor().Username, e.GetAuthor().GetAvatarUrl(),
+                .SetAuthor(
+                    locale.GetString("flip_header") + " | " + e.GetAuthor().Username, 
+                    e.GetAuthor().GetAvatarUrl(),
                     "https://patreon.com/mikibot")
                 .SetDescription(output)
                 .SetThumbnail(imageUrl)
@@ -614,7 +619,7 @@ namespace Miki.Modules.Gambling
             {
                 embed.AddField(
                     locale.GetString("miki_module_fun_slots_lose_header"),
-                    locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency));
+                    locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
             }
             else
             {
