@@ -504,6 +504,7 @@ namespace Miki.Modules.Accounts
 
                 var context = e.GetService<MikiDbContext>();
                 var userService = e.GetService<IUserService>();
+                var leaderboardsService = e.GetService<LeaderboardsService>();
 
                 var guild = e.GetGuild();
                 IDiscordGuildUser self = null;
@@ -544,7 +545,9 @@ namespace Miki.Modules.Accounts
                             discordUser.Username);
                     }
 
-                    int rank = await localExp.GetRankAsync(context);
+                    int rank = await leaderboardsService.GetLocalRankAsync(
+                        (long)e.GetGuild().Id, 
+                        x => x.Experience < localExp.Experience);
                     int localLevel = User.CalculateLevel(localExp.Experience);
                     int maxLocalExp = User.CalculateLevelExperience(localLevel);
                     int minLocalExp = User.CalculateLevelExperience(localLevel - 1);
@@ -584,7 +587,7 @@ namespace Miki.Modules.Accounts
                 int maxGlobalExp = User.CalculateLevelExperience(globalLevel);
                 int minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
-                int? globalRank = await account.GetGlobalRankAsync(context);
+                int? globalRank = await leaderboardsService.GetGlobalRankAsync((long)e.GetAuthor().Id);
 
                 EmojiBar globalExpBar = new EmojiBar(
                     maxGlobalExp - minGlobalExp, 

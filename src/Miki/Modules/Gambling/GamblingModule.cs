@@ -1,12 +1,10 @@
-﻿
-namespace Miki.Modules.Gambling
+﻿namespace Miki.Modules.Gambling
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Framework.Extension;
-    using Microsoft.EntityFrameworkCore;
     using Miki.API.Cards.Objects;
     using Miki.Bot.Models;
     using Miki.Discord;
@@ -14,10 +12,8 @@ namespace Miki.Modules.Gambling
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
-    using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
-    using Miki.Logging;
     using Miki.Modules.Accounts.Services;
     using Miki.Modules.Gambling.Exceptions;
     using Miki.Services.Achievements;
@@ -96,7 +92,7 @@ namespace Miki.Modules.Gambling
                     case RpsService.VictoryStatus.LOSE:
                     {
                         resultMessage.Description +=
-                            $"\n\nYou lost `{bet}` mekos ! Your new balance is `{user.Currency}`.";
+                            $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency}`.";
                     } break;
 
                     case RpsService.VictoryStatus.DRAW:
@@ -388,10 +384,10 @@ namespace Miki.Modules.Gambling
             var transactionService = e.GetService<ITransactionService>();
             var userService = e.GetService<IUserService>();
 
-            User u = await userService.GetOrCreateUserAsync(e.GetAuthor())
+            User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
 
-            int bet = ValidateBet(e, u, 10000);
+            int bet = ValidateBet(e, user, 10000);
 
             await transactionService.CreateTransactionAsync(
                 new TransactionRequest.Builder()
@@ -409,20 +405,20 @@ namespace Miki.Modules.Gambling
                 return;
             }
 
-            string sideParam = e.GetArgumentPack().TakeRequired<string>();
+            string sideParam = e.GetArgumentPack().TakeRequired<string>()
+                .ToLowerInvariant();
 
-            int pickedSide = -1;
-
-            if (char.ToLower(sideParam[0]) == 'h')
+            int? pickedSide = null;
+            if (sideParam[0] == 'h')
             {
                 pickedSide = 1;
             }
-            else if (char.ToLower(sideParam[0]) == 't')
+            else if (sideParam[0] == 't')
             {
                 pickedSide = 0;
             }
 
-            if (pickedSide == -1)
+            if (!pickedSide.HasValue)
             {
                 await e.ErrorEmbed("This is not a valid option!")
                     .ToEmbed()
@@ -446,7 +442,7 @@ namespace Miki.Modules.Gambling
             int side = MikiRandom.Next(2);
             string imageUrl = side == 1 ? headsUrl : tailsUrl;
 
-            bool win = (side == pickedSide);
+            bool win = side == pickedSide;
 
             if (win)
             {
@@ -462,13 +458,13 @@ namespace Miki.Modules.Gambling
                 ? locale.GetString("flip_description_win", $"`{bet}`")
                 : locale.GetString("flip_description_lose");
 
-            output += "\n" + e.GetLocale().GetString(
+            output += "\n" + locale.GetString(
                           "miki_blackjack_new_balance",
-                          u.Currency + (win ? bet : -bet));
+                          user.Currency + (win ? bet : -bet));
 
             DiscordEmbed embed = new EmbedBuilder()
                 .SetAuthor(
-                    locale.GetString("flip_header") + " | " + e.GetAuthor().Username, 
+                    $"{locale.GetString("flip_header")} | {e.GetAuthor().Username}", 
                     e.GetAuthor().GetAvatarUrl(),
                     "https://patreon.com/mikibot")
                 .SetDescription(output)

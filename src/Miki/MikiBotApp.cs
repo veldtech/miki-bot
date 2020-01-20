@@ -252,7 +252,7 @@
                 serviceCollection.AddScoped<PermissionService>();
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddScoped<BlackjackService>();
-
+                serviceCollection.AddScoped<LeaderboardsService>();
 
                 serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
                 {

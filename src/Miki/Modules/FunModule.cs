@@ -23,7 +23,6 @@ namespace Miki.Modules
     using Miki.Bot.Models.Exceptions;
     using Miki.Cache;
     using Miki.Common.Builders;
-    using Miki.Configuration;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
@@ -42,19 +41,7 @@ namespace Miki.Modules
     [Module("fun")]
 	public class FunModule
 	{
-		/// <summary>
-		/// IMGUR API Key (RapidAPI)
-		/// </summary>
-		[Configurable]
-		public string ImgurKey { get; set; } = "";
-
-		/// <summary>
-		/// IMGUR Client ID (RapidAPI)
-		/// </summary>
-		[Configurable]
-		public string ImgurClientId { get; set; } = "";
-
-		const string eightBallEmoji = "<:8ball:664615434061873182>";
+		const string EightBallEmoji = "<:8ball:664615434061873182>";
 
 		private readonly string[] puns =
 		{
@@ -136,8 +123,9 @@ namespace Miki.Modules
 		};
 
         private readonly HttpClient imageClient;
+		private readonly ImgurClient imgurClient;
 
-        private readonly string cdnEndpoint;
+		private readonly string cdnEndpoint;
 
 		public FunModule(MikiApp bot)
         {
@@ -147,6 +135,11 @@ namespace Miki.Modules
             if(!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 imageClient = new HttpClient(config.ImageApiUrl);
+            }
+
+            if(!string.IsNullOrWhiteSpace(config.DanbooruCredentials))
+            {
+                imgurClient = new ImgurClient(config.DanbooruCredentials);
             }
         }
 
@@ -160,7 +153,7 @@ namespace Miki.Modules
 				$"`{locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)])}`");
 
 			return new EmbedBuilder()
-				.SetTitle($"{eightBallEmoji}  8ball")
+				.SetTitle($"{EightBallEmoji}  8ball")
 				.SetDescription(output)
 				.SetColor(0, 0, 0)
 				.ToEmbed()
@@ -299,9 +292,7 @@ namespace Miki.Modules
                     .QueueAsync(e, e.GetChannel());
 				return;
 			}
-
-			var client = new MashapeClient(ImgurClientId, ImgurKey);
-			var endpoint = new GalleryEndpoint(client);
+			var endpoint = new GalleryEndpoint(imgurClient);
 			var images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
@@ -339,8 +330,7 @@ namespace Miki.Modules
                 return;
             }
 
-			var client = new MashapeClient(ImgurClientId, ImgurKey);
-			var endpoint = new GalleryEndpoint(client);
+			var endpoint = new GalleryEndpoint(imgurClient);
 			var images = await endpoint.SearchGalleryAsync($"title:{title}")
                 .ConfigureAwait(false);
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();

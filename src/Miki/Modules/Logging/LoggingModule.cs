@@ -13,10 +13,10 @@
     using Framework.Extension;
     using Miki.Utility;
 
-    [Module("eventmessages")]
+    [Module("logging")]
     public class LoggingModule
     {
-        /*
+        /**
          * -u   = user's name
          * -um  = user's mention
          * -s   = server's name
@@ -149,8 +149,9 @@
 
         public async Task<List<EventMessageObject>> GetMessageAsync(DbContext db, IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-            var channels = await guild.GetChannelsAsync();
-            var channelIds = channels.Select(x => x.Id.ToDbLong());
+            var channels = (await guild.GetChannelsAsync())
+                .ToList();
+            var channelIds = channels.Select(x => (long)x.Id);
 
             IDiscordGuildUser owner = await guild.GetOwnerAsync();
             var ownerMention = owner.Mention;
