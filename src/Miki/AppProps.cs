@@ -29,7 +29,7 @@ namespace Miki
 
         public class Currency
         {
-            public static long BankId => 0L;
+            public static long BankId => 1L;
         }
     }                 
 }
