@@ -547,7 +547,7 @@ namespace Miki.Modules.Accounts
 
                     int rank = await leaderboardsService.GetLocalRankAsync(
                         (long)e.GetGuild().Id, 
-                        x => x.Experience < localExp.Experience);
+                        x => x.Experience > localExp.Experience);
                     int localLevel = User.CalculateLevel(localExp.Experience);
                     int maxLocalExp = User.CalculateLevelExperience(localLevel);
                     int minLocalExp = User.CalculateLevelExperience(localLevel - 1);

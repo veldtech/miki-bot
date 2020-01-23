@@ -191,14 +191,15 @@
                 IGateway gateway;
                 if(selfHost)
                 {
-                    gateway = new GatewayCluster(new GatewayProperties
-                    {
-                        ShardCount = 1,
-                        ShardId = 0,
-                        Token = Config.Token,
-                        Compressed = true,
-                        AllowNonDispatchEvents = true
-                    });
+                    gateway = new GatewayCluster(
+                        new GatewayProperties
+                        {
+                            ShardCount = 1,
+                            ShardId = 0,
+                            Token = Config.Token,
+                            Compressed = true,
+                            AllowNonDispatchEvents = true
+                        });
                 }
                 else
                 {
