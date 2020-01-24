@@ -628,7 +628,7 @@
 
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
-                        .WithAmount(moneyReturned)
+                        .WithAmount(bet + moneyReturned)
                         .WithSender(AppProps.Currency.BankId)
                         .WithReceiver((long)e.GetAuthor().Id)
                         .Build());
