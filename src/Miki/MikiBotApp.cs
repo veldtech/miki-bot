@@ -54,16 +54,11 @@
     using Retsu.Consumer;
     using Sentry;
     using StackExchange.Redis;
+    using Veld.Osu;
+    using Veld.Osu.V1;
 
     public class MikiBotApp : MikiApp
     {
-        private Config Config { get; }
-
-        public MikiBotApp(Config config)
-        {
-            this.Config = config;
-        }
-
         public override ProviderCollection ConfigureProviders(
             IServiceProvider services,
             IAsyncEventingExecutor<IDiscordMessage> pipeline)
@@ -122,14 +117,7 @@
 
         public override void Configure(ServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton(Config);
-            serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
-            serviceCollection.AddSingleton<IConnectionMultiplexer>(
-                ConnectionMultiplexer.Connect(Config.RedisConnectionString));
-
-            // Setup Redis
-            serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
-            serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
+            CreateLogger();
 
             // Setup Entity Framework
             {
@@ -145,99 +133,98 @@
                 serviceCollection.AddDbContext<DbContext, MikiDbContext>(
                     x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
+
             
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
+
+            serviceCollection.AddSingleton<ConfigService>();
+            serviceCollection.AddSingleton(
+                x => x.GetService<ConfigService>()
+                    .GetOrCreateAnyAsync(null)
+                    .GetAwaiter().GetResult());
+
+            serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
+            serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
+            {
+                var config = x.GetService<ConfigService>();
+                // (velddev) blocks call, but resolves previous hack.
+                var configValue = config.GetOrCreateAnyAsync(null)
+                    .GetAwaiter().GetResult();
+                return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
+            });
+
+            // Setup Redis
+            serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
+            serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
 
             serviceCollection.AddScoped<
                 IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
 
-            // Setup Miki API
-            {
-                if(!string.IsNullOrWhiteSpace(Config.MikiApiBaseUrl)
-                    && !string.IsNullOrWhiteSpace(Config.MikiApiKey))
-                {
-                    serviceCollection.AddScoped(x => new MikiApiClient(Config.MikiApiKey));
-                }
-                else
-                {
-                    Log.Warning("No Miki API parameters were supplied, ignoring Miki API.");
-                }
-            }
+            serviceCollection.AddScoped(
+                x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
 
             // Setup Amazon CDN Client
-            {
-                if(!string.IsNullOrWhiteSpace(Config.CdnAccessKey)
-                   && !string.IsNullOrWhiteSpace(Config.CdnSecretKey)
-                   && !string.IsNullOrWhiteSpace(Config.CdnRegionEndpoint))
-                {
-                    serviceCollection.AddSingleton(new AmazonS3Client(
-                        Config.CdnAccessKey,
-                        Config.CdnSecretKey,
-                        new AmazonS3Config()
-                        {
-                            ServiceURL = Config.CdnRegionEndpoint
-                        }));
-                }
-            }
+            serviceCollection.AddSingleton(
+                x => new AmazonS3Client(
+                    x.GetService<Config>().CdnAccessKey,
+                    x.GetService<Config>().CdnSecretKey,
+                    new AmazonS3Config()
+                    {
+                        ServiceURL = x.GetService<Config>().CdnRegionEndpoint
+                    }));
 
-            // Setup Discord
+                    // Setup Discord
             {
                 serviceCollection.AddSingleton<IApiClient>(
-                    s => new DiscordApiClient(Config.Token, s.GetService<ICacheClient>()));
-
+                    s => new DiscordApiClient(s.GetService<Config>().Token, s.GetService<ICacheClient>()));
 
                 bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
 
-                IGateway gateway;
                 if(selfHost)
                 {
-                    gateway = new GatewayCluster(
-                        new GatewayProperties
-                        {
-                            ShardCount = 1,
-                            ShardId = 0,
-                            Token = Config.Token,
-                            Compressed = true,
-                            AllowNonDispatchEvents = true
-                        });
+                    serviceCollection.AddSingleton<IGateway>(
+                        x => new GatewayCluster(
+                            new GatewayProperties
+                            {
+                                ShardCount = 1,
+                                ShardId = 0,
+                                Token = x.GetService<Config>().Token,
+                                Compressed = true,
+                                AllowNonDispatchEvents = true
+                            }));
                 }
                 else
                 {
-                    gateway = new RetsuConsumer(new ConsumerConfiguration
-                    {
-                        ConnectionString = new Uri(Config.RabbitUrl),
-                        QueueName = "gateway",
-                        ExchangeName = "consumer",
-                        ConsumerAutoAck = false,
-                        PrefetchCount = 25,
-                    });
+                    serviceCollection.AddSingleton<IGateway>(x => new RetsuConsumer(
+                        new ConsumerConfiguration
+                        {
+                            ConnectionString = new Uri(x.GetService<Config>().RabbitUrl),
+                            QueueName = "gateway",
+                            ExchangeName = "consumer",
+                            ConsumerAutoAck = false,
+                            PrefetchCount = 25,
+                        }));
                 }
 
-                serviceCollection.AddSingleton(gateway);
                 serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
             }
 
             // Setup web services
-            serviceCollection.AddSingleton(new UrbanDictionaryAPI());
-            serviceCollection.AddSingleton(new BunnyCDNClient(Config.BunnyCdnKey));
+            serviceCollection.AddSingleton(new UrbanDictionaryApi());
+            serviceCollection.AddSingleton(x => new BunnyCDNClient(x.GetService<Config>().BunnyCdnKey));
 
             // Setup miscellanious services
             {
                 serviceCollection.AddSingleton<ConfigurationManager>();
                 serviceCollection.AddSingleton<BackgroundStore>();
 
-                if(!string.IsNullOrWhiteSpace(Config.SharpRavenKey))
-                {
-                    serviceCollection.AddSingleton<ISentryClient>(new SentryClient(
+                serviceCollection.AddSingleton<ISentryClient>(
+                    x => new SentryClient(
                         new SentryOptions
                         {
-                            Dsn = new Dsn(Config.SharpRavenKey)
+                            Dsn = new Dsn(x.GetService<Config>().SharpRavenKey)
                         }));
-                }
-                else
-                {
-                    Log.Warning("Sentry.io key not provided, ignoring distributed error logging...");
-                }
+
                 serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
                 serviceCollection.AddSingleton<TransactionEvents>();
 
@@ -252,15 +239,18 @@
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
                 serviceCollection.AddScoped<PermissionService>();
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
+                serviceCollection.AddSingleton<IOsuApiClient>(
+                    x => new OsuApiClientV1(x.GetService<Config>().OptionalValues.OsuApiKey));
                 serviceCollection.AddScoped<BlackjackService>();
                 serviceCollection.AddScoped<LeaderboardsService>();
 
-                serviceCollection.AddSingleton(new PrefixCollection<IDiscordMessage>
-                {
-                    new PrefixTrigger(">", true, true),
-                    new PrefixTrigger("miki.", false),
-                    new MentionTrigger()
-                });
+                serviceCollection.AddSingleton(
+                    new PrefixCollection<IDiscordMessage>
+                    {
+                        new PrefixTrigger(">", true, true),
+                        new PrefixTrigger("miki.", false),
+                        new MentionTrigger()
+                    });
                 serviceCollection.AddSingleton<PrefixService<IDiscordMessage>>();
             }
 
@@ -343,6 +333,46 @@
                     Log.Debug(ex.ToString());
                 }
             }
+        }
+
+
+        private static void CreateLogger()
+        {
+            var theme = new LogTheme();
+            theme.SetColor(
+                LogLevel.Information,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.White,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Error,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Red,
+                    Background = 0
+                });
+            theme.SetColor(
+                LogLevel.Warning,
+                new LogColor
+                {
+                    Foreground = ConsoleColor.Yellow,
+                    Background = 0
+                });
+
+            new LogBuilder()
+                .AddLogEvent((msg, lvl) =>
+                {
+                    if(lvl >= (LogLevel)Enum.Parse(typeof(LogLevel),
+                           Environment.GetEnvironmentVariable(Constants.EnvLogLevel)))
+                    {
+                        Console.WriteLine(msg);
+                    }
+                })
+                .SetLogHeader(msg => $"[{msg}]: ")
+                .SetTheme(theme)
+                .Apply();
         }
 
         private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)

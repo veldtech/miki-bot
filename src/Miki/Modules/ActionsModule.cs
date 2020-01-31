@@ -381,7 +381,7 @@
             EmbedBuilder builder = new EmbedBuilder();
 
             var messageContent = e.GetArgumentPack().Pack.TakeAll()
-                .RemoveMentions(e.GetGuild());
+                .RemoveMentionsAsync(e.GetGuild());
 
             if (e.GetArgumentPack().CanTake)
             {

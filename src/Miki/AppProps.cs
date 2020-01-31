@@ -9,6 +9,9 @@ namespace Miki
     /// </summary>
     public static class AppProps
     {
+        public const string InviteUrl 
+            = "https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334";
+
         public static class Emoji
         {
             public static string Mekos => "<:mekos:421972155484471296>";
@@ -25,6 +28,8 @@ namespace Miki
                 => "<:mbarmidoff:391971424824197123>";
             public static string ExpBarOffEnd 
                 => "<:mbarrightoff:391971424862208000>";
+
+            public static string Disabled => "🚫";
         }
 
         public class Currency

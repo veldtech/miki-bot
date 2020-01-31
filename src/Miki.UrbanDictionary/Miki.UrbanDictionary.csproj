@@ -5,12 +5,13 @@
     <LangVersion>7.1</LangVersion>
     <Authors>Velddev</Authors>
     <Product>Miki</Product>
-    <Description>Urban dictionary api implementation.</Description>
-    <Version>0.1.0</Version>
+    <Description>Urban dictionary API implementation.</Description>
+    <Version>0.2.0</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Miki.Net.Http" Version="2.1.0" />
+    <PackageReference Include="Miki.Net.Http" Version="3.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 

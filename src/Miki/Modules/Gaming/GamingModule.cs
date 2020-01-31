@@ -1,66 +1,103 @@
 ﻿namespace Miki.Modules.Gaming
 {
-    using System.IO;
-    using System.Net;
     using System.Threading.Tasks;
     using Framework;
     using Framework.Commands.Attributes;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Discord.Rest;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Extension;
+    using Miki.Utility;
+    using Veld.Osu;
+    using Veld.Osu.Models;
 
     [Module("Gaming")]
 	internal class GamingModule
     {
-        private const string baseUrl = "http://lemmmy.pw/osusig/sig.php";
+        private readonly IOsuApiClient osuClient;
+
+        public GamingModule(IOsuApiClient osuClient)
+        {
+            this.osuClient = osuClient;
+        }
 
         [Command("osu")]
-		public async Task SendOsuSignatureAsync(IContext e)
-		{
-            e.GetArgumentPack().Take(out string username);
+		public async Task OsuAsync(IContext e)
+        {
+            var username = e.GetArgumentPack().TakeRequired<string>();
 
-            using WebClient webClient = new WebClient();
-            byte[] data = webClient.DownloadData(
-                $"{baseUrl}?colour=pink&uname={username}&countryrank");
+            var user = await osuClient.GetPlayerAsync(username);
+            if(user == null)
+            {
+                throw new UserNullException();
+            }
 
-            await using MemoryStream mem = new MemoryStream(data);
-            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+            await GetOsuEmbed(e, GameMode.Osu, user)
+                .QueueAsync(e, e.GetChannel());
         }
 
 		[Command("ctb")]
-		public async Task SendCatchTheBeatSignatureAsync(IContext e)
+		public async Task CatchTheBeatAsync(IContext e)
 		{
-            e.GetArgumentPack().Take(out string username);
+            var username = e.GetArgumentPack().TakeRequired<string>();
 
-            using WebClient webClient = new WebClient();
-            byte[] data = webClient.DownloadData(
-                $"{baseUrl}?colour=pink&uname={username}&mode=2&countryrank");
+            var user = await osuClient.GetPlayerAsync(username, GameMode.CatchTheBeat);
+            if(user == null)
+            {
+                throw new UserNullException();
+            }
 
-            await using MemoryStream mem = new MemoryStream(data);
-            await e.GetChannel().SendFileAsync(mem, $"{username}.png");
+            await GetOsuEmbed(e, GameMode.Osu, user)
+                .QueueAsync(e, e.GetChannel());
         }
 
 		[Command("mania")]
-		public async Task SendManiaSignatureAsync(IContext e)
+		public async Task ManiaAsync(IContext e)
 		{
-            e.GetArgumentPack().Take(out string username);
+            var username = e.GetArgumentPack().TakeRequired<string>();
 
-            using WebClient webClient = new WebClient();
-            byte[] data = webClient.DownloadData(
-                $"{baseUrl}?colour=pink&uname={username}&mode=3&countryrank");
+            var user = await osuClient.GetPlayerAsync(username, GameMode.Mania);
+            if(user == null)
+            {
+                throw new UserNullException();
+            }
 
-            await using MemoryStream mem = new MemoryStream(data);
-            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+            await GetOsuEmbed(e, GameMode.Osu, user)
+                .QueueAsync(e, e.GetChannel());
         }
 
 		[Command("taiko")]
-		public async Task SendTaikoSignatureAsync(IContext e)
+		public async Task TaikoAsync(IContext e)
 		{
-            e.GetArgumentPack().Take(out string username);
+            var username = e.GetArgumentPack().TakeRequired<string>();
 
-            using WebClient webClient = new WebClient();
-            byte[] data = webClient.DownloadData(
-                $"{baseUrl}?colour=pink&uname={username}&mode=1&countryrank");
+            var user = await osuClient.GetPlayerAsync(username, GameMode.Taiko);
+            if(user == null)
+            {
+                throw new UserNullException();
+            }
 
-            await using MemoryStream mem = new MemoryStream(data);
-            await e.GetChannel().SendFileAsync(mem, $"sig.png");
+            await GetOsuEmbed(e, GameMode.Osu, user)
+                .QueueAsync(e, e.GetChannel());
+        }
+
+        private DiscordEmbed GetOsuEmbed(IContext context, GameMode gamemode, IOsuPlayer user)
+        {
+            return new EmbedBuilder()
+                .SetAuthor(
+                    $"{gamemode.ToString().ToLowerInvariant()}! | {user.Username}",
+                    "https://cdn.miki.ai/commands/logo-osu.png",
+                    $"https://osu.ppy.sh/users/{user.UserId}")
+                .SetDescription(
+                    $":flag_{user.Country.ToLowerInvariant()}: - {user.RankCountry:N0}, 🌐 - {user.RankGlobal:N0}")
+                .AddInlineField("Accuracy", $"{user.Accuracy:N2}")
+                .AddInlineField("PP", $"{user.PerformancePoints:N2}")
+                .AddField("Total Time Played", user.TimePlayed.ToTimeString(context.GetLocale(), true))
+                .SetThumbnail($"https://a.ppy.sh/{user.UserId}?.png")
+                .SetColor(255, 102, 170)
+                .ToEmbed();
         }
     }
 }

@@ -46,7 +46,7 @@
                 return;
             }
 
-            var api = e.GetService<UrbanDictionaryAPI>();
+            var api = e.GetService<UrbanDictionaryApi>();
 
             var query = e.GetArgumentPack().Pack.TakeAll();
             var searchResult = await api.SearchTermAsync(query);
@@ -57,8 +57,7 @@
                 return;
             }
 
-            UrbanDictionaryEntry entry = searchResult.Entries
-                .FirstOrDefault();
+            var entry = searchResult.List.FirstOrDefault();
 
             if(entry == null)
             {
@@ -69,15 +68,15 @@
             }
 
             string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
-                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionUrl(x.Groups[1].Value)})"
             );
 
             string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
-                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionUrl(x.Groups[1].Value)})"
             );
 
             await new EmbedBuilder()
-                .SetAuthor("📚 " + entry.Term, null,
+                .SetAuthor($"📚 {entry.Term}", null,
                     "http://www.urbandictionary.com/define.php?term=" + query)
                 .SetDescription(e.GetLocale()
                     .GetString("miki_module_general_urban_author", entry.Author))
@@ -85,9 +84,7 @@
                     e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
                 .AddField(
                     e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
-                .AddField(
-                    e.GetLocale().GetString("miki_module_general_urban_rating"),
-                    $"👍 {entry.ThumbsUp:N0} - 👎 {entry.ThumbsDown:N0}", true)
+                .SetFooter($"👍 { entry.ThumbsUp:N0} 👎 { entry.ThumbsDown:N0} - Powered by UrbanDictionary")
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }

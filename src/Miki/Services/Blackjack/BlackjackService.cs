@@ -192,7 +192,6 @@
             { CardValue.QUEENS, 10 },
             { CardValue.KINGS,  10 },
         };
-        private const ulong DealerId = 0;
 
         public int Bet => context.Bet;
 

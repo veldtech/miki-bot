@@ -17,6 +17,7 @@
     using Miki.Attributes;
     using Miki.Framework.Extension;
     using Miki.Modules.Accounts.Services;
+    using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
     using Miki.Utility;
@@ -24,7 +25,7 @@
     [Module("Donator")]
 	internal class DonatorModule
 	{
-		private readonly Net.Http.HttpClient client;
+		private readonly IHttpClient client;
         private const int KeyBuybackPrice = 30000;
 
 		public DonatorModule(Config config)
@@ -32,7 +33,7 @@
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
                 && !string.IsNullOrWhiteSpace(config.MikiApiKey))
             {
-                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                client = new HttpClient(config.ImageApiUrl)
                     .AddHeader("Authorization", config.MikiApiKey);
             }
             else
@@ -140,7 +141,7 @@
 		[PatreonOnly]
 		public async Task BoxAsync(IContext e)
 			=> await PerformCallAsync(e,
-					$"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
+					$"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
 				.ConfigureAwait(false);
 
 		[Command("disability")]
@@ -152,14 +153,14 @@
         [PatreonOnly]
         public async Task TohruAsync(IContext e)
             => await PerformCallAsync(e,
-                    "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
+                    "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild()))
                 .ConfigureAwait(false);
 
 		[Command("truth")]
 		[PatreonOnly]
 		public async Task TruthAsync(IContext e)
 			=> await PerformCallAsync(e,
-					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
+					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild()))
 				    .ConfigureAwait(false);
 
 		[Command("trapcard")]

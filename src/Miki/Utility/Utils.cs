@@ -2,6 +2,7 @@ namespace Miki.Utility
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
@@ -22,6 +23,7 @@ namespace Miki.Utility
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Models;
+    using Miki.Net.Http;
     using Miki.Services;
 
     public static class Utils
@@ -59,17 +61,15 @@ namespace Miki.Utility
                     t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
-            if (time.Hours > 0)
+
+            if(time.Hours > 0)
             {
-                if (time.Hours > 1)
-                {
-                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
-                }
-                else
-                {
-                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
-                }
+                t.Add(new TimeValue(
+                    instance.GetString(time.Hours > 1 ? "time_hours" : "time_hour"),
+                    time.Hours, 
+                    minified));
             }
+
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
@@ -148,7 +148,7 @@ namespace Miki.Utility
 
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
             => new LocalizedEmbedBuilder(e.GetLocale())
-                .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
+                .WithTitle(new IconResource(AppProps.Emoji.Disabled, "miki_error_message_generic"))
                 .SetDescription(message)
                 .SetColor(1.0f, 0.0f, 0.0f);
 
@@ -162,34 +162,62 @@ namespace Miki.Utility
             => new DateTime(1755, 1, 1, 0, 0, 0);
 
         public static DiscordEmbed SuccessEmbed(this IContext e, string message)
-            => new EmbedBuilder()
+            => new EmbedBuilder
             {
-                Title = "✅ " + e.GetLocale().GetString("miki_success_message_generic"),
+                Title = $"✅ {e.GetLocale().GetString("miki_success_message_generic")}",
                 Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();
-        public static DiscordEmbed SuccessEmbedResource(this IContext e, string resource, params object[] param)
+        public static DiscordEmbed SuccessEmbedResource(
+            this IContext e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
 
-        public static string RemoveMentions(this string arg, IDiscordGuild guild)
+        public static ValueTask<string> RemoveMentionsAsync(this string arg, IDiscordGuild guild)
         {
-            return Regex.Replace(arg, 
-                "<@!?(\\d+)>", 
-                m => guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username, 
-                RegexOptions.None);
+            return new Regex("<@!?(\\d+)>")
+                .ReplaceAsync(arg, m => ReplaceMentionAsync(guild, m));
+        }
+
+        private static async ValueTask<string> ReplaceMentionAsync(
+            IDiscordGuild guild, Match match)
+        {
+            if(match.Groups.Count == 0)
+            {
+                return match.Value;
+            }
+
+            string value = match.Groups[1]?.Value;
+            if(string.IsNullOrEmpty(value))
+            {
+                return match.Value;
+            }
+
+            if(!ulong.TryParse(value, out var entityId))
+            {
+                return match.Value;
+            }
+
+            var guildMember = await guild.GetMemberAsync(entityId);
+            if(guildMember == null)
+            {
+                return match.Value;
+            }
+
+            return guildMember.Nickname ?? guildMember.Username;
         }
 
         public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
         {
             for (int i = 0; i < Math.Min(items.Count, 12); i++)
             {
-                embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
+                embed.AddInlineField(
+                    $"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
             }
             return embed;
         }
 
         public static async Task SyncAvatarAsync(
-            IDiscordUser user, 
+            [NotNull] IDiscordUser user, 
             IExtendedCacheClient cache, 
             IUserService context, 
             AmazonS3Client s3Service)
@@ -204,7 +232,7 @@ namespace Miki.Utility
 
             string avatarUrl = user.GetAvatarUrl();
 
-            using (var client = new Net.Http.HttpClient(avatarUrl, true))
+            using (var client = new HttpClient(avatarUrl, true))
             {
                 request.InputStream = await client.GetStreamAsync();
             }
@@ -225,20 +253,6 @@ namespace Miki.Utility
 
             await context.UpdateUserAsync(u);
             await context.SaveAsync();
-        }
-        public static async Task<bool> HeadAvatarAsync(IDiscordUser user)
-        {
-            if (user == null)
-            {
-                return false;
-            }
-
-            using var client = new Net.Http.HttpClient($"https://cdn.miki.ai/avatars/{user.Id}.png");
-            var response = await client.SendAsync(new System.Net.Http.HttpRequestMessage
-            {
-                Method = new System.Net.Http.HttpMethod("HEAD"),
-            });
-            return response.Success;
         }
 
         public static string TakeAll(this IArgumentPack pack)

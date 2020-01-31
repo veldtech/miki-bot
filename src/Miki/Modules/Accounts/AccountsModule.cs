@@ -22,16 +22,15 @@ namespace Miki.Modules.Accounts
     using Miki.Common.Builders;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Attributes;
-    using Miki.Helpers;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
+    using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
     using Miki.Services.Transactions;
@@ -42,7 +41,7 @@ namespace Miki.Modules.Accounts
     {
         public AchievementService  AchievementService { get; set; }
 
-        private readonly Net.Http.HttpClient client;
+        private readonly IHttpClient client;
 
         public AccountsModule(MikiApp app)
         {
@@ -51,7 +50,7 @@ namespace Miki.Modules.Accounts
             if (!string.IsNullOrWhiteSpace(config.MikiApiKey)
                 && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
-                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                client = new HttpClient(config.ImageApiUrl)
                     .AddHeader("Authorization", config.MikiApiKey);
             }
             else

@@ -38,14 +38,7 @@
     [Module("General")]
 	public class GeneralModule
 	{
-		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
-
-        // TODO(@velddev): turn into seperate generated string.
-        private const string InviteUrl = "https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334";
-
-        private const string GithubUrl = "";
-        private const string MikiTwitterUrl = "";
-
+        private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
         [Command("avatar")]
         public async Task AvatarAsync(IContext e)
@@ -479,7 +472,7 @@
             dmChannel.QueueMessage(e,
                 null,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
-                + "\n" + InviteUrl);
+                + "\n" + AppProps.InviteUrl);
         }
 
         [Command("ping", "lag")]
