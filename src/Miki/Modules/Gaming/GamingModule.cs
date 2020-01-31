@@ -49,7 +49,7 @@
                 throw new UserNullException();
             }
 
-            await GetOsuEmbed(e, GameMode.Osu, user)
+            await GetOsuEmbed(e, GameMode.CatchTheBeat, user)
                 .QueueAsync(e, e.GetChannel());
         }
 
@@ -64,7 +64,7 @@
                 throw new UserNullException();
             }
 
-            await GetOsuEmbed(e, GameMode.Osu, user)
+            await GetOsuEmbed(e, GameMode.Mania, user)
                 .QueueAsync(e, e.GetChannel());
         }
 
@@ -79,7 +79,7 @@
                 throw new UserNullException();
             }
 
-            await GetOsuEmbed(e, GameMode.Osu, user)
+            await GetOsuEmbed(e, GameMode.Taiko, user)
                 .QueueAsync(e, e.GetChannel());
         }
 
