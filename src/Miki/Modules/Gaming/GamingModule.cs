@@ -24,62 +24,28 @@
         }
 
         [Command("osu")]
-		public async Task OsuAsync(IContext e)
+        public Task OsuAsync(IContext e) => GetOsuUserAsync(e, GameMode.Osu);
+
+        [Command("ctb")]
+        public Task CtbAsync(IContext e) => GetOsuUserAsync(e, GameMode.CatchTheBeat);
+        
+        [Command("mania")]
+        public Task ManiaAsync(IContext e) => GetOsuUserAsync(e, GameMode.Mania);
+
+        [Command("taiko")]
+        public Task TaikoAsync(IContext e) => GetOsuUserAsync(e, GameMode.Taiko);
+
+        private async Task GetOsuUserAsync(IContext e, GameMode mode)
         {
             var username = e.GetArgumentPack().TakeRequired<string>();
 
-            var user = await osuClient.GetPlayerAsync(username);
+            var user = await osuClient.GetPlayerAsync(username, mode);
             if(user == null)
             {
                 throw new UserNullException();
             }
 
-            await GetOsuEmbed(e, GameMode.Osu, user)
-                .QueueAsync(e, e.GetChannel());
-        }
-
-		[Command("ctb")]
-		public async Task CatchTheBeatAsync(IContext e)
-		{
-            var username = e.GetArgumentPack().TakeRequired<string>();
-
-            var user = await osuClient.GetPlayerAsync(username, GameMode.CatchTheBeat);
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
-            await GetOsuEmbed(e, GameMode.CatchTheBeat, user)
-                .QueueAsync(e, e.GetChannel());
-        }
-
-		[Command("mania")]
-		public async Task ManiaAsync(IContext e)
-		{
-            var username = e.GetArgumentPack().TakeRequired<string>();
-
-            var user = await osuClient.GetPlayerAsync(username, GameMode.Mania);
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
-            await GetOsuEmbed(e, GameMode.Mania, user)
-                .QueueAsync(e, e.GetChannel());
-        }
-
-		[Command("taiko")]
-		public async Task TaikoAsync(IContext e)
-		{
-            var username = e.GetArgumentPack().TakeRequired<string>();
-
-            var user = await osuClient.GetPlayerAsync(username, GameMode.Taiko);
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
-            await GetOsuEmbed(e, GameMode.Taiko, user)
+            await GetOsuEmbed(e, mode, user)
                 .QueueAsync(e, e.GetChannel());
         }
 
