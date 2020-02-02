@@ -7,12 +7,13 @@
 
     public class MikiRandom : RandomNumberGenerator
     {
-        private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
+        private static readonly RandomNumberGenerator RandomNumberGenerator 
+            = new RNGCryptoServiceProvider();
 
         public static int Next()
         {
             var data = new byte[sizeof(int)];
-            rng.GetBytes(data);
+            RandomNumberGenerator.GetBytes(data);
             return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
         }
 
@@ -56,19 +57,19 @@
         public static double NextDouble()
         {
             var data = new byte[sizeof(uint)];
-            rng.GetBytes(data);
+            RandomNumberGenerator.GetBytes(data);
             var randUint = BitConverter.ToUInt32(data, 0);
             return randUint / (uint.MaxValue + 1.0);
         }
 
         public override void GetBytes(byte[] data)
         {
-            rng.GetBytes(data);
+            RandomNumberGenerator.GetBytes(data);
         }
 
         public override void GetNonZeroBytes(byte[] data)
         {
-            rng.GetNonZeroBytes(data);
+            RandomNumberGenerator.GetNonZeroBytes(data);
         }
     }
 }
