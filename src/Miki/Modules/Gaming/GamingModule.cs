@@ -6,7 +6,6 @@
     using Miki.Bot.Models.Exceptions;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Framework.Commands;
     using Miki.Framework.Extension;
     using Miki.Utility;
