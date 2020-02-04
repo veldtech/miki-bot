@@ -240,7 +240,15 @@
                 serviceCollection.AddScoped<PermissionService>();
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddSingleton<IOsuApiClient>(
-                    x => new OsuApiClientV1(x.GetService<Config>().OptionalValues.OsuApiKey));
+                    x =>
+                    {
+                        var config = x.GetService<Config>();
+                        if(config.OptionalValues?.OsuApiKey == null)
+                        {
+                            return null;
+                        }
+                        return new OsuApiClientV1(config.OptionalValues.OsuApiKey);
+                    });
                 serviceCollection.AddScoped<BlackjackService>();
                 serviceCollection.AddScoped<LeaderboardsService>();
 

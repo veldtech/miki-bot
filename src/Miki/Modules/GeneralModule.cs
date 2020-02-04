@@ -34,6 +34,7 @@
     using Miki.Services.Achievements;
     using Miki.Utility;
     using Miki.Bot.Models.Exceptions;
+    using Miki.Localization.Exceptions;
 
     [Module("General")]
 	public class GeneralModule
@@ -81,33 +82,45 @@
         [Command("calc", "calculate")]
         public Task CalculateAsync(IContext e)
         {
-
             Expression expression = new Expression(e.GetArgumentPack().Pack.TakeAll());
 
             expression.Parameters.Add("pi", Math.PI);
 
             expression.EvaluateFunction += (name, x) =>
             {
-                if(name == "lerp")
+                switch(name)
                 {
-                    double n = (double) x.Parameters[0].Evaluate();
-                    double v = (double) x.Parameters[1].Evaluate();
-                    double o = (double) x.Parameters[2].Evaluate();
-                    x.Result = (n * (1.0 - o)) + (v * o);
+                    case "lerp":
+                    {
+                        double n = (double) x.Parameters[0].Evaluate();
+                        double v = (double) x.Parameters[1].Evaluate();
+                        double o = (double) x.Parameters[2].Evaluate();
+                        x.Result = (n * (1.0 - o)) + (v * o);
+                        break;
+                    }
                 }
             };
 
-            try
+            Result<string> result = new Result<string>(() => expression.Evaluate().ToString());
+            if(result.IsValid)
             {
-                e.GetChannel().QueueMessage(e, null, expression.Evaluate().ToString());
-            }
-            catch(Exception ex)
-            {
-                e.ErrorEmbed(ex.Message)
-                 .ToEmbed().QueueAsync(e, e.GetChannel());
+                return new EmbedBuilder()
+                    .SetTitle("🧮  Calculator")
+                    .SetDescription(result.Unwrap())
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
             }
 
-            return Task.CompletedTask;
+            var exception = result.UnwrapException();
+            if(exception is LocalizedException le)
+            {
+                return e.ErrorEmbedResource(le.LocaleResource)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+            }
+            return e.ErrorEmbed($"Your calculation threw an error: {exception.Message}")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("changelog")]

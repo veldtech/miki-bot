@@ -1,5 +1,6 @@
 ﻿namespace Miki.Modules.Gaming
 {
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Framework;
     using Framework.Commands.Attributes;
@@ -17,7 +18,7 @@
     {
         private readonly IOsuApiClient osuClient;
 
-        public GamingModule(IOsuApiClient osuClient)
+        public GamingModule([Optional] IOsuApiClient osuClient)
         {
             this.osuClient = osuClient;
         }
