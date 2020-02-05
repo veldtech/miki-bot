@@ -106,7 +106,7 @@
             {
                 return new EmbedBuilder()
                     .SetTitle("🧮  Calculator")
-                    .SetDescription(result.Unwrap())
+                    .SetDescription(Utils.EscapeEveryone(result.Unwrap()))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
             }
