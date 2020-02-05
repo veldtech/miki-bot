@@ -34,6 +34,9 @@
     using Miki.Services.Achievements;
     using Miki.Utility;
     using Miki.Bot.Models.Exceptions;
+    using Miki.Framework.Commands.Permissions;
+    using Miki.Framework.Commands.Scopes;
+    using Miki.Framework.Commands.Scopes.Attributes;
     using Miki.Localization.Exceptions;
 
     [Module("General")]
@@ -82,8 +85,10 @@
         [Command("calc", "calculate")]
         public Task CalculateAsync(IContext e)
         {
-            Expression expression = new Expression(e.GetArgumentPack().Pack.TakeAll());
+            var expressionString = e.GetArgumentPack().Pack.TakeAll();
+            expressionString = expressionString.Trim('\'');
 
+            Expression expression = new Expression(expressionString, EvaluateOptions.NoCache);
             expression.Parameters.Add("pi", Math.PI);
 
             expression.EvaluateFunction += (name, x) =>
@@ -407,6 +412,9 @@
 
             var embedBuilder = new EmbedBuilder();
 
+            var permissionService = e.GetService<PermissionService>();
+            var scopesService = e.GetService<ScopeService>();
+
 			foreach(var nodeModule in commandHandler.Root.Children.OfType<NodeModule>())
 			{
 				var id = nodeModule.Metadata.Identifiers.First();
@@ -414,6 +422,30 @@
                 List<Node> nodes = new List<Node>();
                 await foreach (var node in nodeModule.GetAllExecutableAsync(e))
                 {
+                    if((await permissionService.GetPriorityPermissionAsync(e))
+                       .Status != PermissionStatus.Allow)
+                    {
+                        continue;
+                    }
+
+                    var requiresScopeAttributes = node.Attributes.OfType<RequiresScopeAttribute>()
+                        .ToList();
+                    bool hasAllScopes = true;
+                    foreach(var scope in requiresScopeAttributes)
+                    {
+                        if(await scopesService.HasScopeAsync((long)e.GetAuthor().Id, scope.ScopeId))
+                        {
+                            continue;
+                        }
+                        hasAllScopes = false;
+                        break;
+                    }
+
+                    if(!hasAllScopes)
+                    {
+                        continue;
+                    }
+
                     if(await node.ValidateRequirementsAsync(e))
                     {
                         nodes.Add(node);

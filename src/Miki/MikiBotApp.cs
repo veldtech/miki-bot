@@ -33,6 +33,7 @@
     using Miki.Framework.Commands.Permissions;
     using Miki.Framework.Commands.Prefixes;
     using Miki.Framework.Commands.Prefixes.Triggers;
+    using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Commands.Stages;
     using Miki.Framework.Events.Triggers;
     using Miki.Localization;
@@ -234,10 +235,11 @@
 
                 serviceCollection.AddSingleton<AchievementCollection>();
                 serviceCollection.AddScoped<AchievementService>();
-
+                
                 serviceCollection.AddScoped<RpsService>();
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
                 serviceCollection.AddScoped<PermissionService>();
+                serviceCollection.AddScoped<ScopeService>();
                 serviceCollection.AddScoped<ITransactionService, TransactionService>();
                 serviceCollection.AddSingleton<IOsuApiClient>(
                     x =>
