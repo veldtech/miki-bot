@@ -107,6 +107,7 @@
                 return new EmbedBuilder()
                     .SetTitle("🧮  Calculator")
                     .SetDescription(Utils.EscapeEveryone(result.Unwrap()))
+                    .SetColor(213, 171, 136)
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
             }
