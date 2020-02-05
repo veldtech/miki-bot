@@ -414,7 +414,10 @@
                 List<Node> nodes = new List<Node>();
                 await foreach (var node in nodeModule.GetAllExecutableAsync(e))
                 {
-                    nodes.Add(node);
+                    if(await node.ValidateRequirementsAsync(e))
+                    {
+                        nodes.Add(node);
+                    }
                 }
                 var commandNames = string.Join(", ", nodes
                     .Select(node => '`' + node.Metadata.Identifiers.First() + '`'));

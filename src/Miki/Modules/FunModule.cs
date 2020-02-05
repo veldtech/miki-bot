@@ -712,11 +712,13 @@ namespace Miki.Modules
                     await Utils.SyncAvatarAsync(user, cache, context, s3Client);
                 }
             }
-            Random r = new Random((int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            Random r = new Random(
+                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
 
-			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
+			Stream s = await imageClient.GetStreamAsync(
+                $"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
 			await e.GetChannel().SendFileAsync(s, "meme.png");
 		}
 
