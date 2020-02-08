@@ -1,9 +1,9 @@
-﻿using ProtoBuf;
-using System.Collections.Generic;
-
-namespace Miki.API.Cards.Objects
+﻿namespace Miki.API.Cards.Objects
 {
-	[ProtoContract]
+    using ProtoBuf;
+    using System.Collections.Generic;
+    
+    [ProtoContract]
 	public class CardHand
 	{
 		[ProtoMember(1)]
@@ -12,6 +12,14 @@ namespace Miki.API.Cards.Objects
 		public void AddToHand(Card card)
 		{
 			Hand.Add(card);
+		}
+
+		public void ShowAll()
+		{
+			foreach(var card in Hand)
+			{
+				card.isPublic = true;
+			}
 		}
 
 		public string Print()

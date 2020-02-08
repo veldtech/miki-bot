@@ -18,6 +18,9 @@
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Localization;
+    using Miki.Services;
+    using Amazon.S3;
+    using Miki.Utility;
 
     public enum LevelNotificationsSetting
 	{
@@ -233,10 +236,13 @@
 		[Command("syncavatar")]
 		public async Task SyncAvatarAsync(IContext e)
 		{
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<IUserService>();
             var cache = e.GetService<IExtendedCacheClient>();
+            var amazonClient = e.GetService<AmazonS3Client>();
+
             var locale = e.GetLocale();
-            await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
+            await Utils.SyncAvatarAsync(
+                e.GetAuthor(), cache, context, amazonClient);
 
 			await e.SuccessEmbed(
                 locale.GetString("setting_avatar_updated"))

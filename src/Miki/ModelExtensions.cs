@@ -1,23 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Bot.Models.Models.User;
-using Miki.Bot.Models.Repositories;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Exceptions;
-using Miki.Framework;
-using Miki.Framework.Events;
-using Miki.Models;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace Miki
+﻿namespace Miki
 {
-	public static class ModelExtensions
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using Miki.Bot.Models;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Bot.Models.Models.User;
+    using Miki.Bot.Models.Repositories;
+    using Miki.Discord;
+    using Miki.Discord.Common;
+    using Miki.Exceptions;
+    using Miki.Framework;
+    using Miki.Framework.Events;
+    using Miki.Models;
+    using Miki.Services.Pasta.Exceptions;
+    using System;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+
+    public static class ModelExtensions
 	{
         public static async Task BanAsync(this User user, DbContext context)
         {
@@ -61,29 +62,6 @@ namespace Miki
 		{
 			return await MikiApp.Instance.Services.GetService<DiscordClient>()
                 .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
-		}
-
-		public static async Task AddAsync(MikiDbContext context, string id, string text, long creator)
-		{
-			if (Regex.IsMatch(text, "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)", RegexOptions.IgnoreCase))
-			{
-				throw new Exception("You can't add discord invites!");
-			}
-
-			GlobalPasta pasta = await context.Pastas.FindAsync(id);
-
-			if (pasta != null)
-			{
-				throw new DuplicatePastaException(pasta);
-			}
-
-			await context.Pastas.AddAsync(new GlobalPasta()
-			{
-				Id = id,
-				Text = text,
-				CreatorId = creator,
-				CreatedAt = DateTime.Now
-			});
 		}
 	}
 }

@@ -2,13 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-
     using Bot.Models;
     using Bot.Models.Exceptions;
     using Bot.Models.Models.User;
-
     using Framework;
-
+    using Miki.Discord.Common;
     using Patterns.Repositories;
 
     public class UserService : IUserService
@@ -25,6 +23,19 @@
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
             this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
         }
+        public async ValueTask<User> CreateUserAsync(long userId, string userName)
+        {
+            var user = new User
+            {
+                Id = userId,
+                DateCreated = DateTime.UtcNow,
+                Name = userName,
+                MarriageSlots = 1,
+            };
+            await repository.AddAsync(user);
+            await unitOfWork.CommitAsync();
+            return user;
+        }
 
         /// <inheritdoc />
         public async ValueTask<User> GetUserAsync(long userId)
@@ -35,6 +46,23 @@
                 throw new UserNullException();
             }
             return user;
+        }
+
+        /// <inheritdoc />
+        public ValueTask UpdateUserAsync(User user)
+        {
+            return repository.EditAsync(user);
+        }
+
+        public async ValueTask<bool> UserIsDonatorAsync(long userId)
+        {
+            var donatorStatus = await donatorRepository.GetAsync(userId);
+            if(donatorStatus == null)
+            {
+                return false;
+            }
+
+            return donatorStatus.ValidUntil > DateTime.UtcNow;
         }
 
         /// <inheritdoc />
@@ -67,14 +95,15 @@
 
     public interface IUserService : IDisposable
     {
+        ValueTask<User> CreateUserAsync(long userId, string userName);
+
         ValueTask<User> GetUserAsync(long userId);
 
         ValueTask UpdateUserAsync(User user);
 
-        // ReSharper disable once UnusedMember.Global
-        ValueTask<bool> UserIsBannedAsync(long userId);
-
         ValueTask<bool> UserIsDonatorAsync(long userId);
+
+        ValueTask<bool> UserIsBannedAsync(long userId);
 
         ValueTask SaveAsync();
     }

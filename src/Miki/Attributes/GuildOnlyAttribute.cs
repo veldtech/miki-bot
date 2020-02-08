@@ -1,16 +1,11 @@
-﻿using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Attributes
+﻿namespace Miki.Attributes
 {
-    using Framework.Extension;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using System.Threading.Tasks;
+    using Miki.Framework.Extension;
+    using Miki.Utility;
 
     public class GuildOnlyAttribute : CommandRequirementAttribute
     {

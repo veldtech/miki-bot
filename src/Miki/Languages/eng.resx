@@ -531,7 +531,7 @@ Fuzzy</comment>
     <comment>Please do not change "pasta new", do change &lt;keyword&gt; stuff</comment>
   </data>
   <data name="miki_module_fun_8ball_result" xml:space="preserve">
-    <value>🎱 {0}, your question has been answered `{1}`</value>
+    <value>{0}, your question has been answered {1}</value>
   </data>
   <data name="miki_module_fun_image_error_no_image_found" xml:space="preserve">
     <value>No images found on your search :(</value>
@@ -2298,5 +2298,11 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="error_argument_missing" xml:space="preserve">
     <value>We're missing the {0} from you, consult the documentation for help.</value>
     <comment>{0} should always be a verb</comment>
+  </data>
+  <data name="error_daily_claimed" xml:space="preserve">
+    <value>You already claimed your daily today! Please wait another {0} before using it again.</value>
+  </data>
+  <data name="error_action_unauthorized" xml:space="preserve">
+    <value>You cannot {0} this!</value>
   </data>
 </root>

@@ -196,6 +196,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You cannot {0} this!.
+        /// </summary>
+        internal static string error_action_unauthorized {
+            get {
+                return ResourceManager.GetString("error_action_unauthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can not use an amount less than zero!.
         /// </summary>
         internal static string error_argument_less_than_zero {
@@ -300,6 +309,15 @@ namespace Miki.Languages {
         internal static string error_custom_command_exists {
             get {
                 return ResourceManager.GetString("error_custom_command_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You already claimed your daily today! Please wait another {0} before using it again..
+        /// </summary>
+        internal static string error_daily_claimed {
+            get {
+                return ResourceManager.GetString("error_daily_claimed", resourceCulture);
             }
         }
         
@@ -4216,7 +4234,7 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 🎱 {0}, your question has been answered `{1}`.
+        ///   Looks up a localized string similar to {0}, your question has been answered {1}.
         /// </summary>
         internal static string miki_module_fun_8ball_result {
             get {

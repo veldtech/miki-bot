@@ -15,7 +15,7 @@
     /// Represents a static pattern to create implicit null checks. Used to improve business logic for
     /// modules.
     /// </summary>
-    public class Optional<T>
+    public struct Optional<T>
     {
         private readonly T value;
 

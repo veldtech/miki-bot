@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System;
+    using Miki.Utility;
 
     public class RpsService
 	{
@@ -31,7 +32,7 @@
 
 		public RpsWeapon GetRandomWeapon()
 		{
-			return weapons[MikiRandom.Next(weapons.Count())];
+			return MikiRandom.Of(weapons);
 		}
         
 		public VictoryStatus CalculateVictory(RpsWeapon player, RpsWeapon cpu)

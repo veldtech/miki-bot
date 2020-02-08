@@ -7,25 +7,24 @@
     using API.Cards;
     using API.Cards.Enums;
     using API.Cards.Objects;
-    using Miki.Framework;
+    using Miki.Cache;
+    using Miki.Services.Blackjack.Exceptions;
+    using Miki.Services.Transactions;
     using Miki.Utility;
     using Patterns.Repositories;
 
     public class BlackjackService
     {
-        private readonly IUnitOfWork unit;
         private readonly IAsyncRepository<BlackjackContext> repository;
-        private readonly TransactionService transactionService;
+        private readonly ITransactionService transactionService;
 
-        private const ulong DealerId = 0;
+        public const ulong DealerId = 0;
 
         public BlackjackService(
-            IUnitOfWork unit,
-            TransactionService transactionService,
-            IRepositoryFactory<BlackjackContext> factory = null)
+            IExtendedCacheClient cache,
+            ITransactionService transactionService)
         {
-            this.unit = unit;
-            this.repository = unit.GetRepository(factory);
+            this.repository = new BlackjackRepository(cache);
             this.transactionService = transactionService;
         }
 
@@ -35,16 +34,45 @@
             ulong channelId,
             int bet)
         {
-            return await transactionService.CreateTransactionAsync(
+            return await AssertBlackjackSessionEmpty(userId, channelId)
+                .Map(() => transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(bet)
                         .WithReceiver((long)DealerId)
                         .WithSender((long)userId)
-                        .Build())
+                        .Build()))
                 .Map(context => ConstructContext(bet, userId, channelId, messageId))
-                    .AndThen(context => repository.AddAsync(context))
-                    .AndThen(x => unit.CommitAsync())
+                    .AndThen(AddSessionAsync)
                 .Map(context => new BlackjackSession(context));
+        }
+
+        public Task<BlackjackSession> LoadSessionAsync(
+            ulong userId,
+            ulong channelId)
+        {
+            return repository.GetAsync(channelId, userId)
+                .AndThen(session => RuntimeAssert.NotNull(
+                    session, new BlackjackSessionNullException()))
+                .Map(session => new BlackjackSession(session));
+        }
+
+        private ValueTask AddSessionAsync(BlackjackContext ctx)
+        {
+            return repository.AddAsync(ctx);
+        }
+
+        public ValueTask SyncSessionAsync(BlackjackContext ctx)
+        {
+            return repository.EditAsync(ctx);
+        }
+
+        public ValueTask EndSessionAsync(BlackjackSession session)
+        {
+            if(session == null)
+            {
+                throw new BlackjackSessionNullException();
+            }
+            return repository.DeleteAsync(session.GetContext());
         }
 
         public BlackjackState DrawCard(BlackjackSession session, ulong playerId)
@@ -53,11 +81,14 @@
             {
                 throw new InvalidOperationException();
             }
+
             currentPlayer.AddToHand(session.Deck.DrawRandom());
             if(session.GetHandWorth(currentPlayer) > 21)
             {
+                // TODO: write test that makes player fail.
                 return BlackjackState.LOSE;
             }
+
             return BlackjackState.NONE;
         }
 
@@ -105,7 +136,7 @@
                     }
                 }
 
-                dealer.AddToHand(session.Deck.DrawRandom());
+                DrawCard(session, DealerId);
 
                 if(session.GetHandWorth(dealer) > 21)
                 {
@@ -131,6 +162,15 @@
                 MessageId = messageId,
             };
         }
+
+        private async Task AssertBlackjackSessionEmpty(ulong userId, ulong channelId)
+        {
+            var session = await repository.GetAsync(channelId, userId);
+            if(session != null)
+            {
+                throw new DuplicateSessionException();
+            }
+        }
     }
 
     public class BlackjackSession
@@ -152,13 +192,13 @@
             { CardValue.QUEENS, 10 },
             { CardValue.KINGS,  10 },
         };
-        private const ulong DealerId = 0;
 
         public int Bet => context.Bet;
 
         public IDictionary<ulong, CardHand> Players => context.Hands;
 
         public CardSet Deck => context.Deck;
+        public ulong MessageId => context.MessageId;
 
         public BlackjackSession(BlackjackContext context)
         {
@@ -176,8 +216,13 @@
 
         public int GetHandWorth(CardHand hand)
         {
-            int aces = hand.Hand.Count(c => c.value == CardValue.ACES);
-            int worth = hand.Hand.Sum(card => CardWorth[card.value]);
+            int aces = hand.Hand
+                .Count(c => c.value == CardValue.ACES
+                            && c.isPublic);
+            int worth = hand.Hand
+                .Sum(card => card.isPublic
+                    ? CardWorth[card.value]
+                    : 0);
 
             while(worth > 21 && aces > 0)
             {
@@ -188,6 +233,11 @@
             return worth;
         }
 
+        public BlackjackContext GetContext()
+        {
+            return context;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is BlackjackSession session)
@@ -196,10 +246,21 @@
             }
             return false;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(
+                context.UserId,
+                context.MessageId,
+                context.ChannelId);
+        }
     }
 
     public enum BlackjackState
     {
-        NONE, WIN, LOSE, DRAW
+        NONE, 
+        WIN, 
+        LOSE, 
+        DRAW
     }
 }

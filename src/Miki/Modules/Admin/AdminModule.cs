@@ -206,7 +206,7 @@ namespace Miki.Modules.Admin
             if (!(await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
             {
                 e.GetChannel()
-                    .QueueMessage(e, e.GetLocale().GetString("miki_module_admin_prune_error_no_access"));
+                    .QueueMessage(e, null, locale.GetString("miki_module_admin_prune_error_no_access"));
                 return;
             }
 
@@ -215,7 +215,7 @@ namespace Miki.Modules.Admin
                 await new EmbedBuilder()
                     .SetTitle("♻ Prune")
                     .SetColor(119, 178, 85)
-                    .SetDescription(e.GetLocale().GetString("miki_module_admin_prune_no_arg"))
+                    .SetDescription(locale.GetString("miki_module_admin_prune_no_arg"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -356,7 +356,7 @@ namespace Miki.Modules.Admin
                                 (long)e.GetGuild().Id, command, x.ToArray())
                             .AsTask();
                     })
-                    .FlatMap(permission => e.GetChannel()
+                    .Map(permission => e.GetChannel()
                         .SendMessageAsync(permission?.ToString() ?? "none"));
             }
 
@@ -420,21 +420,15 @@ namespace Miki.Modules.Admin
 
             private async Task<string> GetEntityName(IContext context, Permission p)
             {
-                switch(p.Type)
+                return p.Type switch
                 {
-                    case EntityType.User:
-                        return context.GetAuthor().Username;
-                    case EntityType.Channel:
-                        return (await context.GetGuild().GetChannelAsync((ulong)p.EntityId)).Name;
-                    case EntityType.Role:
-                        return (await context.GetGuild().GetRoleAsync((ulong)p.EntityId)).Name;
-                    case EntityType.Guild:
-                        return context.GetGuild().Name;
-                    case EntityType.Global:
-                        return "";
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    EntityType.User     => context.GetAuthor().Username,
+                    EntityType.Channel  => (await context.GetGuild().GetChannelAsync((ulong)p.EntityId)).Name,
+                    EntityType.Role     => (await context.GetGuild().GetRoleAsync((ulong)p.EntityId)).Name,
+                    EntityType.Guild    => context.GetGuild().Name,
+                    EntityType.Global   => "",
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
             }
 
             private string GetStatusEmoji(PermissionStatus status)

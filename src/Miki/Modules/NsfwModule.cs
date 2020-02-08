@@ -17,6 +17,7 @@
     using Framework.Extension;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
 
     [Module("nsfw")]
 	internal class NsfwModule
@@ -40,53 +41,52 @@
         [Command("urban")]
         public async Task UrbanAsync(IContext e)
         {
-            if (!e.GetArgumentPack().Pack.CanTake)
+            if(!e.GetArgumentPack().Pack.CanTake)
             {
                 return;
             }
 
-            var api = e.GetService<UrbanDictionaryAPI>();
+            var api = e.GetService<UrbanDictionaryApi>();
 
             var query = e.GetArgumentPack().Pack.TakeAll();
             var searchResult = await api.SearchTermAsync(query);
 
-            if (searchResult == null)
+            if(searchResult == null)
             {
                 // TODO (Veld): Something went wrong/No results found.
                 return;
             }
 
-            UrbanDictionaryEntry entry = searchResult.Entries
-                .FirstOrDefault();
+            var entry = searchResult.List.FirstOrDefault();
 
-            if (entry != null)
-            {
-                string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
-                    (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionURL(x.Groups[1].Value)})"
-                    );
-
-                await new EmbedBuilder()
-                {
-                    Author = new EmbedAuthor()
-                    {
-                        Name = "📚 " + entry.Term,
-                        Url = "http://www.urbandictionary.com/define.php?term=" + query,
-                    },
-                    Description = e.GetLocale().GetString("miki_module_general_urban_author", entry.Author)
-                }.AddField(e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
-                 .AddField(e.GetLocale().GetString("miki_module_general_urban_rating"), "👍 " + entry.ThumbsUp.ToFormattedString() + "  👎 " + entry.ThumbsDown.ToFormattedString(), true)
-                 .ToEmbed().QueueAsync(e, e.GetChannel());
-            }
-            else
+            if(entry == null)
             {
                 await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+                return;
             }
+
+            string desc = Regex.Replace(entry.Definition, "\\[(.*?)\\]",
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionUrl(x.Groups[1].Value)})"
+            );
+
+            string example = Regex.Replace(entry.Example, "\\[(.*?)\\]",
+                (x) => $"[{x.Groups[1].Value}]({api.GetUserDefinitionUrl(x.Groups[1].Value)})"
+            );
+
+            await new EmbedBuilder()
+                .SetAuthor($"📚 {entry.Term}", null,
+                    "http://www.urbandictionary.com/define.php?term=" + query)
+                .SetDescription(e.GetLocale()
+                    .GetString("miki_module_general_urban_author", entry.Author))
+                .AddField(
+                    e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
+                .AddField(
+                    e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
+                .SetFooter($"👍 { entry.ThumbsUp:N0} 👎 { entry.ThumbsDown:N0} - Powered by UrbanDictionary")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("yandere")]
@@ -123,22 +123,20 @@
         {
             if(MikiRandom.Next(100) == 50)
             {
-                return new ValueTask(service.UnlockAsync(e,
-                    service.GetAchievementOrDefault(AchievementIds.LewdId),
-                    e.GetAuthor().Id));
+                var lewdAchievement = service.GetAchievementOrDefault(AchievementIds.LewdId);
+                return new ValueTask(service.UnlockAsync(e, lewdAchievement, e.GetAuthor().Id));
             }
             return default;
         }
 
         private DiscordEmbed CreateEmbed(ILinkable s)
-		{
-			string url = string.IsNullOrWhiteSpace(s.SourceUrl) ? "https://miki.ai" : s.SourceUrl;
-			return new EmbedBuilder()
-				.SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", url)
-				.AddInlineField("Tags", FormatTags(s.Tags))
-				.AddInlineField("Score", s.Score)
-				.SetImage(s.Url).ToEmbed();
-		}
+            => new EmbedBuilder()
+                .SetColor(216, 88, 140)
+                .SetAuthor(s.Provider, "https://i.imgur.com/FeRu6Pw.png", "https://miki.ai")
+                .AddInlineField("🗒 Tags", FormatTags(s.Tags))
+                .AddInlineField("⬆ Score", s.Score)
+                .AddInlineField("🔗 Source", $"[click here]({s.Url})")
+                .SetImage(s.Url).ToEmbed();
 
         private static string FormatTags(string tags)
             => string.Join(", ", tags.Split(' ').Select(x => $"`{x}`"));

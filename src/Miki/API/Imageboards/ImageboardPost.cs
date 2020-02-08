@@ -1,15 +1,16 @@
-﻿using Miki.API.Imageboards.Enums;
-using Miki.API.Imageboards.Objects;
-using Miki.Rest;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Miki.API.Imageboards
 {
-	public class ImageboardProvider<T> where T : BooruPost
+	using Miki.API.Imageboards.Enums;
+	using Miki.API.Imageboards.Objects;
+	using Newtonsoft.Json;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading.Tasks;
+    using Miki.Net.Http;
+    using Miki.Utility;
+
+    public class ImageboardProvider<T> where T : BooruPost
 	{
 		public ImageboardConfigurations Config = new ImageboardConfigurations();
 
@@ -67,7 +68,7 @@ namespace Miki.API.Imageboards
 
 			string outputTags = GetTags(tags.ToArray());
 
-            using var c = new Net.Http.HttpClient(Config.QueryKey + outputTags);
+            using var c = new HttpClient(Config.QueryKey + outputTags);
             if(Config.NetUseCredentials)
             {
                 //c.UseDefaultCredentials = true;

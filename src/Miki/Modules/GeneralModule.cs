@@ -28,86 +28,114 @@
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
+    using Miki.API.Reminders;
     using Miki.Attributes;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
+    using Miki.Bot.Models.Exceptions;
+    using Miki.Framework.Commands.Permissions;
+    using Miki.Framework.Commands.Scopes;
+    using Miki.Framework.Commands.Scopes.Attributes;
+    using Miki.Localization.Exceptions;
 
     [Module("General")]
 	public class GeneralModule
 	{
-		private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
-
-        // TODO(@velddev): turn into seperate generated string.
-        private const string InviteUrl = "https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334";
-
-        private const string GithubUrl = "";
-        private const string MikiTwitterUrl = "";
-
+        private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
 
         [Command("avatar")]
-		public async Task AvatarAsync(IContext e)
-		{
-			if(!e.GetArgumentPack().Take(out string arg))
-			{
-				e.GetChannel().QueueMessage(e, e.GetAuthor().GetAvatarUrl());
-			}
-			else
-			{
-				if(arg == "-s")
-				{
-					e.GetChannel().QueueMessage(e, e.GetGuild().IconUrl);
-					return;
-				}
+        public async Task AvatarAsync(IContext e)
+        {
+            
+            string avatarResource = e.GetAuthor().Username;
+            string avatarUrl = e.GetAuthor().GetAvatarUrl();
 
-                IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild())
-                    .ConfigureAwait(false);
-				if(user != null)
-				{
-					e.GetChannel().QueueMessage(e, user.GetAvatarUrl());
-				}
-			}
-		}
+            if(e.GetArgumentPack().Take(out string arg))
+            {
+                if(arg == "-s")
+                {
+                    avatarResource = e.GetGuild().Name;
+                    avatarUrl = e.GetGuild().IconUrl;
+                }
+                else
+                {
+                    IDiscordGuildUser user = await e.GetGuild()
+                        .FindUserAsync(arg)
+                        .ConfigureAwait(false);
+                    if(user == null)
+                    {
+                        throw new UserNullException();
+                    }
+
+                    avatarResource = user.Username;
+                    avatarUrl = user.GetAvatarUrl();
+                }
+            }
+
+            await new EmbedBuilder()
+                .SetTitle($"🖼 Avatar for {avatarResource}")
+                .SetThumbnail(avatarUrl)
+                .SetColor(215, 158, 132)
+                .AddInlineField("Full image", $"[click here]({avatarUrl})")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
+        }
 
         [Command("calc", "calculate")]
         public Task CalculateAsync(IContext e)
         {
+            var expressionString = e.GetArgumentPack().Pack.TakeAll();
+            expressionString = expressionString.Trim('\'');
 
-            Expression expression = new Expression(e.GetArgumentPack().Pack.TakeAll());
-
+            Expression expression = new Expression(expressionString, EvaluateOptions.NoCache);
             expression.Parameters.Add("pi", Math.PI);
 
             expression.EvaluateFunction += (name, x) =>
             {
-                if(name == "lerp")
+                switch(name)
                 {
-                    double n = (double) x.Parameters[0].Evaluate();
-                    double v = (double) x.Parameters[1].Evaluate();
-                    double o = (double) x.Parameters[2].Evaluate();
-                    x.Result = (n * (1.0 - o)) + (v * o);
+                    case "lerp":
+                    {
+                        double n = (double) x.Parameters[0].Evaluate();
+                        double v = (double) x.Parameters[1].Evaluate();
+                        double o = (double) x.Parameters[2].Evaluate();
+                        x.Result = (n * (1.0 - o)) + (v * o);
+                        break;
+                    }
                 }
             };
 
-            try
+            Result<string> result = new Result<string>(() => expression.Evaluate().ToString());
+            if(result.IsValid)
             {
-                e.GetChannel().QueueMessage(e, null, expression.Evaluate().ToString());
-            }
-            catch(Exception ex)
-            {
-                e.ErrorEmbed(ex.Message)
-                 .ToEmbed().QueueAsync(e, e.GetChannel());
+                return new EmbedBuilder()
+                    .SetTitle("🧮  Calculator")
+                    .SetDescription(Utils.EscapeEveryone(result.Unwrap()))
+                    .SetColor(213, 171, 136)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
             }
 
-            return Task.CompletedTask;
+            var exception = result.UnwrapException();
+            if(exception is LocalizedException le)
+            {
+                return e.ErrorEmbedResource(le.LocaleResource)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+            }
+            return e.ErrorEmbed($"Your calculation threw an error: {exception.Message}")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("changelog")]
         public Task ChangelogAsync(IContext e)
         {
-            return new EmbedBuilder
-                {
-                    Title = "Changelog",
-                    Description = "Check out my changelog blog [here](https://blog.miki.ai/)!"
-                }.ToEmbed()
+            return new EmbedBuilder()
+                .SetTitle("Changelog")
+                .SetDescription("Check out my changelog blog [here](https://blog.miki.ai/)!")
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
 
@@ -232,6 +260,7 @@
 		}
 
 		[Command("guildinfo")]
+        [GuildOnly]
 		public async Task GuildInfoAsync(IContext e)
 		{
 			var guild = e.GetGuild();
@@ -272,7 +301,7 @@
 
 			builder.AddInlineField(
 				"📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
-				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToFormattedString());
+				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString("N0"));
 
 			builder.AddInlineField(
 				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
@@ -383,6 +412,9 @@
 
             var embedBuilder = new EmbedBuilder();
 
+            var permissionService = e.GetService<PermissionService>();
+            var scopesService = e.GetService<ScopeService>();
+
 			foreach(var nodeModule in commandHandler.Root.Children.OfType<NodeModule>())
 			{
 				var id = nodeModule.Metadata.Identifiers.First();
@@ -390,7 +422,34 @@
                 List<Node> nodes = new List<Node>();
                 await foreach (var node in nodeModule.GetAllExecutableAsync(e))
                 {
-                    nodes.Add(node);
+                    if((await permissionService.GetPriorityPermissionAsync(e))
+                       .Status != PermissionStatus.Allow)
+                    {
+                        continue;
+                    }
+
+                    var requiresScopeAttributes = node.Attributes.OfType<RequiresScopeAttribute>()
+                        .ToList();
+                    bool hasAllScopes = true;
+                    foreach(var scope in requiresScopeAttributes)
+                    {
+                        if(await scopesService.HasScopeAsync((long)e.GetAuthor().Id, scope.ScopeId))
+                        {
+                            continue;
+                        }
+                        hasAllScopes = false;
+                        break;
+                    }
+
+                    if(!hasAllScopes)
+                    {
+                        continue;
+                    }
+
+                    if(await node.ValidateRequirementsAsync(e))
+                    {
+                        nodes.Add(node);
+                    }
                 }
                 var commandNames = string.Join(", ", nodes
                     .Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
@@ -442,7 +501,7 @@
 				$"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
 				$"`{e.GetLocale().GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
 				$"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) [suggestions](https://suggestions.miki.ai/)");
+				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) | [suggestions](https://suggestions.miki.ai/)");
 
 			await embed.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
@@ -462,7 +521,7 @@
             dmChannel.QueueMessage(e,
                 null,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
-                + "\n" + InviteUrl);
+                + "\n" + AppProps.InviteUrl);
         }
 
         [Command("ping", "lag")]
@@ -632,11 +691,12 @@
                 .ConfigureAwait(false);
             if(roles == null)
             {
-                throw new NullReferenceException($"argument '{nameof(roles)}' is null.");
+                throw new ArgumentMissingException(nameof(roles));
             }
 
+            roles = roles.Where(x => user.RoleIds.Contains(x.Id));
+
             Color c = roles.Where(x => x.Color != 0)
-				.Where(x => user.RoleIds.Contains(x.Id))
 				.OrderByDescending(x => x.Position)
 				.Select(x => x.Color)
 				.FirstOrDefault();

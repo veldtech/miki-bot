@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-
-namespace Miki.API.Imageboards
+﻿namespace Miki.API.Imageboards
 {
-	public class ImageboardConfigurations
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    public class ImageboardConfigurations
 	{
 		public Uri QueryKey = null;
 

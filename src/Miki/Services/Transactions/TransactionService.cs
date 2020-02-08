@@ -1,42 +1,66 @@
-﻿namespace Miki.Services
+﻿namespace Miki.Services.Transactions
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
     using Miki.Utility;
 
-    public class TransactionService
+    public class TransactionService : ITransactionService
     {
         public Func<TransactionResponse, Task> TransactionComplete { get; set; }
         public Func<TransactionRequest, Exception, Task> TransactionFailed { get; set; }
 
+        private readonly TransactionEvents events;
         private readonly IUserService service;
 
-        public TransactionService(
-            IUserService service)
+        public TransactionService(IUserService service, [Optional] TransactionEvents events)
         {
+            this.events = events;
             this.service = service;
         }
 
-        public Task<TransactionResponse> CreateTransactionAsync(TransactionRequest transaction)
+        public async Task<TransactionResponse> CreateTransactionAsync(TransactionRequest transaction)
         {
-            return service.GetUserAsync(transaction.Receiver)
-                .Merge(() => service.GetUserAsync(transaction.Sender))
-                .Map(x => TransferAsync(x.Item1, x.Item2, transaction.Amount))
-                    .Unwrap()
-                    .AndThen(() => service.SaveAsync())
-                    .AndThen(CallTransactionComplete)
-                .UnwrapErrorAsync(x => CallTransactionFailed(transaction, x));
+            var receiver = await service.GetUserAsync(transaction.Receiver);
+            var sender = await service.GetUserAsync(transaction.Sender);
+
+            try
+            {
+                var response = await TransferAsync(receiver, sender, transaction.Amount);
+                await CommitAsync();
+                if(events != null)
+                {
+                    await events.CallTransactionCompleted(response);
+                }
+                return response;
+            }
+            catch(Exception e)
+            {
+                if(events != null)
+                {
+                    await events.CallTransactionFailed(transaction, e);
+                }
+                throw;
+            }
         }
 
-        public async Task<TransactionResponse> TransferAsync(User receiver, User sender, long amount)
+        private ValueTask CommitAsync()
         {
+            return service.SaveAsync();
+        }
+
+        private async Task<TransactionResponse> TransferAsync(User receiver, User sender, long amount)
+        {
+            if(amount <= 0)
+            {
+                throw new ArgumentLessThanZeroException();
+            }
+
             if(sender.Currency < amount)
             {
-                throw new InsufficientCurrencyException(receiver.Currency, amount);
+                throw new InsufficientCurrencyException(sender.Currency, amount);
             }
 
             if(receiver.Id == sender.Id)
@@ -51,24 +75,6 @@
             await service.UpdateUserAsync(receiver);
 
             return new TransactionResponse(sender, receiver, amount);
-        }
-
-        private async Task CallTransactionComplete(TransactionResponse transaction)
-        {
-            if(TransactionComplete == null)
-            {
-                return;
-            }
-            await TransactionComplete(transaction);
-        }
-
-        private async Task CallTransactionFailed(TransactionRequest transaction, Exception e)
-        {
-            if(TransactionFailed == null)
-            {
-                return;
-            }
-            await TransactionFailed(transaction, e);
         }
     }
 

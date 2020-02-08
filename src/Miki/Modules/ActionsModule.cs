@@ -5,6 +5,7 @@
     using Miki.Framework.Commands.Attributes;
     using System.Threading.Tasks;
     using Framework.Extension;
+    using Miki.Utility;
 
     [Module("Actions")]
 	public class ActionsModule
@@ -380,7 +381,7 @@
             EmbedBuilder builder = new EmbedBuilder();
 
             var messageContent = e.GetArgumentPack().Pack.TakeAll()
-                .RemoveMentions(e.GetGuild());
+                .RemoveMentionsAsync(e.GetGuild());
 
             if (e.GetArgumentPack().CanTake)
             {

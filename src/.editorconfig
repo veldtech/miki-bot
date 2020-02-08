@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# IDE0066: Convert switch statement to expression
+csharp_style_prefer_switch_expression = false:suggestion

@@ -37,7 +37,6 @@
             CreateAchievementsMetrics(achievements);
             CreateEventSystemMetrics(commandPipeline);
             CreateDiscordMetrics(discordClient);
-            CreateHttpMetrics(discordApiClient);
 
             Log.Message("Datadog set up!");
         }
@@ -81,9 +80,8 @@
                 return Task.CompletedTask;
             };
         }
-		private void CreateDiscordMetrics(IDiscordClient client)
+		private void CreateDiscordMetrics(IDiscordClient discord)
 		{
-			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
 			if(discord == null)
 			{
 				return;
@@ -94,7 +92,8 @@
 				DogStatsd.Increment("messages.received");
 				return Task.CompletedTask;
 			};
-			discord.GuildJoin += (newGuild) =>
+			
+            discord.GuildJoin += (newGuild) =>
 			{
 				DogStatsd.Increment("guilds.joined");
 				return Task.CompletedTask;
@@ -115,22 +114,6 @@
 
             system.OnExecuted += OnCommandProcessed;
         }
-
-        private void CreateHttpMetrics(DiscordApiClient client)
-		{
-			if(client == null)
-			{
-				return;
-			}
-
-            client.RestClient.OnRequestComplete += (method, url) =>
-			{
-				DogStatsd.Histogram("discord.http.requests", 1, 1, new[] {
-					$"http_method:{method}",
-					$"http_uri:{url}"
-				});
-			};
-		}
 
         private ValueTask OnCommandProcessed(IExecutionResult<IDiscordMessage> arg)
         {

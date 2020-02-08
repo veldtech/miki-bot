@@ -7,13 +7,19 @@
     using Framework.Commands;
     using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
+    using Miki.Services;
+    using Miki.Utility;
 
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
         public override async Task<bool> CheckAsync(IContext e)
         {
-            var context = e.GetService<DbContext>();
-            return await IsDonator.ForUserAsync(context, e.GetAuthor().Id);
+            var context = e.GetService<IUserService>();
+            if(context == null)
+            {
+                return false;
+            }
+            return await context.UserIsDonatorAsync((long)e.GetAuthor().Id);
         }
 
         public override async Task OnCheckFail(IContext e)

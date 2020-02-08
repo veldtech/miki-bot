@@ -42,6 +42,12 @@
             InitLocale("eng");
         }
 
+        public void InitContext<T>(string key, T value)
+        {
+            Mock.Setup(x => x.GetContext<T>(key))
+                .Returns(value);
+        }
+
         public void InitService<T>(Mock<IContext> mock, T returnType)
         {
             mock.Setup(x => x.GetService(It.Is<Type>(type => type == typeof(T))))

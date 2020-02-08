@@ -1,30 +1,31 @@
-﻿using Miki.Bot.Models;
-using Miki.Discord;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands.Attributes;
-using Miki.Framework.Commands;
-using Miki.Localization;
-using Miki.Logging;
-using Miki.Modules.Donator.Exceptions;
-using Miki.Helpers;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Miki.Services.Achievements;
-
-namespace Miki.Modules.Donator
+﻿namespace Miki.Modules.Donator
 {
-    using Attributes;
-    using Framework.Extension;
+    using Miki.Bot.Models;
+    using Miki.Discord;
+    using Miki.Discord.Rest;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Attributes;
+    using Miki.Framework.Commands;
+    using Miki.Localization;
+    using Miki.Logging;
+    using Miki.Modules.Donator.Exceptions;
+    using Miki.Helpers;
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Attributes;
+    using Miki.Framework.Extension;
     using Miki.Modules.Accounts.Services;
-    using Services;
+    using Miki.Net.Http;
+    using Miki.Services;
+    using Miki.Services.Achievements;
+    using Miki.Utility;
 
     [Module("Donator")]
 	internal class DonatorModule
 	{
-		private readonly Net.Http.HttpClient client;
+		private readonly IHttpClient client;
         private const int KeyBuybackPrice = 30000;
 
 		public DonatorModule(Config config)
@@ -32,7 +33,7 @@ namespace Miki.Modules.Donator
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl)
                 && !string.IsNullOrWhiteSpace(config.MikiApiKey))
             {
-                client = new Net.Http.HttpClient(config.ImageApiUrl)
+                client = new HttpClient(config.ImageApiUrl)
                     .AddHeader("Authorization", config.MikiApiKey);
             }
             else
@@ -140,7 +141,7 @@ namespace Miki.Modules.Donator
 		[PatreonOnly]
 		public async Task BoxAsync(IContext e)
 			=> await PerformCallAsync(e,
-					$"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
+					$"/api/box?text={e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild())}&url={await GetUrlFromMessageAsync(e)}")
 				.ConfigureAwait(false);
 
 		[Command("disability")]
@@ -148,24 +149,25 @@ namespace Miki.Modules.Donator
 		public async Task DisabilityAsync(IContext e)
 			=> await PerformCallAsync(e, "/api/disability?url=" + await GetUrlFromMessageAsync(e));
 
-		[Command("tohru")]
-		[PatreonOnly]
-		public async Task TohruAsync(IContext e)
-			=> await PerformCallAsync(e,
-				"/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()));
+        [Command("tohru")]
+        [PatreonOnly]
+        public async Task TohruAsync(IContext e)
+            => await PerformCallAsync(e,
+                    "/api/tohru?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild()))
+                .ConfigureAwait(false);
 
 		[Command("truth")]
 		[PatreonOnly]
 		public async Task TruthAsync(IContext e)
 			=> await PerformCallAsync(e,
-					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentions(e.GetGuild()))
-				.ConfigureAwait(false);
+					"/api/yagami?text=" + e.GetArgumentPack().Pack.TakeAll().RemoveMentionsAsync(e.GetGuild()))
+				    .ConfigureAwait(false);
 
 		[Command("trapcard")]
 		[PatreonOnly]
 		public async Task YugiAsync(IContext e)
 			=> await PerformCallAsync(e, $"/api/yugioh?url={await GetUrlFromMessageAsync(e)}")
-            .ConfigureAwait(false);
+                .ConfigureAwait(false);
 
 		private async Task<string> GetUrlFromMessageAsync(IContext e)
 		{

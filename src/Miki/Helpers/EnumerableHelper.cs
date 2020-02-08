@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-namespace Miki.Helpers
+﻿namespace Miki.Helpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class EnumerableHelper
     {
         public static T Splice<T, TType>(this T v, int size, int offset = 0)

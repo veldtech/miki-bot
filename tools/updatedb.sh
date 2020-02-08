@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-    echo "usage: updatedb.sh <connectionString>"
+    echo "usage: updatedb.sh <connectionString> [id]"
 	exit 1
 fi
 
@@ -15,7 +15,8 @@ CWD=$PWD
 cd $DIR/..
 
 echo starting migration...
-dotnet ef database update --project submodules/miki.bot.models --startup-project src/Miki
+
+dotnet ef database update --project submodules/miki.bot.models --startup-project src/Miki $2
 
 echo cleaning up...
 unset MIKI_CONNSTRING

@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	public class BooruPost
+    using Newtonsoft.Json;
+
+    public class BooruPost
 	{
 		[JsonProperty("tags")]
 		public string Tags { get; set; }

@@ -5,6 +5,7 @@
     using Miki.Framework.Commands.Attributes;
     using System.Threading.Tasks;
     using Framework.Extension;
+    using Miki.Utility;
 
     [Module("reactions")]
 	public class ReactionsModule
@@ -232,7 +233,7 @@
 		{
             await new EmbedBuilder()
 			{
-				ImageUrl = lewd[MikiRandom.Next(0, lewd.Length)]
+				ImageUrl = MikiRandom.Of(lewd)
 			}.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
@@ -241,7 +242,7 @@
 		{
             await new EmbedBuilder()
 			{
-				ImageUrl = poutImages[MikiRandom.Next(0, poutImages.Length)]
+				ImageUrl = MikiRandom.Of(poutImages)
 			}.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
@@ -250,7 +251,7 @@
 		{
             await new EmbedBuilder()
 			{
-				ImageUrl = smugImages[MikiRandom.Next(0, smugImages.Length)]
+				ImageUrl = MikiRandom.Of(smugImages)
 			}.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 

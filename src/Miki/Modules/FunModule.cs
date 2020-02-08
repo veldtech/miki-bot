@@ -8,21 +8,21 @@ namespace Miki.Modules
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Amazon.S3;
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
     using Imgur.API.Models;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.API.Imageboards;
     using Miki.API.Imageboards.Enums;
     using Miki.API.Imageboards.Interfaces;
     using Miki.API.Imageboards.Objects;
     using Miki.API.Reminder;
+    using Miki.API.Reminders;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Cache;
     using Miki.Common.Builders;
-    using Miki.Configuration;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
@@ -32,24 +32,16 @@ namespace Miki.Modules
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
+    using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Utility;
     using NCalc;
     using Newtonsoft.Json;
 
     [Module("fun")]
 	public class FunModule
 	{
-		/// <summary>
-		/// IMGUR API Key (RapidAPI)
-		/// </summary>
-		[Configurable]
-		public string ImgurKey { get; set; } = "";
-
-		/// <summary>
-		/// IMGUR Client ID (RapidAPI)
-		/// </summary>
-		[Configurable]
-		public string ImgurClientId { get; set; } = "";
+		const string EightBallEmoji = "<:8ball:664615434061873182>";
 
 		private readonly string[] puns =
 		{
@@ -131,8 +123,9 @@ namespace Miki.Modules
 		};
 
         private readonly HttpClient imageClient;
+		private readonly ImgurClient imgurClient;
 
-        private readonly string cdnEndpoint;
+		private readonly string cdnEndpoint;
 
 		public FunModule(MikiApp bot)
         {
@@ -143,15 +136,28 @@ namespace Miki.Modules
             {
                 imageClient = new HttpClient(config.ImageApiUrl);
             }
+
+            if(!string.IsNullOrWhiteSpace(config.DanbooruCredentials))
+            {
+                imgurClient = new ImgurClient(config.DanbooruCredentials);
+            }
         }
 
 		[Command("8ball")]
 		public Task EightBallAsync(IContext e)
 		{
-			string output = e.GetLocale().GetString("miki_module_fun_8ball_result",
-				e.GetAuthor().Username, e.GetLocale().GetString(reactions[MikiRandom.Next(0, reactions.Length)]));
-			e.GetChannel().QueueMessage(e, output);
-			return Task.CompletedTask;
+			var locale = e.GetLocale();
+
+			string output = locale.GetString("miki_module_fun_8ball_result",
+				e.GetAuthor().Username, 
+				$"`{locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)])}`");
+
+			return new EmbedBuilder()
+				.SetTitle($"{EightBallEmoji}  8ball")
+				.SetDescription(output)
+				.SetColor(0, 0, 0)
+				.ToEmbed()
+				.QueueAsync(e, e.GetChannel());
 		}
 
 		[Command("bird", "birb")]
@@ -286,9 +292,7 @@ namespace Miki.Modules
                     .QueueAsync(e, e.GetChannel());
 				return;
 			}
-
-			var client = new MashapeClient(ImgurClientId, ImgurKey);
-			var endpoint = new GalleryEndpoint(client);
+			var endpoint = new GalleryEndpoint(imgurClient);
 			var images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
@@ -326,8 +330,7 @@ namespace Miki.Modules
                 return;
             }
 
-			var client = new MashapeClient(ImgurClientId, ImgurKey);
-			var endpoint = new GalleryEndpoint(client);
+			var endpoint = new GalleryEndpoint(imgurClient);
 			var images = await endpoint.SearchGalleryAsync($"title:{title}")
                 .ConfigureAwait(false);
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -360,7 +363,7 @@ namespace Miki.Modules
 
             if (string.IsNullOrWhiteSpace(args))
 			{
-                await e.ErrorEmbedResource("miki_module_fun_image_error_no_image_found")
+                await e.ErrorEmbedResource("error_argument_missing", "choice")
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -444,11 +447,11 @@ namespace Miki.Modules
         [Command("reminder", "remind")]
         public class ReminderCommand
         {
-            private readonly API.TaskScheduler<string> reminders;
+            private readonly TaskScheduler<string> reminders;
 
             public ReminderCommand()
             {
-                reminders = new API.TaskScheduler<string>();
+                reminders = new TaskScheduler<string>();
             }
 
             [Command]
@@ -678,7 +681,8 @@ namespace Miki.Modules
 		public async Task ShipAsync(IContext e)
 		{
             var cache = e.GetService<IExtendedCacheClient>();
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<IUserService>();
+			var s3Client = e.GetService<AmazonS3Client>();
 
             e.GetArgumentPack().Take(out string shipPartner);
 
@@ -700,19 +704,21 @@ namespace Miki.Modules
 
                 if (!authorResponse.Success)
                 {
-                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context);
+                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client);
                 }
 
                 if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
                 {
-                    await Utils.SyncAvatarAsync(user, cache, context);
+                    await Utils.SyncAvatarAsync(user, cache, context, s3Client);
                 }
             }
-            Random r = new Random((int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            Random r = new Random(
+                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
 			int value = r.Next(0, 100);
 
-			Stream s = await imageClient.GetStreamAsync($"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
+			Stream s = await imageClient.GetStreamAsync(
+                $"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
 			await e.GetChannel().SendFileAsync(s, "meme.png");
 		}
 

@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-
-namespace Miki.API.Leaderboards
+﻿namespace Miki.API.Leaderboards
 {
-	internal class LeaderboardsPage
+	using Newtonsoft.Json;
+	using System.Collections.Generic;
+    using Miki.Api.Models;
+
+    internal class LeaderboardsPage
 	{
 		[JsonProperty("currentPage")]
 		public int CurrentPage { get; set; }

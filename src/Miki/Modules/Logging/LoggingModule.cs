@@ -11,11 +11,12 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Framework.Extension;
+    using Miki.Utility;
 
-    [Module("eventmessages")]
+    [Module("logging")]
     public class LoggingModule
     {
-        /*
+        /**
          * -u   = user's name
          * -um  = user's mention
          * -s   = server's name
@@ -25,40 +26,32 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule()
+        public LoggingModule(IDiscordClient client, DbContext context)
         {
-            
+            client.GuildMemberCreate += async (user) =>
+            {
+                IDiscordGuild guild = await user.GetGuildAsync();
 
-            //m.UserJoinGuild = async (user) =>
-            //{
-            //    IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
+                List<EventMessageObject> data = await GetMessageAsync(context, guild, EventMessageType.JOINSERVER, user);
+                if(data == null)
+                {
+                    return;
+                }
 
-            //    using (var scope = MikiApp.Instance.Services.CreateScope())
-            //    {
-            //        List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.JOINSERVER, user);
-            //        if (data == null)
-            //        {
-            //            return;
-            //        }
+                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+            };
 
-            //        data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
-            //    }
-            //};
+            client.GuildMemberDelete += async (user) =>
+            {
+                IDiscordGuild guild = await user.GetGuildAsync();
+                List<EventMessageObject> data = await GetMessageAsync(context, guild, EventMessageType.LEAVESERVER, user);
+                if(data == null)
+                {
+                    return;
+                }
 
-            //m.UserLeaveGuild = async (user) =>
-            //{
-            //    IDiscordGuild guild = await (user as IDiscordGuildUser).GetGuildAsync();
-            //    using (var scope = MikiApp.Instance.Services.CreateScope())
-            //    {
-            //        List<EventMessageObject> data = await GetMessageAsync(scope.ServiceProvider.GetService<DbContext>(), guild, EventMessageType.LEAVESERVER, user);
-            //        if (data == null)
-            //        {
-            //            return;
-            //        }
-
-            //        data.ForEach(x => x.destinationChannel.QueueMessage(x.message));
-            //    }
-            //};
+                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+            };
         }
 
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
@@ -128,11 +121,11 @@
             if (Enum.TryParse(e.GetArgumentPack().Pack.TakeAll().ToLower(), true, out EventMessageType type))
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
-                EventMessageObject msg = allmessages.FirstOrDefault(x => x.destinationChannel.Id == e.GetChannel().Id);
-                e.GetChannel().QueueMessage(e, msg.message ?? "No message set in this channel");
+                EventMessageObject msg = allmessages.FirstOrDefault(x => x.DestinationChannel.Id == e.GetChannel().Id);
+                e.GetChannel().QueueMessage(e, null, msg.Message ?? "No message set in this channel");
                 return;
             }
-            e.GetChannel().QueueMessage(e, $"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
+            e.GetChannel().QueueMessage(e, null, $"Please pick one of these tags. ```{string.Join(',', Enum.GetNames(typeof(EventMessageType))).ToLower()}```");
         }
 
         private async Task SetMessageAsync(DbContext db, string message, EventMessageType v, ulong channelid)
@@ -156,8 +149,9 @@
 
         public async Task<List<EventMessageObject>> GetMessageAsync(DbContext db, IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
-            var channels = await guild.GetChannelsAsync();
-            var channelIds = channels.Select(x => x.Id.ToDbLong());
+            var channels = (await guild.GetChannelsAsync())
+                .ToList();
+            var channelIds = channels.Select(x => (long)x.Id);
 
             IDiscordGuildUser owner = await guild.GetOwnerAsync();
             var ownerMention = owner.Mention;
@@ -199,8 +193,8 @@
 
                 output.Add(new EventMessageObject()
                 {
-                    message = modifiedMessage,
-                    destinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId) as IDiscordTextChannel
+                    Message = modifiedMessage,
+                    DestinationChannel = channels.FirstOrDefault(x => x.Id.ToDbLong() == c.ChannelId) as IDiscordTextChannel
                 });
             }
             return output;
@@ -209,7 +203,7 @@
 
 	public struct EventMessageObject
 	{
-		public IDiscordTextChannel destinationChannel;
-		public string message;
+		public IDiscordTextChannel DestinationChannel { get; set; }
+		public string Message { get; set; }
 	}
 }

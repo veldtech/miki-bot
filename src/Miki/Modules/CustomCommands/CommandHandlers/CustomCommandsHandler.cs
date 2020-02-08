@@ -1,25 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Cache;
-using Miki.Discord;
-using Miki.Discord.Common;
-using Miki.Discord.Common.Packets;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Framework.Commands.Pipelines;
-using MiScript;
-using MiScript.Models;
-using MiScript.Parser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Miki.Modules.CustomCommands.CommandHandlers
+﻿namespace Miki.Modules.CustomCommands.CommandHandlers
 {
-    using Discord.Common.Packets.API;
-    using Framework.Extension;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Cache;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Pipelines;
+    using MiScript;
+    using MiScript.Models;
+    using MiScript.Parser;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Miki.Discord.Common.Packets.API;
+    using Miki.Framework.Extension;
+    using Miki.Utility;
 
     public class CustomCommandsHandler : IPipelineStage
     {
@@ -70,7 +67,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if (e == null)
             {
                 return;
-            }
+            }   
 
             if (e.GetMessage().Type != DiscordMessageType.DEFAULT)
             {
@@ -115,7 +112,7 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if (tokens != null)
             {
                 var context = CreateContext(e);
-                e.GetChannel().QueueMessage(e, new Parser(tokens).Parse(context));
+                e.GetChannel().QueueMessage(e, null, new Parser(tokens).Parse(context));
             }
         }
     }

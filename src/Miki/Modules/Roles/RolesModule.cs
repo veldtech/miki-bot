@@ -21,6 +21,7 @@
     using System.Threading.Tasks;
     using Miki.Localization;
     using Framework.Extension;
+    using Miki.Utility;
 
     [Module("Role Management")]
 	internal class RolesModule

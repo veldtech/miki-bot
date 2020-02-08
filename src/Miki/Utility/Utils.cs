@@ -1,14 +1,14 @@
-namespace Miki
+namespace Miki.Utility
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
     using Amazon.S3.Model;
     using Microsoft.Extensions.DependencyInjection;
-    using Miki.API.Leaderboards;
+    using Miki.Api.Models;
     using Miki.Bot.Models;
     using Miki.BunnyCDN;
     using Miki.Cache;
@@ -23,7 +23,8 @@ namespace Miki
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Models;
-    using System.Linq;
+    using Miki.Net.Http;
+    using Miki.Services;
 
     public static class Utils
     {
@@ -60,17 +61,15 @@ namespace Miki
                     t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
-            if (time.Hours > 0)
+
+            if(time.Hours > 0)
             {
-                if (time.Hours > 1)
-                {
-                    t.Add(new TimeValue(instance.GetString("time_hours"), time.Hours, minified));
-                }
-                else
-                {
-                    t.Add(new TimeValue(instance.GetString("time_hour"), time.Hours, minified));
-                }
+                t.Add(new TimeValue(
+                    instance.GetString(time.Hours > 1 ? "time_hours" : "time_hour"),
+                    time.Hours, 
+                    minified));
             }
+
             if (time.Minutes > 0)
             {
                 if (time.Minutes > 1)
@@ -144,11 +143,12 @@ namespace Miki
             => c.GetMessage().Author;
 
         public static bool IsAll(string input)
-            => (input == "all") || (input == "*");
+            => (input.ToLowerInvariant() == "all") 
+               || (input == "*");
 
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
             => new LocalizedEmbedBuilder(e.GetLocale())
-                .WithTitle(new IconResource("🚫", "miki_error_message_generic"))
+                .WithTitle(new IconResource(AppProps.Emoji.Disabled, "miki_error_message_generic"))
                 .SetDescription(message)
                 .SetColor(1.0f, 0.0f, 0.0f);
 
@@ -162,39 +162,65 @@ namespace Miki
             => new DateTime(1755, 1, 1, 0, 0, 0);
 
         public static DiscordEmbed SuccessEmbed(this IContext e, string message)
-            => new EmbedBuilder()
+            => new EmbedBuilder
             {
-                Title = "✅ " + e.GetLocale().GetString("miki_success_message_generic"),
+                Title = $"✅ {e.GetLocale().GetString("miki_success_message_generic")}",
                 Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();
-        public static DiscordEmbed SuccessEmbedResource(this IContext e, string resource, params object[] param)
+        public static DiscordEmbed SuccessEmbedResource(
+            this IContext e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
 
-        public static string ToFormattedString(this int val)
-            => val.ToString("N0");
-
-        public static string ToFormattedString(this long val)
-            => val.ToString("N0");
-
-        public static string RemoveMentions(this string arg, IDiscordGuild guild)
+        public static ValueTask<string> RemoveMentionsAsync(this string arg, IDiscordGuild guild)
         {
-            return Regex.Replace(arg, 
-                "<@!?(\\d+)>", 
-                m => guild.GetMemberAsync(ulong.Parse(m.Groups[1].Value)).Result.Username, 
-                RegexOptions.None);
+            return new Regex("<@!?(\\d+)>")
+                .ReplaceAsync(arg, m => ReplaceMentionAsync(guild, m));
+        }
+
+        private static async ValueTask<string> ReplaceMentionAsync(
+            IDiscordGuild guild, Match match)
+        {
+            if(match.Groups.Count == 0)
+            {
+                return match.Value;
+            }
+
+            string value = match.Groups[1]?.Value;
+            if(string.IsNullOrEmpty(value))
+            {
+                return match.Value;
+            }
+
+            if(!ulong.TryParse(value, out var entityId))
+            {
+                return match.Value;
+            }
+
+            var guildMember = await guild.GetMemberAsync(entityId);
+            if(guildMember == null)
+            {
+                return match.Value;
+            }
+
+            return guildMember.Nickname ?? guildMember.Username;
         }
 
         public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
         {
             for (int i = 0; i < Math.Min(items.Count, 12); i++)
             {
-                embed.AddInlineField($"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
+                embed.AddInlineField(
+                    $"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
             }
             return embed;
         }
 
-        public static async Task SyncAvatarAsync(IDiscordUser user, IExtendedCacheClient cache, MikiDbContext context)
+        public static async Task SyncAvatarAsync(
+            [NotNull] IDiscordUser user, 
+            IExtendedCacheClient cache, 
+            IUserService context, 
+            AmazonS3Client s3Service)
         {
             PutObjectRequest request = new PutObjectRequest
             {
@@ -206,12 +232,12 @@ namespace Miki
 
             string avatarUrl = user.GetAvatarUrl();
 
-            using (var client = new Net.Http.HttpClient(avatarUrl, true))
+            using (var client = new HttpClient(avatarUrl, true))
             {
                 request.InputStream = await client.GetStreamAsync();
             }
 
-            var response = await MikiApp.Instance.Services.GetService<AmazonS3Client>().PutObjectAsync(request);
+            var response = await s3Service.PutObjectAsync(request);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -221,24 +247,12 @@ namespace Miki
             await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
                 .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
-            User u = await User.GetAsync(context, user.Id, user.Username);
+            User u = await context.GetOrCreateUserAsync(user);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
             u.AvatarUrl = u.Id.ToString();
-            await context.SaveChangesAsync();
-        }
-        public static async Task<bool> HeadAvatarAsync(IDiscordUser user)
-        {
-            if (user == null)
-            {
-                return false;
-            }
 
-            using var client = new Net.Http.HttpClient($"https://cdn.miki.ai/avatars/{user.Id}.png");
-            var response = await client.SendAsync(new System.Net.Http.HttpRequestMessage
-            {
-                Method = new System.Net.Http.HttpMethod("HEAD"),
-            });
-            return response.Success;
+            await context.UpdateUserAsync(u);
+            await context.SaveAsync();
         }
 
         public static string TakeAll(this IArgumentPack pack)
@@ -252,73 +266,6 @@ namespace Miki
         }
     }
 
-    public class MikiRandom : RandomNumberGenerator
-    {
-        private static readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
-
-        public static int Next()
-        {
-            var data = new byte[sizeof(int)];
-            rng.GetBytes(data);
-            return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
-        }
-
-        public static long Next(long maxValue)
-        {
-            return Next(0L, maxValue);
-        }
-
-        public static int Next(int maxValue)
-        {
-            return Next(0, maxValue);
-        }
-
-        public static int Roll(int maxValue)
-        {
-            return Next(0, maxValue) + 1;
-        }
-
-        public static long Next(long minValue, long maxValue)
-        {
-            if (minValue > maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return (long)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-        }
-
-        public static int Next(int minValue, int maxValue)
-        {
-            if (minValue > maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
-        }
-
-        public static T Of<T>(IEnumerable<T> collection) 
-            => collection.ElementAt(Next(collection.Count()));
-
-        public static double NextDouble()
-        {
-            var data = new byte[sizeof(uint)];
-            rng.GetBytes(data);
-            var randUint = BitConverter.ToUInt32(data, 0);
-            return randUint / (uint.MaxValue + 1.0);
-        }
-
-        public override void GetBytes(byte[] data)
-        {
-            rng.GetBytes(data);
-        }
-
-        public override void GetNonZeroBytes(byte[] data)
-        {
-            rng.GetNonZeroBytes(data);
-        }
-    }
-
     public class TimeValue
     {
         public int Value { get; set; }
@@ -329,14 +276,9 @@ namespace Miki
         public TimeValue(string i, int v, bool minified = false)
         {
             Value = v;
-            if (minified)
-            {
-                Identifier = i[0].ToString();
-            }
-            else
-            {
-                Identifier = i;
-            }
+            Identifier = minified 
+                ? i[0].ToString() 
+                : i;
             this.minified = minified;
         }
 

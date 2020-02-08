@@ -56,15 +56,19 @@
 
     public static class TaskExtensions
     {
-        public static Task<Tuple<T1, T2>> Merge<T1, T2>(
-            this Func<Task<T1>> result1, Func<ValueTask<T2>> result2)
+        public static async Task<Tuple<T1, T2>> Merge<T1, T2>(
+            this Func<Task<T1>> task1, Func<ValueTask<T2>> task2)
         {
-            return Merge(result1, () => result2().AsTask());
+            T1 t1 = await task1();
+            T2 t2 = await task2();
+            return new Tuple<T1, T2>(t1, t2);
         }
-        public static Task<Tuple<T1, T2>> Merge<T1, T2>(
-            this ValueTask<T1> result1, Func<ValueTask<T2>> result2)
+        public static async Task<Tuple<T1, T2>> Merge<T1, T2>(
+            this ValueTask<T1> result1, ValueTask<T2> result2)
         {
-            return Merge(result1.AsTask, () => result2().AsTask());
+            T1 t1 = await result1;
+            T2 t2 = await result2;
+            return new Tuple<T1, T2>(t1, t2);
         }
 
         public static async Task<Tuple<T1, T2>> Merge<T1, T2>(
@@ -76,6 +80,15 @@
             return new Tuple<T1, T2>(t1, t2);
         }
 
+        public static async Task<TOut> Map<TOut>(
+            this Task result,
+            Func<Task<TOut>> func)
+        {
+            ThrowOnFaultyTask(result);
+            await result;
+            return await func();
+        }
+
         public static async Task<TOut> Map<TIn, TOut>(
             this Task<TIn> result,
             Func<TIn, TOut> func)
@@ -83,65 +96,87 @@
             ThrowOnFaultyTask(result);
             return func(await result);
         }
-
-        public static Task<TOut> FlatMap<TIn, TOut>(
-            this Task<Task<TIn>> result,
-            Func<TIn, TOut> func)
+        public static async Task<TOut> Map<TIn, TOut>(
+            this Task<TIn> result,
+            Func<TIn, Task<TOut>> func)
         {
             ThrowOnFaultyTask(result);
-            return result.Unwrap()
-                .Map(func);
+            return await func(await result);
         }
 
-        public static Task<TResult> AndThen<TResult>(
+        public static async Task<TOut> FlatMap<TIn, TOut>(
+            this Task<Task<TIn>> task,
+            Func<TIn, TOut> func)
+        {
+            ThrowOnFaultyTask(task);
+            var innerTask = await task;
+            var result = await innerTask;
+            return func(result);
+        }
+
+        public static async Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Func<Task> func)
         {
-            return result.Map(x =>
-            {
-                func();
-                return x;
-            });
+            var x = await result;
+            await func();
+            return x;
         }
-        public static Task<TResult> AndThen<TResult>(
+        public static async Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Action func)
         {
-            return result.Map(x =>
-            {
-                func();
-                return x;
-            });
+            var x = await result;
+            func();
+            return x;
         }
-        public static Task<TResult> AndThen<TResult>(
+        public static async Task<TResult> AndThen<TResult>(
+            this ValueTask<TResult> result,
+            Action<TResult> func)
+        {
+            TResult t = await result;
+            func(t);
+            return t;
+        }
+        public static async Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Action<TResult> func)
         {
-            return result.Map(x =>
-            {
-                func(x);
-                return x;
-            });
+            var x = await result;
+            func(x);
+            return x;
         }
-        public static Task<TResult> AndThen<TResult>(
+        public static async Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Func<ValueTask> func)
         {
-            return result.Map(x =>
-            {
-                func();
-                return x;
-            });
+            await func();
+            return await result;
         }
-        public static Task<TResult> AndThen<TResult>(
+        public static async Task<TResult> AndThen<TResult>(
+            this Task<TResult> result,
+            Func<TResult, ValueTask> func)
+        {
+            var x = await result;
+            await func(x);
+            return x;
+        }
+        public static async Task<TResult> AndThen<TResult>(
             this Task<TResult> result,
             Func<TResult, Task> func)
         {
-            return result.Map(x =>
-            {
-                func(x);
-                return x;
-            });
+            var x = await result;
+            await func(x);
+            return x;
+        }
+
+        public static async Task<TResult> AndThen<TResult>(
+            this ValueTask<TResult> result,
+            Func<TResult, Task> func)
+        {
+            var r = await result;
+            await func(r);
+            return r;
         }
 
         public static async Task<TResult> OrElse<TResult>(

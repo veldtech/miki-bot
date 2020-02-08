@@ -1,10 +1,10 @@
-﻿using Miki.API.Imageboards.Interfaces;
-using Newtonsoft.Json;
-using System;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	public class DanbooruPost : BooruPost, ILinkable
+    using Miki.API.Imageboards.Interfaces;
+    using Newtonsoft.Json;
+    using System;
+    
+    public class DanbooruPost : BooruPost, ILinkable
 	{
 		[JsonProperty("id")]
 		public uint Id { get; set; }
@@ -28,13 +28,13 @@ namespace Miki.API.Imageboards.Objects
 		public string Rating { get; set; }
 
 		[JsonProperty("image_width")]
-		private string imageWidth { set => Width = value; }
+		private string ImageWidth { set => Width = value; }
 
 		[JsonProperty("image_height")]
-		private string imageHeight { set => Height = value; }
+		private string ImageHeight { set => Height = value; }
 
 		[JsonProperty("tag_string")]
-		private string tagString { set => Tags = value; }
+		private string TagString { set => Tags = value; }
 
 		[JsonProperty("is_note_locked")]
 		public bool IsNoteLocked { get; set; }
