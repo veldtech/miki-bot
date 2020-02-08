@@ -50,14 +50,7 @@
 
         /// <inheritdoc />
         public async ValueTask<bool> UserIsDonatorAsync(long userId)
-        {
-            var donatorRecord = await donatorRepository.GetAsync(userId);
-            if (donatorRecord == null)
-            {
-                return false;
-            }
-            return true;
-        }
+            => await donatorRepository.GetAsync(userId) != null;
 
         /// <inheritdoc />
         public ValueTask UpdateUserAsync(User user)
@@ -78,6 +71,7 @@
 
         ValueTask UpdateUserAsync(User user);
 
+        // ReSharper disable once UnusedMember.Global
         ValueTask<bool> UserIsBannedAsync(long userId);
 
         ValueTask<bool> UserIsDonatorAsync(long userId);

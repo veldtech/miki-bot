@@ -349,7 +349,7 @@
         public class DailyEditCommand
         {
             [Command("resettimer")]
-            //[RequiresScope("developer")]
+            [RequiresScope("developer")]
             public async Task ResetDailyAsync(IContext e)
             {
                 var userService = e.GetService<IUserService>();
@@ -368,7 +368,7 @@
             }
 
             [Command("resetstreaktimer")]
-            //[RequiresScope("developer")]
+            [RequiresScope("developer")]
             public async Task ResetStreakTimerAsync(IContext e)
             {
                 var streakService = e.GetService<IStreakService>();
@@ -376,7 +376,7 @@
 
                 await streakService.UpdateStreakAsync(dailyStreak).ConfigureAwait(false);
 
-                dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
+                //dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
                 await streakService.SaveAsync().ConfigureAwait(false);
 
                 EmbedBuilder message = new EmbedBuilder()

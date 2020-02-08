@@ -12,16 +12,16 @@
     public class StreakService : IStreakService
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IAsyncRepository<DailyStreak> repository;
+        private readonly IAsyncRepository<Daily> repository;
 
         public StreakService(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-            this.repository = unitOfWork.GetRepository<DailyStreak>();
+            this.repository = unitOfWork.GetRepository<Daily>();
         }
 
         /// <inheritdoc />
-        public async ValueTask<DailyStreak> GetStreakAsync(long userId)
+        public async ValueTask<Daily> GetStreakAsync(long userId)
         {
             var dailyStreakRecord = await repository.GetAsync(userId);
             if (dailyStreakRecord == null)
@@ -32,7 +32,7 @@
         }
 
         /// <inheritdoc />
-        public ValueTask UpdateStreakAsync(DailyStreak dailyStreak)
+        public ValueTask UpdateStreakAsync(Daily dailyStreak)
             => repository.EditAsync(dailyStreak);
 
         /// <inheritdoc />
@@ -46,9 +46,9 @@
 
     public interface IStreakService : IDisposable
     {
-        ValueTask<DailyStreak> GetStreakAsync(long userId);
+        ValueTask<Daily> GetStreakAsync(long userId);
 
-        ValueTask UpdateStreakAsync(DailyStreak dailyStreak);
+        ValueTask UpdateStreakAsync(Daily dailyStreak);
 
         ValueTask SaveAsync();
     }

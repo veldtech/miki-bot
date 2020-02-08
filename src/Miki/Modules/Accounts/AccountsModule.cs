@@ -1102,8 +1102,9 @@ namespace Miki.Modules.Accounts
         public async Task GetDailyAsync(IContext e)
         {
             var userService = e.GetService<IUserService>();
+            var streakService = e.GetService<IStreakService>();
             var user = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
-            var dailyStreak = await userService.GetDailyStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+            var dailyStreak = await streakService.GetStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
 
             await userService.UpdateUserAsync(user).ConfigureAwait(false);
 
@@ -1116,7 +1117,7 @@ namespace Miki.Modules.Accounts
 
             const int dailyAmount = 100;
             const int dailyStreakAmount = 20;
-            int donatorMultiplier = await userService.UserIsDonatorAsync((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2:1;
+            var donatorMultiplier = await userService.UserIsDonatorAsync((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2:1;
 
             if(user.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
             {
@@ -1141,26 +1142,27 @@ namespace Miki.Modules.Accounts
                 return;
             }
 
-            ICacheClient cache = e.GetService<ICacheClient>();
-            string redisKey = $"user:{user.Id}:daily";
+            var cache = e.GetService<ICacheClient>();
+            var redisKey = $"user:{user.Id}:daily";
 
-            if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
-            {
-                dailyStreak.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
-                await cache.RemoveAsync(redisKey);
-            }
+            //if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
+            //{
+            //    dailyStreak.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
+            //    await cache.RemoveAsync(redisKey);
+            //}
 
-            if (DateTime.UtcNow <= dailyStreak.LastStreakTime.AddHours(48))
-            {
-                dailyStreak.CurrentStreak++;
-                dailyStreak.LastStreakTime = DateTime.UtcNow;
-            } else
-            {
-                dailyStreak.CurrentStreak = 0;
-                dailyStreak.LastStreakTime = DateTime.UtcNow;
-            }
+            //if (DateTime.UtcNow <= dailyStreak.LastStreakTime.AddHours(48))
+            //{
+            //    dailyStreak.CurrentStreak++;
+            //    dailyStreak.LastStreakTime = DateTime.UtcNow;
+            //}
+            //else
+            //{
+            //    dailyStreak.CurrentStreak = 0;
+            //    dailyStreak.LastStreakTime = DateTime.UtcNow;
+            //}
 
-            int finalAmount = (dailyAmount * donatorMultiplier) + ((dailyStreakAmount * donatorMultiplier) * Math.Min(100, (int)dailyStreak.CurrentStreak));
+            var finalAmount = (dailyAmount * donatorMultiplier) + ((dailyStreakAmount * donatorMultiplier) * Math.Min(100, (int)dailyStreak.CurrentStreak));
 
             user.AddCurrency(finalAmount);
             user.LastDailyTime = DateTime.UtcNow;
@@ -1172,7 +1174,7 @@ namespace Miki.Modules.Accounts
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
                     $"**{finalAmount:N0}**", 
-                    $"`{user.Currency.ToFormattedString()}`"))
+                    $"`{user.Currency:N0}`"))
                 .SetColor(253, 216, 136);
 
             if(dailyStreak.CurrentStreak > 0)
