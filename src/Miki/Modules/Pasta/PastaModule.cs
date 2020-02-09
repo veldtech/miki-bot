@@ -166,8 +166,13 @@ namespace Miki.Modules
        
             await pastaService.UseAsync(pasta);
 
-            var sanitizedText = Utils.EscapeEveryone(pasta.Text);     
-            e.GetChannel().QueueMessage(e, null, sanitizedText);     
+            await new EmbedBuilder()
+                .SetTitle($"🍝  Pasta - {pasta.Id}")
+                .SetDescription(Utils.EscapeEveryone(pasta.Text))
+                .SetColor(255, 204, 77)
+                .SetFooter($"Requested by {e.GetAuthor().Username}#{e.GetAuthor().Discriminator}")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());     
         }
 
         [Command("infopasta")]
