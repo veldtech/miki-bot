@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.110.21" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.22" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="4.0.0" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
 
@@ -46,7 +46,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Npgsql" Version="4.1.3" />
     <PackageReference Include="Sentry" Version="2.0.2" />
-    <PackageReference Include="Veld.Osu" Version="0.1.2" />
+    <PackageReference Include="Veld.Osu" Version="0.1.4" />
   </ItemGroup>
 
   <ItemGroup>
