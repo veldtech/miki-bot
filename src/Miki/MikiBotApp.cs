@@ -9,7 +9,6 @@
     using Amazon.S3;
     using Discord.Internal;
     using Framework.Commands.Localization.Services;
-    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;

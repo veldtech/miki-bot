@@ -11,8 +11,6 @@
     using Discord.Rest;
     using Framework;
     using Framework.Commands;
-    using Framework.Commands.Attributes;
-    using Framework.Extension;
     using Framework.Language;
     using Helpers;
     using Localization;

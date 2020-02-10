@@ -1,12 +1,9 @@
 ﻿namespace Miki.Attributes
 {
     using System.Threading.Tasks;
-    using Bot.Models;
     using Discord;
     using Framework;
     using Framework.Commands;
-    using Framework.Extension;
-    using Microsoft.EntityFrameworkCore;
     using Miki.Services;
     using Miki.Utility;
 

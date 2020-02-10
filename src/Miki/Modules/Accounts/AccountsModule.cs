@@ -8,7 +8,6 @@ namespace Miki.Modules.Accounts
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Api.Models;
-    using Framework.Extension;
     using Localization.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +25,6 @@ namespace Miki.Modules.Accounts
     using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Logging;
     using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;

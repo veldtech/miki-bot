@@ -27,8 +27,6 @@ namespace Miki.Modules
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Extension;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;

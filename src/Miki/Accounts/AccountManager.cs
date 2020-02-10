@@ -5,19 +5,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Framework;
-    using Miki.Localization;
-    using Miki.Localization.Models;
     using Miki.Logging;
-    using Miki.Modules;
     using Miki.Utility;
     using Sentry;
 

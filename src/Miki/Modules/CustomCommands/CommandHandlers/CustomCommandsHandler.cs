@@ -15,7 +15,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Discord.Common.Packets.API;
-    using Miki.Framework.Extension;
     using Miki.Utility;
 
     public class CustomCommandsHandler : IPipelineStage

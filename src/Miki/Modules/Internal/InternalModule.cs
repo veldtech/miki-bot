@@ -1,6 +1,6 @@
 ﻿namespace Miki.Modules.Internal
 {
-    using Framework.Commands.Attributes;
+    using Miki.Framework.Commands;
     using Routines;
 
     [Module("Internal")]

@@ -7,15 +7,12 @@ namespace Miki.Modules
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
-    using Miki.Configuration;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Extension;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services;

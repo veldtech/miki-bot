@@ -7,7 +7,6 @@
     using Miki.Framework;
     using System.Threading.Tasks;
     using Miki.Services.Achievements;
-    using Framework.Extension;
 
     internal class Notification
 	{
