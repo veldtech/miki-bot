@@ -6,7 +6,6 @@
     using Bot.Models.Exceptions;
     using Bot.Models.Models.User;
     using Framework;
-    using Miki.Discord.Common;
     using Patterns.Repositories;
 
     public class UserService : IUserService

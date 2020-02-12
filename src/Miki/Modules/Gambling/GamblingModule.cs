@@ -39,7 +39,7 @@
                 int bet = ValidateBet(e, user, 10000);
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
-                        .WithReceiver(0L)
+                        .WithReceiver(AppProps.Currency.BankId)
                         .WithSender((long)e.GetAuthor().Id)
                         .WithAmount(bet)
                         .Build());
@@ -71,7 +71,8 @@
 
                 RpsWeapon botWeapon = rps.GetRandomWeapon();
 
-                resultMessage.SetDescription($"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
+                resultMessage.SetDescription(
+                    $"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
 
                 switch (rps.CalculateVictory(playerWeapon, botWeapon))
                 {
@@ -81,7 +82,7 @@
                             new TransactionRequest.Builder()
                                 .WithAmount((int)(bet * rewardMultiplier))
                                 .WithReceiver((long)e.GetAuthor().Id)
-                                .WithSender(0L)
+                                .WithSender(AppProps.Currency.BankId)
                                 .Build());
                         resultMessage.Description += $"\n\nYou won `{(int) (bet * rewardMultiplier)}` " 
                                                      + $"mekos! Your new balance is `{user.Currency}`.";
@@ -243,7 +244,10 @@
                             Embed = CreateDrawEmbed(ctx, session)
                         });
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
 
             private async Task OnBlackjackDeadAsync(
@@ -264,7 +268,10 @@
                             Embed = await CreateLoseEmbedAsync(ctx, session)
                         });
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
 
             private async Task OnBlackjackWinAsync(
@@ -293,7 +300,10 @@
                             Embed = CreateWinEmbed(ctx, session)
                         });
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
 
             private DiscordEmbed NewLoadingEmbed()
