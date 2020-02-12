@@ -215,7 +215,8 @@
                     Embed = CreateEmbed(ctx, session).ToEmbed()
                 });
                 // TODO: care about the message.
-                // TODO: just create a new message instance and allow changing the message id in the context?
+                // TODO: just create a new message instance and allow changing the message id in the
+                //       context?
             }
 
             private async Task OnBlackjackDrawAsync(
