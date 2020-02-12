@@ -23,6 +23,8 @@
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
             this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
         }
+
+        /// <inheritdoc />
         public async ValueTask<User> CreateUserAsync(long userId, string userName)
         {
             var user = new User
@@ -49,11 +51,6 @@
         }
 
         /// <inheritdoc />
-        public ValueTask UpdateUserAsync(User user)
-        {
-            return repository.EditAsync(user);
-        }
-
         public async ValueTask<bool> UserIsDonatorAsync(long userId)
         {
             var donatorStatus = await donatorRepository.GetAsync(userId);
@@ -75,10 +72,6 @@
             }
             return banRecord.ExpirationDate > DateTime.UtcNow;
         }
-
-        /// <inheritdoc />
-        public async ValueTask<bool> UserIsDonatorAsync(long userId)
-            => await donatorRepository.GetAsync(userId) != null;
 
         /// <inheritdoc />
         public ValueTask UpdateUserAsync(User user)

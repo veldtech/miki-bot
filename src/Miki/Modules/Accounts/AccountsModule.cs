@@ -1141,6 +1141,8 @@ namespace Miki.Modules.Accounts
         {
             var userService = e.GetService<IUserService>();
             var streakService = e.GetService<IStreakService>();
+            var transactionService = e.GetService<ITransactionService>();
+
             var user = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
             var dailyStreak = await streakService.GetStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
 
@@ -1202,12 +1204,10 @@ namespace Miki.Modules.Accounts
 
             var finalAmount = (dailyAmount * donatorMultiplier) + ((dailyStreakAmount * donatorMultiplier) * Math.Min(100, (int)dailyStreak.CurrentStreak));
 
-            int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
-
             await transactionService.CreateTransactionAsync(
                 new TransactionRequest.Builder()
-                    .WithAmount(amount)
-                    .WithReceiver(u.Id)
+                    .WithAmount(finalAmount)
+                    .WithReceiver(user.Id)
                     .WithSender(0L)
                     .Build());
 
