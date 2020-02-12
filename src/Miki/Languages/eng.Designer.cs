@@ -448,6 +448,15 @@ namespace Miki.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pasta was not found..
+        /// </summary>
+        internal static string error_pasta_null {
+            get {
+                return ResourceManager.GetString("error_pasta_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You cannot alter a command you do not have permissions for yourself!.
         /// </summary>
         internal static string error_permissions_invalid {

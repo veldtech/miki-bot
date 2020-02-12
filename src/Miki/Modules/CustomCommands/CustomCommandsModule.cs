@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Framework.Extension;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore;
     using Miki.Attributes;
@@ -12,10 +11,7 @@
     using Miki.Discord;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Stages;
-    using Miki.Framework.Events;
-    using Miki.Framework.Events.Triggers;
     using Miki.Logging;
     using Miki.Modules.CustomCommands.CommandHandlers;
     using Miki.Modules.CustomCommands.Exceptions;

@@ -8,13 +8,11 @@
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.UrbanDictionary;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Miki.Localization;
-    using Framework.Extension;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
     using Miki.Utility;

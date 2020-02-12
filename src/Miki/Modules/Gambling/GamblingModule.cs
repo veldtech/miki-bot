@@ -4,14 +4,12 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
-    using Framework.Extension;
     using Miki.API.Cards.Objects;
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
     using Miki.Modules.Accounts.Services;

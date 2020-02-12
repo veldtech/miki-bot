@@ -3,12 +3,10 @@
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Framework;
-    using Framework.Commands.Attributes;
     using Miki.Bot.Models.Exceptions;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework.Commands;
-    using Miki.Framework.Extension;
     using Miki.Utility;
     using Veld.Osu;
     using Veld.Osu.Models;

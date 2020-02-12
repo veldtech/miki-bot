@@ -2305,4 +2305,7 @@ To read more about the miki scripting language. Check out https://github.com/mik
   <data name="error_action_unauthorized" xml:space="preserve">
     <value>You cannot {0} this!</value>
   </data>
+  <data name="error_pasta_null" xml:space="preserve">
+    <value>Pasta was not found.</value>
+  </data>
 </root>

@@ -1,11 +1,12 @@
 ﻿using Miki.Configuration;
 using Miki.Discord.Common;
-using Miki.Framework.Commands.Attributes;
 using System.Threading.Tasks;
 
 namespace Miki.Modules
 {
-	[Module("internal:servercount")]
+    using Miki.Framework.Commands;
+
+    [Module("internal:servercount")]
 	public class ServerCountModule
 	{
 		[Configurable]

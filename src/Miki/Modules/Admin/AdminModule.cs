@@ -7,7 +7,6 @@ namespace Miki.Modules.Admin
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Reflection;
-    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Discord;
@@ -16,7 +15,6 @@ namespace Miki.Modules.Admin
     using Miki.Discord.Rest;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Permissions;
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Exceptions;

@@ -14,9 +14,7 @@
     using Miki.Framework;
     using Miki.Framework.Arguments;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Nodes;
-    using Miki.Framework.Extension;
     using Miki.Framework.Language;
     using Miki.Helpers;
     using Miki.Localization;

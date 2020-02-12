@@ -3,11 +3,10 @@
     using Miki.Anilist;
     using Miki.Discord;
     using Miki.Framework;
-    using Miki.Framework.Commands.Attributes;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Framework.Extension;
+    using Miki.Framework.Commands;
     using Miki.Utility;
 
     [Module("Anime")]

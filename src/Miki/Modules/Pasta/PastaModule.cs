@@ -7,15 +7,12 @@ namespace Miki.Modules
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
-    using Miki.Configuration;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Extension;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services;
@@ -166,8 +163,13 @@ namespace Miki.Modules
        
             await pastaService.UseAsync(pasta);
 
-            var sanitizedText = Utils.EscapeEveryone(pasta.Text);     
-            e.GetChannel().QueueMessage(e, null, sanitizedText);     
+            await new EmbedBuilder()
+                .SetTitle($"🍝  Pasta - {pasta.Id}")
+                .SetDescription(Utils.EscapeEveryone(pasta.Text))
+                .SetColor(255, 204, 77)
+                .SetFooter($"Requested by {e.GetAuthor().Username}#{e.GetAuthor().Discriminator}")
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());     
         }
 
         [Command("infopasta")]

@@ -5,12 +5,11 @@
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
-    using Miki.Framework.Commands.Attributes;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Framework.Extension;
+    using Miki.Framework.Commands;
     using Miki.Utility;
 
     [Module("logging")]

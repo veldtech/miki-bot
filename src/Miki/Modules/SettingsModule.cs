@@ -6,7 +6,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Framework.Extension;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Cache;
@@ -14,7 +13,6 @@
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Localization;

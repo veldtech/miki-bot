@@ -4,7 +4,6 @@
     using Miki.Discord;
     using Miki.Discord.Rest;
     using Miki.Framework;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands;
     using Miki.Localization;
     using Miki.Logging;
@@ -15,7 +14,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Attributes;
-    using Miki.Framework.Extension;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services;

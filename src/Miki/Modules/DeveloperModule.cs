@@ -6,16 +6,15 @@
     using Miki.Discord.Common;
     using Miki.Discord.Common.Packets;
     using Miki.Framework;
-    using Miki.Framework.Commands.Attributes;
     using Miki.Framework.Commands.Filters;
     using Miki.Net.Http;
     using Newtonsoft.Json;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Framework.Extension;
     using Miki.Framework.Commands.Scopes.Attributes;
     using Microsoft.EntityFrameworkCore;
+    using Miki.Framework.Commands;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Exceptions;
     using Miki.Utility;

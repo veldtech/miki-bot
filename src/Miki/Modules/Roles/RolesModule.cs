@@ -9,10 +9,7 @@
     using Miki.Dsl;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Attributes;
-    using Miki.Framework.Events;
     using Miki.Helpers;
-    using Miki.Models;
     using Miki.Modules.Roles.Exceptions;
     using System;
     using System.Collections.Generic;
@@ -20,7 +17,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using Miki.Localization;
-    using Framework.Extension;
     using Miki.Utility;
 
     [Module("Role Management")]
