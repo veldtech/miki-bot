@@ -346,40 +346,21 @@
         [RequiresScope("developer")]
         public class DailyEditCommand
         {
-            [Command("resettimer")]
+            [Command("reset")]
             [RequiresScope("developer")]
-            public async Task ResetDailyAsync(IContext e)
+            public async Task ResetAsync(IContext e)
             {
-                var userService = e.GetService<IUserService>();
-                var targetUser = await userService.GetUserAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                var dailyService = e.GetService<IDailyService>();
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
 
-                await userService.UpdateUserAsync(targetUser).ConfigureAwait(false);
+                daily.LastClaimTime = DateTime.UtcNow.AddHours(-24);
 
-                targetUser.LastDailyTime = DateTime.UtcNow.AddHours(-23);
-                await userService.SaveAsync().ConfigureAwait(false);
-
-                var message = new EmbedBuilder()
-                    .SetTitle("💰 Daily")
-                    .SetDescription("You have reset your daily!");
-
-                await message.ToEmbed().QueueAsync(e, e.GetChannel());
-            }
-
-            [Command("resetstreaktimer")]
-            [RequiresScope("developer")]
-            public async Task ResetStreakTimerAsync(IContext e)
-            {
-                var streakService = e.GetService<IStreakService>();
-                var dailyStreak = await streakService.GetStreakAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
-
-                await streakService.UpdateStreakAsync(dailyStreak).ConfigureAwait(false);
-
-                //dailyStreak.LastStreakTime = DateTime.UtcNow.AddHours(48);
-                await streakService.SaveAsync().ConfigureAwait(false);
+                await dailyService.SaveAsync().ConfigureAwait(false);
 
                 EmbedBuilder message = new EmbedBuilder()
                     .SetTitle("💰 Daily")
-                    .SetDescription("You have reset your streak timer, you can increase your streak again today!");
+                    .SetDescription("You have reset your daily!");
 
                 await message.ToEmbed().QueueAsync(e, e.GetChannel());
             }

@@ -229,6 +229,7 @@
                 serviceCollection.AddSingleton<TransactionEvents>();
 
                 serviceCollection.AddScoped<IUserService, UserService>();
+                serviceCollection.AddScoped<IDailyService, DailyService>();
                 serviceCollection.AddSingleton<AccountService>();
                 serviceCollection.AddScoped<PastaService>();
 

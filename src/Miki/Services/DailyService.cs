@@ -1,4 +1,8 @@
-﻿using ProtoBuf;
+﻿using Miki.Cache;
+using Miki.Core.Migrations;
+using Miki.Logging;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
 namespace Miki.Services
 {
@@ -15,29 +19,83 @@ namespace Miki.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAsyncRepository<User> userRepository;
-        private readonly IAsyncRepository<Daily> dailyStreakRepository;
+        private readonly IAsyncRepository<Daily> dailyRepository;
 
-        public DailyService(IUnitOfWork unitOfWork)
+        private readonly ITransactionService transactionService;
+
+        public DailyService(IUnitOfWork unitOfWork, ITransactionService transactionService)
         {
             this.unitOfWork = unitOfWork;
-            this.userRepository = unitOfWork.GetRepository<User>();
-            this.dailyStreakRepository = unitOfWork.GetRepository<Daily>();
+            userRepository = unitOfWork.GetRepository<User>();
+            dailyRepository = unitOfWork.GetRepository<Daily>();
+
+            this.transactionService = transactionService;
         }
 
         /// <inheritdoc />
-        public async ValueTask ClaimDailyAsync(ulong userId)
+        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context = null)
         {
-            var user = await userRepository.GetAsync(userId);
-            
+            var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
+
+            await dailyRepository.EditAsync(daily).ConfigureAwait(false);
+
+            if (DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
+            {
+                /*
+                 * Temporary code for transferring streaks from cache.
+                 */
+                var cache = context.GetService<ICacheClient>();
+                var redisKey = $"user:{userId}:daily";
+
+                if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
+                {
+                    daily.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
+                    await cache.RemoveAsync(redisKey);
+                }
+                /*
+                 * End of temporary code.
+                 */
+
+                if (DateTime.UtcNow < daily.LastClaimTime.AddDays(2))
+                {
+                    daily.CurrentStreak++;
+                    daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak ? daily.CurrentStreak : daily.LongestStreak;
+                }
+
+                daily.LastClaimTime = DateTime.UtcNow;
+
+                await SaveAsync().ConfigureAwait(false);
+
+                var claimAmount = AppProps.Daily.DailyAmount + (AppProps.Daily.StreakAmount * daily.CurrentStreak);
+
+                return new DailyClaimResponse(daily, amountClaimed: claimAmount);
+            }
+            else
+            {
+                return new DailyClaimResponse(daily, DailyStatus.Claimed);
+            }
         }
 
         /// <inheritdoc />
-        public async ValueTask<Daily> GetStreakAsync(ulong userId)
-             => await dailyStreakRepository.GetAsync(userId);
+        public async ValueTask<Daily> GetOrCreateDailyAsync(long userId)
+        {
+            var daily = await dailyRepository.GetAsync(userId);
+            if (daily == null)
+            {
+                daily = new Daily
+                {
+                    UserId = userId,
+                    LastClaimTime = DateTime.UtcNow.AddDays(-1)
+                };
+                await dailyRepository.AddAsync(daily);
+                await unitOfWork.CommitAsync();
+            }
+            return daily;
+        }
 
         /// <inheritdoc />
-        public ValueTask UpdateStreakAsync(Daily dailyStreak)
-            => dailyStreakRepository.EditAsync(dailyStreak);
+        public ValueTask UpdateDailyAsync(Daily daily)
+            => dailyRepository.EditAsync(daily);
 
         /// <inheritdoc />
         public ValueTask SaveAsync()
@@ -50,17 +108,33 @@ namespace Miki.Services
 
     public class DailyClaimResponse
     {
-        public bool claimSuccess;
-        //public  failReason;
+        public DailyStatus Status;
+        public int AmountClaimed;
+        public int CurrentStreak;
+        public DateTime LastClaimTime;
+
+        public DailyClaimResponse(Daily daily, DailyStatus status = DailyStatus.Success, int amountClaimed = 0)
+        {
+            Status = status;
+            AmountClaimed = amountClaimed;
+            CurrentStreak = daily.CurrentStreak;
+            LastClaimTime = daily.LastClaimTime;
+        }
+    }
+
+    public enum DailyStatus
+    {
+        Success,
+        Claimed
     }
 
     public interface IDailyService : IDisposable
     {
-        ValueTask ClaimDailyAsync(ulong userId);
+        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context);
 
-        ValueTask<Daily> GetStreakAsync(ulong userId);
+        ValueTask<Daily> GetOrCreateDailyAsync(long userId);
 
-        ValueTask UpdateStreakAsync(Daily dailyStreak);
+        ValueTask UpdateDailyAsync(Daily daily);
 
         ValueTask SaveAsync();
     }

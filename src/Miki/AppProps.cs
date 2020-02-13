@@ -36,5 +36,11 @@ namespace Miki
         {
             public static long BankId => 1L;
         }
+
+        public class Daily
+        {
+            public static int DailyAmount => 100;
+            public static int StreakAmount => 20;
+        }
     }                 
 }
