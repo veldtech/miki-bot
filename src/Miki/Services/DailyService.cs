@@ -65,6 +65,10 @@ namespace Miki.Services
                     daily.CurrentStreak++;
                     daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak ? daily.CurrentStreak : daily.LongestStreak;
                 }
+                else
+                {
+                    daily.CurrentStreak = 1;
+                }
 
                 daily.LastClaimTime = DateTime.UtcNow;
 

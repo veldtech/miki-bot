@@ -29,6 +29,11 @@
                 Id = 3,
                 Currency = 0
             });
+            ctx.Set<User>().Add(new User
+            {
+                Id = 4,
+                Currency = 0
+            });
 
             ctx.Set<IsDonator>().Add(new IsDonator
             {
@@ -50,6 +55,14 @@
                 CurrentStreak = 5,
                 LongestStreak = 10,
                 LastClaimTime = DateTime.UtcNow.AddDays(-1)
+            });
+
+            ctx.Set<Daily>().Add(new Daily
+            {
+                UserId = 4,
+                CurrentStreak = 7,
+                LongestStreak = 14,
+                LastClaimTime = DateTime.UtcNow.AddDays(-3)
             });
             ctx.SaveChanges();
         }
@@ -105,6 +118,21 @@
             Assert.Equal(1, daily.CurrentStreak);
             Assert.Equal(1, daily.LongestStreak);
             Assert.InRange(daily.LastClaimTime, DateTime.UtcNow.AddMinutes(-2), DateTime.UtcNow.AddMinutes(2));
+        }
+
+        [Fact]
+        public async Task DailyStreakResetTest()
+        {
+            await using var unit = NewContext();
+            var userService = new UserService(unit);
+            var transactionService = new TransactionService(userService);
+            var dailyService = new DailyService(unit, userService, transactionService);
+
+            await dailyService.ClaimDailyAsync(4L);
+
+            var daily = await dailyService.GetOrCreateDailyAsync(4L);
+
+            Assert.Equal(1, daily.CurrentStreak);
         }
 
         [Fact]
