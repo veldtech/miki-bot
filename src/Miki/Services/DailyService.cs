@@ -21,14 +21,16 @@ namespace Miki.Services
         private readonly IAsyncRepository<User> userRepository;
         private readonly IAsyncRepository<Daily> dailyRepository;
 
+        private readonly IUserService userService;
         private readonly ITransactionService transactionService;
 
-        public DailyService(IUnitOfWork unitOfWork, ITransactionService transactionService)
+        public DailyService(IUnitOfWork unitOfWork, IUserService userService, ITransactionService transactionService)
         {
             this.unitOfWork = unitOfWork;
             userRepository = unitOfWork.GetRepository<User>();
             dailyRepository = unitOfWork.GetRepository<Daily>();
 
+            this.userService = userService;
             this.transactionService = transactionService;
         }
 
@@ -36,7 +38,6 @@ namespace Miki.Services
         public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context = null)
         {
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
-
             await dailyRepository.EditAsync(daily).ConfigureAwait(false);
 
             if (DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
@@ -44,13 +45,16 @@ namespace Miki.Services
                 /*
                  * Temporary code for transferring streaks from cache.
                  */
-                var cache = context.GetService<ICacheClient>();
-                var redisKey = $"user:{userId}:daily";
-
-                if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
+                if (context != null)
                 {
-                    daily.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
-                    await cache.RemoveAsync(redisKey);
+                    var cache = context.GetService<ICacheClient>();
+                    var redisKey = $"user:{userId}:daily";
+
+                    if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
+                    {
+                        daily.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
+                        await cache.RemoveAsync(redisKey);
+                    }
                 }
                 /*
                  * End of temporary code.
@@ -66,7 +70,15 @@ namespace Miki.Services
 
                 await SaveAsync().ConfigureAwait(false);
 
-                var claimAmount = AppProps.Daily.DailyAmount + (AppProps.Daily.StreakAmount * daily.CurrentStreak);
+                var multiplier = await userService.UserIsDonatorAsync(userId).ConfigureAwait(false) ? 2 : 1;
+                var claimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * daily.CurrentStreak) * multiplier;
+
+                await transactionService.CreateTransactionAsync( // TODO: Move this into DailyService.
+                    new TransactionRequest.Builder()
+                        .WithAmount(claimAmount)
+                        .WithReceiver(userId)
+                        .WithSender(AppProps.Currency.BankId)
+                        .Build());
 
                 return new DailyClaimResponse(daily, amountClaimed: claimAmount);
             }
@@ -110,6 +122,7 @@ namespace Miki.Services
     {
         public DailyStatus Status;
         public int AmountClaimed;
+        public int LongestStreak;
         public int CurrentStreak;
         public DateTime LastClaimTime;
 
@@ -117,6 +130,7 @@ namespace Miki.Services
         {
             Status = status;
             AmountClaimed = amountClaimed;
+            LongestStreak = daily.LongestStreak;
             CurrentStreak = daily.CurrentStreak;
             LastClaimTime = daily.LastClaimTime;
         }

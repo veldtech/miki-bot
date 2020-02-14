@@ -1139,7 +1139,6 @@ namespace Miki.Modules.Accounts
         {
             var userService = e.GetService<IUserService>();
             var dailyService = e.GetService<IDailyService>();
-            var transactionService = e.GetService<ITransactionService>();
 
             var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
 
@@ -1168,21 +1167,11 @@ namespace Miki.Modules.Accounts
                 return;
             }
 
-            var multiplier = await userService.UserIsDonatorAsync((long)e.GetAuthor().Id).ConfigureAwait(false) ? 2 : 1;
-            var finalAmount = response.AmountClaimed * multiplier;
-
-            await transactionService.CreateTransactionAsync(
-                new TransactionRequest.Builder()
-                    .WithAmount(finalAmount)
-                    .WithReceiver(user.Id)
-                    .WithSender(AppProps.Currency.BankId)
-                    .Build());
-
             var embed = new EmbedBuilder()
                 .SetTitle("💰 Daily")
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
-                    $"**{finalAmount:N0}**", 
+                    $"**{response.AmountClaimed:N0}**", 
                     $"`{user.Currency:N0}`"))
                 .SetColor(253, 216, 136);
 
