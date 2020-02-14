@@ -8,7 +8,11 @@
 
     public static class ServiceExtensions
     {
-        public static async Task<User> GetOrCreateUserAsync(this IUserService service, IDiscordUser user)
+        /// <summary>
+        /// Creates and returns the User regardless of business errors.
+        /// </summary>
+        public static async Task<User> GetOrCreateUserAsync(
+            this IUserService service, IDiscordUser user)
         {
             try
             {
