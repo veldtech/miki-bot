@@ -234,7 +234,8 @@
 
                 serviceCollection.AddSingleton<AchievementCollection>();
                 serviceCollection.AddScoped<AchievementService>();
-                
+
+                serviceCollection.AddScoped<MarriageService>();
                 serviceCollection.AddScoped<RpsService>();
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
                 serviceCollection.AddScoped<PermissionService>();

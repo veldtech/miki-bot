@@ -56,9 +56,9 @@
                 .Map(session => new BlackjackSession(session));
         }
 
-        private ValueTask AddSessionAsync(BlackjackContext ctx)
+        private async ValueTask AddSessionAsync(BlackjackContext ctx)
         {
-            return repository.AddAsync(ctx);
+            await repository.AddAsync(ctx);
         }
 
         public ValueTask SyncSessionAsync(BlackjackContext ctx)

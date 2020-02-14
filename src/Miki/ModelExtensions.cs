@@ -3,26 +3,21 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
     using Miki.Bot.Models.Models.User;
     using Miki.Bot.Models.Repositories;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Exceptions;
     using Miki.Framework;
-    using Miki.Framework.Events;
-    using Miki.Models;
-    using Miki.Services.Pasta.Exceptions;
     using System;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     public static class ModelExtensions
 	{
         public static async Task BanAsync(this User user, DbContext context)
         {
-            MarriageRepository repository = new MarriageRepository(context);
+            // TODO: replace for IContext
+            MarriageService repository = new MarriageService(new UnitOfWork(context));
 
             User u = await context.Set<User>().FindAsync(user.Id);
 

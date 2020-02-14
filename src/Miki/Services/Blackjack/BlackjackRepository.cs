@@ -48,7 +48,7 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask AddAsync(BlackjackContext entity)
+        public async ValueTask<BlackjackContext> AddAsync(BlackjackContext entity)
         {
             var value = await GetAsync(entity.ChannelId, entity.UserId);
             if (value != null)
@@ -59,6 +59,7 @@
 
             Logging.Log.Debug($"ADD - {SessionKey}: {key}");
             await cache.HashUpsertAsync(SessionKey, key, entity);
+            return entity;
         }
 
         /// <inheritdoc />
