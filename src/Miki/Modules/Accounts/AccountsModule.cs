@@ -1141,43 +1141,37 @@ namespace Miki.Modules.Accounts
             var dailyService = e.GetService<IDailyService>();
 
             var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
-
             var response = await dailyService.ClaimDailyAsync(user.Id, e).ConfigureAwait(false);
 
-            if(response.Status == DailyStatus.Claimed) // TODO: Add localization here!
+            if(response.Status == DailyStatus.Claimed)
             {
                 var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
-                var builder = e.ErrorEmbed($"You already claimed your daily today! Please wait another `{time}` before using it again.");
+                var builder = e.ErrorEmbed(e.GetLocale().GetString(
+                    "miki_module_accounts_daily_claimed",
+                    $"`{time}`",
+                    $"`{user.Currency:N0}`"));
 
-                switch(MikiRandom.Next(2)) 
-                {
-                    case 0:
-                    {
-                        builder.AddInlineField("Appreciate Miki?", "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!");
-                    }
-                    break;
-                    case 1:
-                    {
-                        builder.AddInlineField("Appreciate Miki?", "Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!");
-                    }
-                    break;
-                }
+                var appreciationList = e.GetLocale().GetString("miki_module_accounts_daily_appreciate_list").Split(";");
+                builder.AddInlineField(e.GetLocale().GetString("miki_module_accounts_daily_appreciate_title"), $"{appreciationList[MikiRandom.Next(2)]}");
+
                 await builder.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
 
             var embed = new EmbedBuilder()
-                .SetTitle("💰 Daily")
+                .SetTitle(e.GetLocale().GetString("miki_module_accounts_daily_title"))
                 .SetDescription(e.GetLocale().GetString(
-                    "daily_received", 
+                    "miki_module_accounts_daily_received", 
                     $"**{response.AmountClaimed:N0}**", 
                     $"`{user.Currency:N0}`"))
                 .SetColor(253, 216, 136);
 
             if(response.CurrentStreak > 0)
             {
-                embed.AddInlineField("Streak!", $"You're on a {response.CurrentStreak:N0} day daily streak!");
+                embed.AddInlineField(
+                    e.GetLocale().GetString("miki_module_accounts_daily_streak_title"),
+                    e.GetLocale().GetString("miki_module_accounts_daily_streak", $"{response.CurrentStreak:N0}"));
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());

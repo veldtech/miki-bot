@@ -169,15 +169,6 @@ namespace Miki.Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Received {0} Mekos! You now have {1} Mekos.
-        /// </summary>
-        internal static string daily_received {
-            get {
-                return ResourceManager.GetString("daily_received", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Servers.
         /// </summary>
         internal static string discord_servers {
@@ -3593,6 +3584,69 @@ namespace Miki.Languages {
         internal static string miki_mekos_insufficient {
             get {
                 return ResourceManager.GetString("miki_mekos_insufficient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!;Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!.
+        /// </summary>
+        internal static string miki_module_accounts_daily_appreciate_list {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_appreciate_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appreciate Miki?.
+        /// </summary>
+        internal static string miki_module_accounts_daily_appreciate_title {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_appreciate_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You already claimed your daily today! Please wait another `{0}` before using it again..
+        /// </summary>
+        internal static string miki_module_accounts_daily_claimed {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_claimed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Received {0} Mekos! You now have {1} Mekos.
+        /// </summary>
+        internal static string miki_module_accounts_daily_received {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_received", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re on a {0} day daily streak!.
+        /// </summary>
+        internal static string miki_module_accounts_daily_streak_content {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_streak_content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Streak!.
+        /// </summary>
+        internal static string miki_module_accounts_daily_streak_title {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_streak_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 💰 Daily.
+        /// </summary>
+        internal static string miki_module_accounts_daily_title {
+            get {
+                return ResourceManager.GetString("miki_module_accounts_daily_title", resourceCulture);
             }
         }
         

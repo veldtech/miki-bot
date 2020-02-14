@@ -2109,7 +2109,7 @@ To give someone reputation, do `&gt;rep &lt;mention&gt; ["all"|amount]`</value>
   <data name="error_argument_less_than_zero" xml:space="preserve">
     <value>You can not use an amount less than zero!</value>
   </data>
-  <data name="daily_received" xml:space="preserve">
+  <data name="miki_module_accounts_daily_received" xml:space="preserve">
     <value>Received {0} Mekos! You now have {1} Mekos</value>
   </data>
   <data name="error_blackjack_null" xml:space="preserve">
@@ -2307,5 +2307,24 @@ To read more about the miki scripting language. Check out https://github.com/mik
   </data>
   <data name="error_pasta_null" xml:space="preserve">
     <value>Pasta was not found.</value>
+  </data>
+  <data name="miki_module_accounts_daily_appreciate_list" xml:space="preserve">
+    <value>Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!;Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!</value>
+    <comment>When adding things to this list seperate them with a semicolon (" ; "). </comment>
+  </data>
+  <data name="miki_module_accounts_daily_appreciate_title" xml:space="preserve">
+    <value>Appreciate Miki?</value>
+  </data>
+  <data name="miki_module_accounts_daily_claimed" xml:space="preserve">
+    <value>You already claimed your daily today! Please wait another `{0}` before using it again.</value>
+  </data>
+  <data name="miki_module_accounts_daily_streak_content" xml:space="preserve">
+    <value>You're on a {0} day daily streak!</value>
+  </data>
+  <data name="miki_module_accounts_daily_streak_title" xml:space="preserve">
+    <value>Streak!</value>
+  </data>
+  <data name="miki_module_accounts_daily_title" xml:space="preserve">
+    <value>💰 Daily</value>
   </data>
 </root>
