@@ -316,18 +316,9 @@ namespace Miki.Modules
 		public async Task MarryAsync(IContext e)
 		{
 			var userService = e.GetService<IUserService>();
-			if(!e.GetArgumentPack().Take(out string args))
-			{
-				return;
-			}
 
             IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-
-			if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
+            if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
 			{
 				e.GetChannel().QueueMessage(e, null, "(´・ω・`)");
 				return;
