@@ -73,7 +73,7 @@ namespace Miki.Services
                 var multiplier = await userService.UserIsDonatorAsync(userId).ConfigureAwait(false) ? 2 : 1;
                 var claimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * daily.CurrentStreak) * multiplier;
 
-                await transactionService.CreateTransactionAsync( // TODO: Move this into DailyService.
+                await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(claimAmount)
                         .WithReceiver(userId)
