@@ -1,4 +1,5 @@
-﻿using Miki.Cache;
+﻿using System.ComponentModel.DataAnnotations;
+using Miki.Cache;
 using Miki.Core.Migrations;
 using Miki.Logging;
 using Miki.Services.Transactions;
@@ -18,7 +19,6 @@ namespace Miki.Services
     public class DailyService : IDailyService
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IAsyncRepository<User> userRepository;
         private readonly IAsyncRepository<Daily> dailyRepository;
 
         private readonly IUserService userService;
@@ -27,7 +27,6 @@ namespace Miki.Services
         public DailyService(IUnitOfWork unitOfWork, IUserService userService, ITransactionService transactionService)
         {
             this.unitOfWork = unitOfWork;
-            userRepository = unitOfWork.GetRepository<User>();
             dailyRepository = unitOfWork.GetRepository<Daily>();
 
             this.userService = userService;
@@ -35,7 +34,11 @@ namespace Miki.Services
         }
 
         /// <inheritdoc />
-        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context = null)
+        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId)
+            => await ClaimDailyAsync(userId, null);
+
+        /// <inheritdoc />
+        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
         {
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
             await dailyRepository.EditAsync(daily).ConfigureAwait(false);
@@ -84,11 +87,11 @@ namespace Miki.Services
                         .WithSender(AppProps.Currency.BankId)
                         .Build());
 
-                return new DailyClaimResponse(daily, amountClaimed: claimAmount);
+                return new DailyClaimResponse(daily, DailyStatus.Success, claimAmount);
             }
             else
             {
-                return new DailyClaimResponse(daily, DailyStatus.Claimed);
+                return new DailyClaimResponse(daily, DailyStatus.Claimed, 0);
             }
         }
 
@@ -124,13 +127,13 @@ namespace Miki.Services
 
     public class DailyClaimResponse
     {
-        public DailyStatus Status;
-        public int AmountClaimed;
-        public int LongestStreak;
-        public int CurrentStreak;
-        public DateTime LastClaimTime;
+        public DailyStatus Status { get; set; }
+        public int AmountClaimed { get; set; }
+        public int LongestStreak { get; set; }
+        public int CurrentStreak { get; set; }
+        public DateTime LastClaimTime { get; set; }
 
-        public DailyClaimResponse(Daily daily, DailyStatus status = DailyStatus.Success, int amountClaimed = 0)
+        public DailyClaimResponse(Daily daily, DailyStatus status, int amountClaimed)
         {
             Status = status;
             AmountClaimed = amountClaimed;

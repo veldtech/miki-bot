@@ -1152,7 +1152,7 @@ namespace Miki.Modules.Accounts
                     $"`{user.Currency:N0}`"));
 
                 var appreciationList = e.GetLocale().GetString("miki_module_accounts_daily_appreciate_list").Split(";");
-                builder.AddInlineField(e.GetLocale().GetString("miki_module_accounts_daily_appreciate_title"), $"{appreciationList[MikiRandom.Next(2)]}");
+                builder.AddInlineField(e.GetLocale().GetString("miki_module_accounts_daily_appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
 
                 await builder.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
