@@ -624,7 +624,7 @@ namespace Miki.Modules.Accounts
                     locale.GetString("miki_generic_mekos"),
                     $"{account.Currency:N0} {AppProps.Emoji.Mekos}");
 
-                MarriageRepository repository = new MarriageRepository(context);
+                var repository = e.GetService<MarriageService>();
                 List<UserMarriedTo> marriages =
                     (await repository.GetMarriagesAsync((long)discordUser.Id))
                     .Where(x => !x.Marriage.IsProposing)

@@ -3,8 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Cache.InMemory;
-    using Miki.Services.Blackjack;
-    using Miki.Services.Blackjack.Exceptions;
+    using Miki.Services;
     using Miki.Services.Transactions;
     using Moq;
     using Serialization.Protobuf;

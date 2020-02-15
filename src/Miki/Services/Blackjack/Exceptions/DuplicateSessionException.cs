@@ -1,12 +1,8 @@
-﻿using Miki.Localization;
-using Miki.Localization.Exceptions;
-using Miki.Localization.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Services.Blackjack.Exceptions
+﻿namespace Miki.Services
 {
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
     public class DuplicateSessionException : LocalizedException
     {
         public override IResource LocaleResource 

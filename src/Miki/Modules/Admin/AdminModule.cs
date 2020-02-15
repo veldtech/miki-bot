@@ -469,7 +469,7 @@ namespace Miki.Modules.Admin
                 var ownPermission = await permissions.GetPriorityPermissionAsync(e);
                 if(ownPermission.Status == PermissionStatus.Deny)
                 {
-                    throw new PermissionUnauthorizedException();
+                    throw new PermissionUnauthorizedException("");
                 }
 
                 Entity entity = await GetEntityAsync(e);

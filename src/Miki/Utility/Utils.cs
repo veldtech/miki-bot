@@ -114,7 +114,7 @@ namespace Miki.Utility
 
                     if (!minified)
                     {
-                        text += $", {instance.GetString("time_and")} " + s[s.Count - 1].ToString();
+                        text += $", {instance.GetString("time_and")} {s[^1]}";
                     }
                 }
                 else if (t.Count == 1)
@@ -164,7 +164,7 @@ namespace Miki.Utility
         public static DiscordEmbed SuccessEmbed(this IContext e, string message)
             => new EmbedBuilder
             {
-                Title = $"✅ {e.GetLocale().GetString("miki_success_message_generic")}",
+                Title = $"✅  {e.GetLocale().GetString("miki_success_message_generic")}",
                 Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();

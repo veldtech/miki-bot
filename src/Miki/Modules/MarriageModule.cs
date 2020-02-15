@@ -46,9 +46,7 @@ namespace Miki.Modules
                 return;
             }
 
-            var context = e.GetService<MikiDbContext>();
-
-            MarriageRepository repository = new MarriageRepository(context);
+            var service = e.GetService<MarriageService>();
 
 			User accepter = await userService.GetOrCreateUserAsync(e.GetAuthor())
 				.ConfigureAwait(false);
@@ -56,16 +54,16 @@ namespace Miki.Modules
 			User asker = await userService.GetOrCreateUserAsync(user)
 				.ConfigureAwait(false);
 
-            UserMarriedTo marriage = await repository.GetEntryAsync(accepter.Id, asker.Id);
+            UserMarriedTo marriage = await service.GetEntryAsync(accepter.Id, asker.Id);
 
             if(marriage != null)
             {
-                if(accepter.MarriageSlots < (await repository.GetMarriagesAsync(accepter.Id)).Count)
+                if(accepter.MarriageSlots < (await service.GetMarriagesAsync(accepter.Id)).Count)
                 {
                     throw new InsufficientMarriageSlotsException(accepter);
                 }
 
-                if(asker.MarriageSlots < (await repository.GetMarriagesAsync(asker.Id)).Count)
+                if(asker.MarriageSlots < (await service.GetMarriagesAsync(asker.Id)).Count)
                 {
                     throw new InsufficientMarriageSlotsException(asker);
                 }
@@ -78,10 +76,7 @@ namespace Miki.Modules
 
                 if(marriage.Marriage.IsProposing)
                 {
-                    marriage.Marriage.AcceptProposal();
-
-                    await context.SaveChangesAsync()
-                        .ConfigureAwait(false);
+                    await service.AcceptProposalAsync(marriage.Marriage);
 
                     await new EmbedBuilder()
                     {
@@ -167,10 +162,9 @@ namespace Miki.Modules
 		[Command("cancelmarriage")]
 		public async Task CancelMarriageAsync(IContext e)
 		{
-			var context = e.GetService<MikiDbContext>();
-			MarriageRepository repository = new MarriageRepository(context);
+			var service = e.GetService<MarriageService>();
 
-            var marriages = await repository.GetProposalsSent(e.GetAuthor().Id.ToDbLong())
+            var marriages = await service.GetProposalsSent(e.GetAuthor().Id.ToDbLong())
                 .ConfigureAwait(false);
 
 			if(!marriages.Any())
@@ -185,9 +179,11 @@ namespace Miki.Modules
 			if(e.GetArgumentPack().Take(out int selectionId))
 			{
 				var m = marriages[selectionId - 1];
-                string otherName = (await e.GetService<DiscordClient>()
-                    .GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())
+                string otherName = (await e.GetService<IDiscordClient>()
+					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())
                     .ConfigureAwait(false)).Username;
+
+				await service.DeclineProposalAsync(m);
 
 				await new EmbedBuilder
 				{
@@ -196,10 +192,6 @@ namespace Miki.Modules
 					Color = new Color(231, 90, 112)
 				}.ToEmbed()
                     .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-
-				m.Remove(context);
-                await context.SaveChangesAsync()
                     .ConfigureAwait(false);
             }
 			else
@@ -214,7 +206,7 @@ namespace Miki.Modules
 					Color = new Color(154, 170, 180)
 				};
 
-                await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages)
+                await this.BuildMarriageEmbedAsync(e, embed, e.GetAuthor().Id.ToDbLong(), marriages)
                     .ConfigureAwait(false);
 
                 await embed.ToEmbed()
@@ -226,11 +218,9 @@ namespace Miki.Modules
 		[Command("declinemarriage")]
 		public async Task DeclineMarriageAsync(IContext e)
 		{
-			var context = e.GetService<MikiDbContext>();
+			var service = e.GetService<MarriageService>();
 
-			MarriageRepository repository = new MarriageRepository(context);
-
-			var marriages = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
+			var marriages = await service.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
 
 			if(marriages.Count == 0)
 			{
@@ -244,9 +234,9 @@ namespace Miki.Modules
 			if(e.GetArgumentPack().Take(out int selectionId))
 			{
 				var m = marriages[selectionId - 1];
-				string otherName = (await MikiApp.Instance.Services
-					.GetService<DiscordClient>()
+				string otherName = (await e.GetService<IDiscordClient>()
 					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong())).Username;
+                await service.DeclineProposalAsync(m);
 
 				await new EmbedBuilder()
 				{
@@ -255,8 +245,6 @@ namespace Miki.Modules
 					Color = new Color(191, 105, 82)
 				}.ToEmbed().QueueAsync(e, e.GetChannel());
 
-				m.Remove(context);
-				await context.SaveChangesAsync();
 			}
 			else
 			{
@@ -269,7 +257,7 @@ namespace Miki.Modules
 					},
 					Color = new Color(154, 170, 180)
 				};
-                await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages);
+                await this.BuildMarriageEmbedAsync(e, embed, e.GetAuthor().Id.ToDbLong(), marriages);
 				await embed.ToEmbed().QueueAsync(e, e.GetChannel());
 			}
 		}
@@ -277,11 +265,9 @@ namespace Miki.Modules
 		[Command("divorce")]
 		public async Task DivorceAsync(IContext e)
 		{
-			var context = e.GetService<MikiDbContext>();
+            var service = e.GetService<MarriageService>();
 
-			MarriageRepository repository = new MarriageRepository(context);
-
-			var marriages = await repository.GetMarriagesAsync((long)e.GetAuthor().Id);
+			var marriages = await service.GetMarriagesAsync((long)e.GetAuthor().Id);
 
 			if(marriages.Count == 0)
 			{
@@ -294,9 +280,9 @@ namespace Miki.Modules
 			if(e.GetArgumentPack().Take(out int selectionId))
 			{
 				var m = marriages[selectionId - 1];
-				var otherUser = await MikiApp.Instance.Services
-                    .GetService<DiscordClient>()
+				var otherUser = await e.GetService<IDiscordClient>()
 					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong());
+                await service.DeclineProposalAsync(m);
 
 				await new EmbedBuilder
 				{
@@ -305,8 +291,6 @@ namespace Miki.Modules
 					Color = new Color(0.6f, 0.4f, 0.1f)
 				}.ToEmbed().QueueAsync(e, e.GetChannel());
 
-				m.Remove(context);
-				await context.SaveChangesAsync();
 			}
 			else
 			{
@@ -320,7 +304,7 @@ namespace Miki.Modules
 					Color = new Color(154, 170, 180)
 				};
 
-                await this.BuildMarriageEmbedAsync(embed, e.GetAuthor().Id.ToDbLong(), marriages)
+                await this.BuildMarriageEmbedAsync(e, embed, e.GetAuthor().Id.ToDbLong(), marriages)
                     .ConfigureAwait(false);
                 await embed.ToEmbed()
                     .QueueAsync(e, e.GetChannel())
@@ -332,31 +316,17 @@ namespace Miki.Modules
 		public async Task MarryAsync(IContext e)
 		{
 			var userService = e.GetService<IUserService>();
-			if(!e.GetArgumentPack().Take(out string args))
-			{
-				return;
-			}
 
-            IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(args, e.GetGuild())
-                .ConfigureAwait(false);
-
-			if(user == null)
-			{
-				e.GetChannel().QueueMessage(e, null, "Couldn't find this person..");
-				return;
-			}
-
-			if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
+            IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
+            if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
 			{
 				e.GetChannel().QueueMessage(e, null, "(´・ω・`)");
 				return;
 			}
 
-			var context = e.GetService<MikiDbContext>();
+            var repository = e.GetService<MarriageService>();
 
-			MarriageRepository repository = new MarriageRepository(context);
-
-			User mentionedPerson = await userService.GetOrCreateUserAsync(user)
+            User mentionedPerson = await userService.GetOrCreateUserAsync(user)
                 .ConfigureAwait(false);
 
             User currentUser = await userService.GetOrCreateUserAsync(e.GetAuthor())
@@ -386,16 +356,13 @@ namespace Miki.Modules
             await repository.ProposeAsync(askerId, receiverId)
                 .ConfigureAwait(false);
 
-            await context.SaveChangesAsync()
-                .ConfigureAwait(false);
-
-			await new EmbedBuilder()
+            await new EmbedBuilder()
 				.SetTitle("💍" + e.GetLocale().GetString("miki_module_accounts_marry_text", $"**{e.GetAuthor().Username}**", $"**{user.Username}**"))
 				.SetDescription(e.GetLocale().GetString("miki_module_accounts_marry_text2", user.Username, e.GetAuthor().Username))
 				.SetColor(0.4f, 0.4f, 0.8f)
 				.SetThumbnail("https://i.imgur.com/TKZSKIp.png")
-				.AddInlineField("✅ To accept", ">acceptmarriage @user")
-				.AddInlineField("❌ To decline", ">declinemarriage @user")
+				.AddInlineField("✅ To accept", ">acceptmarriage")
+				.AddInlineField("❌ To decline", ">declinemarriage")
 				.SetFooter("Take your time though! This proposal won't disappear", "")
 				.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
@@ -410,9 +377,7 @@ namespace Miki.Modules
 				page -= 1;
 			}
 
-			var context = e.GetService<MikiDbContext>();
-
-			MarriageRepository repository = new MarriageRepository(context);
+            var repository = e.GetService<MarriageService>();
 
 			List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
 			List<string> proposalNames = new List<string>();
@@ -477,12 +442,13 @@ namespace Miki.Modules
         }
 
 		private async Task BuildMarriageEmbedAsync(
+			IContext context,
             EmbedBuilder embed, 
             long userId, 
             IReadOnlyList<UserMarriedTo> marriages)
 		{
 			StringBuilder builder = new StringBuilder();
-			var discord = MikiApp.Instance.Services.GetService<DiscordClient>();
+			var discord = context.GetService<IDiscordClient>();
 
 			for(int i = 0; i < marriages.Count; i++)
             {

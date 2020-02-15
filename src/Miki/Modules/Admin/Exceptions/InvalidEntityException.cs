@@ -2,7 +2,6 @@
 {
     using System;
     using System.Reflection;
-    using Miki.Attributes;
     using Miki.Bot.Models.Attributes;
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
@@ -19,7 +18,7 @@
         {
             if(string.IsNullOrEmpty(entityVerb))
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(entityVerb);
             }
 
             entity = entityVerb;
