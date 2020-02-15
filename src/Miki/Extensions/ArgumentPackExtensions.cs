@@ -1,4 +1,4 @@
-﻿namespace Miki.Utility
+﻿namespace Miki
 {
     using Miki.Bot.Models.Exceptions;
     using Miki.Framework.Arguments;

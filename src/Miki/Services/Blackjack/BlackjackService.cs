@@ -1,4 +1,4 @@
-﻿namespace Miki.Services.Blackjack
+﻿namespace Miki.Services
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,6 @@
     using API.Cards.Enums;
     using API.Cards.Objects;
     using Miki.Cache;
-    using Miki.Services.Blackjack.Exceptions;
     using Miki.Services.Transactions;
     using Miki.Utility;
     using Patterns.Repositories;

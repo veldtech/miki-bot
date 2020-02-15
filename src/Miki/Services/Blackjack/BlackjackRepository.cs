@@ -1,4 +1,4 @@
-﻿namespace Miki.Services.Blackjack
+﻿namespace Miki.Services
 {
     using System;
     using System.Collections.Generic;

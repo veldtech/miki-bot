@@ -18,7 +18,7 @@
         {
             if(string.IsNullOrEmpty(entityVerb))
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(entityVerb);
             }
 
             entity = entityVerb;

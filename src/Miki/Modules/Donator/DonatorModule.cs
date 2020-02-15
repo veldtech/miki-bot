@@ -18,6 +18,7 @@
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Services.Transactions;
     using Miki.Utility;
 
     [Module("Donator")]
@@ -44,23 +45,24 @@
 		public async Task SellKeyAsync(IContext e)
 		{
 			var unit = e.GetService<IUnitOfWork>();
+            var transactionService = e.GetService<ITransactionService>();
             var keyRepository = unit.GetRepository<DonatorKey>();
-
-            var userService = e.GetService<IUserService>();
-
-			long id = (long)e.GetAuthor().Id;
 
 			if(e.GetArgumentPack().Take(out Guid guid))
 			{
 				DonatorKey key = await DonatorKey.GetKeyAsync(keyRepository, guid);
-				User user = await userService.GetUserAsync(id);
 
-				user.AddCurrency(KeyBuybackPrice);
                 await keyRepository.DeleteAsync(key);
+                await unit.CommitAsync();
 
-				await unit.CommitAsync();
+                await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(KeyBuybackPrice)
+                        .WithReceiver((long)e.GetAuthor().Id)
+                        .WithSender(AppProps.Currency.BankId)
+                        .Build());
 
-				await e.SuccessEmbed(
+                await e.SuccessEmbed(
                         e.GetLocale().GetString("key_sold_success", KeyBuybackPrice))
 					.QueueAsync(e, e.GetChannel());
 			}

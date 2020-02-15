@@ -1,8 +1,6 @@
 ﻿namespace Miki.Utility
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Miki.Localization.Exceptions;
 
     public static class RuntimeAssert

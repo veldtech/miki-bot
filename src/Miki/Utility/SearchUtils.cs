@@ -136,7 +136,8 @@
 
         public static Task<IDiscordGuildUser> FindUserByName(IDiscordGuild guild, string name)
             => guild.GetMembersAsync()
-                .Map(r => r.First(x => x.Nickname?.ToLowerInvariant() == name.ToLowerInvariant()
-                                       || x.Username.ToLowerInvariant() == name.ToLowerInvariant()));
+                .Map(r => r.First(
+                        x => x.Nickname?.ToLowerInvariant() == name.ToLowerInvariant()
+                             || name.ToLowerInvariant().StartsWith(x.Username.ToLowerInvariant())));
     }
 }

@@ -46,7 +46,6 @@
     using Miki.Serialization.Protobuf;
     using Miki.Services;
     using Miki.Services.Achievements;
-    using Miki.Services.Blackjack;
     using Miki.Services.Rps;
     using Miki.Services.Transactions;
     using Miki.UrbanDictionary;
@@ -235,6 +234,7 @@
                 serviceCollection.AddSingleton<AchievementCollection>();
                 serviceCollection.AddScoped<AchievementService>();
 
+                serviceCollection.AddScoped<GuildService>();
                 serviceCollection.AddScoped<MarriageService>();
                 serviceCollection.AddScoped<RpsService>();
                 serviceCollection.AddScoped<ILocalizationService, LocalizationService>();

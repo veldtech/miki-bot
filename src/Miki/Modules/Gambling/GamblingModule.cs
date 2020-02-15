@@ -15,7 +15,6 @@
     using Miki.Modules.Accounts.Services;
     using Miki.Modules.Gambling.Exceptions;
     using Miki.Services.Achievements;
-    using Miki.Services.Blackjack;
     using Miki.Services.Rps;
     using Miki.Services.Transactions;
     using Miki.Utility;

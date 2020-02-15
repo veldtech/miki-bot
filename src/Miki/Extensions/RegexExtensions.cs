@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Utility
+﻿namespace Miki.Utility
 {
+    using System;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     public static class RegexExtensions
     {
-        public static async ValueTask<string> ReplaceAsync(this Regex regex, string input, Func<Match, ValueTask<string>> replacementFn)
+        /// <summary>
+        /// Asynchronous call to <see cref="Regex.Replace(string, MatchEvaluator)"/>.
+        /// </summary>
+        public static async ValueTask<string> ReplaceAsync(
+            this Regex regex, string input, Func<Match, ValueTask<string>> replacementFn)
         {
             var sb = new StringBuilder();
             var lastIndex = 0;
