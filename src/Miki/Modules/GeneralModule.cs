@@ -290,31 +290,31 @@
 				},
 			};
 			builder.AddInlineField(
-				"👑 " + locale.GetString("miki_module_general_guildinfo_owned_by"),
+				"👑 " + locale.GetStringD("miki_module_general_guildinfo_owned_by"),
 				$"{owner.Username}#{owner.Discriminator}");
 
 			builder.AddInlineField(
-				"👉 " + locale.GetString("miki_label_prefix"),
+				"👉 " + locale.GetStringD("miki_label_prefix"),
 				prefix);
 
 			builder.AddInlineField(
-				"📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
+				"📺 " + locale.GetStringD("miki_module_general_guildinfo_channels"),
 				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString("N0"));
 
 			builder.AddInlineField(
-				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
+				"🔊 " + locale.GetStringD("miki_module_general_guildinfo_voicechannels"),
 				channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString("N0"));
 
 			builder.AddInlineField(
-				"🙎 " + locale.GetString("miki_module_general_guildinfo_users"),
+				"🙎 " + locale.GetStringD("miki_module_general_guildinfo_users"),
 				roles.Count().ToString("N0"));
 
 			builder.AddInlineField(
-				"#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"),
+				"#⃣ " + locale.GetStringD("miki_module_general_guildinfo_roles_count"),
 				roles.Count().ToString("N0"));
 
 			builder.AddField(
-				"📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
+				"📜 " + locale.GetStringD("miki_module_general_guildinfo_roles"),
 				string.Join(",", roles.Select(x => $"`{x.Name}`")));
 
             await builder.ToEmbed()
@@ -337,8 +337,8 @@
                 {
                     var helpListEmbed = new EmbedBuilder
                     {
-                        Title = locale.GetString("miki_module_help_error_null_header"),
-                        Description = locale.GetString("miki_module_help_error_null_message", prefix),
+                        Title = locale.GetStringD("miki_module_help_error_null_header"),
+                        Description = locale.GetStringD("miki_module_help_error_null_message", prefix),
                         Color = new Color(0.6f, 0.6f, 1.0f)
                     };
 
@@ -355,7 +355,7 @@
                         nodes.SelectMany(node => node.Metadata.Identifiers));
                     var best = comparer.GetBest(arg);
 
-                    helpListEmbed.AddField(locale.GetString("miki_common_suggestion"), best.text);
+                    helpListEmbed.AddField(locale.GetStringD("miki_common_suggestion"), best.text);
 
                     await helpListEmbed.ToEmbed()
                         .QueueAsync(e, e.GetChannel())
@@ -377,20 +377,20 @@
                     if (command.Metadata.Identifiers.Count > 1)
                     {
                         explainedHelpEmbed.AddInlineField(
-                            e.GetLocale().GetString("miki_module_general_help_aliases"),
+                            e.GetLocale().GetStringD("miki_module_general_help_aliases"),
                             string.Join(", ", command.Metadata.Identifiers.Skip(1)));
                     }
 
                     explainedHelpEmbed.AddField
                     (
-                        locale.GetString("miki_module_general_help_description"),
-                        locale.GetString("miki_command_description_" + commandId.ToLower())
-                        ?? locale.GetString("miki_placeholder_null"));
+                        locale.GetStringD("miki_module_general_help_description"),
+                        locale.GetStringD("miki_command_description_" + commandId.ToLower())
+                        ?? locale.GetStringD("miki_placeholder_null"));
 
                     explainedHelpEmbed.AddField(
-                        locale.GetString("miki_module_general_help_usage"),
-                        locale.GetString("miki_command_usage_" + commandId.ToLower())
-                        ?? locale.GetString("miki_placeholder_null"));
+                        locale.GetStringD("miki_module_general_help_usage"),
+                        locale.GetStringD("miki_command_usage_" + commandId.ToLower())
+                        ?? locale.GetStringD("miki_placeholder_null"));
 
                     await explainedHelpEmbed.ToEmbed()
                         .QueueAsync(e, e.GetChannel())
@@ -402,7 +402,7 @@
 
             await new EmbedBuilder()
 			{
-				Description = e.GetLocale().GetString("miki_module_general_help_dm"),
+				Description = e.GetLocale().GetStringD("miki_module_general_help_dm"),
 				Color = new Color(0.6f, 0.6f, 1.0f)
 			}.ToEmbed()
 				.QueueAsync(e, e.GetChannel())
@@ -472,7 +472,7 @@
 			await new EmbedBuilder()
 			{
 				Title = "Hi everyone!",
-				Description = e.GetLocale().GetString("miki_module_general_info_donate_string"),
+				Description = e.GetLocale().GetStringD("miki_module_general_info_donate_string"),
 				Color = new Color(0.8f, 0.4f, 0.4f),
 			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
 			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
@@ -490,16 +490,16 @@
 				.SetAuthor($"Miki {v}")
 				.SetColor(0.6f, 0.6f, 1.0f);
 
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_made_by_header"),
-				e.GetLocale().GetString("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
+			embed.AddField(e.GetLocale().GetStringD("miki_module_general_info_made_by_header"),
+				e.GetLocale().GetStringD("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
 
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
-				$"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
+			embed.AddField(e.GetLocale().GetStringD("miki_module_general_info_links"),
+				$"`{e.GetLocale().GetStringD("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
 				$"`{"donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) | [suggestions](https://suggestions.miki.ai/)");
+				$"`{e.GetLocale().GetStringD("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
+				$"`{e.GetLocale().GetStringD("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
+				$"`{e.GetLocale().GetStringD("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
+				$"`{e.GetLocale().GetStringD("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) | [suggestions](https://suggestions.miki.ai/)");
 
 			await embed.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
@@ -513,12 +513,12 @@
 		[Command("invite")]
 		public async Task InviteAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString("miki_module_general_invite_message"));
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetStringD("miki_module_general_invite_message"));
             var dmChannel = await e.GetAuthor().GetDMChannelAsync()
                     .ConfigureAwait(false);
             dmChannel.QueueMessage(e,
                 null,
-                e.GetLocale().GetString("miki_module_general_invite_dm")
+                e.GetLocale().GetStringD("miki_module_general_invite_dm")
                 + "\n" + AppProps.InviteUrl);
         }
 
@@ -591,9 +591,9 @@
                     .ConfigureAwait(false);
 
                 await new EmbedBuilder()
-                    .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
+                    .SetTitle(locale.GetStringD("miki_module_general_prefix_success_header"))
                     .SetDescription(
-                        locale.GetString(
+                        locale.GetStringD(
                             "miki_module_general_prefix_success_message",
                             prefix))
                     .ToEmbed()
@@ -618,9 +618,9 @@
                     .ConfigureAwait(false);
 
                 await new EmbedBuilder()
-                    .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
+                    .SetTitle(locale.GetStringD("miki_module_general_prefix_success_header"))
                     .SetDescription(
-                        locale.GetString(
+                        locale.GetStringD(
                             "miki_module_general_prefix_success_message",
                             trigger.DefaultValue))
                     .ToEmbed()
@@ -641,10 +641,10 @@
             await new EmbedBuilder()
                 {
                     Title = "⚙️ Miki stats",
-                    Description = e.GetLocale().GetString("stats_description"),
+                    Description = e.GetLocale().GetStringD("stats_description"),
                     Color = new Color(0.3f, 0.8f, 1),
                 }.AddField(
-                    $"🖥️ {locale.GetString("discord_servers")}",
+                    $"🖥️ {locale.GetStringD("discord_servers")}",
                     serverCount.ToString("N0"))
                 .AddField(
                     "More info",

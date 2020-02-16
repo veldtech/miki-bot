@@ -100,7 +100,7 @@
                     .Build());
 
             await new EmbedBuilder()
-                .SetTitle(locale.GetString("miki_terms_weekly"))
+                .SetTitle(locale.GetStringD("miki_terms_weekly"))
                 .AddInlineField("Mekos", mekosGained.ToString("N0"))
                 .ToEmbed().QueueAsync(e, e.GetChannel());
 
@@ -120,7 +120,7 @@
 
             if (thisGuild == null)
             {
-                await e.ErrorEmbed(locale.GetString("guild_error_null"))
+                await e.ErrorEmbed(locale.GetStringD("guild_error_null"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -134,8 +134,8 @@
             if (thisGuild.LastRivalRenewed.AddDays(1) > DateTime.Now)
             {
                 await new EmbedBuilder()
-                    .SetTitle(locale.GetString("miki_terms_rival"))
-                    .SetDescription(locale.GetString("guildnewrival_error_timer_running"))
+                    .SetTitle(locale.GetStringD("miki_terms_rival"))
+                    .SetDescription(locale.GetStringD("guildnewrival_error_timer_running"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -148,7 +148,7 @@
 
             if (!rivalGuilds.Any())
             {
-                await e.ErrorEmbed(locale.GetString("guildnewrival_error_matchmaking_failed"))
+                await e.ErrorEmbed(locale.GetStringD("guildnewrival_error_matchmaking_failed"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -166,8 +166,8 @@
             await context.SaveChangesAsync();
 
             await new EmbedBuilder()
-                .SetTitle(locale.GetString("miki_terms_rival"))
-                .SetDescription(locale.GetString(
+                .SetTitle(locale.GetStringD("miki_terms_rival"))
+                .SetDescription(locale.GetStringD(
                     "guildnewrival_success",
                     rivalGuild.Name))
                 .ToEmbed()
@@ -245,7 +245,7 @@
 
                 await new EmbedBuilder()
                     .SetAuthor("Guild bank", "https://imgur.com/KXtwIWs.png")
-                    .SetDescription(locale.GetString("guildbank_deposit_title", e.GetAuthor().Username, totalDeposited.ToString("N0")))
+                    .SetDescription(locale.GetStringD("guildbank_deposit_title", e.GetAuthor().Username, totalDeposited.ToString("N0")))
                     .SetColor(new Color(255, 255, 255))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
@@ -271,7 +271,7 @@
 				EmbedBuilder embed = new EmbedBuilder()
 					.SetAuthor(g.Name, e.GetGuild().IconUrl, "https://miki.veld.one")
 					.SetColor(0.1f, 0.6f, 1)
-					.AddInlineField(locale.GetString("miki_terms_level"), level.ToString("N0"));
+					.AddInlineField(locale.GetStringD("miki_terms_level"), level.ToString("N0"));
 
 				if((e.GetGuild().IconUrl ?? "") != "")
 				{
@@ -280,15 +280,15 @@
 
 				string expBarString = expBar.Print(g.Experience);
 
-                embed.AddInlineField(e.GetLocale().GetString("miki_terms_experience"),
+                embed.AddInlineField(e.GetLocale().GetStringD("miki_terms_experience"),
                     $"[{g.Experience:N0} / {g.CalculateMaxExperience(g.Experience):N0}]\n" 
                     + (expBarString ?? ""));
 
 				embed.AddInlineField(
-					e.GetLocale().GetString("miki_terms_rank"), 
+					e.GetLocale().GetStringD("miki_terms_rank"), 
 					"#" + (rank <= 10 ? $"**{rank:N0}**" : rank.ToString("N0"))
 				).AddInlineField(
-					e.GetLocale().GetString("miki_module_general_guildinfo_users"),
+					e.GetLocale().GetStringD("miki_module_general_guildinfo_users"),
 					g.UserCount.ToString()
 				);
 
@@ -296,7 +296,7 @@
 
 				if(rival != null)
 				{
-					embed.AddInlineField(e.GetLocale().GetString("miki_terms_rival"), $"{rival.Name} [{rival.Experience:N0}]");
+					embed.AddInlineField(e.GetLocale().GetStringD("miki_terms_rival"), $"{rival.Name} [{rival.Experience:N0}]");
 				}
 
                 await embed.ToEmbed()
@@ -321,8 +321,8 @@
                             g.MinimalExperienceToGetRewards = value;
 
                             await new EmbedBuilder()
-                                .SetTitle(e.GetLocale().GetString("miki_terms_config"))
-                                .SetDescription(e.GetLocale().GetString("guildconfig_expneeded",
+                                .SetTitle(e.GetLocale().GetStringD("miki_terms_config"))
+                                .SetDescription(e.GetLocale().GetStringD("guildconfig_expneeded",
                                     value.ToString("N0")))
                                 .ToEmbed()
                                 .QueueAsync(e, e.GetChannel());
@@ -339,7 +339,7 @@
                                 : "guildconfig_visibility_false";
 
                             await new EmbedBuilder()
-                                .SetTitle(e.GetLocale().GetString("miki_terms_config"))
+                                .SetTitle(e.GetLocale().GetStringD("miki_terms_config"))
                                 .SetDescription(resourceString)
                                 .ToEmbed().QueueAsync(e, e.GetChannel());
                         }
@@ -353,8 +353,8 @@
             {
                 await new EmbedBuilder()
                 {
-                    Title = e.GetLocale().GetString("guild_settings"),
-                    Description = e.GetLocale().GetString("miki_command_description_guildconfig")
+                    Title = e.GetLocale().GetStringD("guild_settings"),
+                    Description = e.GetLocale().GetStringD("miki_command_description_guildconfig")
                 }.ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
@@ -404,9 +404,9 @@
                 await new EmbedBuilder()
 					.SetTitle("🏠 Guild house")
 					.SetColor(255, 232, 182)
-					.SetDescription(e.GetLocale().GetString("guildhouse_buy", guildUser.GuildHouseUpgradePrice.ToString("N0")))
+					.SetDescription(e.GetLocale().GetStringD("guildhouse_buy", guildUser.GuildHouseUpgradePrice.ToString("N0")))
 					.AddInlineField("Current weekly bonus", $"x{guildUser.GuildHouseMultiplier}")
-					.AddInlineField("Current house level", e.GetLocale().GetString($"guildhouse_rank_{guildUser.GuildHouseLevel}"))
+					.AddInlineField("Current house level", e.GetLocale().GetStringD($"guildhouse_rank_{guildUser.GuildHouseLevel}"))
 					.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 	}

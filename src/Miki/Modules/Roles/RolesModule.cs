@@ -67,7 +67,7 @@
 
             if (author.RoleIds.Contains(role.Id))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_role_already_given"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_role_already_given"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -93,7 +93,7 @@
 
             if (!newRole?.Optable ?? false)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_role_forbidden"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_role_forbidden"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -103,7 +103,7 @@
 
             if (newRole.RequiredLevel > level)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_role_level_low", newRole.RequiredLevel - level))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_role_level_low", newRole.RequiredLevel - level))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -124,7 +124,7 @@
             var me = await e.GetGuild().GetSelfAsync();
             if (!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("permission_missing", "give roles")).ToEmbed()
+                await e.ErrorEmbed(e.GetLocale().GetStringD("permission_missing", "give roles")).ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -133,7 +133,7 @@
 
             if (discordRole.Position >= hierarchy)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "give roles")).ToEmbed()
+                await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "give roles")).ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -182,7 +182,7 @@
 
             if(role == null)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_role_null"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_role_null"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -192,7 +192,7 @@
 
             if(!author.RoleIds.Contains(role.Id))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_role_forbidden"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_role_forbidden"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -203,7 +203,7 @@
 
             if(!await me.HasPermissionsAsync(GuildPermission.ManageRoles))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "give roles"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "give roles"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -211,7 +211,7 @@
 
             if(role.Position >= await me.GetHierarchyAsync())
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "give roles"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "give roles"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -230,6 +230,7 @@
 		public async Task IAmListAsync(IContext e)
 		{
             var context = e.GetService<MikiDbContext>();
+            var locale = e.GetLocale();
 
             e.GetArgumentPack().Take(out int index);
                 
@@ -285,7 +286,7 @@
 
 						if (role.Item2.Price != 0)
 						{
-							stringBuilder.Append($"🔸{role.Item2.Price} ");
+							stringBuilder.Append($"🔸  {role.Item2.Price} ");
 						}
 
 						stringBuilder.AppendLine();
@@ -294,7 +295,7 @@
 
 				if (stringBuilder.Length == 0)
 				{
-					stringBuilder.Append(e.GetLocale().GetString("miki_placeholder_null"));
+					stringBuilder.Append(e.GetLocale().GetStringD("miki_placeholder_null"));
 				}
 
 				await context.SaveChangesAsync();

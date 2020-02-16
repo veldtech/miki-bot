@@ -322,11 +322,11 @@
                 var self = await ctx.GetGuild().GetSelfAsync();
 
                 var authorResource =
-                    $"{locale.GetString("miki_blackjack_lose_title")} | {ctx.GetAuthor().Username}";
+                    $"{locale.GetStringD("miki_blackjack_lose_title")} | {ctx.GetAuthor().Username}";
 
                 return CreateEmbed(ctx, session)
                     .SetAuthor(authorResource, self.GetAvatarUrl(), "https://patreon.com/mikibot")
-                    .SetDescription(locale.GetString("miki_blackjack_lose_description"))
+                    .SetDescription(locale.GetStringD("miki_blackjack_lose_description"))
                     .ToEmbed();
             }
 
@@ -336,11 +336,11 @@
                 var locale = ctx.GetLocale();
                 return CreateEmbed(ctx, session)
                     .SetAuthor(
-                        locale.GetString("blackjack_draw_title") + " | " + ctx.GetAuthor().Username,
+                        locale.GetStringD("blackjack_draw_title") + " | " + ctx.GetAuthor().Username,
                         ctx.GetAuthor().GetAvatarUrl(),
                         "https://patreon.com/mikibot"
                     )
-                    .SetDescription(locale.GetString("blackjack_draw_description"))
+                    .SetDescription(locale.GetStringD("blackjack_draw_description"))
                     .ToEmbed();
             }
 
@@ -350,36 +350,36 @@
                 var locale = ctx.GetLocale();
 
                 var authorResource =
-                    $"{locale.GetString("miki_blackjack_win_title")} | {ctx.GetAuthor().Username}";
+                    $"{locale.GetStringD("miki_blackjack_win_title")} | {ctx.GetAuthor().Username}";
 
                 return CreateEmbed(ctx, session)
                     .SetAuthor(
                         authorResource, ctx.GetAuthor().GetAvatarUrl(), "https://patreon.com/mikibot")
-                    .SetDescription(locale.GetString("miki_blackjack_win_description", session.Bet * 2))
+                    .SetDescription(locale.GetStringD("miki_blackjack_win_description", session.Bet * 2))
                     .ToEmbed();
             }
 
             public EmbedBuilder CreateEmbed(IContext e, BlackjackSession session)
             {
                 var locale = e.GetLocale();
-                string explanation = locale.GetString("miki_blackjack_explanation");
+                string explanation = locale.GetStringD("miki_blackjack_explanation");
 
                 CardHand player = session.Players[e.GetAuthor().Id];
                 CardHand dealer = session.Players[BlackjackService.DealerId];
 
                 var userHandResource =
-                    locale.GetString("miki_blackjack_cards_you", session.GetHandWorth(player));
+                    locale.GetStringD("miki_blackjack_cards_you", session.GetHandWorth(player));
                 var dealerHandResource =
-                    locale.GetString("miki_blackjack_cards_miki", session.GetHandWorth(dealer));
+                    locale.GetStringD("miki_blackjack_cards_miki", session.GetHandWorth(dealer));
 
                 return new EmbedBuilder()
                     .SetAuthor(
-                        locale.GetString("miki_blackjack") + " | " + e.GetAuthor().Username,
+                        locale.GetStringD("miki_blackjack") + " | " + e.GetAuthor().Username,
                         e.GetAuthor().GetAvatarUrl(),
                         "https://patreon.com/mikibot")
                     .SetDescription(
                         // TODO: move command identifiers from resources.
-                        $"{explanation}\n{locale.GetString("miki_blackjack_hit")}\n{locale.GetString("miki_blackjack_stay")}")
+                        $"{explanation}\n{locale.GetStringD("miki_blackjack_hit")}\n{locale.GetStringD("miki_blackjack_stay")}")
                     .AddField(userHandResource, player.Print(), true)
                     .AddField(dealerHandResource, dealer.Print(), true);
             }
@@ -463,16 +463,16 @@
             }
 
             string output = win 
-                ? locale.GetString("flip_description_win", $"`{bet}`")
-                : locale.GetString("flip_description_lose");
+                ? locale.GetStringD("flip_description_win", $"`{bet}`")
+                : locale.GetStringD("flip_description_lose");
 
-            output += "\n" + locale.GetString(
+            output += "\n" + locale.GetStringD(
                           "miki_blackjack_new_balance",
                           user.Currency + (win ? bet : -bet));
 
             DiscordEmbed embed = new EmbedBuilder()
                 .SetAuthor(
-                    $"{locale.GetString("flip_header")} | {e.GetAuthor().Username}", 
+                    $"{locale.GetStringD("flip_header")} | {e.GetAuthor().Username}", 
                     e.GetAuthor().GetAvatarUrl(),
                     "https://patreon.com/mikibot")
                 .SetDescription(output)
@@ -515,7 +515,7 @@
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetAuthor(
-                    $"{locale.GetString("miki_module_fun_slots_header")} | {e.GetAuthor().Username}",
+                    $"{locale.GetStringD("miki_module_fun_slots_header")} | {e.GetAuthor().Username}",
                     e.GetAuthor().GetAvatarUrl(), 
                     "https://patreon.com/mikibot");
 
@@ -622,14 +622,14 @@
             if (moneyReturned == 0)
             {
                 embed.AddField(
-                    locale.GetString("miki_module_fun_slots_lose_header"),
-                    locale.GetString("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
+                    locale.GetStringD("miki_module_fun_slots_lose_header"),
+                    locale.GetStringD("miki_module_fun_slots_lose_amount", bet, u.Currency - bet));
             }
             else
             {
                 embed.AddField(
-                    locale.GetString("miki_module_fun_slots_win_header"),
-                    locale.GetString(
+                    locale.GetStringD("miki_module_fun_slots_win_header"),
+                    locale.GetStringD(
                         "miki_module_fun_slots_win_amount", 
                         moneyReturned, 
                         u.Currency + moneyReturned));

@@ -2,3 +2,6 @@
 
 # IDE0066: Convert switch statement to expression
 csharp_style_prefer_switch_expression = false:suggestion
+
+# IDE0016: Use 'throw' expression
+csharp_style_throw_expression = true:none

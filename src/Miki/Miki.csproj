@@ -35,7 +35,7 @@
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.0.4" />
+    <PackageReference Include="Miki.Framework" Version="2.1.0" />
     <PackageReference Include="Miki.Framework.Arguments" Version="2.0.0" />
     <PackageReference Include="Miki.Framework.Commands" Version="2.0.1" />
     <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.0.0" />
@@ -50,242 +50,109 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Languages\ara.Designer.cs">
-      <DependentUpon>ara.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\bul.Designer.cs">
-      <DependentUpon>bul.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\cze.Designer.cs">
-      <DependentUpon>cze.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\dan.Designer.cs">
-      <DependentUpon>dan.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\ger.Designer.cs">
-      <DependentUpon>ger.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\eng.Designer.cs">
-      <DependentUpon>eng.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\spa.Designer.cs">
-      <DependentUpon>spa.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\fin.Designer.cs">
-      <DependentUpon>fin.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\fra.Designer.cs">
-      <DependentUpon>fra.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\heb.Designer.cs">
-      <DependentUpon>heb.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\hin.Designer.cs">
-      <DependentUpon>hin.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\hun.Designer.cs">
-      <DependentUpon>hun.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\ita.Designer.cs">
-      <DependentUpon>ita.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\jpn.Designer.cs">
-      <DependentUpon>jpn.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\lit.Designer.cs">
-      <DependentUpon>lit.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\may.Designer.cs">
-      <DependentUpon>may.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\dut.Designer.cs">
-      <DependentUpon>dut.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\nor.Designer.cs">
-      <DependentUpon>nor.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\pol.Designer.cs">
-      <DependentUpon>pol.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\por.Designer.cs">
-      <DependentUpon>por.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\rus.Designer.cs">
-      <DependentUpon>rus.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\swe.Designer.cs">
-      <DependentUpon>swe.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\tgl.Designer.cs">
-      <DependentUpon>tgl.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\ukr.Designer.cs">
-      <DependentUpon>ukr.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\zhs.Designer.cs">
-      <DependentUpon>zhs.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Languages\zht.Designer.cs">
-      <DependentUpon>zht.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Languages\ara.resx">
-      <LastGenOutput>ara.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\ara.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\bul.resx">
-      <LastGenOutput>bul.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\bul.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\cze.resx">
-      <LastGenOutput>cze.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\cze.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\dan.resx">
-      <LastGenOutput>dan.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\dan.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ger.resx">
-      <LastGenOutput>ger.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\ger.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\eng.resx">
-      <LastGenOutput>eng.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\eng.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\spa.resx">
-      <LastGenOutput>spa.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\hin.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\fin.resx">
-      <LastGenOutput>fin.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\spa.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\fra.resx">
-      <LastGenOutput>fra.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\fin.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\heb.resx">
-      <LastGenOutput>heb.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\fra.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\hin.resx">
-      <LastGenOutput>hin.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\heb.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\hun.resx">
-      <LastGenOutput>hun.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\hun.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ita.resx">
-      <LastGenOutput>ita.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\ita.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\jpn.resx">
-      <LastGenOutput>jpn.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\jpn.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\lit.resx">
-      <LastGenOutput>lit.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\lit.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\may.resx">
-      <LastGenOutput>may.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\may.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\dut.resx">
-      <LastGenOutput>dut.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\dut.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\nor.resx">
-      <LastGenOutput>nor.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\nor.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\pol.resx">
-      <LastGenOutput>pol.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\pol.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\por.resx">
-      <LastGenOutput>por.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\por.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\rus.resx">
-      <LastGenOutput>rus.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\rus.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\swe.resx">
-      <LastGenOutput>swe.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\swe.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\tgl.resx">
-      <LastGenOutput>tgl.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\tgl.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\ukr.resx">
-      <LastGenOutput>ukr.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\ukr.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\zhs.resx">
-      <LastGenOutput>zhs.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\zhs.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Update="Languages\zht.resx">
-      <LastGenOutput>zht.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="resources\locales\zht.resx">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
@@ -297,5 +164,95 @@
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\backgrounds.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\ara.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\bul.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\cze.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\dan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\dut.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\eng.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\fin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\fra.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\ger.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\heb.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\hin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\hun.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\ita.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\jpn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\lit.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\may.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\nor.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\pol.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\por.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\rus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\spa.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\swe.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\tgl.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\ukr.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\zhs.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\locales\zht.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\lootboxes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\lootbox_tiers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
