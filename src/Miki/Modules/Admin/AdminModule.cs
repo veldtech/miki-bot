@@ -50,7 +50,7 @@ namespace Miki.Modules.Admin
 
                 if (user == null)
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("ban_error_user_null"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -60,14 +60,14 @@ namespace Miki.Modules.Admin
 
                 if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "ban")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "ban")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 if (await user.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "ban")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "ban")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -83,16 +83,16 @@ namespace Miki.Modules.Admin
                 EmbedBuilder embed = new EmbedBuilder
                 {
                     Title = "🛑 BAN",
-                    Description = e.GetLocale().GetString("ban_header", $"**{e.GetGuild().Name}**")
+                    Description = e.GetLocale().GetStringD("ban_header", $"**{e.GetGuild().Name}**")
                 };
 
                 if (!string.IsNullOrWhiteSpace(reason))
                 {
-                    embed.AddInlineField($"💬 {e.GetLocale().GetString("miki_module_admin_kick_reason")}", reason);
+                    embed.AddInlineField($"💬 {e.GetLocale().GetStringD("miki_module_admin_kick_reason")}", reason);
                 }
 
                 embed.AddInlineField(
-                    $"💁 {e.GetLocale().GetString("miki_module_admin_kick_by")}",
+                    $"💁 {e.GetLocale().GetStringD("miki_module_admin_kick_by")}",
                     $"{e.GetAuthor().Username}#{e.GetAuthor().Discriminator}");
 
                 await embed.ToEmbed().SendToUser(user);
@@ -101,7 +101,7 @@ namespace Miki.Modules.Admin
             }
             else
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("permission_needed_error", $"`{e.GetLocale().GetString("permission_ban_members")}`"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("permission_needed_error", $"`{e.GetLocale().GetStringD("permission_ban_members")}`"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
@@ -131,21 +131,21 @@ namespace Miki.Modules.Admin
 
                 if (bannedUser == null)
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("ban_error_user_null"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 if (await bannedUser.GetHierarchyAsync() >= await author.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "kick")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "kick")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 if (await bannedUser.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "kick")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "kick")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -158,19 +158,19 @@ namespace Miki.Modules.Admin
 
                 EmbedBuilder embed = new EmbedBuilder
                 {
-                    Title = locale.GetString("miki_module_admin_kick_header"),
-                    Description = locale.GetString(
+                    Title = locale.GetStringD("miki_module_admin_kick_header"),
+                    Description = locale.GetStringD(
                         "miki_module_admin_kick_description", 
                         e.GetGuild().Name)
                 };
 
                 if (!string.IsNullOrWhiteSpace(reason))
                 {
-                    embed.AddField(locale.GetString("miki_module_admin_kick_reason"), reason, true);
+                    embed.AddField(locale.GetStringD("miki_module_admin_kick_reason"), reason, true);
                 }
 
                 embed.AddField(
-                    locale.GetString("miki_module_admin_kick_by"),
+                    locale.GetStringD("miki_module_admin_kick_by"),
                     $"{author.Username}#{author.Discriminator}", 
                     true);
 
@@ -183,7 +183,7 @@ namespace Miki.Modules.Admin
             else
             {
                 await e.ErrorEmbed(
-                        e.GetLocale().GetString("permission_needed_error", $"`{e.GetLocale().GetString("permission_kick_members")}`"))
+                        e.GetLocale().GetStringD("permission_needed_error", $"`{e.GetLocale().GetStringD("permission_kick_members")}`"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
@@ -204,7 +204,7 @@ namespace Miki.Modules.Admin
             if (!(await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(invoker)).HasFlag(GuildPermission.ManageMessages))
             {
                 e.GetChannel()
-                    .QueueMessage(e, null, locale.GetString("miki_module_admin_prune_error_no_access"));
+                    .QueueMessage(e, null, locale.GetStringD("miki_module_admin_prune_error_no_access"));
                 return;
             }
 
@@ -213,7 +213,7 @@ namespace Miki.Modules.Admin
                 await new EmbedBuilder()
                     .SetTitle("♻ Prune")
                     .SetColor(119, 178, 85)
-                    .SetDescription(locale.GetString("miki_module_admin_prune_no_arg"))
+                    .SetDescription(locale.GetStringD("miki_module_admin_prune_no_arg"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -230,20 +230,20 @@ namespace Miki.Modules.Admin
             {
                 if (amount < 0)
                 {
-                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_negative"))
+                    await Utils.ErrorEmbed(e, locale.GetStringD("miki_module_admin_prune_error_negative"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
                 if (amount > 100)
                 {
-                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_max"))
+                    await Utils.ErrorEmbed(e, locale.GetStringD("miki_module_admin_prune_error_max"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
             }
             else
             {
-                await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_parse"))
+                await Utils.ErrorEmbed(e, locale.GetStringD("miki_module_admin_prune_error_parse"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -266,7 +266,7 @@ namespace Miki.Modules.Admin
             {
                 await e.GetMessage().DeleteAsync();
 
-                await e.ErrorEmbed(locale.GetString(PruneErrorNoMessages, e.GetPrefixMatch()))
+                await e.ErrorEmbed(locale.GetStringD(PruneErrorNoMessages, e.GetPrefixMatch()))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -627,8 +627,8 @@ namespace Miki.Modules.Admin
             }
 
             string localeState = (setValue)
-                ? e.GetLocale().GetString("miki_generic_enabled")
-                : e.GetLocale().GetString("miki_generic_disabled");
+                ? e.GetLocale().GetStringD("miki_generic_enabled")
+                : e.GetLocale().GetStringD("miki_generic_disabled");
 
             bool global = false;
 
@@ -673,7 +673,7 @@ namespace Miki.Modules.Admin
                 IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(argObject, e.GetGuild());
                 if (user == null)
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("ban_error_user_null"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -689,14 +689,14 @@ namespace Miki.Modules.Admin
 
                 if (await user.GetHierarchyAsync() >= await author.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "softban")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "softban")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 if (await user.GetHierarchyAsync() >= await currentUser.GetHierarchyAsync())
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetString("permission_error_low", "softban")).ToEmbed()
+                    await e.ErrorEmbed(e.GetLocale().GetStringD("permission_error_low", "softban")).ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -724,9 +724,9 @@ namespace Miki.Modules.Admin
             }
             else
             {
-                await e.ErrorEmbed(e.GetLocale().GetString(
+                await e.ErrorEmbed(e.GetLocale().GetStringD(
                     "permission_needed_error",
-                    $"`{e.GetLocale().GetString("permission_ban_members")}`"))
+                    $"`{e.GetLocale().GetStringD("permission_ban_members")}`"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }

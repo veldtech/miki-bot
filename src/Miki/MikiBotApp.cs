@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Resources;
@@ -30,6 +31,7 @@
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Filters;
+    using Miki.Framework.Commands.Localization;
     using Miki.Framework.Commands.Permissions;
     using Miki.Framework.Commands.Prefixes;
     using Miki.Framework.Commands.Prefixes.Triggers;
@@ -41,7 +43,6 @@
     using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
-    using Miki.Modules.Logging;
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services;
@@ -55,6 +56,8 @@
     using StackExchange.Redis;
     using Veld.Osu;
     using Veld.Osu.V1;
+    using System.Resources;
+    using System.Text.Json;
 
     public class MikiBotApp : MikiApp
     {
@@ -94,12 +97,9 @@
             }
         }
 
-        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(IServiceProvider services)
-        {
-            LoadLocales(services);
-            // TODO(velddev): Find a better place to load this.
-
-            return new CommandPipelineBuilder(services)
+        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(
+            IServiceProvider services)
+            => new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
                     new BotFilter(),
@@ -112,13 +112,11 @@
                 .UsePermissions()
                 .UseScopes()
                 .Build();
-        }
 
         public override async Task ConfigureAsync(ServiceCollection serviceCollection)
         {
             CreateLogger();
 
-            // Setup Entity Framework
             {
                 // TODO(velddev): Remove constant environment fetch.
                 var connString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
@@ -133,7 +131,6 @@
                     x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             }
 
-            
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
 
             serviceCollection.AddSingleton<ConfigService>();
@@ -227,6 +224,7 @@
 
                 serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
                 serviceCollection.AddSingleton<TransactionEvents>();
+                serviceCollection.AddSingleton(await BuildLocalesAsync());
 
                 serviceCollection.AddScoped<IUserService, UserService>();
                 serviceCollection.AddSingleton<AccountService>();
@@ -315,35 +313,37 @@
             return context;
         }
 
-        private static void LoadLocales(IServiceProvider services)
+        private async Task<LocaleCollection> BuildLocalesAsync()
         {
-            var localizationService = services.GetRequiredService<ILocalizationService>();
-            
-            const string nameSpace = "Miki.Languages";
-            var typeList = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(t => t.IsClass && t.Namespace == nameSpace);
+            var collection = new LocaleCollection();
+            var resourceFolder = "resources/locales";
 
-            foreach(var t in typeList)
+            var files = Directory.GetFiles(resourceFolder);
+
+            foreach(var fileName in files)
             {
                 try
                 {
-                    string languageName = t.Name.ToLowerInvariant();
+                    //                     vvvv
+                    // Gets /folder/folder/file.json
+                    var languageName = fileName.Split('/', '\\').Last()
+                        .Split('.').FirstOrDefault();
 
-                    ResourceManager resources = new ResourceManager(
-                        $"Miki.Languages.{languageName}",
-                        t.Assembly);
-                    
-                    IResourceManager resourceManager = new ResxResourceManager(resources);
+                    await using var json = new MemoryStream(await File.ReadAllBytesAsync(fileName));
+                    var dict = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(json);
+                    var resourceManager = new LocaleResoureManager(dict);
 
-                    localizationService.AddLocale(new Locale(languageName, resourceManager));
+                    collection.Add(new Locale(languageName, resourceManager));
                 }
                 catch(Exception ex)
                 {
-                    Log.Error($"Language {t.Name} did not load correctly");
+                    Log.Error($"Language {fileName} did not load correctly");
                     Log.Debug(ex.ToString());
                 }
             }
+
+            LocaleExtensions.DefaultLocale = collection.Get("eng");
+            return collection;
         }
 
 
@@ -413,7 +413,7 @@
                     .ConfigureAwait(false);
                 (defaultChannel as IDiscordTextChannel).QueueMessage(
                     scope.ServiceProvider.GetService<MessageWorker>(), 
-                    message: i.GetString("miki_join_message"));
+                    message: i.GetStringD("miki_join_message"));
             }
 
             List<string> allArgs = new List<string>();

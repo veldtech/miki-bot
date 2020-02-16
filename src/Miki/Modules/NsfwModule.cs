@@ -59,7 +59,7 @@
 
             if(entry == null)
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("error_term_invalid"))
+                await e.ErrorEmbed(e.GetLocale().GetStringD("error_term_invalid"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -77,11 +77,11 @@
                 .SetAuthor($"📚 {entry.Term}", null,
                     "http://www.urbandictionary.com/define.php?term=" + query)
                 .SetDescription(e.GetLocale()
-                    .GetString("miki_module_general_urban_author", entry.Author))
+                    .GetStringD("miki_module_general_urban_author", entry.Author))
                 .AddField(
-                    e.GetLocale().GetString("miki_module_general_urban_definition"), desc, true)
+                    e.GetLocale().GetStringD("miki_module_general_urban_definition"), desc, true)
                 .AddField(
-                    e.GetLocale().GetString("miki_module_general_urban_example"), example, true)
+                    e.GetLocale().GetStringD("miki_module_general_urban_example"), example, true)
                 .SetFooter($"👍 { entry.ThumbsUp:N0} 👎 { entry.ThumbsDown:N0} - Powered by UrbanDictionary")
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());

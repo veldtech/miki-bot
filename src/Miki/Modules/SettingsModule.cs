@@ -24,7 +24,7 @@
 	{
 		RewardsOnly = 0,
 		All = 1,
-		NONE = 2
+		None = 2
 	}
 
     public enum AchievementNotificationSetting
@@ -80,13 +80,13 @@
             var localeNames = string.Join(", ", languageNames.Keys.Select(x => $"`{x}`"));
 
             await new EmbedBuilder()
-                .SetTitle(locale.GetString("locales_available"))
+                .SetTitle(locale.GetStringD("locales_available"))
                 .SetDescription(localeNames)
                 .AddField(
                     "Your language not here?",
-                    locale.GetString(
+                    locale.GetStringD(
                         "locales_contribute",
-                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                        $"[{locale.GetStringD("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
@@ -110,17 +110,15 @@
                     .ConfigureAwait(false);
             }
             catch (LocaleNotFoundException)
-            {
+            {   
                 await e.ErrorEmbedResource("error_locale_not_found", localeIso)
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
-
-            var newLocale = await service.GetLocaleAsync((long)e.GetChannel().Id);
-
             var localeName = languageNames.FirstOrDefault(x => x.Value == localeIso).Key;
 
-            await e.SuccessEmbed(newLocale.GetString("localization_set", localeName))
+            var newLocale = await service.GetLocaleAsync((long)e.GetChannel().Id);
+            await newLocale.SuccessEmbedResource("localization_set", localeName)
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
@@ -223,9 +221,9 @@
 
             await new EmbedBuilder()
                 .SetTitle(
-                    locale.GetString("miki_module_general_prefix_success_header"))
+                    locale.GetStringD("miki_module_general_prefix_success_header"))
                 .SetDescription(
-                    locale.GetString("miki_module_general_prefix_success_message", prefix))
+                    locale.GetStringD("miki_module_general_prefix_success_message", prefix))
                 .AddField("Warning", "This command has been replaced with `>prefix set`.")
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
@@ -243,7 +241,7 @@
                 e.GetAuthor(), cache, context, amazonClient);
 
 			await e.SuccessEmbed(
-                locale.GetString("setting_avatar_updated"))
+                locale.GetStringD("setting_avatar_updated"))
                 .QueueAsync(e, e.GetChannel());
 		}
 	}

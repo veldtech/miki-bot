@@ -154,7 +154,7 @@ namespace Miki.Modules
 			await new EmbedBuilder()
 			{
 				Color = new Color(0.4f, 1f, 0.6f),
-				Description = e.GetLocale().GetString("buymarriageslot_success", user.MarriageSlots),
+				Description = e.GetLocale().GetStringD("buymarriageslot_success", user.MarriageSlots),
 			}.ToEmbed().QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
@@ -286,8 +286,8 @@ namespace Miki.Modules
 
 				await new EmbedBuilder
 				{
-					Title = $"🔔 {e.GetLocale().GetString("miki_module_accounts_divorce_header")}",
-					Description = e.GetLocale().GetString("miki_module_accounts_divorce_content", e.GetAuthor().Username, otherUser.Username),
+					Title = $"🔔 {e.GetLocale().GetStringD("miki_module_accounts_divorce_header")}",
+					Description = e.GetLocale().GetStringD("miki_module_accounts_divorce_content", e.GetAuthor().Username, otherUser.Username),
 					Color = new Color(0.6f, 0.4f, 0.1f)
 				}.ToEmbed().QueueAsync(e, e.GetChannel());
 
@@ -357,8 +357,8 @@ namespace Miki.Modules
                 .ConfigureAwait(false);
 
             await new EmbedBuilder()
-				.SetTitle("💍" + e.GetLocale().GetString("miki_module_accounts_marry_text", $"**{e.GetAuthor().Username}**", $"**{user.Username}**"))
-				.SetDescription(e.GetLocale().GetString("miki_module_accounts_marry_text2", user.Username, e.GetAuthor().Username))
+				.SetTitle("💍" + e.GetLocale().GetStringD("miki_module_accounts_marry_text", $"**{e.GetAuthor().Username}**", $"**{user.Username}**"))
+				.SetDescription(e.GetLocale().GetStringD("miki_module_accounts_marry_text2", user.Username, e.GetAuthor().Username))
 				.SetColor(0.4f, 0.4f, 0.8f)
 				.SetThumbnail("https://i.imgur.com/TKZSKIp.png")
 				.AddInlineField("✅ To accept", ">acceptmarriage")
@@ -434,7 +434,7 @@ namespace Miki.Modules
                 .GetAvatarUrl();
 			if(pageCount > 1)
 			{
-				embed.SetFooter(e.GetLocale().GetString("page_footer", page + 1, pageCount));
+				embed.SetFooter(e.GetLocale().GetStringD("page_footer", page + 1, pageCount));
 			}
 			await embed.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
