@@ -5,9 +5,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Discord.Common;
-    using Discord.Common.Packets;
     using Discord.Common.Packets.API;
-    using Discord.Internal;
     using Framework;
     using Framework.Commands.Localization;
     using Localization.Models;
@@ -71,7 +69,8 @@
             private readonly MockMessageWorker worker;
             private readonly IMessageReference<IDiscordMessage> reference;
 
-            public MockDiscordMessage(MockMessageWorker worker, IMessageReference<IDiscordMessage> reference)
+            public MockDiscordMessage(
+                MockMessageWorker worker, IMessageReference<IDiscordMessage> reference)
             {
                 this.worker = worker;
                 this.reference = reference;

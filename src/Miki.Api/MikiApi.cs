@@ -1,24 +1,22 @@
 ﻿namespace Miki.API
 {
-    using Miki.Api.Models;
-    using Miki.API.Leaderboards;
     using Miki.Net.Http;
-    using Miki.Rest;
     using Newtonsoft.Json;
-    using System;
     using System.Text;
     using System.Threading.Tasks;
+    using Miki.Api.Leaderboards;
+    using Miki.Api.Users;
 
-    public class MikiApiClient : IDisposable
+    public class MikiApiClient
 	{
-		private readonly HttpClient _client;
+		private readonly IHttpClient client;
 
-		private const string _baseUrl = "https://api.miki.ai/";
+		private const string BaseUrl = "https://api.miki.ai/";
 
 		public MikiApiClient(string token)
 		{
-			_client = new HttpClient(_baseUrl);
-            _client.AddHeader("Authorization", "Bearer " + token);
+			client = new HttpClient(BaseUrl);
+            client.AddHeader("Authorization", "Bearer " + token);
 		}
 
 		/// <summary>
@@ -35,11 +33,11 @@
 		/// <param name="options">Leaderboards Options Object</param>
 		public async Task<LeaderboardsObject> GetPagedLeaderboardsAsync(LeaderboardsOptions options)
 			=> JsonConvert.DeserializeObject<LeaderboardsObject>(
-                (await _client.GetAsync(BuildLeaderboardsRoute(options))).Body);
+                (await client.GetAsync(BuildLeaderboardsRoute(options))).Body);
 
         public async Task<UserInventory> GetUserInventoryAsync(long id)
             => JsonConvert.DeserializeObject<UserInventory>(
-                (await _client.GetAsync($"users/{id}/inventory")).Body);
+                (await client.GetAsync($"users/{id}/inventory")).Body);
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()
@@ -53,16 +51,10 @@
 			sb.Append($"/{options.Type.ToString().ToLower()}");
 
 			QueryString qs = new QueryString();
-
-			qs.Add("amount", options.Amount);
+            qs.Add("amount", options.Amount);
 			qs.Add("offset", options.Offset);
 
-			return sb.ToString() + qs.Query;
+			return sb + qs.Query;
 		}
-
-		public void Dispose()
-		{
-			_client.Dispose();
-		}
-	}
+    }
 }

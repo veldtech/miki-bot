@@ -14,6 +14,7 @@
     using Miki.Accounts;
     using Miki.Adapters;
     using Miki.API;
+    using Miki.API.Backgrounds;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Repositories;
     using Miki.BunnyCDN;
@@ -39,7 +40,6 @@
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
     using Miki.Logging;
-    using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
     using Miki.Modules.Logging;
     using Miki.Serialization;
@@ -114,7 +114,7 @@
                 .Build();
         }
 
-        public override void Configure(ServiceCollection serviceCollection)
+        public override async Task ConfigureAsync(ServiceCollection serviceCollection)
         {
             CreateLogger();
 
@@ -215,7 +215,8 @@
             // Setup miscellanious services
             {
                 serviceCollection.AddSingleton<ConfigurationManager>();
-                serviceCollection.AddSingleton<BackgroundStore>();
+                serviceCollection.AddSingleton(
+                    await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
                 serviceCollection.AddSingleton<ISentryClient>(
                     x => new SentryClient(

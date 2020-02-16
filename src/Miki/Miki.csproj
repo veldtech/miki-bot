@@ -35,7 +35,7 @@
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.0.4" />
+    <PackageReference Include="Miki.Framework" Version="2.1.0" />
     <PackageReference Include="Miki.Framework.Arguments" Version="2.0.0" />
     <PackageReference Include="Miki.Framework.Commands" Version="2.0.1" />
     <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.0.0" />
@@ -297,5 +297,17 @@
     <ProjectReference Include="..\..\submodules\miki.bot.models\Miki.Bot.Models.csproj" />
     <ProjectReference Include="..\..\submodules\retsu\src\Retsu.Consumer\Retsu.Consumer.csproj" />
     <ProjectReference Include="..\Miki.Api\Miki.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\backgrounds.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\lootboxes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\lootbox_tiers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

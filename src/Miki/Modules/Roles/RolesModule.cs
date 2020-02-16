@@ -230,6 +230,7 @@
 		public async Task IAmListAsync(IContext e)
 		{
             var context = e.GetService<MikiDbContext>();
+            var locale = e.GetLocale();
 
             e.GetArgumentPack().Take(out int index);
                 
@@ -285,7 +286,7 @@
 
 						if (role.Item2.Price != 0)
 						{
-							stringBuilder.Append($"🔸{role.Item2.Price} ");
+							stringBuilder.Append($"🔸  {role.Item2.Price} ");
 						}
 
 						stringBuilder.AppendLine();

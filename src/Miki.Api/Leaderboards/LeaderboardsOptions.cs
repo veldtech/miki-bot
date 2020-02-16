@@ -1,4 +1,4 @@
-﻿namespace Miki.API.Leaderboards
+﻿namespace Miki.Api.Leaderboards
 {
 	// TODO: restructure
 	public struct LeaderboardsOptions

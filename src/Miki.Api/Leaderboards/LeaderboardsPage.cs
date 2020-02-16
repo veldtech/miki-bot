@@ -1,8 +1,7 @@
-﻿namespace Miki.API.Leaderboards
+﻿namespace Miki.Api.Leaderboards
 {
-	using Newtonsoft.Json;
-	using System.Collections.Generic;
-    using Miki.Api.Models;
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     internal class LeaderboardsPage
 	{

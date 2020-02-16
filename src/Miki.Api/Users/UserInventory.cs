@@ -1,4 +1,4 @@
-﻿namespace Miki.Api.Models
+﻿namespace Miki.Api.Users
 {
     using System.Collections.Generic;
 

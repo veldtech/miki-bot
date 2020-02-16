@@ -8,7 +8,7 @@ namespace Miki.Utility
     using Amazon.S3;
     using Amazon.S3.Model;
     using Microsoft.Extensions.DependencyInjection;
-    using Miki.Api.Models;
+    using Miki.Api.Leaderboards;
     using Miki.Bot.Models;
     using Miki.BunnyCDN;
     using Miki.Cache;

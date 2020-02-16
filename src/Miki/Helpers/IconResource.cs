@@ -14,6 +14,6 @@
         }
 
         public string Get(IResourceManager instance)
-            => icon + " " + instance.GetString(resourceText);
+            => icon + "  " + instance.GetString(resourceText);
     }
 }

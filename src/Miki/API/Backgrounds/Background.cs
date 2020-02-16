@@ -1,39 +1,21 @@
-﻿namespace Miki.Models.Objects.Backgrounds
+﻿namespace Miki.API.Backgrounds
 {
-	using Miki.Logging;
-	using Newtonsoft.Json;
-	using System.Collections.Generic;
-	using System.IO;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
-	public class BackgroundStore
-	{
-		public List<Background> Backgrounds { get; private set; } = new List<Background>();
-
-		public BackgroundStore()
-		{
-			if (File.Exists("./resources/backgrounds.json"))
-			{
-				Backgrounds = JsonConvert.DeserializeObject<List<Background>>(File.ReadAllText("./resources/backgrounds.json"));
-			}
-			else
-			{
-				Log.Warning("No resources for backgrounds were loaded!");
-			}
-		}
-	}
-
+    [DataContract]
 	public class Background
 	{
-		[JsonProperty("id")]
+		[DataMember(Name = "id")]
 		public int Id { get; set; }
 
-		[JsonProperty("name")]
+        [DataMember(Name = "name")]
 		public string Name { get; set; }
 
-		[JsonProperty("price")]
+        [DataMember(Name = "price")]
 		public int Price { get; set; }
 
-		[JsonProperty("tags")]
+        [DataMember(Name = "tags")]
 		public List<string> Tags { get; set; }
 
 		public string ImageUrl => $"https://cdn.miki.ai/image-profiles/backgrounds/background-{ Id }.png";

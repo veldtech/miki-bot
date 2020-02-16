@@ -7,13 +7,13 @@ namespace Miki.Modules.Accounts
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Api.Models;
     using Localization.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
     using Miki.API;
-    using Miki.API.Leaderboards;
+    using Miki.API.Backgrounds;
+    using Miki.Api.Leaderboards;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Bot.Models.Repositories;
@@ -26,7 +26,6 @@ namespace Miki.Modules.Accounts
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Logging;
-    using Miki.Models.Objects.Backgrounds;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services;
