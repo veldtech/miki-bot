@@ -3,9 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
-    using Newtonsoft.Json;
 
     public class BackgroundStore
     {
@@ -13,6 +12,10 @@
 
         public BackgroundStore(IReadOnlyList<Background> backgrounds)
         {
+            if(backgrounds == null)
+            {
+                throw new ArgumentNullException(nameof(backgrounds));
+            }
             Backgrounds = backgrounds;
         }
 
@@ -22,13 +25,9 @@
             {
                 throw new FileNotFoundException("Couldn't find file", path);
             }
-            string json = await File.ReadAllTextAsync(path);
 
-            var backgrounds = JsonConvert.DeserializeObject<List<Background>>(json);
-            if(backgrounds == null || !backgrounds.Any())
-            {
-                throw new IndexOutOfRangeException("Resource did not contain any elements");
-            }
+            await using var stream = new MemoryStream(await File.ReadAllBytesAsync(path));
+            var backgrounds = await JsonSerializer.DeserializeAsync<List<Background>>(stream);
             return new BackgroundStore(backgrounds);
         }
     }
