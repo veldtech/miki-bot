@@ -27,10 +27,10 @@
 
         /// <inheritdoc />
         public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId)
-            => await ClaimDailyAsync(userId, null);
+            => await ClaimDailyAsync(userId, null, null);
 
         /// <inheritdoc />
-        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
+        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context, ICacheClient cache)
         {
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
             await dailyRepository.EditAsync(daily).ConfigureAwait(false);
@@ -40,12 +40,14 @@
                 /*
                  * Temporary code for transferring streaks from cache.
                  */
-                if (context != null)
+                if (context != null || cache != null)
                 {
-                    var cache = context.GetService<ICacheClient>();
-                    var redisKey = $"user:{userId}:daily";
+                    if(cache == null) cache = context.GetService<ICacheClient>();
 
-                    if (await cache.ExistsAsync(redisKey).ConfigureAwait(false))
+                    var redisKey = $"user:{userId}:daily";
+                    var cacheExists = await cache.ExistsAsync(redisKey).ConfigureAwait(false);
+
+                    if (cacheExists)
                     {
                         daily.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
                         await cache.RemoveAsync(redisKey);
@@ -119,7 +121,7 @@
 
     public interface IDailyService : IDisposable
     {
-        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context);
+        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context, ICacheClient cache);
 
         ValueTask<Daily> GetOrCreateDailyAsync(long userId);
 

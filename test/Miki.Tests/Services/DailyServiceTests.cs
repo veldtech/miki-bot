@@ -3,10 +3,12 @@
     using System;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
+    using Miki.Cache;
     using Miki.Services;
     using Miki.Services.Daily;
     using Miki.Services.Transactions;
     using Xunit;
+    using Moq;
 
     public class DailyServiceTest : BaseEntityTest<MikiDbContext>
     {
@@ -147,6 +149,27 @@
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 
             Assert.NotNull(daily);
+        }
+
+        [Fact]
+        public async Task MigrateCacheToDatabaseTest()
+        {
+            await using var unit = NewContext();
+            var userService = new UserService(unit);
+            var transactionService = new TransactionService(userService);
+            var dailyService = new DailyService(unit, userService, transactionService);
+
+            var mock = new Mock<ICacheClient>();
+            mock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+            mock.Setup(x => x.GetAsync<int>(It.IsAny<string>()))
+                .ReturnsAsync(5);
+
+            await dailyService.ClaimDailyAsync(2L, null, mock.Object);
+
+            var daily = await dailyService.GetOrCreateDailyAsync(2L);
+
+            Assert.Equal(6, daily.CurrentStreak);
         }
     }
 }

@@ -1141,7 +1141,7 @@ namespace Miki.Modules.Accounts
             var dailyService = e.GetService<IDailyService>();
 
             var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
-            var response = await dailyService.ClaimDailyAsync(user.Id, e).ConfigureAwait(false);
+            var response = await dailyService.ClaimDailyAsync(user.Id, e, null).ConfigureAwait(false);
 
             if(response.Status == DailyStatus.Claimed)
             {
