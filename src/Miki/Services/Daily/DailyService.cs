@@ -1,20 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Miki.Cache;
-using Miki.Core.Migrations;
-using Miki.Logging;
-using Miki.Services.Transactions;
-using Miki.Utility;
-
-namespace Miki.Services
+﻿namespace Miki.Services.Daily
 {
     using System;
     using System.Threading.Tasks;
-
     using Bot.Models;
-
+    using Cache;
     using Framework;
-
     using Patterns.Repositories;
+    using Transactions;
 
     public class DailyService : IDailyService
     {
@@ -123,30 +115,6 @@ namespace Miki.Services
         /// <inheritdoc />
         public void Dispose()
             => unitOfWork.Dispose();
-    }
-
-    public class DailyClaimResponse
-    {
-        public DailyStatus Status { get; set; }
-        public int AmountClaimed { get; set; }
-        public int LongestStreak { get; set; }
-        public int CurrentStreak { get; set; }
-        public DateTime LastClaimTime { get; set; }
-
-        public DailyClaimResponse(Daily daily, DailyStatus status, int amountClaimed)
-        {
-            Status = status;
-            AmountClaimed = amountClaimed;
-            LongestStreak = daily.LongestStreak;
-            CurrentStreak = daily.CurrentStreak;
-            LastClaimTime = daily.LastClaimTime;
-        }
-    }
-
-    public enum DailyStatus
-    {
-        Success,
-        Claimed
     }
 
     public interface IDailyService : IDisposable

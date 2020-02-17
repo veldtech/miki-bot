@@ -19,6 +19,7 @@
     using Miki.Framework.Exceptions;
     using Miki.Utility;
     using Miki.Services;
+    using Miki.Services.Daily;
 
     [Module("Experimental")]
 	internal class DeveloperModule

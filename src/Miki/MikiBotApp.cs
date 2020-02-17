@@ -46,6 +46,7 @@
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services;
+    using Miki.Services.Daily;
     using Miki.Services.Achievements;
     using Miki.Services.Rps;
     using Miki.Services.Transactions;

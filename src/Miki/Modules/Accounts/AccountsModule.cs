@@ -31,6 +31,7 @@ namespace Miki.Modules.Accounts
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services;
+    using Miki.Services.Daily;
     using Miki.Services.Achievements;
     using Miki.Services.Transactions;
     using Miki.Utility;
@@ -1146,12 +1147,12 @@ namespace Miki.Modules.Accounts
             {
                 var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
                 var builder = e.ErrorEmbed(e.GetLocale().GetString(
-                    "miki_module_accounts_daily_claimed",
+                    "daily_claimed",
                     $"`{time}`",
                     $"`{user.Currency:N0}`"));
 
-                var appreciationList = e.GetLocale().GetString("miki_module_accounts_daily_appreciate_list").Split(";");
-                builder.AddInlineField(e.GetLocale().GetString("miki_module_accounts_daily_appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
+                var appreciationList = e.GetLocale().GetString("appreciate_list").Split(";");
+                builder.AddInlineField(e.GetLocale().GetString("appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
 
                 await builder.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
@@ -1159,9 +1160,9 @@ namespace Miki.Modules.Accounts
             }
 
             var embed = new EmbedBuilder()
-                .SetTitle(e.GetLocale().GetString("miki_module_accounts_daily_title"))
+                .SetTitle(e.GetLocale().GetString("daily_title"))
                 .SetDescription(e.GetLocale().GetStringD(
-                    "miki_module_accounts_daily_received", 
+                    "daily_received", 
                     $"**{response.AmountClaimed:N0}**", 
                     $"`{user.Currency:N0}`"))
                 .SetColor(253, 216, 136);
@@ -1169,8 +1170,8 @@ namespace Miki.Modules.Accounts
             if(response.CurrentStreak > 0)
             {
                 embed.AddInlineField(
-                    e.GetLocale().GetString("miki_module_accounts_daily_streak_title"),
-                    e.GetLocale().GetString("miki_module_accounts_daily_streak", $"{response.CurrentStreak:N0}"));
+                    e.GetLocale().GetString("daily_streak_title"),
+                    e.GetLocale().GetString("daily_streak", $"{response.CurrentStreak:N0}"));
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
