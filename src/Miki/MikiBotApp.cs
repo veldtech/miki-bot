@@ -5,7 +5,6 @@
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Resources;
     using System.Threading.Tasks;
     using Amazon.S3;
     using Discord.Internal;
@@ -56,7 +55,6 @@
     using StackExchange.Redis;
     using Veld.Osu;
     using Veld.Osu.V1;
-    using System.Resources;
     using System.Text.Json;
 
     public class MikiBotApp : MikiApp
@@ -324,11 +322,7 @@
             {
                 try
                 {
-                    //                     vvvv
-                    // Gets /folder/folder/file.json
-                    var languageName = fileName.Split('/', '\\').Last()
-                        .Split('.').FirstOrDefault();
-
+                    var languageName = Path.GetFileNameWithoutExtension(fileName);
                     await using var json = new MemoryStream(await File.ReadAllBytesAsync(fileName));
                     var dict = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(json);
                     var resourceManager = new LocaleResoureManager(dict);

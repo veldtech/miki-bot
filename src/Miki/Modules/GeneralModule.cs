@@ -331,14 +331,14 @@
             if (e.GetArgumentPack().Take(out string arg))
             {
                 var command = commandHandler.GetCommand(new ArgumentPack(arg.Split(' ')));
-                string prefix = e.GetPrefixMatch();
-
                 if (command == null)
                 {
                     var helpListEmbed = new EmbedBuilder
                     {
                         Title = locale.GetStringD("miki_module_help_error_null_header"),
-                        Description = locale.GetStringD("miki_module_help_error_null_message", prefix),
+                        Description = locale.GetStringD(
+                            "miki_module_help_error_null_message",
+                            e.GetPrefixMatch()),
                         Color = new Color(0.6f, 0.6f, 1.0f)
                     };
 
@@ -420,8 +420,15 @@
                 List<Node> nodes = new List<Node>();
                 await foreach (var node in nodeModule.GetAllExecutableAsync(e))
                 {
-                    if((await permissionService.GetPriorityPermissionAsync(e))
-                       .Status != PermissionStatus.Allow)
+                    var perm = await permissionService.GetPriorityPermissionAsync(e);
+                    var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
+                        .FirstOrDefault()?.Status;
+                    if(defaultPermission == null)
+                    {
+                        defaultPermission = PermissionStatus.Allow;
+                    }
+
+                    if((perm?.Status ?? defaultPermission) != PermissionStatus.Allow)
                     {
                         continue;
                     }

@@ -125,35 +125,27 @@
 
 		[Command("setnotifications")]
 		public async Task SetupNotifications(IContext e)
-		{
-			if(!e.GetArgumentPack().Take(out string enumString))
-			{
-				// TODO(velddev): Handle error.
-			}
-
-            var enumNames= string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
+        {
+            var enumNames = string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
                 .Select(x => $"`{x}`"));
-
-			if(!enumString.TryFromEnum<DatabaseSettingId>(out var value))
-            {
+            if(!e.GetArgumentPack().Take(out DatabaseSettingId value))
+			{
                 await e.ErrorEmbedResource("error_notifications_setting_not_found", enumNames)
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
-				return;
-			}
+                return;
+            }
 
-			if(!settingOptions.TryGetValue(value, out var @enum))
+            if(!settingOptions.TryGetValue(value, out var @enum))
 			{
 				return;
 			}
 
-			if(!e.GetArgumentPack().Take(out string enumValue))
-			{
-			}
-
-            var enumValueNames = string.Join(", ", Enum.GetNames(@enum.GetType())
-                .Select(x => $"`{x}`"));
+            var enumValue = e.GetArgumentPack().TakeRequired<string>();
+			
+            var enumValueNames = string.Join(
+                ", ", Enum.GetNames(@enum.GetType()).Select(x => $"`{x}`"));
             if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
 			{
 				await e.ErrorEmbedResource(
