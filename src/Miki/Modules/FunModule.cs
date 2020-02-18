@@ -383,7 +383,7 @@ namespace Miki.Modules
 		public async Task RollAsync(IContext e)
 		{
 			string rollResult;
-            string args = e.GetArgumentPack().Pack.TakeAll();
+            var args = e.GetArgumentPack().Pack.TakeAll();
 
             if (string.IsNullOrWhiteSpace(args)) // No Arguments.
 			{
@@ -391,24 +391,25 @@ namespace Miki.Modules
 			}
 			else
 			{
-				if (int.TryParse(args, out int max)) // Simple number argument.
+				if (int.TryParse(args, out var max)) // Simple number argument.
 				{
 					rollResult = MikiRandom.Roll(max).ToString();
 				}
 				else // Assume the user has entered an advanced expression.
 				{
-					Regex regex = new Regex(@"(\d+)?d(\d+)");
-					string fullExpression = args;
-					int expressionCount = 0;
+					var regex = new Regex(@"(\d+)?d(\d+)");
+					var fullExpression = args;
+					var expressionCount = 0;
+                    var characterLimit = 256;
 
-					foreach (Match match in regex.Matches(args))
+                    foreach (Match match in regex.Matches(args))
 					{
-						GroupCollection groupCollection = match.Groups;
-						int dieCount = groupCollection[1].Success ? int.Parse(groupCollection[1].Value) : 1;
-						int dieSides = int.Parse(groupCollection[2].Value);
-						List<string> partialExpression = new List<string>();
+						var groupCollection = match.Groups;
+						var dieCount = groupCollection[1].Success ? int.Parse(groupCollection[1].Value) : 1;
+						var dieSides = int.Parse(groupCollection[2].Value);
+						var partialExpression = new List<string>();
 
-						for (int i = 0; i < dieCount; i++)
+						for (var i = 0; i < dieCount; i++)
 						{
 							partialExpression.Add(MikiRandom.Roll(dieSides).ToString());
 						}
@@ -423,7 +424,11 @@ namespace Miki.Modules
 						fullExpression = $"({fullExpression})";
 					}
 
-					Expression evaluation = new Expression(fullExpression);
+					var evaluation = new Expression(fullExpression);
+                    if (fullExpression.Length > characterLimit)
+                    {
+                        fullExpression = $"(...)";
+                    }
 					rollResult = evaluation.Evaluate() + $" `{fullExpression}`";
 				}
 			}
