@@ -57,7 +57,6 @@
     using StackExchange.Redis;
     using Veld.Osu;
     using Veld.Osu.V1;
-    using System.Resources;
     using System.Text.Json;
 
     public class MikiBotApp : MikiApp

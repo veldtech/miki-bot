@@ -1,4 +1,7 @@
-﻿namespace Miki.Tests.Services
+﻿using Amazon.Runtime.Internal.Util;
+using Miki.Framework;
+
+namespace Miki.Tests.Services
 {
     using System;
     using System.Threading.Tasks;
@@ -159,13 +162,17 @@
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            var mock = new Mock<ICacheClient>();
-            mock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
+            var cacheMock = new Mock<ICacheClient>();
+            cacheMock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
-            mock.Setup(x => x.GetAsync<int>(It.IsAny<string>()))
+            cacheMock.Setup(x => x.GetAsync<int>(It.IsAny<string>()))
                 .ReturnsAsync(5);
 
-            await dailyService.ClaimDailyAsync(2L, null, mock.Object);
+            var contextMock = new Mock<IContext>();
+            contextMock.Setup(x => x.GetService(typeof(ICacheClient)))
+                .Returns(cacheMock.Object);
+
+            await dailyService.ClaimDailyAsync(2L, contextMock.Object);
 
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 

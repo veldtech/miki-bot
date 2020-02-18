@@ -27,10 +27,10 @@
 
         /// <inheritdoc />
         public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId)
-            => await ClaimDailyAsync(userId, null, null);
+            => await ClaimDailyAsync(userId, null);
 
         /// <inheritdoc />
-        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context, ICacheClient cache)
+        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
         {
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
             await dailyRepository.EditAsync(daily).ConfigureAwait(false);
@@ -40,17 +40,16 @@
                 /*
                  * Temporary code for transferring streaks from cache.
                  */
-                if (context != null || cache != null)
+                if (context != null)
                 {
-                    if(cache == null) cache = context.GetService<ICacheClient>();
-
                     var redisKey = $"user:{userId}:daily";
-                    var cacheExists = await cache.ExistsAsync(redisKey).ConfigureAwait(false);
+                    var cacheClient = context.GetService<ICacheClient>();
+                    var cacheExists = await cacheClient.ExistsAsync(redisKey).ConfigureAwait(false);
 
                     if (cacheExists)
                     {
-                        daily.CurrentStreak = await cache.GetAsync<int>(redisKey).ConfigureAwait(false);
-                        await cache.RemoveAsync(redisKey);
+                        daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey).ConfigureAwait(false);
+                        await cacheClient.RemoveAsync(redisKey);
                     }
                 }
                 /*
@@ -121,7 +120,7 @@
 
     public interface IDailyService : IDisposable
     {
-        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context, ICacheClient cache);
+        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context);
 
         ValueTask<Daily> GetOrCreateDailyAsync(long userId);
 
