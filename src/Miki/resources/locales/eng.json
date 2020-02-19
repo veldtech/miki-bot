@@ -617,7 +617,6 @@
   "error_pasta_invite": "You can not add Discord invites to a pasta!",
   "error_blackjack_session_exists": "You still have a blackjack game running here, please either stop it by using `>blackjack stay` or finish playing it. This game will expire in 24 hours.",
   "error_argument_less_than_zero": "You can not use an amount less than zero!",
-  "daily_received": "Received {0} Mekos! You now have {1} Mekos",
   "error_blackjack_null": "You do not have a game running in this channel at the moment! use `>blackjack new` to start a game!",
   "guildhouse_rank": "Your guild house level:",
   "guildhouse_rank_0": "None",
@@ -679,5 +678,12 @@
   "error_argument_missing": "We're missing the {0} from you, consult the documentation for help.",
   "error_daily_claimed": "You already claimed your daily today! Please wait another {0} before using it again.",
   "error_action_unauthorized": "You cannot {0} this!",
-  "error_pasta_null": "Pasta was not found."
+  "error_pasta_null": "Pasta was not found.",
+  "appreciate_list": "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!;Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!",
+  "appreciate_title": "Appreciate Miki?",
+  "daily_claimed": "You already claimed your daily today! Please wait another {0} before using it again.",
+  "daily_received": "Received {0} Mekos! You now have {1} Mekos",
+  "daily_streak": "You're on a {0} day daily streak!",
+  "daily_streak_title": "Streak!",
+  "daily_title": ":moneybag: Daily"
 }

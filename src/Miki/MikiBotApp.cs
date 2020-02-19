@@ -45,6 +45,7 @@
     using Miki.Serialization;
     using Miki.Serialization.Protobuf;
     using Miki.Services;
+    using Miki.Services.Daily;
     using Miki.Services.Achievements;
     using Miki.Services.Rps;
     using Miki.Services.Transactions;
@@ -225,6 +226,7 @@
                 serviceCollection.AddSingleton(await BuildLocalesAsync());
 
                 serviceCollection.AddScoped<IUserService, UserService>();
+                serviceCollection.AddScoped<IDailyService, DailyService>();
                 serviceCollection.AddSingleton<AccountService>();
                 serviceCollection.AddScoped<PastaService>();
 

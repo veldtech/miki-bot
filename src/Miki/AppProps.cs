@@ -32,9 +32,15 @@ namespace Miki
             public static string Disabled => "🚫";
         }
 
-        public class Currency
+        public static class Currency
         {
             public static long BankId => 1L;
+        }
+
+        public static class Daily
+        {
+            public static int DailyAmount => 100;
+            public static int StreakAmount => 20;
         }
     }                 
 }

@@ -19,6 +19,7 @@
     using Miki.Framework.Exceptions;
     using Miki.Utility;
     using Miki.Services;
+    using Miki.Services.Daily;
 
     [Module("Experimental")]
 	internal class DeveloperModule
@@ -341,5 +342,29 @@
 			var userObject = await userService.GetUserAsync((long)u.Id);
 			await userObject.BanAsync(context);
 		}
-	}
+
+        [Command("dailyedit")]
+        [RequiresScope("developer")]
+        public class DailyEditCommand
+        {
+            [Command("reset")]
+            [RequiresScope("developer")]
+            public async Task ResetAsync(IContext e)
+            {
+                var dailyService = e.GetService<IDailyService>();
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
+
+                daily.LastClaimTime = DateTime.UtcNow.AddHours(-24);
+
+                await dailyService.SaveAsync().ConfigureAwait(false);
+
+                EmbedBuilder message = new EmbedBuilder()
+                    .SetTitle("💰 Daily")
+                    .SetDescription("You have reset your daily!");
+
+                await message.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+        }
+    }
 }

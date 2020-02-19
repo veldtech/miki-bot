@@ -10,10 +10,10 @@
 
     public class UserService : IUserService
     {
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IAsyncRepository<User> repository;
         private readonly IAsyncRepository<IsBanned> bannedRepository;
         private readonly IAsyncRepository<IsDonator> donatorRepository;
-        private readonly IAsyncRepository<User> repository;
-        private readonly IUnitOfWork unitOfWork;
 
         public UserService(IUnitOfWork unitOfWork)
         {
@@ -22,6 +22,8 @@
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
             this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
         }
+
+        /// <inheritdoc />
         public async ValueTask<User> CreateUserAsync(long userId, string userName)
         {
             var user = new User
@@ -48,11 +50,6 @@
         }
 
         /// <inheritdoc />
-        public ValueTask UpdateUserAsync(User user)
-        {
-            return repository.EditAsync(user);
-        }
-
         public async ValueTask<bool> UserIsDonatorAsync(long userId)
         {
             var donatorStatus = await donatorRepository.GetAsync(userId);
@@ -76,15 +73,16 @@
         }
 
         /// <inheritdoc />
+        public ValueTask UpdateUserAsync(User user)
+            => repository.EditAsync(user);
+
+        /// <inheritdoc />
         public ValueTask SaveAsync()
-        {
-            return unitOfWork.CommitAsync();
-        }
+            => unitOfWork.CommitAsync();
 
         /// <inheritdoc />
         public void Dispose()
-        {
-        }
+            => unitOfWork?.Dispose();
     }
 
     public interface IUserService : IDisposable

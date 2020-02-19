@@ -21,14 +21,17 @@ namespace Miki.Modules.Accounts
     using Miki.Common.Builders;
     using Miki.Discord;
     using Miki.Discord.Common;
+    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
+    using Miki.Helpers;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services;
+    using Miki.Services.Daily;
     using Miki.Services.Achievements;
     using Miki.Services.Transactions;
     using Miki.Utility;
@@ -1135,88 +1138,43 @@ namespace Miki.Modules.Accounts
         public async Task GetDailyAsync(IContext e)
         {
             var userService = e.GetService<IUserService>();
-            var transactionService = e.GetService<ITransactionService>();
+            var dailyService = e.GetService<IDailyService>();
 
-            User u = await userService.GetOrCreateUserAsync(e.GetAuthor());
+            var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
+            var response = await dailyService.ClaimDailyAsync(user.Id, e).ConfigureAwait(false);
 
-            int dailyAmount = 100;
-            int dailyStreakAmount = 20;
-
-            if(await userService.UserIsDonatorAsync(u.Id))
+            if(response.Status == DailyStatus.Claimed)
             {
-                dailyAmount *= 2;
-                dailyStreakAmount *= 2;
-            }
+                var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                var builder = e.ErrorEmbed(e.GetLocale().GetString(
+                    "daily_claimed",
+                    $"`{time}`",
+                    $"`{user.Currency:N0}`"));
 
-            if(u.LastDailyTime.AddHours(23) >= DateTime.UtcNow)
-            {
-                var time = (u.LastDailyTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                var appreciationList = e.GetLocale().GetString("appreciate_list").Split(";");
+                builder.AddInlineField(e.GetLocale().GetString("appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
 
-                var builder = e.ErrorEmbedResource("error_daily_claimed", $"`{time}`");
-
-                switch(MikiRandom.Next(2))
-                {
-                    case 0:
-                    {
-                        builder.AddInlineField(
-                            "Appreciate Miki?", 
-                            "Vote for us every day on [DiscordBots](https://discordbots.org/bot/160105994217586689/vote) to get an additional bonus!");
-                    }
-                    break;
-                    case 1:
-                    {
-                        builder.AddInlineField(
-                            "Appreciate Miki?", 
-                            "Donate to us on [Patreon](https://patreon.com/mikibot) for more mekos!");
-                    }
-                    break;
-                }
                 await builder.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
 
-            int streak = 0;
-            string redisKey = $"user:{e.GetAuthor().Id}:daily";
-
-            var cache = e.GetService<ICacheClient>();
-
-            if(await cache.ExistsAsync(redisKey))
-            {
-                streak = await cache.GetAsync<int>(redisKey);
-                streak++;
-            }
-
-            u.LastDailyTime = DateTime.UtcNow;
-            await userService.UpdateUserAsync(u);
-            await userService.SaveAsync();
-
-            int amount = dailyAmount + (dailyStreakAmount * Math.Min(100, streak));
-
-            await transactionService.CreateTransactionAsync(
-                new TransactionRequest.Builder()
-                    .WithAmount(amount)
-                    .WithReceiver(u.Id)
-                    .WithSender(0L)
-                    .Build());
-
             var embed = new EmbedBuilder()
-                .SetTitle("💰 Daily")
+                .SetTitle(e.GetLocale().GetString("daily_title"))
                 .SetDescription(e.GetLocale().GetStringD(
                     "daily_received", 
-                    $"**{amount:N0}**", 
-                    $"`{(u.Currency):N0}`"))
+                    $"**{response.AmountClaimed:N0}**", 
+                    $"`{user.Currency:N0}`"))
                 .SetColor(253, 216, 136);
 
-
-            if(streak > 0)
+            if(response.CurrentStreak > 0)
             {
-                embed.AddInlineField("Streak!", $"You're on a {streak:N0} day daily streak!");
+                embed.AddInlineField(
+                    e.GetLocale().GetString("daily_streak_title"),
+                    e.GetLocale().GetString("daily_streak", $"{response.CurrentStreak:N0}"));
             }
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
-
-            await cache.UpsertAsync(redisKey, streak, new TimeSpan(48, 0, 0));
         }
     }
 }
