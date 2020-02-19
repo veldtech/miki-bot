@@ -41,7 +41,7 @@ If you have any questions about the setup process **do not** ask in the support 
 
 | Key | Value |
 | --- | --- |
-| MIKI_CONNSTRING | "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;" |
+| MIKI_CONNSTRING | "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;Password={YOUR_PASSWORD}" |
 
 6) Install the `uuid-ossp` postgres extensions on the `Miki` database.
 
