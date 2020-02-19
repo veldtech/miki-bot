@@ -33,28 +33,30 @@ If you have any questions about the setup process **do not** ask in the support 
 
 2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
 
-3) Add your bot token in Miki/miki/settings.json.
+3) Download [Redis](https://redis.io/download) and get that running too.
 
-4) Download [Redis](https://redis.io/download) and get that running too.
+4) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
 
-5) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
+5) Configure your connection string in `launchSettings.json` as such (if using localhost):
 
-6) Configure your connection string in Miki/miki/settings.json as such (if using localhost):
+---
+| Key | Value |
+| --- | --- |
+| MIKI_CONNSTRING | "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;" |
+---
 
-```json
-"connection_string": "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;"
-```
-
-7) Install the `uuid-ossp` postgres extensions on the `Miki` database.
+6) Install the `uuid-ossp` postgres extensions on the `Miki` database.
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
-8) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+7) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
 
     * Tools -> NuGet Package Manager -> Package Manager Console
     
+8) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
+
 9) Run Miki. 🎉
 
 ## Possible issues:
