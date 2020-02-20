@@ -33,9 +33,9 @@
             {
                 return await GetGuildAsync(user.RivalId);
             }
-            catch(GuildUserNullException ex)
+            catch(GuildUserNullException)
             {
-                throw new GuildRivalNullException(ex);
+                throw new GuildRivalNullException();
             }
         }
     }

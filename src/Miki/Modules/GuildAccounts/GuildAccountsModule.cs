@@ -39,9 +39,18 @@
 
             LocalExperience thisUser = await localExperienceRepository.GetAsync(
                 (long)e.GetGuild().Id, (long)e.GetAuthor().Id);
+            // TODO move to LocalExperience service?
             if(thisUser == null)
             {
-                throw new UserNullException();
+                thisUser = new LocalExperience
+                {
+                    ServerId = (long)e.GetGuild().Id,
+                    UserId = (long)e.GetAuthor().Id,
+                    Experience = 0,
+                };
+                await localExperienceRepository.AddAsync(thisUser)
+                    .ConfigureAwait(false);
+                await unit.CommitAsync().ConfigureAwait(false);
             }
 
             GuildUser thisGuild = await guildService.GetGuildAsync((long)e.GetGuild().Id);

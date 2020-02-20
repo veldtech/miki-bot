@@ -666,7 +666,7 @@
   "miki_command_description_sellkey": "Sell your unwanted keys for a flat sum of mekos!",
   "miki_command_usage_redeemkey": ">redeemkey <key>",
   "miki_command_usage_sellkey": ">sellkey <key>",
-  "error_guild_rival_null": "Your guild does not have a rival yet! Use `>guildrival` to find your first rival!",
+  "error_guild_rival_null": "This Discord Server does not have a rival yet! Use `>guildnewrival` to find your first rival!",
   "error_command_guildonly": "This command can only be used in discord servers!",
   "locale_not_here": "Is your language not here?",
   "permission_set": "Permissions of {0} set to level {1}!",

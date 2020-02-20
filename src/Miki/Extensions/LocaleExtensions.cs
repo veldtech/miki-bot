@@ -26,6 +26,11 @@
             {
                 return val;
             }
+
+            if(LocaleExtensions.DefaultLocale.ResourceManager == this)
+            {
+                return null;
+            }
             return LocaleExtensions.DefaultLocale.GetString(key);
         }
     }
