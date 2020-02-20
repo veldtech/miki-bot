@@ -1137,6 +1137,7 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
+            var userService = e.GetService<IUserService>();
             var dailyService = e.GetService<IDailyService>();
 
             var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
@@ -1158,9 +1159,6 @@ namespace Miki.Modules.Accounts
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
-
-            var userService = e.GetService<IUserService>();
-            var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
 
             var embed = new EmbedBuilder()
                 .SetTitle(e.GetLocale().GetString("daily_title"))
