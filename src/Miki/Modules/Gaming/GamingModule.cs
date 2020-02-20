@@ -12,11 +12,11 @@
     using Veld.Osu.Models;
 
     [Module("Gaming")]
-	internal class GamingModule
+    internal class GamingModule
     {
         private readonly IOsuApiClient osuClient;
 
-        public GamingModule([Optional] IOsuApiClient osuClient)
+        public GamingModule(IOsuApiClient osuClient = null)
         {
             this.osuClient = osuClient;
         }
@@ -26,7 +26,7 @@
 
         [Command("ctb")]
         public Task CtbAsync(IContext e) => GetOsuUserAsync(e, GameMode.CatchTheBeat);
-        
+
         [Command("mania")]
         public Task ManiaAsync(IContext e) => GetOsuUserAsync(e, GameMode.Mania);
 
@@ -38,7 +38,7 @@
             var username = e.GetArgumentPack().TakeRequired<string>();
 
             var user = await osuClient.GetPlayerAsync(username, mode);
-            if(user == null)
+            if (user == null)
             {
                 throw new UserNullException();
             }

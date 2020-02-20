@@ -575,6 +575,7 @@ namespace Miki.Modules
                 {
                     await e.ErrorEmbed(e.GetLocale().GetString("error_argument_null", "time"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
+					return;
                 }
 
                 string reminderText = new string(args

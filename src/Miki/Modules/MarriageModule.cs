@@ -428,10 +428,8 @@ namespace Miki.Modules
 			embed.AddField("Proposals Sent", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
 			embed.Color = new Color(1, 0.5f, 0);
-            embed.ThumbnailUrl = (await e.GetGuild()
-                    .GetMemberAsync(e.GetAuthor().Id)
-                    .ConfigureAwait(false))
-                .GetAvatarUrl();
+            embed.ThumbnailUrl = e.GetAuthor().GetAvatarUrl();
+
 			if(pageCount > 1)
 			{
 				embed.SetFooter(e.GetLocale().GetString("page_footer", page + 1, pageCount));
