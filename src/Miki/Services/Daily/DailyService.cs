@@ -33,8 +33,7 @@
         public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
         {
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
-            await dailyRepository.EditAsync(daily).ConfigureAwait(false);
-
+            
             if (DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
             {
                 /*
@@ -48,7 +47,8 @@
 
                     if (cacheExists)
                     {
-                        daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey).ConfigureAwait(false);
+                        daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey)
+                            .ConfigureAwait(false);
                         await cacheClient.RemoveAsync(redisKey);
                     }
                 }
@@ -59,7 +59,8 @@
                 if (DateTime.UtcNow < daily.LastClaimTime.AddDays(2))
                 {
                     daily.CurrentStreak++;
-                    daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak ? daily.CurrentStreak : daily.LongestStreak;
+                    daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak 
+                        ? daily.CurrentStreak : daily.LongestStreak;
                 }
                 else
                 {
@@ -67,6 +68,7 @@
                 }
 
                 daily.LastClaimTime = DateTime.UtcNow;
+                await dailyRepository.EditAsync(daily).ConfigureAwait(false);
 
                 await SaveAsync().ConfigureAwait(false);
 
@@ -84,7 +86,7 @@
             }
             else
             {
-                return new DailyClaimResponse(daily, DailyStatus.Claimed, 0);
+                return new DailyClaimResponse(daily, DailyStatus.NotReady, 0);
             }
         }
 

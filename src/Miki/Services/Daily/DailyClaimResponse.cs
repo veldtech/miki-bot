@@ -6,7 +6,7 @@
     public enum DailyStatus
     {
         Success,
-        Claimed
+        NotReady
     }
 
     public class DailyClaimResponse

@@ -57,18 +57,18 @@ namespace Miki.Utility
             {
                 if (Math.Floor(time.TotalDays) > 1)
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_days"), time.Days, minified));
+                    t.Add(new TimeValue(instance.GetString("time_days"), time.Days, minified));
                 }
             }
 
             if(time.Hours > 0)
             {
                 t.Add(new TimeValue(
-                    instance.GetStringD(time.Hours > 1 ? "time_hours" : "time_hour"),
+                    instance.GetString(time.Hours > 1 ? "time_hours" : "time_hour"),
                     time.Hours, 
                     minified));
             }
@@ -77,11 +77,11 @@ namespace Miki.Utility
             {
                 if (time.Minutes > 1)
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_minutes"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minutes"), time.Minutes, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_minute"), time.Minutes, minified));
+                    t.Add(new TimeValue(instance.GetString("time_minute"), time.Minutes, minified));
                 }
             }
 
@@ -89,11 +89,11 @@ namespace Miki.Utility
             {
                 if (time.Seconds > 1)
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_seconds"), time.Seconds, minified));
+                    t.Add(new TimeValue(instance.GetString("time_seconds"), time.Seconds, minified));
                 }
                 else
                 {
-                    t.Add(new TimeValue(instance.GetStringD("time_second"), time.Seconds, minified));
+                    t.Add(new TimeValue(instance.GetString("time_second"), time.Seconds, minified));
                 }
             }
 
@@ -117,7 +117,7 @@ namespace Miki.Utility
 
                     if (!minified)
                     {
-                        text += $", {instance.GetStringD("time_and")} {s[^1]}";
+                        text += $", {instance.GetString("time_and")} {s[^1]}";
                     }
                 }
                 else if (t.Count == 1)
@@ -156,7 +156,7 @@ namespace Miki.Utility
                 .SetColor(1.0f, 0.0f, 0.0f);
 
         public static EmbedBuilder ErrorEmbedResource(this IContext e, string resourceId, params object[] args)
-            => ErrorEmbed(e, e.GetLocale().GetStringD(resourceId, args));
+            => ErrorEmbed(e, e.GetLocale().GetString(resourceId, args));
 
         public static EmbedBuilder ErrorEmbedResource(this IContext e, IResource resource)
             => ErrorEmbed(e, resource.Get(e.GetLocale()));
@@ -169,16 +169,16 @@ namespace Miki.Utility
         public static DiscordEmbed SuccessEmbed(this Locale e, string message)
             => new EmbedBuilder
             {
-                Title = $"✅  {e.GetStringD("miki_success_message_generic")}",
+                Title = $"✅  {e.GetString("miki_success_message_generic")}",
                 Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();
         public static DiscordEmbed SuccessEmbedResource(
             this IContext e, string resource, params object[] param)
-            => SuccessEmbed(e, e.GetLocale().GetStringD(resource, param));
+            => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
         public static DiscordEmbed SuccessEmbedResource(
             this Locale e, string resource, params object[] param)
-            => SuccessEmbed(e, e.GetStringD(resource, param));
+            => SuccessEmbed(e, e.GetString(resource, param));
 
 
         public static ValueTask<string> RemoveMentionsAsync(this string arg, IDiscordGuild guild)

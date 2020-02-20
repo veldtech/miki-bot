@@ -63,7 +63,7 @@
                         .Build());
 
                 await e.SuccessEmbed(
-                        e.GetLocale().GetStringD("key_sold_success", KeyBuybackPrice))
+                        e.GetLocale().GetString("key_sold_success", KeyBuybackPrice))
 					.QueueAsync(e, e.GetChannel());
 			}
 		}
@@ -108,9 +108,9 @@
 
 			await new EmbedBuilder
 			{
-				Title = $"🎉 {locale.GetStringD("common_success", e.GetAuthor().Username)}",
+				Title = $"🎉 {locale.GetString("common_success", e.GetAuthor().Username)}",
 				Color = new Color(226, 46, 68),
-				Description = locale.GetStringD("key_redeem_success", $"**{key.StatusTime.TotalDays}**"),
+				Description = locale.GetString("key_redeem_success", $"**{key.StatusTime.TotalDays}**"),
                 ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
 			}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
 				.ToEmbed().QueueAsync(e, e.GetChannel());

@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.110.23" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.25" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="4.0.1" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
 

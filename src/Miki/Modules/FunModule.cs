@@ -146,9 +146,9 @@ namespace Miki.Modules
 		{
 			var locale = e.GetLocale();
 
-			string output = locale.GetStringD("miki_module_fun_8ball_result",
+			string output = locale.GetString("miki_module_fun_8ball_result",
 				e.GetAuthor().Username, 
-				$"`{locale.GetStringD(reactions[MikiRandom.Next(0, reactions.Length)])}`");
+				$"`{locale.GetString(reactions[MikiRandom.Next(0, reactions.Length)])}`");
 
 			return new EmbedBuilder()
 				.SetTitle($"{EightBallEmoji}  8ball")
@@ -368,14 +368,14 @@ namespace Miki.Modules
             }
 			string[] choices = args.Split(',');
 
-			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetStringD(
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString(
                 "miki_module_fun_pick", e.GetAuthor().Username, MikiRandom.Of(choices)));
 		}
 
 		[Command("pun")]
 		public Task PunAsync(IContext e)
 		{
-			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetStringD(MikiRandom.Of(puns)));
+			e.GetChannel().QueueMessage(e, null, e.GetLocale().GetString(MikiRandom.Of(puns)));
 			return Task.CompletedTask;
 		}
 
@@ -441,7 +441,7 @@ namespace Miki.Modules
             }
 
 			e.GetChannel()
-				.QueueMessage(e, null, e.GetLocale().GetStringD(
+				.QueueMessage(e, null, e.GetLocale().GetString(
                     "miki_module_fun_roll_result", 
                     e.GetAuthor().Username, 
                     rollResult));
@@ -480,7 +480,7 @@ namespace Miki.Modules
                 var instances = reminders.GetAllInstances(e.GetAuthor().Id);
                 if(instances?.Count <= 0)
                 {
-                    await e.ErrorEmbed(locale.GetStringD("error_no_reminders"))
+                    await e.ErrorEmbed(locale.GetString("error_no_reminders"))
                         .ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                     return;
@@ -490,7 +490,7 @@ namespace Miki.Modules
                         .ToList();
 
                 EmbedBuilder embed = new EmbedBuilder()
-                    .SetTitle($"⏰ {locale.GetStringD("reminders")}")
+                    .SetTitle($"⏰ {locale.GetString("reminders")}")
                     .SetColor(0.86f, 0.18f, 0.26f);
 
                 foreach(var x in instances)
@@ -523,9 +523,9 @@ namespace Miki.Modules
                         }
 
                         await new EmbedBuilder()
-                            .SetTitle($"⏰ {locale.GetStringD("reminders")}")
+                            .SetTitle($"⏰ {locale.GetString("reminders")}")
                             .SetColor(0.86f, 0.18f, 0.26f)
-                            .SetDescription(locale.GetStringD("reminder_cancelled_all"))
+                            .SetDescription(locale.GetString("reminder_cancelled_all"))
                             .ToEmbed()
                             .QueueAsync(e, e.GetChannel());
                         return;
@@ -536,15 +536,15 @@ namespace Miki.Modules
                     if(reminders.CancelReminder(e.GetAuthor().Id, id) is TaskInstance<string> i)
                     {
                         await new EmbedBuilder()
-                            .SetTitle($"⏰ {locale.GetStringD("reminders")}")
+                            .SetTitle($"⏰ {locale.GetString("reminders")}")
                             .SetColor(0.86f, 0.18f, 0.26f)
-                            .SetDescription(locale.GetStringD("reminder_cancelled", $"`{i.Context}`"))
+                            .SetDescription(locale.GetString("reminder_cancelled", $"`{i.Context}`"))
                             .ToEmbed()
                             .QueueAsync(e, e.GetChannel());
                         return;
                     }
                 }
-                await e.ErrorEmbed(locale.GetStringD("error_reminder_null"))
+                await e.ErrorEmbed(locale.GetString("error_reminder_null"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
             }
@@ -555,13 +555,13 @@ namespace Miki.Modules
                 var locale = e.GetLocale();
 
                 await new EmbedBuilder()
-                    .SetTitle($"⏰ {locale.GetStringD("reminders")}")
+                    .SetTitle($"⏰ {locale.GetString("reminders")}")
                     .SetColor(0.86f, 0.18f, 0.26f)
-                    .SetDescription(locale.GetStringD("reminder_help_description"))
-                    .AddInlineField(locale.GetStringD("term_commands"),
-                        $"`{prefix}{locale.GetStringD("reminder_help_add")}` - {locale.GetStringD("reminder_desc_add")}\n" +
-                        $"`{prefix}{locale.GetStringD("reminder_help_clear")}` - {locale.GetStringD("reminder_desc_clear")}\n" +
-                        $"`{prefix}{locale.GetStringD("reminder_help_list")}` - {locale.GetStringD("reminder_desc_list")}\n")
+                    .SetDescription(locale.GetString("reminder_help_description"))
+                    .AddInlineField(locale.GetString("term_commands"),
+                        $"`{prefix}{locale.GetString("reminder_help_add")}` - {locale.GetString("reminder_desc_add")}\n" +
+                        $"`{prefix}{locale.GetString("reminder_help_clear")}` - {locale.GetString("reminder_desc_clear")}\n" +
+                        $"`{prefix}{locale.GetString("reminder_help_list")}` - {locale.GetString("reminder_desc_list")}\n")
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
             }
@@ -573,7 +573,7 @@ namespace Miki.Modules
 
                 if(splitIndex == -1)
                 {
-                    await e.ErrorEmbed(e.GetLocale().GetStringD("error_argument_null", "time"))
+                    await e.ErrorEmbed(e.GetLocale().GetString("error_argument_null", "time"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
 
@@ -597,7 +597,7 @@ namespace Miki.Modules
                     }, reminderText, timeUntilReminder);
 
                     await new EmbedBuilder()
-                        .SetTitle($"👌 {e.GetLocale().GetStringD("term_ok")}")
+                        .SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
                         .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\nYour reminder code is `{id}`")
                         .SetColor(255, 220, 93)
                         .ToEmbed().QueueAsync(e, e.GetChannel());

@@ -80,13 +80,13 @@
             var localeNames = string.Join(", ", languageNames.Keys.Select(x => $"`{x}`"));
 
             await new EmbedBuilder()
-                .SetTitle(locale.GetStringD("locales_available"))
+                .SetTitle(locale.GetString("locales_available"))
                 .SetDescription(localeNames)
                 .AddField(
                     "Your language not here?",
-                    locale.GetStringD(
+                    locale.GetString(
                         "locales_contribute",
-                        $"[{locale.GetStringD("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
@@ -213,9 +213,9 @@
 
             await new EmbedBuilder()
                 .SetTitle(
-                    locale.GetStringD("miki_module_general_prefix_success_header"))
+                    locale.GetString("miki_module_general_prefix_success_header"))
                 .SetDescription(
-                    locale.GetStringD("miki_module_general_prefix_success_message", prefix))
+                    locale.GetString("miki_module_general_prefix_success_message", prefix))
                 .AddField("Warning", "This command has been replaced with `>prefix set`.")
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
@@ -233,7 +233,7 @@
                 e.GetAuthor(), cache, context, amazonClient);
 
 			await e.SuccessEmbed(
-                locale.GetStringD("setting_avatar_updated"))
+                locale.GetString("setting_avatar_updated"))
                 .QueueAsync(e, e.GetChannel());
 		}
 	}

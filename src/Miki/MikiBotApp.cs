@@ -409,7 +409,7 @@
                     .ConfigureAwait(false);
                 (defaultChannel as IDiscordTextChannel).QueueMessage(
                     scope.ServiceProvider.GetService<MessageWorker>(), 
-                    message: i.GetStringD("miki_join_message"));
+                    message: i.GetString("miki_join_message"));
             }
 
             List<string> allArgs = new List<string>();

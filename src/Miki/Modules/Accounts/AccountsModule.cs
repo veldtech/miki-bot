@@ -184,8 +184,8 @@ namespace Miki.Modules.Accounts
                 .ConfigureAwait(false);
 
             EmbedBuilder embed = new EmbedBuilder()
-                .SetTitle(locale.GetStringD("miki_accounts_level_up_header"))
-                .SetDescription(locale.GetStringD(
+                .SetTitle(locale.GetString("miki_accounts_level_up_header"))
+                .SetDescription(locale.GetString(
                     "miki_accounts_level_up_content",
                     $"{user.Username}#{user.Discriminator}",
                     level))
@@ -358,7 +358,7 @@ namespace Miki.Modules.Accounts
             embed.AddInlineField(
                 $"Total Pts: {totalScore:N0}",
                 string.IsNullOrEmpty(leftBuilder.ToString())
-                    ? locale.GetStringD("miki_placeholder_null")
+                    ? locale.GetString("miki_placeholder_null")
                     : leftBuilder.ToString());
 
             await embed.ToEmbed().QueueAsync(e, e.GetChannel());
@@ -469,7 +469,7 @@ namespace Miki.Modules.Accounts
 
             await Utils.RenderLeaderboards(new EmbedBuilder(), obj.Items, obj.CurrentPage * 12)
                 .SetFooter(
-                    e.GetLocale().GetStringD(
+                    e.GetLocale().GetString(
                         "page_index", 
                         obj.CurrentPage + 1, 
                         Math.Ceiling((double)obj.TotalPages / 10)))
@@ -521,7 +521,7 @@ namespace Miki.Modules.Accounts
                 EmbedBuilder embed = new EmbedBuilder()
                     .SetDescription(account.Title)
                     .SetAuthor(
-                        locale.GetStringD("miki_global_profile_user_header", discordUser.Username),
+                        locale.GetString("miki_global_profile_user_header", discordUser.Username),
                         await GetProfileIconAsync(userService, (long)discordUser.Id),
                         "https://patreon.com/mikibot")
                     .SetThumbnail(discordUser.GetAvatarUrl());
@@ -556,7 +556,7 @@ namespace Miki.Modules.Accounts
                         onBarSet, 
                         offBarSet, 
                         6);
-                    infoValueBuilder.AppendText(e.GetLocale().GetStringD(
+                    infoValueBuilder.AppendText(e.GetLocale().GetString(
                         "miki_module_accounts_information_level",
                         localLevel,
                         localExp.Experience.ToString("N0"),
@@ -570,7 +570,7 @@ namespace Miki.Modules.Accounts
                             expBar.Print(localExp.Experience - minLocalExp));
                     }
 
-                    infoValueBuilder.AppendText(locale.GetStringD(
+                    infoValueBuilder.AppendText(locale.GetString(
                         "miki_module_accounts_information_rank",
                         rank.ToString("N0")));
                 }
@@ -579,7 +579,7 @@ namespace Miki.Modules.Accounts
                     $"Reputation: {account.Reputation:N0}",
                     newLine: false);
 
-                embed.AddInlineField(locale.GetStringD("miki_generic_information"),
+                embed.AddInlineField(locale.GetString("miki_generic_information"),
                     infoValueBuilder.Build());
 
                 int globalLevel = User.CalculateLevel(account.Total_Experience);
@@ -595,7 +595,7 @@ namespace Miki.Modules.Accounts
                     6);
 
                 var globalInfoBuilder = new MessageBuilder()
-                    .AppendText(locale.GetStringD(
+                    .AppendText(locale.GetString(
                         "miki_module_accounts_information_level",
                         globalLevel.ToString("N0"),
                         account.Total_Experience.ToString("N0"),
@@ -610,18 +610,18 @@ namespace Miki.Modules.Accounts
 
                 var globalInfo = globalInfoBuilder
                     .AppendText(
-                        locale.GetStringD(
+                        locale.GetString(
                             "miki_module_accounts_information_rank",
                             globalRank?.ToString("N0") ?? "We haven't calculated your rank yet!"),
                         MessageFormatting.Plain, false)
                     .Build();
 
                 embed.AddInlineField(
-                    locale.GetStringD("miki_generic_global_information"),
+                    locale.GetString("miki_generic_global_information"),
                     globalInfo);
 
                 embed.AddInlineField(
-                    locale.GetStringD("miki_generic_mekos"),
+                    locale.GetString("miki_generic_mekos"),
                     $"{account.Currency:N0} {AppProps.Emoji.Mekos}");
 
                 var repository = e.GetService<MarriageService>();
@@ -658,11 +658,11 @@ namespace Miki.Modules.Accounts
                     string marriageText = string.Join("\n", marriageStrings);
                     if(string.IsNullOrEmpty(marriageText))
                     {
-                        marriageText = locale.GetStringD("miki_placeholder_null");
+                        marriageText = locale.GetString("miki_placeholder_null");
                     }
 
                     embed.AddInlineField(
-                        locale.GetStringD("miki_module_accounts_profile_marriedto"),
+                        locale.GetString("miki_module_accounts_profile_marriedto"),
                         marriageText);
                 }
 
@@ -679,10 +679,10 @@ namespace Miki.Modules.Accounts
                 var achievementService = e.GetService<AchievementService>();
                 string achievements = allAchievements?.Any() ?? false
                     ? achievementService.PrintAchievements(allAchievements)
-                    : locale.GetStringD("miki_placeholder_null");
+                    : locale.GetString("miki_placeholder_null");
 
                 embed.AddInlineField(
-                    locale.GetStringD("miki_generic_achievements"), achievements);
+                    locale.GetString("miki_generic_achievements"), achievements);
 
                 await embed.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
@@ -926,16 +926,16 @@ namespace Miki.Modules.Accounts
 
                 await new EmbedBuilder()
                 {
-                    Title = e.GetLocale().GetStringD("miki_module_accounts_rep_header"),
-                    Description = e.GetLocale().GetStringD("miki_module_accounts_rep_description")
+                    Title = e.GetLocale().GetString("miki_module_accounts_rep_header"),
+                    Description = e.GetLocale().GetString("miki_module_accounts_rep_description")
                 }.AddInlineField(
-                        e.GetLocale().GetStringD("miki_module_accounts_rep_total_received"),
+                        e.GetLocale().GetString("miki_module_accounts_rep_total_received"),
                         giver.Reputation.ToString("N0"))
                     .AddInlineField(
-                        e.GetLocale().GetStringD("miki_module_accounts_rep_reset"),
+                        e.GetLocale().GetString("miki_module_accounts_rep_reset"),
                         pointReset.ToTimeString(e.GetLocale()))
                     .AddInlineField(
-                        e.GetLocale().GetStringD("miki_module_accounts_rep_remaining"),
+                        e.GetLocale().GetString("miki_module_accounts_rep_remaining"),
                         repObject.ReputationPointsLeft.ToString())
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
@@ -997,7 +997,7 @@ namespace Miki.Modules.Accounts
                 {
                     embed.Footer = new EmbedFooter()
                     {
-                        Text = e.GetLocale().GetStringD("warning_mention_self"),
+                        Text = e.GetLocale().GetString("warning_mention_self"),
                     };
                 }
 
@@ -1025,8 +1025,8 @@ namespace Miki.Modules.Accounts
                     }
                 }
 
-                embed.Title = (e.GetLocale().GetStringD("miki_module_accounts_rep_header"));
-                embed.Description = (e.GetLocale().GetStringD("rep_success"));
+                embed.Title = (e.GetLocale().GetString("miki_module_accounts_rep_header"));
+                embed.Description = (e.GetLocale().GetString("rep_success"));
 
                 var userService = e.GetService<IUserService>();
                 foreach(var u in usersMentioned)
@@ -1051,7 +1051,7 @@ namespace Miki.Modules.Accounts
                     DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
                 );
 
-                await embed.AddInlineField(e.GetLocale().GetStringD("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft.ToString())
+                await embed.AddInlineField(e.GetLocale().GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft.ToString())
                     .ToEmbed().QueueAsync(e, e.GetChannel());
 
                 await context.SaveChangesAsync();
@@ -1072,7 +1072,7 @@ namespace Miki.Modules.Accounts
             await new EmbedBuilder()
             {
                 Title = "👌 OKAY",
-                Description = locale.GetStringD("sync_success", "name")
+                Description = locale.GetString("sync_success", "name")
             }.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
@@ -1093,7 +1093,7 @@ namespace Miki.Modules.Accounts
             await new EmbedBuilder()
                 .SetTitle("🔸 Mekos")
                 .SetDescription(
-                    locale.GetStringD("miki_user_mekos", user.Name, user.Currency.ToString("N0")))
+                    locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")))
                 .SetColor(1f, 0.5f, 0.7f)
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
@@ -1117,7 +1117,7 @@ namespace Miki.Modules.Accounts
         {
             return new EmbedBuilder()
                 .SetTitle("🔸 transaction")
-                .SetDescription(context.GetLocale().GetStringD(
+                .SetDescription(context.GetLocale().GetString(
                     "give_description",
                     transaction.Sender.Name,
                     transaction.Receiver.Name,
@@ -1140,10 +1140,12 @@ namespace Miki.Modules.Accounts
             var userService = e.GetService<IUserService>();
             var dailyService = e.GetService<IDailyService>();
 
-            var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
-            var response = await dailyService.ClaimDailyAsync(user.Id, e).ConfigureAwait(false);
+            var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
+                .ConfigureAwait(false);
+            var response = await dailyService.ClaimDailyAsync(user.Id, e)
+                .ConfigureAwait(false);
 
-            if(response.Status == DailyStatus.Claimed)
+            if(response.Status == DailyStatus.NotReady)
             {
                 var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
                 var builder = e.ErrorEmbed(e.GetLocale().GetString(
@@ -1161,7 +1163,7 @@ namespace Miki.Modules.Accounts
 
             var embed = new EmbedBuilder()
                 .SetTitle(e.GetLocale().GetString("daily_title"))
-                .SetDescription(e.GetLocale().GetStringD(
+                .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
                     $"**{response.AmountClaimed:N0}**", 
                     $"`{user.Currency:N0}`"))

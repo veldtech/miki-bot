@@ -2,25 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Resources;
+    using Miki.Framework.Commands.Localization;
     using Miki.Localization.Models;
 
     public static class LocaleExtensions
     {
         public static Locale DefaultLocale { get; set; }
-
-        /// <summary>
-        /// GetStringD or Default.
-        /// </summary>
-        public static string GetStringD(this Locale e, string key, params object[] args)
-        {
-            var value = e.GetString(key);
-            if(string.IsNullOrWhiteSpace(value))
-            {
-                value = DefaultLocale.GetString(key);
-            }
-
-            return string.Format(value, args);
-        }
     }
 
     public class LocaleResoureManager : IResourceManager
@@ -39,7 +26,7 @@
             {
                 return val;
             }
-            return null;
+            return LocaleExtensions.DefaultLocale.GetString(key);
         }
     }
 }
