@@ -1137,7 +1137,6 @@ namespace Miki.Modules.Accounts
         [Command("daily")]
         public async Task GetDailyAsync(IContext e)
         {
-            var userService = e.GetService<IUserService>();
             var dailyService = e.GetService<IDailyService>();
 
             var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
@@ -1150,8 +1149,7 @@ namespace Miki.Modules.Accounts
                 var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
                 var builder = e.ErrorEmbed(e.GetLocale().GetString(
                     "daily_claimed",
-                    $"`{time}`",
-                    $"`{user.Currency:N0}`"));
+                    $"`{time}`"));
 
                 var appreciationList = e.GetLocale().GetString("appreciate_list").Split(";");
                 builder.AddInlineField(e.GetLocale().GetString("appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
@@ -1160,6 +1158,9 @@ namespace Miki.Modules.Accounts
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
+
+            var userService = e.GetService<IUserService>();
+            var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
 
             var embed = new EmbedBuilder()
                 .SetTitle(e.GetLocale().GetString("daily_title"))
