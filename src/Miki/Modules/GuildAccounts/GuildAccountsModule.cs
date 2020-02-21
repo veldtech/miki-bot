@@ -36,7 +36,6 @@
             var localExperienceRepository = unit.GetRepository<LocalExperience>();
             var timerRepository = unit.GetRepository<Timer>();
 
-
             LocalExperience thisUser = await localExperienceRepository.GetAsync(
                 (long)e.GetGuild().Id, (long)e.GetAuthor().Id);
             // TODO move to LocalExperience service?
