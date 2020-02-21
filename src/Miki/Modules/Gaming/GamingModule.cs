@@ -7,17 +7,23 @@
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework.Commands;
+    using Miki.Logging;
     using Miki.Utility;
     using Veld.Osu;
     using Veld.Osu.Models;
 
     [Module("Gaming")]
-	internal class GamingModule
+    internal class GamingModule
     {
         private readonly IOsuApiClient osuClient;
 
-        public GamingModule([Optional] IOsuApiClient osuClient)
+        public GamingModule(IOsuApiClient osuClient = null)
         {
+            if (osuClient == null)
+            {
+                Log.Warning("Osu commands will not work");
+            }
+
             this.osuClient = osuClient;
         }
 
@@ -26,7 +32,7 @@
 
         [Command("ctb")]
         public Task CtbAsync(IContext e) => GetOsuUserAsync(e, GameMode.CatchTheBeat);
-        
+
         [Command("mania")]
         public Task ManiaAsync(IContext e) => GetOsuUserAsync(e, GameMode.Mania);
 
@@ -38,7 +44,7 @@
             var username = e.GetArgumentPack().TakeRequired<string>();
 
             var user = await osuClient.GetPlayerAsync(username, mode);
-            if(user == null)
+            if (user == null)
             {
                 throw new UserNullException();
             }
