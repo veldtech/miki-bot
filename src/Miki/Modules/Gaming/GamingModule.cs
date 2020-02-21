@@ -7,6 +7,7 @@
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework.Commands;
+    using Miki.Logging;
     using Miki.Utility;
     using Veld.Osu;
     using Veld.Osu.Models;
@@ -18,6 +19,11 @@
 
         public GamingModule(IOsuApiClient osuClient = null)
         {
+            if (osuClient == null)
+            {
+                Log.Warning("Osu commands will not work");
+            }
+
             this.osuClient = osuClient;
         }
 
