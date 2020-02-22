@@ -42,20 +42,17 @@ If you have any questions about the setup process **do not** ask in the support 
 | Key | Value |
 | --- | --- |
 | MIKI_CONNSTRING | "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;Password={YOUR_PASSWORD}" |
+| MIKI_SELFHOSTED | "true" |
+| MIKI_LOGLEVEL | "Debug" |
+| MIKI_MESSAGEWORKER | "1" |
 
-6) Install the `uuid-ossp` postgres extensions on the `Miki` database.
-
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-```
-
-7) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+6) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
 
     * Tools -> NuGet Package Manager -> Package Manager Console
-    
-8) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
 
-9) Run Miki. 🎉
+7) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
+
+8) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
