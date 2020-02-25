@@ -24,13 +24,13 @@
             messageMock.SetupGet(x => x.Timestamp)
                 .Returns(DateTimeOffset.Now);
 
-            Mock.Setup(x => x.GetContext<IDiscordTextChannel>(FetchDataStage.ChannelArgumentKey))
-                .Returns(new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
-            Mock.Setup(x => x.GetContext<IDiscordMessage>(CorePipelineStage.MessageArgumentKey))
-                .Returns(messageMock.Object);
+            Mock.SetContext(
+                FetchDataStage.ChannelArgumentKey, 
+                new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
+            Mock.SetContext(CorePipelineStage.MessageContextKey, messageMock.Object);
 
             var general = new GeneralModule();
-            await general.PingAsync(Mock.Object);
+            await general.PingAsync(Mock);
 
             Assert.True(Worker.TryGetMessage(out var response));
 

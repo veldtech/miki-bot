@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Miki.Discord.Common.Utils;
-using Miki.Localization;
-using Miki.Localization.Exceptions;
-using Miki.Localization.Models;
-
+﻿
 namespace Miki.Modules.Admin.Exceptions
 {
+    using Miki.Discord.Common;
+    using Miki.Localization.Exceptions;
+    using Miki.Localization.Models;
+
     public class InvalidMentionTypeException : LocalizedException
     {
         public override IResource LocaleResource =>

@@ -33,6 +33,7 @@
     using Miki.Utility;
     using Miki.Bot.Models.Exceptions;
     using Miki.Framework.Commands.Permissions;
+    using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Commands.Scopes.Attributes;
     using Miki.Localization.Exceptions;
@@ -270,9 +271,13 @@
             var context = e.GetService<MikiDbContext>();
 			var cache = e.GetService<ICacheClient>();
 
-			string prefix = await e.GetService<PrefixService<IDiscordMessage>>()
-				.GetDefaultTrigger()
-				.GetForGuildAsync(context, cache, guild.Id)
+            if(!(e.GetService<IPrefixService>()
+                .GetDefaultTrigger() is DynamicPrefixTrigger trigger))
+            {
+                throw new InvalidOperationException("Cannot get default trigger");
+            }
+
+            var prefix = await trigger.GetForGuildAsync(context, cache, guild.Id)
                 .ConfigureAwait(false);
 
             var roles = (await e.GetGuild().GetRolesAsync().ConfigureAwait(false))
@@ -561,9 +566,9 @@
 			[Command]
 			public async Task PrefixHelpAsync(IContext e)
 			{
-				var prefixService = e.GetService<PrefixService<IDiscordMessage>>();
+				var prefixService = e.GetService<IPrefixService>();
 
-				var prefix = await prefixService.GetDefaultTrigger()
+				var prefix = await (prefixService.GetDefaultTrigger() as DynamicPrefixTrigger)
 					.GetForGuildAsync(
 						e.GetService<MikiDbContext>(),
 						e.GetService<ICacheClient>(),
@@ -581,7 +586,7 @@
             [DefaultPermission(PermissionStatus.Deny)]
 			public async Task SetPrefixAsync(IContext e)
 			{
-				var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
+				var prefixMiddleware = e.GetService<IPrefixService>();
 				var locale = e.GetLocale();
 
 				if(!e.GetArgumentPack().Take(out string prefix))
@@ -589,7 +594,7 @@
                     return;
 				}
 
-				await prefixMiddleware.GetDefaultTrigger()
+				await (prefixMiddleware.GetDefaultTrigger() as DynamicPrefixTrigger)
 					.ChangeForGuildAsync(
 						e.GetService<DbContext>(),
 						e.GetService<ICacheClient>(),
@@ -612,10 +617,10 @@
             [DefaultPermission(PermissionStatus.Deny)]
 			public async Task ResetPrefixAsync(IContext e)
 			{
-				var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
+				var prefixMiddleware = e.GetService<IPrefixService>();
 				var locale = e.GetLocale();
 
-				var trigger = prefixMiddleware.GetDefaultTrigger();
+				var trigger = prefixMiddleware.GetDefaultTrigger() as DynamicPrefixTrigger;
 
                 await trigger.ChangeForGuildAsync(
                         e.GetService<DbContext>(),

@@ -24,11 +24,12 @@
         [Fact]
         public async Task DefaultBlackjack()
         {
-            Mock.Setup(x => x.GetContext<IDiscordTextChannel>(FetchDataStage.ChannelArgumentKey))
-                .Returns(new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
+            Mock.SetContext(
+                FetchDataStage.ChannelArgumentKey, 
+                new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
 
             var command = new GamblingModule.BlackjackCommand();
-            await command.BlackjackAsync(Mock.Object);
+            await command.BlackjackAsync(Mock);
 
             Assert.True(Worker.TryGetMessage(out var response));
             Assert.NotNull(response.Arguments.Properties.Embed);

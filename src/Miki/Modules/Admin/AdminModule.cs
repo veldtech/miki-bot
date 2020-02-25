@@ -11,7 +11,6 @@ namespace Miki.Modules.Admin
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Utils;
     using Miki.Discord.Rest;
     using Miki.Framework;
     using Miki.Framework.Commands;

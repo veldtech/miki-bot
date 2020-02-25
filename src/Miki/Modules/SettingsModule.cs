@@ -18,6 +18,7 @@
     using Miki.Localization;
     using Miki.Services;
     using Amazon.S3;
+    using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Utility;
 
     public enum LevelNotificationsSetting
@@ -201,8 +202,14 @@
                 return;
             }
 
-            var prefixMiddleware = e.GetService<PrefixService<IDiscordMessage>>();
-            await prefixMiddleware.GetDefaultTrigger()
+            var prefixMiddleware = e.GetService<IPrefixService>();
+            if(prefixMiddleware == null)
+            {
+                throw new InvalidOperationException("Cannot get service PrefixService");
+            }
+
+            var trigger = prefixMiddleware.GetDefaultTrigger();
+            await (trigger as DynamicPrefixTrigger)
                 .ChangeForGuildAsync(
                     e.GetService<DbContext>(),
                     e.GetService<ICacheClient>(),
@@ -221,7 +228,7 @@
                 .QueueAsync(e, e.GetChannel());
         }
 
-		[Command("syncavatar")]
+        [Command("syncavatar")]
 		public async Task SyncAvatarAsync(IContext e)
 		{
             var context = e.GetService<IUserService>();

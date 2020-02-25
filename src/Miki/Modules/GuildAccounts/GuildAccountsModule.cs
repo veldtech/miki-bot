@@ -62,7 +62,7 @@
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
-
+                
             Timer timer = await timerRepository.GetAsync((long)e.GetGuild().Id, (long)e.GetAuthor().Id);
             if (timer == null)
             {

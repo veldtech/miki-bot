@@ -1089,11 +1089,11 @@ namespace Miki.Modules.Accounts
             }
 
             User user = await userService.GetOrCreateUserAsync(member);
+            var desc = locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0"));
 
             await new EmbedBuilder()
                 .SetTitle("🔸 Mekos")
-                .SetDescription(
-                    locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0")))
+                .SetDescription(desc)
                 .SetColor(1f, 0.5f, 0.7f)
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());

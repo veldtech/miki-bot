@@ -36,7 +36,6 @@
     using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Commands.Stages;
-    using Miki.Framework.Events.Triggers;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
@@ -103,8 +102,8 @@
                 .UseFilters(
                     new BotFilter(),
                     new UserFilter())
-                .UsePrefixes()
                 .UseStage(new FetchDataStage())
+                .UsePrefixes()
                 .UseLocalization()
                 .UseArgumentPack()
                 .UseCommandHandler()
@@ -116,19 +115,17 @@
         {
             CreateLogger();
 
+            // TODO(velddev): Remove constant environment fetch.
+            var connString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
+            if(connString == null)
             {
-                // TODO(velddev): Remove constant environment fetch.
-                var connString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
-                if(connString == null)
-                {
-                    throw new InvalidOperationException("Connection string cannot be null");
-                }
-
-                serviceCollection.AddDbContext<MikiDbContext>(
-                    x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
-                serviceCollection.AddDbContext<DbContext, MikiDbContext>(
-                    x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                throw new InvalidOperationException("Connection string cannot be null");
             }
+
+            serviceCollection.AddDbContext<MikiDbContext>(
+                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+            serviceCollection.AddDbContext<DbContext, MikiDbContext>(
+                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
 
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
 
@@ -168,100 +165,97 @@
                         ServiceURL = x.GetService<Config>().CdnRegionEndpoint
                     }));
 
-                    // Setup Discord
+            // Setup Discord
+            serviceCollection.AddSingleton<IApiClient>(
+                s => new DiscordApiClient(
+                    s.GetService<Config>().Token,
+                    s.GetService<ICacheClient>()));
+
+            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
+
+            if(selfHost)
             {
-                serviceCollection.AddSingleton<IApiClient>(
-                    s => new DiscordApiClient(s.GetService<Config>().Token, s.GetService<ICacheClient>()));
-
-                bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
-
-                if(selfHost)
-                {
-                    serviceCollection.AddSingleton<IGateway>(
-                        x => new GatewayCluster(
-                            new GatewayProperties
-                            {
-                                ShardCount = 1,
-                                ShardId = 0,
-                                Token = x.GetService<Config>().Token,
-                                Compressed = true,
-                                AllowNonDispatchEvents = true
-                            }));
-                }
-                else
-                {
-                    serviceCollection.AddSingleton<IGateway>(x => new RetsuConsumer(
-                        new ConsumerConfiguration
+                serviceCollection.AddSingleton<IGateway>(
+                    x => new GatewayCluster(
+                        new GatewayProperties
                         {
-                            ConnectionString = new Uri(x.GetService<Config>().RabbitUrl),
-                            QueueName = "gateway",
-                            ExchangeName = "consumer",
-                            ConsumerAutoAck = false,
-                            PrefetchCount = 25,
+                            ShardCount = 1,
+                            ShardId = 0,
+                            Token = x.GetService<Config>().Token,
+                            Compressed = true,
+                            AllowNonDispatchEvents = true
                         }));
-                }
-
-                serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton<IGateway>(x => new RetsuConsumer(
+                    new ConsumerConfiguration
+                    {
+                        ConnectionString = new Uri(x.GetService<Config>().RabbitUrl),
+                        QueueName = "gateway",
+                        ExchangeName = "consumer",
+                        ConsumerAutoAck = false,
+                        PrefetchCount = 25,
+                    }));
             }
 
+            serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
+
             // Setup web services
-            serviceCollection.AddSingleton(new UrbanDictionaryApi());
+            serviceCollection.AddSingleton<UrbanDictionaryApi>();
             serviceCollection.AddSingleton(x => new BunnyCDNClient(x.GetService<Config>().BunnyCdnKey));
 
             // Setup miscellanious services
-            {
-                serviceCollection.AddSingleton<ConfigurationManager>();
-                serviceCollection.AddSingleton(
-                    await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
+            serviceCollection.AddSingleton<ConfigurationManager>();
+            serviceCollection.AddSingleton(
+                await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
-                serviceCollection.AddSingleton<ISentryClient>(
-                    x => new SentryClient(
-                        new SentryOptions
-                        {
-                            Dsn = new Dsn(x.GetService<Config>().SharpRavenKey)
-                        }));
-
-                serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
-                serviceCollection.AddSingleton<TransactionEvents>();
-                serviceCollection.AddSingleton(await BuildLocalesAsync());
-
-                serviceCollection.AddScoped<IUserService, UserService>();
-                serviceCollection.AddScoped<IDailyService, DailyService>();
-                serviceCollection.AddSingleton<AccountService>();
-                serviceCollection.AddScoped<PastaService>();
-
-                serviceCollection.AddSingleton<AchievementCollection>();
-                serviceCollection.AddScoped<AchievementService>();
-
-                serviceCollection.AddScoped<GuildService>();
-                serviceCollection.AddScoped<MarriageService>();
-                serviceCollection.AddScoped<RpsService>();
-                serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
-                serviceCollection.AddScoped<PermissionService>();
-                serviceCollection.AddScoped<ScopeService>();
-                serviceCollection.AddScoped<ITransactionService, TransactionService>();
-                serviceCollection.AddSingleton<IOsuApiClient>(
-                    x =>
+            serviceCollection.AddSingleton<ISentryClient>(
+                x => new SentryClient(
+                    new SentryOptions
                     {
-                        var config = x.GetService<Config>();
-                        if(config.OptionalValues?.OsuApiKey == null)
-                        {
-                            return null;
-                        }
-                        return new OsuApiClientV1(config.OptionalValues.OsuApiKey);
-                    });
-                serviceCollection.AddScoped<BlackjackService>();
-                serviceCollection.AddScoped<LeaderboardsService>();
+                        Dsn = new Dsn(x.GetService<Config>().SharpRavenKey)
+                    }));
 
-                serviceCollection.AddSingleton(
-                    new PrefixCollection<IDiscordMessage>
+            serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
+            serviceCollection.AddSingleton<TransactionEvents>();
+            serviceCollection.AddSingleton(await BuildLocalesAsync());
+
+            serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<IDailyService, DailyService>();
+            serviceCollection.AddSingleton<AccountService>();
+            serviceCollection.AddScoped<PastaService>();
+
+            serviceCollection.AddSingleton<AchievementCollection>();
+            serviceCollection.AddScoped<AchievementService>();
+
+            serviceCollection.AddScoped<GuildService>();
+            serviceCollection.AddScoped<MarriageService>();
+            serviceCollection.AddScoped<RpsService>();
+            serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
+            serviceCollection.AddScoped<PermissionService>();
+            serviceCollection.AddScoped<ScopeService>();
+            serviceCollection.AddScoped<ITransactionService, TransactionService>();
+            serviceCollection.AddSingleton<IOsuApiClient>(
+                x =>
+                {
+                    var config = x.GetService<Config>();
+                    if(config.OptionalValues?.OsuApiKey == null)
                     {
-                        new PrefixTrigger(">", true, true),
-                        new PrefixTrigger("miki.", false),
-                        new MentionTrigger()
-                    });
-                serviceCollection.AddSingleton<PrefixService<IDiscordMessage>>();
-            }
+                        return null;
+                    }
+                    return new OsuApiClientV1(config.OptionalValues.OsuApiKey);
+                });
+            serviceCollection.AddScoped<BlackjackService>();
+            serviceCollection.AddScoped<LeaderboardsService>();
+
+            serviceCollection.AddSingleton(new PrefixCollectionBuilder()
+                .AddAsDefault(new DynamicPrefixTrigger(">"))
+                .Add(new PrefixTrigger("miki."))
+                .Add(new MentionTrigger())
+                .Build());
+
+            serviceCollection.AddScoped<IPrefixService, PrefixService>();
 
             serviceCollection.AddSingleton(x =>
                 new CommandTreeBuilder(x)
@@ -306,10 +300,8 @@
         {
             // TODO (velddev): Resolve this in a better way.
             var context = new ContextObject(Services);
-            await new CorePipelineStage()
-                .CheckAsync(message, context, () => default);
-            await new FetchDataStage()
-                .CheckAsync(message, context, () => default);
+            await new CorePipelineStage().CheckAsync(message, context, () => default);
+            await new FetchDataStage().CheckAsync(message, context, () => default);
             return context;
         }
 

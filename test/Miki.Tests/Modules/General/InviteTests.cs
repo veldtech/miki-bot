@@ -23,13 +23,13 @@
             messageMock.SetupGet(x => x.Author)
                 .Returns(userMock.Object);
             
-            Mock.Setup(x => x.GetContext<IDiscordTextChannel>(FetchDataStage.ChannelArgumentKey))
-                .Returns(new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
-            Mock.Setup(x => x.GetContext<IDiscordMessage>(CorePipelineStage.MessageArgumentKey))
-                .Returns(messageMock.Object);
+            Mock.SetContext(
+                FetchDataStage.ChannelArgumentKey, 
+                new DiscordGuildTextChannel(new DiscordChannelPacket(), null));
+            Mock.SetContext(CorePipelineStage.MessageContextKey, messageMock.Object);
 
             var general = new GeneralModule();
-            await general.InviteAsync(Mock.Object);
+            await general.InviteAsync(Mock);
 
             Assert.True(Worker.TryGetMessage(out var response));
             Assert.Equal("miki_module_general_invite_message", response.Arguments.Properties.Content);

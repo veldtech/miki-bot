@@ -22,7 +22,8 @@
         /// <inheritdoc />
         public string GetString(string key)
         {
-            if(set.TryGetValue(key, out var val))
+            if(set.TryGetValue(key, out var val) 
+                && !string.IsNullOrWhiteSpace(val))
             {
                 return val;
             }

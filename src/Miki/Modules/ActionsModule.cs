@@ -375,19 +375,18 @@
 
         public async Task QueueAction(IContext e, string action, string imageUrl)
         {
-            string username = (await e.GetGuild().GetSelfAsync()).Username;
-
             EmbedBuilder builder = new EmbedBuilder();
 
-            var messageContent = e.GetArgumentPack().Pack.TakeAll()
+            var messageContent = await e.GetArgumentPack().Pack.TakeAll()
                 .RemoveMentionsAsync(e.GetGuild());
 
-            if (e.GetArgumentPack().CanTake)
+            if (string.IsNullOrWhiteSpace(messageContent))
             {
                 builder.SetTitle($"{e.GetAuthor().Username} {action} {messageContent}");
             }
             else
-            {
+			{
+				string username = (await e.GetGuild().GetSelfAsync()).Username;
                 builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
             }
 

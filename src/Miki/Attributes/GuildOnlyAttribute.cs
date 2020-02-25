@@ -16,7 +16,7 @@
         public override async Task OnCheckFail(IContext e)
         {
             await e.ErrorEmbedResource("error_command_guildonly")
-                .ToEmbed().QueueAsync(e, e.GetChannel() as IDiscordTextChannel);
+                .ToEmbed().QueueAsync(e, e.GetChannel());
         }
     }
 }

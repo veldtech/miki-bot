@@ -9,6 +9,7 @@
     using Miki.Attributes;
     using Miki.Bot.Models;
     using Miki.Discord;
+    using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Stages;

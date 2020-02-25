@@ -3,7 +3,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Utils;
     using Miki.Framework;
     using Miki.Modules.Admin.Exceptions;
 

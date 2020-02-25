@@ -15,7 +15,7 @@
         public async Task IsPatronNullTest()
         {
             PatreonOnlyAttribute attribute = new PatreonOnlyAttribute();
-            Assert.False(await attribute.CheckAsync(Mock.Object));
+            Assert.False(await attribute.CheckAsync(Mock));
         }
 
         [Fact]
@@ -34,12 +34,12 @@
             messageMock.SetupGet(x => x.Author)
                 .Returns(authorMock.Object);
 
-            InitContext(CorePipelineStage.MessageArgumentKey, messageMock.Object);
+            Mock.SetContext(CorePipelineStage.MessageContextKey, messageMock.Object);
 
-            InitService(Mock, userMock.Object);
-            InitService(Mock, authorMock.Object);
+            Mock.SetService(typeof(IUserService), userMock.Object);
+            Mock.SetService(typeof(IDiscordUser), authorMock.Object);
 
-            Assert.False(await attribute.CheckAsync(Mock.Object));
+            Assert.False(await attribute.CheckAsync(Mock));
         }
     }
 }
