@@ -157,7 +157,7 @@ namespace Miki.Tests.Services
 
             var daily = await dailyService.GetOrCreateDailyAsync(4L);
 
-            Assert.Equal(1, daily.CurrentStreak);
+            Assert.Equal(0, daily.CurrentStreak);
         }
 
         [Fact]
