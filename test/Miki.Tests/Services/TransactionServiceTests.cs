@@ -1,11 +1,13 @@
 ﻿namespace Miki.Tests.Services
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Services;
     using Miki.Services.Transactions;
+    using Moq;
     using Xunit;
 
     public class TransactionContext : DbContext
@@ -90,9 +92,23 @@
             var unit = NewContext();
             var userService = new UserService(unit);
 
-            var service = new TransactionService(userService, null);
+            // TODO: replace with better testing solution.
+            bool ranCallback = false;
+
+            var events = new TransactionEvents();
+            events.OnTransactionFailed += (a, b) =>
+            {
+                Assert.IsType<InsufficientCurrencyException>(b);
+                ranCallback = true;
+                return Task.CompletedTask;
+            };
+
+            var service = new TransactionService(userService, events);
+
             await Assext.ThrowsRootAsync<InsufficientCurrencyException>(
                 async () => await service.CreateTransactionAsync(new TransactionRequest(2L, 1L, 10)));
+
+            Assert.True(ranCallback, "TransactionService did not call error event");
         }
 
         [Fact]
