@@ -7,6 +7,8 @@ namespace Miki.Tests.Services
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Cache;
+    using Miki.Cache.InMemory;
+    using Miki.Serialization.Protobuf;
     using Miki.Services;
     using Miki.Services.Daily;
     using Miki.Services.Transactions;
@@ -76,29 +78,38 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task ClaimDailyTest()
         {
+            var testContext = new TestContextObject();
+            testContext.SetService(typeof(ICacheClient),
+                new InMemoryCacheClient(new ProtobufSerializer()));
+
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            var response = await dailyService.ClaimDailyAsync(2L);
+            var response = await dailyService.ClaimDailyAsync(2L, testContext);
 
             Assert.NotNull(response);
             Assert.Equal(1, response.CurrentStreak);
             Assert.Equal(1, response.LongestStreak);
             Assert.Equal(120, response.AmountClaimed);
-            Assert.InRange(response.LastClaimTime, DateTime.UtcNow.AddMinutes(-2), DateTime.UtcNow.AddMinutes(2));
+            Assert.InRange(
+                response.LastClaimTime, DateTime.UtcNow.AddMinutes(-2), DateTime.UtcNow.AddMinutes(2));
         }
 
         [Fact]
         public async Task DonatorClaimDailyTest()
         {
+            var testContext = new TestContextObject();
+            testContext.SetService(typeof(ICacheClient),
+                new InMemoryCacheClient(new ProtobufSerializer()));
+
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
             
-            var response = await dailyService.ClaimDailyAsync(3L);
+            var response = await dailyService.ClaimDailyAsync(3L, testContext);
             var expectedClaimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * 6) * 2;
 
             Assert.NotNull(response);
@@ -111,12 +122,16 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task CheckIfDailyUpdatedInDatabaseTest()
         {
+            var testContext = new TestContextObject();
+            testContext.SetService(typeof(ICacheClient),
+                new InMemoryCacheClient(new ProtobufSerializer()));
+
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            await dailyService.ClaimDailyAsync(2L);
+            await dailyService.ClaimDailyAsync(2L, testContext);
 
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 
@@ -129,12 +144,16 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task DailyStreakResetTest()
         {
+            var testContext = new TestContextObject();
+            testContext.SetService(typeof(ICacheClient),
+                new InMemoryCacheClient(new ProtobufSerializer()));
+
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            await dailyService.ClaimDailyAsync(4L);
+            await dailyService.ClaimDailyAsync(4L, testContext);
 
             var daily = await dailyService.GetOrCreateDailyAsync(4L);
 
@@ -168,11 +187,10 @@ namespace Miki.Tests.Services
             cacheMock.Setup(x => x.GetAsync<int>(It.IsAny<string>()))
                 .ReturnsAsync(5);
 
-            var contextMock = new Mock<IContext>();
-            contextMock.Setup(x => x.GetService(typeof(ICacheClient)))
-                .Returns(cacheMock.Object);
+            var contextMock = new TestContextObject();
+            contextMock.SetService(typeof(ICacheClient), cacheMock.Object);
 
-            await dailyService.ClaimDailyAsync(2L, contextMock.Object);
+            await dailyService.ClaimDailyAsync(2L, contextMock);
 
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 
