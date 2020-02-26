@@ -1165,7 +1165,7 @@ namespace Miki.Modules.Accounts
                 .SetDescription(e.GetLocale().GetString(
                     "daily_received", 
                     $"**{response.AmountClaimed:N0}**", 
-                    $"`{user.Currency:N0}`"))
+                    $"`{(user.Currency + response.AmountClaimed):N0}`"))
                 .SetColor(253, 216, 136);
 
             if(response.CurrentStreak > 0)

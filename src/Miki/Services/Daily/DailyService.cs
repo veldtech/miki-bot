@@ -25,46 +25,46 @@
             this.transactionService = transactionService;
         }
 
-        /// <inheritdoc />
-        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId)
-            => await ClaimDailyAsync(userId, null);
 
         /// <inheritdoc />
         public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
         {
+            if(context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
-            
-            if (DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
+
+            if(DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
             {
                 /*
                  * Temporary code for transferring streaks from cache.
                  */
-                if (context != null)
-                {
-                    var redisKey = $"user:{userId}:daily";
-                    var cacheClient = context.GetService<ICacheClient>();
-                    var cacheExists = await cacheClient.ExistsAsync(redisKey).ConfigureAwait(false);
+                var redisKey = $"user:{userId}:daily";
+                var cacheClient = context.GetService<ICacheClient>();
+                var cacheExists = await cacheClient.ExistsAsync(redisKey).ConfigureAwait(false);
 
-                    if (cacheExists)
-                    {
-                        daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey)
-                            .ConfigureAwait(false);
-                        await cacheClient.RemoveAsync(redisKey);
-                    }
+                if(cacheExists)
+                {
+                    daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey)
+                        .ConfigureAwait(false);
+                    await cacheClient.RemoveAsync(redisKey);
                 }
                 /*
                  * End of temporary code.
                  */
 
-                if (DateTime.UtcNow < daily.LastClaimTime.AddDays(2))
+                if(DateTime.UtcNow < daily.LastClaimTime.AddDays(2))
                 {
                     daily.CurrentStreak++;
-                    daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak 
-                        ? daily.CurrentStreak : daily.LongestStreak;
+                    daily.LongestStreak = daily.LongestStreak < daily.CurrentStreak
+                        ? daily.CurrentStreak
+                        : daily.LongestStreak;
                 }
                 else
                 {
-                    daily.CurrentStreak = 1;
+                    daily.CurrentStreak = 0;
                 }
 
                 daily.LastClaimTime = DateTime.UtcNow;
@@ -72,8 +72,12 @@
 
                 await SaveAsync().ConfigureAwait(false);
 
-                var multiplier = await userService.UserIsDonatorAsync(userId).ConfigureAwait(false) ? 2 : 1;
-                var claimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * daily.CurrentStreak) * multiplier;
+                var multiplier = await userService.UserIsDonatorAsync(userId).ConfigureAwait(false)
+                    ? 2
+                    : 1;
+                var claimAmount =
+                    (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * daily.CurrentStreak)
+                    * multiplier;
 
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
@@ -84,10 +88,8 @@
 
                 return new DailyClaimResponse(daily, DailyStatus.Success, claimAmount);
             }
-            else
-            {
-                return new DailyClaimResponse(daily, DailyStatus.NotReady, 0);
-            }
+
+            return new DailyClaimResponse(daily, DailyStatus.NotReady, 0);
         }
 
         /// <inheritdoc />
