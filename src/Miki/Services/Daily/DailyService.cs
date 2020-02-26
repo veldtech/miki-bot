@@ -64,7 +64,7 @@
                 }
                 else
                 {
-                    daily.CurrentStreak = 1;
+                    daily.CurrentStreak = 0;
                 }
 
                 daily.LastClaimTime = DateTime.UtcNow;
