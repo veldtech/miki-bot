@@ -90,7 +90,25 @@
                 {
                     Log.Error(arg.Error);
                     var sentry = arg.Context.GetService<ISentryClient>();
-                    sentry?.CaptureEvent(new SentryEvent(arg.Error));
+                    if(sentry == null)
+                    {
+                        Log.Warning("Sentry was not set up, discarding error log.");
+                        return;
+                    }
+
+                    var sentryEvent = new SentryEvent(arg.Error);
+                    sentryEvent.Contexts.TryAdd(
+                        "user",
+                        arg.Context.GetMessage().Author.Username
+                        + "#"
+                        + arg.Context.GetMessage().Author.Discriminator);
+                    sentryEvent.Contexts.TryAdd(
+                        "command", arg.Context.Executable.ToString());
+
+                    sentryEvent.Contexts.TryAdd(
+                        "query", arg.Context.GetQuery());
+
+                    sentry.CaptureEvent(sentryEvent);
                 }
             }
         }
