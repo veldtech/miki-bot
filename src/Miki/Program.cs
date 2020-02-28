@@ -7,6 +7,6 @@
         /// <summary>
         /// Start-up point of the app.
         /// </summary>
-        private static async Task Main() => new MikiBotApp().StartAsync();
+        private static Task Main() => new MikiBotApp().StartAsync();
     }
 }
