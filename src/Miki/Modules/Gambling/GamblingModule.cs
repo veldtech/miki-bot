@@ -29,23 +29,15 @@
             [Command]
             public async Task RpsAsync(IContext e)
             {
-                var transactionService = e.GetService<ITransactionService>();
                 var userService = e.GetService<IUserService>();
+                var rps = e.GetService<IRpsService>();
 
                 User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                     .ConfigureAwait(false);
 
                 int bet = ValidateBet(e, user, 10000);
-                await transactionService.CreateTransactionAsync(
-                    new TransactionRequest.Builder()
-                        .WithReceiver(AppProps.Currency.BankId)
-                        .WithSender((long)e.GetAuthor().Id)
-                        .WithAmount(bet)
-                        .Build());
 
-                const float rewardMultiplier = 1f;
-
-                if (e.GetArgumentPack().Pack.Length < 2)
+                if(e.GetArgumentPack().Pack.Length < 2)
                 {
                     await e.ErrorEmbed("You need to choose a weapon!")
                         .ToEmbed()
@@ -53,47 +45,33 @@
                         .ConfigureAwait(false);
                 }
 
-                var rps = e.GetService<RpsService>();
+                var weapon = e.GetArgumentPack().TakeRequired<string>();
+
+                var result = await rps.PlayRpsAsync((long)e.GetAuthor().Id, bet, weapon);
+
                 EmbedBuilder resultMessage = new EmbedBuilder()
                     .SetTitle("Rock, Paper, Scissors!");
 
-                e.GetArgumentPack().Take(out string weapon);
-
-                if (!RpsWeapon.TryParse(weapon, out RpsWeapon playerWeapon))
-                {
-                    await resultMessage.SetDescription("Invalid weapon!")
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                    return;
-                }
-
-                RpsWeapon botWeapon = rps.GetRandomWeapon();
-
                 resultMessage.SetDescription(
-                    $"{playerWeapon.Name.ToUpper()} {playerWeapon.Emoji} vs. {botWeapon.Emoji} {botWeapon.Name.ToUpper()}");
+                    $"{result.PlayerWeapon.Name.ToUpper()} {result.PlayerWeapon.Emoji} vs. " 
+                    + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
 
-                switch (rps.CalculateVictory(playerWeapon, botWeapon))
+                switch (result.Status)
                 {
-                    case RpsService.VictoryStatus.WIN:
+                    case VictoryStatus.WIN:
                     {
-                        await transactionService.CreateTransactionAsync(
-                            new TransactionRequest.Builder()
-                                .WithAmount((int)(bet * rewardMultiplier))
-                                .WithReceiver((long)e.GetAuthor().Id)
-                                .WithSender(AppProps.Currency.BankId)
-                                .Build());
-                        resultMessage.Description += $"\n\nYou won `{(int) (bet * rewardMultiplier)}` " 
-                                                     + $"mekos! Your new balance is `{user.Currency}`.";
+                        resultMessage.Description 
+                            += $"\n\nYou won `{result.AmountWon}` " 
+                               + $"mekos! Your new balance is `{user.Currency}`.";
                     } break;
 
-                    case RpsService.VictoryStatus.LOSE:
+                    case VictoryStatus.LOSE:
                     {
                         resultMessage.Description +=
                             $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency}`.";
                     } break;
 
-                    case RpsService.VictoryStatus.DRAW:
+                    case VictoryStatus.DRAW:
                     {
                         resultMessage.Description += "\n\nIt's a draw! no mekos were lost!.";
                     } break;

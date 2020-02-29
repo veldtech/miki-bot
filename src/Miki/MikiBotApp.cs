@@ -178,7 +178,7 @@
                 x => new AmazonS3Client(
                     x.GetService<Config>().CdnAccessKey,
                     x.GetService<Config>().CdnSecretKey,
-                    new AmazonS3Config()
+                    new AmazonS3Config
                     {
                         ServiceURL = x.GetService<Config>().CdnRegionEndpoint
                     }));
@@ -249,7 +249,7 @@
 
             serviceCollection.AddScoped<GuildService>();
             serviceCollection.AddScoped<MarriageService>();
-            serviceCollection.AddScoped<RpsService>();
+            serviceCollection.AddScoped<IRpsService, RpsService>();
             serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
             serviceCollection.AddScoped<PermissionService>();
             serviceCollection.AddScoped<ScopeService>();

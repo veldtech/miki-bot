@@ -84,7 +84,7 @@
         public User Receiver { get; }
         public long Amount { get; }
 
-        internal TransactionResponse(User sender, User receiver, long amount)
+        public TransactionResponse(User sender, User receiver, long amount)
         {
             Sender = sender;
             Receiver = receiver;
