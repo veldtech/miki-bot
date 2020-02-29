@@ -95,7 +95,7 @@
                             .Build());
                     break;
                 case VictoryStatus.WIN:
-                    builder.WithAmountWon(bet - (int)(bet * 2.0));
+                    builder.WithAmountWon((int)(bet * 2.0) - bet);
                     await transactionService.CreateTransactionAsync(
                         new TransactionRequest.Builder()
                             .WithAmount((int)(bet * 2.0))
@@ -108,7 +108,7 @@
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
+             
             return builder.Build();
         }
     }

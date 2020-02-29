@@ -50,12 +50,10 @@
                 var result = await rps.PlayRpsAsync((long)e.GetAuthor().Id, bet, weapon);
 
                 EmbedBuilder resultMessage = new EmbedBuilder()
-                    .SetTitle("Rock, Paper, Scissors!");
-
-                resultMessage.SetDescription(
-                    $"{result.PlayerWeapon.Name.ToUpper()} {result.PlayerWeapon.Emoji} vs. " 
-                    + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
-
+                    .SetTitle("Rock, Paper, Scissors!")
+                    .SetDescription(
+                        $"{result.PlayerWeapon.Name.ToUpper()} {result.PlayerWeapon.Emoji} vs. " 
+                        + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
                 switch (result.Status)
                 {
                     case VictoryStatus.WIN:
