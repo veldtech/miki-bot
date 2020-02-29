@@ -96,18 +96,19 @@
                         return;
                     }
 
-                    var sentryEvent = new SentryEvent(arg.Error);
-                    sentryEvent.Contexts.TryAdd(
-                        "user",
-                        arg.Context.GetMessage().Author.Username
-                        + "#"
-                        + arg.Context.GetMessage().Author.Discriminator);
-                    sentryEvent.Contexts.TryAdd(
-                        "command", arg.Context.Executable.ToString());
-
-                    sentryEvent.Contexts.TryAdd(
-                        "query", arg.Context.GetQuery());
-
+                    var sentryEvent = new SentryEvent(arg.Error)
+                    {
+                        User = new Sentry.Protocol.User
+                        {
+                            Username = arg.Context.GetAuthor().GetFullName(),
+                            Id = arg.Context.GetAuthor().Id.ToString()
+                        },
+                        Request = new Sentry.Protocol.Request
+                        {
+                            QueryString = arg.Context.GetQuery(),
+                            Url = arg.Context.Executable.ToString(),
+                        }
+                    };
                     sentry.CaptureEvent(sentryEvent);
                 }
             }
