@@ -380,7 +380,7 @@
             var messageContent = await e.GetArgumentPack().Pack.TakeAll()
                 .RemoveMentionsAsync(e.GetGuild());
 
-            if (string.IsNullOrWhiteSpace(messageContent))
+            if (!string.IsNullOrWhiteSpace(messageContent))
             {
                 builder.SetTitle($"{e.GetAuthor().Username} {action} {messageContent}");
             }

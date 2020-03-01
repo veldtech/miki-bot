@@ -54,7 +54,7 @@
 
             GuildUser thisGuild = await guildService.GetGuildAsync((long)e.GetGuild().Id);
 
-            if(thisUser.Experience >= thisGuild.MinimalExperienceToGetRewards)
+            if(thisUser.Experience < thisGuild.MinimalExperienceToGetRewards)
             {
                 await e.ErrorEmbedResource("miki_guildweekly_insufficient_exp",
                         thisGuild.MinimalExperienceToGetRewards.ToString("N0"))
@@ -67,7 +67,7 @@
             if (timer == null)
             {
                 timer = await timerRepository.AddAsync(
-                    new Timer()
+                    new Timer
                 {
                     GuildId = e.GetGuild().Id.ToDbLong(),
                     UserId = e.GetAuthor().Id.ToDbLong(),
@@ -150,8 +150,8 @@
 
             List<GuildUser> rivalGuilds = await context.GuildUsers
             // TODO: refactor and potentially move into function
-                .Where((g) => Math.Abs(g.UserCount - e.GetGuild().MemberCount) < (g.UserCount * 0.25)
-                    && g.RivalId == 0 && g.Id != thisGuild.Id)
+                .Where((g) => Math.Abs(g.UserCount - e.GetGuild().MemberCount) < g.UserCount * 0.25
+                              && g.RivalId == 0 && g.Id != thisGuild.Id)
                 .ToListAsync();
 
             if (!rivalGuilds.Any())

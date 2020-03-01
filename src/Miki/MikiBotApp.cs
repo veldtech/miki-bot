@@ -113,6 +113,7 @@
                 services.GetService<Config>(),
                 services.GetService<IDiscordClient>(),
                 services.GetService<DiscordApiClient>());
+
             return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
@@ -309,7 +310,6 @@
                 Services.GetService<IDiscordClient>());
             return CreateFromMessageAsync(message);
         }
-
         /// <summary>
         /// Hacky temp function
         /// </summary>
