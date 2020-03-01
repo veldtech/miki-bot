@@ -661,6 +661,7 @@ namespace Miki.Modules.Admin
         }
 
         [Command("softban")] // softban ulong, softban string, so
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task SoftbanAsync(IContext e)
         {
             IDiscordGuildUser currentUser = await e.GetGuild().GetSelfAsync();

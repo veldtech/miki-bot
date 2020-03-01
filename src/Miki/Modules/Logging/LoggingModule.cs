@@ -10,6 +10,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Permissions.Attributes;
+    using Miki.Framework.Commands.Permissions.Models;
     using Miki.Utility;
 
     [Module("logging")]
@@ -55,6 +57,7 @@
 
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
         [Command("setwelcomemessage")]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task SetWelcomeMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
@@ -84,6 +87,7 @@
         }
 
         [Command("setleavemessage")]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task SetLeaveMessage(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
