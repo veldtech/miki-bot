@@ -12,6 +12,8 @@
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
+    using Miki.Framework.Commands.Permissions.Attributes;
+    using Miki.Framework.Commands.Permissions.Models;
     using Miki.Framework.Commands.Stages;
     using Miki.Logging;
     using Miki.Modules.CustomCommands.CommandHandlers;
@@ -40,6 +42,7 @@
         }
 
         [GuildOnly, Command("createcommand")]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task NewCustomCommandAsync(IContext e)
         {
             if(e.GetArgumentPack().Take(out string commandName))
@@ -112,6 +115,7 @@
         }
 
         [GuildOnly, Command("removecommand")]
+        [DefaultPermission(PermissionStatus.Deny)]
         public async Task RemoveCommandAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
