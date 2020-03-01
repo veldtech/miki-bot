@@ -3,6 +3,7 @@ namespace Miki.Utility
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
@@ -25,6 +26,7 @@ namespace Miki.Utility
     using Miki.Localization.Models;
     using Miki.Net.Http;
     using Miki.Services;
+    using HttpClient = Miki.Net.Http.HttpClient;
 
     public static class Utils
     {
@@ -240,21 +242,22 @@ namespace Miki.Utility
             };
 
             string avatarUrl = user.GetAvatarUrl();
-
             using (var client = new HttpClient(avatarUrl, true))
             {
                 request.InputStream = await client.GetStreamAsync();
             }
 
             var response = await s3Service.PutObjectAsync(request);
-
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new AvatarSyncException();
             }
 
-            await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
-                .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
+            try
+            {
+                await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
+                    .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
+            } catch(HttpRequestException) { /* ignored */ }
 
             User u = await context.GetOrCreateUserAsync(user);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
