@@ -697,14 +697,13 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            using (var client = new HttpClient(""))
+            using (var client = new HttpClient(cdnEndpoint))
             {
                 var authorResponse = await client.SendAsync(new System.Net.Http.HttpRequestMessage
                 {
                     Method = new System.Net.Http.HttpMethod("HEAD"),
-                    RequestUri = new Uri($"{cdnEndpoint}/avatars/{e.GetAuthor().Id}.png")
+                    RequestUri = new Uri($"avatars/{e.GetAuthor().Id}.png")
                 });
-
 
                 if (!authorResponse.Success)
                 {

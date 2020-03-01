@@ -77,41 +77,29 @@
         }
 
         private async ValueTask LogErrors(IExecutionResult<IDiscordMessage> arg)
-        {   
-            if(!arg.Success)
+        {
+            if(arg.Success)
             {
-                if(arg.Error.GetRootException() is LocalizedException botEx)
-                {
-                    await arg.Context.ErrorEmbedResource(botEx.LocaleResource)
-                        .ToEmbed()
-                        .QueueAsync(arg.Context, arg.Context.GetChannel());
-                }
-                else
-                {
-                    Log.Error(arg.Error);
-                    var sentry = arg.Context.GetService<ISentryClient>();
-                    if(sentry == null)
-                    {
-                        Log.Warning("Sentry was not set up, discarding error log.");
-                        return;
-                    }
-
-                    var sentryEvent = new SentryEvent(arg.Error)
-                    {
-                        User = new Sentry.Protocol.User
-                        {
-                            Username = arg.Context.GetAuthor().GetFullName(),
-                            Id = arg.Context.GetAuthor().Id.ToString()
-                        },
-                        Request = new Sentry.Protocol.Request
-                        {
-                            QueryString = arg.Context.GetQuery(),
-                            Url = arg.Context.Executable.ToString(),
-                        }
-                    };
-                    sentry.CaptureEvent(sentryEvent);
-                }
+                return;
             }
+
+            if(arg.Error.GetRootException() is LocalizedException botEx)
+            {
+                await arg.Context.ErrorEmbedResource(botEx.LocaleResource)
+                    .ToEmbed()
+                    .QueueAsync(arg.Context, arg.Context.GetChannel());
+                return;
+            }
+
+            Log.Error(arg.Error);
+            var sentry = arg.Context.GetService<ISentryClient>();
+            if(sentry == null)
+            {
+                Log.Warning("Sentry was not set up, discarding error log.");
+                return;
+            }
+
+            sentry.CaptureEvent(arg.Context.ToSentryEvent(arg.Error));
         }
 
         public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(
