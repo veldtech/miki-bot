@@ -697,17 +697,12 @@ namespace Miki.Modules
                 throw new UserNullException();
             }
 
-            using (var client = new HttpClient(cdnEndpoint))
+            using (var client = new HttpClient("https://cdn.miki.ai/"))
             {
                 var authorResponse = await client.HeadAsync($"avatars/{e.GetAuthor().Id}.png");
                 if (!authorResponse.Success)
                 {
                     await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client);
-                }
-
-                if (await cache.HashExistsAsync("avtr:sync", user.Id.ToString()))
-                {
-                    await Utils.SyncAvatarAsync(user, cache, context, s3Client);
                 }
             }
             Random r = new Random(

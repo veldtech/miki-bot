@@ -47,11 +47,9 @@ namespace Miki.Modules.Accounts
         {
             var config = app.Services.GetService<Config>();
 
-            if (!string.IsNullOrWhiteSpace(config.MikiApiKey)
-                && !string.IsNullOrWhiteSpace(config.ImageApiUrl))
+            if (!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
-                client = new HttpClient(config.ImageApiUrl)
-                    .AddHeader("Authorization", config.MikiApiKey);
+                client = new HttpClient(config.ImageApiUrl);
             }
             else
             {
