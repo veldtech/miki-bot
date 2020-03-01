@@ -34,7 +34,7 @@
             });
 
             CreateAccountMetrics(accounts);
-            CreateAchievementsMetrics(achievements);
+            //CreateAchievementsMetrics(achievements);
             CreateEventSystemMetrics(commandPipeline);
             CreateDiscordMetrics(discordClient);
 

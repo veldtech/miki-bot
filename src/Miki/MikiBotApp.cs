@@ -56,6 +56,7 @@
     using Veld.Osu;
     using Veld.Osu.V1;
     using System.Text.Json;
+    using Miki.Modules.Internal.Routines;
 
     public class MikiBotApp : MikiApp
     {
@@ -104,7 +105,15 @@
 
         public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(
             IServiceProvider services)
-            => new CommandPipelineBuilder(services)
+        {
+            DatadogRoutine routine = new DatadogRoutine(
+                services.GetService<AccountService>(),
+                null,
+                services.GetService<CommandPipeline>(),
+                services.GetService<Config>(),
+                services.GetService<IDiscordClient>(),
+                services.GetService<DiscordApiClient>());
+            return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(
                     new BotFilter(),
@@ -117,6 +126,7 @@
                 .UsePermissions()
                 .UseScopes()
                 .Build();
+        }
 
         public override async Task ConfigureAsync(ServiceCollection serviceCollection)
         {

@@ -7,5 +7,5 @@
 	public class InternalModule
 	{
 		public DatadogRoutine DatadogService { get; set; }
-	}
+    }
 }
