@@ -31,6 +31,7 @@ namespace Miki.Utility
     public static class Utils
     {
         public static string EveryonePattern => @"@(everyone|here)";
+        public static string ImageRegex => "(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png)";
 
         public static string EscapeEveryone(string text)
             => Regex.Replace(text, EveryonePattern, "@\u200b$1");

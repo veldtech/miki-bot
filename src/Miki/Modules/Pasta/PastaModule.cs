@@ -163,12 +163,24 @@ namespace Miki.Modules
        
             await pastaService.UseAsync(pasta);
 
-            await new EmbedBuilder()
+            var embedBuilder = new EmbedBuilder()
                 .SetTitle($"🍝  Pasta - {pasta.Id}")
-                .SetDescription(Utils.EscapeEveryone(pasta.Text))
                 .SetColor(255, 204, 77)
-                .SetFooter($"Requested by {e.GetAuthor().Username}#{e.GetAuthor().Discriminator}")
-                .ToEmbed()
+                .SetFooter($"Requested by {e.GetAuthor().Username}#{e.GetAuthor().Discriminator}");
+
+            var escapedText = Utils.EscapeEveryone(pasta.Text);
+            var deImagedText = Regex.Replace(escapedText, Utils.ImageRegex, x =>
+            {
+                embedBuilder.SetImage(x.Groups[0].Value);
+                return "";
+            });
+
+            if(!string.IsNullOrWhiteSpace(deImagedText))
+            {
+                embedBuilder.SetDescription(deImagedText);
+            }
+
+            await embedBuilder.ToEmbed()
                 .QueueAsync(e, e.GetChannel());     
         }
 
