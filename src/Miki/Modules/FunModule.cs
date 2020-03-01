@@ -699,12 +699,7 @@ namespace Miki.Modules
 
             using (var client = new HttpClient(cdnEndpoint))
             {
-                var authorResponse = await client.SendAsync(new System.Net.Http.HttpRequestMessage
-                {
-                    Method = new System.Net.Http.HttpMethod("HEAD"),
-                    RequestUri = new Uri($"avatars/{e.GetAuthor().Id}.png")
-                });
-
+                var authorResponse = await client.HeadAsync($"avatars/{e.GetAuthor().Id}.png");
                 if (!authorResponse.Success)
                 {
                     await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client);
