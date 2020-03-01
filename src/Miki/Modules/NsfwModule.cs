@@ -12,6 +12,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Miki.Attributes;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
@@ -21,22 +22,27 @@
 	internal class NsfwModule
 	{
 		[Command("gelbooru", "gel")]
+        [NsfwOnly]
 		public Task RunGelbooru(IContext e)
             => RunNsfwAsync<GelbooruPost>(e);
 
         [Command("danbooru", "dan")]
-		public Task DanbooruAsync(IContext e)
+        [NsfwOnly]
+        public Task DanbooruAsync(IContext e)
             => RunNsfwAsync<DanbooruPost>(e);
 
         [Command("rule34", "r34")]
-		public Task RunRule34(IContext e)
+        [NsfwOnly]
+        public Task RunRule34(IContext e)
             => RunNsfwAsync<Rule34Post>(e);
 
         [Command("e621")]
-		public Task RunE621(IContext e)
+        [NsfwOnly]
+        public Task RunE621(IContext e)
             => RunNsfwAsync<E621Post>(e);
 
         [Command("urban")]
+        [NsfwOnly]
         public async Task UrbanAsync(IContext e)
         {
             if(!e.GetArgumentPack().Pack.CanTake)
@@ -88,6 +94,7 @@
         }
 
         [Command("yandere")]
+        [NsfwOnly]
         public Task RunYandere(IContext e) 
             => RunNsfwAsync<YanderePost>(e);
 
