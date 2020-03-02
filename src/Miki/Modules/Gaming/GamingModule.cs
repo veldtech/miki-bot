@@ -1,5 +1,6 @@
 ﻿namespace Miki.Modules.Gaming
 {
+    using System;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Framework;
@@ -43,14 +44,16 @@
         {
             var username = e.GetArgumentPack().TakeRequired<string>();
 
-            var user = await osuClient.GetPlayerAsync(username, mode);
-            if (user == null)
+            try
+            {
+                var user = await osuClient.GetPlayerAsync(username, mode);
+                await GetOsuEmbed(e, mode, user)
+                    .QueueAsync(e, e.GetChannel());
+            }
+            catch(InvalidOperationException)
             {
                 throw new UserNullException();
             }
-
-            await GetOsuEmbed(e, mode, user)
-                .QueueAsync(e, e.GetChannel());
         }
 
         private DiscordEmbed GetOsuEmbed(IContext context, GameMode gamemode, IOsuPlayer user)
