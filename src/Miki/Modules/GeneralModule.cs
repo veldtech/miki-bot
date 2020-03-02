@@ -318,9 +318,10 @@
 				"#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"),
 				roles.Count().ToString("N0"));
 
-			builder.AddField(
-				"📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
-				string.Join(",", roles.Select(x => $"`{x.Name}`")));
+            var rolesString = string.Join(",", roles.Select(x => $"`{x.Name}`"));
+            builder.AddField(
+                "📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
+                rolesString.SplitStringUntil(",", 1500));
 
             await builder.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
