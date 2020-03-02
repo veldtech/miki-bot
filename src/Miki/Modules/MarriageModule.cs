@@ -104,62 +104,57 @@ namespace Miki.Modules
         }
 
         [Command("buymarriageslot")]
-		public async Task BuyMarriageSlotAsync(IContext e)
-		{
-			var context = e.GetService<MikiDbContext>();
-			var userService = e.GetService<IUserService>();
-			var transactionService = e.GetService<ITransactionService>();
+        public async Task BuyMarriageSlotAsync(IContext e)
+        {
+            var userService = e.GetService<IUserService>();
+            var transactionService = e.GetService<ITransactionService>();
 
-			User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
+            User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
 
             int limit = 10;
-			// TODO: Add IsDonator into User service
-			bool isDonator = await user.IsDonatorAsync(context)
-                .ConfigureAwait(false);
 
+            bool isDonator = await userService.UserIsDonatorAsync(user.Id).ConfigureAwait(false);
             if(isDonator)
-			{
-				limit += 5;
-			}
+            {
+                limit += 5;
+            }
 
-			if(user.MarriageSlots >= limit)
-			{
-				EmbedBuilder embed = e.ErrorEmbed($"For now, **{limit} slots** is the max. sorry :(");
+            if(user.MarriageSlots >= limit)
+            {
+                EmbedBuilder embed = e.ErrorEmbed($"For now, **{limit} slots** is the max. sorry :(");
 
-				if(limit == 10 && !isDonator)
-				{
-					embed.AddField("Pro tip!", "Donators get 5 more slots!")
-						.SetFooter("Want more? Consider donating!", "https://patreon.com/mikibot");
-				}
+                if(limit == 10 && !isDonator)
+                {
+                    embed.AddField("Pro tip!", "Donators get 5 more slots!")
+                        .SetFooter("Want more slots? Consider donating!", "https://patreon.com/mikibot");
+                }
 
-				embed.Color = new Color(1f, 0.6f, 0.4f);
-				await embed.ToEmbed()
+                await embed.ToEmbed()
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
                 return;
-			}
+            }
 
-			int costForUpgrade = (user.MarriageSlots - 4) * 2500;
+            int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
-			user.MarriageSlots++;
-			await transactionService.CreateTransactionAsync(
-				new TransactionRequest.Builder()
-					.WithAmount(costForUpgrade)
-					.WithReceiver(0L)
-					.WithSender(user.Id)
-					.Build())
-				.ConfigureAwait(false);
+            user.MarriageSlots++;
+            await userService.SaveAsync().ConfigureAwait(false);
 
-			await new EmbedBuilder()
-			{
-				Color = new Color(0.4f, 1f, 0.6f),
-				Description = e.GetLocale().GetString("buymarriageslot_success", user.MarriageSlots),
-			}.ToEmbed().QueueAsync(e, e.GetChannel())
+            await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(costForUpgrade)
+                        .WithReceiver(0L)
+                        .WithSender(user.Id)
+                        .Build())
+                .ConfigureAwait(false);
+
+            await e.SuccessEmbedResource("buymarriageslot_success", user.MarriageSlots)
+                .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
-		[Command("cancelmarriage")]
+        [Command("cancelmarriage")]
 		public async Task CancelMarriageAsync(IContext e)
 		{
 			var service = e.GetService<MarriageService>();
