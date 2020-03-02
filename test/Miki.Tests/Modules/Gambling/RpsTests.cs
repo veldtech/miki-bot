@@ -42,7 +42,7 @@
                     It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(
                     new RpsGameResult.Builder()
-                        .WithAmountWon(20)
+                        .WithAmountWon(10)
                         .WithBet(10)
                         .WithCpuWeapon(new RpsWeapon("scissor", "x"))
                         .WithPlayerWeapon(new RpsWeapon("rock", "x"))
@@ -57,7 +57,7 @@
             Worker.TryGetMessage(out var msg);
 
             Assert.Equal(
-                "ROCK x vs. x SCISSOR\n\nYou won `20` mekos! Your new balance is `20`.",
+                "ROCK x vs. x SCISSOR\n\nYou won `10` mekos! Your new balance is `30`.",
                 msg.Arguments.Properties.Embed.Description);
         }
     }
