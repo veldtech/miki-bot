@@ -199,7 +199,7 @@
             {
                 var apiClient = ctx.GetService<IApiClient>();
                 var blackjackService = ctx.GetService<BlackjackService>();
-                var transactionService = ctx.GetService<TransactionService>();
+                var transactionService = ctx.GetService<ITransactionService>();
 
                 await blackjackService.EndSessionAsync(session);
 
