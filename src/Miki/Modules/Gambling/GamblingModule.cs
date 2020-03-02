@@ -720,7 +720,7 @@
             }
             else if (args.Take(out string arg))
             {
-                if (IsValidBetAll(arg))
+                if (Utils.IsAll(arg))
                 {
                     bet = Math.Min(user.Currency, maxBet);
                 }
@@ -732,12 +732,6 @@
             }
 
             return bet;
-        }
-
-        private static bool IsValidBetAll(string input)
-        {
-            return input.ToLowerInvariant() == "all"
-                || input.ToLowerInvariant() == "*";
         }
     }
 }
