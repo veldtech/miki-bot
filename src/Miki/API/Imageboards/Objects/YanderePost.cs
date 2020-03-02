@@ -4,9 +4,61 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
-    internal class YanderePost : BooruPost, ILinkable
+    /*
+     *  {
+      "id": 614834,
+      "tags": "pantsu pantyhose shirt_lift underboob yom",
+      "created_at": 1583104349,
+      "updated_at": 1583104370,
+      "creator_id": 25882,
+      "approver_id": null,
+      "author": "Mr_GT",
+      "change": 3235698,
+      "source": "https://twitter.com/i/web/status/1234252711807213571",
+      "score": 6,
+      "md5": "da630593cbf6cfe01b868c1ad1632a16",
+      "file_size": 187671,
+      "file_ext": "jpg",
+      "file_url": "https://files.yande.re/image/da630593cbf6cfe01b868c1ad1632a16/yande.re%20614834%20pantsu%20pantyhose%20shirt_lift%20underboob%20yom.jpg",
+      "is_shown_in_index": true,
+      "preview_url": "https://assets.yande.re/data/preview/da/63/da630593cbf6cfe01b868c1ad1632a16.jpg",
+      "preview_width": 107,
+      "preview_height": 150,
+      "actual_preview_width": 215,
+      "actual_preview_height": 300,
+      "sample_url": "https://files.yande.re/sample/da630593cbf6cfe01b868c1ad1632a16/yande.re%20614834%20sample%20pantsu%20pantyhose%20shirt_lift%20underboob%20yom.jpg",
+      "sample_width": 1073,
+      "sample_height": 1500,
+      "sample_file_size": 217528,
+      "jpeg_url": "https://files.yande.re/image/da630593cbf6cfe01b868c1ad1632a16/yande.re%20614834%20pantsu%20pantyhose%20shirt_lift%20underboob%20yom.jpg",
+      "jpeg_width": 1287,
+      "jpeg_height": 1800,
+      "jpeg_file_size": 0,
+      "rating": "q",
+      "is_rating_locked": false,
+      "has_children": false,
+      "parent_id": null,
+      "status": "active",
+      "is_pending": false,
+      "width": 1287,
+      "height": 1800,
+      "is_held": false,
+      "frames_pending_string": "",
+      "frames_pending": [
+        
+      ],
+      "frames_string": "",
+      "frames": [
+        
+      ],
+      "is_note_locked": false,
+      "last_noted_at": 0,
+      "last_commented_at": 0
+    },
+     */
+    public class YanderePost : BooruPost, ILinkable
     {
-        public string Url => FileUrl;
+        public string Url => FileUrl ?? Source;
         public string SourceUrl => Source;
         public string Provider => "Yande.re";
 

@@ -3,6 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Net;
+    using Miki.API.Imageboards.Interfaces;
+    using Miki.API.Imageboards.Objects;
+
     public class ImageboardConfigurations
 	{
 		public Uri QueryKey = null;
@@ -15,5 +18,6 @@
 		public ICredentials NetCredentials = CredentialCache.DefaultCredentials;
 		public List<Tuple<string, string>> NetHeaders = new List<Tuple<string, string>>();
 		public List<string> BlacklistedTags = new List<string>();
+		public Func<string, ILinkable> mapper;
 	}
 }

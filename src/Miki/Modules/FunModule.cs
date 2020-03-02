@@ -123,13 +123,10 @@ namespace Miki.Modules
         private readonly HttpClient imageClient;
 		private readonly ImgurClient imgurClient;
 
-		private readonly string cdnEndpoint;
-
 		public FunModule(MikiApp bot)
         {
             var config = bot.Services.GetService<Config>();
 
-            cdnEndpoint = config.CdnRegionEndpoint;
             if(!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 imageClient = new HttpClient(config.ImageApiUrl);

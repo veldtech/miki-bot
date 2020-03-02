@@ -133,7 +133,7 @@
 		public string UploaderName { get; set; }
 
 		[JsonProperty("has_large")]
-		public bool HasLarge { get; set; }
+		public bool? HasLarge { get; set; }
 
 		[JsonProperty("has_visible_children")]
 		public bool HasVisibleChildren { get; set; }

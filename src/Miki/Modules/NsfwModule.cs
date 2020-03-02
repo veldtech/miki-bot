@@ -1,5 +1,7 @@
 ﻿namespace Miki.Modules
 {
+    using System;
+    using System.Collections.Generic;
     using Miki.API.Imageboards;
     using Miki.API.Imageboards.Enums;
     using Miki.API.Imageboards.Interfaces;
@@ -10,18 +12,135 @@
     using Miki.Framework.Commands;
     using Miki.UrbanDictionary;
     using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Miki.Attributes;
+    using Miki.Bot.Models;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
     using Miki.Utility;
+    using Newtonsoft.Json;
 
     [Module("nsfw")]
 	internal class NsfwModule
 	{
-		[Command("gelbooru", "gel")]
+        public NsfwModule(Config config)
+        {
+            ImageboardProviderPool.AddProvider<E621Post>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri("http://e621.net/post/index.json?tags="),
+                    ExplicitTag = "rating:e",
+                    QuestionableTag = "rating:q",
+                    SafeTag = "rating:s",
+                    NetUseCredentials = true,
+                    NetHeaders = new List<Tuple<string, string>>()
+                    {
+                        new Tuple<string, string>("User-Agent", "MikiBot"),
+                    },
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                        "gore"
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<E621Post>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<DanbooruPost>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri("https://danbooru.donmai.us/posts.json?tags="),
+                    ExplicitTag = "rating:e",
+                    QuestionableTag = "rating:q",
+                    SafeTag = "rating:s",
+                    NetUseCredentials = true,
+                    NetHeaders =
+                    {
+                        new Tuple<string, string>(
+                            "Authorization",
+                            $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(config.OptionalValues.DanbooruApiKey))}"),
+                    },
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                        "gore"
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<DanbooruPost>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<GelbooruPost>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri(
+                        "http://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="),
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                        "gore"
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<GelbooruPost>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<SafebooruPost>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri(
+                        "https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="),
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                        "gore"
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<SafebooruPost>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<Rule34Post>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri(
+                        "http://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="),
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                        "gore"
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<Rule34Post>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<KonachanPost>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri("https://konachan.com/post.json?tags="),
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<List<KonachanPost>>(content))
+                }));
+            ImageboardProviderPool.AddProvider<YanderePost>(new ImageboardProvider(
+                new ImageboardConfigurations
+                {
+                    QueryKey = new Uri("https://yande.re/post.json?api_version=2&tags="),
+                    BlacklistedTags =
+                    {
+                        "loli",
+                        "shota",
+                    },
+                    mapper = content => MikiRandom.Of(
+                        JsonConvert.DeserializeObject<YandereResponse>(content).Posts)
+                }));
+        }
+
+        [Command("gelbooru", "gel")]
         [NsfwOnly]
 		public Task RunGelbooru(IContext e)
             => RunNsfwAsync<GelbooruPost>(e);
@@ -105,21 +224,23 @@
             {
                 ILinkable s = await ImageboardProviderPool.GetProvider<T>()
                     .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
-
                 if(!IsValid(s))
                 {
                     await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
                 await CreateEmbed(s)
                     .QueueAsync(e, e.GetChannel());
             }
-            catch
+            catch(Exception ex)
             {
                 await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+                throw ex;
             }
             await UnlockLewdAchievementAsync(e, e.GetService<AchievementService>());
         }
