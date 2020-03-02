@@ -6,6 +6,7 @@
     public class DataNotFoundException : LocalizedException
     {
         /// <inheritdoc />
-        public override IResource LocaleResource => new LanguageResource("error_data_not_found");
+        public override IResource LocaleResource 
+            => new LanguageResource("error_data_not_found");
     }
 }

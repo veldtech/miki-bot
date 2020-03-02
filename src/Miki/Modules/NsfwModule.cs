@@ -234,6 +234,10 @@
                 await CreateEmbed(s)
                     .QueueAsync(e, e.GetChannel());
             }
+            catch(ArgumentOutOfRangeException)
+            {
+                throw new DataNotFoundException();
+            }
             catch(Exception ex)
             {
                 if(!(ex is LocalizedException))

@@ -60,13 +60,13 @@
                     {
                         resultMessage.Description 
                             += $"\n\nYou won `{result.AmountWon}` " 
-                               + $"mekos! Your new balance is `{user.Currency}`.";
+                               + $"mekos! Your new balance is `{user.Currency + result.AmountWon}`.";
                     } break;
 
                     case VictoryStatus.LOSE:
                     {
                         resultMessage.Description +=
-                            $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency}`.";
+                            $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency - bet}`.";
                     } break;
 
                     case VictoryStatus.DRAW:

@@ -11,9 +11,9 @@
 
         private static readonly IEnumerable<RpsWeapon> weapons = new List<RpsWeapon>()
         {
-            new RpsWeapon("Rock", ":scissors:"),
+            new RpsWeapon("Rock", ":full_moon:"),
             new RpsWeapon("Paper", ":page_facing_up:"),
-            new RpsWeapon("Scissors", ":full_moon:")
+            new RpsWeapon("Scissors", ":scissors:")
         };
 
         public RpsWeapon(string name, string emoji = null)
