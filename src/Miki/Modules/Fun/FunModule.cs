@@ -707,10 +707,6 @@ namespace Miki.Modules
 			var s3Client = e.GetService<AmazonS3Client>();
 
 			IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
-            if (user == null)
-            {
-                throw new UserNullException();
-            }
 
             using (var client = new HttpClient("https://cdn.miki.ai/"))
             {
