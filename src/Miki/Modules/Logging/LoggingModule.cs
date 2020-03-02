@@ -12,6 +12,7 @@
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Utility;
+    using Sentry;
 
     [Module("logging")]
     public class LoggingModule
@@ -26,30 +27,44 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule(IDiscordClient client, DbContext context)
+        public LoggingModule(IDiscordClient client, ISentryClient sentry, DbContext context)
         {
             client.GuildMemberCreate += async user =>
             {
-                var guild = await user.GetGuildAsync();
-                var data = await GetMessageAsync(context, guild, EventMessageType.JOINSERVER, user);
-                if(data == null)
+                try
                 {
-                    return;
-                }
+                    var guild = await user.GetGuildAsync();
+                    var data = await GetMessageAsync(context, guild, EventMessageType.JOINSERVER, user);
+                    if(data == null)
+                    {
+                        return;
+                    }
 
-                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+                    data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+                }
+                catch(Exception e)
+                {
+                    sentry.CaptureException(e);
+                }
             };
 
             client.GuildMemberDelete += async (user) =>
             {
-                var guild = await user.GetGuildAsync();
-                var data = await GetMessageAsync(context, guild, EventMessageType.LEAVESERVER, user);
-                if(data == null)
+                try
                 {
-                    return;
-                }
+                    var guild = await user.GetGuildAsync();
+                    var data = await GetMessageAsync(context, guild, EventMessageType.LEAVESERVER, user);
+                    if(data == null)
+                    {
+                        return;
+                    }
 
-                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+                    data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+                }
+                catch(Exception e)
+                {
+                    sentry.CaptureException(e);
+                }
             };
         }
 
