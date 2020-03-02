@@ -47,7 +47,6 @@ namespace Miki.Tests.Services
             {
                 UserId = 3,
                 ValidUntil = DateTime.UtcNow.AddYears(1000)
-
             });
 
             ctx.Set<Daily>().Add(new Daily
@@ -71,6 +70,13 @@ namespace Miki.Tests.Services
                 CurrentStreak = 7,
                 LongestStreak = 14,
                 LastClaimTime = DateTime.UtcNow.AddDays(-3)
+            });
+            ctx.Set<Daily>().Add(new Daily
+            {
+                UserId = 5,
+                CurrentStreak = 240,
+                LongestStreak = 240,
+                LastClaimTime = DateTime.UtcNow.AddDays(-1)
             });
             ctx.SaveChanges();
         }
@@ -195,6 +201,29 @@ namespace Miki.Tests.Services
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 
             Assert.Equal(6, daily.CurrentStreak);
+        }
+
+        [Fact]
+        public async Task HigherThanHundredDailyTest()
+        {
+            var testContext = new TestContextObject();
+            testContext.SetService(typeof(ICacheClient),
+                new InMemoryCacheClient(new ProtobufSerializer()));
+
+            await using var unit = NewContext();
+            
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserAsync(It.IsAny<long>()))
+                .Returns(new ValueTask<User>(new User {Id = 5L}));
+            var transactionServiceMock = new Mock<ITransactionService>();
+            transactionServiceMock.Setup(x => x.CreateTransactionAsync(It.IsAny<TransactionRequest>()))
+                .Returns(Task.FromResult(new TransactionResponse(null, null, 0)));
+            
+            var dailyService = new DailyService(
+                unit, userServiceMock.Object, transactionServiceMock.Object);
+
+            var dailyResponse = await dailyService.ClaimDailyAsync(5L, testContext);
+            Assert.Equal(2100, dailyResponse.AmountClaimed);
         }
     }
 }
