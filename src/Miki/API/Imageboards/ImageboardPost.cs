@@ -8,6 +8,7 @@ namespace Miki.API.Imageboards
 	using System.Linq;
 	using System.Threading.Tasks;
     using Miki.API.Imageboards.Interfaces;
+    using Miki.Exceptions;
     using Miki.Net.Http;
     using Miki.Utility;
 
@@ -78,6 +79,10 @@ namespace Miki.API.Imageboards
             }
 
             var request = await c.GetAsync();
+            if(string.IsNullOrWhiteSpace(request.Body))
+            {
+                throw new DataNotFoundException();
+            }
 
             if(request.Success)
             {

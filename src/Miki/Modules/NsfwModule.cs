@@ -17,7 +17,9 @@
     using System.Threading.Tasks;
     using Miki.Attributes;
     using Miki.Bot.Models;
+    using Miki.Exceptions;
     using Miki.Localization;
+    using Miki.Localization.Exceptions;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
     using Miki.Utility;
@@ -226,10 +228,7 @@
                     .GetPostAsync(e.GetArgumentPack().Pack.TakeAll(), ImageRating.EXPLICIT);
                 if(!IsValid(s))
                 {
-                    await e.ErrorEmbed("Couldn't find anything with these tags!")
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel());
-                    return;
+                    throw new DataNotFoundException();
                 }
 
                 await CreateEmbed(s)
@@ -237,11 +236,15 @@
             }
             catch(Exception ex)
             {
-                await e.ErrorEmbed("Too many tags for this system. sorry :(")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                throw ex;
+                if(!(ex is LocalizedException))
+                {
+                    await e.ErrorEmbed("Too many tags for this system. sorry :(")
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
+                }
+                throw;
             }
+
             await UnlockLewdAchievementAsync(e, e.GetService<AchievementService>());
         }
 

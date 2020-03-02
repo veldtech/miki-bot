@@ -685,5 +685,6 @@
   "daily_received": "Received {0} Mekos! You now have {1} Mekos",
   "daily_streak": "You're on a {0} day daily streak!",
   "daily_streak_title": "Streak!",
-  "daily_title": ":moneybag: Daily"
+  "daily_title": ":moneybag: Daily",
+  "error_data_not_found":  "We tried looking what you wanted, but nothing was found." 
 }
