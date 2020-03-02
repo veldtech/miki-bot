@@ -20,7 +20,7 @@
         public DatadogRoutine(
             AccountService accounts,
             AchievementService achievements,
-            CommandPipeline commandPipeline,
+            IAsyncEventingExecutor<IDiscordMessage> commandPipeline,
             Config config,
             IDiscordClient discordClient,
             DiscordApiClient discordApiClient)

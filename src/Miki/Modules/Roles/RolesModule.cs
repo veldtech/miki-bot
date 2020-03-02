@@ -144,7 +144,8 @@
                 .SetTitle("I AM")
                 .SetColor(128, 255, 128)
                 .SetDescription($"You're a(n) {role.Name} now!")
-                .ToEmbed().QueueAsync(e, e.GetChannel());
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
         }
 
         [GuildOnly, Command("iamnot")]

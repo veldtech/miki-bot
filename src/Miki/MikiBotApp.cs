@@ -64,6 +64,14 @@
             IServiceProvider services,
             IAsyncEventingExecutor<IDiscordMessage> pipeline)
         {
+            DatadogRoutine routine = new DatadogRoutine(
+                services.GetService<AccountService>(),
+                null,
+                Pipeline,
+                services.GetService<Config>(),
+                services.GetService<IDiscordClient>(),
+                services.GetService<DiscordApiClient>());
+
             var discordClient = services.GetService<IDiscordClient>();
             discordClient.UserUpdate += Client_UserUpdated;
             discordClient.GuildJoin += Client_JoinedGuild;  
@@ -106,14 +114,6 @@
         public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(
             IServiceProvider services)
         {
-            DatadogRoutine routine = new DatadogRoutine(
-                services.GetService<AccountService>(),
-                null,
-                services.GetService<CommandPipeline>(),
-                services.GetService<Config>(),
-                services.GetService<IDiscordClient>(),
-                services.GetService<DiscordApiClient>());
-
             return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
                 .UseFilters(

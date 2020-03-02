@@ -55,7 +55,7 @@
 
 		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
 		{
-			return await MikiApp.Instance.Services.GetService<DiscordClient>()
+			return await MikiApp.Instance.Services.GetService<IDiscordClient>()
                 .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
 		}
 	}
