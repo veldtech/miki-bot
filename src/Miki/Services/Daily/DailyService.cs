@@ -69,15 +69,14 @@
 
                 daily.LastClaimTime = DateTime.UtcNow;
                 await dailyRepository.EditAsync(daily).ConfigureAwait(false);
-
                 await SaveAsync().ConfigureAwait(false);
 
                 var multiplier = await userService.UserIsDonatorAsync(userId).ConfigureAwait(false)
-                    ? 2
-                    : 1;
-                var claimAmount =
-                    (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * daily.CurrentStreak)
-                    * multiplier;
+                    ? 2 : 1;
+
+                var claimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount
+                                   * Math.Clamp(daily.CurrentStreak, 0, 100))
+                                  * multiplier;
 
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
