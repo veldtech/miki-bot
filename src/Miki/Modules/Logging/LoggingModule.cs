@@ -8,6 +8,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
@@ -27,10 +28,12 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule(IDiscordClient client, ISentryClient sentry, DbContext context)
+        public LoggingModule(IDiscordClient client)
         {
             client.GuildMemberCreate += async user =>
             {
+                using var scope = MikiApp.Instance.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService<DbContext>();
                 try
                 {
                     var guild = await user.GetGuildAsync();
@@ -44,12 +47,15 @@
                 }
                 catch(Exception e)
                 {
+                    var sentry = scope.ServiceProvider.GetService<ISentryClient>();
                     sentry.CaptureException(e);
                 }
             };
 
             client.GuildMemberDelete += async (user) =>
             {
+                using var scope = MikiApp.Instance.Services.CreateScope();
+                var context = scope.ServiceProvider.GetService<DbContext>();
                 try
                 {
                     var guild = await user.GetGuildAsync();
@@ -63,6 +69,7 @@
                 }
                 catch(Exception e)
                 {
+                    var sentry = scope.ServiceProvider.GetService<ISentryClient>();
                     sentry.CaptureException(e);
                 }
             };
