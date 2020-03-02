@@ -9,14 +9,11 @@
     using Miki.Dsl;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Helpers;
-    using Miki.Modules.Roles.Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Miki.Exceptions;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
