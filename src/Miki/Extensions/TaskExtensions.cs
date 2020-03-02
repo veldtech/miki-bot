@@ -197,6 +197,24 @@
             }
         }
 
+        public static async Task<TResult> OrElseThrow<TResult>(
+            this Task<TResult> task,
+            Exception exception)
+        {
+            try
+            {
+                return await task;
+            }
+            catch(TaskCanceledException)
+            {
+                throw;
+            }
+            catch(Exception)
+            {
+                throw exception;
+            }
+        }
+
         /// <summary>
         /// Unwraps the execution and gives a callback when an exception has been raised, but will still
         /// throw. This gives you some functionality to communicate that your logic has failed, but will
