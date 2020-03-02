@@ -304,11 +304,11 @@
 
 			builder.AddInlineField(
 				"📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
-				channels.Count(x => x.Type == ChannelType.GUILDTEXT).ToString("N0"));
+				channels.Count(x => x.Type == ChannelType.GuildText).ToString("N0"));
 
 			builder.AddInlineField(
 				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
-				channels.Count(x => x.Type == ChannelType.GUILDVOICE).ToString("N0"));
+				channels.Count(x => x.Type == ChannelType.GuildVoice).ToString("N0"));
 
 			builder.AddInlineField(
 				"🙎 " + locale.GetString("miki_module_general_guildinfo_users"),

@@ -37,7 +37,7 @@
                 .Map(() => transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(bet)
-                        .WithReceiver((long)DealerId)
+                        .WithReceiver(AppProps.Currency.BankId)
                         .WithSender((long)userId)
                         .Build()))
                 .Map(context => ConstructContext(bet, userId, channelId, messageId))

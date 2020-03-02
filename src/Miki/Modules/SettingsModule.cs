@@ -173,7 +173,7 @@
 					{
 						channels = (await e.GetGuild().GetChannelsAsync()
                                 .ConfigureAwait(false))
-							.Where(x => x.Type == ChannelType.GUILDTEXT)
+							.Where(x => x.Type == ChannelType.GuildText)
 							.Select(x => x as IDiscordTextChannel)
 							.ToList();
 					}
