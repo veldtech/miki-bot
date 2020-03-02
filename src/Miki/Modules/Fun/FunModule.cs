@@ -9,6 +9,7 @@ namespace Miki.Modules
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
+    using Imgur.API;
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
     using Imgur.API.Models;
@@ -29,6 +30,7 @@ namespace Miki.Modules
     using Miki.Framework.Commands;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
+    using Miki.Modules.Fun.Exceptions;
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
@@ -288,7 +290,17 @@ namespace Miki.Modules
 				return;
 			}
 			var endpoint = new GalleryEndpoint(imgurClient);
-			var images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
+
+			IEnumerable<IGalleryItem> images;
+            try
+            {
+                images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
+            }
+            catch(ImgurException ex)
+            {
+                throw new ImgurResponseException(ex);
+            }
+
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
@@ -326,9 +338,18 @@ namespace Miki.Modules
             }
 
 			var endpoint = new GalleryEndpoint(imgurClient);
-			var images = await endpoint.SearchGalleryAsync($"title:{title}")
-                .ConfigureAwait(false);
-			List<IGalleryImage> actualImages = new List<IGalleryImage>();
+			IEnumerable<IGalleryItem> images;
+            try
+            {
+                images = await endpoint.SearchGalleryAsync($"title:{title}")
+                    .ConfigureAwait(false);
+            }
+            catch(ImgurException ex)
+            {
+                throw new ImgurResponseException(ex);
+            }
+
+            List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
 				if(item is IGalleryImage image)
