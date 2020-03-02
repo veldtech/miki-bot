@@ -706,11 +706,8 @@ namespace Miki.Modules
             var context = e.GetService<IUserService>();
 			var s3Client = e.GetService<AmazonS3Client>();
 
-            e.GetArgumentPack().Take(out string shipPartner);
-
-			IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(shipPartner, e.GetGuild());
-
-			if (user == null)
+			IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
+            if (user == null)
             {
                 throw new UserNullException();
             }
