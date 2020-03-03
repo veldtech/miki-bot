@@ -27,7 +27,6 @@
         [GuildOnly, Command("guildweekly", "weekly")]
         public async Task GuildWeeklyAsync(IContext e)
         {
-            var database = e.GetService<MikiDbContext>();
             var transactionService = e.GetService<ITransactionService>();
             var guildService = e.GetService<GuildService>();
             var locale = e.GetLocale();
@@ -114,7 +113,7 @@
 
             timer.Value = DateTime.Now;
             await timerRepository.EditAsync(timer);
-            await database.SaveChangesAsync();
+            await unit.CommitAsync();
         }
 
         [GuildOnly, Command("guildnewrival")]
