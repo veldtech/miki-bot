@@ -245,7 +245,7 @@
 			})).Entity;
 
 			await context.SaveChangesAsync();
-			e.GetChannel().QueueMessage(e, null, $"key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
+			e.GetChannel().QueueMessage(e, null, $"Key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
 		}
 
 		[Command("setexp")]
@@ -351,6 +351,28 @@
             [RequiresScope("developer")]
             public async Task ResetAsync(IContext e)
             {
+                var userService = e.GetService<IUserService>();
+
+                e.GetArgumentPack().Take(out string userArgument);
+                var userName = userArgument != null
+                    ? userArgument
+                    : e.GetAuthor().Username;
+
+                IDiscordUser discordUser;
+
+                try
+                {
+                    discordUser = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+                }
+                catch
+                {
+                    await e.ErrorEmbed("User not found!").ToEmbed().QueueAsync(e, e.GetChannel());
+                    return;
+                }
+
+                User user = await userService.GetOrCreateUserAsync(discordUser)
+                    .ConfigureAwait(false);
+
                 var dailyService = e.GetService<IDailyService>();
                 var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
                 await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
@@ -361,7 +383,50 @@
 
                 EmbedBuilder message = new EmbedBuilder()
                     .SetTitle("💰 Daily")
-                    .SetDescription("You have reset your daily!");
+                    .SetDescription((userArgument != null?$"You have reset {user.Name}'s daily!":$"You have reset your daily!"));
+
+                await message.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+
+            [Command("setstreak")]
+            [RequiresScope("developer")]
+            public async Task SetStreak(IContext e)
+            {
+                var userService = e.GetService<IUserService>();
+
+                if (!e.GetArgumentPack().Take(out string userName))
+                {
+                    await e.ErrorEmbed($"You didn't give a user! Use `>dailyedit setstreak <user> <streak>`").ToEmbed().QueueAsync(e, e.GetChannel());
+                    return;
+                }
+
+                IDiscordUser discordUser = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+
+                User user = await userService.GetOrCreateUserAsync(discordUser)
+                    .ConfigureAwait(false);
+
+                var dailyService = e.GetService<IDailyService>();
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
+
+                if (!e.GetArgumentPack().Take(out int newStreak))
+                {
+                    await e.ErrorEmbed($"You didn't give an amount! Use `>dailyedit setstreak {userName} <streak>`").ToEmbed().QueueAsync(e, e.GetChannel());
+                    return;
+                }
+                
+                daily.CurrentStreak = newStreak;
+
+                if (newStreak > daily.LongestStreak)
+                {
+                    daily.LongestStreak = newStreak;
+                }
+
+                await dailyService.SaveAsync().ConfigureAwait(false);
+
+                EmbedBuilder message = new EmbedBuilder()
+                    .SetTitle("💰 Daily")
+                    .SetDescription($"{user.Name}'s streak has been set to {daily.CurrentStreak}!");
 
                 await message.ToEmbed().QueueAsync(e, e.GetChannel());
             }
