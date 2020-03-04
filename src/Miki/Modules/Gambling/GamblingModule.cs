@@ -205,7 +205,7 @@
 
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
-                        .WithSender((long)BlackjackService.DealerId)
+                        .WithSender(AppProps.Currency.BankId)
                         .WithReceiver((long)ctx.GetAuthor().Id)
                         .WithAmount(session.Bet)
                         .Build());
@@ -261,7 +261,7 @@
 
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
-                        .WithSender((long)BlackjackService.DealerId)
+                        .WithSender(AppProps.Currency.BankId)
                         .WithReceiver((long)ctx.GetAuthor().Id)
                         .WithAmount(session.Bet * 2)
                         .Build());

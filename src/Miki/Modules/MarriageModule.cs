@@ -144,7 +144,7 @@ namespace Miki.Modules
             await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(costForUpgrade)
-                        .WithReceiver(0L)
+                        .WithReceiver(AppProps.Currency.BankId)
                         .WithSender(user.Id)
                         .Build())
                 .ConfigureAwait(false);

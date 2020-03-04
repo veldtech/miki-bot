@@ -30,49 +30,52 @@
 
         public LoggingModule(IDiscordClient client)
         {
-            client.GuildMemberCreate += async user =>
+            client.GuildMemberCreate += OnClientOnGuildMemberCreate;
+            client.GuildMemberDelete += OnClientOnGuildMemberDelete;
+        }
+
+        private async Task OnClientOnGuildMemberCreate(IDiscordGuildUser user)
+        {
+            using var scope = MikiApp.Instance.Services.CreateScope();
+            var context = scope.ServiceProvider.GetService<DbContext>();
+            try
             {
-                using var scope = MikiApp.Instance.Services.CreateScope();
-                var context = scope.ServiceProvider.GetService<DbContext>();
-                try
+                var guild = await user.GetGuildAsync();
+                var data = await GetMessageAsync(context, guild, EventMessageType.JOINSERVER, user);
+                if(data == null)
                 {
-                    var guild = await user.GetGuildAsync();
-                    var data = await GetMessageAsync(context, guild, EventMessageType.JOINSERVER, user);
-                    if(data == null)
-                    {
-                        return;
-                    }
-
-                    data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+                    return;
                 }
-                catch(Exception e)
-                {
-                    var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                    sentry.CaptureException(e);
-                }
-            };
 
-            client.GuildMemberDelete += async (user) =>
+                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+            }
+            catch(Exception e)
             {
-                using var scope = MikiApp.Instance.Services.CreateScope();
-                var context = scope.ServiceProvider.GetService<DbContext>();
-                try
-                {
-                    var guild = await user.GetGuildAsync();
-                    var data = await GetMessageAsync(context, guild, EventMessageType.LEAVESERVER, user);
-                    if(data == null)
-                    {
-                        return;
-                    }
+                var sentry = scope.ServiceProvider.GetService<ISentryClient>();
+                sentry.CaptureException(e);
+            }
+        }
 
-                    data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
-                }
-                catch(Exception e)
+        private async Task OnClientOnGuildMemberDelete(IDiscordGuildUser user)
+        {
+            using var scope = MikiApp.Instance.Services.CreateScope();
+            var context = scope.ServiceProvider.GetService<DbContext>();
+            try
+            {
+                var guild = await user.GetGuildAsync();
+                var data = await GetMessageAsync(context, guild, EventMessageType.LEAVESERVER, user);
+                if(data == null)
                 {
-                    var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                    sentry.CaptureException(e);
+                    return;
                 }
-            };
+
+                data.ForEach(x => x.DestinationChannel.SendMessageAsync(x.Message));
+            }
+            catch(Exception e)
+            {
+                var sentry = scope.ServiceProvider.GetService<ISentryClient>();
+                sentry.CaptureException(e);
+            }
         }
 
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
