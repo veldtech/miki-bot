@@ -139,6 +139,7 @@ namespace Miki.Modules
             int costForUpgrade = (user.MarriageSlots - 4) * 2500;
 
             user.MarriageSlots++;
+	    await userService.UpdateUserAsync(user).ConfigureAwait(false);
             await userService.SaveAsync().ConfigureAwait(false);
 
             await transactionService.CreateTransactionAsync(

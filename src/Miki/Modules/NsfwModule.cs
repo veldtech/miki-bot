@@ -63,7 +63,7 @@
                     {
                         new Tuple<string, string>(
                             "Authorization",
-                            $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(config.OptionalValues.DanbooruApiKey))}"),
+                            $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes(config.OptionalValues?.DanbooruApiKey ?? ""))}"),
                     },
                     BlacklistedTags =
                     {
