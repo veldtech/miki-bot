@@ -377,13 +377,12 @@ namespace Miki.Modules
 
 			List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
 			List<string> proposalNames = new List<string>();
+            var discordclient = e.GetService<IDiscordClient>();
 
 			foreach(UserMarriedTo p in proposals)
 			{
 				long id = p.GetOther(e.GetAuthor().Id.ToDbLong());
-				string u = (await MikiApp.Instance.Services
-                    .GetService<DiscordClient>()
-					.GetUserAsync(id.FromDbLong())).Username;
+				string u = (await discordclient.GetUserAsync(id.FromDbLong())).Username;
 				proposalNames.Add($"{u} [{id}]");
 			}
 
@@ -408,8 +407,8 @@ namespace Miki.Modules
 			foreach(UserMarriedTo p in proposals)
 			{
 				long id = p.GetOther(e.GetAuthor().Id.ToDbLong());
-                string u = (await e.GetService<DiscordClient>()
-                    .GetUserAsync(id.FromDbLong()).ConfigureAwait(false)).Username;
+                string u = (await discordclient.GetUserAsync(id.FromDbLong())
+                    .ConfigureAwait(false)).Username;
 				proposalNames.Add($"{u} [{id}]");
 			}
 
