@@ -18,9 +18,16 @@
     {
         VictoryStatus CalculateVictory(RpsWeapon player, RpsWeapon cpu);
         
-        IEnumerable<string> GetAllWeapons();
+        IReadOnlyList<string> GetAllWeapons();
         
         RpsWeapon GetRandomWeapon();
+
+        /// <summary>
+        /// Returns a valid weapon object which is
+        /// </summary>
+        /// <param name="weaponName">Query on the weapon's name.</param>
+        /// <returns>The matching weapon type.</returns>
+        Optional<RpsWeapon> GetWeapon(string weaponName);
         
         Task<RpsGameResult> PlayRpsAsync(long userId, int bet, string weapon);
 
@@ -28,21 +35,29 @@
     public class RpsService : IRpsService
 	{
         private readonly ITransactionService transactionService;
-        private readonly List<RpsWeapon> weapons = new List<RpsWeapon>();
 
-		public RpsService(
+        /// <summary>
+        /// Weapons cannot have the same first letter, because this will break
+        /// <see cref="GetWeapon(string)"/>.
+        /// </summary>
+        private readonly List<RpsWeapon> weapons = new List<RpsWeapon>()
+        {
+            new RpsWeapon("Scissors", ":scissors:"),
+            new RpsWeapon("Rock", ":full_moon:"),
+            new RpsWeapon("Paper", ":page_facing_up:")
+        };
+
+        public RpsService(
             ITransactionService transactionService)
 		{
             this.transactionService = transactionService;
+        }
 
-            weapons.Add(new RpsWeapon("scissors", ":scissors:"));
-			weapons.Add(new RpsWeapon("paper", ":page_facing_up:"));
-			weapons.Add(new RpsWeapon("rock", ":full_moon:"));
-		}
-
-		public IEnumerable<string> GetAllWeapons()
+		public IReadOnlyList<string> GetAllWeapons()
         {
-            return weapons.Select(x => x.Name);
+            return weapons
+                .Select(x => x.Name)
+                .ToList();
         }
 
 		public RpsWeapon GetRandomWeapon()
@@ -58,16 +73,22 @@
 		}
         public VictoryStatus CalculateVictory(int player, int cpu)
         {
-            return (VictoryStatus)((cpu - player + 3) % weapons.Count);
+            return (VictoryStatus)((cpu - player + 3) % GetAllWeapons().Count);
+        }
+
+        public Optional<RpsWeapon> GetWeapon(string weaponName)
+        {
+            if(string.IsNullOrWhiteSpace(weaponName))
+            {
+                return Optional<RpsWeapon>.None;
+            }
+            return weapons.FirstOrDefault(
+                x => char.ToLower(x.Name[0]) == char.ToLower(weaponName[0]));
         }
 
         public async Task<RpsGameResult> PlayRpsAsync(long userId, int bet, string weapon)
         {
-            if(!RpsWeapon.TryParse(weapon, out var playerWeapon))
-            {
-                // TODO: throw exception
-            }
-
+            var playerWeapon = GetWeapon(weapon).Unwrap();
             await transactionService.CreateTransactionAsync(
                 new TransactionRequest.Builder()
                     .WithReceiver(AppProps.Currency.BankId)

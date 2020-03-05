@@ -27,5 +27,16 @@
         {
             Assert.Equal(service.CalculateVictory(a, b), result);
         }
+
+        [Theory]
+        [InlineData("w", null)]
+        [InlineData("r", "Rock")]
+        [InlineData("p", "Paper")]
+        [InlineData("s", "Scissors")]
+        [InlineData(null, null)]
+        public void GetWeaponTests(string input, string expectedWeapon)
+        {
+            Assert.Equal(expectedWeapon, service.GetWeapon(input).UnwrapDefault()?.Name);
+        }
     }
 }

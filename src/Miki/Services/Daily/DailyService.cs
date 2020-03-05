@@ -25,7 +25,6 @@
             this.transactionService = transactionService;
         }
 
-
         /// <inheritdoc />
         public async ValueTask<DailyResponse> ClaimDailyAsync(long userId)
         {
