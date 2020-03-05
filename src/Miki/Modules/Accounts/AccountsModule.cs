@@ -777,7 +777,7 @@ namespace Miki.Modules.Accounts
                         await transactionService.CreateTransactionAsync(
                             new TransactionRequest.Builder()
                                 .WithAmount(background.Price)
-                                .WithReceiver(0L)
+                                .WithReceiver(AppProps.Currency.BankId)
                                 .WithSender(userId)
                                 .Build());
 
@@ -821,7 +821,7 @@ namespace Miki.Modules.Accounts
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(250)
-                        .WithReceiver(0L)
+                        .WithReceiver(AppProps.Currency.BankId)
                         .WithSender((long)e.GetAuthor().Id)
                         .Build());
 
@@ -860,7 +860,7 @@ namespace Miki.Modules.Accounts
                 await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
                         .WithAmount(250)
-                        .WithReceiver(0L)
+                        .WithReceiver(AppProps.Currency.BankId)
                         .WithSender((long)e.GetAuthor().Id)
                         .Build());
                 await context.SaveChangesAsync();
