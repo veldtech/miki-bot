@@ -84,16 +84,12 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task ClaimDailyTest()
         {
-            var testContext = new TestContextObject();
-            testContext.SetService(typeof(ICacheClient),
-                new InMemoryCacheClient(new ProtobufSerializer()));
-
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            var response = await dailyService.ClaimDailyAsync(2L, testContext);
+            var response = await dailyService.ClaimDailyAsync(2L);
 
             Assert.NotNull(response);
             Assert.Equal(1, response.CurrentStreak);
@@ -106,16 +102,12 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task DonatorClaimDailyTest()
         {
-            var testContext = new TestContextObject();
-            testContext.SetService(typeof(ICacheClient),
-                new InMemoryCacheClient(new ProtobufSerializer()));
-
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
             
-            var response = await dailyService.ClaimDailyAsync(3L, testContext);
+            var response = await dailyService.ClaimDailyAsync(3L);
             var expectedClaimAmount = (AppProps.Daily.DailyAmount + AppProps.Daily.StreakAmount * 6) * 2;
 
             Assert.NotNull(response);
@@ -128,16 +120,12 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task CheckIfDailyUpdatedInDatabaseTest()
         {
-            var testContext = new TestContextObject();
-            testContext.SetService(typeof(ICacheClient),
-                new InMemoryCacheClient(new ProtobufSerializer()));
-
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            await dailyService.ClaimDailyAsync(2L, testContext);
+            await dailyService.ClaimDailyAsync(2L);
 
             var daily = await dailyService.GetOrCreateDailyAsync(2L);
 
@@ -150,16 +138,12 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task DailyStreakResetTest()
         {
-            var testContext = new TestContextObject();
-            testContext.SetService(typeof(ICacheClient),
-                new InMemoryCacheClient(new ProtobufSerializer()));
-
             await using var unit = NewContext();
             var userService = new UserService(unit);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
-            await dailyService.ClaimDailyAsync(4L, testContext);
+            await dailyService.ClaimDailyAsync(4L);
 
             var daily = await dailyService.GetOrCreateDailyAsync(4L);
 
@@ -180,36 +164,8 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task MigrateCacheToDatabaseTest()
-        {
-            await using var unit = NewContext();
-            var userService = new UserService(unit);
-            var transactionService = new TransactionService(userService);
-            var dailyService = new DailyService(unit, userService, transactionService);
-
-            var cacheMock = new Mock<ICacheClient>();
-            cacheMock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
-                .ReturnsAsync(true);
-            cacheMock.Setup(x => x.GetAsync<int>(It.IsAny<string>()))
-                .ReturnsAsync(5);
-
-            var contextMock = new TestContextObject();
-            contextMock.SetService(typeof(ICacheClient), cacheMock.Object);
-
-            await dailyService.ClaimDailyAsync(2L, contextMock);
-
-            var daily = await dailyService.GetOrCreateDailyAsync(2L);
-
-            Assert.Equal(6, daily.CurrentStreak);
-        }
-
-        [Fact]
         public async Task HigherThanHundredDailyTest()
         {
-            var testContext = new TestContextObject();
-            testContext.SetService(typeof(ICacheClient),
-                new InMemoryCacheClient(new ProtobufSerializer()));
-
             await using var unit = NewContext();
             
             var userServiceMock = new Mock<IUserService>();
@@ -222,7 +178,7 @@ namespace Miki.Tests.Services
             var dailyService = new DailyService(
                 unit, userServiceMock.Object, transactionServiceMock.Object);
 
-            var dailyResponse = await dailyService.ClaimDailyAsync(5L, testContext);
+            var dailyResponse = await dailyService.ClaimDailyAsync(5L);
             Assert.Equal(2100, dailyResponse.AmountClaimed);
         }
     }

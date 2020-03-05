@@ -9,16 +9,15 @@
         NotReady
     }
 
-    public class DailyClaimResponse
+    public class DailyResponse
     {
-
         public DailyStatus Status { get; set; }
         public int AmountClaimed { get; set; }
         public int LongestStreak { get; set; }
         public int CurrentStreak { get; set; }
         public DateTime LastClaimTime { get; set; }
 
-        public DailyClaimResponse(Daily daily, DailyStatus status, int amountClaimed)
+        public DailyResponse(Daily daily, DailyStatus status, int amountClaimed)
         {
             Status = status;
             AmountClaimed = amountClaimed;

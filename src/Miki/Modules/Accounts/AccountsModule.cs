@@ -1,3 +1,5 @@
+using Amazon.S3.Model;
+
 namespace Miki.Modules.Accounts
 {
     using System;
@@ -1133,47 +1135,73 @@ namespace Miki.Modules.Accounts
         }
 
         [Command("daily")]
-        public async Task GetDailyAsync(IContext e)
+        public class DailyCommand
         {
-            var userService = e.GetService<IUserService>();
-            var dailyService = e.GetService<IDailyService>();
-
-            var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
-                .ConfigureAwait(false);
-            var response = await dailyService.ClaimDailyAsync(user.Id, e)
-                .ConfigureAwait(false);
-
-            if(response.Status == DailyStatus.NotReady)
+            [Command]
+            public async Task ClaimDailyAsync(IContext e)
             {
-                var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
-                var builder = e.ErrorEmbed(e.GetLocale().GetString(
-                    "daily_claimed",
-                    $"`{time}`"));
+                var userService = e.GetService<IUserService>();
+                var dailyService = e.GetService<IDailyService>();
 
-                var appreciationList = e.GetLocale().GetString("appreciate_list").Split(";");
-                builder.AddInlineField(e.GetLocale().GetString("appreciate_title"), $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
+                var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
+                    .ConfigureAwait(false);
+                var response = await dailyService.ClaimDailyAsync(user.Id)
+                    .ConfigureAwait(false);
 
-                await builder.ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                return;
+                var embed = new EmbedBuilder()
+                    .SetTitle(e.GetLocale().GetString("daily_title"))
+                    .SetColor(253, 216, 136);
+
+                if (response.Status == DailyStatus.NotReady)
+                {
+                    var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                    embed.SetDescription(e.GetLocale().GetString(
+                        "daily_claimed",
+                        $"`{time}`"));
+
+                    var appreciationList = e.GetLocale().GetString("appreciate_list").Split(";");
+                    embed.AddInlineField(e.GetLocale().GetString("appreciate_title"),
+                        $"{appreciationList[MikiRandom.Next(appreciationList.Length)]}");
+
+                    embed.AddInlineField(e.GetLocale().GetString("daily_stats_current_streak"), $"{response.CurrentStreak}");
+
+                    await embed.ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
+                    return;
+                }
+
+                embed.SetDescription(e.GetLocale().GetString(
+                    "daily_received",
+                    $"**{response.AmountClaimed:N0}**",
+                    $"`{(user.Currency + response.AmountClaimed):N0}`"));
+
+                if (response.CurrentStreak > 0)
+                {
+                    embed.AddInlineField(
+                        e.GetLocale().GetString("daily_streak_title"),
+                        e.GetLocale().GetString("daily_streak", $"{response.CurrentStreak:N0}"));
+                }
+
+                await embed.ToEmbed().QueueAsync(e, e.GetChannel());
             }
 
-            var embed = new EmbedBuilder()
-                .SetTitle(e.GetLocale().GetString("daily_title"))
-                .SetDescription(e.GetLocale().GetString(
-                    "daily_received", 
-                    $"**{response.AmountClaimed:N0}**", 
-                    $"`{(user.Currency + response.AmountClaimed):N0}`"))
-                .SetColor(253, 216, 136);
-
-            if(response.CurrentStreak > 0)
+            [Command("stats")]
+            public async Task DailyStatsAsync(IContext e)
             {
-                embed.AddInlineField(
-                    e.GetLocale().GetString("daily_streak_title"),
-                    e.GetLocale().GetString("daily_streak", $"{response.CurrentStreak:N0}"));
-            }
+                var dailyService = e.GetService<IDailyService>();
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id);
 
-            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
+                var time = (daily.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                var embed = new EmbedBuilder()
+                    .SetTitle(e.GetLocale().GetString("daily_stats_title", $"{e.GetAuthor().Username}"))
+                    .SetColor(253, 216, 136);
+
+                embed.AddInlineField(e.GetLocale().GetString("daily_stats_current_streak"), $"{daily.CurrentStreak}");
+                embed.AddInlineField(e.GetLocale().GetString("daily_stats_longest_streak"), $"{(daily.LongestStreak >= daily.CurrentStreak ? daily.LongestStreak:daily.CurrentStreak)}");
+                embed.AddInlineField(e.GetLocale().GetString("daily_stats_time"), $"{time}");
+
+                await embed.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
         }
     }
 }

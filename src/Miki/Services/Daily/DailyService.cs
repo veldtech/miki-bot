@@ -27,34 +27,12 @@
 
 
         /// <inheritdoc />
-        public async ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context)
+        public async ValueTask<DailyResponse> ClaimDailyAsync(long userId)
         {
-            if(context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
             var daily = await GetOrCreateDailyAsync(userId).ConfigureAwait(false);
 
             if(DateTime.UtcNow >= daily.LastClaimTime.AddHours(23))
             {
-                /*
-                 * Temporary code for transferring streaks from cache.
-                 */
-                var redisKey = $"user:{userId}:daily";
-                var cacheClient = context.GetService<ICacheClient>();
-                var cacheExists = await cacheClient.ExistsAsync(redisKey).ConfigureAwait(false);
-
-                if(cacheExists)
-                {
-                    daily.CurrentStreak = await cacheClient.GetAsync<int>(redisKey)
-                        .ConfigureAwait(false);
-                    await cacheClient.RemoveAsync(redisKey);
-                }
-                /*
-                 * End of temporary code.
-                 */
-
                 if(DateTime.UtcNow < daily.LastClaimTime.AddDays(2))
                 {
                     daily.CurrentStreak++;
@@ -86,10 +64,10 @@
                         .WithSender(AppProps.Currency.BankId)
                         .Build());
 
-                return new DailyClaimResponse(daily, DailyStatus.Success, claimAmount);
+                return new DailyResponse(daily, DailyStatus.Success, claimAmount);
             }
 
-            return new DailyClaimResponse(daily, DailyStatus.NotReady, 0);
+            return new DailyResponse(daily, DailyStatus.NotReady, 0);
         }
 
         /// <inheritdoc />
@@ -124,7 +102,7 @@
 
     public interface IDailyService : IDisposable
     {
-        ValueTask<DailyClaimResponse> ClaimDailyAsync(long userId, IContext context);
+        ValueTask<DailyResponse> ClaimDailyAsync(long userId);
 
         ValueTask<Daily> GetOrCreateDailyAsync(long userId);
 
