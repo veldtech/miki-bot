@@ -17,6 +17,7 @@ namespace Miki.Modules
     using Miki.Modules.Accounts.Services;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Services.Pasta;
     using Miki.Utility;
 
     [Module("pastas")]
@@ -62,24 +63,25 @@ namespace Miki.Modules
         [Command("deletepasta")]
         public async Task DeletePasta(IContext e)
         {
-            string pastaArg = e.GetArgumentPack().Pack.TakeAll();
+            var locale = e.GetLocale();
+            var pastaArg = e.GetArgumentPack().Pack.TakeAll();
 
             if(string.IsNullOrWhiteSpace(pastaArg))
             {
                 await e.ErrorEmbed(
-                        e.GetLocale().GetString("miki_module_pasta_error_specify",
-                        e.GetLocale().GetString("miki_module_pasta_error_specify")))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                        locale.GetString("miki_module_pasta_error_specify",
+                        locale.GetString("miki_module_pasta_error_specify")))
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
                 return;
             }
 
             var context = e.GetService<PastaService>();
-            await context.DeletePastaAsync(pastaArg, (long)e.GetAuthor().Id);
+            await context.DeletePastaAsync(pastaArg, (long)e.GetAuthor().Id).ConfigureAwait(false);
 
-            await e.SuccessEmbed(
-                e.GetLocale().GetString("miki_module_pasta_delete_success", pastaArg))
-                .QueueAsync(e, e.GetChannel());
-
+            await e.SuccessEmbed(locale.GetString("miki_module_pasta_delete_success", pastaArg))
+                .QueueAsync(e, e.GetChannel())
+                .ConfigureAwait(false);
         }
 
         [Command("editpasta")]
@@ -315,7 +317,7 @@ namespace Miki.Modules
             page = page > maxPage ? maxPage : page;
             page = page < 0 ? 0 : page;
 
-            if (pastaVotes.Count() <= 0)
+            if (!pastaVotes.Any())
             {
                 string loveString = lovedPastas 
                     ? locale.GetString("miki_module_pasta_loved") 
@@ -323,12 +325,13 @@ namespace Miki.Modules
 
                 string errorString = locale.GetString(
                     "miki_module_pasta_favlist_self_none", loveString);
-                if (e.GetMessage().MentionedUserIds.Count() >= 1)
+                if (e.GetMessage().MentionedUserIds.Any())
                 {
                     errorString = locale.GetString(
                         "miki_module_pasta_favlist_mention_none", loveString);
                 }
-                await Utils.ErrorEmbed(e, errorString).ToEmbed()
+                await e.ErrorEmbed(errorString)
+                    .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -350,10 +353,7 @@ namespace Miki.Modules
                 .SetDescription(resultString)
                 .SetFooter(
                     locale.GetString(
-                        "page_index", 
-                        page + 1, 
-                        Math.Ceiling(pastaVotes.Count() / totalPerPage)),
-                    "")
+                        "page_index", page + 1, Math.Ceiling(pastaVotes.Count / totalPerPage)))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }

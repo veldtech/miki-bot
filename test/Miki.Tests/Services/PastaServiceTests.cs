@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Services;
+    using Miki.Services.Pasta;
     using Miki.Services.Pasta.Exceptions;
     using Xunit;
 

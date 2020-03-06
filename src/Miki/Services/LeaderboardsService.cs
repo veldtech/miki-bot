@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
     using Miki.Bot.Models.Queries;
     using Miki.Cache;
     using Miki.Framework;
@@ -45,7 +44,7 @@
             var rankObject = await (await globalRankView.ListAsync())
                 .AsQueryable()
                 .FirstOrDefaultAsync(x => x.Id == userId);
-            return rankObject?.Rank;
+            return 1 + rankObject?.Rank;
         }
 
         private async Task RefreshGlobalViewAsync()
@@ -66,8 +65,5 @@
         {
             return "leaderboards:global";
         }
-
-        public class Config
-        {}
     }
 }

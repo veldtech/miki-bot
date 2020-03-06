@@ -1,14 +1,8 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Miki.Framework;
-
-namespace Miki.Tests.Services
+﻿namespace Miki.Tests.Services
 {
     using System;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Cache.InMemory;
-    using Miki.Serialization.Protobuf;
     using Miki.Services;
     using Miki.Services.Daily;
     using Miki.Services.Transactions;

@@ -1,5 +1,3 @@
-using Amazon.S3.Model;
-
 namespace Miki.Modules.Accounts
 {
     using System;
@@ -23,12 +21,10 @@ namespace Miki.Modules.Accounts
     using Miki.Common.Builders;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Helpers;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
@@ -60,25 +56,15 @@ namespace Miki.Modules.Accounts
 
             var discordClient = app.Services.GetService<IDiscordClient>();
             var accountsService = app.Services.GetService<AccountService>();
-            var transactionService = app.Services.GetService<TransactionEvents>();
-
             AchievementService = app.Services.GetService<AchievementService>();
 
-            discordClient.MessageCreate += (msg) => OnMessageCreate(app, AchievementService, msg);
+            discordClient.MessageCreate += msg => OnMessageCreate(app, AchievementService, msg);
 
             accountsService.OnLocalLevelUp += OnUserLevelUp;
             accountsService.OnLocalLevelUp += OnLevelUpAchievements;
 
-            transactionService.OnTransactionComplete += OnTransactionComplete; 
-
             AchievementService.OnAchievementUnlocked += SendAchievementNotification;
             AchievementService.OnAchievementUnlocked += CheckAchievementUnlocks;
-        }
-
-        public Task OnTransactionComplete(TransactionResponse e)
-        {
-            Log.Message($"{e.Amount}: {e.Sender} -> {e.Receiver}.");
-            return Task.CompletedTask;
         }
 
         private async Task OnMessageCreate(MikiApp app, AchievementService service, IDiscordMessage arg)
@@ -92,22 +78,19 @@ namespace Miki.Modules.Accounts
                     {
                         var a = service.GetAchievement(AchievementIds.FrogId);
                         await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    }
-                        break;
+                    } break;
 
                     case "( ͡° ͜ʖ ͡°)":
                     {
                         var a = service.GetAchievement(AchievementIds.LennyId);
                         await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    }
-                        break;
+                    } break;
 
                     case "poi":
                     {
                         var a = service.GetAchievement(AchievementIds.ShipId);
                         await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    }
-                        break;
+                    } break;
                 }
 
                 if(MikiRandom.Next(0, 10000000000) == 5234210)
@@ -701,20 +684,24 @@ namespace Miki.Modules.Accounts
         [Command("setbackground")]
         public async Task SetProfileBackgroundAsync(IContext e)
         {
-            var context = e.GetService<MikiDbContext>();
+            var unit = e.GetService<IUnitOfWork>();
+            var backgroundRepository = unit.GetRepository<BackgroundsOwned>();
+            var profileVisualRepository = unit.GetRepository<ProfileVisuals>();
 
             var backgroundId = e.GetArgumentPack().TakeRequired<int>();
             long userId = (long)e.GetAuthor().Id;
                        
-            BackgroundsOwned bo = await context.BackgroundsOwned.FindAsync(userId, backgroundId);
+            BackgroundsOwned bo = await backgroundRepository.GetAsync(userId, backgroundId);
             if(bo == null)
             {
                 throw new BackgroundNotOwnedException();
             }
 
-            ProfileVisuals v = await ProfileVisuals.GetAsync(userId, context);
+            ProfileVisuals v = await profileVisualRepository.GetAsync(userId);
             v.BackgroundId = bo.BackgroundId;
-            await context.SaveChangesAsync();
+
+            await profileVisualRepository.EditAsync(v);
+            await unit.CommitAsync();
 
             // TODO: redo embed.
             await e.SuccessEmbed("Successfully set background.")
@@ -809,10 +796,10 @@ namespace Miki.Modules.Accounts
             var context = e.GetService<MikiDbContext>();
 
             var x = Regex.Matches(
-                e.GetArgumentPack().Pack.TakeAll().ToUpper(), 
+                e.GetArgumentPack().Pack.TakeAll().ToUpperInvariant(), 
                 "(#)?([A-F0-9]{6})");
 
-            if(x.Count > 0)
+            if(x.Any())
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
                 var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
@@ -848,10 +835,10 @@ namespace Miki.Modules.Accounts
             var context = e.GetService<MikiDbContext>();
 
             var x = Regex.Matches(
-                e.GetArgumentPack().Pack.TakeAll().ToUpper(), 
+                e.GetArgumentPack().Pack.TakeAll().ToUpperInvariant(), 
                 "(#)?([A-F0-9]{6})");
 
-            if(x.Count > 0)
+            if(x.Any())
             {
                 ProfileVisuals visuals = await ProfileVisuals.GetAsync(e.GetAuthor().Id, context);
                 var hex = (x.First().Groups as IEnumerable<Group>).Last().Value;
@@ -1062,18 +1049,16 @@ namespace Miki.Modules.Accounts
         public async Task SyncNameAsync(IContext e)
         {
             var context = e.GetService<IUserService>();
-            var locale = e.GetLocale();
 
-            User user = await context.GetOrCreateUserAsync(e.GetAuthor());
+            User user = await context.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
             user.Name = e.GetAuthor().Username;
 
-            await context.SaveAsync();
+            await context.UpdateUserAsync(user).ConfigureAwait(false);
+            await context.SaveAsync().ConfigureAwait(false);
 
-            await new EmbedBuilder()
-            {
-                Title = "👌 OKAY",
-                Description = locale.GetString("sync_success", "name")
-            }.ToEmbed().QueueAsync(e, e.GetChannel());
+            await e.SuccessEmbedResource("sync_success", "name")
+                .QueueAsync(e, e.GetChannel())
+                .ConfigureAwait(false);
         }
 
         [Command("mekos", "bal", "meko")]
@@ -1102,7 +1087,6 @@ namespace Miki.Modules.Accounts
         [Command("give")]
         public Task GiveMekosAsync(IContext e)
             => e.GetGuild().FindUserAsync(e)
-                .AndThen(ThrowOnUserNull)
                 .Map(receiver => new TransactionRequest.Builder()
                     .WithReceiver((long)receiver.Id)
                     .WithSender((long)e.GetAuthor().Id)
@@ -1126,14 +1110,6 @@ namespace Miki.Modules.Accounts
                 .ToEmbed();
         }
 
-        private void ThrowOnUserNull(IDiscordGuildUser user)
-        {
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
-        }
-
         [Command("daily")]
         public class DailyCommand
         {
@@ -1142,6 +1118,7 @@ namespace Miki.Modules.Accounts
             {
                 var userService = e.GetService<IUserService>();
                 var dailyService = e.GetService<IDailyService>();
+                var locale = e.GetLocale();
 
                 var user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                     .ConfigureAwait(false);
@@ -1155,7 +1132,7 @@ namespace Miki.Modules.Accounts
                 if (response.Status == DailyStatus.NotReady)
                 {
                     var time = (response.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
-                    embed.SetDescription(e.GetLocale().GetString(
+                    embed.SetDescription(locale.GetString(
                         "daily_claimed",
                         $"`{time}`"));
 
