@@ -90,23 +90,30 @@
             {
                 donatorStatus = new IsDonator
                 {
-                    UserId = id
+                    UserId = id,
+                    KeysRedeemed = 1,
+                    ValidUntil = DateTime.UtcNow + key.StatusTime
                 };
                 await donatorRepository.AddAsync(donatorStatus);
             }
+            else
+            {
+                donatorStatus.KeysRedeemed++;
 
-            donatorStatus.KeysRedeemed++;
+                if(donatorStatus.ValidUntil > DateTime.Now)
+                {
+                    donatorStatus.ValidUntil += key.StatusTime;
+                }
+                else
+                {
+                    donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
+                }
+                await donatorRepository.EditAsync(donatorStatus);
+            }
+            await keyRepository.DeleteAsync(key);
+            await unit.CommitAsync();
 
-			if(donatorStatus.ValidUntil > DateTime.Now)
-			{
-				donatorStatus.ValidUntil += key.StatusTime;
-			}
-			else
-			{
-				donatorStatus.ValidUntil = DateTime.Now + key.StatusTime;
-			}
-
-			await new EmbedBuilder
+            await new EmbedBuilder
 			{
 				Title = $"🎉 {locale.GetString("common_success", e.GetAuthor().Username)}",
 				Color = new Color(226, 46, 68),
@@ -114,9 +121,6 @@
                 ThumbnailUrl = "https://i.imgur.com/OwwA5fV.png"
 			}.AddInlineField("When does my status expire?", donatorStatus.ValidUntil.ToLongDateString())
 				.ToEmbed().QueueAsync(e, e.GetChannel());
-
-			await keyRepository.DeleteAsync(key);
-			await unit.CommitAsync();
 
 			var achievementManager = e.GetService<AchievementService>();
 			var donatorAchievement = achievementManager.GetAchievement(AchievementIds.DonatorId);
