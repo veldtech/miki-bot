@@ -56,20 +56,20 @@
                         + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
                 switch (result.Status)
                 {
-                    case VictoryStatus.WIN:
+                    case GameResult.Win:
                     {
                         resultMessage.Description 
                             += $"\n\nYou won `{result.AmountWon}` " 
                                + $"mekos! Your new balance is `{user.Currency + result.AmountWon}`.";
                     } break;
 
-                    case VictoryStatus.LOSE:
+                    case GameResult.Lose:
                     {
                         resultMessage.Description +=
                             $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency - bet}`.";
                     } break;
 
-                    case VictoryStatus.DRAW:
+                    case GameResult.Draw:
                     {
                         resultMessage.Description += "\n\nIt's a draw! no mekos were lost!.";
                     } break;

@@ -46,7 +46,7 @@
                         .WithBet(10)
                         .WithCpuWeapon(new RpsWeapon("scissor", "x"))
                         .WithPlayerWeapon(new RpsWeapon("rock", "x"))
-                        .WithStatus(VictoryStatus.WIN)
+                        .WithStatus(GameResult.Win)
                         .Build()));
 
             Mock.SetService(typeof(IRpsService), serviceMock.Object);
