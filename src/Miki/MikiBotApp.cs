@@ -149,10 +149,9 @@
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
 
             serviceCollection.AddSingleton<ConfigService>();
-            serviceCollection.AddSingleton(
-                x => x.GetService<ConfigService>()
-                    .GetOrCreateAnyAsync(null)
-                    .GetAwaiter().GetResult());
+            serviceCollection.AddSingleton(x => x.GetService<ConfigService>()
+                .GetOrCreateAnyAsync(null)
+                .GetAwaiter().GetResult());
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
