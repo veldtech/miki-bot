@@ -1,5 +1,3 @@
-using Amazon.S3.Model;
-
 namespace Miki.Modules.Accounts
 {
     using System;
