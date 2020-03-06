@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
-    using Miki.Utility;
+    using Miki.Functional;
 
     public class TransactionService : ITransactionService
     {

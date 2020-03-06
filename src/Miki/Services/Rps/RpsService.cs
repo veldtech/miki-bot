@@ -4,19 +4,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Miki.Functional;
     using Miki.Services.Transactions;
     using Miki.Utility;
 
-    public enum VictoryStatus
+    public interface IRpsService
     {
-        DRAW = 0,
-        WIN = 1,
-        LOSE = 2,
-    }
-
-	public interface IRpsService
-    {
-        VictoryStatus CalculateVictory(RpsWeapon player, RpsWeapon cpu);
+        GameResult CalculateVictory(RpsWeapon player, RpsWeapon cpu);
         
         IReadOnlyList<string> GetAllWeapons();
         
@@ -40,7 +34,7 @@
         /// Weapons cannot have the same first letter, because this will break
         /// <see cref="GetWeapon(string)"/>.
         /// </summary>
-        private readonly List<RpsWeapon> weapons = new List<RpsWeapon>()
+        private readonly List<RpsWeapon> weapons = new List<RpsWeapon>
         {
             new RpsWeapon("Scissors", ":scissors:"),
             new RpsWeapon("Rock", ":full_moon:"),
@@ -65,15 +59,15 @@
 			return MikiRandom.Of(weapons);
 		}
         
-		public VictoryStatus CalculateVictory(RpsWeapon player, RpsWeapon cpu)
+		public GameResult CalculateVictory(RpsWeapon player, RpsWeapon cpu)
 		{
-			int playerIndex = weapons.IndexOf(player);
-			int cpuIndex = weapons.IndexOf(cpu);
+			var playerIndex = weapons.IndexOf(player);
+			var cpuIndex = weapons.IndexOf(cpu);
 			return CalculateVictory(playerIndex, cpuIndex);
 		}
-        public VictoryStatus CalculateVictory(int player, int cpu)
+        public GameResult CalculateVictory(int player, int cpu)
         {
-            return (VictoryStatus)((cpu - player + 3) % GetAllWeapons().Count);
+            return (GameResult)((cpu - player + 3) % GetAllWeapons().Count);
         }
 
         public Optional<RpsWeapon> GetWeapon(string weaponName)
@@ -95,7 +89,7 @@
                     .WithSender(userId)
                     .WithAmount(bet)
                     .Build());
-            RpsWeapon botWeapon = GetRandomWeapon();
+            var botWeapon = GetRandomWeapon();
 
             var status = CalculateVictory(playerWeapon, botWeapon);
             var builder = new RpsGameResult.Builder()
@@ -106,7 +100,7 @@
 
             switch(status)
             {
-                case VictoryStatus.DRAW:
+                case GameResult.Draw:
                     await transactionService.CreateTransactionAsync(
                         new TransactionRequest.Builder()
                             .WithAmount(bet)
@@ -114,7 +108,7 @@
                             .WithSender(AppProps.Currency.BankId)
                             .Build());
                     break;
-                case VictoryStatus.WIN:
+                case GameResult.Win:
                     builder.WithAmountWon((int)(bet * 2.0) - bet);
                     await transactionService.CreateTransactionAsync(
                         new TransactionRequest.Builder()
@@ -123,7 +117,7 @@
                             .WithSender(AppProps.Currency.BankId)
                             .Build());
                     break;
-                case VictoryStatus.LOSE:
+                case GameResult.Lose:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -139,7 +133,7 @@
         {
             private RpsWeapon cpuWeapon;
             private RpsWeapon playerWeapon;
-            private VictoryStatus status;
+            private GameResult status;
             private int? amountWon;
             private int bet;
 
@@ -149,7 +143,7 @@
                 return this;
             }
 
-            public Builder WithStatus(VictoryStatus status)
+            public Builder WithStatus(GameResult status)
             {
                 this.status = status;
                 return this;
@@ -187,7 +181,7 @@
 
         public RpsWeapon PlayerWeapon { get; }
 
-        public VictoryStatus Status { get; }
+        public GameResult Status { get; }
 
         /// <summary>
         /// Gets the amount won if the Status is WIN.
@@ -199,7 +193,7 @@
         public RpsGameResult(
             RpsWeapon playerWeapon,
             RpsWeapon cpuWeapon,
-            VictoryStatus status,
+            GameResult status,
             int? amountWon,
             int bet)
         {
