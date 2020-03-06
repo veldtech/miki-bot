@@ -160,10 +160,8 @@
 				return;
 			}
 
-
 			var context = e.GetService<MikiDbContext>();
-
-			var channels = new List<IDiscordTextChannel> { e.GetChannel() };
+            var channels = new List<IDiscordTextChannel> { e.GetChannel() };
 
 			if(e.GetArgumentPack().CanTake)
 			{
@@ -195,12 +193,10 @@
         }
 
 		[Command("setprefix")]
+        [DefaultPermission(PermissionStatus.Deny)]
 		public async Task PrefixAsync(IContext e)
-		{
-            if (!e.GetArgumentPack().Take(out string prefix))
-            {
-                return;
-            }
+        {
+            var prefix = e.GetArgumentPack().TakeRequired<string>();
 
             var prefixMiddleware = e.GetService<IPrefixService>();
             if(prefixMiddleware == null)
