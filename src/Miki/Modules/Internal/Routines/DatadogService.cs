@@ -25,6 +25,12 @@
             IDiscordClient discordClient,
             DiscordApiClient discordApiClient)
         {
+            if(string.IsNullOrWhiteSpace(config.DatadogHost))
+            {
+                Log.Warning("Metrics are not being collected");
+                return;
+            }
+
             DogStatsd.Configure(new StatsdConfig
             {
                 // TODO #534: Change to [Configurable]

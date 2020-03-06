@@ -56,6 +56,7 @@
     using Veld.Osu;
     using Veld.Osu.V1;
     using System.Text.Json;
+    using Miki.Cache.InMemory;
     using Miki.Modules.Internal.Routines;
 
     public class MikiBotApp : MikiApp
@@ -154,18 +155,27 @@
                     .GetAwaiter().GetResult());
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
-            serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
-            {
-                var config = x.GetService<ConfigService>();
-                // (velddev) blocks call, but resolves previous hack.
-                var configValue = config.GetOrCreateAnyAsync(null)
-                    .GetAwaiter().GetResult();
-                return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
-            });
+            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
 
-            // Setup Redis
-            serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
-            serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
+            if(selfHost)
+            {
+                serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
+                serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
+            }
+            else
+            {
+                // Setup Redis
+                serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
+                {
+                    var config = x.GetService<ConfigService>();
+                    // (velddev) blocks call, but resolves previous hack.
+                    var configValue = config.GetOrCreateAnyAsync(null)
+                        .GetAwaiter().GetResult();
+                    return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
+                });
+                serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
+                serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
+            }
 
             serviceCollection.AddScoped<
                 IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
@@ -189,7 +199,6 @@
                     s.GetService<Config>().Token,
                     s.GetService<ICacheClient>()));
 
-            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
 
             if(selfHost)
             {
