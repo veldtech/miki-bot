@@ -1194,15 +1194,16 @@ namespace Miki.Modules.Accounts
                 var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id);
 
                 var locale = e.GetLocale();
-                var time = (daily.LastClaimTime.AddHours(23) - DateTime.UtcNow).ToTimeString(e.GetLocale());
+                var timeLeft = daily.LastClaimTime.AddHours(23) - DateTime.UtcNow;
+                var timeString = timeLeft.Seconds > 0 ? timeLeft.ToTimeString(locale) : "Now!";
+
                 var embed = new EmbedBuilder()
                     .SetTitle(locale.GetString("daily_stats_title", $"{e.GetAuthor().Username}"))
-                    .SetColor(253, 216, 136);
-
-                embed.AddInlineField(locale.GetString("daily_stats_current_streak"), $"{daily.CurrentStreak}");
-                embed.AddInlineField(locale.GetString("daily_stats_longest_streak"), 
-                    $"{(daily.LongestStreak >= daily.CurrentStreak ? daily.LongestStreak:daily.CurrentStreak)}");
-                embed.AddInlineField(locale.GetString("daily_stats_time"), $"{time}");
+                    .SetColor(253, 216, 136)
+                    .AddInlineField(locale.GetString("daily_stats_current_streak"), $"{daily.CurrentStreak}")
+                    .AddInlineField(locale.GetString("daily_stats_longest_streak"), 
+                        $"{(daily.LongestStreak >= daily.CurrentStreak ? daily.LongestStreak:daily.CurrentStreak)}")
+                    .AddInlineField(locale.GetString("daily_stats_time"), $"{timeString}");
 
                 await embed.ToEmbed().QueueAsync(e, e.GetChannel());
             }
