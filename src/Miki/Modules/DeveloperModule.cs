@@ -347,30 +347,31 @@
         [RequiresScope("developer")]
         public class DailyEditCommand
         {
+            [Command]
+            [RequiresScope("developer")]
+            public async Task DailyEditAsync(IContext e)
+            {
+                var embed = new EmbedBuilder()
+                    .SetTitle(":shield: Daily Edit")
+                    .SetDescription($"Available commands are `reset [user]` `setstreak <user> <amount>`")
+                    .SetColor(85, 172, 238);
+                    
+                await embed.ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+
             [Command("reset")]
             [RequiresScope("developer")]
             public async Task ResetAsync(IContext e)
             {
                 var userService = e.GetService<IUserService>();
 
-                e.GetArgumentPack().Take(out string userArgument);
-                var userName = userArgument != null
-                    ? userArgument
-                    : e.GetAuthor().Username;
-
-                IDiscordUser discordUser;
-
-                try
+                if (!e.GetArgumentPack().Take(out string userArgument))
                 {
-                    discordUser = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-                }
-                catch
-                {
-                    await e.ErrorEmbed("User not found!").ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
+                    userArgument = e.GetAuthor().Username;
                 }
 
-                User user = await userService.GetOrCreateUserAsync(discordUser)
+                var discordUser = await e.GetGuild().FindUserAsync(userArgument);
+                var user = await userService.GetOrCreateUserAsync(discordUser)
                     .ConfigureAwait(false);
 
                 var dailyService = e.GetService<IDailyService>();
@@ -381,9 +382,10 @@
 
                 await dailyService.SaveAsync().ConfigureAwait(false);
 
-                EmbedBuilder message = new EmbedBuilder()
-                    .SetTitle("💰 Daily")
-                    .SetDescription((userArgument != null?$"You have reset {user.Name}'s daily!":$"You have reset your daily!"));
+                var message = new EmbedBuilder()
+                    .SetTitle(":shield: Daily Edit")
+                    .SetDescription((userArgument != null?$"You have reset {user.Name}'s daily!":$"You have reset your daily!"))
+                    .SetColor(85, 172, 238);
 
                 await message.ToEmbed().QueueAsync(e, e.GetChannel());
             }
@@ -400,9 +402,8 @@
                     return;
                 }
 
-                IDiscordUser discordUser = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-
-                User user = await userService.GetOrCreateUserAsync(discordUser)
+                var discordUser = await e.GetGuild().FindUserAsync(userName);
+                var user = await userService.GetOrCreateUserAsync(discordUser)
                     .ConfigureAwait(false);
 
                 var dailyService = e.GetService<IDailyService>();
@@ -424,9 +425,10 @@
 
                 await dailyService.SaveAsync().ConfigureAwait(false);
 
-                EmbedBuilder message = new EmbedBuilder()
-                    .SetTitle("💰 Daily")
-                    .SetDescription($"{user.Name}'s streak has been set to {daily.CurrentStreak}!");
+                var message = new EmbedBuilder()
+                    .SetTitle(":shield: Daily Edit")
+                    .SetDescription($"{user.Name}'s streak has been set to {daily.CurrentStreak}!")
+                    .SetColor(85, 172, 238);
 
                 await message.ToEmbed().QueueAsync(e, e.GetChannel());
             }
