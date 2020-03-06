@@ -1125,7 +1125,6 @@ namespace Miki.Modules.Accounts
                 var response = await dailyService.ClaimDailyAsync(user.Id)
                     .ConfigureAwait(false);
 
-                var locale = e.GetLocale();
                 var embed = new EmbedBuilder()
                     .SetTitle(locale.GetString("daily_title"))
                     .SetColor(253, 216, 136);
