@@ -14,18 +14,29 @@
         }
 
         [Theory]
-        [InlineData(0, 1, VictoryStatus.WIN)]
-        [InlineData(1, 2, VictoryStatus.WIN)]
-        [InlineData(2, 3, VictoryStatus.WIN)]
-        [InlineData(0, 0, VictoryStatus.DRAW)]
-        [InlineData(1, 1, VictoryStatus.DRAW)]
-        [InlineData(2, 2, VictoryStatus.DRAW)]
-        [InlineData(1, 0, VictoryStatus.LOSE)]
-        [InlineData(2, 1, VictoryStatus.LOSE)]
-        [InlineData(0, 2, VictoryStatus.LOSE)]
-        public void GameResultTest(int a, int b, VictoryStatus result)
+        [InlineData(0, 1, GameResult.Win)]
+        [InlineData(1, 2, GameResult.Win)]
+        [InlineData(2, 3, GameResult.Win)]
+        [InlineData(0, 0, GameResult.Draw)]
+        [InlineData(1, 1, GameResult.Draw)]
+        [InlineData(2, 2, GameResult.Draw)]
+        [InlineData(1, 0, GameResult.Lose)]
+        [InlineData(2, 1, GameResult.Lose)]
+        [InlineData(0, 2, GameResult.Lose)]
+        public void GameResultTest(int a, int b, GameResult result)
         {
             Assert.Equal(service.CalculateVictory(a, b), result);
+        }
+
+        [Theory]
+        [InlineData("w", null)]
+        [InlineData("r", "Rock")]
+        [InlineData("p", "Paper")]
+        [InlineData("s", "Scissors")]
+        [InlineData(null, null)]
+        public void GetWeaponTests(string input, string expectedWeapon)
+        {
+            Assert.Equal(expectedWeapon, service.GetWeapon(input).UnwrapDefault()?.Name);
         }
     }
 }
