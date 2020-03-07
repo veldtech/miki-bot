@@ -260,12 +260,12 @@
 				return;
 			}
 
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+			var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
 
 			e.GetArgumentPack().Take(out int amount);
 			var context = e.GetService<MikiDbContext>();
 
-			LocalExperience localUser = await LocalExperience.GetAsync(
+			var localUser = await LocalExperience.GetAsync(
 				context,
 				e.GetGuild().Id,
 				user.Id);
