@@ -33,7 +33,6 @@
             await CreateAchievementEmbed(d, user)
                 .QueueAsync(
                     scope.ServiceProvider.GetService<IMessageWorker<IDiscordMessage>>(),
-                    scope.ServiceProvider.GetService<IDiscordClient>(),
                     channel);
         }
 
