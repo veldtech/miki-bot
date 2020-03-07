@@ -305,7 +305,6 @@ namespace Miki.Modules
             e.GetArgumentPack().Take(out int page);
 
             var context = e.GetService<MikiDbContext>();
-
             var authorId = targetUser.Id.ToDbLong();
             var pastaVotes = await context.Votes
                 .Where(x => x.UserId == authorId 
