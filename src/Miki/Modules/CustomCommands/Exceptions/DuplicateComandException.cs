@@ -3,16 +3,16 @@
     using Miki.Localization.Exceptions;
     using Miki.Localization.Models;
 
-    public class DuplicateComandException : LocalizedException
+    public class DuplicateCommandException : LocalizedException
     {
         public override IResource LocaleResource 
-            => new LanguageResource("error_duplicate_command", $"`{_commandName}`");
+            => new LanguageResource("error_duplicate_command", $"`{commandName}`");
 
-        private string _commandName;
+        private readonly string commandName;
 
-        public DuplicateComandException(string commandName)
+        public DuplicateCommandException(string commandName)
         {
-            _commandName = commandName;
+            this.commandName = commandName;
         }
     }
 }

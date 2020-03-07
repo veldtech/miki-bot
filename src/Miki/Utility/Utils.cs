@@ -27,7 +27,7 @@ namespace Miki.Utility
     using Miki.Localization.Models;
     using Miki.Net.Http;
     using Miki.Services;
-    using HttpClient = Miki.Net.Http.HttpClient;
+    using HttpClient = Net.Http.HttpClient;
 
     public static class Utils
     {
@@ -56,7 +56,7 @@ namespace Miki.Utility
 
         public static string ToTimeString(this TimeSpan time, Locale instance, bool minified)
         {
-            List<TimeValue> t = new List<TimeValue>();
+            var t = new List<TimeValue>();
             if (Math.Floor(time.TotalDays) > 0)
             {
                 if (Math.Floor(time.TotalDays) > 1)
@@ -103,7 +103,7 @@ namespace Miki.Utility
 
             if (t.Count != 0)
             {
-                List<string> s = new List<string>();
+                var s = new List<string>();
                 foreach (TimeValue v in t)
                 {
                     s.Add(v.ToString());
@@ -150,8 +150,7 @@ namespace Miki.Utility
             => c.GetMessage().Author;
 
         public static bool IsAll(string input)
-            => (input.ToLowerInvariant() == "all") 
-               || (input == "*");
+            => (input.ToLowerInvariant() == "all") || (input == "*");
 
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
             => new LocalizedEmbedBuilder(e.GetLocale())
@@ -219,7 +218,8 @@ namespace Miki.Utility
             return guildMember.Nickname ?? guildMember.Username;
         }
 
-        public static EmbedBuilder RenderLeaderboards(EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
+        public static EmbedBuilder RenderLeaderboards(
+            EmbedBuilder embed, List<LeaderboardsItem> items, int offset)
         {
             for (int i = 0; i < Math.Min(items.Count, 12); i++)
             {
@@ -261,11 +261,11 @@ namespace Miki.Utility
                     .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
             } catch(HttpRequestException) { /* ignored */ }
 
-            User u = await context.GetOrCreateUserAsync(user);
+            var mikiUser = await context.GetOrCreateUserAsync(user);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
-            u.AvatarUrl = u.Id.ToString();
+            mikiUser.AvatarUrl = mikiUser.Id.ToString();
 
-            await context.UpdateUserAsync(u);
+            await context.UpdateUserAsync(mikiUser);
             await context.SaveAsync();
         }
 

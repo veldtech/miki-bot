@@ -58,6 +58,7 @@
     using System.Text.Json;
     using Miki.Cache.InMemory;
     using Miki.Modules.Internal.Routines;
+    using Miki.Services.Pasta;
 
     public class MikiBotApp : MikiApp
     {
@@ -150,8 +151,7 @@
 
             serviceCollection.AddSingleton<ConfigService>();
             serviceCollection.AddSingleton(x => x.GetService<ConfigService>()
-                .GetOrCreateAnyAsync(null)
-                .GetAwaiter().GetResult());
+                .GetOrCreateAnyAsync(null).GetAwaiter().GetResult());
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
@@ -179,8 +179,7 @@
             serviceCollection.AddScoped<
                 IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
 
-            serviceCollection.AddScoped(
-                x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
+            serviceCollection.AddScoped(x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
 
             // Setup Amazon CDN Client
             serviceCollection.AddSingleton(

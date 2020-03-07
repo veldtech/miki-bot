@@ -8,7 +8,6 @@
     using Miki.Localization;
     using Miki.Logging;
     using Miki.Modules.Donator.Exceptions;
-    using Miki.Helpers;
     using System;
     using System.IO;
     using System.Linq;
@@ -16,7 +15,6 @@
     using Miki.Attributes;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
-    using Miki.Services;
     using Miki.Services.Achievements;
     using Miki.Services.Transactions;
     using Miki.Utility;
@@ -51,7 +49,6 @@
 			if(e.GetArgumentPack().Take(out Guid guid))
 			{
 				DonatorKey key = await DonatorKey.GetKeyAsync(keyRepository, guid);
-
                 await keyRepository.DeleteAsync(key);
                 await unit.CommitAsync();
 

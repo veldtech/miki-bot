@@ -16,11 +16,7 @@
 
 		[Command("getanime")]
 		public async Task GetAnimeAsync(IContext e)
-			=> await GetMediaAsync(
-                e, 
-                false, 
-                MediaFormat.MANGA, 
-                MediaFormat.NOVEL);
+			=> await GetMediaAsync(e, false, MediaFormat.MANGA, MediaFormat.NOVEL);
 
         [Command("getcharacter")]
         public async Task GetCharacterAsync(IContext e)
@@ -63,7 +59,7 @@
                 .AddInlineField("Description", description)
                 .SetColor(0, 170, 255)
                 .SetThumbnail(character.LargeImageUrl)
-                .SetFooter("Powered by anilist.co", "")
+                .SetFooter("Powered by anilist.co")
                 .ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
@@ -217,7 +213,7 @@
                 var args = e.GetArgumentPack().Pack.TakeAll();
                 if(!string.IsNullOrWhiteSpace(args))
                 {
-                    media = await anilistClient.GetMediaAsync(args);
+                    media = await anilistClient.GetMediaAsync(args, format);
                 }
             }
 
@@ -245,11 +241,11 @@
                 }
 
                 await embed.AddInlineField("Rating", $"{media.Score ?? 0}/100")
-				    .AddInlineField("Genres", string.Join("\n", media.Genres) ?? "None")
-			        .AddInlineField("Description", description ?? "None")
+				    .AddInlineField("Genres", string.Join("\n", media.Genres))
+			        .AddInlineField("Description", description)
 				    .SetColor(0, 170, 255)
 				    .SetThumbnail(media.CoverImage)
-				    .SetFooter("Powered by anilist.co", "")
+				    .SetFooter("Powered by anilist.co")
 				    .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
 			}

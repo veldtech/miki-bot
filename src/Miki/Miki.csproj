@@ -41,10 +41,10 @@
     <PackageReference Include="Miki.Discord" Version="3.2.0" />
     <PackageReference Include="Miki.Discord.Rest" Version="3.2.0" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.2.2" />
-    <PackageReference Include="Miki.Framework.Arguments" Version="2.1.0" />
-    <PackageReference Include="Miki.Framework.Commands" Version="2.1.2" />
-    <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.2.2" />
+    <PackageReference Include="Miki.Framework" Version="2.3.0" />
+    <PackageReference Include="Miki.Framework.Arguments" Version="2.3.0" />
+    <PackageReference Include="Miki.Framework.Commands" Version="2.3.0" />
+    <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.3.0" />
     <PackageReference Include="Miki.Functional" Version="0.1.1" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="Miki.UrbanDictionary" Version="0.2.0" />

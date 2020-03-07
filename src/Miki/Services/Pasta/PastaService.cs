@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Miki.Bot.Models;
-using Miki.Framework;
-using Miki.Patterns.Repositories;
-using Miki.Services.Pasta.Exceptions;
-
-namespace Miki.Services
+﻿namespace Miki.Services.Pasta
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Miki.Bot.Models;
+    using Miki.Framework;
+    using Miki.Patterns.Repositories;
+    using Miki.Services.Pasta.Exceptions;
     using Miki.Bot.Models.Models.Core;
 
     public class PastaSearchResult : IPaginated<GlobalPasta>

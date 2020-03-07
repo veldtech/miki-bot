@@ -4,7 +4,6 @@
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets;
     using Miki.Framework;
     using Miki.Framework.Commands.Filters;
     using Miki.Net.Http;
@@ -34,12 +33,10 @@
 					.SetTitle("Emoji Identified!")
 					.AddInlineField("Name", emote.Name)
 					.AddInlineField("Id", emote.Id.ToString())
-					//.AddInlineField("Created At", emote.ToString())
-					.AddInlineField("Code", "`" + emote.ToString() + "`")
-					//.SetThumbnail(emote.Url)
+					.AddInlineField("Code", $"`{emote}`")
 					.ToEmbed()
                     .QueueAsync(e, e.GetChannel());
-			}
+            }
         }
 
 		[Command("say")]
@@ -72,7 +69,7 @@
 
 			if (user.Id == 0)
 			{
-				await e.GetChannel().SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync("none.");
 			}
 
 			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
@@ -83,11 +80,12 @@
 		public async Task IdenGuildUserAsync(IContext e)
 		{
             var api = e.GetService<IApiClient>();
-            var user = await api.GetGuildUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
+            var user = await api.GetGuildUserAsync(
+				ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
 
 			if (user == null)
 			{
-				await e.GetChannel().SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync("none.");
 			}
 
 			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
@@ -121,7 +119,8 @@
 		public async Task HasPermissionAsync(IContext e)
 		{
 			var user = await e.GetGuild().GetSelfAsync();
-			if(await user.HasPermissionsAsync(Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
+			if(await user.HasPermissionsAsync(
+                Enum.Parse<GuildPermission>(e.GetArgumentPack().Pack.TakeAll())))
 			{
 				e.GetChannel().QueueMessage(e, null, "Yes!");
 			}
@@ -140,7 +139,7 @@
 
 			if (user == null)
 			{
-				await e.GetChannel().SendMessageAsync($"none.");
+				await e.GetChannel().SendMessageAsync("none.");
 			}
 
 			await e.GetChannel().SendMessageAsync($"```json\n{JsonConvert.SerializeObject(user)}```");
@@ -169,7 +168,8 @@
 		{
 			var roles = await e.GetGuild().GetRolesAsync();
 			var self = await e.GetGuild().GetSelfAsync();
-			e.GetChannel().QueueMessage(e, null, $"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
+			e.GetChannel().QueueMessage(
+                e, null, $"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
 		}
 
 		[Command("ignore")]
@@ -245,7 +245,8 @@
 			})).Entity;
 
 			await context.SaveChangesAsync();
-			e.GetChannel().QueueMessage(e, null, $"Key generated for {e.GetArgumentPack().Pack.TakeAll()} days `{key.Key}`");
+			e.GetChannel().QueueMessage(
+                e, null, $"Key generated for {key.StatusTime.TotalDays} days `{key.Key}`");
 		}
 
 		[Command("setexp")]
@@ -259,27 +260,27 @@
 				return;
 			}
 
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+			var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
 
 			e.GetArgumentPack().Take(out int amount);
 			var context = e.GetService<MikiDbContext>();
 
-			LocalExperience u = await LocalExperience.GetAsync(
+			var localUser = await LocalExperience.GetAsync(
 				context,
 				e.GetGuild().Id,
 				user.Id);
-			if(u == null)
+			if(localUser == null)
 			{
-				u = await LocalExperience.CreateAsync(
+				localUser = await LocalExperience.CreateAsync(
 					context,
 					e.GetGuild().Id,
 					user.Id,
 					user.Username);
 			}
 
-			u.Experience = amount;
+			localUser.Experience = amount;
 			await context.SaveChangesAsync();
-			await cache.UpsertAsync($"user:{e.GetGuild().Id}:{e.GetAuthor().Id}:exp", u.Experience);
+			await cache.UpsertAsync($"user:{e.GetGuild().Id}:{e.GetAuthor().Id}:exp", localUser.Experience);
 			e.GetChannel().QueueMessage(e, null, ":ok_hand:");
 		}
 
