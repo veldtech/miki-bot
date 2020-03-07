@@ -16,6 +16,7 @@
     using Microsoft.EntityFrameworkCore;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Scopes;
+    using Miki.Framework.Commands.Scopes.Models;
     using Miki.Framework.Exceptions;
     using Miki.Utility;
     using Miki.Services;
@@ -317,7 +318,7 @@
         [RequiresScope("developer.internal")]
         public async Task AddScopeAsync(IContext e)
         {
-            var scopeStage = e.GetService<ScopePipelineStage>();
+            var scopeStage = e.GetService<ScopeService>();
             e.GetArgumentPack().Take(out string userStr);
             var user = await DiscordExtensions.GetUserAsync(userStr, e.GetGuild());
             if(user == null)
@@ -327,7 +328,10 @@
 
             e.GetArgumentPack().Take(out string scope);
 
-            await scopeStage.AddScopeAsync(e.GetService<DbContext>(), user, scope);
+            await scopeStage.AddScopeAsync(new Scope{
+                UserId = (long)user.Id, 
+                ScopeId = scope
+            });
             e.GetChannel().QueueMessage(e, null, ":ok_hand:");
         }
 

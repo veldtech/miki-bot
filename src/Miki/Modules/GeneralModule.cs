@@ -444,7 +444,8 @@
                     bool hasAllScopes = true;
                     foreach(var scope in requiresScopeAttributes)
                     {
-                        if(await scopesService.HasScopeAsync((long)e.GetAuthor().Id, scope.ScopeId))
+                        if(await scopesService.HasScopeAsync(
+                            (long)e.GetAuthor().Id, new [] {scope.ScopeId }))
                         {
                             continue;
                         }
