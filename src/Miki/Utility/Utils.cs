@@ -21,6 +21,7 @@ namespace Miki.Utility
     using Miki.Framework.Arguments;
     using Miki.Framework.Commands;
     using Miki.Framework.Language;
+    using Miki.Functional;
     using Miki.Helpers;
     using Miki.Localization;
     using Miki.Localization.Models;

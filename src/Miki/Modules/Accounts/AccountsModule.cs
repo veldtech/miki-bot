@@ -21,12 +21,10 @@ namespace Miki.Modules.Accounts
     using Miki.Common.Builders;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Helpers;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
