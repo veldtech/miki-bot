@@ -305,10 +305,9 @@ namespace Miki.Modules
             e.GetArgumentPack().Take(out int page);
 
             var context = e.GetService<MikiDbContext>();
-            var service = e.GetService<PastaService>();
 
             var authorId = targetUser.Id.ToDbLong();
-            List<PastaVote> pastaVotes = await context.Votes
+            var pastaVotes = await context.Votes
                 .Where(x => x.UserId == authorId 
                     && x.PositiveVote == lovedPastas)
                 .ToListAsync();
