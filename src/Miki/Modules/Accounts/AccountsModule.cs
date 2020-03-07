@@ -233,10 +233,7 @@ namespace Miki.Modules.Accounts
             }
 
             await embed.ToEmbed()
-                .QueueAsync(
-                    scope.ServiceProvider.GetService<MessageWorker>(),
-                    scope.ServiceProvider.GetService<IDiscordClient>(),
-                    channel)
+                .QueueAsync(scope.ServiceProvider.GetService<MessageWorker>(), channel)
                 .ConfigureAwait(false);
         }
 

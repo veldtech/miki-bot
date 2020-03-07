@@ -145,12 +145,12 @@
 
             var args = e.GetArgumentPack();
 
-            args.Take(out string giveawayText);
+            var giveawayText = args.TakeRequired<string>();
             if(args.CanTake)
             {
-                while(!e.GetArgumentPack().Pack.Peek().StartsWith("-"))
+                while(!args.Pack.Peek().HasValue)
                 {
-                    giveawayText += " " + e.GetArgumentPack().Pack.Take();
+                    giveawayText += " " + args.Pack.Take();
                 }
             }
 
@@ -542,23 +542,21 @@
                 .WithTitle(new RawResource("Ping"))
                 .WithDescription("ping_placeholder")
                 .Build()
-                .QueueAsync(e,
-                    e.GetChannel(),
-                    modifier: x => x.ThenWait(200)
-                        .Then(y =>
-                        {
-                            float ping = (float) (y.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
-                            return new EmbedBuilder()
-                                .SetTitle("Pong - " + Environment.MachineName)
-                                .SetColor(
-                                    Color.Lerp(
-                                        new Color(0.0f, 1.0f, 0.0f), 
-                                        new Color(1.0f, 0.0f, 0.0f), 
-                                        Math.Min(ping / 1000, 1f)))
-                                .AddInlineField("Miki", ping.ToString("N0") + "ms")
-                                .ToEmbed()
-                                .EditAsync(y);
-                        }));
+                .QueueAsync(e, e.GetChannel(), modifier: x => x.ThenWait(200)
+                    .Then(y =>
+                    {
+                        float ping = (float)(y.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
+                        return new EmbedBuilder()
+                            .SetTitle("Pong - " + Environment.MachineName)
+                            .SetColor(
+                                Color.Lerp(
+                                    new Color(0.0f, 1.0f, 0.0f),
+                                    new Color(1.0f, 0.0f, 0.0f),
+                                    Math.Min(ping / 1000, 1f)))
+                            .AddInlineField("Miki", ping.ToString("N0") + "ms")
+                            .ToEmbed()
+                            .EditAsync(y);
+                    }));
         }
 
         [Command("prefix")]
@@ -634,8 +632,7 @@
                     .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
                     .SetDescription(
                         locale.GetString(
-                            "miki_module_general_prefix_success_message",
-                            trigger.DefaultValue))
+                            "miki_module_general_prefix_success_message", trigger.DefaultValue))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
@@ -652,16 +649,11 @@
                 .ConfigureAwait(false);
 
             await new EmbedBuilder()
-                {
-                    Title = "⚙️ Miki stats",
-                    Description = e.GetLocale().GetString("stats_description"),
-                    Color = new Color(0.3f, 0.8f, 1),
-                }.AddField(
-                    $"🖥️ {locale.GetString("discord_servers")}",
-                    serverCount.ToString("N0"))
-                .AddField(
-                    "More info",
-                    "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
+                .SetTitle("⚙️ Miki stats")
+                .SetDescription(locale.GetString("stats_description"))
+                .SetColor(0.3f, 0.8f, 1)
+                .AddField($"🖥️ {locale.GetString("discord_servers")}", serverCount.ToString("N0"))
+                .AddField("More info", "https://p.datadoghq.com/sb/01d4dd097-08d1558da4")
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
@@ -719,7 +711,7 @@
 			builder.AppendLine($"`Color Hex_:` {c.ToString()}");
 
 			embed.AddField(
-				e.CreateResource("miki_module_whois_tag_personal"),
+				new LanguageResource("miki_module_whois_tag_personal"),
 				new RawResource(builder.ToString())
 			);
 
