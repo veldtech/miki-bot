@@ -37,18 +37,14 @@
             throw new InvalidEntityException("channel");
         }
 
-        public static Task<IDiscordGuildUser> FindUserAsync(
-            this IDiscordGuild guild,
-            string argument)
+        public static Task<IDiscordGuildUser> FindUserAsync(this IDiscordGuild guild, string argument)
         {
             return FindUserById(guild, argument)
                 .OrElse(() => FindUserByMention(guild, argument))
                 .OrElse(() => FindUserByName(guild, argument))
                 .OrElseThrow(new UserNullException());
         }
-        public static Task<IDiscordGuildUser> FindUserAsync(
-            this IDiscordGuild guild,
-            IContext context)
+        public static Task<IDiscordGuildUser> FindUserAsync(this IDiscordGuild guild, IContext context)
         {
             if(context.GetArgumentPack().Take(out string resource))
             {
@@ -78,12 +74,14 @@
                     return guild.GetRoleAsync(m.Id);
                 }
             }
-
             return Task.FromException<IDiscordRole>(new InvalidEntityException("role"));
         }
 
         public static Task<IDiscordRole> FindRoleByName(IDiscordGuild guild, string id)
-            => guild.GetRolesAsync().Map(y => y.FirstOrDefault(x => x.Name.ToLowerInvariant() == id));
+        {
+            return guild.GetRolesAsync()
+                .Map(y => y.FirstOrDefault(x => x.Name.ToLowerInvariant() == id));
+        }
 
         public static async Task<IDiscordGuildChannel> FindChannelById(IDiscordGuild guild, string id)
         {
@@ -117,7 +115,6 @@
             {
                 return await guild.GetMemberAsync(userId);
             }
-
             throw new InvalidEntityException("id");
         }
 
@@ -131,15 +128,14 @@
                     return await guild.GetMemberAsync(mention.Id);
                 }
             }
-
             throw new InvalidEntityException("user");
         }
 
         public static Task<IDiscordGuildUser> FindUserByName(IDiscordGuild guild, string name)
             => guild.GetMembersAsync()
                 .Map(r => r.First(
-                        x => x.Nickname?.ToLowerInvariant() == name.ToLowerInvariant()
-                             || name.ToLowerInvariant().StartsWith(x.Username.ToLowerInvariant())));
+                    x => x.Nickname?.ToLowerInvariant() == name.ToLowerInvariant() 
+                         || name.ToLowerInvariant().StartsWith(x.Username.ToLowerInvariant())));
     }
 }
     

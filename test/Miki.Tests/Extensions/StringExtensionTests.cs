@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki.Tests.Extensions
+﻿namespace Miki.Tests.Extensions
 {
     using Xunit;
 
