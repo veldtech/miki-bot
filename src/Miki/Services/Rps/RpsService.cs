@@ -36,8 +36,8 @@
         /// </summary>
         private readonly List<RpsWeapon> weapons = new List<RpsWeapon>
         {
-            new RpsWeapon("Scissors", ":scissors:"),
             new RpsWeapon("Rock", ":full_moon:"),
+            new RpsWeapon("Scissors", ":scissors:"),
             new RpsWeapon("Paper", ":page_facing_up:")
         };
 
