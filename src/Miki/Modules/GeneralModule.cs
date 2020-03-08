@@ -4,7 +4,6 @@
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Framework.Commands.Prefixes;
     using Microsoft.EntityFrameworkCore;
-    using Miki.API;
     using Miki.Bot.Models;
     using Miki.Cache;
     using Miki.Discord;
@@ -105,7 +104,7 @@
                 }
             };
 
-            Result<string> result = new Result<string>(() => expression.Evaluate().ToString());
+            var result = Functional.AsResult(() => expression.Evaluate().ToString());
             if(result.IsValid)
             {
                 return new EmbedBuilder()
@@ -444,7 +443,8 @@
                     bool hasAllScopes = true;
                     foreach(var scope in requiresScopeAttributes)
                     {
-                        if(await scopesService.HasScopeAsync((long)e.GetAuthor().Id, scope.ScopeId))
+                        if(await scopesService.HasScopeAsync(
+                            (long)e.GetAuthor().Id, new [] {scope.ScopeId }))
                         {
                             continue;
                         }
