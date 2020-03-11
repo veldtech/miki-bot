@@ -121,8 +121,8 @@
                 .UseFilters(
                     new BotFilter(),
                     new UserFilter())
-                .UseStage(new FetchDataStage())
                 .UsePrefixes()
+                .UseStage(new FetchDataStage())
                 .UseLocalization()
                 .UseArgumentPack()
                 .UseCommandHandler()
@@ -282,10 +282,9 @@
 
             serviceCollection.AddScoped<IPrefixService, PrefixService>();
 
-            serviceCollection.AddSingleton(x =>
-                new CommandTreeBuilder(x)
-                    .AddCommandBuildStep(new ConfigurationManagerAdapter())
-                    .Create(Assembly.GetExecutingAssembly()));
+            serviceCollection.AddSingleton(x => new CommandTreeBuilder(x)
+                .AddCommandBuildStep(new ConfigurationManagerAdapter())
+                .Create(Assembly.GetExecutingAssembly()));
         }
 
         public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
