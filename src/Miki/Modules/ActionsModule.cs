@@ -3,6 +3,8 @@
     using Miki.Discord;
     using Miki.Framework;
     using System.Threading.Tasks;
+    using Miki.Discord.Common;
+    using Miki.Discord.Common.Models;
     using Miki.Framework.Commands;
     using Miki.Utility;
 
@@ -297,97 +299,100 @@
 
 		[Command("ask")]
 		public async Task AskAsync(IContext e)
-			=> await QueueAction(e, "asks", askImage)
+			=> await QueueActionAsync(e, "asks", askImage)
                 .ConfigureAwait(false);
 
 		[Command("bite")]
 		public async Task BiteAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "bites", biteImages[MikiRandom.Next(biteImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("cake")]
 		public async Task CakeAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "feeds", cakeImages[MikiRandom.Next(cakeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("cuddle")]
 		public async Task CuddleAsync(IContext e)
-			=> await QueueAction(e, 
+			=> await QueueActionAsync(e, 
                     "cuddles", 
                     cuddleImages[MikiRandom.Next(cuddleImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("glare")]
 		public async Task GlareAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "glares at", glareImages[MikiRandom.Next(glareImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("highfive")]
 		public async Task HighFiveAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "high-fives", highFiveImages[MikiRandom.Next(highFiveImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("hug")]
 		public async Task HugAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "hugs", hugImages[MikiRandom.Next(hugImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("poke")]
 		public async Task PokeAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "pokes", pokeImages[MikiRandom.Next(pokeImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("punch")]
 		public async Task PunchAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "punches", punchImages[MikiRandom.Next(punchImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("kiss")]
 		public async Task KissAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "kisses", kissImages[MikiRandom.Next(kissImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("lick")]
 		public async Task LickAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "licks", lickImages[MikiRandom.Next(lickImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("pat",  "pet" )]
 		public async Task PetAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "pats", patImages[MikiRandom.Next(patImages.Length)])
                 .ConfigureAwait(false);
 
         [Command("slap")]
 		public async Task SlapAsync(IContext e)
-			=> await QueueAction(
+			=> await QueueActionAsync(
                     e, "slaps", slapImages[MikiRandom.Next(slapImages.Length)])
                 .ConfigureAwait(false);
 
-        public async Task QueueAction(IContext e, string action, string imageUrl)
+        public async Task QueueActionAsync(IContext e, string action, string imageUrl)
         {
             EmbedBuilder builder = new EmbedBuilder();
 
-            var messageContent = await e.GetArgumentPack().Pack.TakeAll()
-                .RemoveMentionsAsync(e.GetGuild());
+            var messageContent = e.GetArgumentPack().Pack.TakeAll();
+            if(e.GetMessage() is IDiscordGuildMessage)
+			{
+				messageContent = await messageContent.RemoveMentionsAsync(e.GetGuild());
+			}
 
             if (!string.IsNullOrWhiteSpace(messageContent))
             {
                 builder.SetTitle($"{e.GetAuthor().Username} {action} {messageContent}");
             }
             else
-			{
-				string username = (await e.GetGuild().GetSelfAsync()).Username;
-                builder.SetTitle($"{username} {action} {e.GetAuthor().Username}");
+            {
+                var self = await e.GetService<IDiscordClient>().GetSelfAsync();
+                builder.SetTitle($"{self.Username} {action} {e.GetAuthor().Username}");
             }
 
             builder.SetImage(imageUrl);
