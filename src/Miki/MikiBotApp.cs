@@ -1,4 +1,7 @@
-﻿namespace Miki
+﻿using Miki.Services.Lottery;
+using Miki.Services.Scheduler;
+
+namespace Miki
 {
     using System;
     using System.Collections.Generic;
@@ -254,10 +257,10 @@
 
             serviceCollection.AddSingleton<AchievementCollection>();
             serviceCollection.AddScoped<AchievementService>();
+            serviceCollection.AddSingleton<ISchedulerService, SchedulerService>();
 
             serviceCollection.AddScoped<GuildService>();
             serviceCollection.AddScoped<MarriageService>();
-            serviceCollection.AddScoped<IRpsService, RpsService>();
             serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
             serviceCollection.AddScoped<PermissionService>();
             serviceCollection.AddScoped<ScopeService>();
@@ -272,8 +275,12 @@
                     }
                     return new OsuApiClientV1(config.OptionalValues.OsuApiKey);
                 });
-            serviceCollection.AddScoped<BlackjackService>();
             serviceCollection.AddScoped<LeaderboardsService>();
+
+            // Gambling Services
+            serviceCollection.AddScoped<BlackjackService>();
+            serviceCollection.AddScoped<IRpsService, RpsService>();
+            serviceCollection.AddScoped<ILotteryService, LotteryService>();
 
             serviceCollection.AddSingleton(new PrefixCollectionBuilder()
                 .AddAsDefault(new DynamicPrefixTrigger(">"))
