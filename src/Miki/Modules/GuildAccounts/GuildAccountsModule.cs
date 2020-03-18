@@ -202,26 +202,27 @@
             public async Task GuildBankBalance(IContext e)
             {
                 var context = e.GetService<DbContext>();
+                var accountService = e.GetService<IBankAccountService>();
+                var locale = e.GetLocale();
 
                 var guildUser = await context.Set<GuildUser>()
                     .SingleOrDefaultAsync(x => x.Id == (long)e.GetGuild().Id);
 
-                var account = await BankAccount.GetAsync(context, e.GetAuthor().Id, e.GetGuild().Id);
+                var account = await accountService.GetOrCreateAccountAsync(
+                    (long)e.GetAuthor().Id, 
+                    (long)e.GetGuild().Id);
 
-                await new LocalizedEmbedBuilder(e.GetLocale())
-                    .WithTitle(new LanguageResource("guildbank_title", e.GetGuild().Name))
-                    .WithColor(new Color(255, 255, 255))
-                    .WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
+                await new EmbedBuilder()
+                    .SetTitle(locale.GetString("guildbank_title", e.GetGuild().Name))
+                    .SetThumbnail("https://imgur.com/KXtwIWs.png")
+                    .SetColor(255, 255, 255)
                     .AddField(
-                        new LanguageResource("guildbank_balance_title"),
-                        new LanguageResource("guildbank_balance", guildUser.Currency.ToString("N0")),
-                        true
-                    )
+                        locale.GetString("guildbank_balance_title"),
+                        locale.GetString("guildbank_balance", $"{guildUser.Currency:N0}"))
                     .AddField(
-                        new LanguageResource("guildbank_contributed", "{0}"),
-                        new StringResource(account.TotalDeposited.ToString("N0"))
-                    ).Build()
-                    .QueueAsync(e, e.GetChannel());
+                        locale.GetString("guildbank_contributed"),
+                        $"{account.TotalDeposited:N0}")
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
 
             [Command("deposit", "dep")]
@@ -229,30 +230,31 @@
             {
                 var context = e.GetService<DbContext>();
                 var userService = e.GetService<IUserService>();
+                var accountService = e.GetService<IBankAccountService>();
+                var transactionService = e.GetService<ITransactionService>();
                 var locale = e.GetLocale();
 
+                var totalDeposited = e.GetArgumentPack().TakeRequired<int>();
+                var user = await userService.GetOrCreateUserAsync(e.GetAuthor());
+
+                await transactionService.CreateTransactionAsync(
+                    new TransactionRequest.Builder()
+                        .WithAmount(totalDeposited)
+                        .WithReceiver(AppProps.Currency.BankId)
+                        .WithSender(user.Id)
+                        .Build());
+
+                //TODO: Create GuildUserService.
                 var guildUser = await context.Set<GuildUser>()
                     .SingleOrDefaultAsync(x => x.Id == (long)e.GetGuild().Id);
-
-                int totalDeposited = e.GetArgumentPack().TakeRequired<int>();
-
-                User user = await userService.GetOrCreateUserAsync(e.GetAuthor());
-
-                user.RemoveCurrency(totalDeposited);
                 guildUser.Currency += totalDeposited;
-
-                await userService.UpdateUserAsync(user);
-                // TODO: abstractify to a service
                 context.Update(guildUser);
 
-                BankAccount account = await BankAccount.GetAsync(context, e.GetAuthor().Id, e.GetGuild().Id);
-                context.Update(account);
-                account.Deposit(totalDeposited);
-                await context.SaveChangesAsync();
+                await accountService.DepositAsync((long)e.GetAuthor().Id, (long)e.GetGuild().Id, totalDeposited);
 
                 await new EmbedBuilder()
                     .SetAuthor("Guild bank", "https://imgur.com/KXtwIWs.png")
-                    .SetDescription(locale.GetString("guildbank_deposit_title", e.GetAuthor().Username, totalDeposited.ToString("N0")))
+                    .SetDescription(locale.GetString("guildbank_deposit_title", e.GetAuthor().Username, $"{totalDeposited:N0}"))
                     .SetColor(new Color(255, 255, 255))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());

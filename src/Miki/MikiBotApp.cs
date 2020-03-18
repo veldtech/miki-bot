@@ -261,6 +261,7 @@
             serviceCollection.AddScoped<PermissionService>();
             serviceCollection.AddScoped<ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
+            serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
             serviceCollection.AddSingleton<IOsuApiClient>(
                 x =>
                 {
