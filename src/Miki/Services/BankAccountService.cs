@@ -3,8 +3,6 @@
     using System;
     using System.Threading.Tasks;
     using Bot.Models;
-    using Bot.Models.Exceptions;
-    using Bot.Models.Models.User;
     using Framework;
     using Patterns.Repositories;
 
@@ -59,7 +57,7 @@
 
         // TODO: Add withdraw capability.
         /// <inheritdoc />
-        public async ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount)
+        public ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount)
             => throw new NotImplementedException();
 
         /// <inheritdoc />
