@@ -647,6 +647,7 @@
   "miki_command_usage_setnotifications": ">setnotifications [-type:(rewards only|all|none)] [-g:true]",
   "guildhouse_buy": "For your next upgrade. Your guild needs to pay {0} mekos! use `>guildupgrade house` to purchase it.",
   "error_user_null": "User not found!",
+  "error_bank_account_null": "Bank account doesn't exist!",
   "error_notifications_setting_not_found": "The setting has not been found in Miki's configurable notifications! The valid options are: {0}",
   "error_notifications_type_not_found": "There is no setting called {0} in {1} present. Please pick from these options: {2}",
   "notifications_update_success": "Notification setting updated successfully!",

@@ -20,26 +20,33 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<BankAccount> GetOrCreateAccountAsync(long userId, long guildId)
+        public async ValueTask<BankAccount> CreateAccountAsync(AccountDetails accountDetails)
         {
-            var account = await repository.GetAsync(userId, guildId);
+            var account = new BankAccount
+            {
+                UserId = accountDetails.UserId,
+                GuildId = accountDetails.GuildId
+            };
+            await repository.AddAsync(account);
+            await unitOfWork.CommitAsync();
+            return account;
+        }
+
+        /// <inheritdoc />
+        public async ValueTask<BankAccount> GetAccountAsync(AccountDetails accountDetails)
+        {
+            var account = await repository.GetAsync(accountDetails.UserId, accountDetails.GuildId);
             if (account == null)
             {
-                account = new BankAccount
-                {
-                    UserId = userId,
-                    GuildId = guildId
-                };
-                await repository.AddAsync(account);
-                await unitOfWork.CommitAsync();
+                throw new BankAccountNullException();
             }
             return account;
         }
 
         /// <inheritdoc />
-        public async ValueTask<BankAccount> DepositAsync(long userId, long guildId, int amount)
+        public async ValueTask<BankAccount> DepositAsync(AccountDetails accountDetails, int amount)
         {
-            var account = await GetOrCreateAccountAsync(userId, guildId).ConfigureAwait(false);
+            var account = await this.GetOrCreateBankAccountAsync(accountDetails).ConfigureAwait(false);
 
             account.Currency += amount;
             account.TotalDeposited += amount;
@@ -50,8 +57,9 @@
             return account;
         }
 
+        // TODO: Add withdraw capability.
         /// <inheritdoc />
-        public async ValueTask<BankAccount> WithdrawAsync(long userId, long guildId, int amount)
+        public async ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount)
             => throw new NotImplementedException();
 
         /// <inheritdoc />
@@ -67,13 +75,27 @@
             => unitOfWork?.Dispose();
     }
 
+    public struct AccountDetails
+    {
+        public long UserId;
+        public long GuildId;
+
+        public AccountDetails(long userId = 1, long guildId = 1)
+        {
+            UserId = userId;
+            GuildId = guildId;
+        }
+    }
+
     public interface IBankAccountService : IDisposable
     {
-        ValueTask<BankAccount> GetOrCreateAccountAsync(long userId, long guildId);
+        ValueTask<BankAccount> CreateAccountAsync(AccountDetails accountDetails);
 
-        ValueTask<BankAccount> DepositAsync(long userId, long guildId, int amount);
+        ValueTask<BankAccount> GetAccountAsync(AccountDetails accountDetails);
 
-        ValueTask<BankAccount> WithdrawAsync(long userId, long guildId, int amount);
+        ValueTask<BankAccount> DepositAsync(AccountDetails accountDetails, int amount);
+
+        ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount);
 
         ValueTask UpdateAccountAsync(BankAccount account);
 

@@ -31,10 +31,15 @@
         {
             await using var unit = NewContext();
             var accountService = new BankAccountService(unit);
+            var accountDetails = new AccountDetails
+            {
+                UserId = 1,
+                GuildId = 1
+            };
 
-            await accountService.DepositAsync(1L, 1L, 5000);
+            await accountService.DepositAsync(accountDetails, 5000);
 
-            var account = await accountService.GetOrCreateAccountAsync(1L, 1L);
+            var account = await accountService.GetOrCreateBankAccountAsync(accountDetails);
 
             Assert.NotNull(account);
             Assert.Equal(10000, account.Currency);
@@ -46,10 +51,15 @@
         {
             await using var unit = NewContext();
             var accountService = new BankAccountService(unit);
+            var accountDetails = new AccountDetails
+            {
+                UserId = 1,
+                GuildId = 2
+            };
 
-            await accountService.DepositAsync(1L, 2L, 5000);
+            await accountService.DepositAsync(accountDetails, 5000);
 
-            var account = await accountService.GetOrCreateAccountAsync(1L, 2L);
+            var account = await accountService.GetOrCreateBankAccountAsync(accountDetails);
 
             Assert.NotNull(account);
             Assert.Equal(5000, account.Currency);

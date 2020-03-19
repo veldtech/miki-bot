@@ -18,9 +18,25 @@
             {
                 return await service.GetUserAsync((long)user.Id);
             }
-            catch(UserNullException)
+            catch (UserNullException)
             {
                 return await service.CreateUserAsync((long)user.Id, user.Username);
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns the User regardless of business errors.
+        /// </summary>
+        public static async Task<BankAccount> GetOrCreateBankAccountAsync(
+            this IBankAccountService service, AccountDetails accountDetails)
+        {
+            try
+            {
+                return await service.GetAccountAsync(accountDetails);
+            }
+            catch (BankAccountNullException)
+            {
+                return await service.CreateAccountAsync(accountDetails);
             }
         }
     }
