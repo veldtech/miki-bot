@@ -1,7 +1,7 @@
 ﻿namespace Miki.Services
 {
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class DuplicateSessionException : LocalizedException
     {

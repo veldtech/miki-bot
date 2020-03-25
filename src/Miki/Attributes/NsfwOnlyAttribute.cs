@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Miki.Attributes
 {
     using System.Threading.Tasks;
-    using Miki.Discord;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Utility;

@@ -1,7 +1,6 @@
-namespace Miki.Modules
+namespace Miki.Modules.Pasta
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -13,6 +12,7 @@ namespace Miki.Modules
     using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Commands;
+    using Miki.Localization;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Services;
@@ -31,7 +31,7 @@ namespace Miki.Modules
             if(e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed(
-                    locale.GetString("createpasta_error_no_content"))
+                    locale.GetString(Resources.ErrorCreatePastaEmptyContent))
                         .ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                 return;
@@ -40,10 +40,7 @@ namespace Miki.Modules
             var id = e.GetArgumentPack().TakeRequired<string>();
             var text = e.GetArgumentPack().Pack.TakeAll();
 
-            if(Regex.IsMatch(
-                text,
-                "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)",
-                RegexOptions.IgnoreCase))
+            if(Regex.IsMatch(text, Utils.DiscordInviteRegex, RegexOptions.IgnoreCase))
             {
                 throw new PastaInviteException();
             }
@@ -53,7 +50,7 @@ namespace Miki.Modules
             await pastaService.CreatePastaAsync(id, text, (long)e.GetAuthor().Id);
 
             await e.SuccessEmbed(
-                locale.GetString("miki_module_pasta_create_success", id))
+                locale.GetString(Resources.CreatePastaSuccess(id)))
                 .QueueAsync(e, e.GetChannel());
 
             var a = e.GetService<AchievementService>();
@@ -69,8 +66,8 @@ namespace Miki.Modules
             if(string.IsNullOrWhiteSpace(pastaArg))
             {
                 await e.ErrorEmbed(
-                        locale.GetString("miki_module_pasta_error_specify",
-                        locale.GetString("miki_module_pasta_error_specify")))
+                        locale.GetString("miki_module_pasta_error_specify", 
+                            locale.GetString("verb_delete")))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -87,11 +84,12 @@ namespace Miki.Modules
         [Command("editpasta")]
         public async Task EditPasta(IContext e)
         {
+            var locale = e.GetLocale();
             if(e.GetArgumentPack().Pack.Length < 2)
             {
                 await e.ErrorEmbed(
-                        e.GetLocale().GetString("miki_module_pasta_error_specify",
-                        e.GetLocale().GetString("miki_module_pasta_error_specify_edit")))
+                        locale.GetString("miki_module_pasta_error_specify",
+                            locale.GetString("verb_edit")))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -105,7 +103,7 @@ namespace Miki.Modules
         }
 
         [Command("mypasta")]
-        public async Task MyPasta(IContext e)
+        public async Task MyPastaAsync(IContext e)
         {
             var locale = e.GetLocale();
 
@@ -148,12 +146,13 @@ namespace Miki.Modules
         }
 
         [Command("pasta")]
-        public async Task GetPasta(IContext e)
+        public async Task GetPastaAsync(IContext e)
         {
+            var locale = e.GetLocale();
             var pastaArg = e.GetArgumentPack().Pack.TakeAll();
             if (string.IsNullOrWhiteSpace(pastaArg))
             {
-                await e.ErrorEmbed(e.GetLocale().GetString("pasta_error_no_arg"))
+                await e.ErrorEmbed(locale.GetString("pasta_error_no_arg"))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
                 return;
@@ -194,8 +193,7 @@ namespace Miki.Modules
             string pastaArg = e.GetArgumentPack().Pack.TakeAll();
             if(string.IsNullOrWhiteSpace(pastaArg))
             {
-                await e.ErrorEmbed(
-                    locale.GetString("infopasta_error_no_arg"))
+                await e.ErrorEmbed(locale.GetString("infopasta_error_no_arg"))
                         .ToEmbed()
                         .QueueAsync(e, e.GetChannel());
                 return;
@@ -283,13 +281,13 @@ namespace Miki.Modules
         }
 
         [Command("lovedpasta", "lovedpastas", "favouritepastas")]
-        public async Task LovePastaList(IContext e)
+        public async Task LovePastaListAsync(IContext e)
         {
             await FavouritePastaList(e);
         }
 
         [Command("hatedpasta", "hatedpastas")]
-        public async Task HatePastaList(IContext e)
+        public async Task HatePastaListAsync(IContext e)
         {
             await FavouritePastaList(e, false);
         }
@@ -393,6 +391,15 @@ namespace Miki.Modules
                     votes.Upvotes - votes.Downvotes))
                     .QueueAsync(e, e.GetChannel());
             }
+        }
+
+        private class Resources
+        {
+            public static IResource ErrorCreatePastaEmptyContent
+                => new LanguageResource("createpasta_error_no_content");
+
+            public static IResource CreatePastaSuccess(string pastaId)
+                => new LanguageResource("miki_module_pasta_create_success", pastaId);
         }
     }
 }

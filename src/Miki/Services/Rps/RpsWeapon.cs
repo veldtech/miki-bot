@@ -2,7 +2,7 @@
 {
     using Miki.Bot.Models.Attributes;
 
-    [Verb("weapon")]
+    [Entity("weapon")]
     public class RpsWeapon
 	{
 		public string Name;

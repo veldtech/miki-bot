@@ -1,7 +1,7 @@
 ﻿namespace Miki.Modules.Roles
 {
     using Miki.Discord.Common;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class RequiredRoleMissingException : RoleException
     {

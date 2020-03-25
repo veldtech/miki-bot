@@ -1,16 +1,12 @@
 ﻿namespace Miki.Modules.Internal.Routines
 {
-    using System;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
     using Miki.Bot.Models;
-    using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Nodes;
+    using Miki.Localization.Exceptions;
     using Miki.Logging;
     using Miki.Services.Achievements;
     using StatsdClient;
@@ -19,11 +15,9 @@
 	{
         public DatadogRoutine(
             AccountService accounts,
-            AchievementService achievements,
             IAsyncEventingExecutor<IDiscordMessage> commandPipeline,
             Config config,
-            IDiscordClient discordClient,
-            DiscordApiClient discordApiClient)
+            IDiscordClient discordClient)
         {
             if(string.IsNullOrWhiteSpace(config.DatadogHost))
             {
@@ -40,7 +34,6 @@
             });
 
             CreateAccountMetrics(accounts);
-            //CreateAchievementsMetrics(achievements);
             CreateEventSystemMetrics(commandPipeline);
             CreateDiscordMetrics(discordClient);
 
@@ -128,7 +121,7 @@
                 return default;
             }
 
-            if(!arg.Success)
+            if(!arg.Success && !(arg.Error is LocalizedException))
             {
                 DogStatsd.Counter("commands.error", 1, 1, new[]
                 {

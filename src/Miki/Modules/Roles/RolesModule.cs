@@ -16,7 +16,6 @@
     using System.Threading.Tasks;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
     using Miki.Services;
     using Miki.Services.Transactions;
     using Miki.Utility;

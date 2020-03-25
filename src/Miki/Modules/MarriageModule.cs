@@ -160,7 +160,7 @@ namespace Miki.Modules
 		{
 			var service = e.GetService<MarriageService>();
 
-            var marriages = await service.GetProposalsSent(e.GetAuthor().Id.ToDbLong())
+            var marriages = await service.GetProposalsSentAsync(e.GetAuthor().Id.ToDbLong())
                 .ConfigureAwait(false);
 
 			if(!marriages.Any())
@@ -216,7 +216,7 @@ namespace Miki.Modules
 		{
 			var service = e.GetService<MarriageService>();
 
-			var marriages = await service.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
+			var marriages = await service.GetProposalsReceivedAsync(e.GetAuthor().Id.ToDbLong());
 
 			if(marriages.Count == 0)
 			{
@@ -375,7 +375,7 @@ namespace Miki.Modules
 
             var repository = e.GetService<MarriageService>();
 
-			List<UserMarriedTo> proposals = await repository.GetProposalsReceived(e.GetAuthor().Id.ToDbLong());
+			List<UserMarriedTo> proposals = await repository.GetProposalsReceivedAsync(e.GetAuthor().Id.ToDbLong());
 			List<string> proposalNames = new List<string>();
             var discordclient = e.GetService<IDiscordClient>();
 
@@ -401,7 +401,7 @@ namespace Miki.Modules
 
 			embed.AddField("Proposals Recieved", string.IsNullOrEmpty(output) ? "none (yet!)" : output);
 
-			proposals = await repository.GetProposalsSent(e.GetAuthor().Id.ToDbLong());
+			proposals = await repository.GetProposalsSentAsync(e.GetAuthor().Id.ToDbLong());
 			proposalNames = new List<string>();
 
 			foreach(UserMarriedTo p in proposals)

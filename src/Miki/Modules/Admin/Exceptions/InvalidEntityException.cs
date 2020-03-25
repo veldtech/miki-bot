@@ -3,8 +3,8 @@
     using System;
     using System.Reflection;
     using Miki.Bot.Models.Attributes;
+    using Miki.Localization;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
 
     public class InvalidEntityException : LocalizedException
     {
@@ -27,7 +27,7 @@
         public static InvalidEntityException FromEntity<T>()
         {
             return new InvalidEntityException(
-                typeof(T).GetCustomAttribute<VerbAttribute>()?.Value ?? "unknown");
+                typeof(T).GetCustomAttribute<EntityAttribute>()?.Value ?? "unknown");
         }
     }
 }

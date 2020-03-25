@@ -2,9 +2,9 @@
 {
     using Bot.Models.Exceptions;
     using Miki.Bot.Models;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
-    class InsufficientMarriageSlotsException : UserException
+	class InsufficientMarriageSlotsException : UserException
 	{
 		public override IResource LocaleResource
 			=> new LanguageResource("error_marriageslots_insufficient", User.Name);

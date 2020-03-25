@@ -1,11 +1,10 @@
 ﻿namespace Miki.Tests.Modules
 {
-    using System;
-    using Discord.Common;
-    using Framework;
-    using Framework.Commands.Localization;
-    using Localization.Models;
-    using Moq;
+    using Miki.Discord.Common;
+    using Miki.Framework;
+    using Miki.Framework.Commands.Localization;
+    using Miki.Localization;
+    using Miki.Localization;
 
     public class BaseCommandTest
     {
@@ -22,7 +21,7 @@
         {
             Mock.SetContext(
                 LocalizationPipelineStage.LocaleContextKey,
-                new Locale(locale, resource ?? MockResourceManager.PassThrough));
+                new Locale(locale, resource ?? TestResourceManager.PassThrough));
         }
 
         public void InitWorker()

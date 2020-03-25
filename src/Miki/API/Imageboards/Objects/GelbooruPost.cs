@@ -1,9 +1,9 @@
-﻿using Miki.API.Imageboards.Interfaces;
-using Newtonsoft.Json;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	internal class GelbooruPost : BooruPost, ILinkable
+    using Miki.API.Imageboards.Interfaces;
+    using Newtonsoft.Json;
+
+    internal class GelbooruPost : BooruPost, ILinkable
 	{
 		public string Url => FileUrl;
 		public string SourceUrl => "";

@@ -7,7 +7,7 @@ namespace Miki.Modules.Accounts
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Localization.Models;
+    using Miki.Localization;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -22,7 +22,6 @@ namespace Miki.Modules.Accounts
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Exceptions;
-    using Miki.Localization;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Logging;
@@ -31,6 +30,7 @@ namespace Miki.Modules.Accounts
     using Miki.Services;
     using Miki.Services.Daily;
     using Miki.Services.Achievements;
+    using Miki.Services.Settings;
     using Miki.Services.Transactions;
     using Miki.Utility;
 
@@ -159,7 +159,8 @@ namespace Miki.Modules.Accounts
         {
             using var scope = MikiApp.Instance.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<MikiDbContext>();
-            
+            var settingsService = scope.ServiceProvider.GetService<ISettingsService>();
+
             var service = scope.ServiceProvider
                 .GetService<ILocalizationService>();
 
@@ -187,8 +188,8 @@ namespace Miki.Modules.Accounts
                     .ToListAsync()
                     .ConfigureAwait(false);
 
-                var notificationSetting = await Setting.GetAsync(
-                        context, channel.Id, DatabaseSettingId.LevelUps)
+                var notificationSetting = await settingsService.GetAsync<LevelNotificationsSetting>(
+                        SettingType.LevelUps, (long)channel.Id)
                     .ConfigureAwait(false);
 
                 switch((LevelNotificationsSetting)notificationSetting)
@@ -205,12 +206,8 @@ namespace Miki.Modules.Accounts
 
                 if(rolesObtained.Count > 0)
                 {
-                    var roles = (await guild.GetRolesAsync().ConfigureAwait(false))
-                        .ToList();
-
-                    IDiscordGuildUser guildUser = await guild.GetMemberAsync(user.Id)
-                        .ConfigureAwait(false);
-                    if(guildUser != null)
+                    var roles = (await guild.GetRolesAsync().ConfigureAwait(false)).ToList();
+                    if(user is IDiscordGuildUser guildUser)
                     {
                         foreach(LevelRole role in rolesObtained)
                         {
@@ -220,8 +217,7 @@ namespace Miki.Modules.Accounts
                                 continue;
                             }
 
-                            await guildUser.AddRoleAsync(r)
-                                .ConfigureAwait(false);
+                            await guildUser.AddRoleAsync(r).ConfigureAwait(false);
                         }
                     }
 

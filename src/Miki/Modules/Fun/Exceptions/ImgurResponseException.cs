@@ -2,7 +2,7 @@
 {
     using Imgur.API;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class ImgurResponseException : LocalizedException
     {

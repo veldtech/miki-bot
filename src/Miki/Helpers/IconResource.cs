@@ -1,6 +1,6 @@
 ﻿namespace Miki.Helpers
 {
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class IconResource : IResource
     {

@@ -1,7 +1,7 @@
 ﻿namespace Miki.Modules.CustomCommands
 {
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class DuplicateCommandException : LocalizedException
     {

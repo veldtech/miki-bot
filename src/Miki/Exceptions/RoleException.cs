@@ -2,7 +2,7 @@
 {
     using Miki.Discord.Common;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class RoleException : LocalizedException
     {

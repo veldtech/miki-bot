@@ -1,7 +1,7 @@
 ﻿namespace Miki.Modules.GuildAccounts.Exceptions
 {
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class RivalNullException : LocalizedException
     {

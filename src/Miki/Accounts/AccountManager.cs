@@ -134,11 +134,11 @@
                     {
                         var context = scope.ServiceProvider.GetService<DbContext>();
 
-                        var _ = await Task.WhenAll(
-                                UpdateGlobalDatabaseAsync(context),
-                                UpdateLocalDatabaseAsync(context),
-                                UpdateGuildDatabaseAsync(context))
-                            .ContinueWith(x => context.SaveChangesAsync());
+                        await Task.WhenAll(
+                            UpdateGlobalDatabaseAsync(context),
+                            UpdateLocalDatabaseAsync(context),
+                            UpdateGuildDatabaseAsync(context));
+                        await context.SaveChangesAsync();
                     }
                     catch(Exception ex)
                     {
@@ -157,7 +157,7 @@
             }
             catch(Exception ex)
             {
-                Log.Error(ex.ToString());
+                Log.Error(ex);
             }
         }
 

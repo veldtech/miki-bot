@@ -123,9 +123,9 @@
   "miki_module_pasta_error_search_no_results": "No search query found. Please specify what you want to search for.",
   "miki_module_pasta_error_specify": "Please specify which pasta you would like to {0}.",
   "miki_module_pasta_error_specify_check": "check",
-  "miki_module_pasta_error_specify_delete": "delete",
-  "miki_module_pasta_error_specify_edit": "edit",
-  "miki_module_pasta_error_specify_upvote": "upvote",
+  "verb_delete": "delete",
+  "verb_edit": "edit",
+  "verb_upvote": "upvote",
   "miki_module_pasta_identify_created_by": "Created by",
   "miki_module_pasta_identify_date_created": "Date created",
   "miki_module_pasta_identify_rating": "Rating",
@@ -695,5 +695,5 @@
   "error_data_not_found": "We tried looking what you wanted, but nothing was found.",
   "error_role_not_setup": "This role was not set up using Miki! use {0} to get started!",
   "error_server_internal": "An error occured on a downstream service. {0} responded with {1}",
-  "verb_weapon": "weapon"
+  "entity_weapon": "weapon"
 }

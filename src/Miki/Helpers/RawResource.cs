@@ -1,8 +1,8 @@
 ﻿namespace Miki.Helpers
 {
-    using Miki.Localization.Models;
     using System.Collections.Generic;
     using System.Linq;
+    using Miki.Localization;
 
     public class RawResource : IResource
 	{

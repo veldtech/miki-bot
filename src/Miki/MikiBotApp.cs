@@ -38,7 +38,6 @@
     using Miki.Framework.Commands.Stages;
     using Miki.Localization;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
     using Miki.Serialization;
@@ -68,11 +67,9 @@
         {
             DatadogRoutine routine = new DatadogRoutine(
                 services.GetService<AccountService>(),
-                null,
                 Pipeline,
                 services.GetService<Config>(),
-                services.GetService<IDiscordClient>(),
-                services.GetService<DiscordApiClient>());
+                services.GetService<IDiscordClient>());
 
             var discordClient = services.GetService<IDiscordClient>();
             discordClient.UserUpdate += Client_UserUpdated;
@@ -343,7 +340,7 @@
                     var languageName = Path.GetFileNameWithoutExtension(fileName);
                     await using var json = new MemoryStream(await File.ReadAllBytesAsync(fileName));
                     var dict = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(json);
-                    var resourceManager = new LocaleResoureManager(dict);
+                    var resourceManager = new ResourceManager(dict);
 
                     collection.Add(new Locale(languageName, resourceManager));
                 }
