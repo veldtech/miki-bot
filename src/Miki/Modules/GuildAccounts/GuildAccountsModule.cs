@@ -13,8 +13,7 @@
     using Framework.Commands;
     using Framework.Language;
     using Helpers;
-    using Localization;
-    using Localization.Models;
+    using Miki.Localization;
     using Microsoft.EntityFrameworkCore;
     using Miki.Accounts;
     using Miki.Services;
@@ -187,19 +186,22 @@
         {
             [Command]
             public async Task GuildBankInfoAsync(IContext e)
-                  => await new LocalizedEmbedBuilder(e.GetLocale())
-                      .WithTitle(new LanguageResource("guildbank_title", e.GetGuild().Name))
-                      .WithDescription(new LanguageResource("guildbank_info_description"))
-                      .WithColor(new Color(255, 255, 255))
-                      .WithThumbnailUrl("https://imgur.com/KXtwIWs.png")
-                      .AddField(
-                          new LanguageResource("guildbank_info_help"),
-                          new LanguageResource("guildbank_info_help_description", e.GetPrefixMatch()),
-                          true
-                      ).Build().QueueAsync(e, e.GetChannel());
+            {
+                var locale = e.GetLocale();
+                await new EmbedBuilder()
+                    .SetTitle(locale.GetString("guildbank_title", e.GetGuild().Name))
+                    .SetDescription(locale.GetString("guildbank_info_description"))
+                    .SetColor(new Color(255, 255, 255))
+                    .SetThumbnail("https://imgur.com/KXtwIWs.png")
+                    .AddInlineField(
+                        locale.GetString("guildbank_info_help"),
+                        locale.GetString("guildbank_info_help_description", e.GetPrefixMatch()))
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
+            }
 
             [Command("balance", "bal")]
-            public async Task GuildBankBalance(IContext e)
+            public async Task GuildBankBalanceAsync(IContext e)
             {
                 var context = e.GetService<DbContext>();
                 var accountService = e.GetService<IBankAccountService>();
@@ -261,13 +263,13 @@
                 await new EmbedBuilder()
                     .SetAuthor("Guild bank", "https://imgur.com/KXtwIWs.png")
                     .SetDescription(locale.GetString("guildbank_deposit_title", e.GetAuthor().Username, $"{totalDeposited:N0}"))
-                    .SetColor(new Color(255, 255, 255))
+                    .SetColor(255, 255, 255)
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
             }
         }
 
-		[GuildOnly, Command("guildprofile")]
+        [GuildOnly, Command("guildprofile")]
 		public async Task GuildProfile(IContext e)
 		{
             var context = e.GetService<MikiDbContext>();

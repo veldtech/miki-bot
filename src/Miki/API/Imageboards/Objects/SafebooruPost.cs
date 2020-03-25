@@ -1,9 +1,9 @@
-﻿using Miki.API.Imageboards.Interfaces;
-using Newtonsoft.Json;
-
-namespace Miki.API.Imageboards.Objects
+﻿namespace Miki.API.Imageboards.Objects
 {
-	internal class SafebooruPost : BooruPost, ILinkable
+    using Miki.API.Imageboards.Interfaces;
+    using Newtonsoft.Json;
+
+    internal class SafebooruPost : BooruPost, ILinkable
 	{
 		public string Url =>
 			$"https://safebooru.org/{((IsSample) ? "samples" : "images")}/{Directory}/{((IsSample) ? "sample_" : "")}{Image}";

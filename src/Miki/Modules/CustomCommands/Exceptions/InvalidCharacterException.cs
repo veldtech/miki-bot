@@ -2,7 +2,6 @@
 {
     using Miki.Localization;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
 
     /// <summary>
     /// Throws when a character is not supported in the current context.

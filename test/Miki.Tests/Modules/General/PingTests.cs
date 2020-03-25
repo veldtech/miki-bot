@@ -2,15 +2,10 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Discord;
     using Discord.Common;
-    using Discord.Common.Packets;
     using Discord.Internal;
-    using Framework;
     using Framework.Commands;
-    using Framework.Commands.Localization;
     using Framework.Commands.Stages;
-    using Localization.Models;
     using Miki.Modules;
     using Moq;
     using Xunit;

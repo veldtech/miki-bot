@@ -1,7 +1,7 @@
 ﻿namespace Miki
 {
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     internal class RoleNullException : LocalizedException
 	{

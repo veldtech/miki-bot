@@ -6,7 +6,9 @@
     using Miki.Discord.Common;
     using Miki.Framework;
     using System.Threading.Tasks;
+    using Miki.Modules;
     using Miki.Services.Achievements;
+    using Miki.Services.Settings;
 
     internal class Notification
 	{
@@ -20,20 +22,17 @@
             using var scope = MikiApp.Instance.Services.CreateScope();
             if(channel is IDiscordGuildChannel)
             {
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
-                var achievementSetting = await Setting.GetAsync(
-                    context,
-                    channel.Id,
-                    DatabaseSettingId.Achievements);
-                if(achievementSetting != 0)
+                var context = scope.ServiceProvider.GetService<ISettingsService>();
+                var achievementSetting = await context.GetAsync<AchievementNotificationSetting>(
+                    SettingType.Achievements, (long)channel.Id);
+                if(achievementSetting != AchievementNotificationSetting.All)
                 {
                     return;
                 }
             }
-            await CreateAchievementEmbed(d, user)
-                .QueueAsync(
-                    scope.ServiceProvider.GetService<IMessageWorker<IDiscordMessage>>(),
-                    channel);
+
+            var worker = scope.ServiceProvider.GetService<IMessageWorker<IDiscordMessage>>();
+            await CreateAchievementEmbed(d, user).QueueAsync(worker, channel);
         }
 
 		private static DiscordEmbed CreateAchievementEmbed(

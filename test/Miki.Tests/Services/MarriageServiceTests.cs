@@ -59,14 +59,12 @@
         {
             await InitMarriageAsync();
 
-            await using(var context = NewContext())
-            {
-                var service = new MarriageService(context);
-                var marriage = await service.GetMarriageAsync(1L, 2L);
+            await using var context = NewContext();
+            var service = new MarriageService(context);
+            var marriage = await service.GetMarriageAsync(1L, 2L);
 
-                Assert.False(marriage.Marriage.IsProposing);
-                Assert.NotEqual(marriage.Marriage.TimeOfProposal, marriage.Marriage.TimeOfMarriage);
-            }
+            Assert.False(marriage.Marriage.IsProposing);
+            Assert.NotEqual(marriage.Marriage.TimeOfProposal, marriage.Marriage.TimeOfMarriage);
         }
 
         [Fact]

@@ -19,6 +19,7 @@
     using Miki.Services;
     using Amazon.S3;
     using Miki.Framework.Commands.Prefixes.Triggers;
+    using Miki.Services.Settings;
     using Miki.Utility;
 
     public enum LevelNotificationsSetting
@@ -37,13 +38,6 @@
 	[Module("settings")]
 	internal class SettingsModule
     {
-        private readonly IDictionary<DatabaseSettingId, Enum> settingOptions 
-            = new Dictionary<DatabaseSettingId, Enum>
-            {
-                {DatabaseSettingId.LevelUps, (LevelNotificationsSetting) 0},
-                {DatabaseSettingId.Achievements, (AchievementNotificationSetting) 0}
-            };
-
         private readonly Dictionary<string, string> languageNames = new Dictionary<string, string>
         {
             { "arabic", "ara" },
@@ -124,75 +118,84 @@
                 .ConfigureAwait(false);
         }
 
-		[Command("setnotifications")]
-		public async Task SetupNotifications(IContext e)
+        [Command("setnotifications")]
+        public class SetNotificationsCommand
         {
-            var enumNames = string.Join(", ", Enum.GetNames(typeof(DatabaseSettingId))
-                .Select(x => $"`{x}`"));
-            if(!e.GetArgumentPack().Take(out DatabaseSettingId value))
-			{
-                await e.ErrorEmbedResource("error_notifications_setting_not_found", enumNames)
-                    .ToEmbed()
+            public readonly Dictionary<SettingType, Type> settingOptions =
+                new Dictionary<SettingType, Type>
+                {
+                    {SettingType.Achievements, typeof(AchievementNotificationSetting)},
+                    {SettingType.LevelUps, typeof(LevelNotificationsSetting)}
+                };
+
+            [Command]
+            [DefaultPermission(PermissionStatus.Deny)]
+            public async Task SetNotificationsAsync(IContext e)
+            {
+                if(!e.GetArgumentPack().Take(out SettingType value))
+                {
+                    var enumNames = string.Join(", ", Enum.GetNames(typeof(SettingType))
+                        .Select(x => $"`{x}`"));
+                    await e.ErrorEmbedResource("error_notifications_setting_not_found", enumNames)
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel())
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                if(!settingOptions.TryGetValue(value, out var enumType))
+                {
+                    throw new NotSupportedException();
+                }
+
+                var enumValue = e.GetArgumentPack().TakeRequired<string>();
+
+                if(!Enum.TryParse(enumType, enumValue, true, out var type))
+                {
+                    var enumValueNames = string.Join(
+                        ", ", Enum.GetNames(enumType).Select(x => $"`{x}`"));
+                    await e.ErrorEmbedResource(
+                            "error_notifications_type_not_found",
+                            enumValue,
+                            value.ToString(),
+                            enumValueNames)
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel())
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                var settingService = e.GetService<ISettingsService>();
+                var channels = new List<IDiscordTextChannel> { e.GetChannel() };
+
+                if(e.GetArgumentPack().CanTake)
+                {
+                    if(e.GetArgumentPack().Take(out string attr))
+                    {
+                        if(attr.StartsWith("-g"))
+                        {
+                            channels = (await e.GetGuild().GetChannelsAsync()
+                                    .ConfigureAwait(false))
+                                .Where(x => x.Type == ChannelType.GuildText)
+                                .Select(x => x as IDiscordTextChannel)
+                                .ToList();
+                        }
+                    }
+                }
+
+                foreach(var c in channels)
+                {
+                    await settingService.SetAsync(value, (long)c.Id, (Enum)type)
+                        .ConfigureAwait(false);
+                }
+
+                await e.SuccessEmbedResource("notifications_update_success")
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
-                return;
             }
-
-            if(!settingOptions.TryGetValue(value, out var @enum))
-			{
-				return;
-			}
-
-            var enumValue = e.GetArgumentPack().TakeRequired<string>();
-			
-            var enumValueNames = string.Join(
-                ", ", Enum.GetNames(@enum.GetType()).Select(x => $"`{x}`"));
-            if(!Enum.TryParse(@enum.GetType(), enumValue, true, out var type))
-			{
-				await e.ErrorEmbedResource(
-                        "error_notifications_type_not_found", 
-                        enumValue, 
-                        value.ToString(), 
-                        enumValueNames)
-					.ToEmbed()
-					.QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
-				return;
-			}
-
-			var context = e.GetService<MikiDbContext>();
-            var channels = new List<IDiscordTextChannel> { e.GetChannel() };
-
-			if(e.GetArgumentPack().CanTake)
-			{
-				if(e.GetArgumentPack().Take(out string attr))
-				{
-					if(attr.StartsWith("-g"))
-					{
-						channels = (await e.GetGuild().GetChannelsAsync()
-                                .ConfigureAwait(false))
-							.Where(x => x.Type == ChannelType.GuildText)
-							.Select(x => x as IDiscordTextChannel)
-							.ToList();
-					}
-				}
-			}
-
-			foreach(var c in channels)
-            {
-                await Setting.UpdateAsync(context, c.Id, value, (int)type)
-                    .ConfigureAwait(false);
-            }
-
-            await context.SaveChangesAsync()
-                .ConfigureAwait(false);
-
-            await e.SuccessEmbedResource("notifications_update_success")
-                .QueueAsync(e, e.GetChannel())
-                .ConfigureAwait(false);
         }
 
-		[Command("setprefix")]
+        [Command("setprefix")]
         [DefaultPermission(PermissionStatus.Deny)]
 		public async Task PrefixAsync(IContext e)
         {
@@ -223,7 +226,7 @@
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
-
+         
         [Command("syncavatar")]
 		public async Task SyncAvatarAsync(IContext e)
 		{

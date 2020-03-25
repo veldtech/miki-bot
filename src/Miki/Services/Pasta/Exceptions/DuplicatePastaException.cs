@@ -2,8 +2,7 @@
 {
 	using Miki.Localization;
     using Miki.Bot.Models;
-    using Miki.Localization.Models;
-
+    
     public class DuplicatePastaException : PastaException
 	{
 		public override IResource LocaleResource

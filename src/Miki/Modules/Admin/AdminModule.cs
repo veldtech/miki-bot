@@ -6,8 +6,6 @@ namespace Miki.Modules.Admin
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using System.Reflection;
-    using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
@@ -20,8 +18,6 @@ namespace Miki.Modules.Admin
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Framework.Commands.Scopes.Attributes;
     using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
     using Miki.Modules.Admin.Exceptions;
     using Miki.Utility;
 

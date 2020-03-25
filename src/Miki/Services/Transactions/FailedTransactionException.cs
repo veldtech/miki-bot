@@ -2,7 +2,7 @@
 {
     using System;
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class FailedTransactionException : LocalizedException
     {

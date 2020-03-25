@@ -1,7 +1,7 @@
 ﻿namespace Miki.Services.Pasta.Exceptions
 {
     using Miki.Localization.Exceptions;
-    using Miki.Localization.Models;
+    using Miki.Localization;
 
     public class PastaNotFoundException : LocalizedException
     {

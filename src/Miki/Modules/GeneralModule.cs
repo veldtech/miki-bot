@@ -17,7 +17,6 @@
     using Miki.Framework.Language;
     using Miki.Helpers;
     using Miki.Localization;
-    using Miki.Localization.Models;
     using NCalc;
     using System;
     using System.Collections.Generic;
@@ -35,6 +34,7 @@
     using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Commands.Scopes.Attributes;
+    using Miki.Functional;
     using Miki.Localization.Exceptions;
 
     [Module("General")]
@@ -104,7 +104,7 @@
                 }
             };
 
-            var result = Functional.AsResult(() => expression.Evaluate().ToString());
+            var result = Result<string>.From(() => expression.Evaluate().ToString());
             if(result.IsValid)
             {
                 return new EmbedBuilder()
@@ -538,24 +538,23 @@
         [Command("ping", "lag")]
         public Task PingAsync(IContext e)
         {
-            return new LocalizedEmbedBuilder(e.GetLocale())
-                .WithTitle(new RawResource("Ping"))
-                .WithDescription("ping_placeholder")
-                .Build()
+            var locale = e.GetLocale();
+            return new EmbedBuilder()
+                .SetTitle("Ping")
+                .SetDescription(locale.GetString("ping_placeholder"))
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel(), modifier: x => x.ThenWait(200)
-                    .Then(y =>
+                    .Then(message =>
                     {
-                        float ping = (float)(y.Timestamp - e.GetMessage().Timestamp).TotalMilliseconds;
+                        float ping = (float)(message.Timestamp - e.GetMessage().Timestamp)
+                            .TotalMilliseconds;
                         return new EmbedBuilder()
                             .SetTitle("Pong - " + Environment.MachineName)
-                            .SetColor(
-                                Color.Lerp(
-                                    new Color(0.0f, 1.0f, 0.0f),
-                                    new Color(1.0f, 0.0f, 0.0f),
-                                    Math.Min(ping / 1000, 1f)))
-                            .AddInlineField("Miki", ping.ToString("N0") + "ms")
+                            .SetColor(Color.Lerp(
+                                new Color(0, 255, 0), new Color(255, 0, 0), Math.Min(ping / 1000, 1f)))
+                            .AddInlineField("Miki", $"{ping:N0}ms")
                             .ToEmbed()
-                            .EditAsync(y);
+                            .EditAsync(message);
                     }));
         }
 
@@ -573,11 +572,14 @@
 						e.GetService<ICacheClient>(),
 						e.GetGuild().Id)
                     .ConfigureAwait(false);
+                var locale = e.GetLocale();
 
-				await new LocalizedEmbedBuilder(e.GetLocale())
-					.WithTitle("miki_module_general_prefix_help_header")
-					.WithDescription("prefix_info", prefix)
-					.Build().QueueAsync(e, e.GetChannel())
+
+                await new EmbedBuilder()
+					.SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
+					.SetDescription(locale.GetString("prefix_info", prefix))
+					.ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);
 			}
 
@@ -664,71 +666,68 @@
         public async Task WhoIsAsync(IContext e)
 		{
 			IDiscordGuildUser user;
-			var success = e.GetArgumentPack().Take(out string arg);
-			if(success)
+			if(e.GetArgumentPack().Take(out string arg))
 			{
-				user = await DiscordExtensions.GetUserAsync(arg, e.GetGuild())
+				user = await e.GetGuild().FindUserAsync(arg)
                     .ConfigureAwait(false);
             }
             else
             {
-                if(e.GetAuthor() is IDiscordGuildUser guildUser)
-                {
-                    user = guildUser;
-                }
-                else
+                if(!(e.GetAuthor() is IDiscordGuildUser guildUser))
                 {
                     throw new InvalidOperationException("Invalid author.");
                 }
+                user = guildUser;
             }
 
-            LocalizedEmbedBuilder embed = new LocalizedEmbedBuilder(e.GetLocale());
-			embed.WithTitle(
-                "whois_title", 
-                user.Username + $"{(string.IsNullOrEmpty(user.Nickname) ? "" : $" ({user.Nickname})")}");
-			embed.SetColor(0.5f, 0f, 1.0f);
-			embed.SetThumbnail(user.GetAvatarUrl());
+            var locale = e.GetLocale();
 
-			var roles = await e.GetGuild()
+            var embed = new EmbedBuilder()
+                .SetTitle(locale.GetString("whois_title", GetWhoIsUsername(user)))
+                .SetColor(0.5f, 0f, 1.0f)
+                .SetThumbnail(user.GetAvatarUrl());
+
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"`User Id___:` {user.Id}");
+            builder.AppendLine($"`Created at:` {user.CreatedAt:dd/MM/yyyy HH:mm:ss}");
+            builder.AppendLine($"`Joined at_:` {user.JoinedAt:dd/MM/yyyy HH:mm:ss}");
+
+            var roles = await e.GetGuild()
                 .GetRolesAsync()
                 .ConfigureAwait(false);
-            if(roles == null)
+            if(roles != null)
             {
-                throw new ArgumentMissingException(nameof(roles));
+                roles = roles.Where(x => user.RoleIds.Contains(x.Id));
+
+                Color c = roles.Where(x => x.Color != 0)
+                    .OrderByDescending(x => x.Position)
+                    .Select(x => x.Color)
+                    .FirstOrDefault();
+                builder.AppendLine($"`Color Hex_:` {c.ToString()}");
+
+                string r = string.Join(", ", roles.Select(x => $"`{x.Name}`"));
+                if(string.IsNullOrEmpty(r))
+                {
+                    r = "none (yet!)";
+                }
+
+                embed.AddField(locale.GetString("miki_module_general_guildinfo_roles"), r);
             }
 
-            roles = roles.Where(x => user.RoleIds.Contains(x.Id));
+			embed.AddField(locale.GetString("miki_module_whois_tag_personal"), builder.ToString());
 
-            Color c = roles.Where(x => x.Color != 0)
-				.OrderByDescending(x => x.Position)
-				.Select(x => x.Color)
-				.FirstOrDefault();
-
-			StringBuilder builder = new StringBuilder();
-			builder.AppendLine($"`User Id___:` {user.Id}");
-			builder.AppendLine($"`Created at:` {user.CreatedAt:dd/MM/yyyy HH:mm:ss}");
-			builder.AppendLine($"`Joined at_:` {user.JoinedAt:dd/MM/yyyy HH:mm:ss}");
-			builder.AppendLine($"`Color Hex_:` {c.ToString()}");
-
-			embed.AddField(
-				new LanguageResource("miki_module_whois_tag_personal"),
-				new RawResource(builder.ToString())
-			);
-
-			string r = string.Join(", ", roles.Select(x => $"`{x.Name}`"));
-			if(string.IsNullOrEmpty(r))
-			{
-				r = "none (yet!)";
-			}
-
-			embed.AddField(
-				new LanguageResource("miki_module_general_guildinfo_roles"),
-				new RawResource(r)
-			);
-
-			await embed.Build()
+            await embed.ToEmbed()
 				.QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
+        }
+
+        private string GetWhoIsUsername(IDiscordGuildUser user)
+        {
+            if(string.IsNullOrEmpty(user.Nickname))
+            {
+                return user.Username;
+            }
+            return user.Username + $" ({user.Nickname})";
         }
 	}
 }

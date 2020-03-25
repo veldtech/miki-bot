@@ -10,7 +10,6 @@ namespace Miki.Utility
     using Amazon.S3.Model;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Api.Leaderboards;
-    using Miki.Bot.Models;
     using Miki.BunnyCDN;
     using Miki.Cache;
     using Miki.Discord;
@@ -20,11 +19,8 @@ namespace Miki.Utility
     using Miki.Framework;
     using Miki.Framework.Arguments;
     using Miki.Framework.Commands;
-    using Miki.Framework.Language;
-    using Miki.Functional;
     using Miki.Helpers;
     using Miki.Localization;
-    using Miki.Localization.Models;
     using Miki.Net.Http;
     using Miki.Services;
     using HttpClient = Net.Http.HttpClient;
@@ -32,7 +28,11 @@ namespace Miki.Utility
     public static class Utils
     {
         public static string EveryonePattern => @"@(everyone|here)";
+
         public static string ImageRegex => "(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png)";
+
+        public static string DiscordInviteRegex
+            => "(http[s]://)?((discord.gg)|(discordapp.com/invite))/([A-Za-z0-9]+)";
 
         public static string EscapeEveryone(string text)
             => Regex.Replace(text, EveryonePattern, "@\u200b$1");
@@ -150,15 +150,20 @@ namespace Miki.Utility
             => c.GetMessage().Author;
 
         public static bool IsAll(string input)
-            => (input.ToLowerInvariant() == "all") || (input == "*");
+            => input.ToLowerInvariant() == "all" || input == "*";
 
         public static EmbedBuilder ErrorEmbed(this IContext e, string message)
-            => new LocalizedEmbedBuilder(e.GetLocale())
-                .WithTitle(new IconResource(AppProps.Emoji.Disabled, "miki_error_message_generic"))
+        {
+            var locale = e.GetLocale();
+            return new EmbedBuilder()
+                .SetTitle(locale.GetString(
+                    new IconResource(AppProps.Emoji.Disabled, "miki_error_message_generic")))
                 .SetDescription(message)
                 .SetColor(1.0f, 0.0f, 0.0f);
+        }
 
-        public static EmbedBuilder ErrorEmbedResource(this IContext e, string resourceId, params object[] args)
+        public static EmbedBuilder ErrorEmbedResource(
+            this IContext e, string resourceId, params object[] args)
             => ErrorEmbed(e, e.GetLocale().GetString(resourceId, args));
 
         public static EmbedBuilder ErrorEmbedResource(this IContext e, IResource resource)
