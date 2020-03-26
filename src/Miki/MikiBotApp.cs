@@ -58,6 +58,7 @@
     using Miki.Cache.InMemory;
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Pasta;
+    using Miki.Services.Settings;
 
     public class MikiBotApp : MikiApp
     {
@@ -79,8 +80,8 @@
             pipeline.OnExecuted += LogErrors;
 
             return new ProviderCollection()
-                .Add(ProviderAdapter.Factory(
-                    discordClient.Gateway.StartAsync,
+                .Add(new ProviderAdapter(
+                    discordClient.Gateway.StartAsync, 
                     discordClient.Gateway.StopAsync));
         }
 
@@ -115,9 +116,7 @@
         {
             return new CommandPipelineBuilder(services)
                 .UseStage(new CorePipelineStage())
-                .UseFilters(
-                    new BotFilter(),
-                    new UserFilter())
+                .UseFilters(new BotFilter(), new UserFilter())
                 .UsePrefixes()
                 .UseStage(new FetchDataStage())
                 .UseLocalization()
@@ -243,6 +242,7 @@
             serviceCollection.AddSingleton<TransactionEvents>();
             serviceCollection.AddSingleton(await BuildLocalesAsync());
 
+            serviceCollection.AddScoped<ISettingsService, SettingsService>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<IDailyService, DailyService>();
             serviceCollection.AddSingleton<AccountService>();
