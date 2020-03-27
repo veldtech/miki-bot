@@ -21,7 +21,6 @@ namespace Miki.Modules
     using Miki.API.Reminder;
     using Miki.API.Reminders;
     using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
     using Miki.Cache;
     using Miki.Common.Builders;
     using Miki.Discord;
@@ -34,6 +33,7 @@ namespace Miki.Modules
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
+    using Miki.Services.Scheduling;
     using Miki.Utility;
     using NCalc;
     using Newtonsoft.Json;
@@ -124,6 +124,13 @@ namespace Miki.Modules
 
         private readonly HttpClient imageClient;
 		private readonly ImgurClient imgurClient;
+        private readonly IScheduleWorkerGroup reminderWorkGroup;
+
+        public class ReminderContext
+        {
+            public string Reminder { get; set; }
+			public ulong UserId { get; set; }
+        }
 
 		public FunModule(MikiApp bot)
         {
@@ -469,11 +476,35 @@ namespace Miki.Modules
         public class ReminderCommand
         {
             private readonly TaskScheduler<string> reminders;
+            private readonly IMessageWorker<IDiscordMessage> messageWorker;
+            private readonly IDiscordClient discordClient;
+            private readonly IScheduleWorkerGroup reminderWorkerGroup;
 
-            public ReminderCommand()
+            public ReminderCommand(
+                SchedulerService schedulerService, 
+                IMessageWorker<IDiscordMessage> messageWorker, 
+                IDiscordClient discordClient)
             {
-                reminders = new TaskScheduler<string>();
+                this.messageWorker = messageWorker;
+                this.discordClient = discordClient;
+                reminderWorkerGroup = schedulerService
+                    .CreateWorkerGroup("miki:reminders", HandleReminderAsync);
+
+				// Old
+				reminders = new TaskScheduler<string>();
             }
+
+            private async Task HandleReminderAsync(string json)
+            {
+                var context = JsonConvert.DeserializeObject<ReminderContext>(json);
+                await new EmbedBuilder()
+                    .SetTitle("⏰ Reminder")
+                    .SetDescription(new MessageBuilder()
+                        .AppendText(context.Reminder)
+                        .BuildWithBlockCode())
+                    .ToEmbed()
+                    .QueueAsync(messageWorker, await discordClient.CreateDMAsync(context.UserId));
+			}
 
             [Command]
             public async Task RemindAsync(IContext e)
@@ -603,21 +634,20 @@ namespace Miki.Modules
 
                 TimeSpan timeUntilReminder = args.GetTimeFromString();
 
-                if(timeUntilReminder > new TimeSpan(0, 10, 0))
+                if(timeUntilReminder > new TimeSpan(0, 0, 0))
                 {
-                    int id = reminders.AddTask(e.GetAuthor().Id, async (context) =>
-                    {
-                        await new EmbedBuilder()
-                            .SetTitle("⏰ Reminder")
-                            .SetDescription(new MessageBuilder()
-                                .AppendText(context)
-                                .BuildWithBlockCode())
-                            .ToEmbed().QueueAsync(e, e.GetAuthor().GetDMChannelAsync().Result);
-                    }, reminderText, timeUntilReminder);
+                    await reminderWorkerGroup.QueueTaskAsync(
+                        timeUntilReminder, 
+                        JsonConvert.SerializeObject(
+                            new ReminderContext
+                            {
+                                Reminder = reminderText,
+                                UserId = e.GetAuthor().Id
+                            }));
 
                     await new EmbedBuilder()
                         .SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
-                        .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\nYour reminder code is `{id}`")
+                        .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\n")
                         .SetColor(255, 220, 93)
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                 }

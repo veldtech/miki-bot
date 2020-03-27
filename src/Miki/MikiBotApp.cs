@@ -58,6 +58,7 @@
     using Miki.Cache.InMemory;
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Pasta;
+    using Miki.Services.Scheduling;
 
     public class MikiBotApp : MikiApp
     {
@@ -151,9 +152,11 @@
                 .GetOrCreateAnyAsync(null).GetAwaiter().GetResult());
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
-            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
 
-            if(selfHost)
+            bool.TryParse(
+                Environment.GetEnvironmentVariable(Constants.EnvUseInMemory), 
+                out var useInMemoryCache);
+            if(useInMemoryCache)
             {
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
@@ -194,7 +197,7 @@
                     s.GetService<Config>().Token,
                     s.GetService<ICacheClient>()));
 
-
+            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
             if(selfHost)
             {
                 serviceCollection.AddSingleton<IGateway>(
@@ -251,6 +254,7 @@
             serviceCollection.AddSingleton<AchievementCollection>();
             serviceCollection.AddScoped<AchievementService>();
 
+            serviceCollection.AddSingleton<SchedulerService>();
             serviceCollection.AddScoped<GuildService>();
             serviceCollection.AddScoped<MarriageService>();
             serviceCollection.AddScoped<IRpsService, RpsService>();
