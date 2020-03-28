@@ -131,7 +131,16 @@
                     sentryClient?.CaptureException(e);
                 }
 
-                await DeletePayloadAsync(payload);
+                if(payload.IsRepeating)
+                {
+                    payload.StartTime = DateTime.UtcNow;
+                    payload.TimeEpoch = payload.StartTime.Add(payload.Duration);
+                    await RequeueWorkAsync(payload);
+                }
+                else
+                {
+                    await DeletePayloadAsync(payload);
+                }
             }
         }
 

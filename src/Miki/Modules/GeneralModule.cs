@@ -188,8 +188,6 @@
             await msg.CreateReactionAsync(emoji)
                 .ConfigureAwait(false);
 
-            int updateTask = -1;
-
             //taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
             //{
             //    msg = await e.GetChannel()
