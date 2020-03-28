@@ -14,8 +14,8 @@ namespace Miki
 
         public static class Emoji
         {
-            public static string Mekos => "<:mekos:421972155484471296>";
-
+            public static string Mekos 
+                => "<:mekos:421972155484471296>";
             public static string ExpBarOnStart 
                 => "<:mbarlefton:391971424442646534>";
             public static string ExpBarOnMiddle 

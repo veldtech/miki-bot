@@ -59,6 +59,7 @@
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Pasta;
     using Miki.Services.Scheduling;
+    using Splitio.Services.Client.Classes;
 
     public class MikiBotApp : MikiApp
     {
@@ -152,30 +153,7 @@
                 .GetOrCreateAnyAsync(null).GetAwaiter().GetResult());
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
-
-            bool.TryParse(
-                Environment.GetEnvironmentVariable(Constants.EnvUseInMemory), 
-                out var useInMemoryCache);
-            if(useInMemoryCache)
-            {
-                serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
-                serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
-            }
-            else
-            {
-                // Setup Redis
-                serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
-                {
-                    var config = x.GetService<ConfigService>();
-                    // (velddev) blocks call, but resolves previous hack.
-                    var configValue = config.GetOrCreateAnyAsync(null)
-                        .GetAwaiter().GetResult();
-                    return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
-                });
-                serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
-                serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
-            }
-
+            
             serviceCollection.AddScoped<
                 IRepositoryFactory<Achievement>, AchievementRepository.Factory>();
 
@@ -210,6 +188,19 @@
                             Compressed = true,
                             AllowNonDispatchEvents = true
                         }));
+
+                serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
+                serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
+
+                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions
+                {
+                    LocalhostFilePath = "./feature_flags.yaml"
+                };
+                var factory = new SplitFactory("localhost", splitConfig);
+                var client = factory.Client();
+                client.BlockUntilReady(10000);
+
+                serviceCollection.AddSingleton(client);
             }
             else
             {
@@ -222,6 +213,27 @@
                         ConsumerAutoAck = false,
                         PrefetchCount = 25,
                     }));
+
+                serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
+                {
+                    var config = x.GetService<ConfigService>();
+                    // (velddev) blocks call, but resolves previous hack.
+                    var configValue = config.GetOrCreateAnyAsync(null)
+                        .GetAwaiter().GetResult();
+                    return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
+                });
+                serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
+                serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
+
+                serviceCollection.AddSingleton(services =>
+                {
+                    var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
+                    var factory = new SplitFactory(
+                        services.GetService<Config>().OptionalValues.SplitioSdkKey, splitConfig);
+                    var client = factory.Client();
+                    client.BlockUntilReady(10000);
+                    return client;
+                });
             }
 
             serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
@@ -236,11 +248,19 @@
                 await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
             serviceCollection.AddSingleton<ISentryClient>(
-                x => new SentryClient(
-                    new SentryOptions
+                services =>
+                {
+                    var sdkKey = services.GetService<Config>().SharpRavenKey;
+                    if(string.IsNullOrWhiteSpace(sdkKey))
                     {
-                        Dsn = new Dsn(x.GetService<Config>().SharpRavenKey)
-                    }));
+                        return null;
+                    }
+                    return new SentryClient(
+                        new SentryOptions
+                        {
+                            Dsn = new Dsn(sdkKey)
+                        });
+                });
 
             serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
             serviceCollection.AddSingleton<TransactionEvents>();
