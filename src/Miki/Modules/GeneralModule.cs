@@ -24,7 +24,6 @@
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
-    using Miki.API.Reminders;
     using Miki.Attributes;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
@@ -40,7 +39,10 @@
     [Module("General")]
 	public class GeneralModule
 	{
-        private readonly TaskScheduler<string> taskScheduler = new TaskScheduler<string>();
+        private static class FeatureFlags
+        {
+            public const string GiveawayUsingNewScheduler = "giveaway_using_new_scheduler";
+        }
 
         [Command("avatar")]
         public async Task AvatarAsync(IContext e)
@@ -140,6 +142,11 @@
         [Command("giveaway")]
         public async Task GiveawayAsync(IContext e)
         {
+            if(!e.HasFeatureEnabled(FeatureFlags.GiveawayUsingNewScheduler))
+            {
+                throw new CommandDisabledException();
+            }
+
             DiscordEmoji.TryParse("🎁", out var emoji);
 
             var args = e.GetArgumentPack();
@@ -181,65 +188,63 @@
             await msg.CreateReactionAsync(emoji)
                 .ConfigureAwait(false);
 
-            int updateTask = -1;
+            //taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
+            //{
+            //    msg = await e.GetChannel()
+            //        .GetMessageAsync(msg.Id)
+            //        .ConfigureAwait(false);
+            //    if(msg == null)
+            //    {
+            //        return;
+            //    }
 
-            taskScheduler.AddTask(e.GetAuthor().Id, async (desc) =>
-            {
-                msg = await e.GetChannel()
-                    .GetMessageAsync(msg.Id)
-                    .ConfigureAwait(false);
-                if(msg == null)
-                {
-                    return;
-                }
+            //    await msg.DeleteReactionAsync(emoji)
+            //        .ConfigureAwait(false);
 
-                await msg.DeleteReactionAsync(emoji)
-                    .ConfigureAwait(false);
+            //    await Task.Delay(1000)
+            //        .ConfigureAwait(false);
 
-                await Task.Delay(1000)
-                    .ConfigureAwait(false);
+            //    var reactions = (await msg.GetReactionsAsync(emoji)
+            //            .ConfigureAwait(false))
+            //        .ToList();
 
-                var reactions = (await msg.GetReactionsAsync(emoji)
-                        .ConfigureAwait(false))
-                    .ToList();
+            //    //do
+            //    //{
+            //    //	reactions.AddRange();
+            //    //	reactionsGained += 100;
+            //    //} while (reactions.Count == reactionsGained);
 
-                //do
-                //{
-                //	reactions.AddRange();
-                //	reactionsGained += 100;
-                //} while (reactions.Count == reactionsGained);
+            //    // Select random winners
+            //    for(int i = 0; i < amount; i++)
+            //    {
+            //        if(!reactions.Any())
+            //        {
+            //            break;
+            //        }
 
-                // Select random winners
-                for(int i = 0; i < amount; i++)
-                {
-                    if(!reactions.Any())
-                    {
-                        break;
-                    }
+            //        int index = MikiRandom.Next(reactions.Count());
+            //        winners.Add(reactions.ElementAtOrDefault(index));
+            //    }
 
-                    int index = MikiRandom.Next(reactions.Count());
-                    winners.Add(reactions.ElementAtOrDefault(index));
-                }
+            //    if(updateTask != -1)
+            //    {
+            //        taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
+            //    }
 
-                if(updateTask != -1)
-                {
-                    taskScheduler.CancelReminder(e.GetAuthor().Id, updateTask);
-                }
+            //    string winnerText = string.Join(
+            //        "\n", winners.Select(x => $"{x.Username}#{x.Discriminator}").ToArray());
+            //    if(string.IsNullOrEmpty(winnerText))
+            //    {
+            //        winnerText = "nobody!";
+            //    }
 
-                string winnerText = string.Join(
-                    "\n", winners.Select(x => $"{x.Username}#{x.Discriminator}").ToArray());
-                if(string.IsNullOrEmpty(winnerText))
-                {
-                    winnerText = "nobody!";
-                }
-
-                await msg.EditAsync(new EditMessageArgs
-                {
-                    Embed = CreateGiveawayEmbed(e, giveawayText)
-                        .AddField("Winners", winnerText)
-                        .ToEmbed()
-                }).ConfigureAwait(false);
-            }, "description var", timeLeft);
+            //    await msg.EditAsync(new EditMessageArgs
+            //    {
+            //        Embed = CreateGiveawayEmbed(e, giveawayText)
+            //            .AddField("Winners", winnerText)
+            //            .ToEmbed()
+            //    }).ConfigureAwait(false);
+            //}, "description var", timeLeft);
         }
 
         private EmbedBuilder CreateGiveawayEmbed(IContext e, string text)

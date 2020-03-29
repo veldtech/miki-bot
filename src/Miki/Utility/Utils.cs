@@ -37,20 +37,6 @@ namespace Miki.Utility
         public static string EscapeEveryone(string text)
             => Regex.Replace(text, EveryonePattern, "@\u200b$1");
 
-        public static T FromEnum<T>(this string argument, T defaultValue)
-            where T : Enum
-        {
-            if (Enum.TryParse(typeof(T), argument, true, out object result))
-            {
-                return (T)result;
-            }
-            return defaultValue;
-        }
-
-        public static bool TryFromEnum<T>(this string argument, out T value)
-            where T : struct
-            => Enum.TryParse(argument ?? "", true, out value);
-
         public static string ToTimeString(this TimeSpan time, Locale instance)
             => ToTimeString(time, instance, false);
 
