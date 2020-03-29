@@ -373,12 +373,6 @@
 
             int bet = ValidateBet(e, user, 10000);
 
-            await transactionService.CreateTransactionAsync(
-                new TransactionRequest.Builder()
-                    .WithReceiver(AppProps.Currency.BankId)
-                    .WithSender((long)e.GetAuthor().Id)
-                    .WithAmount(bet)
-                    .Build());
 
             if (e.GetArgumentPack().Pack.Length < 2)
             {
@@ -391,6 +385,7 @@
 
             string sideParam = e.GetArgumentPack().TakeRequired<string>()
                 .ToLowerInvariant();
+
 
             int? pickedSide = null;
             if (sideParam[0] == 'h')
@@ -411,6 +406,13 @@
                 return;
             }
 
+            await transactionService.CreateTransactionAsync(
+                new TransactionRequest.Builder()
+                    .WithReceiver(AppProps.Currency.BankId)
+                    .WithSender((long)e.GetAuthor().Id)
+                    .WithAmount(bet)
+                    .Build());
+            
             string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
             string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
 

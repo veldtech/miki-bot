@@ -13,22 +13,23 @@
         private readonly IUnitOfWork unit;
         private readonly IAsyncRepository<Setting> settingsRepository;
 
+        public SettingsService(IUnitOfWork unit)
+        {
+            this.unit = unit;
+            this.settingsRepository = unit.GetRepository<Setting>();
+        }
+
         public async ValueTask<Result<T>> GetAsync<T>(SettingType type, long entityId)
             where T : Enum
         {
-            var setting = await settingsRepository.GetAsync(entityId, (int)type);
-            if(setting == null)
-            {
-                return new Result<T>(
-                    new EntityNullException<Setting>());
-            }
-            return (T)(object)setting.Value;
+            var result = await InternalGetAsync((int)type, entityId);
+            return Result<T>.From(() => (T)(object)result.Unwrap().Value);
         } 
 
         public async ValueTask SetAsync<T>(SettingType type, long entityId, T value)
             where T : Enum
         {
-            var result = await GetAsync<T>(type, entityId);
+            var result = await InternalGetAsync((int)type, entityId);
             var setting = new Setting
             {
                 EntityId = entityId,
@@ -46,6 +47,16 @@
             }
 
             await unit.CommitAsync();
+        }
+
+        private async ValueTask<Result<Setting>> InternalGetAsync(int type, long entityId)
+        {
+            var setting = await settingsRepository.GetAsync(entityId, type);
+            if(setting == null)
+            {
+                return new Result<Setting>(new EntityNullException<Setting>());
+            }
+            return setting;
         }
     }
 }
