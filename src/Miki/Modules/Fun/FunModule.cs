@@ -521,10 +521,10 @@ namespace Miki.Modules.Fun
 
                 foreach(var x in instances)
                 {
-                    string tx = x.PayloadJson;
-                    if(x.PayloadJson.Length > 30)
+                    string tx = JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context;
+                    if(tx.Length > 30)
                     {
-                        tx = new string(x.PayloadJson.Take(27).ToArray()) + "...";
+                        tx = new string(tx.Take(27).ToArray()) + "...";
                     }
                     embed.Description +=
                         $"▶ `{tx} : {x.GetTimeRemaining().ToTimeString(locale, true)}`\n";
@@ -539,39 +539,42 @@ namespace Miki.Modules.Fun
             {
                 var locale = e.GetLocale();
 
-				if(e.GetArgumentPack().Take(out string arg))
+                var arg = e.GetArgumentPack().TakeRequired<string>();
+                var queuedWork = await reminderWorkerGroup
+                    .GetQueuedWorkAsync(e.GetAuthor().Id.ToString());
+
+                if(Utils.IsAll(arg))
                 {
-                    var queuedWork = await reminderWorkerGroup
-                        .GetQueuedWorkAsync(e.GetAuthor().Id.ToString());
-
-					if(Utils.IsAll(arg))
+                    foreach(var work in queuedWork)
                     {
-                        foreach(var work in queuedWork)
-                        {
-                            await reminderWorkerGroup.CancelTaskAsync(work.Uuid);
-                        }
-
-                        await new EmbedBuilder()
-                            .SetTitle($"⏰ {locale.GetString("reminders")}")
-                            .SetColor(0.86f, 0.18f, 0.26f)
-                            .SetDescription(locale.GetString("reminder_cancelled_all"))
-                            .ToEmbed()
-                            .QueueAsync(e, e.GetChannel());
-                        return;
+                        await reminderWorkerGroup.CancelTaskAsync(work.Uuid);
                     }
 
-                    var selectedWork = queuedWork.FirstOrDefault(
-                        x => x.PayloadJson.ToLowerInvariant().StartsWith(arg.ToLowerInvariant()));
-                    if(selectedWork == null)
-                    {
-                        throw new EntityNullException<ReminderCommand>();
-                    }
+                    await new EmbedBuilder()
+                        .SetTitle($"⏰ {locale.GetString("reminders")}")
+                        .SetColor(0.86f, 0.18f, 0.26f)
+                        .SetDescription(locale.GetString("reminder_cancelled_all"))
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
+                    return;
                 }
 
-                await e.ErrorEmbed(locale.GetString("error_reminder_null"))
-                    .ToEmbed()
+                var selectedWork = queuedWork.FirstOrDefault(
+                    x => JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context
+                        .ToLowerInvariant()
+                        .StartsWith(arg.ToLowerInvariant()));
+                if(selectedWork == null)
+                {
+                    throw new EntityNullException<Reminder>();
+                }
+
+                await reminderWorkerGroup.CancelTaskAsync(selectedWork.Uuid, selectedWork.OwnerId);
+
+                await e.SuccessEmbedResource("reminder_cancelled",
+                    JsonConvert.DeserializeObject<Reminder>(selectedWork.PayloadJson).Context)
                     .QueueAsync(e, e.GetChannel());
             }
+
             private async Task HandleReminderAsync(string context)
             {
                 var reminder = JsonConvert.DeserializeObject<Reminder>(context);
