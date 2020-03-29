@@ -34,11 +34,9 @@ If you have any questions about the setup process **do not** ask in the support 
 
 2) Install [Miki.Framework](https://github.com/Mikibot/Miki.Framework.git) and [Miki.Rest](https://github.com/Mikibot/Miki.Rest.git) through NuGet or clone them as well, along with the [other dependencies](https://github.com/Mikibot/Miki#dependencies).
 
-3) Download [Redis](https://redis.io/download) and get that running too.
+3) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
 
-4) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
-
-5) Configure your connection string in `launchSettings.json` as such (if using localhost):
+4) Configure your connection string in `launchSettings.json` as such (if using localhost):
 
 | Key | Value |
 | --- | --- |
@@ -47,13 +45,13 @@ If you have any questions about the setup process **do not** ask in the support 
 | MIKI_LOGLEVEL | "Debug" |
 | MIKI_MESSAGEWORKER | "1" |
 
-6) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
+5) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
 
     * Tools -> NuGet Package Manager -> Package Manager Console
 
-7) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
+6) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
 
-8) Run Miki. 🎉
+7) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
