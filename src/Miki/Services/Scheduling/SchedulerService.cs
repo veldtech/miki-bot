@@ -10,7 +10,7 @@
     using Miki.Logging;
     using Sentry;
 
-    public class SchedulerService : ISchedulerService, IAsyncDisposable
+    public class SchedulerService : ISchedulerService, IDisposable, IAsyncDisposable
     {
         private const string SchedulerQueueKey = "scheduler-queue";
         private const string SchedulerObjectsKey = "scheduler-objects";
@@ -78,7 +78,7 @@
         private async Task<TaskPayload> FetchLatestWorkAsync()
         {
             var key = await cacheClient.SortedSetPopAsync<TaskKey>(SchedulerQueueKey);
-            if(string.IsNullOrWhiteSpace(key?.Uuid))
+            if(key == null || string.IsNullOrWhiteSpace(key?.Uuid))
             {
                 return null;
             }
@@ -97,14 +97,14 @@
             {
                 try
                 {
-                    await Task.Delay(1000, token);
+                    await Task.Delay(1000, token).ConfigureAwait(false);
                 }
                 catch(TaskCanceledException)
                 {
                     break;
                 }
 
-                var payload = await FetchLatestWorkAsync();
+                var payload = await FetchLatestWorkAsync().ConfigureAwait(false);
                 if(payload == null)
                 {
                     continue;
@@ -112,7 +112,7 @@
 
                 if(payload.GetTimeRemaining().TotalSeconds > 0)
                 {
-                    await RequeueWorkAsync(payload);
+                    await RequeueWorkAsync(payload).ConfigureAwait(false);
                     continue;
                 }
 
@@ -123,7 +123,7 @@
 
                 try
                 {
-                    await worker(payload.PayloadJson);
+                    await worker(payload.PayloadJson).ConfigureAwait(false);
                 }
                 catch(Exception e)
                 {
@@ -135,11 +135,11 @@
                 {
                     payload.StartTime = DateTime.UtcNow;
                     payload.TimeEpoch = payload.StartTime.Add(payload.Duration);
-                    await RequeueWorkAsync(payload);
+                    await RequeueWorkAsync(payload).ConfigureAwait(false);
                 }
                 else
                 {
-                    await DeletePayloadAsync(payload);
+                    await DeletePayloadAsync(payload).ConfigureAwait(false);
                 }
             }
         }
@@ -149,6 +149,13 @@
         {
             cancellationToken.Cancel();
             await workerTask;
+            Dispose();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            cancellationToken?.Dispose();
         }
     }
 }

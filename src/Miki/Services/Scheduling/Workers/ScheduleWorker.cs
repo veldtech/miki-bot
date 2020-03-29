@@ -21,13 +21,13 @@
 
         /// <inheritdoc />
         public virtual async Task QueueTaskAsync(
-            TimeSpan duration, string json, string ownerId, bool isRepeating = false)
+            TimeSpan duration, string json, string ownerId, bool isRepeating)
         {
             await QueueTaskAsync(CreateWorkPayload(duration, json, ownerId, isRepeating));
         }
 
         /// <inheritdoc />
-        public async Task CancelTaskAsync(string uuid, string ownerId = null)
+        public async Task CancelTaskAsync(string uuid, Optional<string> ownerId)
         {
             await cacheClient.HashDeleteAsync(parent.GetObjectNamespace(ownerId), uuid);
         }

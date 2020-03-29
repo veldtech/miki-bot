@@ -485,8 +485,8 @@ namespace Miki.Modules.Fun
             [Command]
             public async Task RemindAsync(IContext e)
             {
-                string arguments = e.GetArgumentPack().Pack.TakeAll();
-                string lowercaseArguments = arguments.ToLower().Split(' ')[0];
+                var arguments = e.GetArgumentPack().Pack.TakeAll();
+                var lowercaseArguments = arguments.ToLower().Split(' ')[0];
 
                 if(string.IsNullOrWhiteSpace(lowercaseArguments) || lowercaseArguments.StartsWith("-"))
                 {
@@ -515,13 +515,13 @@ namespace Miki.Modules.Fun
                 instances = instances.OrderBy(x => x.Uuid)
                         .ToList();
 
-                EmbedBuilder embed = new EmbedBuilder()
+                var embed = new EmbedBuilder()
                     .SetTitle($"⏰ {locale.GetString("reminders")}")
                     .SetColor(0.86f, 0.18f, 0.26f);
 
                 foreach(var x in instances)
                 {
-                    string tx = JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context;
+                    var tx = JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context;
                     if(tx.Length > 30)
                     {
                         tx = new string(tx.Take(27).ToArray()) + "...";
@@ -547,7 +547,8 @@ namespace Miki.Modules.Fun
                 {
                     foreach(var work in queuedWork)
                     {
-                        await reminderWorkerGroup.CancelTaskAsync(work.Uuid);
+                        await reminderWorkerGroup.CancelTaskAsync(
+                            work.Uuid, e.GetAuthor().Id.ToString());
                     }
 
                     await new EmbedBuilder()
@@ -604,7 +605,8 @@ namespace Miki.Modules.Fun
 
             private async Task PlaceReminderAsync(IContext e, string args)
             {
-                int splitIndex = args.ToLower().LastIndexOf(" in ", StringComparison.Ordinal);
+                var locale = e.GetLocale();
+                var splitIndex = args.ToLower().LastIndexOf(" in ", StringComparison.Ordinal);
                 // TODO: still a bit hacky
 
                 if(splitIndex == -1)
@@ -612,12 +614,12 @@ namespace Miki.Modules.Fun
                     throw new ArgumentMissingException("time");
                 }
 
-                string reminderText = new string(args
+                var reminderText = new string(args
                     .Take(splitIndex)
                     .ToArray()
                 );
 
-                TimeSpan timeUntilReminder = args.GetTimeFromString();
+                var timeUntilReminder = args.GetTimeFromString();
 
                 if(timeUntilReminder > new TimeSpan(0, 0, 0))
                 {
@@ -629,11 +631,16 @@ namespace Miki.Modules.Fun
                                 Context = reminderText,
                                 UserId = e.GetAuthor().Id
                             }),
-                        e.GetAuthor().Id.ToString());
+                        e.GetAuthor().Id.ToString(),
+                        false);
 
                     await new EmbedBuilder()
                         .SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
-                        .SetDescription($"I'll remind you to **{reminderText}** in **{timeUntilReminder.ToTimeString(e.GetLocale())}**\n")
+                        .SetDescription(
+                            locale.GetString(
+                                "reminder_placed", 
+                                reminderText, 
+                                timeUntilReminder.ToTimeString(e.GetLocale())))
                         .SetColor(255, 220, 93)
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                 }

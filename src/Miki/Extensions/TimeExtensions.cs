@@ -7,7 +7,7 @@
     /// A type to calculate the seconds that has passed since 1970-01-01.
     /// </summary>
     [DataContract]
-    public struct Epoch
+    public struct Epoch : IEquatable<Epoch>
     {
         [DataMember(Name = "seconds", Order = 1)]
         public long Seconds { get; }
@@ -32,6 +32,24 @@
         public static implicit operator Epoch(DateTime dateTime)
         {
             return new Epoch((int)(dateTime - BaseDateTime).TotalSeconds);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(Epoch other)
+        {
+            return Seconds == other.Seconds;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is Epoch other && Equals(other);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return Seconds.GetHashCode();
         }
     }
 }

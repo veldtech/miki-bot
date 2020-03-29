@@ -28,7 +28,7 @@
                 return Task.CompletedTask;
             });
 
-            await worker.QueueTaskAsync(TimeSpan.FromSeconds(1), "test", "1234");
+            await worker.QueueTaskAsync(TimeSpan.FromSeconds(1), "test", "1234", false);
             asyncLock.WaitOne(10000);
         }
 
@@ -43,7 +43,7 @@
                 return Task.CompletedTask;
             });
 
-            await worker.QueueTaskAsync(TimeSpan.FromSeconds(1), "test", "1234");
+            await worker.QueueTaskAsync(TimeSpan.FromSeconds(1), "test", "1234", false);
             asyncLock.WaitOne(10000);
         }
     }
