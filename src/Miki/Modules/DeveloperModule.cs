@@ -12,11 +12,9 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Framework.Commands.Scopes.Attributes;
-    using Microsoft.EntityFrameworkCore;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Scopes;
     using Miki.Framework.Commands.Scopes.Models;
-    using Miki.Framework.Exceptions;
     using Miki.Utility;
     using Miki.Services;
     using Miki.Services.Daily;
@@ -170,7 +168,9 @@
 			var roles = await e.GetGuild().GetRolesAsync();
 			var self = await e.GetGuild().GetSelfAsync();
 			e.GetChannel().QueueMessage(
-                e, null, $"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
+                e, 
+                null, 
+                $"```{JsonConvert.SerializeObject(roles.Where(x => self.RoleIds.Contains(x.Id)))}```");
 		}
 
 		[Command("ignore")]
@@ -202,7 +202,7 @@
 		{
 			if(e.GetArgumentPack().Take(out string userArg))
 			{
-				IDiscordUser user = await DiscordExtensions.GetUserAsync(userArg, e.GetGuild());
+				IDiscordUser user = await e.GetGuild().FindUserAsync(userArg);
 
 				if(e.GetArgumentPack().Take(out int value))
 				{
@@ -261,7 +261,7 @@
 				return;
 			}
 
-			var user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+			var user = await e.GetGuild().FindUserAsync(userName);
 
 			e.GetArgumentPack().Take(out int amount);
 			var context = e.GetService<MikiDbContext>();
@@ -296,7 +296,7 @@
 				return;
 			}
 
-			IDiscordUser user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
+			IDiscordUser user = await e.GetGuild().FindUserAsync(userName);
 
 			if(!e.GetArgumentPack().Take(out int amount))
 			{
@@ -309,8 +309,7 @@
 			u.Total_Experience = amount;
 
 			await userService.UpdateUserAsync(u);
-
-			await userService.SaveAsync();
+            await userService.SaveAsync();
 
 			e.GetChannel().QueueMessage(e, null, ":ok_hand:");
 		}
@@ -320,12 +319,8 @@
         public async Task AddScopeAsync(IContext e)
         {
             var scopeStage = e.GetService<ScopeService>();
-            e.GetArgumentPack().Take(out string userStr);
-            var user = await DiscordExtensions.GetUserAsync(userStr, e.GetGuild());
-            if(user == null)
-            {
-                throw new ArgObjectNullException();
-            }
+            var user = await e.GetGuild().FindUserAsync(
+                e.GetArgumentPack().TakeRequired<string>());
 
             e.GetArgumentPack().Take(out string scope);
 
@@ -358,7 +353,7 @@
             {
                 var embed = new EmbedBuilder()
                     .SetTitle(":shield: Daily Edit")
-                    .SetDescription($"Available commands are `reset [user]` `setstreak <user> <amount>`")
+                    .SetDescription("Available commands are `reset [user]` `setstreak <user> <amount>`")
                     .SetColor(85, 172, 238);
                     
                 await embed.ToEmbed().QueueAsync(e, e.GetChannel());
@@ -380,7 +375,8 @@
                     .ConfigureAwait(false);
 
                 var dailyService = e.GetService<IDailyService>();
-                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id)
+                    .ConfigureAwait(false);
                 await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
 
                 daily.LastClaimTime = DateTime.UtcNow.AddHours(-24);
@@ -389,7 +385,10 @@
 
                 var message = new EmbedBuilder()
                     .SetTitle(":shield: Daily Edit")
-                    .SetDescription((userArgument != null?$"You have reset {user.Name}'s daily!":$"You have reset your daily!"))
+                    .SetDescription(
+                        userArgument != null
+                            ? $"You have reset {user.Name}'s daily!"
+                            : "You have reset your daily!")
                     .SetColor(85, 172, 238);
 
                 await message.ToEmbed().QueueAsync(e, e.GetChannel());
@@ -403,7 +402,10 @@
 
                 if (!e.GetArgumentPack().Take(out string userName))
                 {
-                    await e.ErrorEmbed($"You didn't give a user! Use `>dailyedit setstreak <user> <streak>`").ToEmbed().QueueAsync(e, e.GetChannel());
+                    await e.ErrorEmbed(
+                        "You didn't give a user! Use `>dailyedit setstreak <user> <streak>`")
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
                     return;
                 }
 
@@ -412,12 +414,16 @@
                     .ConfigureAwait(false);
 
                 var dailyService = e.GetService<IDailyService>();
-                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id).ConfigureAwait(false);
+                var daily = await dailyService.GetOrCreateDailyAsync((long)e.GetAuthor().Id)
+                    .ConfigureAwait(false);
                 await dailyService.UpdateDailyAsync(daily).ConfigureAwait(false);
 
                 if (!e.GetArgumentPack().Take(out int newStreak))
                 {
-                    await e.ErrorEmbed($"You didn't give an amount! Use `>dailyedit setstreak {userName} <streak>`").ToEmbed().QueueAsync(e, e.GetChannel());
+                    await e.ErrorEmbed(
+                        $"You didn't give an amount! Use `>dailyedit setstreak {userName} <streak>`")
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel());
                     return;
                 }
                 

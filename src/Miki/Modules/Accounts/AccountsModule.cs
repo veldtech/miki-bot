@@ -874,166 +874,120 @@ namespace Miki.Modules.Accounts
         }
 
         [Command("rep")]
-        public async Task GiveReputationAsync(IContext e)
+        public class GiveReputationCommand
         {
-            var context = e.GetService<MikiDbContext>();
-
-            var giver = await context.Users.FindAsync(e.GetAuthor().Id.ToDbLong());
-
-            var cache = e.GetService<ICacheClient>();
-
-            var repObject = await cache.GetAsync<ReputationObject>($"user:{giver.Id}:rep");
-
-            if(repObject == null)
+            [Command]
+            public async Task GiveReputationAsync(IContext e)
             {
-                repObject = new ReputationObject()
+                var locale = e.GetLocale();
+                var userService = e.GetService<IUserService>();
+
+                var giver = await userService.GetOrCreateUserAsync(e.GetAuthor());
+                var repObject = await userService.GetUserReputationPointsAsync(giver.Id);
+
+                if(!e.GetArgumentPack().CanTake)
                 {
-                    LastReputationGiven = DateTime.Now,
-                    ReputationPointsLeft = 3
-                };
+                    await ReputationInfoScreenAsync(e, giver, repObject)
+                        .ConfigureAwait(false);
+                    return;
+                }
 
-                await cache.UpsertAsync(
-                    $"user:{giver.Id}:rep",
-                    repObject,
-                    DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
-                );
-            }
+                var usersMentioned = new Dictionary<ulong, GiveReputationRequest>();
+                var embed = new EmbedBuilder();
 
-            if(!e.GetArgumentPack().CanTake)
-            {
-                var pointReset = (DateTime.Now.AddDays(1).Date - DateTime.Now);
-
-                await new EmbedBuilder()
+                var mentionedSelf = false;
+                while(e.GetArgumentPack().CanTake)
                 {
-                    Title = e.GetLocale().GetString("miki_module_accounts_rep_header"),
-                    Description = e.GetLocale().GetString("miki_module_accounts_rep_description")
-                }.AddInlineField(
-                        e.GetLocale().GetString("miki_module_accounts_rep_total_received"),
-                        giver.Reputation.ToString("N0"))
-                    .AddInlineField(
-                        e.GetLocale().GetString("miki_module_accounts_rep_reset"),
-                        pointReset.ToTimeString(e.GetLocale()))
-                    .AddInlineField(
-                        e.GetLocale().GetString("miki_module_accounts_rep_remaining"),
-                        repObject.ReputationPointsLeft.ToString())
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-            }
-            else
-            {
-                Dictionary<IDiscordUser, short> usersMentioned = new Dictionary<IDiscordUser, short>();
-
-                EmbedBuilder embed = new EmbedBuilder();
-
-                int totalAmountGiven = 0;
-                bool mentionedSelf = false;
-
-                while(e.GetArgumentPack().CanTake && totalAmountGiven <= repObject.ReputationPointsLeft)
-                {
-                    short amount = 1;
-
                     e.GetArgumentPack().Take(out string userName);
+                    var currentUser = await e.GetGuild().FindUserAsync(userName)
+                        .ConfigureAwait(false);
 
-                    var u = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-
-                    if(u == null)
-                    {
-                        throw new UserNullException();
-                    }
-
+                    var amount = 1;
                     if(e.GetArgumentPack().Take(out int value))
                     {
-                        amount = (short)value;
+                        amount = value;
                     }
                     else if(e.GetArgumentPack().Peek(out string arg))
                     {
                         if(Utils.IsAll(arg))
                         {
-                            amount = (short)(repObject.ReputationPointsLeft - ((short)usersMentioned.Sum(x => x.Value)));
+                            amount = repObject.ReputationPointsLeft
+                                     - usersMentioned.Sum(x => x.Value.Amount);
                             e.GetArgumentPack().Skip();
                         }
                     }
 
-                    if(u.Id == e.GetAuthor().Id)
+                    if(currentUser.Id == e.GetAuthor().Id)
                     {
                         mentionedSelf = true;
                         continue;
                     }
 
-                    totalAmountGiven += amount;
-
-                    if(usersMentioned.Keys.Any(x => x.Id == u.Id))
+                    if(usersMentioned.Keys.Any(x => x == currentUser.Id))
                     {
-                        usersMentioned[usersMentioned.Keys.First(x => x.Id == u.Id)] += amount;
+                        usersMentioned[currentUser.Id].Amount += amount;
                     }
                     else
                     {
-                        usersMentioned.Add(u, amount);
+                        usersMentioned.Add(currentUser.Id, new GiveReputationRequest
+                        {
+                            RecieverId = (long)currentUser.Id,
+                            Amount = amount
+                        });
                     }
                 }
 
                 if(mentionedSelf)
                 {
-                    embed.Footer = new EmbedFooter()
+                    embed.Footer = new EmbedFooter
                     {
-                        Text = e.GetLocale().GetString("warning_mention_self"),
+                        Text = locale.GetString("warning_mention_self"),
                     };
                 }
 
-                if(usersMentioned.Count == 0)
+                var result = await userService.GiveReputationAsync(
+                    (long)e.GetAuthor().Id, 
+                    usersMentioned.Select(x => x.Value).ToList())
+                    .ConfigureAwait(false);
+
+                foreach(var user in result.UsersReceived)
                 {
-                    return;
-                }
-                else
-                {
-                    if(totalAmountGiven <= 0)
-                    {
-                        await e.ErrorEmbedResource("miki_module_accounts_rep_error_zero")
-                            .ToEmbed().QueueAsync(e, e.GetChannel());
-                        return;
-                    }
-
-                    if(usersMentioned.Sum(x => x.Value) > repObject.ReputationPointsLeft)
-                    {
-                        await e.ErrorEmbedResource(
-                                "error_rep_limit", 
-                                usersMentioned.Count, 
-                                usersMentioned.Sum(x => x.Value), repObject.ReputationPointsLeft)
-                            .ToEmbed().QueueAsync(e, e.GetChannel());
-                        return;
-                    }
-                }
-
-                embed.Title = (e.GetLocale().GetString("miki_module_accounts_rep_header"));
-                embed.Description = (e.GetLocale().GetString("rep_success"));
-
-                var userService = e.GetService<IUserService>();
-                foreach(var u in usersMentioned)
-                {
-                    User receiver = await userService.GetOrCreateUserAsync(u.Key);
-
-                    receiver.Reputation += u.Value;
-
+                    var points = usersMentioned[(ulong)user.Id].Amount;
                     embed.AddInlineField(
-                        receiver.Name,
-                        $"{(receiver.Reputation - u.Value):N0} => {receiver.Reputation:N0} (+{u.Value})"
-                    );
-
-                    context.Update(receiver);
+                        user.Name,
+                        $"{user.Reputation - points:N0} => {user.Reputation:N0} (+{points})");
                 }
+                
+                await embed.SetTitle(locale.GetString("miki_module_accounts_rep_header"))
+                    .SetDescription(locale.GetString("rep_success"))
+                    .AddInlineField(
+                        locale.GetString("miki_module_accounts_rep_points_left"),
+                        result.ReputationLeft.ToString())
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
+                    .ConfigureAwait(false);
+            }
 
-                repObject.ReputationPointsLeft -= (short)usersMentioned.Sum(x => x.Value);
+            private async Task ReputationInfoScreenAsync(
+                IContext e, User giver, ReputationObject repObject)
+            {
+                var locale = e.GetLocale();
+                var pointReset = DateTime.Now.AddDays(1).Date - DateTime.Now;
 
-                await cache.UpsertAsync(
-                    $"user:{giver.Id}:rep",
-                    repObject,
-                    DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
-                );
-
-                await embed.AddInlineField(e.GetLocale().GetString("miki_module_accounts_rep_points_left"), repObject.ReputationPointsLeft.ToString())
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-
-                await context.SaveChangesAsync();
+                await new EmbedBuilder()
+                    .SetTitle(locale.GetString("miki_module_accounts_rep_header"))
+                    .SetDescription(locale.GetString("miki_module_accounts_rep_description"))
+                    .AddInlineField(
+                        locale.GetString("miki_module_accounts_rep_total_received"),
+                        giver.Reputation.ToString("N0"))
+                    .AddInlineField(
+                        locale.GetString("miki_module_accounts_rep_reset"),
+                        pointReset.ToTimeString(locale))
+                    .AddInlineField(
+                        locale.GetString("miki_module_accounts_rep_remaining"),
+                        repObject.ReputationPointsLeft.ToString())
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
             }
         }
 

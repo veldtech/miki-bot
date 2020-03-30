@@ -155,11 +155,9 @@ namespace Miki.Utility
         public static EmbedBuilder ErrorEmbedResource(this IContext e, IResource resource)
             => ErrorEmbed(e, resource.Get(e.GetLocale()));
 
-        public static DateTime MinDbValue
-            => new DateTime(1755, 1, 1, 0, 0, 0);
-
         public static DiscordEmbed SuccessEmbed(this IContext e, string message)
             => SuccessEmbed(e.GetLocale(), message);
+
         public static DiscordEmbed SuccessEmbed(this Locale e, string message)
             => new EmbedBuilder
             {
@@ -167,13 +165,14 @@ namespace Miki.Utility
                 Description = message,
                 Color = new Color(119, 178, 85)
             }.ToEmbed();
+
         public static DiscordEmbed SuccessEmbedResource(
             this IContext e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetLocale().GetString(resource, param));
+
         public static DiscordEmbed SuccessEmbedResource(
             this Locale e, string resource, params object[] param)
             => SuccessEmbed(e, e.GetString(resource, param));
-
 
         public static ValueTask<string> RemoveMentionsAsync(this string arg, IDiscordGuild guild)
         {

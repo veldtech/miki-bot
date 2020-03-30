@@ -27,7 +27,7 @@
         public static InvalidEntityException FromEntity<T>()
         {
             return new InvalidEntityException(
-                typeof(T).GetCustomAttribute<EntityAttribute>()?.Value ?? "unknown");
+                typeof(T).GetCustomAttribute<EntityAttribute>()?.Value ?? "object");
         }
     }
 }
