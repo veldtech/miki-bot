@@ -1,6 +1,7 @@
 ﻿namespace Miki.Tests.Extensions
 {
     using System.Threading.Tasks;
+    using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Discord.Common;
     using Miki.Services;
@@ -18,7 +19,7 @@
 
             var userServiceMock = new Mock<IUserService>();
             userServiceMock.Setup(x => x.GetUserAsync(It.IsAny<long>()))
-                .Throws(new UserNullException());
+                .Throws(new EntityNullException<User>());
 
             await userServiceMock.Object.GetOrCreateUserAsync(userMock.Object);
 

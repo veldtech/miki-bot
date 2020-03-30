@@ -18,7 +18,7 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<BankAccount> CreateAccountAsync(AccountDetails accountDetails)
+        public async ValueTask<BankAccount> CreateAccountAsync(AccountReference accountDetails)
         {
             var account = new BankAccount
             {
@@ -31,7 +31,7 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<BankAccount> GetAccountAsync(AccountDetails accountDetails)
+        public async ValueTask<BankAccount> GetAccountAsync(AccountReference accountDetails)
         {
             var account = await repository.GetAsync(accountDetails.UserId, accountDetails.GuildId);
             if (account == null)
@@ -42,7 +42,7 @@
         }
 
         /// <inheritdoc />
-        public async ValueTask<BankAccount> DepositAsync(AccountDetails accountDetails, int amount)
+        public async ValueTask<BankAccount> DepositAsync(AccountReference accountDetails, int amount)
         {
             var account = await this.GetOrCreateBankAccountAsync(accountDetails).ConfigureAwait(false);
 
@@ -57,7 +57,7 @@
 
         // TODO: Add withdraw capability.
         /// <inheritdoc />
-        public ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount)
+        public ValueTask<BankAccount> WithdrawAsync(AccountReference accountDetails, int amount)
             => throw new NotImplementedException();
 
         /// <inheritdoc />
@@ -73,12 +73,12 @@
             => unitOfWork?.Dispose();
     }
 
-    public struct AccountDetails
+    public struct AccountReference
     {
-        public long UserId;
-        public long GuildId;
+        public long UserId { get; }
+        public long GuildId { get; }
 
-        public AccountDetails(long userId = 1, long guildId = 1)
+        public AccountReference(long userId, long guildId)
         {
             UserId = userId;
             GuildId = guildId;
@@ -87,13 +87,13 @@
 
     public interface IBankAccountService : IDisposable
     {
-        ValueTask<BankAccount> CreateAccountAsync(AccountDetails accountDetails);
+        ValueTask<BankAccount> CreateAccountAsync(AccountReference accountDetails);
 
-        ValueTask<BankAccount> GetAccountAsync(AccountDetails accountDetails);
+        ValueTask<BankAccount> GetAccountAsync(AccountReference accountDetails);
 
-        ValueTask<BankAccount> DepositAsync(AccountDetails accountDetails, int amount);
+        ValueTask<BankAccount> DepositAsync(AccountReference accountDetails, int amount);
 
-        ValueTask<BankAccount> WithdrawAsync(AccountDetails accountDetails, int amount);
+        ValueTask<BankAccount> WithdrawAsync(AccountReference accountDetails, int amount);
 
         ValueTask UpdateAccountAsync(BankAccount account);
 

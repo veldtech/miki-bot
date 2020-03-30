@@ -18,7 +18,7 @@
             {
                 return await service.GetUserAsync((long)user.Id);
             }
-            catch (UserNullException)
+            catch (EntityNullException<User>)
             {
                 return await service.CreateUserAsync((long)user.Id, user.Username);
             }
@@ -28,7 +28,7 @@
         /// Creates and returns the User regardless of business errors.
         /// </summary>
         public static async Task<BankAccount> GetOrCreateBankAccountAsync(
-            this IBankAccountService service, AccountDetails accountDetails)
+            this IBankAccountService service, AccountReference accountDetails)
         {
             try
             {

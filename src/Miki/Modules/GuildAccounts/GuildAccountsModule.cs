@@ -210,9 +210,8 @@
                 var guildUser = await context.Set<GuildUser>()
                     .SingleOrDefaultAsync(x => x.Id == (long)e.GetGuild().Id);
 
-                var account = await accountService.GetOrCreateBankAccountAsync(new AccountDetails(
-                    (long)e.GetAuthor().Id, 
-                    (long)e.GetGuild().Id));
+                var account = await accountService.GetOrCreateBankAccountAsync(
+                    new AccountReference((long)e.GetAuthor().Id, (long)e.GetGuild().Id));
 
                 await new EmbedBuilder()
                     .SetTitle(locale.GetString("guildbank_title", e.GetGuild().Name))
@@ -252,11 +251,8 @@
                 guildUser.Currency += totalDeposited;
                 context.Update(guildUser);
 
-                var accountDetails = new AccountDetails
-                {
-                    UserId = (long)e.GetAuthor().Id,
-                    GuildId = (long)e.GetGuild().Id
-                };
+                var accountDetails = new AccountReference(
+                    (long)e.GetAuthor().Id, (long)e.GetGuild().Id);
 
                 await accountService.DepositAsync(accountDetails, totalDeposited);
 

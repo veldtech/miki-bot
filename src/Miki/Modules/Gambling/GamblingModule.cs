@@ -107,14 +107,14 @@
                 var user = await userService.GetOrCreateUserAsync(e.GetAuthor());
                 int bet = ValidateBet(e, user);
 
-                var message = await e.GetChannel()
-                    .SendMessageAsync(null, embed: NewLoadingEmbed())
+                var message = await Retry.RetryAsync(() => e.GetChannel()
+                    .SendMessageAsync(null, embed: NewLoadingEmbed()), 1000)
                     .ConfigureAwait(false);
 
                 try
                 {
                     var session = await blackjackService.NewSessionAsync(
-                        message.Id, e.GetAuthor().Id, e.GetChannel().Id, bet)
+                            message.Id, e.GetAuthor().Id, e.GetChannel().Id, bet)
                         .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
                         .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
                         .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
@@ -122,14 +122,14 @@
                         .AndThen(x => x.Players[BlackjackService.DealerId].Hand[1].isPublic = false)
                         .AndThen(x => blackjackService.SyncSessionAsync(x.GetContext()));
 
-                    await message.EditAsync(new EditMessageArgs(
-                        embed: CreateEmbed(e, session).ToEmbed()))
+                    await Retry.RetryAsync(() => message.EditAsync(new EditMessageArgs(
+                            embed: CreateEmbed(e, session).ToEmbed())), 1000)
                         .ConfigureAwait(false);
                 }
                 catch(LocalizedException ex)
                 {
                     await message.EditAsync(new EditMessageArgs(
-                        embed: e.ErrorEmbedResource(ex.LocaleResource).ToEmbed()))
+                            embed: e.ErrorEmbedResource(ex.LocaleResource).ToEmbed()))
                         .ConfigureAwait(false);
                 }
             }
@@ -182,13 +182,13 @@
             {
                 var apiClient = ctx.GetService<IApiClient>();
 
-                await apiClient.EditMessageAsync(
+                await Retry.RetryAsync(() => apiClient.EditMessageAsync(
                     ctx.GetChannel().Id, 
                     session.MessageId, 
                     new EditMessageArgs
                 {
                     Embed = CreateEmbed(ctx, session).ToEmbed()
-                });
+                }), 1000);
                 // TODO: care about the message.
                 // TODO: just create a new message instance and allow changing the message id in the
                 //       context?

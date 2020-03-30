@@ -23,7 +23,12 @@
             where T : Enum
         {
             var result = await InternalGetAsync((int)type, entityId);
-            return Result<T>.From(() => (T)(object)result.Unwrap().Value);
+            if(result.IsValid)
+            {
+                return (T)(object)result.Unwrap().Value;
+            }
+
+            return new Result<T>(result.UnwrapException());
         } 
 
         public async ValueTask SetAsync<T>(SettingType type, long entityId, T value)

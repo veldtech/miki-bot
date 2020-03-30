@@ -1,13 +1,9 @@
 ﻿namespace Miki.Tests.Services
 {
-    using System;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Services;
-    using Miki.Services.Daily;
-    using Miki.Services.Transactions;
     using Xunit;
-    using Moq;
 
     public class BankAccountServiceTests : BaseEntityTest<MikiDbContext>
     {
@@ -31,11 +27,7 @@
         {
             await using var unit = NewContext();
             var accountService = new BankAccountService(unit);
-            var accountDetails = new AccountDetails
-            {
-                UserId = 1,
-                GuildId = 1
-            };
+            var accountDetails = new AccountReference(1, 1);
 
             await accountService.DepositAsync(accountDetails, 5000);
 
@@ -51,11 +43,7 @@
         {
             await using var unit = NewContext();
             var accountService = new BankAccountService(unit);
-            var accountDetails = new AccountDetails
-            {
-                UserId = 1,
-                GuildId = 2
-            };
+            var accountDetails = new AccountReference(1, 2);
 
             await accountService.DepositAsync(accountDetails, 5000);
 
