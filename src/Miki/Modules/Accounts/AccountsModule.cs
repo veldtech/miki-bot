@@ -895,14 +895,14 @@ namespace Miki.Modules.Accounts
                 var usersMentioned = new Dictionary<ulong, GiveReputationRequest>();
                 var embed = new EmbedBuilder();
 
-                bool mentionedSelf = false;
+                var mentionedSelf = false;
                 while(e.GetArgumentPack().CanTake)
                 {
                     e.GetArgumentPack().Take(out string userName);
                     var currentUser = await e.GetGuild().FindUserAsync(userName)
                         .ConfigureAwait(false);
 
-                    int amount = 1;
+                    var amount = 1;
                     if(e.GetArgumentPack().Take(out int value))
                     {
                         amount = value;
