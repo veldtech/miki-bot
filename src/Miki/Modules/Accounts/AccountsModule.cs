@@ -887,7 +887,8 @@ namespace Miki.Modules.Accounts
 
                 if(!e.GetArgumentPack().CanTake)
                 {
-                    await ReputationInfoScreenAsync(e, giver, repObject);
+                    await ReputationInfoScreenAsync(e, giver, repObject)
+                        .ConfigureAwait(false);
                     return;
                 }
 
@@ -898,7 +899,8 @@ namespace Miki.Modules.Accounts
                 while(e.GetArgumentPack().CanTake)
                 {
                     e.GetArgumentPack().Take(out string userName);
-                    var currentUser = await e.GetGuild().FindUserAsync(userName);
+                    var currentUser = await e.GetGuild().FindUserAsync(userName)
+                        .ConfigureAwait(false);
 
                     int amount = 1;
                     if(e.GetArgumentPack().Take(out int value))
@@ -945,7 +947,8 @@ namespace Miki.Modules.Accounts
 
                 var result = await userService.GiveReputationAsync(
                     (long)e.GetAuthor().Id, 
-                    usersMentioned.Select(x => x.Value).ToList());
+                    usersMentioned.Select(x => x.Value).ToList())
+                    .ConfigureAwait(false);
 
                 foreach(var user in result.UsersReceived)
                 {
@@ -961,7 +964,8 @@ namespace Miki.Modules.Accounts
                         locale.GetString("miki_module_accounts_rep_points_left"),
                         result.ReputationLeft.ToString())
                     .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
+                    .QueueAsync(e, e.GetChannel())
+                    .ConfigureAwait(false);
             }
 
             private async Task ReputationInfoScreenAsync(
