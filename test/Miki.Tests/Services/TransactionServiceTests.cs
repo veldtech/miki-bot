@@ -66,7 +66,7 @@
         {
             await using(var unit = NewContext())
             {
-                var userService = new UserService(unit);
+                var userService = new UserService(unit, null);
 
                 var service = new TransactionService(userService, null);
                 await service.CreateTransactionAsync(new TransactionRequest(1L, 2L, 10));
@@ -74,7 +74,7 @@
 
             await using(var unit = NewContext())
             {
-                var userService = new UserService(unit);
+                var userService = new UserService(unit, null);
 
                 var user1 = await userService.GetUserAsync(1L);
                 Assert.NotNull(user1);
@@ -90,7 +90,7 @@
         public async Task InvalidCurrencyTransferTest()
         {
             var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
 
             // TODO: replace with better testing solution.
             bool ranCallback = false;
@@ -115,9 +115,9 @@
         public async Task InvalidSelfTransferTest()
         {
             var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
 
-            var service = new TransactionService(userService, null);
+            var service = new TransactionService(userService);
             await Assext.ThrowsRootAsync<UserNullException>(
                 async () => await service.CreateTransactionAsync(new TransactionRequest(1L, 1L, 10)));
         }

@@ -2,6 +2,7 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
     using Miki.Discord.Common;
     using Miki.Framework;
@@ -42,7 +43,7 @@
             return FindUserById(guild, argument)
                 .OrElse(() => FindUserByMention(guild, argument))
                 .OrElse(() => FindUserByName(guild, argument))
-                .OrElseThrow(new UserNullException());
+                .OrElseThrow(new EntityNullException<User>());
         }
         public static Task<IDiscordGuildUser> FindUserAsync(this IDiscordGuild guild, IContext context)
         {

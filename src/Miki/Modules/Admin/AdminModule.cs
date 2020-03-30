@@ -43,14 +43,7 @@ namespace Miki.Modules.Admin
                     return;
                 }
 
-                IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-
-                if (user == null)
-                {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
-                }
+                var user = await e.GetGuild().FindUserAsync(userName);
 
                 IDiscordGuildUser author = await e.GetGuild()
                     .GetMemberAsync(e.GetAuthor().Id);
@@ -124,14 +117,7 @@ namespace Miki.Modules.Admin
 
                 e.GetArgumentPack().Take(out string userName);
 
-                bannedUser = await DiscordExtensions.GetUserAsync(userName, e.GetGuild());
-
-                if (bannedUser == null)
-                {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
-                }
+                bannedUser = await e.GetGuild().FindUserAsync(userName);
 
                 if (await bannedUser.GetHierarchyAsync() >= await author.GetHierarchyAsync())
                 {
@@ -668,14 +654,8 @@ namespace Miki.Modules.Admin
                     return;
                 }
 
-                IDiscordGuildUser user = await DiscordExtensions.GetUserAsync(argObject, e.GetGuild());
-                if (user == null)
-                {
-                    await e.ErrorEmbed(e.GetLocale().GetString("ban_error_user_null"))
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
-                    return;
-                }
-
+                IDiscordGuildUser user = await e.GetGuild().FindUserAsync(argObject);
+               
                 string reason = null;
                 if (e.GetArgumentPack().CanTake)
                 {

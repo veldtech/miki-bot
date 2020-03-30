@@ -501,7 +501,7 @@
   "miki_command_usage_rps": ">rps <bet> <r/p/s>",
   "warning_mention_self": "I saw you tried to mention yourself. You can't do this!",
   "error_account_null": "Your account does not exist yet! If this problem keeps appearing, please notify us!",
-  "error_rep_limit": "You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left.",
+  "error_reputation_limit": "You can not give {0} user(s) {1} reputation point(s) while you only have {2} points left.",
   "rep_success": "You've successfully given reputation",
   "sync_success": "I've synchronized your current {0} to Miki's database!",
   "term_avatar": "avatar",
@@ -698,11 +698,13 @@
   "entity_weapon": "weapon",
   "entity_word": "word",
   "entity_number": "number",
-  "entity_switch": "toggle",
   "entity_object": "object",
+  "entity_switch": "toggle",
   "entity_reminder": "reminder",
   "error_missing_argument": "We missed an argument from you! Could you add a valid {0}?",
   "error_entity_null": "This {0} was not found!",
   "error_command_disabled": "This command is disabled for now.. Sorry!",
-  "reminder_placed": "I'll remind you to {0} in {1}!"
+  "reminder_placed": "I'll remind you to {0} in {1}!",
+  "entity_user": "user",
+  "error_reputation_none": "No valid users found to give reputation to." 
 }

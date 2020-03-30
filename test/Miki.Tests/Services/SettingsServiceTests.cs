@@ -1,8 +1,5 @@
 ﻿namespace Miki.Tests.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;

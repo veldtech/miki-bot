@@ -79,7 +79,7 @@
         public async Task ClaimDailyTest()
         {
             await using var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
@@ -97,7 +97,7 @@
         public async Task DonatorClaimDailyTest()
         {
             await using var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
             
@@ -115,7 +115,7 @@
         public async Task CheckIfDailyUpdatedInDatabaseTest()
         {
             await using var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
@@ -133,7 +133,7 @@
         public async Task DailyStreakResetTest()
         {
             await using var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
@@ -148,7 +148,7 @@
         public async Task GetOrCreateDailyTest()
         {
             await using var unit = NewContext();
-            var userService = new UserService(unit);
+            var userService = new UserService(unit, null);
             var transactionService = new TransactionService(userService);
             var dailyService = new DailyService(unit, userService, transactionService);
 
