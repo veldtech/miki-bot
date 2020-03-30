@@ -191,11 +191,11 @@
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
 
-                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
-                //{
-                //    LocalhostFilePath = "./feature_flags.yaml"
-                //};
-                var factory = new SplitFactory("mu27v3u1ttnbivkfpknce6st4b02sj77jb79", splitConfig);
+                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions
+                {
+                    LocalhostFilePath = "./feature_flags.yaml"
+                };
+                var factory = new SplitFactory("localhost", splitConfig);
                 var client = factory.Client();
                 client.BlockUntilReady(10000);
 
