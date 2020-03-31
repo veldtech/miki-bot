@@ -18,7 +18,8 @@
         public Optional<string> GetString(Required<string> key)
         {
             var value = resource.GetString(key);
-            if(value.HasValue && !string.IsNullOrWhiteSpace(value.Unwrap()))
+            if(value.HasValue && !string.IsNullOrWhiteSpace(value.Unwrap()) 
+               || FallbackManager == this)
             {
                 return value.Unwrap();
             }
