@@ -3,6 +3,7 @@ namespace Miki
 {
     using System;
     using System.Collections.Generic;
+    using Miki.Discord.Rest.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Utility;
@@ -25,7 +26,9 @@ namespace Miki
                     QueryString = e.GetQuery(),
                     Url = e.Executable.ToString(),
                 },
+                Message = exception.ToString()
             };
+            
             sentryEvent.SetTag("locale", e.GetLocale()?.CountryCode ?? "eng");
             sentryEvent.SetTag("guild", e.GetGuild()?.Id.ToString() ?? "dm");
             return sentryEvent;
