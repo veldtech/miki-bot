@@ -60,11 +60,11 @@ namespace Miki.Modules.Accounts
 
             discordClient.MessageCreate += msg => OnMessageCreate(app, AchievementService, msg);
 
-            accountsService.OnLocalLevelUp += OnUserLevelUp;
+            accountsService.OnLocalLevelUp += OnUserLevelUpAsync;
             accountsService.OnLocalLevelUp += OnLevelUpAchievements;
 
-            AchievementService.OnAchievementUnlocked += SendAchievementNotification;
-            AchievementService.OnAchievementUnlocked += CheckAchievementUnlocks;
+            AchievementService.OnAchievementUnlocked += SendAchievementNotificationAsync;
+            AchievementService.OnAchievementUnlocked += CheckAchievementUnlocksAsync;
         }
 
         private async Task OnMessageCreate(MikiApp app, AchievementService service, IDiscordMessage arg)
@@ -155,24 +155,25 @@ namespace Miki.Modules.Accounts
         /// <summary>
         /// Notification for local user level ups.
         /// </summary>
-        private async Task OnUserLevelUp(IDiscordUser user, IDiscordTextChannel channel, int level)
+        private async Task OnUserLevelUpAsync(IDiscordUser user, IDiscordTextChannel channel, int level)
         {
             using var scope = MikiApp.Instance.Services.CreateScope();
-            var context = scope.ServiceProvider.GetService<MikiDbContext>();
-            var settingsService = scope.ServiceProvider.GetService<ISettingsService>();
+            var services = scope.ServiceProvider;
 
-            var service = scope.ServiceProvider
-                .GetService<ILocalizationService>();
+            var context = services.GetService<MikiDbContext>();
+            var settingsService = services.GetService<ISettingsService>();
+            var localeService = services.GetService<ILocalizationService>();
 
-            Locale locale = await service.GetLocaleAsync((long)channel.Id)
+            Locale locale = await localeService.GetLocaleAsync((long)channel.Id)
                 .ConfigureAwait(false);
 
             EmbedBuilder embed = new EmbedBuilder()
                 .SetTitle(locale.GetString("miki_accounts_level_up_header"))
-                .SetDescription(locale.GetString(
-                    "miki_accounts_level_up_content",
-                    $"{user.Username}#{user.Discriminator}",
-                    level))
+                .SetDescription(
+                    locale.GetString(
+                        "miki_accounts_level_up_content", 
+                        $"{user.Username}#{user.Discriminator}", 
+                        level))
                 .SetColor(1, 0.7f, 0.2f);
 
 
@@ -192,7 +193,10 @@ namespace Miki.Modules.Accounts
                         SettingType.LevelUps, (long)channel.Id)
                     .ConfigureAwait(false);
 
-                switch((LevelNotificationsSetting)notificationSetting)
+                var setting = notificationSetting.IsValid
+                    ? notificationSetting.Unwrap()
+                    : LevelNotificationsSetting.RewardsOnly;
+                switch(setting)
                 {
                     case LevelNotificationsSetting.None:
                     case LevelNotificationsSetting.RewardsOnly when rolesObtained.Count == 0:
@@ -209,7 +213,7 @@ namespace Miki.Modules.Accounts
                     var roles = (await guild.GetRolesAsync().ConfigureAwait(false)).ToList();
                     if(user is IDiscordGuildUser guildUser)
                     {
-                        foreach(LevelRole role in rolesObtained)
+                        foreach(var role in rolesObtained)
                         {
                             IDiscordRole r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
                             if(r == null)
@@ -236,7 +240,7 @@ namespace Miki.Modules.Accounts
         /// <summary>
         /// Notification for user achievements
         /// </summary>
-        private Task SendAchievementNotification(IContext ctx, AchievementEntry arg)
+        private Task SendAchievementNotificationAsync(IContext ctx, AchievementEntry arg)
         {
             return new EmbedBuilder()
                 .SetTitle($"{arg.Icon} Achievement Unlocked!")
@@ -245,12 +249,11 @@ namespace Miki.Modules.Accounts
                 .QueueAsync(ctx, ctx.GetChannel());
         }
 
-        private async Task CheckAchievementUnlocks(IContext ctx, AchievementEntry arg)
+        private async Task CheckAchievementUnlocksAsync(IContext ctx, AchievementEntry arg)
         {
             var service = ctx.GetService<AchievementService>();
             var achievements = (await service.GetUnlockedAchievementsAsync((long) ctx.GetAuthor().Id))
                 .ToList();
-            var achievementCount = achievements.Count();
             var achievementObject = service.GetAchievement(AchievementIds.AchievementsId);
 
             var currentAchievements = achievements
@@ -258,25 +261,25 @@ namespace Miki.Modules.Accounts
                 .ToList();
 
 
-            if(achievementCount >= 3
+            if(achievements.Count >= 3
                && currentAchievements.FirstOrDefault(x => x.Rank == 0) == null)
             {
                 await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id);
             }
 
-            if(achievementCount >= 5
+            if(achievements.Count >= 5
                && currentAchievements.FirstOrDefault(x => x.Rank == 1) == null)
             {
                 await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 1);
             }
 
-            if(achievementCount >= 12
+            if(achievements.Count >= 12
                && currentAchievements.FirstOrDefault(x => x.Rank == 2) == null)
             {
                 await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 2);
             }
 
-            if(achievementCount >= 25
+            if(achievements.Count >= 25
                && currentAchievements.FirstOrDefault(x => x.Rank == 3) == null)
             {
                 await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 3);

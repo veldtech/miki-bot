@@ -4,13 +4,14 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Cache;
-    using Miki.Discord;
     using Miki.Discord.Common;
+    using Miki.Discord.Common.Models;
     using Miki.Framework;
     using Miki.Logging;
     using Miki.Utility;
@@ -20,6 +21,8 @@
 
     public class AccountService
     {
+        private readonly ISentryClient sentryClient;
+        private readonly ICacheClient cache;
         public event LevelUpDelegate OnLocalLevelUp;
         public event LevelUpDelegate OnGlobalLevelUp;
 
@@ -31,22 +34,27 @@
         private readonly ConcurrentDictionary<ulong, DateTime> lastTimeExpGranted
             = new ConcurrentDictionary<ulong, DateTime>();
 
-        private bool isSyncing;
-
+        private readonly SemaphoreSlim experienceLock;
+        
         private string GetContextKey(ulong guildid, ulong userid)
         {
             return $"user:{guildid}:{userid}:exp";
         }
 
-        public AccountService(IDiscordClient client)
+        public AccountService(IDiscordClient client, ISentryClient sentryClient, ICacheClient cache)
         {
             if(client == null)
             {
                 throw new InvalidOperationException();
             }
 
+            this.sentryClient = sentryClient;
+            this.cache = cache;
+
             client.GuildMemberCreate += this.Client_UserJoined;
             client.MessageCreate += this.CheckAsync;
+
+            experienceLock = new SemaphoreSlim(1, 1);
         }
 
         public async Task CheckAsync(IDiscordMessage e)
@@ -56,116 +64,107 @@
                 return;
             }
 
-            if(this.isSyncing)
+            if(experienceLock.CurrentCount == 0)
             {
                 return;
             }
 
             try
             {
-                var channel = await e.GetChannelAsync().ConfigureAwait(false);
-                if(channel is IDiscordGuildChannel guildChannel)
+                using var scope = MikiApp.Instance.Services.CreateScope();
+                var services = scope.ServiceProvider;
+
+                if(e is IDiscordGuildMessage guildMessage)
                 {
-                    ICacheClient cache = MikiApp.Instance.Services.GetService<ICacheClient>();
-
-                    string key = this.GetContextKey(guildChannel.GuildId, e.Author.Id);
-
-                    if(this.lastTimeExpGranted
+                    var key = GetContextKey(guildMessage.GuildId, e.Author.Id);
+                    if(lastTimeExpGranted
                            .GetOrAdd(e.Author.Id, DateTime.Now)
                            .AddMinutes(1) < DateTime.Now)
                     {
-                        int currentLocalExp = await cache.GetAsync<int>(key);
-                        if(currentLocalExp == 0)
-                        {
-                            // TODO: remove MikiApp.Instance
-                            using var scope = MikiApp.Instance.Services.CreateScope();
-                            DbContext db = scope.ServiceProvider.GetService<DbContext>();
-                            
-                            var expProfile = await GetOrCreateExperienceProfile(
-                                db, e.Author as IDiscordGuildUser);
-
-                            await cache.UpsertAsync(key, expProfile.Experience)
-                                .ConfigureAwait(false);
-                            currentLocalExp = expProfile.Experience;
-                        }
-
                         var bonusExp = MikiRandom.Next(1, 4);
-                        currentLocalExp += bonusExp;
-
-                        var expObject = new ExperienceAdded()
+                        var expObject = new ExperienceAdded
                         {
                             UserId = e.Author.Id.ToDbLong(),
-                            GuildId = guildChannel.GuildId.ToDbLong(),
+                            GuildId = guildMessage.GuildId.ToDbLong(),
                             Experience = bonusExp,
                             Name = e.Author.Username,
                         };
 
-                        this.experienceQueue.AddOrUpdate(e.Author.Id, expObject, (u, eo) =>
+                        int currentLocalExp = await cache.GetAsync<int>(key);
+                        if(currentLocalExp == 0)
                         {
-                            eo.Experience += expObject.Experience;
-                            return eo;
+                            var dbContext = services.GetService<DbContext>();
+                            var expProfile = await GetOrCreateExperienceProfileAsync(
+                                dbContext, e.Author as IDiscordGuildUser);
+
+                            await UpdateCacheExperienceAsync(expObject);
+                            currentLocalExp = expProfile.Experience;
+                        }
+
+                        currentLocalExp += bonusExp;
+                        experienceQueue.AddOrUpdate(e.Author.Id, expObject, (_, experience) =>
+                        {
+                            experience.Experience += expObject.Experience;
+                            return experience;
                         });
 
                         int level = User.CalculateLevel(currentLocalExp);
-
                         if(User.CalculateLevel(currentLocalExp - bonusExp) != level)
                         {
-                            await this.LevelUpLocalAsync(e, level)
+                            await LevelUpLocalAsync(e, level)
                                 .ConfigureAwait(false);
                         }
 
-                        this.lastTimeExpGranted.AddOrUpdate(
+                        lastTimeExpGranted.AddOrUpdate(
                             e.Author.Id, DateTime.Now, (x, d) => DateTime.Now);
-
-                        await cache.UpsertAsync(key, currentLocalExp)
-                            .ConfigureAwait(false);
+                        await UpdateCacheExperienceAsync(expObject);
                     }
                 }
 
                 if(DateTime.Now >= this.lastDbSync + new TimeSpan(0, 1, 0))
                 {
-                    this.isSyncing = true;
-                    Log.Message($"Applying Experience for {this.experienceQueue.Count} users");
-                    this.lastDbSync = DateTime.Now;
-
-                    using var scope = MikiApp.Instance.Services.CreateScope();
-
                     try
                     {
-                        var context = scope.ServiceProvider.GetService<DbContext>();
+                        await experienceLock.WaitAsync();
 
-                        await Task.WhenAll(
-                            UpdateGlobalDatabaseAsync(context),
-                            UpdateLocalDatabaseAsync(context),
-                            UpdateGuildDatabaseAsync(context));
+                        Log.Message($"Applying Experience for {this.experienceQueue.Count} users");
+                        this.lastDbSync = DateTime.Now;
+                        var context = services.GetService<DbContext>();
+
+                        await UpdateGlobalDatabaseAsync(context); 
+                        await UpdateLocalDatabaseAsync(context); 
+                        await UpdateGuildDatabaseAsync(context);
                         await context.SaveChangesAsync();
                     }
                     catch(Exception ex)
                     {
                         Log.Error(ex.Message + "\n" + ex.StackTrace);
-                        var sentryClient = scope.ServiceProvider.GetService<ISentryClient>();
                         sentryClient.CaptureException(ex);
                     }
                     finally
                     {
                         this.experienceQueue.Clear();
-                        this.isSyncing = false;
+                        experienceLock.Release();
                     }
-
-                    Log.Message("Done Applying!");
                 }
             }
             catch(Exception ex)
             {
                 Log.Error(ex);
+                sentryClient.CaptureException(ex);
             }
         }
 
-        private async Task<LocalExperience> GetOrCreateExperienceProfile(
+        private async Task UpdateCacheExperienceAsync(ExperienceAdded experience)
+        {
+            var key = GetContextKey((ulong)experience.GuildId, (ulong)experience.UserId);
+            await cache.UpsertAsync(key, experience.Experience, TimeSpan.FromMinutes(5));
+        }
+
+        private async Task<LocalExperience> GetOrCreateExperienceProfileAsync(
             DbContext ctx, IDiscordGuildUser user)
         {
-            LocalExperience newProfile = await LocalExperience.GetAsync(
-                    ctx, user.GuildId, user.Id)
+            LocalExperience newProfile = await LocalExperience.GetAsync(ctx, user.GuildId, user.Id)
                 .ConfigureAwait(false);
             if(newProfile == null)
             {

@@ -27,8 +27,7 @@
             {
                 return (T)(object)result.Unwrap().Value;
             }
-
-            return new Result<T>(result.UnwrapException());
+            return result.UnwrapException();
         } 
 
         public async ValueTask SetAsync<T>(SettingType type, long entityId, T value)
@@ -59,7 +58,7 @@
             var setting = await settingsRepository.GetAsync(entityId, type);
             if(setting == null)
             {
-                return new Result<Setting>(new EntityNullException<Setting>());
+                return new EntityNullException<Setting>();
             }
             return setting;
         }
