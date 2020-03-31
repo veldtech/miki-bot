@@ -220,10 +220,11 @@ namespace Miki.Utility
         }
 
         public static async Task SyncAvatarAsync(
-            [NotNull] IDiscordUser user, 
-            IExtendedCacheClient cache, 
-            IUserService context, 
-            AmazonS3Client s3Service)
+            [NotNull] IDiscordUser user,
+            IExtendedCacheClient cache,
+            IUserService context,
+            AmazonS3Client s3Service,
+            BunnyCDNClient cdnClient)
         {
             PutObjectRequest request = new PutObjectRequest
             {
@@ -234,22 +235,18 @@ namespace Miki.Utility
             };
 
             string avatarUrl = user.GetAvatarUrl();
-            using (var client = new HttpClient(avatarUrl, true))
+            using(var client = new HttpClient(avatarUrl, true))
             {
                 request.InputStream = await client.GetStreamAsync();
             }
 
             var response = await s3Service.PutObjectAsync(request);
-            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+            if(response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new AvatarSyncException();
             }
 
-            try
-            {
-                await MikiApp.Instance.Services.GetService<BunnyCDNClient>()
-                    .PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
-            } catch(HttpRequestException) { /* ignored */ }
+            await cdnClient.PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
 
             var mikiUser = await context.GetOrCreateUserAsync(user);
             await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);

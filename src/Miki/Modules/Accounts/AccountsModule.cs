@@ -564,7 +564,7 @@ namespace Miki.Modules.Accounts
                 var maxGlobalExp = User.CalculateLevelExperience(globalLevel);
                 var minGlobalExp = User.CalculateLevelExperience(globalLevel - 1);
 
-                var globalRank = await leaderboardsService.GetGlobalRankAsync((long)e.GetAuthor().Id);
+                var globalRank = await leaderboardsService.GetGlobalRankAsync((long)discordUser.Id);
 
                 var globalExpBar = new EmojiBar(
                     maxGlobalExp - minGlobalExp, 

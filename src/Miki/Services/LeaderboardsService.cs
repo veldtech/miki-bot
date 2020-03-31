@@ -28,7 +28,7 @@
 
         public async Task<int> GetLocalRankAsync(long guildId, Expression<Func<LocalExperience, bool>> where)
         {
-            return await (await localRepository.ListAsync()).AsQueryable()
+            return 1 + await (await localRepository.ListAsync()).AsQueryable()
                 .Where(x => x.ServerId == guildId)
                 .Where(where)
                 .CountAsync();

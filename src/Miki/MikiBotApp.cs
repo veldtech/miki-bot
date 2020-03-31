@@ -428,7 +428,8 @@
                 await Utils.SyncAvatarAsync(newUser,
                         scope.ServiceProvider.GetService<IExtendedCacheClient>(),
                         scope.ServiceProvider.GetService<IUserService>(),
-                        scope.ServiceProvider.GetService<AmazonS3Client>())
+                        scope.ServiceProvider.GetService<AmazonS3Client>(),
+                        scope.ServiceProvider.GetService<BunnyCDNClient>())
                     .ConfigureAwait(false);
             }
         }

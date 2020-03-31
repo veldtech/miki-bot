@@ -21,6 +21,7 @@ namespace Miki.Modules.Fun
     using Miki.Bot.Models;
     using Miki.Bot.Models.Attributes;
     using Miki.Bot.Models.Exceptions;
+    using Miki.BunnyCDN;
     using Miki.Cache;
     using Miki.Common.Builders;
     using Miki.Discord;
@@ -728,6 +729,7 @@ namespace Miki.Modules.Fun
             var cache = e.GetService<IExtendedCacheClient>();
             var context = e.GetService<IUserService>();
 			var s3Client = e.GetService<AmazonS3Client>();
+            var cdnClient = e.GetService<BunnyCDNClient>();
 
 			IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
 
@@ -736,7 +738,7 @@ namespace Miki.Modules.Fun
                 var authorResponse = await client.HeadAsync($"avatars/{e.GetAuthor().Id}.png");
                 if (!authorResponse.Success)
                 {
-                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client);
+                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client, cdnClient);
                 }
             }
             Random r = new Random(
