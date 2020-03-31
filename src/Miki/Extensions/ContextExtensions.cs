@@ -2,7 +2,9 @@
 namespace Miki
 {
     using System;
+    using System.Collections.Generic;
     using Miki.Framework;
+    using Miki.Framework.Commands;
     using Miki.Utility;
     using Sentry;
     using Splitio.Services.Client.Interfaces;
@@ -11,7 +13,7 @@ namespace Miki
     {
         public static SentryEvent ToSentryEvent(this IContext e, Exception exception)
         {
-            return new SentryEvent(exception)
+            var sentryEvent = new SentryEvent(exception)
             {
                 User = new Sentry.Protocol.User
                 {
@@ -22,8 +24,11 @@ namespace Miki
                 {
                     QueryString = e.GetQuery(),
                     Url = e.Executable.ToString(),
-                }
+                },
             };
+            sentryEvent.SetTag("locale", e.GetLocale()?.CountryCode ?? "eng");
+            sentryEvent.SetTag("guild", e.GetGuild()?.Id.ToString() ?? "dm");
+            return sentryEvent;
         }
 
         /// <summary>
