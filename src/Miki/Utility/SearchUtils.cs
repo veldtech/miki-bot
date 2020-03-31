@@ -136,7 +136,7 @@
             => guild.GetMembersAsync()
                 .Map(r => r.First(
                     x => x.Nickname?.ToLowerInvariant() == name.ToLowerInvariant() 
-                         || name.ToLowerInvariant().StartsWith(x.Username.ToLowerInvariant())));
+                         || x.Username.ToLowerInvariant() == name.ToLowerInvariant()));
     }
 }
     
