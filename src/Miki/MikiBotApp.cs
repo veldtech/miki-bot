@@ -56,6 +56,7 @@
     using Veld.Osu.V1;
     using System.Text.Json;
     using Miki.Cache.InMemory;
+    using Miki.Functional;
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Pasta;
     using Miki.Services.Scheduling;
@@ -364,7 +365,7 @@
                     var languageName = Path.GetFileNameWithoutExtension(fileName);
                     await using var json = new MemoryStream(await File.ReadAllBytesAsync(fileName));
                     var dict = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(json);
-                    var resourceManager = new ResourceManager(dict);
+                    var resourceManager = new FallbackResourceManager(new ResourceManager(dict));
 
                     collection.Add(new Locale(languageName, resourceManager));
                 }
@@ -375,7 +376,7 @@
                 }
             }
 
-            LocaleExtensions.DefaultLocale = collection.Get("eng");
+            FallbackResourceManager.FallbackManager = collection.Get("eng").ResourceManager;
             return collection;
         }
 
