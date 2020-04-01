@@ -18,6 +18,8 @@
     [Module("logging")]
     public class LoggingModule
     {
+        public readonly ISentryClient sentryClient;
+
         /**
          * -u   = user's name
          * -um  = user's mention
@@ -28,8 +30,9 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule(IDiscordClient client)
+        public LoggingModule(IDiscordClient client, ISentryClient sentryClient)
         {
+            this.sentryClient = sentryClient;
             client.GuildMemberCreate += OnClientOnGuildMemberCreate;
             client.GuildMemberDelete += OnClientOnGuildMemberDelete;
         }
@@ -51,8 +54,7 @@
             }
             catch(Exception e)
             {
-                var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                sentry.CaptureEvent(e.ToSentryEvent());
+                sentryClient.CaptureEvent(e.ToSentryEvent());
             }
         }
 
@@ -73,8 +75,10 @@
             }
             catch(Exception e)
             {
-                var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                sentry.CaptureEvent(e.ToSentryEvent());
+                var @event = e.ToSentryEvent();
+                @event.SetTag("user:id:left", user.Id.ToString());
+                @event.SetTag("guild:id", user.GuildId.ToString());
+                sentryClient.CaptureEvent(e.ToSentryEvent());
             }
         }
 
@@ -93,7 +97,7 @@
                 if(leaveMessage == null)
                 {
                     await e.ErrorEmbed(
-                            $"No welcome message found! To set one use: `>setwelcomemessage <message>`")
+                            "No welcome message found! To set one use: `>setwelcomemessage <message>`")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
