@@ -80,7 +80,7 @@
             discordClient.GuildJoin += Client_JoinedGuild;  
 
             discordClient.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
-            pipeline.OnExecuted += LogErrors;
+            pipeline.OnExecuted += LogErrorsAsync;
 
             return new ProviderCollection()
                 .Add(new ProviderAdapter(
@@ -88,7 +88,7 @@
                     discordClient.Gateway.StopAsync));
         }
 
-        private async ValueTask LogErrors(IExecutionResult<IDiscordMessage> arg)
+        private async ValueTask LogErrorsAsync(IExecutionResult<IDiscordMessage> arg)
         {
             if(arg.Success)
             {
@@ -141,16 +141,17 @@
                 throw new InvalidOperationException("Connection string cannot be null");
             }
 
+            await using var context = new MikiDbContextFactory().CreateDbContext();
+            var config = await new ConfigService(new UnitOfWork(context)).GetOrCreateAnyAsync(null);
+
             serviceCollection.AddDbContext<MikiDbContext>(
                 x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
             serviceCollection.AddDbContext<DbContext, MikiDbContext>(
                 x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
 
-            serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            serviceCollection.AddSingleton<ConfigService>();
-            serviceCollection.AddSingleton(x => x.GetService<ConfigService>()
-                .GetOrCreateAnyAsync(null).GetAwaiter().GetResult());
+            serviceCollection.AddSingleton(config);
 
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             
@@ -160,14 +161,13 @@
             serviceCollection.AddScoped(x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
 
             // Setup Amazon CDN Client
-            serviceCollection.AddSingleton(
-                x => new AmazonS3Client(
-                    x.GetService<Config>().CdnAccessKey,
-                    x.GetService<Config>().CdnSecretKey,
-                    new AmazonS3Config
-                    {
-                        ServiceURL = x.GetService<Config>().CdnRegionEndpoint
-                    }));
+            serviceCollection.AddSingleton(new AmazonS3Client(
+                config.CdnAccessKey,
+                config.CdnSecretKey,
+                new AmazonS3Config
+                {
+                    ServiceURL = config.CdnRegionEndpoint
+                }));
 
             // Setup Discord
             serviceCollection.AddSingleton<IApiClient>(
@@ -179,12 +179,12 @@
             if(selfHost)
             {
                 serviceCollection.AddSingleton<IGateway>(
-                    x => new GatewayCluster(
+                    new GatewayCluster(
                         new GatewayProperties
                         {
                             ShardCount = 1,
                             ShardId = 0,
-                            Token = x.GetService<Config>().Token,
+                            Token = config.Token,
                             Compressed = true,
                             AllowNonDispatchEvents = true
                         }));
@@ -214,26 +214,17 @@
                         PrefetchCount = 25,
                     }));
 
-                serviceCollection.AddSingleton<IConnectionMultiplexer>(x =>
-                {
-                    var config = x.GetService<ConfigService>();
-                    // (velddev) blocks call, but resolves previous hack.
-                    var configValue = config.GetOrCreateAnyAsync(null)
-                        .GetAwaiter().GetResult();
-                    return ConnectionMultiplexer.Connect(configValue.RedisConnectionString);
-                });
+                serviceCollection.AddSingleton<IConnectionMultiplexer>(
+                    await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString));
                 serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
 
-                serviceCollection.AddSingleton(services =>
-                {
-                    var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
-                    var factory = new SplitFactory(
-                        services.GetService<Config>().OptionalValues.SplitioSdkKey, splitConfig);
-                    var client = factory.Client();
-                    client.BlockUntilReady(10000);
-                    return client;
-                });
+                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
+                var factory = new SplitFactory(
+                    config.OptionalValues.SplitioSdkKey, splitConfig);
+                var client = factory.Client();
+                client.BlockUntilReady(10000);
+                serviceCollection.AddSingleton(client);
             }
 
             serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
@@ -247,21 +238,17 @@
             serviceCollection.AddSingleton(
                 await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
-            serviceCollection.AddSingleton<ISentryClient>(
-                services =>
-                {
-                    var sdkKey = services.GetService<Config>().SharpRavenKey;
-                    if(string.IsNullOrWhiteSpace(sdkKey))
+            ISentryClient sentryClient = null;
+            if(!string.IsNullOrWhiteSpace(config.SharpRavenKey))
+            {
+                sentryClient = new SentryClient(
+                    new SentryOptions
                     {
-                        return null;
-                    }
-                    return new SentryClient(
-                        new SentryOptions
-                        {
-                            Dsn = new Dsn(sdkKey)
-                        });
-                });
-
+                        Dsn = new Dsn(config.SharpRavenKey)
+                    });
+            }
+            serviceCollection.AddSingleton(s => sentryClient);
+            
             serviceCollection.AddSingleton<IMessageWorker<IDiscordMessage>, MessageWorker>();
             serviceCollection.AddSingleton<TransactionEvents>();
             serviceCollection.AddSingleton(await BuildLocalesAsync());
@@ -284,17 +271,10 @@
             serviceCollection.AddScoped<ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
-            serviceCollection.AddSingleton<IOsuApiClient>(
-                x =>
-                {
-                    var config = x.GetService<Config>();
-                    if(config.OptionalValues?.OsuApiKey == null)
-                    {
-                        return null;
-                    }
-                    return new OsuApiClientV1(config.OptionalValues.OsuApiKey);
-                });
-            serviceCollection.AddScoped<BlackjackService>();
+            serviceCollection.AddSingleton<IOsuApiClient>(_ => config.OptionalValues?.OsuApiKey == null
+                ? null
+                : new OsuApiClientV1(config.OptionalValues.OsuApiKey));
+                serviceCollection.AddScoped<BlackjackService>();
             serviceCollection.AddScoped<LeaderboardsService>();
 
             serviceCollection.AddSingleton(new PrefixCollectionBuilder()

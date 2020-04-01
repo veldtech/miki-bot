@@ -18,7 +18,7 @@
     [Module("logging")]
     public class LoggingModule
     {
-        public readonly ISentryClient sentryClient;
+        private readonly ISentryClient sentryClient;
 
         /**
          * -u   = user's name
@@ -30,7 +30,7 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule(IDiscordClient client, ISentryClient sentryClient)
+        public LoggingModule(IDiscordClient client, ISentryClient sentryClient = null)
         {
             this.sentryClient = sentryClient;
             client.GuildMemberCreate += OnClientOnGuildMemberCreate;
@@ -76,8 +76,8 @@
             catch(Exception e)
             {
                 var @event = e.ToSentryEvent();
-                @event.SetTag("user:id:left", user.Id.ToString());
-                @event.SetTag("guild:id", user.GuildId.ToString());
+                @event.SetTag("user.id", user?.Id.ToString() ?? "null");
+                @event.SetTag("guild.id", user?.GuildId.ToString() ?? "null");
                 sentryClient.CaptureEvent(e.ToSentryEvent());
             }
         }

@@ -42,8 +42,7 @@
         [RequiresScope("developer")]
 		public Task SayAsync(IContext e)
 		{
-			e.GetChannel()
-                .QueueMessage(e, null, e.GetArgumentPack().Pack.TakeAll());
+			e.GetChannel().QueueMessage(e, null, e.GetArgumentPack().Pack.TakeAll());
 			return Task.CompletedTask;
 		}
         
