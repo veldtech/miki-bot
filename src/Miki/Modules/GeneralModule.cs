@@ -86,6 +86,11 @@
         public Task CalculateAsync(IContext e)
         {
             var expressionString = e.GetArgumentPack().Pack.TakeAll();
+            if(string.IsNullOrWhiteSpace(expressionString))
+            {
+                throw new ArgumentMissingException("entity_expression");
+            }
+
             expressionString = expressionString.Trim('\'');
 
             Expression expression = new Expression(expressionString, EvaluateOptions.NoCache);

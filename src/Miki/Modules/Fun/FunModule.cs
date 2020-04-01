@@ -744,11 +744,11 @@ namespace Miki.Modules.Fun
             Random r = new Random(
                 (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
-			int value = r.Next(0, 101) * -1;
+			int value = 1 + r.Next(0, 100);
 
 			Stream s = await imageClient.GetStreamAsync(
                 $"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
-			await e.GetChannel().SendFileAsync(s, "meme.png", "💕 Love is in the air 💕 ||april fools :-)||");
+			await e.GetChannel().SendFileAsync(s, "meme.png");
 		}
 
 		[Command("greentext","green", "gt")]
