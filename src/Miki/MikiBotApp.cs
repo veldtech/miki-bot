@@ -198,7 +198,7 @@
                 };
                 var factory = new SplitFactory("localhost", splitConfig);
                 var client = factory.Client();
-                client.BlockUntilReady(10000);
+                client.BlockUntilReady(30000);
 
                 serviceCollection.AddSingleton(client);
             }
@@ -223,7 +223,14 @@
                 var factory = new SplitFactory(
                     config.OptionalValues.SplitioSdkKey, splitConfig);
                 var client = factory.Client();
-                client.BlockUntilReady(10000);
+                try
+                {
+                    client.BlockUntilReady(30000);
+                }
+                catch(TimeoutException)
+                {
+                    Log.Error("Couldn't initialize splitIO in time.");
+                }
                 serviceCollection.AddSingleton(client);
             }
 
