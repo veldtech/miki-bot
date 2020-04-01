@@ -12,21 +12,26 @@ namespace Miki
 
     public static class ContextExtensions
     {
+        public static SentryEvent ToSentryEvent(this Exception exception)
+        {
+            return new SentryEvent(exception)
+            {
+                Message = exception.ToString()
+            };
+        }
         public static SentryEvent ToSentryEvent(this IContext e, Exception exception)
         {
-            var sentryEvent = new SentryEvent(exception)
+            var sentryEvent = exception.ToSentryEvent();
+
+            sentryEvent.User = new Sentry.Protocol.User
             {
-                User = new Sentry.Protocol.User
-                {
-                    Username = e.GetAuthor().GetFullName(),
-                    Id = e.GetAuthor().Id.ToString()
-                },
-                Request = new Sentry.Protocol.Request
-                {
-                    QueryString = e.GetQuery(),
-                    Url = e.Executable.ToString(),
-                },
-                Message = exception.ToString()
+                Username = e.GetAuthor().GetFullName(),
+                Id = e.GetAuthor().Id.ToString()
+            };
+            sentryEvent.Request = new Sentry.Protocol.Request
+            {
+                QueryString = e.GetQuery(),
+                Url = e.Executable.ToString(),
             };
             
             sentryEvent.SetTag("locale", e.GetLocale()?.CountryCode ?? "eng");

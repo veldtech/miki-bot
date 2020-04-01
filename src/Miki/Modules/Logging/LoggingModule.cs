@@ -52,7 +52,7 @@
             catch(Exception e)
             {
                 var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                sentry.CaptureException(e);
+                sentry.CaptureEvent(e.ToSentryEvent());
             }
         }
 
@@ -74,7 +74,7 @@
             catch(Exception e)
             {
                 var sentry = scope.ServiceProvider.GetService<ISentryClient>();
-                sentry.CaptureException(e);
+                sentry.CaptureEvent(e.ToSentryEvent());
             }
         }
 
@@ -133,7 +133,7 @@
                 }
 
                 context.EventMessages.Remove(leaveMessage);
-                await e.SuccessEmbed($"Deleted your leave message")
+                await e.SuccessEmbed("Deleted your leave message")
                     .QueueAsync(e, e.GetChannel());
 
             }
