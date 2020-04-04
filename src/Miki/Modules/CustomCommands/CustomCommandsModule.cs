@@ -41,7 +41,8 @@
                 .MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
         }
 
-        [GuildOnly, Command("createcommand")]
+        [Command("createcommand")]
+        [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task NewCustomCommandAsync(IContext e)
         {
@@ -114,7 +115,8 @@
             }
         }
 
-        [GuildOnly, Command("removecommand")]
+        [Command("removecommand")]
+        [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task RemoveCommandAsync(IContext e)
         {

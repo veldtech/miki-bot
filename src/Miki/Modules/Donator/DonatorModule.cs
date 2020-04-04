@@ -13,6 +13,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Miki.Attributes;
+    using Miki.Discord.Common;
     using Miki.Modules.Accounts.Services;
     using Miki.Net.Http;
     using Miki.Services.Achievements;

@@ -6,6 +6,7 @@ namespace Miki.Modules.Admin
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Miki.Attributes;
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
@@ -30,6 +31,7 @@ namespace Miki.Modules.Admin
         #endregion
 
         [Command("ban")]
+        [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task BanAsync(IContext e)
         {
@@ -85,7 +87,7 @@ namespace Miki.Modules.Admin
                     $"💁 {e.GetLocale().GetString("miki_module_admin_kick_by")}",
                     $"{e.GetAuthor().Username}#{e.GetAuthor().Discriminator}");
 
-                await embed.ToEmbed().SendToUser(user);
+                await embed.ToEmbed().SendToUserAsync(user);
 
                 await e.GetGuild().AddBanAsync(user, prune, reason);
             }
@@ -100,10 +102,11 @@ namespace Miki.Modules.Admin
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task CleanAsync(IContext e)
         {
-            await PruneAsync(e, (await e.GetGuild().GetSelfAsync()).Id, null);
+            await PruneAsync(e, (await e.GetGuild().GetSelfAsync()).Id);
         }
 
         [Command("kick")]
+        [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task KickAsync(IContext e)
         {
@@ -112,12 +115,11 @@ namespace Miki.Modules.Admin
 
             if ((await (e.GetChannel() as IDiscordGuildChannel).GetPermissionsAsync(currentUser)).HasFlag(GuildPermission.KickMembers))
             {
-                IDiscordGuildUser bannedUser;
-                IDiscordGuildUser author = await e.GetGuild().GetMemberAsync(e.GetAuthor().Id);
+                var author = await e.GetGuild().GetMemberAsync(e.GetAuthor().Id);
 
                 e.GetArgumentPack().Take(out string userName);
 
-                bannedUser = await e.GetGuild().FindUserAsync(userName);
+                var bannedUser = await e.GetGuild().FindUserAsync(userName);
 
                 if (await bannedUser.GetHierarchyAsync() >= await author.GetHierarchyAsync())
                 {
@@ -160,14 +162,17 @@ namespace Miki.Modules.Admin
                 embed.Color = new Color(1, 1, 0);
 
                 await embed.ToEmbed()
-                    .SendToUser(bannedUser);
+                    .SendToUserAsync(bannedUser);
                 await bannedUser.KickAsync(reason);
             }
             else
             {
                 await e.ErrorEmbed(
-                        e.GetLocale().GetString("permission_needed_error", $"`{e.GetLocale().GetString("permission_kick_members")}`"))
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                        e.GetLocale().GetString(
+                            "permission_needed_error", 
+                            $"`{e.GetLocale().GetString("permission_kick_members")}`"))
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
             }
         }
 
@@ -213,20 +218,20 @@ namespace Miki.Modules.Admin
             {
                 if (amount < 0)
                 {
-                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_negative"))
+                    await e.ErrorEmbed(locale.GetString("miki_module_admin_prune_error_negative"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
                 if (amount > 100)
                 {
-                    await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_max"))
+                    await e.ErrorEmbed(locale.GetString("miki_module_admin_prune_error_max"))
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
             }
             else
             {
-                await Utils.ErrorEmbed(e, locale.GetString("miki_module_admin_prune_error_parse"))
+                await e.ErrorEmbed(locale.GetString("miki_module_admin_prune_error_parse"))
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 return;
             }
@@ -387,7 +392,7 @@ namespace Miki.Modules.Admin
                 foreach(var p in allPermissions)
                 {
                     description.Append($"{GetStatusEmoji(p.Status)} {p.CommandName} for {p.Type} ");
-                    description.Append(await GetEntityName(e, p));
+                    description.Append(await GetEntityNameAsync(e, p));
                     description.Append("\n");
                 }
 
@@ -399,7 +404,7 @@ namespace Miki.Modules.Admin
                     .QueueAsync(e, e.GetChannel());
             }
 
-            private async Task<string> GetEntityName(IContext context, Permission p)
+            private async Task<string> GetEntityNameAsync(IContext context, Permission p)
             {
                 return p.Type switch
                 {
@@ -479,17 +484,17 @@ namespace Miki.Modules.Admin
 
                 if(Enum.TryParse<EntityType>(type, true, out var entityType))
                 {
-                    return await GetEntityFromType(e, entityType);
+                    return await GetEntityFromTypeAsync(e, entityType);
                 }
 
                 if(Mention.TryParse(type, out var mention))
                 {
-                    return await GetEntityFromMention(e, mention);
+                    return await GetEntityFromMentionAsync(e, mention);
                 }
                 return null;
             }
 
-            private Task<Entity> GetEntityFromType(IContext e, EntityType type)
+            private Task<Entity> GetEntityFromTypeAsync(IContext e, EntityType type)
                 => type switch
                 {
                     EntityType.User => e.GetGuild()
@@ -529,7 +534,7 @@ namespace Miki.Modules.Admin
                     _ => throw new NotSupportedException(),
                 };
 
-            private async ValueTask<Entity> GetEntityFromMention(IContext e, Mention mention)
+            private async ValueTask<Entity> GetEntityFromMentionAsync(IContext e, Mention mention)
             {
                 var entity = new Entity
                 {
@@ -695,7 +700,7 @@ namespace Miki.Modules.Admin
                     $"{author.Username}#{author.Discriminator}");
 
                 await embed.ToEmbed()
-                    .SendToUser(user);
+                    .SendToUserAsync(user);
 
                 await e.GetGuild().AddBanAsync(user, 1, reason);
                 await e.GetGuild().RemoveBanAsync(user);

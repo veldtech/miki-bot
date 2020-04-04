@@ -145,9 +145,11 @@
             var config = await new ConfigService(new UnitOfWork(context)).GetOrCreateAnyAsync(null);
 
             serviceCollection.AddDbContext<MikiDbContext>(
-                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models"))
+                    .EnableDetailedErrors());
             serviceCollection.AddDbContext<DbContext, MikiDbContext>(
-                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models")));
+                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models"))
+                    .EnableDetailedErrors());
 
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -220,8 +222,7 @@
                 serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
 
                 var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
-                var factory = new SplitFactory(
-                    config.OptionalValues.SplitioSdkKey, splitConfig);
+                var factory = new SplitFactory(config.OptionalValues.SplitioSdkKey, splitConfig);
                 var client = factory.Client();
                 try
                 {

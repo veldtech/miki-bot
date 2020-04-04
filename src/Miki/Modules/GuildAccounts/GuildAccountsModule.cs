@@ -11,11 +11,11 @@
     using Discord.Rest;
     using Framework;
     using Framework.Commands;
-    using Framework.Language;
     using Helpers;
     using Miki.Localization;
     using Microsoft.EntityFrameworkCore;
     using Miki.Accounts;
+    using Miki.Discord.Common;
     using Miki.Services;
     using Miki.Services.Transactions;
     using Miki.Utility;
@@ -191,7 +191,7 @@
                 await new EmbedBuilder()
                     .SetTitle(locale.GetString("guildbank_title", e.GetGuild().Name))
                     .SetDescription(locale.GetString("guildbank_info_description"))
-                    .SetColor(new Color(255, 255, 255))
+                    .SetColor(255, 255, 255)
                     .SetThumbnail("https://imgur.com/KXtwIWs.png")
                     .AddInlineField(
                         locale.GetString("guildbank_info_help"),

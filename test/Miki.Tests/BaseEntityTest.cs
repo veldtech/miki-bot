@@ -35,9 +35,7 @@
             var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
 
-            options = new DbContextOptionsBuilder<T>()
-                .UseSqlite(connection)
-                .Options;
+            options = new DbContextOptionsBuilder<T>().UseSqlite(connection).Options;
 
             using var context = NewDbContext();
             context.Database.EnsureCreated();

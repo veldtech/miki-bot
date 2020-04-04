@@ -90,18 +90,17 @@
                 .ToLowerInvariant();
 
             var cachePackage = await cache.HashGetAsync<ScriptPackage>(
-                CommandCacheKey, 
-                commandName + ":" + guild.Id);
+                CommandCacheKey, commandName + ":" + guild.Id);
             if (cachePackage != null)
             {
                 tokens = ScriptPacker.Unpack(cachePackage);
             }
             else
             {
-                var db = e.GetService<DbContext>();
+                var db = e.GetService<IUnitOfWork>();
+                var repository = db.GetRepository<CustomCommand>();
 
-                var command = await db.Set<CustomCommand>()
-                    .FindAsync(guild.Id.ToDbLong(), commandName);
+                var command = await repository.GetAsync((long)guild.Id, commandName);
                 if (command != null)
                 {
                     tokens = new Tokenizer().Tokenize(command.CommandBody);

@@ -12,8 +12,12 @@
 
         /// <inheritdoc />
         public override IResource LocaleResource
-            => new LanguageResource("miki_error_entity_invalid", entity);
+            => new LanguageResource("error_entity_invalid", GetEntityResource());
 
+        public InvalidEntityException(Type t)
+        {
+            entity = t.GetCustomAttribute<EntityAttribute>()?.Value ?? "object";
+        }
         public InvalidEntityException(string entityVerb)
         {
             if(string.IsNullOrEmpty(entityVerb))
@@ -24,10 +28,9 @@
             entity = entityVerb;
         }
 
-        public static InvalidEntityException FromEntity<T>()
+        private IResource GetEntityResource()
         {
-            return new InvalidEntityException(
-                typeof(T).GetCustomAttribute<EntityAttribute>()?.Value ?? "object");
+            return new LanguageResource($"entity_{entity}");
         }
     }
 }

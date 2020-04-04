@@ -22,11 +22,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.110.25" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.48" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="4.0.1" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
+    <PackageReference Include="Lindhart.Analyser.MissingAwaitWarning" Version="1.2.0" />
 
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -38,13 +39,13 @@
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.4.2" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
-    <PackageReference Include="Miki.Discord" Version="3.2.0" />
-    <PackageReference Include="Miki.Discord.Rest" Version="3.2.0" />
+    <PackageReference Include="Miki.Discord" Version="3.2.1" />
+    <PackageReference Include="Miki.Discord.Rest" Version="3.2.1" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.3.0" />
-    <PackageReference Include="Miki.Framework.Arguments" Version="2.3.0" />
-    <PackageReference Include="Miki.Framework.Commands" Version="2.3.1" />
-    <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.3.0" />
+    <PackageReference Include="Miki.Framework" Version="2.3.1" />
+    <PackageReference Include="Miki.Framework.Arguments" Version="2.3.1" />
+    <PackageReference Include="Miki.Framework.Commands" Version="2.3.1.1" />
+    <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.3.1" />
     <PackageReference Include="Miki.Functional" Version="0.1.3" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="Miki.UrbanDictionary" Version="0.2.0" />

@@ -706,5 +706,6 @@
   "error_command_disabled": "This command is disabled for now.. Sorry!",
   "reminder_placed": "I'll remind you to {0} in {1}!",
   "entity_user": "user",
-  "error_reputation_none": "No valid users found to give reputation to." 
+  "error_reputation_none": "No valid users found to give reputation to.",
+  "error_entity_invalid":  "This is not a valid {0}." 
 }

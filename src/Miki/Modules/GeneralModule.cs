@@ -3,19 +3,14 @@
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Framework.Commands.Prefixes;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Dsl;
     using Miki.Framework;
     using Miki.Framework.Arguments;
     using Miki.Framework.Commands;
     using Miki.Framework.Commands.Nodes;
-    using Miki.Framework.Language;
-    using Miki.Helpers;
     using Miki.Localization;
     using NCalc;
     using System;
@@ -25,6 +20,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Miki.Attributes;
+    using Miki.Bot.Models;
     using Miki.Modules.Accounts.Services;
     using Miki.Services.Achievements;
     using Miki.Utility;
@@ -47,7 +43,6 @@
         [Command("avatar")]
         public async Task AvatarAsync(IContext e)
         {
-            
             string avatarResource = e.GetAuthor().Username;
             string avatarUrl = e.GetAuthor().GetAvatarUrl();
 
@@ -65,7 +60,7 @@
                         .ConfigureAwait(false);
                     if(user == null)
                     {
-                        throw new UserNullException();
+                        throw new EntityNullException<User>();
                     }
 
                     avatarResource = user.Username;
@@ -187,7 +182,7 @@
                 .AddField("Time", timeLeft.ToTimeString(e.GetLocale()), true)
                 .AddField("React to participate", "good luck", true)
                 .ToEmbed()
-                .SendToChannel(e.GetChannel())
+                .SendToChannelAsync(e.GetChannel())
                 .ConfigureAwait(false);
 
             await msg.CreateReactionAsync(emoji)
@@ -277,7 +272,7 @@
 			IDiscordGuildUser owner = await guild.GetOwnerAsync()
                 .ConfigureAwait(false);
 
-            var context = e.GetService<MikiDbContext>();
+            var context = e.GetService<IUnitOfWork>();
 			var cache = e.GetService<ICacheClient>();
 
             if(!(e.GetService<IPrefixService>()
@@ -294,9 +289,9 @@
             var channels = (await e.GetGuild().GetChannelsAsync().ConfigureAwait(false))
                 .ToList();
 
-            var builder = new EmbedBuilder()
+            var builder = new EmbedBuilder
 			{
-				Author = new EmbedAuthor()
+				Author = new EmbedAuthor
 				{
 					Name = guild.Name,
 					IconUrl = guild.IconUrl,
@@ -578,7 +573,7 @@
 
 				var prefix = await (prefixService.GetDefaultTrigger() as DynamicPrefixTrigger)
 					.GetForGuildAsync(
-						e.GetService<MikiDbContext>(),
+						e.GetService<IUnitOfWork>(),
 						e.GetService<ICacheClient>(),
 						e.GetGuild().Id)
                     .ConfigureAwait(false);
@@ -607,7 +602,7 @@
 
 				await (prefixMiddleware.GetDefaultTrigger() as DynamicPrefixTrigger)
 					.ChangeForGuildAsync(
-						e.GetService<DbContext>(),
+						e.GetService<IUnitOfWork>(),
 						e.GetService<ICacheClient>(),
 						e.GetGuild().Id,
 						prefix)
@@ -634,7 +629,7 @@
 				var trigger = prefixMiddleware.GetDefaultTrigger() as DynamicPrefixTrigger;
 
                 await trigger.ChangeForGuildAsync(
-                        e.GetService<DbContext>(),
+                        e.GetService<IUnitOfWork>(),
                         e.GetService<ICacheClient>(),
                         e.GetGuild().Id,
                         trigger.DefaultValue)

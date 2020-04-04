@@ -208,12 +208,14 @@
             }
 
             var trigger = prefixMiddleware.GetDefaultTrigger();
-            await (trigger as DynamicPrefixTrigger)
-                .ChangeForGuildAsync(
-                    e.GetService<DbContext>(),
+            if(trigger is DynamicPrefixTrigger dynamicTrigger)
+            {
+                await dynamicTrigger.ChangeForGuildAsync(
+                    e.GetService<IUnitOfWork>(),
                     e.GetService<ICacheClient>(),
                     e.GetGuild().Id,
                     prefix);
+            }
 
             var locale = e.GetLocale();
 

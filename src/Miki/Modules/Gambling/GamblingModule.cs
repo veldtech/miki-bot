@@ -8,6 +8,7 @@
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
+    using Miki.Discord.Common.Arguments;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Localization;
@@ -626,89 +627,87 @@
                 .ConfigureAwait(false);
         }
 
-        //[Command(Name = "lottery")]
-        //public async Task LotteryAsync(EventContext e)
+        //[Command("lottery")]
+        //public async Task LotteryAsync(IContext e)
         //{
-        //	ArgObject arg = e.GetArgumentPack().FirstOrDefault();
+        //    if(e.GetArgumentPack().Take(out string arg))
+        //    {
+        //        long totalTickets = await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLengthAsync(lotteryKey);
+        //        long yourTickets = 0;
 
-        //	if (arg == null)
-        //	{
-        //		long totalTickets = await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListLengthAsync(lotteryKey);
-        //		long yourTickets = 0;
+        //        string latestWinner = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).StringGet("lottery:winner");
 
-        //		string latestWinner = (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).StringGet("lottery:winner");
+        //        if(await lotteryDict.ContainsAsync(e.GetAuthor().Id))
+        //        {
+        //            yourTickets = long.Parse(await lotteryDict.GetAsync(e.GetAuthor().Id));
+        //        }
 
-        //		if (await lotteryDict.ContainsAsync(e.GetAuthor().Id))
-        //		{
-        //			yourTickets = long.Parse(await lotteryDict.GetAsync(e.GetAuthor().Id));
-        //		}
+        //        string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.GetLocale(), true) ?? "1h?m?s - will be fixed soon!";
 
-        //		string timeLeft = taskScheduler?.GetInstance(0, lotteryId).TimeLeft.ToTimeString(e.GetLocale(), true) ?? "1h?m?s - will be fixed soon!";
+        //        new EmbedBuilder()
+        //        {
+        //            Title = "🍀 Lottery",
+        //            Description = "Make the biggest gamble, and get paid off massively if legit.",
+        //            Color = new Color(119, 178, 85)
+        //        }.AddInlineField("Tickets Owned", yourTickets.ToString())
+        //        .AddInlineField("Drawing In", timeLeft)
+        //        .AddInlineField("Total Tickets", totalTickets.ToString())
+        //        .AddInlineField("Ticket price", $"{100} mekos")
+        //        .AddInlineField("Latest Winner", latestWinner ?? "no name")
+        //        .AddInlineField("How to buy?", ">lottery buy [amount]")
+        //        .ToEmbed().QueueToChannelAsync(e.GetChannel());
+        //        return;
+        //    }
+            
+        //    switch(arg.Argument.ToLower())
+        //    {
+        //        case "buy":
+        //        {
+        //            arg = arg.Next();
+        //            int amount = arg?.AsInt() ?? 1;
 
-        //		new EmbedBuilder()
-        //		{
-        //			Title = "🍀 Lottery",
-        //			Description = "Make the biggest gamble, and get paid off massively if legit.",
-        //			Color = new Color(119, 178, 85)
-        //		}.AddInlineField("Tickets Owned", yourTickets.ToString())
-        //		.AddInlineField("Drawing In", timeLeft)
-        //		.AddInlineField("Total Tickets", totalTickets.ToString())
-        //		.AddInlineField("Ticket price", $"{100} mekos")
-        //		.AddInlineField("Latest Winner", latestWinner ?? "no name")
-        //		.AddInlineField("How to buy?", ">lottery buy [amount]")
-        //		.ToEmbed().QueueToChannelAsync(e.GetChannel());
-        //		return;
-        //	}
+        //            if(amount < 1)
+        //                amount = 1;
 
-        //	switch (arg.Argument.ToLower())
-        //	{
-        //		case "buy":
-        //		{
-        //			arg = arg.Next();
-        //			int amount = arg?.AsInt() ?? 1;
+        //            using(var context = new MikiContext())
+        //            {
+        //                User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
 
-        //			if (amount < 1)
-        //				amount = 1;
+        //                if(amount * 100 > u.Currency)
+        //                {
+        //                    e.ErrorEmbedResource("miki_mekos_insufficient")
+        //                        .ToEmbed().QueueToChannelAsync(e.GetChannel());
+        //                    return;
+        //                }
 
-        //			using (var context = new MikiContext())
-        //			{
-        //				User u = await DatabaseHelpers.GetUserAsync(context, e.GetAuthor());
+        //                await u.AddCurrencyAsync(-amount * 100, e.GetChannel());
 
-        //				if (amount * 100 > u.Currency)
-        //				{
-        //					e.ErrorEmbedResource("miki_mekos_insufficient")
-        //						.ToEmbed().QueueToChannelAsync(e.GetChannel());
-        //					return;
-        //				}
+        //                RedisValue[] tickets = new RedisValue[amount];
 
-        //				await u.AddCurrencyAsync(-amount * 100, e.GetChannel());
+        //                for(int i = 0; i < amount; i++)
+        //                {
+        //                    tickets[i] = e.GetAuthor().Id.ToString();
+        //                }
 
-        //				RedisValue[] tickets = new RedisValue[amount];
+        //                await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListRightPushAsync(lotteryKey, tickets);
 
-        //				for (int i = 0; i < amount; i++)
-        //				{
-        //					tickets[i] = e.GetAuthor().Id.ToString();
-        //				}
+        //                int totalTickets = 0;
 
-        //				await (Global.RedisClient as StackExchangeCacheClient).Client.GetDatabase(0).ListRightPushAsync(lotteryKey, tickets);
+        //                if(await lotteryDict.ContainsAsync(e.GetAuthor().Id.ToString()))
+        //                {
+        //                    totalTickets = int.Parse(await lotteryDict.GetAsync(e.GetAuthor().Id.ToString()));
+        //                }
 
-        //				int totalTickets = 0;
+        //                await lotteryDict.AddAsync(e.GetAuthor().Id, amount + totalTickets);
 
-        //				if (await lotteryDict.ContainsAsync(e.GetAuthor().Id.ToString()))
-        //				{
-        //					totalTickets = int.Parse(await lotteryDict.GetAsync(e.GetAuthor().Id.ToString()));
-        //				}
+        //                await context.SaveChangesAsync();
 
-        //				await lotteryDict.AddAsync(e.GetAuthor().Id, amount + totalTickets);
-
-        //				await context.SaveChangesAsync();
-
-        //				e.SuccessEmbed($"Successfully bought {amount} tickets!")
-        //					.QueueToChannelAsync(e.GetChannel());
-        //			}
-        //		}
-        //		break;
-        //	}
+        //                e.SuccessEmbed($"Successfully bought {amount} tickets!")
+        //                    .QueueToChannelAsync(e.GetChannel());
+        //            }
+        //        }
+        //        break;
+        //    }
         //}
 
         public static int ValidateBet(
