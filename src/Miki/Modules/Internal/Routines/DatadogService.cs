@@ -137,6 +137,12 @@
                     $"commandname:{ev.ToString().ToLowerInvariant()}"
                 });
             }
+
+            DogStatsd.Histogram("commands.time", arg.TimeMilliseconds, 1, new[]
+            {
+                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                $"commandname:{ev.ToString().ToLowerInvariant()}"
+            });
             return default;
         }
     }
