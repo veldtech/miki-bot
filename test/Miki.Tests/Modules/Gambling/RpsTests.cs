@@ -8,7 +8,6 @@
     using Miki.Modules.Gambling;
     using Miki.Services;
     using Miki.Services.Rps;
-    using Miki.Services.Transactions;
     using Moq;
     using Xunit;
 

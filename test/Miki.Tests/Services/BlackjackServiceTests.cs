@@ -3,20 +3,21 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Cache.InMemory;
+    using Miki.Bot.Models;
     using Miki.Services;
     using Miki.Services.Transactions;
     using Moq;
     using Serialization.Protobuf;
     using Xunit;
 
-    public class BlackjackServiceTests : BaseEntityTest<TransactionContext>
+    public class BlackjackServiceTests : BaseEntityTest<MikiDbContext>
     {
         public BlackjackService Service { get; }
 
         public const ulong ValidUser = 1UL;
 
         public BlackjackServiceTests()
-            : base(x => new TransactionContext(x))
+            : base(x => new MikiDbContext(x))
         {
             var cache = new InMemoryCacheClient(
                 new ProtobufSerializer());

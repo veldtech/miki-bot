@@ -43,7 +43,6 @@
         /// <summary>
         /// Decorates the base key with an owner, if the owner exists.
         /// </summary>
-        /// <returns></returns>
         public string GetObjectNamespace(string ownerId)
         {
             if(string.IsNullOrWhiteSpace(ownerId))

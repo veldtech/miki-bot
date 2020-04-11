@@ -206,16 +206,19 @@
             }
             else
             {
-                serviceCollection.AddSingleton<IGateway>(x => new RetsuConsumer(
+                var consumer = new RetsuConsumer(
                     new ConsumerConfiguration
                     {
-                        ConnectionString = new Uri(x.GetService<Config>().RabbitUrl),
+                        ConnectionString = new Uri(config.RabbitUrl),
                         QueueName = "gateway",
                         ExchangeName = "consumer",
                         ConsumerAutoAck = false,
                         PrefetchCount = 25,
-                    }));
+                    });
+                await consumer.SubscribeAsync("MESSAGE_CREATE");
+                await consumer.SubscribeAsync("GUILD_CREATE");
 
+                serviceCollection.AddSingleton<IGateway>(consumer);
                 serviceCollection.AddSingleton<IConnectionMultiplexer>(
                     await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString));
                 serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
@@ -318,7 +321,7 @@
                     Member = user is IDiscordGuildUser a
                         ? new DiscordGuildMemberPacket
                         {
-                            JoinedAt = a.JoinedAt.ToUnixTimeSeconds(),
+                            JoinedAt = a.JoinedAt.UtcDateTime,
                             GuildId = a.GuildId,
                             Nickname = a.Nickname,
                             Roles = a.RoleIds.ToList(),

@@ -8,7 +8,6 @@
     using Miki.Bot.Models;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Common.Arguments;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using Miki.Localization;

@@ -9,43 +9,11 @@
     using Miki.Services.Transactions;
     using Moq;
     using Xunit;
-
-    public class TransactionContext : DbContext
-    {
-        public TransactionContext(DbContextOptions options)
-            : base(options)
-        { }
-
-        public DbSet<Achievement> Achievements { get; set; }
-        public DbSet<LocalExperience> Experience { get; set; }
-        public DbSet<GlobalPasta> Pastas { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Item> Items { get; set; }
-        public DbSet<Connection> Connections { get; set; }
-        public DbSet<CommandUsage> CommandUsages { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>()
-                .HasKey(x => x.Id);
-            modelBuilder.Entity<Achievement>()
-                .HasKey(x => new {x.UserId, x.Name});
-            modelBuilder.Entity<LocalExperience>()
-                .HasKey(x => new {x.UserId, x.ServerId});
-            modelBuilder.Entity<Item>()
-                .HasKey(x => new { x.Id, x.UserId });
-            modelBuilder.Entity<Connection>()
-                .HasKey(x => x.UserId);
-            modelBuilder.Entity<CommandUsage>()
-                .HasKey(x => x.UserId);
-        }
-    }
-
-    public class TransactionServiceTests : BaseEntityTest<TransactionContext>
+    public class TransactionServiceTests : BaseEntityTest<MikiDbContext>
     {
         /// <inheritdoc />
         public TransactionServiceTests()
-            : base(options => new TransactionContext(options))
+            : base(options => new MikiDbContext(options))
         {
             using var ctx = NewDbContext();
             ctx.Users.Add(new User

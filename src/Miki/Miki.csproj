@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.110.48" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.50" />
     <PackageReference Include="DogStatsD-CSharp-Client" Version="4.0.1" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Lindhart.Analyser.MissingAwaitWarning" Version="1.2.0" />
@@ -35,14 +35,14 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Miki.Anilist" Version="0.6.1" />
     <PackageReference Include="Miki.BunnyCDN" Version="0.1.1" />
-    <PackageReference Include="Miki.Cache.InMemory" Version="1.4.0" />
-    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.4.2" />
+    <PackageReference Include="Miki.Cache.InMemory" Version="1.5.0" />
+    <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.5.0" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
-    <PackageReference Include="Miki.Discord" Version="3.2.1" />
-    <PackageReference Include="Miki.Discord.Rest" Version="3.2.1" />
+    <PackageReference Include="Miki.Discord" Version="3.3.0" />
+    <PackageReference Include="Miki.Discord.Rest" Version="3.3.0" />
     <PackageReference Include="Miki.Dsl" Version="1.2.0" />
-    <PackageReference Include="Miki.Framework" Version="2.3.1" />
+    <PackageReference Include="Miki.Framework" Version="2.3.2" />
     <PackageReference Include="Miki.Framework.Arguments" Version="2.3.1" />
     <PackageReference Include="Miki.Framework.Commands" Version="2.3.1.1" />
     <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.3.1" />

@@ -3,18 +3,15 @@ namespace Miki.Utility
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Amazon.S3;
     using Amazon.S3.Model;
-    using Microsoft.Extensions.DependencyInjection;
     using Miki.Api.Leaderboards;
     using Miki.BunnyCDN;
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Arguments;
