@@ -215,8 +215,30 @@
                         ConsumerAutoAck = false,
                         PrefetchCount = 25,
                     });
+
                 await consumer.SubscribeAsync("MESSAGE_CREATE");
+                await consumer.SubscribeAsync("MESSAGE_UPDATE");
+                await consumer.SubscribeAsync("MESSAGE_DELETE");
+                await consumer.SubscribeAsync("MESSAGE_DELETE_BULK");
+                await consumer.SubscribeAsync("MESSAGE_REACTION_ADD");
+                await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE");
+                await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE_ALL");
+                await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE_EMOJI");
+                await consumer.SubscribeAsync("CHANNEL_CREATE");
+                await consumer.SubscribeAsync("CHANNEL_DELETE");
+                await consumer.SubscribeAsync("CHANNEL_PINS_UPDATE");
+                await consumer.SubscribeAsync("CHANNEL_UPDATE");
                 await consumer.SubscribeAsync("GUILD_CREATE");
+                await consumer.SubscribeAsync("GUILD_DELETE");
+                await consumer.SubscribeAsync("GUILD_BAN_ADD");
+                await consumer.SubscribeAsync("GUILD_BAN_REMOVE");
+                await consumer.SubscribeAsync("GUILD_EMOJIS_UPDATE");
+                await consumer.SubscribeAsync("GUILD_MEMBER_UPDATE");
+                await consumer.SubscribeAsync("GUILD_ROLE_CREATE");
+                await consumer.SubscribeAsync("GUILD_ROLE_DELETE");
+                await consumer.SubscribeAsync("GUILD_ROLE_UPDATE");
+                await consumer.SubscribeAsync("READY");
+                await consumer.SubscribeAsync("RESUMED");
 
                 serviceCollection.AddSingleton<IGateway>(consumer);
                 serviceCollection.AddSingleton<IConnectionMultiplexer>(
