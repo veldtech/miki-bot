@@ -230,6 +230,7 @@
                 await consumer.SubscribeAsync("CHANNEL_UPDATE");
                 await consumer.SubscribeAsync("GUILD_CREATE");
                 await consumer.SubscribeAsync("GUILD_DELETE");
+                await consumer.SubscribeAsync("GUILD_UPDATE");
                 await consumer.SubscribeAsync("GUILD_BAN_ADD");
                 await consumer.SubscribeAsync("GUILD_BAN_REMOVE");
                 await consumer.SubscribeAsync("GUILD_EMOJIS_UPDATE");
