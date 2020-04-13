@@ -163,13 +163,26 @@
             serviceCollection.AddScoped(x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
 
             // Setup Amazon CDN Client
-            serviceCollection.AddSingleton(new AmazonS3Client(
-                config.CdnAccessKey,
-                config.CdnSecretKey,
-                new AmazonS3Config
-                {
-                    ServiceURL = config.CdnRegionEndpoint
-                }));
+
+            if(string.IsNullOrWhiteSpace(config.CdnAccessKey)
+               || string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
+            {
+                serviceCollection.AddSingleton(new AmazonS3Client(
+                    new AmazonS3Config
+                    {
+                        ServiceURL = "https://cdn.miki.ai"
+                    }));
+            }
+            else
+            {
+                serviceCollection.AddSingleton(new AmazonS3Client(
+                    config.CdnAccessKey,
+                    config.CdnSecretKey,
+                    new AmazonS3Config
+                    {
+                        ServiceURL = config.CdnRegionEndpoint
+                    }));
+            }
 
             // Setup Discord
             serviceCollection.AddSingleton<IApiClient>(
@@ -187,7 +200,6 @@
                             ShardCount = 1,
                             ShardId = 0,
                             Token = config.Token,
-                            Compressed = true,
                             AllowNonDispatchEvents = true
                         }));
 
