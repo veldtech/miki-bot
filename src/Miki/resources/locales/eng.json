@@ -694,7 +694,7 @@
   "daily_stats_time": "Next Claim Time",
   "error_data_not_found": "We tried looking what you wanted, but nothing was found.",
   "error_role_not_setup": "This role was not set up using Miki! use {0} to get started!",
-  "error_server_internal": "An error occured on a downstream service. {0} responded with {1}",
+  "error_server_internal": "An error occured on a downstream service from {0}.",
   "entity_weapon": "weapon",
   "entity_word": "word",
   "entity_number": "number",

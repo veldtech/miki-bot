@@ -19,11 +19,9 @@ namespace Miki.Modules.Fun
     using Miki.API.Imageboards.Interfaces;
     using Miki.API.Imageboards.Objects;
     using Miki.Bot.Models;
-    using Miki.Bot.Models.Attributes;
     using Miki.Bot.Models.Exceptions;
     using Miki.BunnyCDN;
     using Miki.Cache;
-    using Miki.Common.Builders;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
@@ -42,6 +40,11 @@ namespace Miki.Modules.Fun
     [Module("fun")]
 	public class FunModule
 	{
+        private static class Features
+        {
+            public const string ShipUsingShipV2 = "ship_using_ship_v2";
+        }
+
 		const string EightBallEmoji = "<:8ball:664615434061873182>";
 
 		private readonly string[] puns =
@@ -298,7 +301,7 @@ namespace Miki.Modules.Fun
             }
             catch(ImgurException ex)
             {
-                throw new ImgurResponseException(ex);
+                throw new InternalServerErrorException("imgur.com");
             }
 
 			List<IGalleryImage> actualImages = new List<IGalleryImage>();
@@ -346,10 +349,10 @@ namespace Miki.Modules.Fun
             }
             catch(ImgurException ex)
             {
-                throw new ImgurResponseException(ex);
+                throw new InternalServerErrorException("imgur.com");
             }
 
-            List<IGalleryImage> actualImages = new List<IGalleryImage>();
+			List<IGalleryImage> actualImages = new List<IGalleryImage>();
 			foreach (IGalleryItem item in images)
 			{
 				if(item is IGalleryImage image)
@@ -723,35 +726,63 @@ namespace Miki.Modules.Fun
             e.GetChannel().QueueMessage(e, null, s.Url);
 		}
 
-		[Command("ship")]
-		public async Task ShipAsync(IContext e)
-		{
+        [Command("ship")]
+        public async Task ShipAsync(IContext e)
+        {
+            if(!e.HasFeatureEnabled(Features.ShipUsingShipV2))
+            {
+                await LegacyShipAsync(e);
+				return;
+            }
+
+            IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
+            Random r = new Random(
+                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            int value = 1 + r.Next(0, 100);
+
+			var response = await imageClient.GetAsync(
+                $"ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}"
+                    + $"&me_hash={e.GetAuthor().AvatarId}&other_hash={user.AvatarId}");
+            if(response.Success)
+            {
+                await using var s = await response.HttpResponseMessage.Content.ReadAsStreamAsync();
+                await e.GetChannel().SendFileAsync(s, "ship.png");
+            }
+            else
+            {
+                throw new InternalServerErrorException("image API");
+            }
+        }
+
+		[Obsolete("Remove after fully rolling out feature flag 'ship_using_ship_v2'")]
+        public async Task LegacyShipAsync(IContext e)
+        {
+            IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
+
+            Random r = new Random(
+                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
+            int value = 1 + r.Next(0, 100);
+
             var cache = e.GetService<IExtendedCacheClient>();
             var context = e.GetService<IUserService>();
-			var s3Client = e.GetService<AmazonS3Client>();
+            var s3Client = e.GetService<AmazonS3Client>();
             var cdnClient = e.GetService<BunnyCDNClient>();
 
-			IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
-
-            using (var client = new HttpClient("https://cdn.miki.ai/"))
+            using(var client = new HttpClient("https://cdn.miki.ai/"))
             {
                 var authorResponse = await client.HeadAsync($"avatars/{e.GetAuthor().Id}.png");
-                if (!authorResponse.Success)
+                if(!authorResponse.Success)
                 {
                     await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client, cdnClient);
                 }
             }
-            Random r = new Random(
-                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
 
-			int value = 1 + r.Next(0, 100);
-
-			Stream s = await imageClient.GetStreamAsync(
+            Stream s = await imageClient.GetStreamAsync(
                 $"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
-			await e.GetChannel().SendFileAsync(s, "meme.png");
-		}
+            await e.GetChannel().SendFileAsync(s, "meme.png");
+        }
 
-		[Command("greentext","green", "gt")]
+        [Command("greentext","green", "gt")]
 		public async Task GreentextAsync(IContext e)
 		{
 			string[] images = {

@@ -201,7 +201,7 @@
                             ShardId = 0,
                             Token = config.Token,
                             AllowNonDispatchEvents = true
-                        }));
+                        }));    
 
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
