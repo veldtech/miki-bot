@@ -9,7 +9,7 @@
 
     public class SettingsServiceTests : BaseEntityTest<MikiDbContext>
     {
-        private static long defaultEntityId = 1L;
+        private static readonly long defaultEntityId = 1L;
 
         public SettingsServiceTests()
             : base(x => new MikiDbContext(x))
