@@ -38,7 +38,7 @@ namespace Miki.Modules.Accounts
     [Module("Accounts")]
     public class AccountsModule
     {
-        private class Features
+        private static class Features
         {
             public const string ExpUsingExpV2 = "exp_using_exp_v2";
         }
@@ -353,7 +353,7 @@ namespace Miki.Modules.Accounts
         {
             if(!e.HasFeatureEnabled(Features.ExpUsingExpV2))
             {
-                await LegacyExpAsync(e);
+                await LegacyExpAsync(e).ConfigureAwait(false);
                 return;
             }
 

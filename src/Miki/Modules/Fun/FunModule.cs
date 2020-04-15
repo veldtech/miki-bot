@@ -731,7 +731,7 @@ namespace Miki.Modules.Fun
         {
             if(!e.HasFeatureEnabled(Features.ShipUsingShipV2))
             {
-                await LegacyShipAsync(e);
+                await LegacyShipAsync(e).ConfigureAwait(false);
 				return;
             }
 
