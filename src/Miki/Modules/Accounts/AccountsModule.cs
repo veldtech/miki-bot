@@ -26,6 +26,7 @@ namespace Miki.Modules.Accounts
     using Miki.Framework.Commands;
     using Miki.Logging;
     using Miki.Modules.Accounts.Services;
+    using Miki.Modules.Fun.Exceptions;
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Daily;
@@ -37,6 +38,11 @@ namespace Miki.Modules.Accounts
     [Module("Accounts")]
     public class AccountsModule
     {
+        private class Features
+        {
+            public const string ExpUsingExpV2 = "exp_using_exp_v2";
+        }
+
         public AchievementService  AchievementService { get; set; }
 
         private readonly IHttpClient client;
@@ -345,13 +351,37 @@ namespace Miki.Modules.Accounts
         [Command("exp")]
         public async Task ExpAsync(IContext e)
         {
-            Stream s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
+            if(!e.HasFeatureEnabled(Features.ExpUsingExpV2))
+            {
+                await LegacyExpAsync(e);
+                return;
+            }
+
+            var response = await client.GetAsync(
+                $"user?id={e.GetAuthor().Id}&hash={e.GetAuthor().AvatarId}");
+            if(response.Success)
+            {
+                await using var s = await response.HttpResponseMessage.Content.ReadAsStreamAsync();
+                await e.GetChannel().SendFileAsync(s, "exp.png");
+            }
+            else
+            {
+                throw new InternalServerErrorException("image API");
+            }
+        }
+
+        [Obsolete("Remove once feature flag 'exp_using_exp_v2' has rolled out")]
+        private async Task LegacyExpAsync(IContext e)
+        {
+            var s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
             if(s == null)
             {
-                await e.ErrorEmbed("Image generation API did not respond. This is an issue, please report it.")
+                await e.ErrorEmbed(
+                        "Image generation API did not respond. This is an issue, please report it.")
                     .ToEmbed().QueueAsync(e, e.GetChannel());
                 throw new PlatformNotSupportedException("Image API");
             }
+
             e.GetChannel().QueueMessage(e, stream: s);
         }
 

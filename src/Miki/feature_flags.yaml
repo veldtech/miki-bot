@@ -1,4 +1,6 @@
 ﻿- giveaway_using_new_scheduler:
     treatment: "off"
 - ship_using_ship_v2:
-    treatment: "off"
+    treatment: "on" 
+- exp_using_exp_v2:
+    treatment: "on" 

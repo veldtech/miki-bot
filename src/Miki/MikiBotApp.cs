@@ -246,6 +246,8 @@
                 await consumer.SubscribeAsync("GUILD_BAN_ADD");
                 await consumer.SubscribeAsync("GUILD_BAN_REMOVE");
                 await consumer.SubscribeAsync("GUILD_EMOJIS_UPDATE");
+                await consumer.SubscribeAsync("GUILD_MEMBER_ADD");
+                await consumer.SubscribeAsync("GUILD_MEMBER_REMOVE");
                 await consumer.SubscribeAsync("GUILD_MEMBER_UPDATE");
                 await consumer.SubscribeAsync("GUILD_ROLE_CREATE");
                 await consumer.SubscribeAsync("GUILD_ROLE_DELETE");
