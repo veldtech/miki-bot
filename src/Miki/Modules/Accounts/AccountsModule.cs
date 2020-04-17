@@ -64,7 +64,7 @@ namespace Miki.Modules.Accounts
             var accountsService = app.Services.GetService<AccountService>();
             AchievementService = app.Services.GetService<AchievementService>();
 
-            discordClient.MessageCreate += msg => OnMessageCreate(app, AchievementService, msg);
+            discordClient.MessageCreate += msg => OnMessageCreateAsync(app, AchievementService, msg);
 
             accountsService.OnLocalLevelUp += OnUserLevelUpAsync;
             accountsService.OnLocalLevelUp += OnLevelUpAchievements;
@@ -73,7 +73,8 @@ namespace Miki.Modules.Accounts
             AchievementService.OnAchievementUnlocked += CheckAchievementUnlocksAsync;
         }
 
-        private async Task OnMessageCreate(MikiApp app, AchievementService service, IDiscordMessage arg)
+        private async Task OnMessageCreateAsync(
+            MikiApp app, AchievementService service, IDiscordMessage arg)
         {
             if(app is MikiBotApp botApp)
             {

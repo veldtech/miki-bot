@@ -108,7 +108,7 @@
                 int bet = ValidateBet(e, user);
 
                 var message = await Retry.RetryAsync(() => e.GetChannel()
-                    .SendMessageAsync(null, embed: NewLoadingEmbed()), 1000)
+                    .SendMessageAsync(null, embed: NewLoadingEmbed()), 5000)
                     .ConfigureAwait(false);
 
                 try
@@ -123,7 +123,7 @@
                         .AndThen(x => blackjackService.SyncSessionAsync(x.GetContext()));
 
                     await Retry.RetryAsync(() => message.EditAsync(new EditMessageArgs(
-                            embed: CreateEmbed(e, session).ToEmbed())), 1000)
+                            embed: CreateEmbed(e, session).ToEmbed())), 5000)
                         .ConfigureAwait(false);
                 }
                 catch(LocalizedException ex)
@@ -146,7 +146,7 @@
                 var state = blackjackService.DrawCard(session, e.GetAuthor().Id);
                 
                 await blackjackService.SyncSessionAsync(session.GetContext());
-                await OnStateChange(e, session, state);
+                await OnStateChangeAsync(e, session, state);
             }
 
             [Command("stay", "stand")]
@@ -161,10 +161,10 @@
                 var state = blackjackService.Stand(session, e.GetAuthor().Id);
                 await blackjackService.SyncSessionAsync(session.GetContext());
 
-                await OnStateChange(e, session, state);
+                await OnStateChangeAsync(e, session, state);
             }
 
-            private Task OnStateChange(
+            private Task OnStateChangeAsync(
                 IContext ctx, BlackjackSession session, BlackjackState state)
             {
                 return state switch
@@ -413,8 +413,8 @@
                     .WithAmount(bet)
                     .Build());
             
-            string headsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-heads.png";
-            string tailsUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/commands/miki-default-tails.png";
+            string headsUrl = "https://cdn.miki.ai/commands/miki-default-heads.png";
+            string tailsUrl = "https://cdn.miki.ai/commands/miki-default-tails.png";
 
             if (e.GetArgumentPack().Peek(out string bonus))
             {
