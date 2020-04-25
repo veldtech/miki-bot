@@ -68,8 +68,13 @@
             return new ScheduleWorkerGroup(taskName, this, cacheClient);
         }
 
-        private async Task RequeueWorkAsync(TaskPayload payload)
+        private async Task RequeueWorkAsync(TaskPayload payload, bool updatePayload)
         {
+            if(updatePayload)
+            {
+                 await cacheClient.HashUpsertAsync(
+                    GetObjectNamespace(payload.OwnerId), payload.Uuid, payload);
+            }
             await cacheClient.SortedSetUpsertAsync(
                 SchedulerQueueKey, payload.GetKey(), payload.TimeEpoch.Seconds);
         }
@@ -111,7 +116,7 @@
 
                 if(payload.GetTimeRemaining().TotalSeconds > 0)
                 {
-                    await RequeueWorkAsync(payload).ConfigureAwait(false);
+                    await RequeueWorkAsync(payload, false).ConfigureAwait(false);
                     continue;
                 }
 
@@ -134,7 +139,7 @@
                 {
                     payload.StartTime = DateTime.UtcNow;
                     payload.TimeEpoch = payload.StartTime.Add(payload.Duration);
-                    await RequeueWorkAsync(payload).ConfigureAwait(false);
+                    await RequeueWorkAsync(payload, true).ConfigureAwait(false);
                 }
                 else
                 {

@@ -508,8 +508,10 @@
 				.SetAuthor($"Miki {v}")
 				.SetColor(0.6f, 0.6f, 1.0f);
 
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_made_by_header"),
-				e.GetLocale().GetString("miki_module_general_info_made_by_description") + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
+            embed.AddField(
+                e.GetLocale().GetString("miki_module_general_info_made_by_header"),
+                e.GetLocale().GetString("miki_module_general_info_made_by_description")
+                + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
 
 			embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
 				$"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +

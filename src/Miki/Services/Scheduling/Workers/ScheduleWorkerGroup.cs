@@ -16,9 +16,9 @@
         }
 
         protected override TaskPayload CreateWorkPayload(
-            TimeSpan duration, string json, string ownerId, bool isRepeating)
+            TimeSpan duration, string json, string uuid, string ownerId, bool isRepeating)
         {
-            var workPayload = base.CreateWorkPayload(duration, json, ownerId, isRepeating);
+            var workPayload = base.CreateWorkPayload(duration, json, uuid, ownerId, isRepeating);
             workPayload.TaskId = Guid.NewGuid().ToString();
             return workPayload;
         }

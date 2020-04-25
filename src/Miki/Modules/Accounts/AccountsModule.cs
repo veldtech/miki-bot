@@ -352,12 +352,6 @@ namespace Miki.Modules.Accounts
         [Command("exp")]
         public async Task ExpAsync(IContext e)
         {
-            if(!e.HasFeatureEnabled(Features.ExpUsingExpV2))
-            {
-                await LegacyExpAsync(e).ConfigureAwait(false);
-                return;
-            }
-
             var response = await client.GetAsync(
                 $"user?id={e.GetAuthor().Id}&hash={e.GetAuthor().AvatarId}");
             if(response.Success)
@@ -369,21 +363,6 @@ namespace Miki.Modules.Accounts
             {
                 throw new InternalServerErrorException("image API");
             }
-        }
-
-        [Obsolete("Remove once feature flag 'exp_using_exp_v2' has rolled out")]
-        private async Task LegacyExpAsync(IContext e)
-        {
-            var s = await client.GetStreamAsync("api/user?id=" + e.GetMessage().Author.Id);
-            if(s == null)
-            {
-                await e.ErrorEmbed(
-                        "Image generation API did not respond. This is an issue, please report it.")
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                throw new PlatformNotSupportedException("Image API");
-            }
-
-            e.GetChannel().QueueMessage(e, stream: s);
         }
 
         [Command("leaderboards", "lb", "leaderboard", "top")]
@@ -485,8 +464,7 @@ namespace Miki.Modules.Accounts
                 .SetAuthor(
                     "Leaderboards: " + options.Type + " (click me!)",
                     null,
-                    api.BuildLeaderboardsUrl(options)
-                )
+                    api.BuildLeaderboardsUrl(options))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
@@ -598,10 +576,7 @@ namespace Miki.Modules.Accounts
                 var globalRank = await leaderboardsService.GetGlobalRankAsync((long)discordUser.Id);
 
                 var globalExpBar = new EmojiBar(
-                    maxGlobalExp - minGlobalExp, 
-                    onBarSet, 
-                    offBarSet, 
-                    6);
+                    maxGlobalExp - minGlobalExp, onBarSet, offBarSet, 6);
 
                 var globalInfoBuilder = new MessageBuilder()
                     .AppendText(locale.GetString(
@@ -622,7 +597,8 @@ namespace Miki.Modules.Accounts
                         locale.GetString(
                             "miki_module_accounts_information_rank",
                             globalRank?.ToString("N0") ?? "We haven't calculated your rank yet!"),
-                        MessageFormatting.Plain, false)
+                        MessageFormatting.Plain, 
+                        false)
                     .Build();
 
                 embed.AddInlineField(
@@ -1072,8 +1048,7 @@ namespace Miki.Modules.Accounts
                     .WithSender((long)e.GetAuthor().Id)
                     .WithAmount(e.GetArgumentPack().TakeRequired<int>())
                     .Build())
-                .Map(request => e.GetService<ITransactionService>()
-                    .CreateTransactionAsync(request))
+                .Map(request => e.GetService<ITransactionService>().CreateTransactionAsync(request))
                 .AndThen(transaction => CreateTransactionEmbed(e, transaction)
                     .QueueAsync(e, e.GetChannel()));
 

@@ -707,5 +707,13 @@
   "reminder_placed": "I'll remind you to {0} in {1}!",
   "entity_user": "user",
   "error_reputation_none": "No valid users found to give reputation to.",
-  "error_entity_invalid":  "This is not a valid {0}." 
+  "error_entity_invalid": "This is not a valid {0}.",
+  "lottery_description": "Make the biggest gamble, and get paid off massively if you win.",
+  "lottery": "Lottery",
+  "lottery_tickets_owned": "Tickets owned",
+  "lottery_draw_time": "Drawing in",
+  "lottery_ticket_price": "Ticket price",
+  "lottery_jackpot": "Jackpot",
+  "lottery_how_to": "How to buy?",
+  "lottery_buy_success": "Successfully bought {0} tickets!"
 }

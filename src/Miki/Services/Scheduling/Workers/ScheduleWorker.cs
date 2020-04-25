@@ -20,10 +20,19 @@
         }
 
         /// <inheritdoc />
-        public virtual async Task QueueTaskAsync(
-            TimeSpan duration, string json, string ownerId, bool isRepeating)
+        public async Task<TaskPayload> GetTaskAsync(string ownerId, string uuid)
         {
-            await QueueTaskAsync(CreateWorkPayload(duration, json, ownerId, isRepeating));
+            return await cacheClient.HashGetAsync<TaskPayload>(
+                parent.GetObjectNamespace(ownerId), uuid);
+        }
+
+
+        /// <inheritdoc />
+        public async Task<TaskPayload> QueueTaskAsync(TimeSpan duration, string uuid, string ownerId, string json, bool isRepeating)
+        {
+            var payload = CreateWorkPayload(duration, json, uuid, ownerId, isRepeating);
+            await QueueTaskAsync(payload);
+            return payload;
         }
 
         /// <inheritdoc />
@@ -33,11 +42,11 @@
         }
 
         protected virtual TaskPayload CreateWorkPayload(
-            TimeSpan duration, string json, string ownerId, bool isRepeating)
+            TimeSpan duration, string json, string uuid, string ownerId, bool isRepeating)
         {
             return new TaskPayload
             {
-                Uuid = Guid.NewGuid().ToString(),
+                Uuid = uuid ?? Guid.NewGuid().ToString(),
                 TaskName = taskName,
                 OwnerId = ownerId,
                 Duration = duration,

@@ -476,7 +476,7 @@ namespace Miki.Modules.Fun
             private readonly IScheduleWorkerGroup reminderWorkerGroup;
 
             public ReminderCommand(
-                SchedulerService schedulerService, 
+                ISchedulerService schedulerService, 
                 IMessageWorker<IDiscordMessage> messageWorker, 
                 IDiscordClient discordClient)
             {
@@ -628,15 +628,15 @@ namespace Miki.Modules.Fun
                 if(timeUntilReminder > new TimeSpan(0, 0, 0))
                 {
                     await reminderWorkerGroup.QueueTaskAsync(
-                        timeUntilReminder, 
+                        timeUntilReminder,
+                        e.GetAuthor().Id.ToString(),
                         JsonConvert.SerializeObject(
                             new Reminder
-							{
+                            {
                                 Context = reminderText,
                                 UserId = e.GetAuthor().Id
                             }),
-                        e.GetAuthor().Id.ToString(),
-                        false);
+						false);
 
                     await new EmbedBuilder()
                         .SetTitle($"👌 {e.GetLocale().GetString("term_ok")}")
@@ -729,12 +729,6 @@ namespace Miki.Modules.Fun
         [Command("ship")]
         public async Task ShipAsync(IContext e)
         {
-            if(!e.HasFeatureEnabled(Features.ShipUsingShipV2))
-            {
-                await LegacyShipAsync(e).ConfigureAwait(false);
-				return;
-            }
-
             IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
             Random r = new Random(
                 (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
@@ -752,34 +746,6 @@ namespace Miki.Modules.Fun
             {
                 throw new InternalServerErrorException("image API");
             }
-        }
-
-		[Obsolete("Remove after fully rolling out feature flag 'ship_using_ship_v2'")]
-        public async Task LegacyShipAsync(IContext e)
-        {
-            IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
-
-            Random r = new Random(
-                (int)((e.GetAuthor().Id + user.Id + (ulong)DateTime.Now.DayOfYear) % int.MaxValue));
-            int value = 1 + r.Next(0, 100);
-
-            var cache = e.GetService<IExtendedCacheClient>();
-            var context = e.GetService<IUserService>();
-            var s3Client = e.GetService<AmazonS3Client>();
-            var cdnClient = e.GetService<BunnyCDNClient>();
-
-            using(var client = new HttpClient("https://cdn.miki.ai/"))
-            {
-                var authorResponse = await client.HeadAsync($"avatars/{e.GetAuthor().Id}.png");
-                if(!authorResponse.Success)
-                {
-                    await Utils.SyncAvatarAsync(e.GetAuthor(), cache, context, s3Client, cdnClient);
-                }
-            }
-
-            Stream s = await imageClient.GetStreamAsync(
-                $"/api/ship?me={e.GetAuthor().Id}&other={user.Id}&value={value}");
-            await e.GetChannel().SendFileAsync(s, "meme.png");
         }
 
         [Command("greentext","green", "gt")]

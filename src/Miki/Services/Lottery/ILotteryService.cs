@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
     using Miki.Bot.Models.Exceptions;
     using Miki.Functional;
+    using Miki.Services.Scheduling;
 
     public interface ILotteryService
     {
@@ -20,6 +21,10 @@
         /// <summary>
         /// Attempts to purchase entries for the user and updates the user's entries appropriately.
         /// </summary>
-        ValueTask<Result<LotteryEntry>> PurchaseEntriesAsync(long userId, int amountOfTickets);
+        ValueTask<LotteryEntry> PurchaseEntriesAsync(long userId, int amountOfTickets);
+
+        ValueTask<TaskPayload> GetLotteryTaskAsync();
+
+        ValueTask<int> GetTotalPrizeAsync();
     }
 }

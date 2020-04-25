@@ -1,6 +1,5 @@
 ﻿namespace Miki.Attributes
 {
-    using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
     using System.Threading.Tasks;

@@ -43,7 +43,8 @@
                 return Task.CompletedTask;
             });
 
-            await worker.QueueTaskAsync(TimeSpan.FromSeconds(1), "test", "1234", false);
+            await worker.QueueTaskAsync(
+                TimeSpan.FromSeconds(1), "1234", "1234", "test", false);
             asyncLock.WaitOne(10000);
         }
     }

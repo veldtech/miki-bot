@@ -23,7 +23,7 @@
     public class BaseEntityTest<T>
         where T : DbContext
     {
-        public ICacheClient CacheClient { get; }
+        public IExtendedCacheClient CacheClient { get; }
 
         private readonly Func<DbContextOptions<T>, T> factory;
         private readonly DbContextOptions<T> options;

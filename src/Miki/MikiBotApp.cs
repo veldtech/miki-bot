@@ -58,6 +58,7 @@
     using Miki.Cache.InMemory;
     using Miki.Functional;
     using Miki.Modules.Internal.Routines;
+    using Miki.Services.Lottery;
     using Miki.Services.Pasta;
     using Miki.Services.Scheduling;
     using Splitio.Services.Client.Classes;
@@ -84,7 +85,7 @@
 
             return new ProviderCollection()
                 .Add(new ProviderAdapter(
-                    discordClient.Gateway.StartAsync, 
+                    discordClient.Gateway.StartAsync,
                     discordClient.Gateway.StopAsync));
         }
 
@@ -310,7 +311,7 @@
             serviceCollection.AddSingleton<AchievementCollection>();
             serviceCollection.AddScoped<AchievementService>();
 
-            serviceCollection.AddSingleton<SchedulerService>();
+            serviceCollection.AddSingleton<ISchedulerService, SchedulerService>();
             serviceCollection.AddScoped<GuildService>();
             serviceCollection.AddScoped<MarriageService>();
             serviceCollection.AddScoped<IRpsService, RpsService>();
@@ -319,6 +320,7 @@
             serviceCollection.AddScoped<ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
+            serviceCollection.AddSingleton<ILotteryService, LotteryService>();
             serviceCollection.AddSingleton<IOsuApiClient>(_ => config.OptionalValues?.OsuApiKey == null
                 ? null
                 : new OsuApiClientV1(config.OptionalValues.OsuApiKey));

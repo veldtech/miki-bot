@@ -12,9 +12,13 @@
         /// </summary>
         Task CancelTaskAsync(string uuid, Optional<string> ownerId);
 
+        Task<TaskPayload> GetTaskAsync(string ownerId, string uuid);
+
         /// <summary>
-        /// Queues a task.
+        /// Queues a task with a pre-specified uuid.
         /// </summary>
-        Task QueueTaskAsync(TimeSpan duration, string json, string ownerId, bool isRepeating);
+        Task<TaskPayload> QueueTaskAsync(
+            TimeSpan duration, string uuid, string ownerId, string json, bool isRepeating);
+
     }
 }
