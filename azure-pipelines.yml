@@ -20,7 +20,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - checkout: 
+    - checkout: self
       submodules: true
     - task: Docker@2
       displayName: Build an image
