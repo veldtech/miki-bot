@@ -63,15 +63,9 @@ $ git clone https://github.com/mikibot/bot && cd bot
 $ cp src/Miki/Properties/launchSettings.template.json src/Miki/Properties/launchSettings.json
 ```
 
-4) Run db migrations
+4) Run tools/setup.sh and follow the settings.
 ```bash
-$ tools/updatedb.sh <connection string>
-```
-
-5) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
-```sql
-INSERT INTO dbo."Configuration" ("Token") VALUES ($1)
--- replace $1 with your token.
+$ tools/setup.sh
 ```
 
 ## Possible issues:
