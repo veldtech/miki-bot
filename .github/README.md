@@ -7,8 +7,8 @@ Your solution to a great Discord Community! Adding levels, role management, achi
 ## Build status
 | Platform | Status |
 | --- | --- |
-| Ubuntu 16.04 | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-ubuntu-master) |
-| Windows | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-windows-master) |
+| Ubuntu | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-ubuntu-master) |
+| Docker |[![Build Status](https://dev.azure.com/mikibot/Miki/_apis/build/status/Mikibot.bot?branchName=master)](https://dev.azure.com/mikibot/Miki/_build/latest?definitionId=15&branchName=master) |
 
 ## Useful links
 Bot invite: https://miki.ai/invite?ref=github<br>
