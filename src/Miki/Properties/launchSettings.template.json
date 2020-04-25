@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Miki": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "MIKI_SELFHOSTED": "true",
+        "MIKI_CONNSTRING": "Server=127.0.0.1;Username=postgres;Database=miki;",
+        "MIKI_LOGLEVEL": "Debug"
+      }
+    },
+    "Miki Docker": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "MIKI_SELFHOSTED": "true",
+        "MIKI_CONNSTRING": "Server=host.docker.internal;Username=postgres;Database=miki;",
+        "MIKI_LOGLEVEL": "Debug"
+      }
+    }
+  }
+}
