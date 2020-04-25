@@ -30,26 +30,23 @@ Currently the Miki API is __private__, meaning you won't have access to the lead
 If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you. DM Xetera#9596 for questions instead.
 
 ## Installation Steps:
-1) Clone the [Miki repository](https://github.com/Mikibot/Miki.git).
+1. Clone the miki bot repository
+
+Windows, Linux
+```bash
+$ git clone https://github.com/mikibot/bot
+```
 
 2) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
 
-3) Configure your connection string in `launchSettings.json` as such (if using localhost):
+3) Copy `launchSettings.template.json` and fill in your PostgreSQL properties.
+```bash
+$ cp src/Miki/Properties/launchSettings.template.json src/Miki/Properties/launchSettings.json
+```
 
-| Key | Value |
-| --- | --- |
-| MIKI_CONNSTRING | "Server=127.0.0.1;Port=5432;User Id=postgres;Database=Miki;Password={YOUR_PASSWORD}" |
-| MIKI_SELFHOSTED | "true" |
-| MIKI_LOGLEVEL | "Debug" |
-| MIKI_MESSAGEWORKER | "1" |
+4) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
 
-4) Run existing migrations inside the base Miki solution through the NuGet Package Manager Console with `Update-Database`
-
-    * Tools -> NuGet Package Manager -> Package Manager Console
-
-5) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
-
-6) Run Miki. 🎉
+5) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
