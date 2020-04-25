@@ -38,7 +38,12 @@ Windows, Linux
 $ git clone https://github.com/mikibot/bot && cd bot
 ```
 
-2. Docker-compose
+2. Copy example.env and fill in your properties.
+```bash
+$ cp example.env .env
+```
+
+3. Docker-compose
 ```bash
 $ docker-compose up
 ```
