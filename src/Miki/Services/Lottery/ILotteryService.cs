@@ -1,5 +1,7 @@
 ﻿namespace Miki.Services.Lottery
 {
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Miki.Bot.Models.Exceptions;
     using Miki.Functional;
@@ -12,11 +14,15 @@
         /// </summary>
         int EntryPrice { get; }
 
+        int WinningAmount { get; }
+
         /// <summary>
         /// Gets the specific user's entries. Throws an exception <see cref="EntityNullException{T}"/>
         /// if not found.
         /// </summary>
         ValueTask<Result<LotteryEntry>> GetEntriesForUserAsync(long userId);
+
+        ValueTask<IEnumerable<LotteryEntry>> GetEntriesAsync();
 
         /// <summary>
         /// Attempts to purchase entries for the user and updates the user's entries appropriately.

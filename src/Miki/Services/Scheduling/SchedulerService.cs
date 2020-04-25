@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Miki.Cache;
+    using Miki.Framework;
     using Miki.Functional;
     using Miki.Logging;
     using Sentry;
@@ -17,16 +18,18 @@
 
         private readonly ConfiguredTaskAwaitable workerTask;
         private readonly CancellationTokenSource cancellationToken;
+        private readonly MikiApp app;
 
         private readonly IExtendedCacheClient cacheClient;
         private readonly ISentryClient sentryClient;
-        private readonly IDictionary<string, Func<string, Task>> taskCallbacks;
+        private readonly IDictionary<string, Func<IContext, string, Task>> taskCallbacks;
 
-        public SchedulerService(IExtendedCacheClient cacheClient, ISentryClient sentryClient)
+        public SchedulerService(MikiApp app, IExtendedCacheClient cacheClient, ISentryClient sentryClient)
         {
+            this.app = app;
             this.cacheClient = cacheClient;
             this.sentryClient = sentryClient;
-            taskCallbacks = new Dictionary<string, Func<string, Task>>();
+            taskCallbacks = new Dictionary<string, Func<IContext, string, Task>>();
             cancellationToken = new CancellationTokenSource();
             workerTask = RunWorkerAsync(cancellationToken.Token).ConfigureAwait(false);
         }
@@ -54,16 +57,26 @@
 
         public IScheduleWorker CreateWorker(
             Required<string> taskName,
-            Func<string, Task> handler)
+            Func<IContext, string, Task> handler)
         {
+            if(taskCallbacks.ContainsKey(taskName))
+            {
+                return new ScheduleWorker(taskName, this, cacheClient);
+            }
+
             taskCallbacks.Add(taskName, handler);
             return new ScheduleWorker(taskName, this, cacheClient);
         }
 
         public IScheduleWorkerGroup CreateWorkerGroup(
             Required<string> taskName,
-            Func<string, Task> handler)
+            Func<IContext, string, Task> handler)
         {
+            if(taskCallbacks.ContainsKey(taskName))
+            {
+                return new ScheduleWorkerGroup(taskName, this, cacheClient);
+            }
+
             taskCallbacks.Add(taskName, handler);
             return new ScheduleWorkerGroup(taskName, this, cacheClient);
         }
@@ -127,7 +140,8 @@
 
                 try
                 {
-                    await worker(payload.PayloadJson).ConfigureAwait(false);
+                    using var context = new ContextObject(app.Services);
+                    await worker(context, payload.PayloadJson).ConfigureAwait(false);
                 }
                 catch(Exception e)
                 {

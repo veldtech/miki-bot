@@ -37,10 +37,10 @@
             {
                 var userService = new UserService(context, CacheClient);
                 var transactionService = new TransactionService(userService);
-                var schedulerService = new SchedulerService(CacheClient, null);
+                var schedulerService = new SchedulerService(null, CacheClient, null);
                 var discordClient = new Mock<IDiscordClient>();
                 var lotteryService = new LotteryService(
-                    CacheClient, schedulerService, transactionService, discordClient.Object);
+                    CacheClient, schedulerService, transactionService, new LotteryEventHandler());
 
                 await lotteryService.PurchaseEntriesAsync(2L, 1);
             }
@@ -49,10 +49,10 @@
             {
                 var userService = new UserService(context, CacheClient);
                 var transactionService = new TransactionService(userService);
-                var schedulerService = new SchedulerService(CacheClient, null);
+                var schedulerService = new SchedulerService(null, CacheClient, null);
                 var discordClient = new Mock<IDiscordClient>();
                 var lotteryService = new LotteryService(
-                    CacheClient, schedulerService, transactionService, discordClient.Object);
+                    CacheClient, schedulerService, transactionService, new LotteryEventHandler());
 
                 var user = await userService.GetUserAsync(2L);
                 var userEntries = await lotteryService.GetEntriesForUserAsync(2L);

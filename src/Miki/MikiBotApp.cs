@@ -319,6 +319,7 @@
             serviceCollection.AddScoped<ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
+            serviceCollection.AddSingleton<LotteryEventHandler>();
             serviceCollection.AddScoped<ILotteryService, LotteryService>();
             serviceCollection.AddSingleton<IOsuApiClient>(_ => config.OptionalValues?.OsuApiKey == null
                 ? null

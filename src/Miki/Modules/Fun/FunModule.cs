@@ -580,7 +580,7 @@ namespace Miki.Modules.Fun
                     .QueueAsync(e, e.GetChannel());
             }
 
-            private async Task HandleReminderAsync(string context)
+            private async Task HandleReminderAsync(IContext _, string context)
             {
                 var reminder = JsonConvert.DeserializeObject<Reminder>(context);
                 await new EmbedBuilder()

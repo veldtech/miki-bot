@@ -14,14 +14,14 @@
 
         public SchedulerServiceTests()
         {
-            service = new SchedulerService(new InMemoryCacheClient(new ProtobufSerializer()), null);
+            service = new SchedulerService(null, new InMemoryCacheClient(new ProtobufSerializer()), null);
         }
 
         [Fact]
         public async Task TestScheduleSingleWorkerFlowAsync()
         {
             var asyncLock = new Semaphore(1, 1);
-            var worker = service.CreateWorker("test", json =>
+            var worker = service.CreateWorker("test", (e, json) =>
             {
                 asyncLock.Release();
                 Assert.Equal("test", json);
@@ -36,7 +36,7 @@
         public async Task TestScheduleGroupWorkerFlowAsync()
         {
             var asyncLock = new Semaphore(1, 1);
-            var worker = service.CreateWorkerGroup("test", json =>
+            var worker = service.CreateWorkerGroup("test", (e, json) =>
             {
                 asyncLock.Release();
                 Assert.Equal("test", json);
