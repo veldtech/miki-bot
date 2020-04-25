@@ -62,7 +62,7 @@
         [RequiresScope("developer")]
 		public async Task IdenUserAsync(IContext e)
 		{
-            var api = e.GetService<IApiClient>();
+            var api = e.GetService<IDiscordClient>();
             var user = await api.GetUserAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
 			if (user.Id == 0)
@@ -77,8 +77,8 @@
         [RequiresScope("developer")]
 		public async Task IdenGuildUserAsync(IContext e)
 		{
-            var api = e.GetService<IApiClient>();
-            var user = await api.GetGuildUserAsync(
+            var api = e.GetService<IDiscordClient>();
+			var user = await api.GetGuildUserAsync(
 				ulong.Parse(e.GetArgumentPack().Pack.TakeAll()), e.GetGuild().Id);
 
 			if (user == null)
@@ -132,8 +132,8 @@
         [RequiresScope("developer")]
 		public async Task IdenGuildChannelAsync(IContext e)
 		{
-            var api = e.GetService<IApiClient>();
-            var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
+            var api = e.GetService<IDiscordClient>();
+			var user = await api.GetChannelAsync(ulong.Parse(e.GetArgumentPack().Pack.TakeAll()));
 
 			if (user == null)
 			{
