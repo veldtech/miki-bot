@@ -49,6 +49,7 @@ $ docker-compose up
 ```
 
 ### Source
+
 1. Clone the miki bot repository
 Windows, Linux
 ```bash
@@ -68,12 +69,12 @@ $ tools/updatedb.sh <connection string>
 ```
 
 5) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
-
-6) Run Miki. 🎉
+```sql
+INSERT INTO dbo."Configuration" ("Token") VALUES ($1)
+-- replace $1 with your token.
+```
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
 
 * A lack of API keys might be giving you issues in the `DonatorModule` and `FunModule`, the simplest way to solve it is to just comment out the lines that raise exceptions and  the lines that reference the client **(there shouldn't be more than 2 reference max, if so, you're doing something wrong).**
-
-* If you're having trouble running migrations make sure your `EntityFramework` for both base `Miki` and `Miki.Framework` is on version 2.0.1-2.0.3 **NOT** 2.1.1.
