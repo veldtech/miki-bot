@@ -50,7 +50,6 @@
                 var userService = new UserService(context, CacheClient);
                 var transactionService = new TransactionService(userService);
                 var schedulerService = new SchedulerService(null, CacheClient, null);
-                var discordClient = new Mock<IDiscordClient>();
                 var lotteryService = new LotteryService(
                     CacheClient, schedulerService, transactionService, new LotteryEventHandler());
 
