@@ -1,0 +1,9 @@
+version: '3'
+services:
+  bot:
+    build: 
+        context: .
+        dockerfile: src/Miki/Dockerfile
+    env_file:
+        - .env
+    network_mode: host
