@@ -4,6 +4,16 @@ services:
     build: 
         context: .
         dockerfile: src/Miki/Dockerfile
+    container_name: "miki"
     env_file:
         - .env
     network_mode: host
+  db:
+    image: "postgres:11"
+    container_name: "miki_database"
+    ports:
+      - "54320:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+volumes:
+  pg_data:
