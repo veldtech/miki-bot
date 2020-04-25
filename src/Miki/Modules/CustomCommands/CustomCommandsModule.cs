@@ -100,7 +100,7 @@
 					{
 						CommandName = commandName.ToLowerInvariant(),
 						CommandBody = scriptBody,
-						GuildId = e.GetGuild().Id.ToDbLong()
+						GuildId = (long)e.GetGuild().Id
 					}).ConfigureAwait(false);
 					await db.SaveChangesAsync()
                         .ConfigureAwait(false);
@@ -121,7 +121,7 @@
         public async Task RemoveCommandAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
-            var guildId = e.GetGuild().Id.ToDbLong();
+            var guildId = (long)e.GetGuild().Id;
 
             if (e.GetArgumentPack().Take(out string commandName))
             {

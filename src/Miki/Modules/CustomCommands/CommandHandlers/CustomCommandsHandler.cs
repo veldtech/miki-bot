@@ -1,6 +1,5 @@
 ﻿namespace Miki.Modules.CustomCommands.CommandHandlers
 {
-    using Microsoft.EntityFrameworkCore;
     using Miki.Bot.Models;
     using Miki.Cache;
     using Miki.Discord.Common;
@@ -19,7 +18,7 @@
 
     public class CustomCommandsHandler : IPipelineStage
     {
-        const string CommandCacheKey = "customcommands";
+        private const string CommandCacheKey = "customcommands";
 
         public Dictionary<string, object> CreateContext(IContext e)
         {
@@ -84,13 +83,12 @@
             var cache = e.GetService<IExtendedCacheClient>();
             IEnumerable<Token> tokens = null;
 
-            string[] args = e.GetMessage().Content.Substring(e.GetPrefixMatch().Length)
-                .Split(' ');
-            string commandName = args.FirstOrDefault()
-                .ToLowerInvariant();
+            string[] args = e.GetMessage().Content.Substring(e.GetPrefixMatch().Length).Split(' ');
+            string commandName = args.FirstOrDefault().ToLowerInvariant();
 
             var cachePackage = await cache.HashGetAsync<ScriptPackage>(
                 CommandCacheKey, commandName + ":" + guild.Id);
+
             if (cachePackage != null)
             {
                 tokens = ScriptPacker.Unpack(cachePackage);
