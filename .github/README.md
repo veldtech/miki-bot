@@ -30,11 +30,24 @@ Currently the Miki API is __private__, meaning you won't have access to the lead
 If you have any questions about the setup process **do not** ask in the support server, as a majority of the people there will not be able to assist you. DM Xetera#9596 for questions instead.
 
 ## Installation Steps:
-1. Clone the miki bot repository
 
+### Docker
+1. Clone the miki bot repository
 Windows, Linux
 ```bash
-$ git clone https://github.com/mikibot/bot
+$ git clone https://github.com/mikibot/bot && cd bot
+```
+
+2. Docker-compose
+```bash
+$ docker-compose up
+```
+
+### Source
+1. Clone the miki bot repository
+Windows, Linux
+```bash
+$ git clone https://github.com/mikibot/bot && cd bot
 ```
 
 2) Download [PostgreSQL](https://www.postgresql.org/) and set up a database called `Miki`.
@@ -44,9 +57,14 @@ $ git clone https://github.com/mikibot/bot
 $ cp src/Miki/Properties/launchSettings.template.json src/Miki/Properties/launchSettings.json
 ```
 
-4) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
+4) Run db migrations
+```bash
+$ tools/updatedb.sh <connection string>
+```
 
-5) Run Miki. 🎉
+5) Set your bot token through `psql` to insert your configuration in dbo."Configuration"
+
+6) Run Miki. 🎉
 
 ## Possible issues:
 These will likely be fixed in the near future (if it's not already by the time you're reading this):
