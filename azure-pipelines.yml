@@ -25,6 +25,6 @@ stages:
       inputs:
         containerRegistry: 'Github Docker'
         command: 'build'
-        Dockerfile: '**/Dockerfile'
-        buildContext: './'
+        Dockerfile: 'src/Miki/Dockerfile'
+        buildContext: '.'
         tags: '$(tag)'
