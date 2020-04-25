@@ -56,7 +56,6 @@
     using Veld.Osu.V1;
     using System.Text.Json;
     using Miki.Cache.InMemory;
-    using Miki.Functional;
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Lottery;
     using Miki.Services.Pasta;
@@ -320,7 +319,7 @@
             serviceCollection.AddScoped<ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
-            serviceCollection.AddSingleton<ILotteryService, LotteryService>();
+            serviceCollection.AddScoped<ILotteryService, LotteryService>();
             serviceCollection.AddSingleton<IOsuApiClient>(_ => config.OptionalValues?.OsuApiKey == null
                 ? null
                 : new OsuApiClientV1(config.OptionalValues.OsuApiKey));
