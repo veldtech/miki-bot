@@ -51,7 +51,6 @@
     using Miki.Utility;
     using Retsu.Consumer;
     using Sentry;
-    using StackExchange.Redis;
     using Veld.Osu;
     using Veld.Osu.V1;
     using System.Text.Json;
@@ -256,13 +255,20 @@
                 await consumer.SubscribeAsync("RESUMED");
 
                 serviceCollection.AddSingleton<IGateway>(consumer);
-                serviceCollection.AddSingleton<IConnectionMultiplexer>(
-                    await ConnectionMultiplexer.ConnectAsync(config.RedisConnectionString));
-                serviceCollection.AddSingleton<ICacheClient, StackExchangeCacheClient>();
-                serviceCollection.AddSingleton<IExtendedCacheClient, StackExchangeCacheClient>();
+
+                var connectionPool = new RedisConnectionPool();
+                await connectionPool.InitAsync(config.RedisConnectionString);
+                serviceCollection.AddSingleton(connectionPool);
+
+                serviceCollection.AddTransient(
+                    x => x.GetRequiredService<RedisConnectionPool>().Get());
+
+                serviceCollection.AddTransient<ICacheClient, StackExchangeCacheClient>();
+                serviceCollection.AddTransient<IExtendedCacheClient, StackExchangeCacheClient>();
 
                 var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
-                var factory = new SplitFactory(config.OptionalValues.SplitioSdkKey, splitConfig);
+                var factory = new SplitFactory(
+                    config.OptionalValues?.SplitioSdkKey, splitConfig);
                 var client = factory.Client();
                 try
                 {
