@@ -23,6 +23,7 @@
             var entryCount = entries?.Sum(x => x.TicketCount) ?? 0;
             if(entryCount == 0)
             {
+                Log.Warning("No entries found.");
                 return;
             }
 
@@ -69,6 +70,7 @@
             }
             catch(DiscordRestException)
             {
+                Log.Warning("Message failed to send");
                 // Couldn't send message to winner.
             }
 

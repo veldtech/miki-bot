@@ -124,6 +124,7 @@
                 var payload = await FetchLatestWorkAsync().ConfigureAwait(false);
                 if(payload == null)
                 {
+                    Log.Warning("task was not valid.");
                     continue;
                 }
 
@@ -135,6 +136,7 @@
 
                 if(!taskCallbacks.TryGetValue(payload.TaskName, out var worker))
                 {
+                    Log.Warning($"task '{payload.TaskName}' was not registerd with a proper handler.");
                     continue;
                 }
 
