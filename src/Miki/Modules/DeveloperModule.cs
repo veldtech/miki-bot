@@ -18,8 +18,9 @@
     using Miki.Utility;
     using Miki.Services;
     using Miki.Services.Daily;
+	using Miki.Services.Scheduling;
 
-    [Module("Experimental")]
+	[Module("Experimental")]
 	internal class DeveloperModule
 	{
 		[Command("identifyemoji")]
@@ -57,6 +58,23 @@
 
             await b.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
+
+        [Command("fetchpayload")]
+        [RequiresScope("developer")]
+        public async Task GetScheduledPayloadAsync(IContext e)
+        {
+            var schedulerService = e.GetService<ISchedulerService>();
+            var cache = e.GetService<IExtendedCacheClient>();
+
+            var ownerId = e.GetArgumentPack().TakeRequired<string>();
+            var uuid = e.GetArgumentPack().TakeRequired<string>();
+
+            var objectKey = schedulerService.GetObjectNamespace(ownerId);
+
+            var payload = await cache.HashGetAsync<TaskPayload>(objectKey, uuid);
+
+            await e.GetChannel().SendMessageAsync(JsonConvert.SerializeObject(payload));
+        }
 
 		[Command("identifyuser")]
         [RequiresScope("developer")]
