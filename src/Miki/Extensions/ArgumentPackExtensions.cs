@@ -12,7 +12,7 @@
             {
                 return value;
             }
-            throw new ArgumentMissingException(typeof(T));
+            return new ArgumentMissingException(typeof(T));
         }
 
         public static Result<T> Take<T>(this ITypedArgumentPack pack, string noun)
