@@ -19,16 +19,13 @@
         public async Task RetryFailedTestAsync()
         {
             var tries = 0;
-            var stopwatch = Stopwatch.StartNew();
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => Retry.RetryAsync<string>(() =>
                 {
                     tries++;
                     throw new InvalidOperationException();
                 }, 1000));
-            Assert.True(stopwatch.ElapsedMilliseconds > 4000);
             Assert.Equal(5, tries);
-
         }
     }
 }
