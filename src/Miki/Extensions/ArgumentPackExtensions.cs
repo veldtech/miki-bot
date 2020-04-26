@@ -2,16 +2,17 @@
 {
     using Miki.Bot.Models.Exceptions;
     using Miki.Framework.Arguments;
+    using Miki.Functional;
 
     public static class ArgumentPackExtensions
     {
-        public static T TakeRequired<T>(this ITypedArgumentPack pack)
+        public static Result<T> TakeRequired<T>(this ITypedArgumentPack pack)
         {
             if(pack.Take(out T value))
             {
                 return value;
             }
-            throw new ArgumentMissingException(typeof(T));
+            return new ArgumentMissingException(typeof(T));
         }
     }
 }

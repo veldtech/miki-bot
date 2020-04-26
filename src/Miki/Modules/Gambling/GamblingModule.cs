@@ -376,7 +376,7 @@
                 return;
             }
 
-            string sideParam = e.GetArgumentPack().TakeRequired<string>()
+            string sideParam = e.GetArgumentPack().TakeRequired<string>().Unwrap()
                 .ToLowerInvariant();
 
 

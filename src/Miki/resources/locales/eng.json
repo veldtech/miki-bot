@@ -715,5 +715,6 @@
   "lottery_ticket_price": "Ticket price",
   "lottery_jackpot": "Jackpot",
   "lottery_how_to": "How to buy?",
-  "lottery_buy_success": "Successfully bought {0} tickets!"
+  "lottery_buy_success": "Successfully bought {0} tickets!",
+  "error_subreddit_nsfw": "Subreddit '{0}' is not safe for work." 
 }

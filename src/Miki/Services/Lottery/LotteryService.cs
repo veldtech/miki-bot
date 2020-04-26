@@ -31,7 +31,8 @@
             LotteryEventHandler eventHandler)
         {
             this.transactions = transactions;
-            this.scheduler = scheduler.CreateWorker(lotterySchedulerKey, eventHandler.HandleLotteryAsync);
+            this.scheduler = scheduler.CreateWorker(
+                lotterySchedulerKey, eventHandler.HandleLotteryAsync);
             this.entrySet = cache.CreateHashSet<LotteryEntry>(eventHandler.LotteryObjectsKey);
         }
 

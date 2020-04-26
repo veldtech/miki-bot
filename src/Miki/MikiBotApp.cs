@@ -58,6 +58,7 @@
     using Miki.Modules.Internal.Routines;
     using Miki.Services.Lottery;
     using Miki.Services.Pasta;
+    using Miki.Services.Reddit;
     using Miki.Services.Scheduling;
     using Splitio.Services.Client.Classes;
     using Miki.Services.Settings;
@@ -313,6 +314,7 @@
             serviceCollection.AddSingleton<AccountService>();
             serviceCollection.AddScoped<PastaService>();
 
+            serviceCollection.AddSingleton<RedditService>();
             serviceCollection.AddSingleton<AchievementCollection>();
             serviceCollection.AddScoped<AchievementService>();
 

@@ -4,6 +4,7 @@
     using System.Security.Cryptography;
     using System;
     using System.Collections.Generic;
+    using Miki.Functional;
 
     public class MikiRandom : RandomNumberGenerator
     {
@@ -52,7 +53,9 @@
         }
 
         public static T Of<T>(IEnumerable<T> collection)
-            => collection.ElementAt(Next(collection.Count()));
+            => collection != null && collection.Any()
+                ? collection.ElementAt(Next(collection.Count()))
+                : default;
 
         public static double NextDouble()
         {

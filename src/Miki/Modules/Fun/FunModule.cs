@@ -8,7 +8,8 @@ namespace Miki.Modules.Fun
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Amazon.S3;
+	using System.Web;
+	using Amazon.S3;
     using Imgur.API;
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
@@ -26,12 +27,15 @@ namespace Miki.Modules.Fun
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
+    using Miki.Framework.Exceptions;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Modules.Fun.Exceptions;
     using Miki.Net.Http;
     using Miki.Services;
     using Miki.Services.Achievements;
+	using Miki.Services.Reddit;
+    using Miki.Services.Reddit.Exceptions;
     using Miki.Services.Scheduling;
     using Miki.Utility;
     using NCalc;
@@ -468,6 +472,37 @@ namespace Miki.Modules.Fun
                     rollResult));
 		}
 
+        [Command("reddit")]
+        public async Task RedditAsync(IContext e)
+        {
+            var redditService = e.GetService<RedditService>();
+
+            var subreddit = e.GetArgumentPack().TakeRequired<string>().Unwrap().TrimStart('/');
+            var category = e.GetArgumentPack().TakeRequired<ListingType>().OrElse(ListingType.Top);
+
+            var posts = await redditService.GetPostsAsync(subreddit, category);
+            
+            var post = MikiRandom.Of(posts.Where(x => !x.Url.EndsWith("gifv"))
+                .Where(x => e.GetChannel().IsNsfw || !x.Nsfw)); 
+			if(post == null)
+            {
+                throw new SubredditNsfwException(subreddit);
+            }
+
+            var url = post.PostHint == "image"
+                ? post.Previews.Images.First().Source.Url.Replace("&amp;", "&")
+                : post.Previews.Images.First().Variants.Gif.Source.Url;
+			
+			await new EmbedBuilder()
+                .SetTitle($"{AppProps.Emoji.Reddit}  {post.Title}")
+                .SetColor(250, 250, 250)
+                .SetDescription(
+                    $"👍 {post.Upvotes:N0} - [link]({redditService.GetUrl(post.PermaLink)})")
+                .SetImage(url)
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
+        }
+		    
         [Command("reminder", "remind")]
         public class ReminderCommand
         {
@@ -567,7 +602,7 @@ namespace Miki.Modules.Fun
                 var selectedWork = queuedWork.FirstOrDefault(
                     x => JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context
                         .ToLowerInvariant()
-                        .StartsWith(arg.ToLowerInvariant()));
+                        .StartsWith(arg.Unwrap().ToLowerInvariant()));
                 if(selectedWork == null)
                 {
                     throw new EntityNullException<Reminder>();
