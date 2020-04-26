@@ -477,8 +477,8 @@ namespace Miki.Modules.Fun
         {
             var redditService = e.GetService<RedditService>();
 
-            var subreddit = e.GetArgumentPack().TakeRequired<string>("subreddit")
-                .Unwrap().TrimStart('/');
+            var subreddit = e.GetArgumentPack().TakeRequired<string>("noun_subreddit")
+                .Unwrap().Split('/').Last();
             var category = e.GetArgumentPack().TakeRequired<ListingType>().OrElse(ListingType.Top);
 
             var posts = await redditService.GetPostsAsync(subreddit, category);

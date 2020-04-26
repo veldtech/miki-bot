@@ -718,5 +718,6 @@
   "lottery_buy_success": "Successfully bought {0} tickets!",
   "error_subreddit_nsfw": "Subreddit '{0}' is not safe for work.",
   "miki_command_description_reddit": "Show reddit posts per subreddit",
-  "miki_command_usage_reddit": ">reddit <subreddit> [list]" 
+  "miki_command_usage_reddit": ">reddit <subreddit> [list]",
+  "noun_subreddit":  "subreddit"
 }
