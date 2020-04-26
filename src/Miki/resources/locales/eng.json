@@ -719,5 +719,6 @@
   "error_subreddit_nsfw": "Subreddit '{0}' is not safe for work.",
   "miki_command_description_reddit": "Show reddit posts per subreddit",
   "miki_command_usage_reddit": ">reddit <subreddit> [list]",
-  "noun_subreddit":  "subreddit"
+  "noun_subreddit": "subreddit",
+  "action_view_reddit": "view on reddit" 
 }

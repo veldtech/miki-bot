@@ -475,13 +475,13 @@ namespace Miki.Modules.Fun
         [Command("reddit")]
         public async Task RedditAsync(IContext e)
         {
-            var redditService = e.GetService<RedditService>();
+            var service = e.GetService<RedditService>();
 
             var subreddit = e.GetArgumentPack().TakeRequired<string>("noun_subreddit")
                 .Unwrap().Split('/').Last();
-            var category = e.GetArgumentPack().TakeRequired<ListingType>().OrElse(ListingType.Top);
+            var category = e.GetArgumentPack().TakeRequired<ListingType>().OrElse(ListingType.Hot);
 
-            var posts = await redditService.GetPostsAsync(subreddit, category);
+            var posts = await service.GetPostsAsync(subreddit, category);
             
             var post = MikiRandom.Of(posts.Where(x => !x.Url.EndsWith("gifv"))
                 .Where(x => e.GetChannel().IsNsfw || !x.Nsfw)); 
@@ -490,19 +490,29 @@ namespace Miki.Modules.Fun
                 throw new SubredditNsfwException(subreddit);
             }
 
-            var url = post.PostHint == "image"
-                ? post.Previews.Images.First().Source.Url.Replace("&amp;", "&")
-                : post.Previews.Images.First().Variants.Gif.Source.Url;
-			
-			await new EmbedBuilder()
+			string url = null;
+            if(post.PostHint != null)
+            {
+                url = post.PostHint == "image"
+                    ? post.Previews.Images.First().Source.Url.Replace("&amp;", "&")
+                    : post.Previews.Images.First().Variants.Gif.Source.Url;
+            }
+
+            var actionLink =
+                $"[{e.GetLocale().GetString("action_view_reddit")}]({service.GetUrl(post.PermaLink)})";
+
+            await new EmbedBuilder()
                 .SetTitle($"{AppProps.Emoji.Reddit}  {post.Title}")
                 .SetColor(250, 250, 250)
                 .SetDescription(
-                    $"👍 {post.Upvotes:N0} - [link]({redditService.GetUrl(post.PermaLink)})")
+                    $"👍 {post.Upvotes:N0} - {actionLink}")
                 .SetImage(url)
+                .SetThumbnail(url == null 
+                    ? "https://cdn.miki.ai/commands/reddit-text-image.png" 
+                    : null)
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
-        }
+		}
 		    
         [Command("reminder", "remind")]
         public class ReminderCommand
