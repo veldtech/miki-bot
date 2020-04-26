@@ -51,7 +51,7 @@
         /// <summary>
         /// Whether the task repeats itself after execution.
         /// </summary>
-        [DataMember(Name = "payload", Order = 8)]
+        [DataMember(Name = "is_repeating", Order = 8)]
         public bool IsRepeating { get; set; }
 
         /// <summary>
