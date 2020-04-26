@@ -478,8 +478,8 @@ namespace Miki.Modules.Fun
             var service = e.GetService<RedditService>();
 
             var subreddit = e.GetArgumentPack().TakeRequired<string>("noun_subreddit")
-                .Unwrap().Split('/').Last();
-            var category = e.GetArgumentPack().TakeRequired<ListingType>().OrElse(ListingType.Hot);
+                .Split('/').Last();
+            var category = e.GetArgumentPack().Take<ListingType>().OrElse(ListingType.Hot);
 
             var posts = await service.GetPostsAsync(subreddit, category);
             
@@ -613,7 +613,7 @@ namespace Miki.Modules.Fun
                 var selectedWork = queuedWork.FirstOrDefault(
                     x => JsonConvert.DeserializeObject<Reminder>(x.PayloadJson).Context
                         .ToLowerInvariant()
-                        .StartsWith(arg.Unwrap().ToLowerInvariant()));
+                        .StartsWith(arg.ToLowerInvariant()));
                 if(selectedWork == null)
                 {
                     throw new EntityNullException<Reminder>();

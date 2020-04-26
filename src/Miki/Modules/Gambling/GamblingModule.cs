@@ -361,11 +361,9 @@
             var transactionService = e.GetService<ITransactionService>();
             var userService = e.GetService<IUserService>();
 
-            User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
-                .ConfigureAwait(false);
+            var user = await userService.GetOrCreateUserAsync(e.GetAuthor()).ConfigureAwait(false);
 
             int bet = ValidateBet(e, user, 10000);
-
 
             if (e.GetArgumentPack().Pack.Length < 2)
             {
@@ -376,9 +374,7 @@
                 return;
             }
 
-            string sideParam = e.GetArgumentPack().TakeRequired<string>().Unwrap()
-                .ToLowerInvariant();
-
+            string sideParam = e.GetArgumentPack().TakeRequired<string>().ToLowerInvariant();
 
             int? pickedSide = null;
             if (sideParam[0] == 'h')
