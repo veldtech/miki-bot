@@ -716,5 +716,7 @@
   "lottery_jackpot": "Jackpot",
   "lottery_how_to": "How to buy?",
   "lottery_buy_success": "Successfully bought {0} tickets!",
-  "error_subreddit_nsfw": "Subreddit '{0}' is not safe for work." 
+  "error_subreddit_nsfw": "Subreddit '{0}' is not safe for work.",
+  "miki_command_description_reddit": "Show reddit posts per subreddit",
+  "miki_command_usage_reddit": ">reddit <subreddit> [list]" 
 }
