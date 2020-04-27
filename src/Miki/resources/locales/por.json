@@ -192,7 +192,7 @@
     "miki_command_description_toggledm": "Alterne a Miki para lhe enviar DMs!",
     "miki_command_description_toggleerrors": "Alterne a Miki para lhe enviar DMs de erro!",
     "miki_command_description_toggleguildnotifications": "Alterne a Miki para lhe enviar mensagens sem comandos neste canal!",
-    "miki_command_usage_leaderboards": "miki_comando_usos_top",
+    "miki_command_usage_leaderboards": ">leaderboards\n>leaderboards local\n>leaderboards mekos\n>leaderboards comands\n>leaderboards [menção]",
     "miki_command_usage_profile": ">profile",
     "miki_command_usage_toggledm": ">toggledm",
     "miki_command_usage_toggleerrors": ">toggleerrors",
