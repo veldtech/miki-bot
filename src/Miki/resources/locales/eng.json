@@ -720,5 +720,6 @@
   "miki_command_description_reddit": "Show reddit posts per subreddit",
   "miki_command_usage_reddit": ">reddit <subreddit> [list]",
   "noun_subreddit": "subreddit",
-  "action_view_reddit": "view on reddit" 
+  "action_view_reddit": "view on reddit",
+  "entity_marriage": "marriage"
 }

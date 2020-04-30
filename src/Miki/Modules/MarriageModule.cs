@@ -262,6 +262,7 @@ namespace Miki.Modules
 		public async Task DivorceAsync(IContext e)
 		{
             var service = e.GetService<MarriageService>();
+            var locale = e.GetLocale();
 
 			var marriages = await service.GetMarriagesAsync((long)e.GetAuthor().Id);
 
@@ -277,30 +278,30 @@ namespace Miki.Modules
 			{
 				var m = marriages[selectionId - 1];
 				var otherUser = await e.GetService<IDiscordClient>()
-					.GetUserAsync(m.GetOther(e.GetAuthor().Id.ToDbLong()).FromDbLong());
+					.GetUserAsync(m.GetOther(e.GetAuthor().Id));
                 await service.DeclineProposalAsync(m);
 
-				await new EmbedBuilder
-				{
-					Title = $"🔔 {e.GetLocale().GetString("miki_module_accounts_divorce_header")}",
-					Description = e.GetLocale().GetString("miki_module_accounts_divorce_content", e.GetAuthor().Username, otherUser.Username),
-					Color = new Color(0.6f, 0.4f, 0.1f)
-				}.ToEmbed().QueueAsync(e, e.GetChannel());
-
+                await new EmbedBuilder()
+                    .SetTitle($"🔔 {locale.GetString("miki_module_accounts_divorce_header")}")
+                    .SetDescription(locale.GetString("miki_module_accounts_divorce_content",
+                        e.GetAuthor().Username, otherUser.Username))
+                    .SetColor(0.6f, 0.4f, 0.1f)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
 			}
 			else
 			{
-				var embed = new EmbedBuilder()
+				var embed = new EmbedBuilder
 				{
-					Title = "💍 Marriages",
-					Footer = new EmbedFooter()
+					Title = $"💍 {locale.GetString("entity_marriage").CapitalizeFirst()}",
+					Footer = new EmbedFooter
 					{
 						Text = $"Use {e.GetPrefixMatch()}divorce <number> to decline",
 					},
 					Color = new Color(154, 170, 180)
 				};
 
-                await this.BuildMarriageEmbedAsync(e, embed, e.GetAuthor().Id.ToDbLong(), marriages)
+                await this.BuildMarriageEmbedAsync(e, embed, (long)e.GetAuthor().Id, marriages)
                     .ConfigureAwait(false);
                 await embed.ToEmbed()
                     .QueueAsync(e, e.GetChannel())
@@ -312,6 +313,7 @@ namespace Miki.Modules
 		public async Task MarryAsync(IContext e)
 		{
 			var userService = e.GetService<IUserService>();
+            var locale = e.GetLocale();
 
             IDiscordGuildUser user = await e.GetGuild().FindUserAsync(e);
             if(user.Id == (await e.GetGuild().GetSelfAsync().ConfigureAwait(false)).Id)
@@ -353,13 +355,19 @@ namespace Miki.Modules
                 .ConfigureAwait(false);
 
             await new EmbedBuilder()
-				.SetTitle("💍" + e.GetLocale().GetString("miki_module_accounts_marry_text", $"**{e.GetAuthor().Username}**", $"**{user.Username}**"))
-				.SetDescription(e.GetLocale().GetString("miki_module_accounts_marry_text2", user.Username, e.GetAuthor().Username))
+				.SetTitle("💍" + locale.GetString(
+                              "miki_module_accounts_marry_text", 
+                              $"**{e.GetAuthor().Username}**", 
+                              $"**{user.Username}**"))
+				.SetDescription(locale.GetString(
+                    "miki_module_accounts_marry_text2", 
+                    user.Username, 
+                    e.GetAuthor().Username))
 				.SetColor(0.4f, 0.4f, 0.8f)
 				.SetThumbnail("https://i.imgur.com/TKZSKIp.png")
 				.AddInlineField("✅ To accept", ">acceptmarriage")
 				.AddInlineField("❌ To decline", ">declinemarriage")
-				.SetFooter("Take your time though! This proposal won't disappear", "")
+				.SetFooter("Take your time though! This proposal won't disappear")
 				.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);

@@ -23,7 +23,6 @@
             {
                 return value.Unwrap();
             }
-
             return FallbackManager.GetString(key).Unwrap();
         }
     }

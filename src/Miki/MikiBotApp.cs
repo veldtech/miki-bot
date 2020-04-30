@@ -62,6 +62,7 @@
     using Miki.Services.Scheduling;
     using Splitio.Services.Client.Classes;
     using Miki.Services.Settings;
+    using Amazon.S3.Model;
 
     public class MikiBotApp : MikiApp
     {
@@ -226,6 +227,12 @@
                         ExchangeName = "consumer",
                         ConsumerAutoAck = false,
                         PrefetchCount = 25,
+                    },
+                    new Retsu.Consumer.Models.QueueConfiguration
+                    {
+                        ConnectionString = new Uri(config.RabbitUrl),
+                        QueueName = "gateway-command",
+                        ExchangeName = "consumer",
                     });
 
                 await consumer.SubscribeAsync("MESSAGE_CREATE");
