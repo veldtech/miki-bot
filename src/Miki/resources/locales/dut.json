@@ -659,7 +659,6 @@
     "permission_missing": "permission_missing",
     "error_invalid_character": "error_invalid_character",
     "error_miscript_parse": "error_miscript_parse",
-    "String1": "String1",
     "ok_command_deleted": "ok_command_deleted",
     "miki_command_description_createcommand": "miki_command_description_createcommand",
     "miki_command_description_removecommand": "miki_command_description_removecommand",
