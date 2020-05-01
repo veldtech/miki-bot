@@ -77,7 +77,6 @@
                 services.GetService<IDiscordClient>());
 
             var discordClient = services.GetService<IDiscordClient>();
-            discordClient.UserUpdate += Client_UserUpdated;
             discordClient.GuildJoin += Client_JoinedGuild;  
 
             discordClient.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
@@ -463,20 +462,6 @@
                 .SetLogHeader(msg => $"[{msg}]: ")
                 .SetTheme(theme)
                 .Apply();
-        }
-
-        private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
-        {
-            using var scope = Services.CreateScope();
-            if(oldUser.AvatarId != newUser.AvatarId)
-            {
-                await Utils.SyncAvatarAsync(newUser,
-                        scope.ServiceProvider.GetService<IExtendedCacheClient>(),
-                        scope.ServiceProvider.GetService<IUserService>(),
-                        scope.ServiceProvider.GetService<AmazonS3Client>(),
-                        scope.ServiceProvider.GetService<BunnyCDNClient>())
-                    .ConfigureAwait(false);
-            }
         }
 
         private async Task Client_JoinedGuild(IDiscordGuild arg)

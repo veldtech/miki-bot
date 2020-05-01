@@ -108,6 +108,7 @@ namespace Miki.Modules
         {
             var userService = e.GetService<IUserService>();
             var transactionService = e.GetService<ITransactionService>();
+            var locale = e.GetLocale();
 
             User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
@@ -126,8 +127,12 @@ namespace Miki.Modules
 
                 if(limit == 10 && !isDonator)
                 {
-                    embed.AddField("Pro tip!", "Donators get 5 more slots!")
-                        .SetFooter("Want more slots? Consider donating!", "https://patreon.com/mikibot");
+                    embed.AddField(
+                            locale.GetString("tip_header"), 
+                            locale.GetString("marriageslot_donator_bonus"))
+                        .SetFooter(
+                            locale.GetString("marriageslot_footer"), 
+                            "https://patreon.com/mikibot");
                 }
 
                 await embed.ToEmbed()
@@ -136,11 +141,7 @@ namespace Miki.Modules
                 return;
             }
 
-            int costForUpgrade = (user.MarriageSlots - 4) * 2500;
-
-            user.MarriageSlots++;
-	    await userService.UpdateUserAsync(user).ConfigureAwait(false);
-            await userService.SaveAsync().ConfigureAwait(false);
+            int costForUpgrade = user.MarriageSlots * 1500;
 
             await transactionService.CreateTransactionAsync(
                     new TransactionRequest.Builder()
@@ -149,6 +150,10 @@ namespace Miki.Modules
                         .WithSender(user.Id)
                         .Build())
                 .ConfigureAwait(false);
+
+            user.MarriageSlots++;
+            await userService.UpdateUserAsync(user).ConfigureAwait(false);
+            await userService.SaveAsync().ConfigureAwait(false);
 
             await e.SuccessEmbedResource("buymarriageslot_success", user.MarriageSlots)
                 .QueueAsync(e, e.GetChannel())

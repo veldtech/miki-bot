@@ -645,7 +645,7 @@
                         $"{AppProps.Emoji.Mekos} {lotteryService.EntryPrice}")
                     .AddInlineField(
                         locale.GetString("lottery_jackpot"),
-                        jackpot.ToString())
+                        jackpot.ToString("N0"))
                     .AddInlineField(
                         locale.GetString("lottery_how_to"), 
                         ">lottery buy <amount>")
@@ -659,7 +659,7 @@
                 var amount = e.GetArgumentPack().TakeRequired<int>();
                 var lotteryService = e.GetService<ILotteryService>();
                 await lotteryService.PurchaseEntriesAsync((long)e.GetAuthor().Id, amount);
-                await e.SuccessEmbedResource("lottery_buy_success", amount)
+                await e.SuccessEmbedResource("lottery_buy_success", amount.ToString("N0"))
                     .QueueAsync(e, e.GetChannel());
             }
         }
@@ -670,12 +670,10 @@
             int maxBet = 1000000)
         {
             var args = e.GetArgumentPack();
-            if (args.Take(out int bet))
+            if (args.Take(out int bet)) {}
+            else if(args.Take(out string arg))
             {
-            }
-            else if (args.Take(out string arg))
-            {
-                if (Utils.IsAll(arg))
+                if(Utils.IsAll(arg))
                 {
                     bet = Math.Min(user.Currency, maxBet);
                 }
@@ -685,7 +683,6 @@
             {
                 throw new BetLimitOverflowException();
             }
-
             return bet;
         }
     }

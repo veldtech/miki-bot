@@ -451,7 +451,7 @@
   "miki_module_accounts_mekos_no_user": "Mentioned user not found!",
   "miki_module_admin_prune_error_negative": "You can't enter a negative amount!",
   "miki_module_admin_prune_error_parse": "You must enter a whole number as the amount!",
-  "miki_user_mekos": "{0} has **{1}** mekos!",
+  "miki_user_mekos": "{0} has {1} mekos!",
   "guild_error_null": "This guild doesn't have a profile yet.",
   "time_and": "and",
   "discord_servers": "Servers",
@@ -680,7 +680,6 @@
   "error_daily_claimed": "You already claimed your daily today! Please wait another {0} before using it again.",
   "error_action_unauthorized": "You cannot {0} this!",
   "error_pasta_null": "Pasta was not found.",
-  "appreciate_title": "Appreciate Miki?",
   "appreciate_patreon": "Vote for us every day on {0} to get an additional bonus!",
   "appreciate_vote": "Donate to us on {0} for more mekos!",
   "daily_claimed": "You already claimed your daily today! Please wait another {0} before using it again.",
@@ -721,5 +720,8 @@
   "miki_command_usage_reddit": ">reddit <subreddit> [list]",
   "noun_subreddit": "subreddit",
   "action_view_reddit": "view on reddit",
-  "entity_marriage": "marriage"
+  "entity_marriage": "marriage",
+  "tip_header": "Pro tip",
+  "marriageslot_donator_bonus": "Donators get 5 more marriage slots",
+  "marriageslot_footer": "Want more slots? Consider donating!"
 }

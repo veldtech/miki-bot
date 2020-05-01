@@ -58,20 +58,22 @@
         public async ValueTask<ReputationObject> GetUserReputationPointsAsync(long userId)
         {
             var repObject = await cache.GetAsync<ReputationObject>($"user:{userId}:rep");
-            if(repObject == null)
+            if(repObject != null)
             {
-                repObject = new ReputationObject
-                {
-                    LastReputationGiven = DateTime.Now,
-                    ReputationPointsLeft = 3
-                };
-
-                await cache.UpsertAsync(
-                    $"user:{userId}:rep",
-                    repObject,
-                    DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
-                );
+                return repObject;
             }
+
+            repObject = new ReputationObject
+            {
+                LastReputationGiven = DateTime.Now,
+                ReputationPointsLeft = 3
+            };
+
+            await cache.UpsertAsync(
+                $"user:{userId}:rep",
+                repObject,
+                DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
+            );
             return repObject;
         }
 

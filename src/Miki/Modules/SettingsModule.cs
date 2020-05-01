@@ -228,22 +228,5 @@
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
-         
-        [Command("syncavatar")]
-		public async Task SyncAvatarAsync(IContext e)
-		{
-            var context = e.GetService<IUserService>();
-            var cache = e.GetService<IExtendedCacheClient>();
-            var amazonClient = e.GetService<AmazonS3Client>();
-            var cdnClient = e.GetService<BunnyCDNClient>();
-
-            var locale = e.GetLocale();
-            await Utils.SyncAvatarAsync(
-                e.GetAuthor(), cache, context, amazonClient, cdnClient);
-
-			await e.SuccessEmbed(
-                locale.GetString("setting_avatar_updated"))
-                .QueueAsync(e, e.GetChannel());
-		}
-	}
+    }
 }

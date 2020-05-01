@@ -1030,10 +1030,13 @@ namespace Miki.Modules.Accounts
             }
 
             var user = await userService.GetOrCreateUserAsync(member);
-            var desc = locale.GetString("miki_user_mekos", user.Name, user.Currency.ToString("N0"));
+            var desc = locale.GetString(
+                "miki_user_mekos", 
+                user.Name, 
+                $"**{user.Currency:N0}**");
 
             await new EmbedBuilder()
-                .SetTitle("🔸 Mekos")
+                .SetTitle($"{AppProps.Emoji.Mekos} Mekos")
                 .SetDescription(desc)
                 .SetColor(1f, 0.5f, 0.7f)
                 .ToEmbed()
@@ -1055,12 +1058,12 @@ namespace Miki.Modules.Accounts
         public DiscordEmbed CreateTransactionEmbed(IContext context, TransactionResponse transaction)
         {
             return new EmbedBuilder()
-                .SetTitle("🔸 transaction")
+                .SetTitle($"{AppProps.Emoji.Mekos} Mekos")
                 .SetDescription(context.GetLocale().GetString(
                     "give_description",
                     transaction.Sender.Name,
                     transaction.Receiver.Name,
-                    transaction.Amount.ToString("N0")))
+                    $"**{transaction.Amount:N0}**"))
                 .SetColor(255, 140, 0)
                 .ToEmbed();
         }
@@ -1093,11 +1096,15 @@ namespace Miki.Modules.Accounts
 
                     var appreciationString = MikiRandom.Of(new[]
                     {
-                        locale.GetString("appreciate_patreon", "[DiscordBots](https://discordbots.org/bot/160105994217586689/vote)"),
-                        locale.GetString("appreciate_vote", "[Patreon](https://patreon.com/mikibot)")
+                        locale.GetString(
+                            "appreciate_vote", 
+                            "[Top.gg](https://discordbots.org/bot/160105994217586689/vote)"),
+                        locale.GetString(
+                            "appreciate_patreon", 
+                            "[Patreon](https://patreon.com/mikibot)")
                     });
 
-                    embed.AddInlineField(locale.GetString("appreciate_title"), appreciationString)
+                    embed.AddInlineField(locale.GetString("tip_header"), appreciationString)
                         .AddInlineField(locale.GetString("daily_stats_current_streak"), $"{response.CurrentStreak}");
 
                     await embed.ToEmbed()

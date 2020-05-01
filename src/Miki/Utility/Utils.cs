@@ -216,43 +216,6 @@ namespace Miki.Utility
             return embed;
         }
 
-        public static async Task SyncAvatarAsync(
-            [NotNull] IDiscordUser user,
-            IExtendedCacheClient cache,
-            IUserService context,
-            AmazonS3Client s3Service,
-            BunnyCDNClient cdnClient)
-        {
-            PutObjectRequest request = new PutObjectRequest
-            {
-                BucketName = "miki-cdn",
-                Key = $"avatars/{user.Id}.png",
-                ContentType = "image/png",
-                CannedACL = new S3CannedACL("public-read")
-            };
-
-            string avatarUrl = user.GetAvatarUrl();
-            using(var client = new HttpClient(avatarUrl, true))
-            {
-                request.InputStream = await client.GetStreamAsync();
-            }
-
-            var response = await s3Service.PutObjectAsync(request);
-            if(response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-            {
-                throw new AvatarSyncException();
-            }
-
-            await cdnClient.PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
-
-            var mikiUser = await context.GetOrCreateUserAsync(user);
-            await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
-            mikiUser.AvatarUrl = mikiUser.Id.ToString();
-
-            await context.UpdateUserAsync(mikiUser);
-            await context.SaveAsync();
-        }
-
         public static string TakeAll(this IArgumentPack pack)
         {
             List<string> allItems = new List<string>();
