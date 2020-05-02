@@ -77,7 +77,7 @@
                 services.GetService<IDiscordClient>());
 
             var discordClient = services.GetService<IDiscordClient>();
-            discordClient.GuildJoin += Client_JoinedGuild;  
+            discordClient.GuildJoin += ClientJoinedGuildAsync;  
 
             discordClient.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
             pipeline.OnExecuted += LogErrorsAsync;
@@ -464,7 +464,7 @@
                 .Apply();
         }
 
-        private async Task Client_JoinedGuild(IDiscordGuild arg)
+        private async Task ClientJoinedGuildAsync(IDiscordGuild arg)
         {
             using var scope = Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
@@ -492,11 +492,11 @@
                 {
                     allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allParams.Add((long)members.ElementAt(i).Id);
                     allParams.Add(members.ElementAt(i).Username);
 
-                    allExpParams.Add(arg.Id.ToDbLong());
-                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allExpParams.Add((long)arg.Id);
+                    allExpParams.Add((long)members.ElementAt(i).Id);
                 }
 
                 await context.Database.ExecuteSqlRawAsync(

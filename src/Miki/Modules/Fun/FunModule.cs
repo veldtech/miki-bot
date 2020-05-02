@@ -303,7 +303,7 @@ namespace Miki.Modules.Fun
             {
                 images = await endpoint.SearchGalleryAsync($"title:{title} ext:gif");
             }
-            catch(ImgurException ex)
+            catch(ImgurException)
             {
                 throw new InternalServerErrorException("imgur.com");
             }
@@ -351,7 +351,7 @@ namespace Miki.Modules.Fun
                 images = await endpoint.SearchGalleryAsync($"title:{title}")
                     .ConfigureAwait(false);
             }
-            catch(ImgurException ex)
+            catch(ImgurException)
             {
                 throw new InternalServerErrorException("imgur.com");
             }

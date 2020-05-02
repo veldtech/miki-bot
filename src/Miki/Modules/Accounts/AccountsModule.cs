@@ -47,8 +47,11 @@ namespace Miki.Modules.Accounts
 
         private readonly IHttpClient client;
 
+        private readonly MikiApp app;
+
         public AccountsModule(MikiApp app)
         {
+            this.app = app;
             var config = app.Services.GetService<Config>();
 
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl))
@@ -148,10 +151,10 @@ namespace Miki.Modules.Accounts
 
             if(achievementToUnlock != -1)
             {
-                if (MikiApp.Instance is MikiBotApp instance)
+                if(app is MikiBotApp botApp)
                 {
                     await AchievementService.UnlockAsync(
-                        await instance.CreateFromUserChannelAsync(user, channel),
+                        await botApp.CreateFromUserChannelAsync(user, channel),
                         achievements,
                         user.Id,
                         achievementToUnlock);
@@ -164,7 +167,7 @@ namespace Miki.Modules.Accounts
         /// </summary>
         private async Task OnUserLevelUpAsync(IDiscordUser user, IDiscordTextChannel channel, int level)
         {
-            using var scope = MikiApp.Instance.Services.CreateScope();
+            using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
 
             var context = services.GetService<MikiDbContext>();
@@ -222,7 +225,7 @@ namespace Miki.Modules.Accounts
                     {
                         foreach(var role in rolesObtained)
                         {
-                            IDiscordRole r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
+                            var r = roles.FirstOrDefault(x => x.Id == (ulong)role.RoleId);
                             if(r == null)
                             {
                                 continue;

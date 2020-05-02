@@ -81,7 +81,7 @@
                     "Your language not here?",
                     locale.GetString(
                         "locales_contribute",
-                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                        $"[{locale.GetString("locales_translations")}]({AppProps.Links.LocalizationInvite})"))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);

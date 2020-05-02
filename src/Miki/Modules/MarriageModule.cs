@@ -5,13 +5,10 @@ namespace Miki.Modules
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
     using Miki.Bot.Models.Repositories;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Discord.Rest;
     using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Commands;
@@ -31,11 +28,6 @@ namespace Miki.Modules
 			var userService = e.GetService<IUserService>();
 
             IDiscordUser user = await e.GetGuild().FindUserAsync(e);
-
-            if(user == null)
-            {
-                throw new UserNullException();
-            }
 
             if(user.Id == e.GetAuthor().Id)
             {

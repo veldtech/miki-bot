@@ -539,7 +539,7 @@
             dmChannel.QueueMessage(e,
                 null,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
-                + "\n" + AppProps.InviteUrl);
+                + "\n" + AppProps.Links.DiscordInvite);
         }
 
         [Command("ping", "lag")]
