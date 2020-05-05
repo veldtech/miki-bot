@@ -11,6 +11,7 @@
     using Microsoft.EntityFrameworkCore;
     using Patterns.Repositories;
     using Miki.Modules.Accounts.Services;
+    using System.Reactive.Subjects;
 
     public delegate Task<bool> CheckUserUpdateAchievement(
         IDiscordUser userBefore, IDiscordUser userAfter);
@@ -22,7 +23,10 @@
         private readonly IAsyncRepository<Achievement> repository;
         private readonly AchievementCollection achievementCollection;
 
-		public event Func<IContext, AchievementEntry, Task> OnAchievementUnlocked;
+        private readonly Subject<(IContext, AchievementEntry)> achievementUnlockedSubject;
+
+        public IObservable<(IContext, AchievementEntry)> OnAchievementUnlocked
+            => achievementUnlockedSubject;
 
 		public AchievementService(
             IUnitOfWork unitOfWork, 
@@ -32,6 +36,8 @@
             this.achievementCollection = achievementCollection;
             this.unitOfWork = unitOfWork;
             repository = unitOfWork.GetRepository(factory);
+
+            achievementUnlockedSubject = new Subject<(IContext, AchievementEntry)>();
         }
         
         public AchievementObject GetAchievementOrDefault(string id)
@@ -49,7 +55,6 @@
                 .AsQueryable()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-
         }
 
         public string PrintAchievements(List<Achievement> achievements)
@@ -89,26 +94,19 @@
                 throw new ArgumentOutOfRangeException(nameof(rank));
             }
 
-            var currentAchievement = await repository.GetAsync((long)userId, achievement.Id);
+            var entry = achievement.Entries[rank];
+            var currentAchievement = await repository.GetAsync(
+                (long)userId, achievement.Id, (short)rank);
             if ((currentAchievement?.Rank ?? -1) >= rank)
             {
                 return;
             }
 
-            await repository.AddAsync(new Achievement
-            {
-                Name = achievement.Id,
-                Rank = (short) rank,
-                UnlockedAt = DateTime.UtcNow,
-                UserId = (long) userId
-            });
+            await repository.AddAsync(entry.ToModel(userId));
 
             await unitOfWork.CommitAsync();
 
-            if (OnAchievementUnlocked != null)
-            {
-                await OnAchievementUnlocked(context, achievement.Entries[rank]);
-            }
+            achievementUnlockedSubject.OnNext((context, entry));
         }
     }
 }

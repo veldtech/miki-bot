@@ -19,6 +19,8 @@
     using Miki.Services;
     using Miki.Services.Daily;
 	using Miki.Services.Scheduling;
+	using Miki.Accounts;
+	using System.ComponentModel.DataAnnotations;
 
 	[Module("Experimental")]
 	internal class DeveloperModule
@@ -76,7 +78,21 @@
             await e.GetChannel().SendMessageAsync(JsonConvert.SerializeObject(payload));
         }
 
-		[Command("identifyuser")]
+        [Command("triggerlevelup")]
+        [RequiresScope("developer")]
+        public class LevelUpCommand
+        {
+			[Command]
+			[RequiresScope("developer")]
+            public async Task TriggerLevelUpAsync(IContext e)
+            {
+                var level = e.GetArgumentPack().TakeRequired<int>();
+                var service = e.GetService<AccountService>();
+                await service.LevelUpLocalAsync(e.GetMessage(), level);
+            }
+        }
+
+        [Command("identifyuser")]
         [RequiresScope("developer")]
 		public async Task IdenUserAsync(IContext e)
 		{

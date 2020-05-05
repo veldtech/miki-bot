@@ -29,6 +29,15 @@
         }
 
         /// <inheritdoc />
+        public async ValueTask AddMarriageSlotAsync(long userId)
+        {
+            var user = await GetUserAsync(userId);
+            user.MarriageSlots++;
+            await repository.EditAsync(user);
+            await unitOfWork.CommitAsync();
+        }
+
+        /// <inheritdoc />
         public async ValueTask<User> CreateUserAsync(long userId, string userName)
         {
             var user = new User

@@ -198,8 +198,10 @@
         /// <inheritdoc />
         public bool PreserveAsyncOrder
         {
+#pragma warning disable 618
             get => connection.PreserveAsyncOrder;
             set => connection.PreserveAsyncOrder = value;
+#pragma warning restore 618
         }
 
         /// <inheritdoc />
@@ -249,17 +251,24 @@
         private readonly List<IConnectionMultiplexer> connectionMultiplexers 
             = new List<IConnectionMultiplexer>();
 
-        public async Task InitAsync(string connectionString, int count = 10)
+        private readonly string connectionString;
+        private readonly int connectionCount;
+
+        public RedisConnectionPool(string connectionString, int count = 10)
         {
-            for(int i = 0; i < count; i++)
-            {
-                connectionMultiplexers.Add(
-                    new RedisConnection(await ConnectionMultiplexer.ConnectAsync(connectionString)));
-            }
+            this.connectionString = connectionString;
+            this.connectionCount = count;
         }
 
         public IConnectionMultiplexer Get()
         {
+            if(connectionMultiplexers.Count != connectionCount)
+            {
+                var connection = new RedisConnection(
+                    ConnectionMultiplexer.Connect(connectionString));
+                connectionMultiplexers.Add(connection);
+                return connection;
+            }
             return connectionMultiplexers.OrderBy(x => x.OperationCount).FirstOrDefault();
         }
 

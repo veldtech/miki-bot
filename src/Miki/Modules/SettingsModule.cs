@@ -6,7 +6,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
     using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
@@ -15,9 +14,6 @@
     using Miki.Framework.Commands.Permissions.Attributes;
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Localization;
-    using Miki.Services;
-    using Amazon.S3;
-    using Miki.BunnyCDN;
     using Miki.Framework.Commands.Prefixes.Triggers;
     using Miki.Services.Settings;
     using Miki.Utility;

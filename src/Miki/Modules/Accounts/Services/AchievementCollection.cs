@@ -64,122 +64,94 @@ namespace Miki.Modules.Accounts.Services
         {
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.AchievementsId)
-                    .AddEntry("Underachiever", "🖍")
-                    .AddEntry("Achiever", "✏️")
-                    .AddEntry("Completionist", "🖊️")
-                    .Build());
+                    .Add("🖍").Add("✏️").Add("🖊️").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LotteryWinId)
-                    .AddEntry("Celebrator", "🍺")
-                    .AddEntry("Absolute Madman", "🍸")
-                    .AddEntry("Pop da champagne", "🍾")
-                    .Build());
+                    .Add("🍺").Add("🍸").Add("🍾").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.ReadInfoId)
-                    .AddEntry("Informed", "📚")
-                    .Build());
+                    .Add("📚").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.MarrySelfId)
-                    .AddEntry("Lonely", "😭")
-                    .Build());
+                    .Add("😭").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.CreatePastaId)
-                    .AddEntry("Chef", "📝")
-                    .Build());
+                    .Add("📝").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.InvalidPermsId)
-                    .AddEntry("NO! Don't touch that!", "😱")
-                    .Build());
+                    .Add("😱").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LevellingId)
-                    .AddEntry("Novice", "🎟")
-                    .AddEntry("Intermediate", "🎫")
-                    .AddEntry("Experienced", "🏵")
-                    .AddEntry("Expert", "🎗")
-                    .AddEntry("Sage", "🎖")
-                    .AddEntry("Master", "🏅")
-                    .AddEntry("Legend", "💮")
-                    .AddEntry("Epic", "🌸")
+                    .Add("🎟")
+                    .Add("🎫")
+                    .Add("🏵")
+                    .Add("🎗")
+                    .Add("🎖")
+                    .Add("🏅")
+                    .Add("💮")
+                    .Add("🌸")
                     .Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.FrogId)
-                    .AddEntry("Oh shit! Waddup", "🐸")
-                    .Build());
+                    .Add("🐸").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LennyId)
-                    .AddEntry("Lenny", "😏")
-                    .Build());
+                    .Add("😏").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.ShipId)
-                    .AddEntry("Shipgirl", "⛵")
-                    .Build());
+                    .Add("⛵").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LuckId)
-                    .AddEntry("Lucky", "🍀")
-                    .Build());
+                    .Add("🍀").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.CurrencyId)
-                    .AddEntry("Loaded", "💵")
-                    .AddEntry("Rich", "💸")
-                    .AddEntry("Minted", "💲")
-                    .AddEntry("Millionaire", "🤑")
-                    .AddEntry("Billionaire", "🏦")
-                    .Build());
+                    .Add("💵").Add("💸").Add("💲").Add("🤑").Add("🏦").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.VoteId)
-                    .AddEntry("Helper", "✉")
-                    .AddEntry("Voter", "🗳")
-                    .AddEntry("Elector", "🗃")
-                    .Build());
+                    .Add("✉").Add("🗳").Add("🗃").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.SlotsId)
-                    .AddEntry("Jackpot", "🎰")
-                    .Build());
+                    .Add("🎰").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.UnluckyId)
-                    .AddEntry("Unlucky", "🎲")
-                    .Build());
+                    .Add("🎲").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.StaffId)
-                    .AddEntry("Contributor", "⭐")
-                    .Build());
+                    .Add("⭐").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.DeveloperId)
-                    .AddEntry("Developer", "🌟")
-                    .Build());
+                    .Add("🌟").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.BugtesterId)
-                    .AddEntry("Glitch", "👾")
-                    .Build());
+                    .Add("👾").Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.DonatorId)
-                    .AddEntry("Donator", "💖")
-                    .AddEntry("Supporter", "💘")
-                    .AddEntry("Sponsor", "💟")
+                    .Add("💖")
+                    .Add("💘")
+                    .Add("💟")
                     .Build());
 
             AddAchievement(
                 new AchievementObject.Builder(AchievementIds.LewdId)
-                    .AddEntry("Lewd", "💋")
-                    .Build());
+                    .Add("💋").Build());
         }
 
         public bool TryGetAchievement(string achievementId, out AchievementObject @object)

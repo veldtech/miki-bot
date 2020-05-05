@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Repositories;
+    using Miki.Services.Marriage;
     using Xunit;
 
     public class MarriageServiceTests : BaseEntityTest<MikiDbContext>
@@ -26,12 +27,11 @@
         }
 
         [Fact]
-        public async Task ProposeTest()
+        public async Task ProposeTestAsync()
         {
             await using(var context = NewContext())
             {
                 var service = new MarriageService(context);
-
                 await service.ProposeAsync(1L, 2L);
             }
 

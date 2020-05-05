@@ -23,7 +23,8 @@
 
         public int EntryPrice => 100;
         public int WinningAmount => 80;
-
+        private int UpfrontPrize => 10000;
+        
         public LotteryService(
             IExtendedCacheClient cache, 
             ISchedulerService scheduler, 
@@ -75,7 +76,7 @@
 
         public async ValueTask<int> GetTotalPrizeAsync()
         {
-            return (await GetEntriesAsync()).Sum(x => x.TicketCount) * WinningAmount;
+            return UpfrontPrize + (await GetEntriesAsync()).Sum(x => x.TicketCount) * WinningAmount;
         }
 
         public async ValueTask<TaskPayload> GetLotteryTaskAsync()

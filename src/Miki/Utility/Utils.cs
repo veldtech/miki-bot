@@ -2,26 +2,17 @@ namespace Miki.Utility
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Amazon.S3;
-    using Amazon.S3.Model;
     using Miki.Api.Leaderboards;
-    using Miki.BunnyCDN;
-    using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
-    using Miki.Exceptions;
     using Miki.Framework;
     using Miki.Framework.Arguments;
     using Miki.Framework.Commands;
     using Miki.Helpers;
     using Miki.Localization;
-    using Miki.Net.Http;
-    using Miki.Services;
-    using HttpClient = Net.Http.HttpClient;
-
+    
     public static class Utils
     {
         public static string EveryonePattern => @"@(everyone|here)";

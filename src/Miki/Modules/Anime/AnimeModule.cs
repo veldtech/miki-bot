@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Miki.Anilist.Objects;
     using Miki.Framework.Commands;
     using Miki.Utility;
 
@@ -91,7 +92,7 @@
             {
                 if(page > result.PageInfo.TotalPages && page != 0)
                 {
-                    await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
+                    await e.ErrorEmbed("You've exceeded the total amount of pages available, might want to move back a bit!")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
                 else

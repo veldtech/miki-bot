@@ -14,11 +14,14 @@
     using Miki.Framework.Commands.Permissions.Models;
     using Miki.Utility;
     using Sentry;
+    using Miki.Framework.Commands.Scopes.Attributes;
+    using Miki.Attributes;
 
     [Module("logging")]
     public class LoggingModule
     {
         private readonly ISentryClient sentryClient;
+        private readonly MikiApp app;
 
         /**
          * -u   = user's name
@@ -30,8 +33,9 @@
 		 * -uc  = user count
          */
 
-        public LoggingModule(IDiscordClient client, ISentryClient sentryClient = null)
+        public LoggingModule(MikiApp app, IDiscordClient client, ISentryClient sentryClient = null)
         {
+            this.app = app;
             this.sentryClient = sentryClient;
             client.GuildMemberCreate += OnClientOnGuildMemberCreate;
             client.GuildMemberDelete += OnClientOnGuildMemberDelete;
@@ -39,7 +43,7 @@
 
         private async Task OnClientOnGuildMemberCreate(IDiscordGuildUser user)
         {
-            using var scope = MikiApp.Instance.Services.CreateScope();
+            using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
             try
             {
@@ -58,9 +62,9 @@
             }
         }
 
-        private async Task OnClientOnGuildMemberDelete(IDiscordGuildUser user)
+        public async Task OnClientOnGuildMemberDelete(IDiscordGuildUser user)
         {
-            using var scope = MikiApp.Instance.Services.CreateScope();
+            using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
             try
             {
@@ -85,15 +89,15 @@
         // TODO (Veld): Use both Welcome message and Leave message as one function as they are too similar right now.
         [Command("setwelcomemessage")]
         [DefaultPermission(PermissionStatus.Deny)]
-        public async Task SetWelcomeMessage(IContext e)
+        public async Task SetWelcomeMessageAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
             string welcomeMessage = e.GetArgumentPack().Pack.TakeAll();
 
             if(string.IsNullOrEmpty(welcomeMessage))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(),
-                    (short)EventMessageType.JOINSERVER);
+                var leaveMessage = await context.EventMessages.FindAsync(
+                    (long)e.GetChannel().Id, (short)EventMessageType.JOINSERVER);
                 if(leaveMessage == null)
                 {
                     await e.ErrorEmbed(
@@ -103,7 +107,7 @@
                 }
 
                 context.EventMessages.Remove(leaveMessage);
-                await e.SuccessEmbed($"Deleted your welcome message")
+                await e.SuccessEmbed("Deleted your welcome message")
                     .QueueAsync(e, e.GetChannel());
             }
             else
@@ -119,7 +123,7 @@
 
         [Command("setleavemessage")]
         [DefaultPermission(PermissionStatus.Deny)]
-        public async Task SetLeaveMessage(IContext e)
+        public async Task SetLeaveMessageAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
             string leaveMsgString = e.GetArgumentPack().Pack.TakeAll();
@@ -131,7 +135,7 @@
                 if(leaveMessage == null)
                 {
                     await e.ErrorEmbed(
-                            $"No leave message found! To set one use: `>setleavemessage <message>`")
+                            "No leave message found! To set one use: `>setleavemessage <message>`")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                     return;
                 }
@@ -153,15 +157,16 @@
         }
 
         [Command("testmessage")]
-        public async Task TestMessage(IContext e)
+        public async Task TestMessageAsync(IContext e)
         {
             var context = e.GetService<MikiDbContext>();
             if(Enum.TryParse(e.GetArgumentPack().Pack.TakeAll().ToLower(), true,
                 out EventMessageType type))
             {
                 var allmessages = await GetMessageAsync(context, e.GetGuild(), type, e.GetAuthor());
-                EventMessageObject msg =
-                    allmessages.FirstOrDefault(x => x.DestinationChannel.Id == e.GetChannel().Id);
+                EventMessageObject msg = allmessages.FirstOrDefault(
+                    x => x.DestinationChannel.Id == e.GetChannel().Id);
+
                 e.GetChannel().QueueMessage(e, null, msg.Message ?? "No message set in this channel");
                 return;
             }
@@ -171,20 +176,25 @@
                 $"Please pick one of these tags. ```{allOptions}```");
         }
 
-        private async Task SetMessageAsync(
-            DbContext db,
-            string message,
-            EventMessageType v,
-            ulong channelid)
+        [Command("itestmessage")]
+        [RequiresScope("developer")]
+        [GuildOnly]
+        public async Task TestInternalMessageAsync(IContext context)
         {
-            EventMessage messageInstance =
-                await db.Set<EventMessage>().FindAsync(channelid.ToDbLong(), (short)v);
+            await OnClientOnGuildMemberDelete(context.GetAuthor() as IDiscordGuildUser);
+        }
+
+        private async Task SetMessageAsync(
+            DbContext db, string message, EventMessageType v, ulong channelId)
+        {
+            EventMessage messageInstance = await db.Set<EventMessage>()
+                .FindAsync((long)channelId, (short)v);
 
             if(messageInstance == null)
             {
-                db.Set<EventMessage>().Add(new EventMessage()
+                db.Set<EventMessage>().Add(new EventMessage
                 {
-                    ChannelId = channelid.ToDbLong(),
+                    ChannelId = (long)channelId,
                     Message = message,
                     EventType = (short)v
                 });
@@ -196,10 +206,7 @@
         }
 
         public async Task<List<EventMessageObject>> GetMessageAsync(
-            DbContext db,
-            IDiscordGuild guild,
-            EventMessageType type,
-            IDiscordUser user)
+            DbContext db, IDiscordGuild guild, EventMessageType type, IDiscordUser user)
         {
             var channels = (await guild.GetChannelsAsync()).ToList();
             var channelIds = channels.Select(x => (long)x.Id);
@@ -246,7 +253,7 @@
                 {
                     Message = modifiedMessage,
                     DestinationChannel = channels.FirstOrDefault(
-                        x => x.Id.ToDbLong() == c.ChannelId) as IDiscordTextChannel
+                        x => (long)x.Id == c.ChannelId) as IDiscordTextChannel
                 });
             }
 

@@ -4,10 +4,9 @@
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Models.User;
-    using Miki.Bot.Models.Repositories;
-    using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
+    using Miki.Services.Marriage;
     using System;
     using System.Linq;
     using System.Threading.Tasks;

@@ -1,5 +1,6 @@
 ﻿namespace Miki.Modules.Internal.Routines
 {
+    using System;
     using System.Threading.Tasks;
     using Miki.Accounts;
     using Miki.Bot.Models;
@@ -15,6 +16,7 @@
 	{
         public DatadogRoutine(
             AccountService accounts,
+            AchievementService achievements,
             IAsyncEventingExecutor<IDiscordMessage> commandPipeline,
             Config config,
             IDiscordClient discordClient)
@@ -33,10 +35,10 @@
                 Prefix = "miki"
             });
 
+            CreateAchievementsMetrics(achievements);
             CreateAccountMetrics(accounts);
             CreateEventSystemMetrics(commandPipeline);
             CreateDiscordMetrics(discordClient);
-
             Log.Message("Datadog set up!");
         }
 
@@ -69,15 +71,15 @@
                 return;
             }
 
-            service.OnAchievementUnlocked += (ctx, achievement) =>
+            service.OnAchievementUnlocked.Subscribe(res =>
             {
+                var (_, achievement) = res;
                 DogStatsd.Increment(
                     "achievements.gained", tags: new[]
                     {
                         $"achievement:{achievement.ResourceName}"
                     });
-                return Task.CompletedTask;
-            };
+            });
         }
 		private void CreateDiscordMetrics(IDiscordClient discord)
 		{

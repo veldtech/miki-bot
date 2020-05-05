@@ -13,7 +13,7 @@
     public class PingTests : BaseCommandTest
     {
         [Fact]
-        public async Task Ping()
+        public async Task PingAsync()
         {
             var messageMock = new Mock<IDiscordMessage>();
             messageMock.SetupGet(x => x.Timestamp)

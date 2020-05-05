@@ -1,9 +1,7 @@
 ﻿namespace Miki.Services.Reddit
 {
-    using System.Collections;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Amazon.S3.Model;
 
     [DataContract]
     public class RedditPostData

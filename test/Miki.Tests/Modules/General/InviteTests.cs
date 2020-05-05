@@ -12,7 +12,7 @@
     public class InviteTests : BaseCommandTest
     {
         [Fact]
-        public async Task Invite()
+        public async Task InviteAsync()
         {
             var userMock = new Mock<IDiscordUser>();
             userMock.Setup(x => x.GetDMChannelAsync())

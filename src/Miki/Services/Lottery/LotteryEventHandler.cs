@@ -15,7 +15,7 @@
     {
         public string LotteryObjectsKey => "lottery:entries";
 
-        public async Task HandleLotteryAsync(IContext context, string json)
+        public async Task HandleLotteryAsync(IContext context, string _)
         {
             var lotteryService = context.GetService<ILotteryService>();
 

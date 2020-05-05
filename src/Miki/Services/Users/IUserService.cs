@@ -7,6 +7,8 @@
 
     public interface IUserService : IDisposable
     {
+        ValueTask AddMarriageSlotAsync(long userId);
+
         ValueTask<User> CreateUserAsync(long userId, string userName);
 
         ValueTask<User> GetUserAsync(long userId);

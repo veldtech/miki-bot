@@ -2,14 +2,11 @@ namespace Miki.Modules.Fun
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-	using System.Web;
-	using Amazon.S3;
     using Imgur.API;
     using Imgur.API.Authentication.Impl;
     using Imgur.API.Endpoints.Impl;
@@ -21,18 +18,14 @@ namespace Miki.Modules.Fun
     using Miki.API.Imageboards.Objects;
     using Miki.Bot.Models;
     using Miki.Bot.Models.Exceptions;
-    using Miki.BunnyCDN;
-    using Miki.Cache;
     using Miki.Discord;
     using Miki.Discord.Common;
     using Miki.Framework;
     using Miki.Framework.Commands;
-    using Miki.Framework.Exceptions;
     using Miki.Localization;
     using Miki.Modules.Accounts.Services;
     using Miki.Modules.Fun.Exceptions;
     using Miki.Net.Http;
-    using Miki.Services;
     using Miki.Services.Achievements;
 	using Miki.Services.Reddit;
     using Miki.Services.Reddit.Exceptions;
@@ -704,7 +697,7 @@ namespace Miki.Modules.Fun
 
 
         [Command("safe")]
-		public async Task DoSafe(IContext e)
+		public async Task DoSafeAsync(IContext e)
 		{
 			ILinkable s = null;
 
@@ -753,7 +746,8 @@ namespace Miki.Modules.Fun
 				}
 				else
 				{
-					s = await ImageboardProviderPool.GetProvider<SafebooruPost>().GetPostAsync(tags, ImageRating.SAFE);
+					s = await ImageboardProviderPool.GetProvider<SafebooruPost>()
+                        .GetPostAsync(tags, ImageRating.SAFE);
 				}
 			}
 			else

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki
+﻿namespace Miki
 {
     /// <summary>
     /// Static Application Properties
