@@ -121,11 +121,9 @@ namespace Miki.Modules
                 if(!isDonator)
                 {
                     embed.AddField(
-                            locale.GetString("tip_header"), 
-                            locale.GetString("marriageslot_donator_bonus"))
-                        .SetFooter(
-                            locale.GetString("marriageslot_footer"), 
-                            "https://patreon.com/mikibot");
+                        locale.GetString("tip_header"),
+                        locale.GetString("marriageslot_donator_bonus") +
+                        $" [{locale.GetString("marriageslot_footer")}](https://patreon.com/mikibot)");
                 }
 
                 await embed.ToEmbed()
