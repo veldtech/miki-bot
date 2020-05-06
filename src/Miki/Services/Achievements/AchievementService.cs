@@ -96,7 +96,7 @@
 
             var entry = achievement.Entries[rank];
             var currentAchievement = await repository.GetAsync(
-                (long)userId, achievement.Id, (short)rank);
+                (long)userId, achievement.Id);
             if ((currentAchievement?.Rank ?? -1) >= rank)
             {
                 return;
