@@ -1,12 +1,12 @@
-﻿namespace Miki.Tests.Modules.Gambling
-{
-    using System.Threading.Tasks;
-    using Discord.Common;
-    using Discord.Internal;
-    using Framework.Commands.Stages;
-    using Miki.Modules.Gambling;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Discord.Common;
+using Miki.Discord.Internal;
+using Miki.Framework.Commands.Stages;
+using Miki.Modules.Gambling;
+using Xunit;
 
+namespace Miki.Tests.Modules.Gambling
+{
     public class BlackjackTests : BaseCommandTest
     {
         [Fact]

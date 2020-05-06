@@ -1,14 +1,14 @@
-﻿namespace Miki.Tests.Attributes
-{
-    using System.Threading.Tasks;
-    using Miki.Attributes;
-    using Miki.Discord.Common;
-    using Miki.Framework.Commands;
-    using Miki.Services;
-    using Miki.Tests.Modules;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Discord.Common;
+using Miki.Framework.Commands;
+using Miki.Services;
+using Miki.Tests.Modules;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Attributes
+{
     public class PatreonOnlyTests : BaseCommandTest
     {
         [Fact]

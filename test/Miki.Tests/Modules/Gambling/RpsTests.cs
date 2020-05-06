@@ -1,16 +1,16 @@
-﻿namespace Miki.Tests.Modules.Gambling
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Modules.Gambling;
-    using Miki.Services;
-    using Miki.Services.Rps;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Modules.Gambling;
+using Miki.Services;
+using Miki.Services.Rps;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Modules.Gambling
+{
     public class RpsTests : BaseCommandTest
     {
         [Fact]

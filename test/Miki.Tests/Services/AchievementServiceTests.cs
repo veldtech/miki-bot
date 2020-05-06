@@ -1,14 +1,14 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services.Achievements;
-    using Moq;
-    using Xunit;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Modules.Accounts.Services;
+using Miki.Services.Achievements;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class AchievementServiceTests : BaseEntityTest<MikiDbContext>
     {
         public AchievementServiceTests()

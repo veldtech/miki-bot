@@ -1,9 +1,9 @@
-﻿namespace Miki.Tests
-{
-    using System.Threading.Tasks;
-    using Miki.Utility;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Utility;
+using Xunit;
 
+namespace Miki.Tests
+{
     public class UtilTests
     {
         [Theory]

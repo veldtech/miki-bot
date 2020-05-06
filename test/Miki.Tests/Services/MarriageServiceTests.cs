@@ -1,12 +1,12 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Repositories;
-    using Miki.Services.Marriage;
-    using Xunit;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Repositories;
+using Miki.Services.Marriage;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class MarriageServiceTests : BaseEntityTest<MikiDbContext>
     {
         public MarriageServiceTests()

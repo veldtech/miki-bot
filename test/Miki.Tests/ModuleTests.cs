@@ -1,12 +1,12 @@
-﻿namespace Miki.Tests
-{
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests
+{
     public class ModuleTests
     {
         [Fact(DisplayName = "App should run with no dependency injection issues on self host.")]

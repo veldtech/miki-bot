@@ -1,16 +1,16 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Services;
-    using Miki.Services.Pasta;
-    using Miki.Services.Pasta.Exceptions;
-    using Xunit;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Services;
+using Miki.Services.Pasta;
+using Miki.Services.Pasta.Exceptions;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class PastaServiceTests : BaseEntityTest<MikiDbContext>
     {
         private readonly GlobalPasta testPasta = new GlobalPasta

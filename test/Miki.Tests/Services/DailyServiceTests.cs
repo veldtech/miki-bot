@@ -1,14 +1,14 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Services;
-    using Miki.Services.Daily;
-    using Miki.Services.Transactions;
-    using Xunit;
-    using Moq;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Services;
+using Miki.Services.Daily;
+using Miki.Services.Transactions;
+using Xunit;
+using Moq;
 
+namespace Miki.Tests.Services
+{
     public class DailyServiceTest : BaseEntityTest<MikiDbContext>
     {
         /// <inheritdoc />

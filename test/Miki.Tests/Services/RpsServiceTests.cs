@@ -1,8 +1,8 @@
-﻿namespace Miki.Tests.Services
-{
-    using Miki.Services.Rps;
-    using Xunit;
+﻿using Miki.Services.Rps;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class RpsServiceTests
     {
         private readonly RpsService service;

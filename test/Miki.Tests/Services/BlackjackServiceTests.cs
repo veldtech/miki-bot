@@ -1,15 +1,15 @@
-﻿namespace Miki.Tests.Services
-{
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Cache.InMemory;
-    using Miki.Bot.Models;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Moq;
-    using Serialization.Protobuf;
-    using Xunit;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Miki.Cache.InMemory;
+using Miki.Bot.Models;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Moq;
+using Miki.Serialization.Protobuf;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class BlackjackServiceTests : BaseEntityTest<MikiDbContext>
     {
         public BlackjackService Service { get; }

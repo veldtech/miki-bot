@@ -1,7 +1,7 @@
-﻿namespace Miki.Tests.Extensions
-{
-    using Xunit;
+﻿using Xunit;
 
+namespace Miki.Tests.Extensions
+{
     public class StringExtensionTests
     {
         [Fact]

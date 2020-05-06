@@ -1,20 +1,25 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Miki.Cache.InMemory;
-    using Miki.Serialization.Protobuf;
-    using Miki.Services.Scheduling;
-    using Xunit;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Cache.InMemory;
+using Miki.Serialization.Protobuf;
+using Miki.Services.Scheduling;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class SchedulerServiceTests
     {
         private readonly ISchedulerService service;
 
         public SchedulerServiceTests()
         {
-            service = new SchedulerService(null, new InMemoryCacheClient(new ProtobufSerializer()), null);
+            service = new SchedulerService(
+                new Mock<MikiApp>().Object, 
+                new InMemoryCacheClient(new ProtobufSerializer()), 
+                null);
         }
 
         [Fact]

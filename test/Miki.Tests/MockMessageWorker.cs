@@ -1,13 +1,13 @@
-﻿namespace Miki.Tests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets.API;
-    using Miki.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Packets.API;
+using Miki.Framework;
 
+namespace Miki.Tests
+{
     public class MockMessageWorker : IMessageWorker<IDiscordMessage>
     {
         private class MockDiscordMessage : IDiscordMessage

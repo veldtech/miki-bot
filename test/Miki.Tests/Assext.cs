@@ -1,11 +1,10 @@
-﻿
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Utility;
+using Xunit;
+
 namespace Miki.Tests
 {
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Utility;
-    using Xunit;
-
     public static class Assext
     {
         public static async Task ThrowsRootAsync<T>(Func<Task> t)

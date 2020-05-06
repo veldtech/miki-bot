@@ -26,6 +26,11 @@
 
         public SchedulerService(MikiApp app, IExtendedCacheClient cacheClient, ISentryClient sentryClient)
         {
+            if(app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
             this.app = app;
             this.cacheClient = cacheClient;
             this.sentryClient = sentryClient;

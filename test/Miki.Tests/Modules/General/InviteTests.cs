@@ -1,14 +1,14 @@
-﻿namespace Miki.Tests.Modules.General
-{
-    using System.Threading.Tasks;
-    using Discord.Common;
-    using Discord.Internal;
-    using Framework.Commands;
-    using Framework.Commands.Stages;
-    using Miki.Modules;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Discord.Common;
+using Miki.Discord.Internal;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Stages;
+using Miki.Modules;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Modules.General
+{
     public class InviteTests : BaseCommandTest
     {
         [Fact]
