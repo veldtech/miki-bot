@@ -84,7 +84,7 @@
 
             return new ProviderCollection()
                 .Add(new ProviderAdapter(
-                        discordClient.Gateway.StartAsync,
+                    discordClient.Gateway.StartAsync,
                     discordClient.Gateway.StopAsync));
 
         }
@@ -158,7 +158,7 @@
                             ShardId = 0,
                             Token = configuration.Configuration.Token,
                             AllowNonDispatchEvents = true,
-                            Intents = (GatewayIntents)2
+                            Intents = GatewayIntents.AllDefault | GatewayIntents.GuildMembers
                         }));    
 
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
