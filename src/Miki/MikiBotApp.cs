@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using Discord.Internal;
     using Framework.Commands.Localization.Services;
+    using Functional;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Miki.Accounts;
@@ -330,7 +331,7 @@
             serviceCollection.AddSingleton<DatadogRoutine>();
         }
 
-        public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
+        public async Task<ContextObject> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
         {
             // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
@@ -357,19 +358,25 @@
                         } : null,
                 },
                 Services.GetService<IDiscordClient>());
-            return CreateFromMessageAsync(message);
+            var context = new ContextObject(Services);
+            await new CorePipelineStage().CheckAsync(message, context, () => default);
+            await new FetchDataStage().CheckAsync(message, context, () => default);
+            return context;
         }
         
         /// <summary>
         /// Hacky temp function
         /// </summary>
-        public async Task<IContext> CreateFromMessageAsync(IDiscordMessage message)
+        public async Task CreateFromMessageAsync(
+            IDiscordMessage message, Func<IContext, Task> scope)
         {
             // TODO (velddev): Resolve this in a better way.
-            var context = new ContextObject(Services);
+            using var context = new ContextObject(Services);
             await new CorePipelineStage().CheckAsync(message, context, () => default);
             await new FetchDataStage().CheckAsync(message, context, () => default);
-            return context;
+            await new LocalizationPipelineStage(Services.GetService<ILocalizationService>())
+                .CheckAsync(message, context, () => default);
+            await scope(context);
         }
 
         private async Task<LocaleCollection> BuildLocalesAsync()

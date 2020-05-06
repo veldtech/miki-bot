@@ -61,7 +61,7 @@ namespace Miki.Modules.Accounts
                 Log.Warning("Image API can not be loaded in AccountsModule");
             }
 
-            discordClient.MessageCreate += msg => OnMessageCreateAsync(app, achievementService, msg);
+            discordClient.MessageCreate += OnMessageCreateAsync;
 
             accountsService.OnLocalLevelUp += OnUserLevelUpAsync;
             accountsService.OnLocalLevelUp += OnLevelUpAchievementsAsync;
@@ -72,38 +72,49 @@ namespace Miki.Modules.Accounts
                 .SubscribeTask(CheckAchievementUnlocksAsync);
         }
 
-        private async Task OnMessageCreateAsync(
-            MikiApp app, AchievementService service, IDiscordMessage arg)
+        private async Task OnMessageCreateAsync(IDiscordMessage arg)
         {
-            if(app is MikiBotApp botApp)
+            if(!(app is MikiBotApp botApp))
             {
-                var ctx = await botApp.CreateFromMessageAsync(arg);
-                switch(arg.Content.ToLowerInvariant())
+                return;
+            }
+
+            switch(arg.Content.ToLowerInvariant())
+            {
+                case "here come dat boi":
                 {
-                    case "here come dat boi":
-                    {
-                        var a = service.GetAchievement(AchievementIds.FrogId);
-                        await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    } break;
-
-                    case "( ͡° ͜ʖ ͡°)":
-                    {
-                        var a = service.GetAchievement(AchievementIds.LennyId);
-                        await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    } break;
-
-                    case "poi":
-                    {
-                        var a = service.GetAchievement(AchievementIds.ShipId);
-                        await service.UnlockAsync(ctx, a, arg.Author.Id);
-                    } break;
+                    var a = achievementService.GetAchievement(AchievementIds.FrogId);
+                    await botApp.CreateFromMessageAsync(
+                        arg,
+                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
                 }
+                    break;
 
-                if(MikiRandom.Next(0, 10000000000) == 5234210)
+                case "( ͡° ͜ʖ ͡°)":
                 {
-                    var a = service.GetAchievement(AchievementIds.LuckId);
-                    await service.UnlockAsync(ctx, a, arg.Author.Id);
+                    var a = achievementService.GetAchievement(AchievementIds.LennyId);
+                    await botApp.CreateFromMessageAsync(
+                        arg,
+                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
                 }
+                    break;
+
+                case "poi":
+                {
+                    var a = achievementService.GetAchievement(AchievementIds.ShipId);
+                    await botApp.CreateFromMessageAsync(
+                        arg,
+                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
+                }
+                    break;
+            }
+
+            if(MikiRandom.Next(0, 10000000000) == 5234210)
+            {
+                var a = achievementService.GetAchievement(AchievementIds.LuckId);
+                await botApp.CreateFromMessageAsync(
+                    arg,
+                    async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
             }
         }
 
@@ -150,8 +161,9 @@ namespace Miki.Modules.Accounts
             {
                 if(app is MikiBotApp botApp)
                 {
+                    using var context = await botApp.CreateFromUserChannelAsync(user, channel);
                     await achievementService.UnlockAsync(
-                        await botApp.CreateFromUserChannelAsync(user, channel),
+                        context,
                         achievements,
                         user.Id,
                         achievementToUnlock);
@@ -305,7 +317,6 @@ namespace Miki.Modules.Accounts
         {
             var context = e.GetService<MikiDbContext>();
             var userService = e.GetService<IUserService>();
-            var achievementService = e.GetService<AchievementService>();
             var locale = e.GetLocale();
             var selectedUser = e.GetAuthor();
 
