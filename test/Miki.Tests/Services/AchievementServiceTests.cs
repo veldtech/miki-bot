@@ -9,6 +9,8 @@ using Xunit;
 
 namespace Miki.Tests.Services
 {
+    using Bot.Models.Repositories;
+
     public class AchievementServiceTests : BaseEntityTest<MikiDbContext>
     {
         public AchievementServiceTests()
@@ -53,7 +55,10 @@ namespace Miki.Tests.Services
         {
             var collection = new AchievementCollection();
             collection.AddAchievement(new AchievementObject.Builder("test").Add("x").Build());
-            return new AchievementService(work ?? NewContext(), collection, null);
+            return new AchievementService(
+                work ?? NewContext(), 
+                collection, 
+                new AchievementRepository.Factory());
         }
     }   
 }
