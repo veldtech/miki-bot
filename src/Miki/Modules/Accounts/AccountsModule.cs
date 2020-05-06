@@ -260,11 +260,25 @@ namespace Miki.Modules.Accounts
         /// <summary>
         /// Notification for user achievements
         /// </summary>
-        private Task SendAchievementNotificationAsync((IContext, AchievementEntry) response)
+        private async Task SendAchievementNotificationAsync((IContext, AchievementEntry) response)
         {
             var (context, entry) = response;
+
+            var settingsService = context.GetService<ISettingsService>();
+
+            var notificationSettingResult = await settingsService.GetAsync<AchievementNotificationSetting>(
+                    SettingType.Achievements, (long)context.GetChannel().Id)
+                .ConfigureAwait(false);
+            var notification = notificationSettingResult
+                .OrElse(AchievementNotificationSetting.All)
+                .Unwrap();
+            if(notification == AchievementNotificationSetting.None)
+            {
+                return;
+            }
+
             var locale = context.GetLocale();
-            return new EmbedBuilder()
+            await new EmbedBuilder()
                 .SetTitle($"{entry.Icon}  {locale.GetString("achievement_unlocked")}")
                 .SetDescription(
                     locale.GetString("achievement_unlocked_text",
