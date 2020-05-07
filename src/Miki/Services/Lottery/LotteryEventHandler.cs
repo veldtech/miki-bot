@@ -47,7 +47,7 @@
                 return;
             }
 
-            var winningAmount = entryCount * lotteryService.WinningAmount;
+            var winningAmount = await lotteryService.GetTotalPrizeAsync();
 
             var transactionService = context.GetService<ITransactionService>();
             await transactionService.CreateTransactionAsync(
