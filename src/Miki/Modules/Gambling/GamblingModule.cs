@@ -265,15 +265,6 @@ namespace Miki.Modules.Gambling
                 }
             }
 
-            private DiscordEmbed NewLoadingEmbed()
-            {
-                // TODO: Move to resources.
-                return new EmbedBuilder()
-                    .SetTitle("One moment...")
-                    .SetDescription("We're setting up your blackjack!")
-                    .ToEmbed();
-            }
-
             private async Task<DiscordEmbed> CreateLoseEmbedAsync(
                 IContext ctx, BlackjackSession session)
             {
