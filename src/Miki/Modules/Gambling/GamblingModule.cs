@@ -1,25 +1,26 @@
-﻿namespace Miki.Modules.Gambling
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Miki.API.Cards.Objects;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Gambling.Exceptions;
+using Miki.Services;
+using Miki.Services.Achievements;
+using Miki.Services.Lottery;
+using Miki.Services.Rps;
+using Miki.Services.Transactions;
+using Miki.Utility;
+
+namespace Miki.Modules.Gambling
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using Miki.API.Cards.Objects;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Modules.Gambling.Exceptions;
-    using Miki.Services.Achievements;
-    using Miki.Services.Lottery;
-    using Miki.Services.Rps;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
-    using Services;
 
     [Module("Gambling")]
     public class GamblingModule
@@ -107,31 +108,20 @@
                 var user = await userService.GetOrCreateUserAsync(e.GetAuthor());
                 int bet = ValidateBet(e, user);
 
-                var message = await Retry.RetryAsync(() => e.GetChannel()
-                    .SendMessageAsync(null, embed: NewLoadingEmbed()), 5000)
-                    .ConfigureAwait(false);
+                var session = await blackjackService.NewSessionAsync(
+                        null, e.GetAuthor().Id, e.GetChannel().Id, bet)
+                    .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
+                    .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
+                    .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
+                    .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
+                    .AndThen(x => x.Players[BlackjackService.DealerId].Hand[1].isPublic = false);
 
-                try
-                {
-                    var session = await blackjackService.NewSessionAsync(
-                            message.Id, e.GetAuthor().Id, e.GetChannel().Id, bet)
-                        .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
-                        .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
-                        .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
-                        .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
-                        .AndThen(x => x.Players[BlackjackService.DealerId].Hand[1].isPublic = false)
-                        .AndThen(x => blackjackService.SyncSessionAsync(x.GetContext()));
+                var message = await e.GetChannel().SendMessageAsync(
+                    null, embed: CreateEmbed(e, session).ToEmbed());
 
-                    await Retry.RetryAsync(() => message.EditAsync(new EditMessageArgs(
-                            embed: CreateEmbed(e, session).ToEmbed())), 5000)
-                        .ConfigureAwait(false);
-                }
-                catch(LocalizedException ex)
-                {
-                    await message.EditAsync(new EditMessageArgs(
-                            embed: e.ErrorEmbedResource(ex.LocaleResource).ToEmbed()))
-                        .ConfigureAwait(false);
-                }
+                session.SetMessageId(message.Id);
+
+                await blackjackService.SyncSessionAsync(session.GetContext());
             }
 
             [Command("hit", "draw")]
@@ -458,7 +448,7 @@
 
             User u = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
-            int bet = ValidateBet(e, u, 99999);
+            int bet = ValidateBet(e, u, 100000);
             int moneyReturned = 0;
 
             await transactionService.CreateTransactionAsync(
@@ -681,7 +671,7 @@
 
             if (bet > maxBet)
             {
-                throw new BetLimitOverflowException();
+                throw new BetLimitOverflowException(maxBet);
             }
             return bet;
         }

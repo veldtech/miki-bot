@@ -28,7 +28,7 @@
         }
 
         public async Task<BlackjackSession> NewSessionAsync(
-            ulong messageId,
+            ulong? messageId,
             ulong userId,
             ulong channelId,
             int bet)
@@ -62,6 +62,10 @@
 
         public ValueTask SyncSessionAsync(BlackjackContext ctx)
         {
+            if(ctx.MessageId == 0)
+            {
+                throw new InvalidOperationException("Context Message ID was not set");
+            }
             return repository.EditAsync(ctx);
         }
 
@@ -145,7 +149,7 @@
         }
 
         private BlackjackContext ConstructContext(
-            int bet, ulong userId, ulong channelId, ulong messageId)
+            int bet, ulong userId, ulong channelId, ulong? messageId)
         {
             return new BlackjackContext
             {
@@ -158,7 +162,7 @@
                 },
                 ChannelId = channelId,
                 UserId = userId,
-                MessageId = messageId,
+                MessageId = messageId ?? 0,
             };
         }
 
@@ -252,6 +256,11 @@
                 context.UserId,
                 context.MessageId,
                 context.ChannelId);
+        }
+
+        public void SetMessageId(ulong messageId)
+        {
+            context.MessageId = messageId;
         }
     }
 
