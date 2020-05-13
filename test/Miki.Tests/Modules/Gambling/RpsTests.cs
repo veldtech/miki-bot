@@ -13,8 +13,8 @@ namespace Miki.Tests.Modules.Gambling
 {
     public class RpsTests : BaseCommandTest
     {
-        [Fact]
-        public async Task RpsWinTest()
+        [Fact(DisplayName = "rps end-to-end test")]
+        public async Task TestRpsWinAsync()
         {
             var userServiceMock = new Mock<IUserService>();
             userServiceMock.Setup(x => x.GetUserAsync(It.IsAny<long>()))

@@ -304,8 +304,9 @@ namespace Miki.Modules.Gambling
                         e.GetAuthor().GetAvatarUrl(),
                         "https://patreon.com/mikibot")
                     .SetDescription(
-                        // TODO: move command identifiers from resources.
-                        $"{explanation}\n{locale.GetString("miki_blackjack_hit")}\n{locale.GetString("miki_blackjack_stay")}")
+                        $"{explanation}\n"
+                        + $"{locale.GetString("miki_blackjack_hit", ">blackjack hit".AsCode())}\n"
+                        + locale.GetString("miki_blackjack_stay", ">blackjack stay".AsCode()))
                     .AddField(userHandResource, player.Print(), true)
                     .AddField(dealerHandResource, dealer.Print(), true);
             }
@@ -387,7 +388,7 @@ namespace Miki.Modules.Gambling
             }
 
             string output = win 
-                ? locale.GetString("flip_description_win", $"`{bet}`")
+                ? locale.GetString("flip_description_win", bet.AsCode())
                 : locale.GetString("flip_description_lose");
 
             output += "\n" + locale.GetString(

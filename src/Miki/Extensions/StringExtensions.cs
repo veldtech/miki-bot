@@ -6,6 +6,11 @@
 
     public static class StringExtensions
     {
+        public static string AsCode(this object str)
+        {
+            return $"`{str}`";
+        }
+
         public static string CapitalizeFirst(this string str, CultureInfo culture = null)
         {
             if(string.IsNullOrEmpty(str))
