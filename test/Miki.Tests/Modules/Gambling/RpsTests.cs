@@ -56,7 +56,7 @@ namespace Miki.Tests.Modules.Gambling
             Worker.TryGetMessage(out var msg);
 
             Assert.Equal(
-                "ROCK x vs. x SCISSOR\n\nYou won `10` mekos! Your new balance is `30`.",
+                "ROCK x vs. x SCISSOR\n\ngame_result_win currency_update_balance",
                 msg.Arguments.Properties.Embed.Description);
         }
     }

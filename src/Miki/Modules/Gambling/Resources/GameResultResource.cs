@@ -26,13 +26,13 @@ namespace Miki.Modules.Gambling.Resources
             switch(result)
             {
                 case GameResult.Win:
-                    return instance.GetString("game_result_win", winnings)
+                    return instance.GetString("game_result_win", $"**{winnings:N0}**")
                            + " "
                            + instance.GetString("currency_update_balance", 
                                $"**{currency + winnings:N0}**");
 
                 case GameResult.Lose:
-                    return instance.GetString("game_result_lose", bet)
+                    return instance.GetString("game_result_lose", $"**{bet:N0}**")
                            + " "
                            + instance.GetString("currency_update_balance", $"**{currency - bet:N0}**");
 
