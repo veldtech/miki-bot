@@ -9,9 +9,9 @@ using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Localization;
-using Miki.Localization.Exceptions;
 using Miki.Modules.Accounts.Services;
 using Miki.Modules.Gambling.Exceptions;
+using Miki.Modules.Gambling.Resources;
 using Miki.Services;
 using Miki.Services.Achievements;
 using Miki.Services.Lottery;
@@ -28,26 +28,21 @@ namespace Miki.Modules.Gambling
         [Command("rps")]
         public class RpsCommand
         {
+            private const int MaxBet = 10000;
+
             [Command]
             public async Task RpsAsync(IContext e)
             {
+                var locale = e.GetLocale();
                 var userService = e.GetService<IUserService>();
                 var rps = e.GetService<IRpsService>();
 
                 User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                     .ConfigureAwait(false);
 
-                int bet = ValidateBet(e, user, 10000);
+                int bet = ValidateBet(e, user, MaxBet);
 
-                if(e.GetArgumentPack().Pack.Length < 2)
-                {
-                    await e.ErrorEmbed("You need to choose a weapon!")
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-
-                var weapon = e.GetArgumentPack().TakeRequired<string>();
+                var weapon = e.GetArgumentPack().TakeRequired<string>("noun_weapon");
                 var result = await rps.PlayRpsAsync((long)e.GetAuthor().Id, bet, weapon);
 
                 EmbedBuilder resultMessage = new EmbedBuilder()
@@ -55,29 +50,10 @@ namespace Miki.Modules.Gambling
                     .SetDescription(
                         $"{result.PlayerWeapon.Name.ToUpper()} {result.PlayerWeapon.Emoji} vs. " 
                         + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
-                switch (result.Status)
-                {
-                    case GameResult.Win:
-                    {
-                        resultMessage.Description 
-                            += $"\n\nYou won `{result.AmountWon}` " 
-                               + $"mekos! Your new balance is `{user.Currency + result.AmountWon}`.";
-                    } break;
 
-                    case GameResult.Lose:
-                    {
-                        resultMessage.Description +=
-                            $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency - bet}`.";
-                    } break;
-
-                    case GameResult.Draw:
-                    {
-                        resultMessage.Description += "\n\nIt's a draw! no mekos were lost!.";
-                    } break;
-                }
-                await resultMessage.ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
+                resultMessage.Description += "\n\n" + locale.GetString(
+                    new GameResultResource(result.Status, user.Currency, bet, result.AmountWon ?? 0));
+                await resultMessage.ToEmbed().QueueAsync(e, e.GetChannel()).ConfigureAwait(false);
             }
         }
 
