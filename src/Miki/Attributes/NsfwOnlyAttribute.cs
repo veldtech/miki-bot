@@ -1,11 +1,10 @@
-﻿
+﻿using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Utility;
+
 namespace Miki.Attributes
 {
-    using System.Threading.Tasks;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Utility;
-
     public class NsfwOnlyAttribute : CommandRequirementAttribute
     {
         /// <inheritdoc />

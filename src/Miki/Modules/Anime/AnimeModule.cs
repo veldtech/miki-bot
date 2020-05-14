@@ -1,15 +1,15 @@
-﻿namespace Miki.Modules.Anime
-{
-    using Miki.Anilist;
-    using Miki.Discord;
-    using Miki.Framework;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Anilist.Objects;
-    using Miki.Framework.Commands;
-    using Miki.Utility;
+﻿using Miki.Anilist;
+using Miki.Discord;
+using Miki.Framework;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Anilist.Objects;
+using Miki.Framework.Commands;
+using Miki.Utility;
 
+namespace Miki.Modules.Anime
+{
     [Module("Anime")]
 	public class AnimeModule
 	{

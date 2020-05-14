@@ -1,11 +1,11 @@
-﻿namespace Miki
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Framework;
-    using Miki.Logging;
-    using Miki.Services;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Logging;
+using Miki.Services;
 
+namespace Miki
+{
     public class Program
     {
         public static readonly string EnvConStr = "MIKI_CONNSTRING";

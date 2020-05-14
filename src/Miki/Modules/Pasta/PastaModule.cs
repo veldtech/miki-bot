@@ -1,25 +1,24 @@
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
+using Miki.Modules.Accounts.Services;
+using Miki.Services;
+using Miki.Services.Achievements;
+using Miki.Services.Pasta;
+using Miki.Utility;
+
 namespace Miki.Modules.Pasta
 {
-    using System;
-    using System.Linq;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Discord.Rest;
-    using Miki.Exceptions;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization;
-    using Miki.Localization;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services;
-    using Miki.Services.Achievements;
-    using Miki.Services.Pasta;
-    using Miki.Utility;
-
     [Module("pastas")]
     public class PastaModule
     {

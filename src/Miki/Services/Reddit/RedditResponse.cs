@@ -1,7 +1,7 @@
-﻿namespace Miki.Services.Reddit
+﻿using System.Runtime.Serialization;
+
+namespace Miki.Services.Reddit
 {
-    using System.Runtime.Serialization;
-    
     [DataContract]
     public class RedditResponse
     {

@@ -1,38 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Miki.Localization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts;
+using Miki.API;
+using Miki.API.Backgrounds;
+using Miki.Api.Leaderboards;
+using Miki.Bot.Models;
+using Miki.Common.Builders;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Logging;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Fun.Exceptions;
+using Miki.Net.Http;
+using Miki.Services;
+using Miki.Services.Daily;
+using Miki.Services.Achievements;
+using Miki.Services.Marriage;
+using Miki.Services.Settings;
+using Miki.Services.Transactions;
+using Miki.Utility;
+
 namespace Miki.Modules.Accounts
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Miki.Localization;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Accounts;
-    using Miki.API;
-    using Miki.API.Backgrounds;
-    using Miki.Api.Leaderboards;
-    using Miki.Bot.Models;
-    using Miki.Common.Builders;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Exceptions;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Logging;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Modules.Fun.Exceptions;
-    using Miki.Net.Http;
-    using Miki.Services;
-    using Miki.Services.Daily;
-    using Miki.Services.Achievements;
-    using Miki.Services.Marriage;
-    using Miki.Services.Settings;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
-    
     [Module("Accounts")]
     public class AccountsModule
     {

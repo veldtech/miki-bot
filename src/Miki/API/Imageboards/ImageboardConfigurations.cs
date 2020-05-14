@@ -1,11 +1,11 @@
-﻿namespace Miki.API.Imageboards
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using Miki.API.Imageboards.Interfaces;
-    using Miki.API.Imageboards.Objects;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using Miki.API.Imageboards.Interfaces;
+using Miki.API.Imageboards.Objects;
 
+namespace Miki.API.Imageboards
+{
     public class ImageboardConfigurations
 	{
 		public Uri QueryKey = null;

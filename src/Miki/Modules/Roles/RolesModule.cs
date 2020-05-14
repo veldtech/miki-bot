@@ -1,25 +1,25 @@
-﻿namespace Miki.Modules.Roles
-{
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Dsl;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Dsl;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Modules.Roles
+{
     [Module("Role Management")]
 	internal class RolesModule
 	{

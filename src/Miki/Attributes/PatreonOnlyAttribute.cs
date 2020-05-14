@@ -1,12 +1,12 @@
-﻿namespace Miki.Attributes
-{
-    using System.Threading.Tasks;
-    using Discord;
-    using Framework;
-    using Framework.Commands;
-    using Miki.Services;
-    using Miki.Utility;
+﻿using System.Threading.Tasks;
+using Miki.Discord;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Services;
+using Miki.Utility;
 
+namespace Miki.Attributes
+{
     public class PatreonOnlyAttribute : CommandRequirementAttribute
     {
         public override async Task<bool> CheckAsync(IContext e)

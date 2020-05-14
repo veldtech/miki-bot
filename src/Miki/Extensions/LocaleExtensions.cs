@@ -1,10 +1,9 @@
 ﻿using Miki.Localization;
 using Newtonsoft.Json;
+using Miki.Functional;
 
 namespace Miki.Extensions
 {
-    using Functional;
-
     public static class LocaleExtensions
     {
         public static string GetString(

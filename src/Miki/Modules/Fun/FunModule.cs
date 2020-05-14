@@ -1,39 +1,39 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Imgur.API;
+using Imgur.API.Authentication.Impl;
+using Imgur.API.Endpoints.Impl;
+using Imgur.API.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.API.Imageboards;
+using Miki.API.Imageboards.Enums;
+using Miki.API.Imageboards.Interfaces;
+using Miki.API.Imageboards.Objects;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Fun.Exceptions;
+using Miki.Net.Http;
+using Miki.Services.Achievements;
+using Miki.Services.Reddit;
+using Miki.Services.Reddit.Exceptions;
+using Miki.Services.Scheduling;
+using Miki.Utility;
+using NCalc;
+using Newtonsoft.Json;
+
 namespace Miki.Modules.Fun
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Imgur.API;
-    using Imgur.API.Authentication.Impl;
-    using Imgur.API.Endpoints.Impl;
-    using Imgur.API.Models;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.API.Imageboards;
-    using Miki.API.Imageboards.Enums;
-    using Miki.API.Imageboards.Interfaces;
-    using Miki.API.Imageboards.Objects;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Modules.Fun.Exceptions;
-    using Miki.Net.Http;
-    using Miki.Services.Achievements;
-	using Miki.Services.Reddit;
-    using Miki.Services.Reddit.Exceptions;
-    using Miki.Services.Scheduling;
-    using Miki.Utility;
-    using NCalc;
-    using Newtonsoft.Json;
-
     [Module("fun")]
 	public class FunModule
 	{

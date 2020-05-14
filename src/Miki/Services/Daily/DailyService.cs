@@ -1,13 +1,13 @@
-﻿namespace Miki.Services.Daily
-{
-    using System;
-    using System.Threading.Tasks;
-    using Bot.Models;
-    using Cache;
-    using Framework;
-    using Patterns.Repositories;
-    using Transactions;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
+using Miki.Services.Transactions;
 
+namespace Miki.Services.Daily
+{
     public class DailyService : IDailyService
     {
         private readonly IUnitOfWork unitOfWork;

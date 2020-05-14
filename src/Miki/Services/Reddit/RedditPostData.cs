@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Reddit
-{
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
+namespace Miki.Services.Reddit
+{
     [DataContract]
     public class RedditPostData
     {

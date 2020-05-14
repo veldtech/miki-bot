@@ -1,17 +1,17 @@
-﻿namespace Miki.Modules.Internal.Routines
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Accounts;
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization.Exceptions;
-    using Miki.Logging;
-    using Miki.Services.Achievements;
-    using StatsdClient;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Accounts;
+using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization.Exceptions;
+using Miki.Logging;
+using Miki.Services.Achievements;
+using StatsdClient;
 
+namespace Miki.Modules.Internal.Routines
+{
     public class DatadogRoutine
 	{
         public DatadogRoutine(

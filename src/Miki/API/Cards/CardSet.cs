@@ -1,12 +1,12 @@
-﻿namespace Miki.API.Cards
-{
-    using Miki.API.Cards.Enums;
-    using Miki.API.Cards.Objects;
-    using ProtoBuf;
-    using System;
-    using System.Collections.Generic;
-    using Miki.Utility;
+﻿using Miki.API.Cards.Enums;
+using Miki.API.Cards.Objects;
+using ProtoBuf;
+using System;
+using System.Collections.Generic;
+using Miki.Utility;
 
+namespace Miki.API.Cards
+{
     [ProtoContract]
 	public class CardSet : List<Card>
 	{

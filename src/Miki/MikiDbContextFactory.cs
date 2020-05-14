@@ -1,10 +1,10 @@
-﻿namespace Miki
-{
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Design;
-    using Miki.Bot.Models;
-    using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Miki.Bot.Models;
+using System;
 
+namespace Miki
+{
     public class MikiDbContextFactory : IDesignTimeDbContextFactory<MikiDbContext>
     {
         public MikiDbContext CreateDbContext(params string[] args)

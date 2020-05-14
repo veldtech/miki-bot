@@ -1,10 +1,10 @@
-﻿namespace Miki
-{
-    using System;
-    using System.Reactive.Linq;
-    using System.Threading.Tasks;
-    using System.Reactive.Threading.Tasks;
+﻿using System;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Reactive.Threading.Tasks;
 
+namespace Miki
+{
     public static class ReactiveExtensions
     {
         public static IDisposable SubscribeTask<T>(

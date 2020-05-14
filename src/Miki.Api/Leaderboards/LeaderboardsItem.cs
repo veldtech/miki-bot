@@ -1,7 +1,7 @@
-﻿namespace Miki.Api.Leaderboards
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace Miki.Api.Leaderboards
+{
     public class LeaderboardsItem
 	{
 		[JsonProperty("id")]

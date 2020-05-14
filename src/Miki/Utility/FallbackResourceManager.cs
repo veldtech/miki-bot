@@ -1,8 +1,8 @@
-﻿namespace Miki.Utility
-{
-    using Miki.Functional;
-    using Miki.Localization;
+﻿using Miki.Functional;
+using Miki.Localization;
 
+namespace Miki.Utility
+{
     public class FallbackResourceManager : IResourceManager
     {
         public static IResourceManager FallbackManager { get; set; }

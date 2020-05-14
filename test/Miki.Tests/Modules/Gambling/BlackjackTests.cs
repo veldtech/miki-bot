@@ -10,7 +10,7 @@ namespace Miki.Tests.Modules.Gambling
     public class BlackjackTests : BaseCommandTest
     {
         [Fact]
-        public async Task DefaultBlackjack()
+        public async Task DefaultBlackjackAsync()
         {
             Mock.SetContext(
                 FetchDataStage.ChannelArgumentKey, 

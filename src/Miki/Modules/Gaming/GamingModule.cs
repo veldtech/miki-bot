@@ -1,18 +1,18 @@
-﻿namespace Miki.Modules.Gaming
-{
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
-    using Framework;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework.Commands;
-    using Miki.Logging;
-    using Miki.Utility;
-    using Veld.Osu;
-    using Veld.Osu.Models;
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework.Commands;
+using Miki.Logging;
+using Miki.Utility;
+using Veld.Osu;
+using Veld.Osu.Models;
 
+namespace Miki.Modules.Gaming
+{
     [Module("Gaming")]
     internal class GamingModule
     {

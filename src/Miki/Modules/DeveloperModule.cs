@@ -1,27 +1,27 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands.Filters;
-    using Miki.Net.Http;
-    using Newtonsoft.Json;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Scopes;
-    using Miki.Framework.Commands.Scopes.Models;
-    using Miki.Utility;
-    using Miki.Services;
-    using Miki.Services.Daily;
-	using Miki.Services.Scheduling;
-	using Miki.Accounts;
-	using System.ComponentModel.DataAnnotations;
+﻿using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands.Filters;
+using Miki.Net.Http;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Scopes;
+using Miki.Framework.Commands.Scopes.Models;
+using Miki.Utility;
+using Miki.Services;
+using Miki.Services.Daily;
+using Miki.Services.Scheduling;
+using Miki.Accounts;
+using System.ComponentModel.DataAnnotations;
 
+namespace Miki.Modules
+{
 	[Module("Experimental")]
 	internal class DeveloperModule
 	{

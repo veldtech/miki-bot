@@ -1,16 +1,14 @@
-﻿namespace Miki.Utility
-{
-    using System;
-    using System.Threading.Tasks;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using StackExchange.Redis;
-    using Miki.Logging;
-    using StackExchange.Redis.Profiling;
-    using System.Security.Cryptography;
+﻿using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using StackExchange.Redis;
+using StackExchange.Redis.Profiling;
 
+namespace Miki.Utility
+{
     public class RedisConnection : IConnectionMultiplexer
     {
         private readonly IConnectionMultiplexer connection;

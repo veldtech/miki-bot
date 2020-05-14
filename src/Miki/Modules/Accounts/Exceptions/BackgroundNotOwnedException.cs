@@ -1,8 +1,8 @@
-﻿namespace Miki.Exceptions
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Exceptions
+{
 	public class BackgroundNotOwnedException : LocalizedException
 	{
 		public override IResource LocaleResource

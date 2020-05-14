@@ -1,15 +1,14 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Miki.Discord.Rest.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Utility;
+using Sentry;
+using Splitio.Services.Client.Interfaces;
+
 namespace Miki
 {
-    using System;
-    using System.Collections.Generic;
-    using Miki.Discord.Rest.Exceptions;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Utility;
-    using Sentry;
-    using Splitio.Services.Client.Interfaces;
-
     public static class ContextExtensions
     {
         public static SentryEvent ToSentryEvent(this Exception exception)

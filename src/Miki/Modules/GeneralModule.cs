@@ -1,36 +1,36 @@
-﻿namespace Miki.Modules
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Attributes;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Dsl;
-    using Miki.Framework;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Nodes;
-    using Miki.Framework.Commands.Permissions;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Prefixes;
-    using Miki.Framework.Commands.Prefixes.Triggers;
-    using Miki.Framework.Commands.Scopes;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Functional;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services.Achievements;
-    using Miki.Utility;
-    using NCalc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Dsl;
+using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Prefixes;
+using Miki.Framework.Commands.Prefixes.Triggers;
+using Miki.Framework.Commands.Scopes;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Functional;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Modules.Accounts.Services;
+using Miki.Services.Achievements;
+using Miki.Utility;
+using NCalc;
 
+namespace Miki.Modules
+{
     [Module("General")]
 	public class GeneralModule
 	{

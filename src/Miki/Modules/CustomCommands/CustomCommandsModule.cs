@@ -1,28 +1,28 @@
-﻿namespace Miki.Modules.CustomCommands
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Stages;
-    using Miki.Logging;
-    using Miki.Modules.CustomCommands.CommandHandlers;
-    using Miki.Modules.CustomCommands.Exceptions;
-    using Miki.Utility;
-    using MiScript;
-    using MiScript.Models;
-    using MiScript.Parser;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Stages;
+using Miki.Logging;
+using Miki.Modules.CustomCommands.CommandHandlers;
+using Miki.Modules.CustomCommands.Exceptions;
+using Miki.Utility;
+using MiScript;
+using MiScript.Models;
+using MiScript.Parser;
 
+namespace Miki.Modules.CustomCommands
+{
     [Module("CustomCommands")]
     public class CustomCommandsModule
     {

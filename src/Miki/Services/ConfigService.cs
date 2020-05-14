@@ -1,13 +1,13 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class ConfigService : IAsyncDisposable
     {
         private readonly IUnitOfWork unit;

@@ -1,23 +1,23 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Framework.Commands.Localization.Models.Exceptions;
-    using Miki.Framework.Commands.Prefixes;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Localization;
-    using Miki.Framework.Commands.Prefixes.Triggers;
-    using Miki.Services.Settings;
-    using Miki.Utility;
+﻿using Miki.Framework.Commands.Localization.Models.Exceptions;
+using Miki.Framework.Commands.Prefixes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Localization;
+using Miki.Framework.Commands.Prefixes.Triggers;
+using Miki.Services.Settings;
+using Miki.Utility;
 
+namespace Miki.Modules
+{
     public enum LevelNotificationsSetting
 	{
 		RewardsOnly = 0,

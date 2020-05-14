@@ -1,13 +1,13 @@
-﻿namespace Miki.Services.Rps
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Functional;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Functional;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Services.Rps
+{
     public interface IRpsService
     {
         GameResult CalculateVictory(RpsWeapon player, RpsWeapon cpu);

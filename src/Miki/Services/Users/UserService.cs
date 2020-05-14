@@ -1,16 +1,16 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Bot.Models;
-    using Bot.Models.Exceptions;
-    using Bot.Models.Models.User;
-    using Framework;
-    using Miki.Cache;
-    using Patterns.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Bot.Models.Models.User;
+using Miki.Framework;
+using Miki.Cache;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class UserService : IUserService
     {
         private readonly IUnitOfWork unitOfWork;

@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Pasta.Exceptions
-{
-	using Bot.Models;
-    using Localization.Exceptions;
+﻿using Miki.Bot.Models;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Services.Pasta.Exceptions
+{
     public abstract class PastaException : LocalizedException
 	{
 		protected GlobalPasta Pasta;

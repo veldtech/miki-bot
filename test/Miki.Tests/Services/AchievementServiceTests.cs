@@ -6,11 +6,10 @@ using Miki.Modules.Accounts.Services;
 using Miki.Services.Achievements;
 using Moq;
 using Xunit;
+using Miki.Bot.Models.Repositories;
 
 namespace Miki.Tests.Services
 {
-    using Bot.Models.Repositories;
-
     public class AchievementServiceTests : BaseEntityTest<MikiDbContext>
     {
         public AchievementServiceTests()

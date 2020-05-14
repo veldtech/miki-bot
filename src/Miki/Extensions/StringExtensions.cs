@@ -1,9 +1,9 @@
-﻿namespace Miki 
-{
-    using System;
-    using System.Globalization;
-    using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 
+namespace Miki 
+{
     public static class StringExtensions
     {
         public static string AsCode(this object str)

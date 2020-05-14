@@ -1,9 +1,9 @@
-﻿namespace Miki.Services.Settings
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
-    using System;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
+using System;
 
+namespace Miki.Services.Settings
+{
     public class InvalidSettingException : LocalizedException
     {
         private readonly Type enumType;

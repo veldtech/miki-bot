@@ -1,10 +1,10 @@
-﻿namespace Miki.Services.Achievements
-{
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.EntityFrameworkCore.Metadata;
-    using Miki.Bot.Models;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Miki.Bot.Models;
 
+namespace Miki.Services.Achievements
+{
     public class AchievementObject
     {
         public string Id { get; private set; }

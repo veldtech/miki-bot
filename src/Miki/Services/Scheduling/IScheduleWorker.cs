@@ -1,9 +1,9 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Functional;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Functional;
 
+namespace Miki.Services.Scheduling
+{
     public interface IScheduleWorker
     {
         /// <summary>

@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Marriage
-{
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Services.Marriages
+{
     public class ProposalsEmptyException : LocalizedException
     {
         /// <inheritdoc />

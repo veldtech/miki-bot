@@ -1,16 +1,16 @@
-﻿namespace Miki
-{
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Models.User;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Services.Marriage;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Models.User;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Services.Marriage;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace Miki
+{
     public static class ModelExtensions
 	{
         public static async Task BanAsync(this User user, DbContext context)

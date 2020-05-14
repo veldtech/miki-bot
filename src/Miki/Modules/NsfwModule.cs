@@ -1,30 +1,30 @@
-﻿namespace Miki.Modules
-{
-    using System;
-    using System.Collections.Generic;
-    using Miki.API.Imageboards;
-    using Miki.API.Imageboards.Enums;
-    using Miki.API.Imageboards.Interfaces;
-    using Miki.API.Imageboards.Objects;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.UrbanDictionary;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Exceptions;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services.Achievements;
-    using Miki.Utility;
-    using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using Miki.API.Imageboards;
+using Miki.API.Imageboards.Enums;
+using Miki.API.Imageboards.Interfaces;
+using Miki.API.Imageboards.Objects;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.UrbanDictionary;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Exceptions;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Modules.Accounts.Services;
+using Miki.Services.Achievements;
+using Miki.Utility;
+using Newtonsoft.Json;
 
+namespace Miki.Modules
+{
     [Module("nsfw")]
 	internal class NsfwModule
 	{

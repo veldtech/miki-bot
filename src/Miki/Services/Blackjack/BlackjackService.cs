@@ -1,17 +1,17 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using API.Cards;
-    using API.Cards.Enums;
-    using API.Cards.Objects;
-    using Miki.Cache;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
-    using Patterns.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.API.Cards;
+using Miki.API.Cards.Enums;
+using Miki.API.Cards.Objects;
+using Miki.Cache;
+using Miki.Services.Transactions;
+using Miki.Utility;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class BlackjackService
     {
         private readonly IAsyncRepository<BlackjackContext> repository;

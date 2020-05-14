@@ -1,9 +1,9 @@
-﻿namespace Miki
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Services.Transactions;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Services.Transactions;
 
+namespace Miki
+{
     public class TransactionEvents
     {
         public Func<TransactionResponse, Task> OnTransactionComplete { get; set; }

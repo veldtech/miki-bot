@@ -1,12 +1,12 @@
-﻿namespace Miki.Services.Lottery
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Functional;
-    using Miki.Services.Scheduling;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Miki.Bot.Models.Exceptions;
+using Miki.Functional;
+using Miki.Services.Scheduling;
 
+namespace Miki.Services.Lottery
+{
     public interface ILotteryService
     {
         /// <summary>

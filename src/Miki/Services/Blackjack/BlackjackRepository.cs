@@ -1,14 +1,14 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Cache;
-    using Exceptions;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Framework;
-    using Patterns.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class BlackjackRepository : IAsyncRepository<BlackjackContext>
     {
         private readonly IExtendedCacheClient cache;

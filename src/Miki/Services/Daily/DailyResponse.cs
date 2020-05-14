@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Daily
-{
-    using System;
-    using Miki.Bot.Models;
+﻿using System;
+using Miki.Bot.Models;
 
+namespace Miki.Services.Daily
+{
     public enum DailyStatus
     {
         Success,

@@ -1,10 +1,9 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using Miki.Services.Achievements;
+
 namespace Miki.Modules.Accounts.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using Miki.Services.Achievements;
-
     public class AchievementIds
     {
         public static string AchievementsId { get; } = "achievements";

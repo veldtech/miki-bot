@@ -1,10 +1,10 @@
-﻿namespace Miki.API.Cards
+﻿using Miki.API.Cards.Objects;
+using ProtoBuf;
+using System;
+using System.Collections.Generic;
+
+namespace Miki.API.Cards
 {
-    using Miki.API.Cards.Objects;
-    using ProtoBuf;
-    using System;
-    using System.Collections.Generic;
-    
     public delegate int GetCardValue(int totalValue, CardHand hand);
 
 	[ProtoContract]

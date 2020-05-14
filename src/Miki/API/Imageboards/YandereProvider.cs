@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Imageboards
-{
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using Miki.API.Imageboards.Objects;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Miki.API.Imageboards.Objects;
 
+namespace Miki.API.Imageboards
+{
     [DataContract]
     public class YandereResponse
     {

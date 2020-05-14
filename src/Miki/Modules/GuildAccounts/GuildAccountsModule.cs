@@ -1,25 +1,25 @@
-﻿namespace Miki.Modules.GuildAccounts
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Attributes;
-    using Bot.Models;
-    using Bot.Models.Exceptions;
-    using Discord;
-    using Discord.Rest;
-    using Framework;
-    using Framework.Commands;
-    using Helpers;
-    using Miki.Localization;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Accounts;
-    using Miki.Discord.Common;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord;
+using Miki.Discord.Rest;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Helpers;
+using Miki.Localization;
+using Microsoft.EntityFrameworkCore;
+using Miki.Accounts;
+using Miki.Discord.Common;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Modules.GuildAccounts
+{
     [Module("Guild_Accounts")]
 	public class GuildAccountsModule
 	{

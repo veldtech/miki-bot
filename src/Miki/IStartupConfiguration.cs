@@ -1,8 +1,8 @@
-﻿namespace Miki
-{
-    using Miki.Bot.Models;
-    using Miki.Logging;
+﻿using Miki.Bot.Models;
+using Miki.Logging;
 
+namespace Miki
+{
     public interface IStartupConfiguration
     {
 

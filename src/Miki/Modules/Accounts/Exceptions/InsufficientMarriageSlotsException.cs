@@ -1,9 +1,9 @@
-﻿namespace Miki.Exceptions
-{
-    using Bot.Models.Exceptions;
-    using Miki.Bot.Models;
-    using Miki.Localization;
+﻿using Miki.Bot.Models.Exceptions;
+using Miki.Bot.Models;
+using Miki.Localization;
 
+namespace Miki.Exceptions
+{
 	class InsufficientMarriageSlotsException : UserException
 	{
 		public override IResource LocaleResource

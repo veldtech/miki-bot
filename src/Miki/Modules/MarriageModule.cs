@@ -1,25 +1,25 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Exceptions;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
+using Miki.Modules.Accounts.Services;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Miki.Utility;
+using Miki.Services.Achievements;
+using Miki.Services.Marriage;
+using Miki.Services.Marriages;
+
 namespace Miki.Modules
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Repositories;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Exceptions;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
-    using Services.Achievements;
-    using MarriageService = Miki.Services.Marriage.MarriageService;
-
     [Module("Marriage")]
 	public class MarriageModule
     {
@@ -71,7 +71,7 @@ namespace Miki.Modules
                 {
                     await service.AcceptProposalAsync(marriage.Marriage);
 
-                    await new EmbedBuilder()
+                    await new EmbedBuilder
                     {
                         Title = ("❤️ Happily married"),
                         Color = new Color(190, 25, 49),

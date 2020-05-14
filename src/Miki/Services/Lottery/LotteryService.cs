@@ -1,16 +1,16 @@
-﻿namespace Miki.Services.Lottery
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Cache;
-    using Miki.Cache.Extensions;
-    using Miki.Functional;
-    using Miki.Services.Scheduling;
-    using Miki.Services.Transactions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
+using Miki.Cache.Extensions;
+using Miki.Functional;
+using Miki.Services.Scheduling;
+using Miki.Services.Transactions;
 
+namespace Miki.Services.Lottery
+{
     public class LotteryService : ILotteryService
     {
         private readonly ITransactionService transactions;

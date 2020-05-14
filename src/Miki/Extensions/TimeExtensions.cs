@@ -1,8 +1,8 @@
-﻿namespace Miki
-{
-    using System;
-    using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
+namespace Miki
+{
     /// <summary>
     /// A type to calculate the seconds that has passed since 1970-01-01.
     /// </summary>

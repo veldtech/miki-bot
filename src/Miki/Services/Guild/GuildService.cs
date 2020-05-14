@@ -1,10 +1,10 @@
-﻿namespace Miki.Services
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     // TODO: finish and test GuildService.
     public class GuildService
     {

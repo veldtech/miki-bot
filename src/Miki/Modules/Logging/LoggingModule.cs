@@ -1,22 +1,22 @@
-﻿namespace Miki.Modules.Logging
-{
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Utility;
-    using Sentry;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Attributes;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Utility;
+using Sentry;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Attributes;
 
+namespace Miki.Modules.Logging
+{
     [Module("logging")]
     public class LoggingModule
     {

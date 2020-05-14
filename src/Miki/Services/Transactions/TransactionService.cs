@@ -1,12 +1,12 @@
-﻿namespace Miki.Services.Transactions
-{
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Functional;
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Functional;
 
+namespace Miki.Services.Transactions
+{
     public class TransactionService : ITransactionService
     {
         public Func<TransactionResponse, Task> TransactionComplete { get; set; }

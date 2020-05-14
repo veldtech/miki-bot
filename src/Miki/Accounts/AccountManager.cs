@@ -1,22 +1,22 @@
-﻿namespace Miki.Accounts
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Models;
-    using Miki.Framework;
-    using Miki.Logging;
-    using Miki.Utility;
-    using Sentry;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Models;
+using Miki.Framework;
+using Miki.Logging;
+using Miki.Utility;
+using Sentry;
 
+namespace Miki.Accounts
+{
     public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
 
     public class AccountService

@@ -1,7 +1,7 @@
-﻿namespace Miki.Modules.Fun
-{
-    using Miki.Bot.Models.Attributes;
+﻿using Miki.Bot.Models.Attributes;
 
+namespace Miki.Modules.Fun
+{
     [Entity("reminder")]
     public class Reminder
     {

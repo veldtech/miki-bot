@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.CustomCommands.Exceptions
-{
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Modules.CustomCommands.Exceptions
+{
     public class CommandNullException : LocalizedException
     {
         public override IResource LocaleResource 

@@ -1,8 +1,8 @@
-﻿namespace Miki
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki
+{
     internal class RoleNullException : LocalizedException
 	{
 		public override IResource LocaleResource

@@ -1,10 +1,10 @@
-﻿namespace Miki.Services
-{
-    using System.Collections.Generic;
-    using API.Cards;
-    using API.Cards.Objects;
-    using ProtoBuf;
+﻿using System.Collections.Generic;
+using Miki.API.Cards;
+using Miki.API.Cards.Objects;
+using ProtoBuf;
 
+namespace Miki.Services
+{
     [ProtoContract]
 	public class BlackjackContext
 	{

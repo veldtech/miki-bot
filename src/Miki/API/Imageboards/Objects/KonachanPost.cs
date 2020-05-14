@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Imageboards.Objects
-{
-    using Miki.API.Imageboards.Interfaces;
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
+﻿using Miki.API.Imageboards.Interfaces;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
+namespace Miki.API.Imageboards.Objects
+{
     internal class KonachanPost : BooruPost, ILinkable
 	{
 		public string Url => "http:" + FileUrl;

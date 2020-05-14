@@ -1,14 +1,14 @@
-﻿namespace Miki.Services.Marriage
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services.Marriages
+{
     public class MarriageService
     {
         private readonly IUnitOfWork unitOfWork;

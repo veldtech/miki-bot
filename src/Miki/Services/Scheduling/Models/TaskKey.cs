@@ -1,7 +1,7 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
+namespace Miki.Services.Scheduling
+{
     [DataContract]
     public class TaskKey
     {

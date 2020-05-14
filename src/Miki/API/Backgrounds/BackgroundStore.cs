@@ -1,11 +1,11 @@
-﻿namespace Miki.API.Backgrounds
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text.Json;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 
+namespace Miki.API.Backgrounds
+{
     public class BackgroundStore
     {
         public IReadOnlyList<Background> Backgrounds { get; }

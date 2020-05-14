@@ -1,18 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Miki.Api.Leaderboards;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Helpers;
+using Miki.Localization;
+
 namespace Miki.Utility
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Miki.Api.Leaderboards;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Helpers;
-    using Miki.Localization;
-    
     public static class Utils
     {
         public static string EveryonePattern => @"@(everyone|here)";

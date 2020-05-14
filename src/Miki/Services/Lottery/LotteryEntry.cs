@@ -1,7 +1,7 @@
-﻿namespace Miki.Services.Lottery
-{
-    using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
+namespace Miki.Services.Lottery
+{
     [DataContract]
     public class LotteryEntry
     {

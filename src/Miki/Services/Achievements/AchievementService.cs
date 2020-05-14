@@ -1,18 +1,18 @@
-﻿namespace Miki.Services.Achievements
-{
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Framework.Commands;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Framework;
-    using Microsoft.EntityFrameworkCore;
-    using Patterns.Repositories;
-    using Miki.Modules.Accounts.Services;
-    using System.Reactive.Subjects;
+﻿using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Framework.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Framework;
+using Microsoft.EntityFrameworkCore;
+using Miki.Patterns.Repositories;
+using Miki.Modules.Accounts.Services;
+using System.Reactive.Subjects;
 
+namespace Miki.Services.Achievements
+{
     public delegate Task<bool> CheckUserUpdateAchievement(
         IDiscordUser userBefore, IDiscordUser userAfter);
     public delegate Task<bool> CheckCommandAchievement(User user, Node command);

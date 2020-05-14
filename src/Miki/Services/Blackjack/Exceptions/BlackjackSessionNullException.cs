@@ -1,8 +1,8 @@
-﻿namespace Miki.Services
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
+
+namespace Miki.Services
 {
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
-    
     public class BlackjackSessionNullException : LocalizedException
 	{
 		public override IResource LocaleResource 
