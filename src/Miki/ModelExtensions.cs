@@ -4,10 +4,10 @@ using Miki.Bot.Models;
 using Miki.Bot.Models.Models.User;
 using Miki.Discord.Common;
 using Miki.Framework;
-using Miki.Services.Marriage;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.Services.Marriages;
 
 namespace Miki
 {
@@ -52,10 +52,9 @@ namespace Miki
             await context.SaveChangesAsync();
         }
 
-		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
+		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role, IDiscordGuild guild)
 		{
-			return await MikiApp.Instance.Services.GetService<IDiscordClient>()
-                .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
+			return await guild.GetRoleAsync((ulong)role.RoleId);
 		}
 	}
 }

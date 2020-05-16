@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
-using Miki.Cache;
 using Miki.Framework;
 using Miki.Patterns.Repositories;
 using Miki.Services.Transactions;
 
-namespace Miki.Services.Daily
+namespace Miki.Services.Dailies
 {
     public class DailyService : IDailyService
     {

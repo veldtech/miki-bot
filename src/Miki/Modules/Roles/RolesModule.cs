@@ -168,8 +168,9 @@ namespace Miki.Modules.Roles
             {
                 List<LevelRole> levelRoles = await context.LevelRoles
                     .Where(x => x.GuildId == (long)e.GetGuild().Id).ToListAsync();
-                if(levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower())
-                       .Count() > 1)
+                if(levelRoles.Count(
+                       x => ModelExtensions.GetRoleAsync(x, e.GetGuild()).Result.Name.ToLower() 
+                            == roleName.ToLower()) > 1)
                 {
                     await e.ErrorEmbed("two roles configured have the same name.")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
@@ -177,9 +178,11 @@ namespace Miki.Modules.Roles
                 }
                 else
                 {
-                    role = levelRoles
-                        .Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower())
-                        .FirstOrDefault().GetRoleAsync().Result;
+                    role = await levelRoles
+                        .FirstOrDefault(
+                            x => x.GetRoleAsync(e.GetGuild()).Result.Name.ToLower() 
+                                 == roleName.ToLower())
+                        .GetRoleAsync(e.GetGuild());
                 }
             }
             else
@@ -271,7 +274,7 @@ namespace Miki.Modules.Roles
 							continue;
 						}
 
-						stringBuilder.Append($"`{role.Item1.Name.PadRight(20)}|`");
+						stringBuilder.Append($"`{role.Item1.Name,20}|`");
 
 						if (role.Item2.RequiredLevel > 0)
 						{

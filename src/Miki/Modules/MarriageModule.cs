@@ -15,7 +15,6 @@ using Miki.Services;
 using Miki.Services.Transactions;
 using Miki.Utility;
 using Miki.Services.Achievements;
-using Miki.Services.Marriage;
 using Miki.Services.Marriages;
 
 namespace Miki.Modules
@@ -356,7 +355,8 @@ namespace Miki.Modules
 
             var repository = e.GetService<MarriageService>();
 
-			List<UserMarriedTo> proposals = await repository.GetProposalsReceivedAsync(e.GetAuthor().Id.ToDbLong());
+			List<UserMarriedTo> proposals = await repository.GetProposalsReceivedAsync(
+                (long)e.GetAuthor().Id);
 			List<string> proposalNames = new List<string>();
             var discordclient = e.GetService<IDiscordClient>();
 

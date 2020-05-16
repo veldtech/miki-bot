@@ -282,7 +282,7 @@ namespace Miki.Accounts
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<MikiDbContext>();
 
-            GuildUser g = await context.GuildUsers.FindAsync(guild.Id.ToDbLong())
+            GuildUser g = await context.GuildUsers.FindAsync((long)guild.Id)
                 .ConfigureAwait(false);
             g.UserCount = guild.MemberCount;
 

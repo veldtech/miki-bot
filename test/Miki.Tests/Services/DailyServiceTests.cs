@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Miki.Bot.Models;
 using Miki.Services;
-using Miki.Services.Daily;
+using Miki.Services.Dailies;
 using Miki.Services.Transactions;
 using Xunit;
 using Moq;

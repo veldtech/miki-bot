@@ -15,10 +15,9 @@ using Miki.Framework.Commands.Scopes;
 using Miki.Framework.Commands.Scopes.Models;
 using Miki.Utility;
 using Miki.Services;
-using Miki.Services.Daily;
 using Miki.Services.Scheduling;
 using Miki.Accounts;
-using System.ComponentModel.DataAnnotations;
+using Miki.Services.Dailies;
 
 namespace Miki.Modules
 {

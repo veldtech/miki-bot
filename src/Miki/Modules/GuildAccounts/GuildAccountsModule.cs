@@ -67,8 +67,8 @@ namespace Miki.Modules.GuildAccounts
                 timer = await timerRepository.AddAsync(
                     new Timer
                 {
-                    GuildId = e.GetGuild().Id.ToDbLong(),
-                    UserId = e.GetAuthor().Id.ToDbLong(),
+                    GuildId = (long)e.GetGuild().Id,
+                    UserId = (long)e.GetAuthor().Id,
                     Value = DateTime.Now.AddDays(-30)
                 });
                 await unit.CommitAsync();

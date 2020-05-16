@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
-using Miki.Bot.Models.Repositories;
-using Miki.Services.Marriage;
+using Miki.Services.Marriages;
 using Xunit;
 
 namespace Miki.Tests.Services
@@ -55,7 +54,7 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task AcceptMarriageTest()
+        public async Task AcceptMarriageTestAsync()
         {
             await InitMarriageAsync();
 
@@ -68,7 +67,7 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task DeclineProposalTest()
+        public async Task DeclineProposalTestAsync()
         {
             await InitMarriageAsync();
 

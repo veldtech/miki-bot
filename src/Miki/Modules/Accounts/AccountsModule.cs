@@ -24,9 +24,9 @@ using Miki.Modules.Accounts.Services;
 using Miki.Modules.Fun.Exceptions;
 using Miki.Net.Http;
 using Miki.Services;
-using Miki.Services.Daily;
 using Miki.Services.Achievements;
-using Miki.Services.Marriage;
+using Miki.Services.Dailies;
+using Miki.Services.Marriages;
 using Miki.Services.Settings;
 using Miki.Services.Transactions;
 using Miki.Utility;
@@ -794,7 +794,7 @@ namespace Miki.Modules.Accounts
 
                         await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
                         {
-                            UserId = e.GetAuthor().Id.ToDbLong(),
+                            UserId = (long)e.GetAuthor().Id,
                             BackgroundId = background.Id,
                         });
 

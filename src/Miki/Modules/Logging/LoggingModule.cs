@@ -37,11 +37,11 @@ namespace Miki.Modules.Logging
         {
             this.app = app;
             this.sentryClient = sentryClient;
-            client.GuildMemberCreate += OnClientOnGuildMemberCreate;
-            client.GuildMemberDelete += OnClientOnGuildMemberDelete;
+            client.GuildMemberCreate += OnClientOnGuildMemberCreateAsync;
+            client.GuildMemberDelete += OnClientOnGuildMemberDeleteAsync;
         }
 
-        private async Task OnClientOnGuildMemberCreate(IDiscordGuildUser user)
+        private async Task OnClientOnGuildMemberCreateAsync(IDiscordGuildUser user)
         {
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
@@ -62,7 +62,7 @@ namespace Miki.Modules.Logging
             }
         }
 
-        public async Task OnClientOnGuildMemberDelete(IDiscordGuildUser user)
+        public async Task OnClientOnGuildMemberDeleteAsync(IDiscordGuildUser user)
         {
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
@@ -130,8 +130,8 @@ namespace Miki.Modules.Logging
 
             if(string.IsNullOrEmpty(leaveMsgString))
             {
-                EventMessage leaveMessage = context.EventMessages.Find(e.GetChannel().Id.ToDbLong(),
-                    (short)EventMessageType.LEAVESERVER);
+                EventMessage leaveMessage = await context.EventMessages.FindAsync(
+                    (long)e.GetChannel().Id, (short)EventMessageType.LEAVESERVER);
                 if(leaveMessage == null)
                 {
                     await e.ErrorEmbed(
@@ -181,7 +181,7 @@ namespace Miki.Modules.Logging
         [GuildOnly]
         public async Task TestInternalMessageAsync(IContext context)
         {
-            await OnClientOnGuildMemberDelete(context.GetAuthor() as IDiscordGuildUser);
+            await OnClientOnGuildMemberDeleteAsync(context.GetAuthor() as IDiscordGuildUser);
         }
 
         private async Task SetMessageAsync(

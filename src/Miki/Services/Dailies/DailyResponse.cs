@@ -1,7 +1,7 @@
 ﻿using System;
 using Miki.Bot.Models;
 
-namespace Miki.Services.Daily
+namespace Miki.Services.Dailies
 {
     public enum DailyStatus
     {
