@@ -319,7 +319,7 @@
             serviceCollection.AddScoped<AchievementService>();
 
             serviceCollection.AddSingleton<ISchedulerService, SchedulerService>();
-            serviceCollection.AddScoped<GuildService>();
+            serviceCollection.AddScoped<IGuildService, GuildService>();
             serviceCollection.AddScoped<MarriageService>();
             serviceCollection.AddScoped<IRpsService, RpsService>();
             serviceCollection.AddScoped<ILocalizationService, LocalizationService>();

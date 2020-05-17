@@ -25,7 +25,7 @@
         }
 
         /// <summary>
-        /// Creates and returns the User regardless of business errors.
+        /// Creates and returns the BankAccount regardless of business errors.
         /// </summary>
         public static async Task<BankAccount> GetOrCreateBankAccountAsync(
             this IBankAccountService service, AccountReference accountDetails)
@@ -37,6 +37,38 @@
             catch (BankAccountNullException)
             {
                 return await service.CreateAccountAsync(accountDetails);
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns the LocalExperience regardless of business errors.
+        /// </summary>
+        public static async Task<LocalExperience> GetOrCreateLocalExperienceAsync(
+            this IGuildService service, GuildUserReference guildUser)
+        {
+            try
+            {
+                return await service.GetLocalExperienceAsync(guildUser);
+            }
+            catch (LocalExperienceNullException)
+            {
+                return await service.CreateLocalExperienceAsync(guildUser);
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns the Timer regardless of business errors.
+        /// </summary>
+        public static async Task<Timer> GetOrCreateTimerAsync(
+            this IGuildService service, GuildUserReference guildUser)
+        {
+            try
+            {
+                return await service.GetTimerAsync(guildUser);
+            }
+            catch (TimerNullException)
+            {
+                return await service.CreateTimerAsync(guildUser);
             }
         }
     }
