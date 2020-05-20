@@ -1,16 +1,16 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Bot.Models;
-    using Bot.Models.Exceptions;
-    using Bot.Models.Models.User;
-    using Framework;
-    using Miki.Cache;
-    using Patterns.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Bot.Models.Models.User;
+using Miki.Framework;
+using Miki.Cache;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class UserService : IUserService
     {
         private readonly IUnitOfWork unitOfWork;
@@ -26,6 +26,15 @@
             this.repository = unitOfWork.GetRepository<User>();
             this.bannedRepository = unitOfWork.GetRepository<IsBanned>();
             this.donatorRepository = unitOfWork.GetRepository<IsDonator>();
+        }
+
+        /// <inheritdoc />
+        public async ValueTask AddMarriageSlotAsync(long userId)
+        {
+            var user = await GetUserAsync(userId);
+            user.MarriageSlots++;
+            await repository.EditAsync(user);
+            await unitOfWork.CommitAsync();
         }
 
         /// <inheritdoc />
@@ -58,20 +67,22 @@
         public async ValueTask<ReputationObject> GetUserReputationPointsAsync(long userId)
         {
             var repObject = await cache.GetAsync<ReputationObject>($"user:{userId}:rep");
-            if(repObject == null)
+            if(repObject != null)
             {
-                repObject = new ReputationObject
-                {
-                    LastReputationGiven = DateTime.Now,
-                    ReputationPointsLeft = 3
-                };
-
-                await cache.UpsertAsync(
-                    $"user:{userId}:rep",
-                    repObject,
-                    DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
-                );
+                return repObject;
             }
+
+            repObject = new ReputationObject
+            {
+                LastReputationGiven = DateTime.Now,
+                ReputationPointsLeft = 3
+            };
+
+            await cache.UpsertAsync(
+                $"user:{userId}:rep",
+                repObject,
+                DateTime.UtcNow.AddDays(1).Date - DateTime.UtcNow
+            );
             return repObject;
         }
 

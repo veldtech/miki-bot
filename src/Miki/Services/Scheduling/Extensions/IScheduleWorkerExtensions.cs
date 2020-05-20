@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+namespace Miki.Services.Scheduling
+{
     public static class ScheduleWorkerExtensions
     {
         public static Task<TaskPayload> QueueTaskAsync(

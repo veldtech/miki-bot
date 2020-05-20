@@ -1,11 +1,11 @@
-﻿namespace Miki.Tests.Services
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Services;
-    using Xunit;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Services;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class UserServiceTests : BaseEntityTest
     {
         [Fact]

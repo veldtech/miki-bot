@@ -1,11 +1,10 @@
-﻿namespace Miki.Tests.Modules
-{
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands.Localization;
-    using Miki.Localization;
-    using Miki.Localization;
+﻿using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands.Localization;
+using Miki.Localization;
 
+namespace Miki.Tests.Modules
+{
     public class BaseCommandTest
     {
         public MockMessageWorker Worker { get; } = new MockMessageWorker();

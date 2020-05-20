@@ -1,25 +1,26 @@
-﻿namespace Miki.Modules.Gambling
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Miki.API.Cards.Objects;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Gambling.Exceptions;
+using Miki.Modules.Gambling.Resources;
+using Miki.Services;
+using Miki.Services.Achievements;
+using Miki.Services.Lottery;
+using Miki.Services.Rps;
+using Miki.Services.Transactions;
+using Miki.Utility;
+
+namespace Miki.Modules.Gambling
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using Miki.API.Cards.Objects;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Modules.Gambling.Exceptions;
-    using Miki.Services.Achievements;
-    using Miki.Services.Lottery;
-    using Miki.Services.Rps;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
-    using Services;
 
     [Module("Gambling")]
     public class GamblingModule
@@ -27,26 +28,21 @@
         [Command("rps")]
         public class RpsCommand
         {
+            private const int MaxBet = 10000;
+
             [Command]
             public async Task RpsAsync(IContext e)
             {
+                var locale = e.GetLocale();
                 var userService = e.GetService<IUserService>();
                 var rps = e.GetService<IRpsService>();
 
                 User user = await userService.GetOrCreateUserAsync(e.GetAuthor())
                     .ConfigureAwait(false);
 
-                int bet = ValidateBet(e, user, 10000);
+                int bet = ValidateBet(e, user, MaxBet);
 
-                if(e.GetArgumentPack().Pack.Length < 2)
-                {
-                    await e.ErrorEmbed("You need to choose a weapon!")
-                        .ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-
-                var weapon = e.GetArgumentPack().TakeRequired<string>();
+                var weapon = e.GetArgumentPack().TakeRequired<string>("noun_weapon");
                 var result = await rps.PlayRpsAsync((long)e.GetAuthor().Id, bet, weapon);
 
                 EmbedBuilder resultMessage = new EmbedBuilder()
@@ -54,29 +50,10 @@
                     .SetDescription(
                         $"{result.PlayerWeapon.Name.ToUpper()} {result.PlayerWeapon.Emoji} vs. " 
                         + $"{result.CpuWeapon.Emoji} {result.CpuWeapon.Name.ToUpper()}");
-                switch (result.Status)
-                {
-                    case GameResult.Win:
-                    {
-                        resultMessage.Description 
-                            += $"\n\nYou won `{result.AmountWon}` " 
-                               + $"mekos! Your new balance is `{user.Currency + result.AmountWon}`.";
-                    } break;
 
-                    case GameResult.Lose:
-                    {
-                        resultMessage.Description +=
-                            $"\n\nYou lost `{bet}` mekos! Your new balance is `{user.Currency - bet}`.";
-                    } break;
-
-                    case GameResult.Draw:
-                    {
-                        resultMessage.Description += "\n\nIt's a draw! no mekos were lost!.";
-                    } break;
-                }
-                await resultMessage.ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                    .ConfigureAwait(false);
+                resultMessage.Description += "\n\n" + locale.GetString(
+                    new GameResultResource(result.Status, user.Currency, bet, result.AmountWon ?? 0));
+                await resultMessage.ToEmbed().QueueAsync(e, e.GetChannel()).ConfigureAwait(false);
             }
         }
 
@@ -107,31 +84,20 @@
                 var user = await userService.GetOrCreateUserAsync(e.GetAuthor());
                 int bet = ValidateBet(e, user);
 
-                var message = await Retry.RetryAsync(() => e.GetChannel()
-                    .SendMessageAsync(null, embed: NewLoadingEmbed()), 5000)
-                    .ConfigureAwait(false);
+                var session = await blackjackService.NewSessionAsync(
+                        null, e.GetAuthor().Id, e.GetChannel().Id, bet)
+                    .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
+                    .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
+                    .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
+                    .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
+                    .AndThen(x => x.Players[BlackjackService.DealerId].Hand[1].isPublic = false);
 
-                try
-                {
-                    var session = await blackjackService.NewSessionAsync(
-                            message.Id, e.GetAuthor().Id, e.GetChannel().Id, bet)
-                        .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
-                        .AndThen(x => blackjackService.DrawCard(x, BlackjackService.DealerId))
-                        .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
-                        .AndThen(x => blackjackService.DrawCard(x, e.GetAuthor().Id))
-                        .AndThen(x => x.Players[BlackjackService.DealerId].Hand[1].isPublic = false)
-                        .AndThen(x => blackjackService.SyncSessionAsync(x.GetContext()));
+                var message = await e.GetChannel().SendMessageAsync(
+                    null, embed: CreateEmbed(e, session).ToEmbed());
 
-                    await Retry.RetryAsync(() => message.EditAsync(new EditMessageArgs(
-                            embed: CreateEmbed(e, session).ToEmbed())), 5000)
-                        .ConfigureAwait(false);
-                }
-                catch(LocalizedException ex)
-                {
-                    await message.EditAsync(new EditMessageArgs(
-                            embed: e.ErrorEmbedResource(ex.LocaleResource).ToEmbed()))
-                        .ConfigureAwait(false);
-                }
+                session.SetMessageId(message.Id);
+
+                await blackjackService.SyncSessionAsync(session.GetContext());
             }
 
             [Command("hit", "draw")]
@@ -275,15 +241,6 @@
                 }
             }
 
-            private DiscordEmbed NewLoadingEmbed()
-            {
-                // TODO: Move to resources.
-                return new EmbedBuilder()
-                    .SetTitle("One moment...")
-                    .SetDescription("We're setting up your blackjack!")
-                    .ToEmbed();
-            }
-
             private async Task<DiscordEmbed> CreateLoseEmbedAsync(
                 IContext ctx, BlackjackSession session)
             {
@@ -347,8 +304,9 @@
                         e.GetAuthor().GetAvatarUrl(),
                         "https://patreon.com/mikibot")
                     .SetDescription(
-                        // TODO: move command identifiers from resources.
-                        $"{explanation}\n{locale.GetString("miki_blackjack_hit")}\n{locale.GetString("miki_blackjack_stay")}")
+                        $"{explanation}\n"
+                        + $"{locale.GetString("miki_blackjack_hit", ">blackjack hit".AsCode())}\n"
+                        + locale.GetString("miki_blackjack_stay", ">blackjack stay".AsCode()))
                     .AddField(userHandResource, player.Print(), true)
                     .AddField(dealerHandResource, dealer.Print(), true);
             }
@@ -430,7 +388,7 @@
             }
 
             string output = win 
-                ? locale.GetString("flip_description_win", $"`{bet}`")
+                ? locale.GetString("flip_description_win", bet.AsCode())
                 : locale.GetString("flip_description_lose");
 
             output += "\n" + locale.GetString(
@@ -458,7 +416,7 @@
 
             User u = await userService.GetOrCreateUserAsync(e.GetAuthor())
                 .ConfigureAwait(false);
-            int bet = ValidateBet(e, u, 99999);
+            int bet = ValidateBet(e, u, 100000);
             int moneyReturned = 0;
 
             await transactionService.CreateTransactionAsync(
@@ -645,7 +603,7 @@
                         $"{AppProps.Emoji.Mekos} {lotteryService.EntryPrice}")
                     .AddInlineField(
                         locale.GetString("lottery_jackpot"),
-                        jackpot.ToString())
+                        jackpot.ToString("N0"))
                     .AddInlineField(
                         locale.GetString("lottery_how_to"), 
                         ">lottery buy <amount>")
@@ -659,7 +617,7 @@
                 var amount = e.GetArgumentPack().TakeRequired<int>();
                 var lotteryService = e.GetService<ILotteryService>();
                 await lotteryService.PurchaseEntriesAsync((long)e.GetAuthor().Id, amount);
-                await e.SuccessEmbedResource("lottery_buy_success", amount)
+                await e.SuccessEmbedResource("lottery_buy_success", amount.ToString("N0"))
                     .QueueAsync(e, e.GetChannel());
             }
         }
@@ -670,12 +628,10 @@
             int maxBet = 1000000)
         {
             var args = e.GetArgumentPack();
-            if (args.Take(out int bet))
+            if (args.Take(out int bet)) {}
+            else if(args.Take(out string arg))
             {
-            }
-            else if (args.Take(out string arg))
-            {
-                if (Utils.IsAll(arg))
+                if(Utils.IsAll(arg))
                 {
                     bet = Math.Min(user.Currency, maxBet);
                 }
@@ -683,9 +639,8 @@
 
             if (bet > maxBet)
             {
-                throw new BetLimitOverflowException();
+                throw new BetLimitOverflowException(maxBet);
             }
-
             return bet;
         }
     }

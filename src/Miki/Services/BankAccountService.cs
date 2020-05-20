@@ -1,11 +1,11 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Bot.Models;
-    using Framework;
-    using Patterns.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class BankAccountService : IBankAccountService
     {
         private readonly IUnitOfWork unitOfWork;

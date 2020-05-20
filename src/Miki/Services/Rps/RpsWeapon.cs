@@ -1,7 +1,7 @@
-﻿namespace Miki.Services.Rps
-{
-    using Miki.Bot.Models.Attributes;
+﻿using Miki.Bot.Models.Attributes;
 
+namespace Miki.Services.Rps
+{
     [Entity("weapon")]
     public class RpsWeapon
 	{

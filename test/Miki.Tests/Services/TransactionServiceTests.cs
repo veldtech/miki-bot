@@ -1,14 +1,15 @@
-﻿namespace Miki.Tests.Services
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Moq;
+using Xunit;
+
+namespace Miki.Tests.Services
 {
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Moq;
-    using Xunit;
     public class TransactionServiceTests : BaseEntityTest<MikiDbContext>
     {
         /// <inheritdoc />

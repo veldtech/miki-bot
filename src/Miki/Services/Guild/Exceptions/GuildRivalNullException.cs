@@ -1,9 +1,9 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using System;
+using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Services
+{
     public class GuildRivalNullException : LocalizedException
     {
         /// <inheritdoc />

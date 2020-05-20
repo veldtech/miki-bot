@@ -1,8 +1,8 @@
-﻿namespace Miki.API.Imageboards.Objects
-{
-    using Miki.API.Imageboards.Interfaces;
-    using Newtonsoft.Json;
+﻿using Miki.API.Imageboards.Interfaces;
+using Newtonsoft.Json;
 
+namespace Miki.API.Imageboards.Objects
+{
     internal class GelbooruPost : BooruPost, ILinkable
 	{
 		public string Url => FileUrl;

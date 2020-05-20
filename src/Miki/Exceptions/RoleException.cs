@@ -1,9 +1,9 @@
-﻿namespace Miki
-{
-    using Miki.Discord.Common;
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Discord.Common;
+using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki
+{
     public class RoleException : LocalizedException
     {
         public override IResource LocaleResource => new LanguageResource("error_default");

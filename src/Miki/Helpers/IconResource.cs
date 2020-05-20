@@ -1,7 +1,7 @@
-﻿namespace Miki.Helpers
-{
-    using Miki.Localization;
+﻿using Miki.Localization;
 
+namespace Miki.Helpers
+{
     public class IconResource : IResource
     {
         private readonly string icon;

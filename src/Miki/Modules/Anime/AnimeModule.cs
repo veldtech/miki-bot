@@ -1,14 +1,15 @@
-﻿namespace Miki.Modules.Anime
-{
-    using Miki.Anilist;
-    using Miki.Discord;
-    using Miki.Framework;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Framework.Commands;
-    using Miki.Utility;
+﻿using Miki.Anilist;
+using Miki.Discord;
+using Miki.Framework;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Anilist.Objects;
+using Miki.Framework.Commands;
+using Miki.Utility;
 
+namespace Miki.Modules.Anime
+{
     [Module("Anime")]
 	public class AnimeModule
 	{
@@ -91,7 +92,7 @@
             {
                 if(page > result.PageInfo.TotalPages && page != 0)
                 {
-                    await e.ErrorEmbed($"You've exceeded the total amount of pages available, might want to move back a bit!")
+                    await e.ErrorEmbed("You've exceeded the total amount of pages available, might want to move back a bit!")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
                 }
                 else

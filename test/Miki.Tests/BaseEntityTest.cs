@@ -1,15 +1,15 @@
-﻿namespace Miki.Tests
-{
-    using System.Diagnostics.CodeAnalysis;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using Microsoft.Data.Sqlite;
-    using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Cache.InMemory;
-    using Miki.Framework;
-    using Miki.Serialization.Protobuf;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using System;
+using Microsoft.Data.Sqlite;
+using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Cache.InMemory;
+using Miki.Framework;
+using Miki.Serialization.Protobuf;
 
+namespace Miki.Tests
+{
     public class BaseEntityTest : BaseEntityTest<MikiDbContext>
     {
         public BaseEntityTest()

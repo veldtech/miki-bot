@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.Roles
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Modules.Roles
+{
     public class RoleNotSetupException : LocalizedException
     {
         /// <inheritdoc />

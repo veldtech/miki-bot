@@ -1,15 +1,16 @@
-﻿namespace Miki.Tests.Services
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Services;
-    using Miki.Services.Lottery;
-    using Miki.Services.Scheduling;
-    using Miki.Services.Transactions;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Services;
+using Miki.Services.Lottery;
+using Miki.Services.Scheduling;
+using Miki.Services.Transactions;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class LotteryServiceTests : BaseEntityTest
     {
         public LotteryServiceTests()
@@ -37,7 +38,8 @@
             {
                 var userService = new UserService(context, CacheClient);
                 var transactionService = new TransactionService(userService);
-                var schedulerService = new SchedulerService(null, CacheClient, null);
+                var schedulerService = new SchedulerService(
+                    new Mock<MikiApp>().Object, CacheClient, null);
                 var discordClient = new Mock<IDiscordClient>();
                 var lotteryService = new LotteryService(
                     CacheClient, schedulerService, transactionService, new LotteryEventHandler());
@@ -49,7 +51,8 @@
             {
                 var userService = new UserService(context, CacheClient);
                 var transactionService = new TransactionService(userService);
-                var schedulerService = new SchedulerService(null, CacheClient, null);
+                var schedulerService = new SchedulerService(
+                    new Mock<MikiApp>().Object, CacheClient, null);
                 var lotteryService = new LotteryService(
                     CacheClient, schedulerService, transactionService, new LotteryEventHandler());
 

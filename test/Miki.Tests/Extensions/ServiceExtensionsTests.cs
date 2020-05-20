@@ -1,13 +1,13 @@
-﻿namespace Miki.Tests.Extensions
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord.Common;
-    using Miki.Services;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord.Common;
+using Miki.Services;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Extensions
+{
     public class ServiceExtensionsTests
     {
         [Fact]

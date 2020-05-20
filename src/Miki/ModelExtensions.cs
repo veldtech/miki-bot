@@ -1,17 +1,16 @@
-﻿namespace Miki
-{
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Models.User;
-    using Miki.Bot.Models.Repositories;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Models.User;
+using Miki.Discord.Common;
+using Miki.Framework;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Services.Marriages;
 
+namespace Miki
+{
     public static class ModelExtensions
 	{
         public static async Task BanAsync(this User user, DbContext context)
@@ -53,10 +52,9 @@
             await context.SaveChangesAsync();
         }
 
-		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role)
+		public static async Task<IDiscordRole> GetRoleAsync(this LevelRole role, IDiscordGuild guild)
 		{
-			return await MikiApp.Instance.Services.GetService<IDiscordClient>()
-                .GetRoleAsync((ulong)role.GuildId, (ulong)role.RoleId);
+			return await guild.GetRoleAsync((ulong)role.RoleId);
 		}
 	}
 }

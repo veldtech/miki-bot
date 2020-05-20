@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.Roles
-{
-    using Miki.Discord.Common;
-    using Miki.Localization;
+﻿using Miki.Discord.Common;
+using Miki.Localization;
 
+namespace Miki.Modules.Roles
+{
     public class RequiredRoleMissingException : RoleException
     {
         public override IResource LocaleResource 

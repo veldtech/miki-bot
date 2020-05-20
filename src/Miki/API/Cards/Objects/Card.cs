@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Cards.Objects
-{
-    using Miki.API.Cards.Enums;
-    using ProtoBuf;
-    using System;
+﻿using Miki.API.Cards.Enums;
+using ProtoBuf;
+using System;
 
+namespace Miki.API.Cards.Objects
+{
     [ProtoContract]
 	public class Card
 	{

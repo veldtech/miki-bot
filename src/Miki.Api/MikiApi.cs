@@ -1,12 +1,12 @@
-﻿namespace Miki.API
-{
-    using Miki.Net.Http;
-    using Newtonsoft.Json;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Api.Leaderboards;
-    using Miki.Api.Users;
+﻿using Miki.Net.Http;
+using Newtonsoft.Json;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Api.Leaderboards;
+using Miki.Api.Users;
 
+namespace Miki.API
+{
     public class MikiApiClient
 	{
 		private readonly IHttpClient client;

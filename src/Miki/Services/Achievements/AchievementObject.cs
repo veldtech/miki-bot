@@ -1,9 +1,10 @@
-﻿namespace Miki.Services.Achievements
-{
-    using System;
-    using System.Collections.Generic;
-    using Miki.Bot.Models;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Miki.Bot.Models;
 
+namespace Miki.Services.Achievements
+{
     public class AchievementObject
     {
         public string Id { get; private set; }
@@ -19,13 +20,16 @@
                 this.id = id;
             }
 
-            public Builder AddEntry(string name, string icon)
+            public Builder Add(string icon)
             {
-                if (entries == null)
+                if(entries == null)
                 {
                     entries = new List<AchievementEntry>();
                 }
-                entries.Add(new AchievementEntry(null, name, icon, (short)entries.Count));
+
+                entries.Add(
+                    new AchievementEntry(
+                        id, icon, (short)entries.Count));
                 return this;
             }
 
@@ -42,27 +46,26 @@
 
     public class AchievementEntry
     {
-
-        public string ResourceName { get; }
+        public string ResourceName => $"achievement_{Id}_{Rank}";
+        public string Id { get; set; }
         public string Icon { get; }
-        public short  Rank { get; }
+        public short Rank { get; }
         public int Points => (1 + Rank) * 5;
 
-        private readonly AchievementObject parent;
-
-        public AchievementEntry(AchievementObject parent, string name, string icon, short rank)
+        public AchievementEntry(string id, string icon, short rank)
         {
-            this.parent = parent;
-            ResourceName = name;
+            Id= id;
             Icon = icon;
             Rank = rank;
         }
 
+        public Achievement ToModel(ulong userId) 
+            => ToModel((long)userId);
         public Achievement ToModel(long userId)
         {
             return new Achievement
             {
-                Name = parent.Id,
+                Name = Id,
                 UnlockedAt = DateTime.UtcNow,
                 Rank = Rank,
                 UserId = userId

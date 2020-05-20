@@ -1,27 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Miki.Api.Leaderboards;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Helpers;
+using Miki.Localization;
+
 namespace Miki.Utility
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Amazon.S3;
-    using Amazon.S3.Model;
-    using Miki.Api.Leaderboards;
-    using Miki.BunnyCDN;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Exceptions;
-    using Miki.Framework;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Helpers;
-    using Miki.Localization;
-    using Miki.Net.Http;
-    using Miki.Services;
-    using HttpClient = Net.Http.HttpClient;
-
     public static class Utils
     {
         public static string EveryonePattern => @"@(everyone|here)";
@@ -214,43 +205,6 @@ namespace Miki.Utility
                     $"#{offset + i + 1}: " + items[i].Name, $"{items[i].Value:n0}");
             }
             return embed;
-        }
-
-        public static async Task SyncAvatarAsync(
-            [NotNull] IDiscordUser user,
-            IExtendedCacheClient cache,
-            IUserService context,
-            AmazonS3Client s3Service,
-            BunnyCDNClient cdnClient)
-        {
-            PutObjectRequest request = new PutObjectRequest
-            {
-                BucketName = "miki-cdn",
-                Key = $"avatars/{user.Id}.png",
-                ContentType = "image/png",
-                CannedACL = new S3CannedACL("public-read")
-            };
-
-            string avatarUrl = user.GetAvatarUrl();
-            using(var client = new HttpClient(avatarUrl, true))
-            {
-                request.InputStream = await client.GetStreamAsync();
-            }
-
-            var response = await s3Service.PutObjectAsync(request);
-            if(response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-            {
-                throw new AvatarSyncException();
-            }
-
-            await cdnClient.PurgeCacheAsync($"https://mikido.b-cdn.net/avatars/{user.Id}.png");
-
-            var mikiUser = await context.GetOrCreateUserAsync(user);
-            await cache.HashUpsertAsync("avtr:sync", user.Id.ToString(), 1);
-            mikiUser.AvatarUrl = mikiUser.Id.ToString();
-
-            await context.UpdateUserAsync(mikiUser);
-            await context.SaveAsync();
         }
 
         public static string TakeAll(this IArgumentPack pack)

@@ -1,16 +1,16 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Queries;
-    using Miki.Cache;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Queries;
+using Miki.Cache;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services
+{
     public class LeaderboardsService
     {
         private readonly IAsyncRepository<RankObject> globalRankView;

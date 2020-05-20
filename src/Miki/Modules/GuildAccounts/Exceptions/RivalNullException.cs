@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.GuildAccounts.Exceptions
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Modules.GuildAccounts.Exceptions
+{
     public class RivalNullException : LocalizedException
     {
         public override IResource LocaleResource

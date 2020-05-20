@@ -1,27 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Exceptions;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Localization;
+using Miki.Modules.Admin.Exceptions;
+using Miki.Utility;
+
 namespace Miki.Modules.Admin
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Discord.Rest;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Permissions;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Exceptions;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Localization;
-    using Miki.Modules.Admin.Exceptions;
-    using Miki.Utility;
-
     [Module("Admin")]
     public class AdminModule
     {

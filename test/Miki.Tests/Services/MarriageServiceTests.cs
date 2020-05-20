@@ -1,11 +1,11 @@
-﻿namespace Miki.Tests.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Repositories;
-    using Xunit;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Services.Marriages;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class MarriageServiceTests : BaseEntityTest<MikiDbContext>
     {
         public MarriageServiceTests()
@@ -26,12 +26,11 @@
         }
 
         [Fact]
-        public async Task ProposeTest()
+        public async Task ProposeTestAsync()
         {
             await using(var context = NewContext())
             {
                 var service = new MarriageService(context);
-
                 await service.ProposeAsync(1L, 2L);
             }
 
@@ -55,7 +54,7 @@
         }
 
         [Fact]
-        public async Task AcceptMarriageTest()
+        public async Task AcceptMarriageTestAsync()
         {
             await InitMarriageAsync();
 
@@ -68,7 +67,7 @@
         }
 
         [Fact]
-        public async Task DeclineProposalTest()
+        public async Task DeclineProposalTestAsync()
         {
             await InitMarriageAsync();
 

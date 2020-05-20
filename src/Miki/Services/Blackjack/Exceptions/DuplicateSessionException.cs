@@ -1,8 +1,8 @@
-﻿namespace Miki.Services
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Services
+{
     public class DuplicateSessionException : LocalizedException
     {
         public override IResource LocaleResource 

@@ -1,28 +1,30 @@
-﻿namespace Miki.Accounts
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Models;
-    using Miki.Framework;
-    using Miki.Logging;
-    using Miki.Utility;
-    using Sentry;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Models;
+using Miki.Framework;
+using Miki.Logging;
+using Miki.Utility;
+using Sentry;
 
+namespace Miki.Accounts
+{
     public delegate Task LevelUpDelegate(IDiscordUser a, IDiscordTextChannel g, int level);
 
     public class AccountService
     {
+        private readonly MikiApp app;
         private readonly ISentryClient sentryClient;
         private readonly ICacheClient cache;
+
         public event LevelUpDelegate OnLocalLevelUp;
         public event LevelUpDelegate OnGlobalLevelUp;
 
@@ -41,17 +43,19 @@
             return $"user:{guildid}:{userid}:exp";
         }
 
-        public AccountService(IDiscordClient client, ISentryClient sentryClient, ICacheClient cache)
+        public AccountService(
+            MikiApp app, IDiscordClient client, ISentryClient sentryClient, ICacheClient cache)
         {
             if(client == null)
             {
                 throw new InvalidOperationException();
             }
 
+            this.app = app;
             this.sentryClient = sentryClient;
             this.cache = cache;
 
-            client.GuildMemberCreate += this.Client_UserJoined;
+            client.GuildMemberCreate += this.Client_UserJoinedAsync;
             client.MessageCreate += this.CheckAsync;
 
             experienceLock = new SemaphoreSlim(1, 1);
@@ -71,7 +75,7 @@
 
             try
             {
-                using var scope = MikiApp.Instance.Services.CreateScope();
+                using var scope = app.Services.CreateScope();
                 var services = scope.ServiceProvider;
 
                 if(e is IDiscordGuildMessage guildMessage)
@@ -84,8 +88,8 @@
                         var bonusExp = MikiRandom.Next(1, 4);
                         var expObject = new ExperienceAdded
                         {
-                            UserId = e.Author.Id.ToDbLong(),
-                            GuildId = guildMessage.GuildId.ToDbLong(),
+                            UserId = (long)e.Author.Id,
+                            GuildId = (long)guildMessage.GuildId,
                             Experience = bonusExp,
                             Name = e.Author.Username,
                         };
@@ -266,24 +270,8 @@
                 await OnGlobalLevelUp.Invoke(e.Author, await e.GetChannelAsync(), l);
             }
         }
-
-        private async Task Client_GuildUpdated(IDiscordGuild before, IDiscordGuild after)
-        {
-            if(before.Name != after.Name)
-            {
-                using var scope = MikiApp.Instance.Services.CreateScope();
-                var context = scope.ServiceProvider.GetService<MikiDbContext>();
-
-                GuildUser g = await context.GuildUsers.FindAsync(before.Id.ToDbLong())
-                    .ConfigureAwait(false);
-                g.Name = after.Name;
-
-                await context.SaveChangesAsync()
-                    .ConfigureAwait(false);
-            }
-        }
-
-        private async Task Client_UserJoined(IDiscordGuildUser arg)
+        
+        private async Task Client_UserJoinedAsync(IDiscordGuildUser arg)
         {
             await this.UpdateGuildUserCountAsync(await arg.GetGuildAsync().ConfigureAwait(false))
                 .ConfigureAwait(false);
@@ -291,10 +279,10 @@
 
         private async Task UpdateGuildUserCountAsync(IDiscordGuild guild)
         {
-            using var scope = MikiApp.Instance.Services.CreateScope();
+            using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetService<MikiDbContext>();
 
-            GuildUser g = await context.GuildUsers.FindAsync(guild.Id.ToDbLong())
+            GuildUser g = await context.GuildUsers.FindAsync((long)guild.Id)
                 .ConfigureAwait(false);
             g.UserCount = guild.MemberCount;
 

@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Pasta.Exceptions
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Services.Pasta.Exceptions
+{
     public class PastaNotFoundException : LocalizedException
     {
         public override IResource LocaleResource 

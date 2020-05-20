@@ -1,25 +1,26 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Bot.Models;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands.Filters;
-    using Miki.Net.Http;
-    using Newtonsoft.Json;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Scopes;
-    using Miki.Framework.Commands.Scopes.Models;
-    using Miki.Utility;
-    using Miki.Services;
-    using Miki.Services.Daily;
-	using Miki.Services.Scheduling;
+﻿using Miki.Bot.Models;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands.Filters;
+using Miki.Net.Http;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Scopes;
+using Miki.Framework.Commands.Scopes.Models;
+using Miki.Utility;
+using Miki.Services;
+using Miki.Services.Scheduling;
+using Miki.Accounts;
+using Miki.Services.Dailies;
 
+namespace Miki.Modules
+{
 	[Module("Experimental")]
 	internal class DeveloperModule
 	{
@@ -76,7 +77,21 @@
             await e.GetChannel().SendMessageAsync(JsonConvert.SerializeObject(payload));
         }
 
-		[Command("identifyuser")]
+        [Command("triggerlevelup")]
+        [RequiresScope("developer")]
+        public class LevelUpCommand
+        {
+			[Command]
+			[RequiresScope("developer")]
+            public async Task TriggerLevelUpAsync(IContext e)
+            {
+                var level = e.GetArgumentPack().TakeRequired<int>();
+                var service = e.GetService<AccountService>();
+                await service.LevelUpLocalAsync(e.GetMessage(), level);
+            }
+        }
+
+        [Command("identifyuser")]
         [RequiresScope("developer")]
 		public async Task IdenUserAsync(IContext e)
 		{

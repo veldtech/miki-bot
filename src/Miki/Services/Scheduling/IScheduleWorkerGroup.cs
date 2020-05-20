@@ -1,9 +1,9 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
+namespace Miki.Services.Scheduling
+{
     public interface IScheduleWorkerGroup : IScheduleWorker
     {
 

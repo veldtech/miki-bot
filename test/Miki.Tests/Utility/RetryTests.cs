@@ -1,11 +1,11 @@
-﻿namespace Miki.Tests.Utility
-{
-    using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
-    using Miki.Utility;
-    using Xunit;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Miki.Utility;
+using Xunit;
 
+namespace Miki.Tests.Utility
+{
     public class RetryTests
     {
         [Fact]

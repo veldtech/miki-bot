@@ -1,15 +1,15 @@
-﻿namespace Miki
-{
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Bot.Models;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using System.Threading.Tasks;
-    using Miki.Modules;
-    using Miki.Services.Achievements;
-    using Miki.Services.Settings;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using System.Threading.Tasks;
+using Miki.Modules;
+using Miki.Services.Achievements;
+using Miki.Services.Settings;
 
+namespace Miki
+{
     internal class Notification
 	{
 		public static async ValueTask SendAchievementAsync(

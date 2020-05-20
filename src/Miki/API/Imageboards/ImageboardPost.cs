@@ -1,17 +1,17 @@
+using Miki.API.Imageboards.Enums;
+using Miki.API.Imageboards.Objects;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.API.Imageboards.Interfaces;
+using Miki.Exceptions;
+using Miki.Net.Http;
+using Miki.Utility;
+
 namespace Miki.API.Imageboards
 {
-	using Miki.API.Imageboards.Enums;
-	using Miki.API.Imageboards.Objects;
-	using Newtonsoft.Json;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Threading.Tasks;
-    using Miki.API.Imageboards.Interfaces;
-    using Miki.Exceptions;
-    using Miki.Net.Http;
-    using Miki.Utility;
-
     public class ImageboardProvider
     {
         public ImageboardConfigurations Config = new ImageboardConfigurations();

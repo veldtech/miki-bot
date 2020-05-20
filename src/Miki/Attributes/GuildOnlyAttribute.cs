@@ -1,10 +1,10 @@
-﻿namespace Miki.Attributes
-{
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using System.Threading.Tasks;
-    using Miki.Utility;
+﻿using Miki.Framework;
+using Miki.Framework.Commands;
+using System.Threading.Tasks;
+using Miki.Utility;
 
+namespace Miki.Attributes
+{
     public class GuildOnlyAttribute : CommandRequirementAttribute
     {
         public override Task<bool> CheckAsync(IContext e)

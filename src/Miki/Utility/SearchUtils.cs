@@ -1,13 +1,13 @@
-﻿namespace Miki.Utility
-{
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Modules.Admin.Exceptions;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Modules.Admin.Exceptions;
 
+namespace Miki.Utility
+{
     public static class SearchUtils
     {
         public static Task<IDiscordRole> FindRoleAsync(

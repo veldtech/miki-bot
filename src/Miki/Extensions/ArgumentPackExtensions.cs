@@ -1,9 +1,9 @@
-﻿namespace Miki
-{
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Framework.Arguments;
-    using Miki.Functional;
+﻿using Miki.Bot.Models.Exceptions;
+using Miki.Framework.Arguments;
+using Miki.Functional;
 
+namespace Miki
+{
     public static class ArgumentPackExtensions
     {
         public static Result<T> Take<T>(this ITypedArgumentPack pack)

@@ -1,10 +1,10 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Cache;
-    using Miki.Functional;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Functional;
 
+namespace Miki.Services.Scheduling
+{
     public class ScheduleWorker : IScheduleWorker
     {
         protected readonly string taskName;

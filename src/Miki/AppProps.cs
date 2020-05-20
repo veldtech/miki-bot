@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Miki
+﻿namespace Miki
 {
     /// <summary>
     /// Static Application Properties
     /// </summary>
     public static class AppProps
     {
-        public const string InviteUrl 
-            = "https://discordapp.com/oauth2/authorize?&client_id=160185389313818624&scope=bot&permissions=355593334";
-
         public static class Emoji
         {
             public static string Disabled => "🚫";
@@ -34,6 +27,19 @@ namespace Miki
         {
             public static int DailyAmount => 100;
             public static int StreakAmount => 20;
+        }
+
+        public static class Links
+        {
+            public static string DiscordInvite = 
+                "https://discordapp.com/oauth2/authorize" 
+                + "?client_id=160185389313818624&scope=bot&permissions=355593334";
+
+            /// <summary>
+            /// Invite or redirect to the language page.
+            /// </summary>
+            public static string LocalizationInvite =
+                "https://translations.miki.ai/engage/miki/";
         }
     }                 
 }

@@ -1,20 +1,20 @@
-﻿namespace Miki.Tests.Modules.Gambling
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Discord.Common;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Modules.Gambling;
-    using Miki.Services;
-    using Miki.Services.Rps;
-    using Moq;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Discord.Common;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Modules.Gambling;
+using Miki.Services;
+using Miki.Services.Rps;
+using Moq;
+using Xunit;
 
+namespace Miki.Tests.Modules.Gambling
+{
     public class RpsTests : BaseCommandTest
     {
-        [Fact]
-        public async Task RpsWinTest()
+        [Fact(DisplayName = "rps end-to-end test")]
+        public async Task TestRpsWinAsync()
         {
             var userServiceMock = new Mock<IUserService>();
             userServiceMock.Setup(x => x.GetUserAsync(It.IsAny<long>()))
@@ -56,7 +56,7 @@
             Worker.TryGetMessage(out var msg);
 
             Assert.Equal(
-                "ROCK x vs. x SCISSOR\n\nYou won `10` mekos! Your new balance is `30`.",
+                "ROCK x vs. x SCISSOR\n\ngame_result_win currency_update_balance",
                 msg.Arguments.Properties.Embed.Description);
         }
     }

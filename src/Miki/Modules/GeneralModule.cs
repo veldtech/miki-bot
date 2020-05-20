@@ -1,37 +1,36 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Framework.Commands.Prefixes;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Dsl;
-    using Miki.Framework;
-    using Miki.Framework.Arguments;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Nodes;
-    using Miki.Localization;
-    using NCalc;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Services.Achievements;
-    using Miki.Utility;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Framework.Commands.Permissions;
-    using Miki.Framework.Commands.Prefixes.Triggers;
-    using Miki.Framework.Commands.Scopes;
-    using Miki.Framework.Commands.Scopes.Attributes;
-    using Miki.Functional;
-    using Miki.Localization.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Attributes;
+using Miki.Bot.Models.Exceptions;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Dsl;
+using Miki.Framework;
+using Miki.Framework.Arguments;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Nodes;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Prefixes;
+using Miki.Framework.Commands.Prefixes.Triggers;
+using Miki.Framework.Commands.Scopes;
+using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Functional;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Modules.Accounts.Services;
+using Miki.Services.Achievements;
+using Miki.Utility;
+using NCalc;
 
+namespace Miki.Modules
+{
     [Module("General")]
 	public class GeneralModule
 	{
@@ -55,14 +54,7 @@
                 }
                 else
                 {
-                    IDiscordGuildUser user = await e.GetGuild()
-                        .FindUserAsync(arg)
-                        .ConfigureAwait(false);
-                    if(user == null)
-                    {
-                        throw new EntityNullException<User>();
-                    }
-
+                    var user = await e.GetGuild().FindUserAsync(arg).ConfigureAwait(false);
                     avatarResource = user.Username;
                     avatarUrl = user.GetAvatarUrl();
                 }
@@ -100,7 +92,7 @@
                         double n = (double) x.Parameters[0].Evaluate();
                         double v = (double) x.Parameters[1].Evaluate();
                         double o = (double) x.Parameters[2].Evaluate();
-                        x.Result = (n * (1.0 - o)) + (v * o);
+                        x.Result = n * (1.0 - o) + v * o;
                         break;
                     }
                 }
@@ -174,7 +166,7 @@
                 return;
             }
 
-            giveawayText += ((amount > 1) ? " x " + amount : "");
+            giveawayText += amount > 1 ? $" x {amount:N0}" : "";
 
             List<IDiscordUser> winners = new List<IDiscordUser>();
 
@@ -539,7 +531,7 @@
             dmChannel.QueueMessage(e,
                 null,
                 e.GetLocale().GetString("miki_module_general_invite_dm")
-                + "\n" + AppProps.InviteUrl);
+                + "\n" + AppProps.Links.DiscordInvite);
         }
 
         [Command("ping", "lag")]

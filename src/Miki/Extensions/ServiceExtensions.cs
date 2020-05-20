@@ -1,11 +1,11 @@
-﻿namespace Miki
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord.Common;
-    using Miki.Services;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord.Common;
+using Miki.Services;
 
+namespace Miki
+{
     public static class ServiceExtensions
     {
         /// <summary>

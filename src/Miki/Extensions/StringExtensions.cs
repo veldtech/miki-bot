@@ -1,9 +1,27 @@
-﻿namespace Miki 
-{
-    using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 
+namespace Miki 
+{
     public static class StringExtensions
     {
+        public static string AsCode(this object str)
+        {
+            return $"`{str}`";
+        }
+
+        public static string CapitalizeFirst(this string str, CultureInfo culture = null)
+        {
+            if(string.IsNullOrEmpty(str))
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
+
+            return char.ToUpper(str[0], culture ?? CultureInfo.InvariantCulture)
+                   + str.Substring(1);
+        }
+
         public static string SplitStringUntil(this string str, string seperator, int maxCount)
         {
             int maxIndex = 0;

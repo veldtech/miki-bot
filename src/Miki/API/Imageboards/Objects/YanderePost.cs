@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Imageboards.Objects
-{
-    using Miki.API.Imageboards.Interfaces;
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
+﻿using Miki.API.Imageboards.Interfaces;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
+namespace Miki.API.Imageboards.Objects
+{
     /*
      *  {
       "id": 614834,

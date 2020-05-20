@@ -1,21 +1,21 @@
-﻿namespace Miki.Services.Lottery
-{
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Discord.Rest.Exceptions;
-    using Miki.Framework;
-    using Miki.Logging;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Rest.Exceptions;
+using Miki.Framework;
+using Miki.Logging;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Services.Lottery
+{
     public class LotteryEventHandler
     {
         public string LotteryObjectsKey => "lottery:entries";
 
-        public async Task HandleLotteryAsync(IContext context, string json)
+        public async Task HandleLotteryAsync(IContext context, string _)
         {
             var lotteryService = context.GetService<ILotteryService>();
 
@@ -47,7 +47,7 @@
                 return;
             }
 
-            var winningAmount = entryCount * lotteryService.WinningAmount;
+            var winningAmount = await lotteryService.GetTotalPrizeAsync();
 
             var transactionService = context.GetService<ITransactionService>();
             await transactionService.CreateTransactionAsync(

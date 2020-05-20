@@ -1,7 +1,7 @@
-﻿namespace Miki.Api.Users
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace Miki.Api.Users
+{
     public class UserInventory
     {
         public List<UserItem> Items { get; set; }

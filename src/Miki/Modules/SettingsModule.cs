@@ -1,27 +1,23 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Framework.Commands.Localization.Models.Exceptions;
-    using Miki.Framework.Commands.Prefixes;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Cache;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Permissions.Attributes;
-    using Miki.Framework.Commands.Permissions.Models;
-    using Miki.Localization;
-    using Miki.Services;
-    using Amazon.S3;
-    using Miki.BunnyCDN;
-    using Miki.Framework.Commands.Prefixes.Triggers;
-    using Miki.Services.Settings;
-    using Miki.Utility;
+﻿using Miki.Framework.Commands.Localization.Models.Exceptions;
+using Miki.Framework.Commands.Prefixes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Permissions.Attributes;
+using Miki.Framework.Commands.Permissions.Models;
+using Miki.Localization;
+using Miki.Framework.Commands.Prefixes.Triggers;
+using Miki.Services.Settings;
+using Miki.Utility;
 
+namespace Miki.Modules
+{
     public enum LevelNotificationsSetting
 	{
 		RewardsOnly = 0,
@@ -81,7 +77,7 @@
                     "Your language not here?",
                     locale.GetString(
                         "locales_contribute",
-                        $"[{locale.GetString("locales_translations")}](https://poeditor.com/join/project/FIv7NBIReD)"))
+                        $"[{locale.GetString("locales_translations")}]({AppProps.Links.LocalizationInvite})"))
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
@@ -228,22 +224,5 @@
                 .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
-         
-        [Command("syncavatar")]
-		public async Task SyncAvatarAsync(IContext e)
-		{
-            var context = e.GetService<IUserService>();
-            var cache = e.GetService<IExtendedCacheClient>();
-            var amazonClient = e.GetService<AmazonS3Client>();
-            var cdnClient = e.GetService<BunnyCDNClient>();
-
-            var locale = e.GetLocale();
-            await Utils.SyncAvatarAsync(
-                e.GetAuthor(), cache, context, amazonClient, cdnClient);
-
-			await e.SuccessEmbed(
-                locale.GetString("setting_avatar_updated"))
-                .QueueAsync(e, e.GetChannel());
-		}
-	}
+    }
 }

@@ -1,9 +1,9 @@
-﻿namespace Miki.Utility
-{
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Miki.Utility
+{
     public class Task<T1, T2> : Task<Tuple<T1, T2>> {
         /// <inheritdoc />
         public Task(Func<object, Tuple<T1, T2>> function, object state)

@@ -1,10 +1,10 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Framework;
-    using Miki.Functional;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Framework;
+using Miki.Functional;
 
+namespace Miki.Services.Scheduling
+{
     public interface ISchedulerService
     {
         IScheduleWorker CreateWorker(Required<string> taskName, Func<IContext, string, Task> handler);

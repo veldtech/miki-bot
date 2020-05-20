@@ -1,16 +1,16 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Miki.Cache;
-    using Miki.Framework;
-    using Miki.Functional;
-    using Miki.Logging;
-    using Sentry;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Framework;
+using Miki.Functional;
+using Miki.Logging;
+using Sentry;
 
+namespace Miki.Services.Scheduling
+{
     public class SchedulerService : ISchedulerService, IDisposable, IAsyncDisposable
     {
         private const string SchedulerQueueKey = "scheduler-queue";
@@ -26,6 +26,11 @@
 
         public SchedulerService(MikiApp app, IExtendedCacheClient cacheClient, ISentryClient sentryClient)
         {
+            if(app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
             this.app = app;
             this.cacheClient = cacheClient;
             this.sentryClient = sentryClient;

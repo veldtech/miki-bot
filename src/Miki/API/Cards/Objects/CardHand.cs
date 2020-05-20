@@ -1,8 +1,8 @@
-﻿namespace Miki.API.Cards.Objects
+﻿using ProtoBuf;
+using System.Collections.Generic;
+
+namespace Miki.API.Cards.Objects
 {
-    using ProtoBuf;
-    using System.Collections.Generic;
-    
     [ProtoContract]
 	public class CardHand
 	{

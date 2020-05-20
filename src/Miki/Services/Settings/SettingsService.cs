@@ -1,13 +1,13 @@
-﻿namespace Miki.Services.Settings
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Framework;
-    using Miki.Functional;
-    using Miki.Patterns.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Framework;
+using Miki.Functional;
+using Miki.Patterns.Repositories;
 
+namespace Miki.Services.Settings
+{
     public class SettingsService : ISettingsService
     {
         private readonly IUnitOfWork unit;

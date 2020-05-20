@@ -1,8 +1,8 @@
-﻿namespace Miki.Api.Leaderboards
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace Miki.Api.Leaderboards
+{
     public class LeaderboardsObject
 	{
 		[JsonProperty("totalPages")]

@@ -1,11 +1,11 @@
-﻿namespace Miki.Modules.Admin.Exceptions
-{
-    using System;
-    using System.Reflection;
-    using Miki.Bot.Models.Attributes;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using System;
+using System.Reflection;
+using Miki.Bot.Models.Attributes;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Modules.Admin.Exceptions
+{
     public class InvalidEntityException : LocalizedException
     {
         private readonly string entity;

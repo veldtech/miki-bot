@@ -1,13 +1,13 @@
-﻿namespace Miki.Modules
-{
-    using Miki.Discord;
-    using Miki.Framework;
-    using System.Threading.Tasks;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Models;
-    using Miki.Framework.Commands;
-    using Miki.Utility;
+﻿using Miki.Discord;
+using Miki.Framework;
+using System.Threading.Tasks;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Models;
+using Miki.Framework.Commands;
+using Miki.Utility;
 
+namespace Miki.Modules
+{
     [Module("Actions")]
 	public class ActionsModule
 	{

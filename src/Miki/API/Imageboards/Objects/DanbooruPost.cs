@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Imageboards.Objects
+﻿using Miki.API.Imageboards.Interfaces;
+using Newtonsoft.Json;
+using System;
+
+namespace Miki.API.Imageboards.Objects
 {
-    using Miki.API.Imageboards.Interfaces;
-    using Newtonsoft.Json;
-    using System;
-    
     public class DanbooruPost : BooruPost, ILinkable
 	{
 		[JsonProperty("id")]

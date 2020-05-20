@@ -1,9 +1,9 @@
-﻿namespace Miki.Helpers
-{
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using StatsdClient;
+﻿using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using StatsdClient;
 
+namespace Miki.Helpers
+{
     public static class DatabaseHelpers
 	{
         public static void AddCurrency(

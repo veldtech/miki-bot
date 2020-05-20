@@ -1,91 +1,93 @@
-﻿namespace Miki
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading.Tasks;
-    using Amazon.S3;
-    using Discord.Internal;
-    using Framework.Commands.Localization.Services;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using Miki.Accounts;
-    using Miki.Adapters;
-    using Miki.API;
-    using Miki.API.Backgrounds;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Repositories;
-    using Miki.BunnyCDN;
-    using Miki.Cache;
-    using Miki.Cache.StackExchange;
-    using Miki.Configuration;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Discord.Common.Packets;
-    using Miki.Discord.Common.Packets.API;
-    using Miki.Discord.Gateway;
-    using Miki.Discord.Rest;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using Miki.Framework.Commands.Filters;
-    using Miki.Framework.Commands.Localization;
-    using Miki.Framework.Commands.Permissions;
-    using Miki.Framework.Commands.Prefixes;
-    using Miki.Framework.Commands.Prefixes.Triggers;
-    using Miki.Framework.Commands.Scopes;
-    using Miki.Framework.Commands.Stages;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Logging;
-    using Miki.Modules.Accounts.Services;
-    using Miki.Serialization;
-    using Miki.Serialization.Protobuf;
-    using Miki.Services;
-    using Miki.Services.Daily;
-    using Miki.Services.Achievements;
-    using Miki.Services.Rps;
-    using Miki.Services.Transactions;
-    using Miki.UrbanDictionary;
-    using Miki.Utility;
-    using Retsu.Consumer;
-    using Sentry;
-    using Veld.Osu;
-    using Veld.Osu.V1;
-    using System.Text.Json;
-    using Miki.Cache.InMemory;
-    using Miki.Modules.Internal.Routines;
-    using Miki.Services.Lottery;
-    using Miki.Services.Pasta;
-    using Miki.Services.Reddit;
-    using Miki.Services.Scheduling;
-    using Splitio.Services.Client.Classes;
-    using Miki.Services.Settings;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Miki.Discord.Internal;
+using Miki.Framework.Commands.Localization.Services;
+using Miki.Functional;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Miki.Accounts;
+using Miki.Adapters;
+using Miki.API;
+using Miki.API.Backgrounds;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Repositories;
+using Miki.Cache;
+using Miki.Cache.InMemory;
+using Miki.Cache.StackExchange;
+using Miki.Configuration;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Discord.Common.Packets;
+using Miki.Discord.Common.Packets.API;
+using Miki.Discord.Gateway;
+using Miki.Discord.Rest;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Framework.Commands.Filters;
+using Miki.Framework.Commands.Localization;
+using Miki.Framework.Commands.Permissions;
+using Miki.Framework.Commands.Prefixes;
+using Miki.Framework.Commands.Prefixes.Triggers;
+using Miki.Framework.Commands.Scopes;
+using Miki.Framework.Commands.Stages;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Logging;
+using Miki.Modules.Accounts.Services;
+using Miki.Modules.Internal.Routines;
+using Miki.Serialization;
+using Miki.Serialization.Protobuf;
+using Miki.Services;
+using Miki.Services.Achievements;
+using Miki.Services.Dailies;
+using Miki.Services.Lottery;
+using Miki.Services.Marriages;
+using Miki.Services.Pasta;
+using Miki.Services.Reddit;
+using Miki.Services.Rps;
+using Miki.Services.Scheduling;
+using Miki.Services.Settings;
+using Miki.Services.Transactions;
+using Miki.UrbanDictionary;
+using Miki.Utility;
+using Retsu.Consumer;
+using Sentry;
+using Splitio.Services.Client.Classes;
+using Splitio.Services.Client.Interfaces;
+using Veld.Osu;
+using Veld.Osu.V1;
 
+namespace Miki
+{
     public class MikiBotApp : MikiApp
     {
-        public override ProviderCollection ConfigureProviders(
-            IServiceProvider services,
-            IAsyncEventingExecutor<IDiscordMessage> pipeline)
+        private readonly IStartupConfiguration configuration;
+
+        public MikiBotApp(IStartupConfiguration configuration)
         {
-            DatadogRoutine routine = new DatadogRoutine(
-                services.GetService<AccountService>(),
-                Pipeline,
-                services.GetService<Config>(),
-                services.GetService<IDiscordClient>());
+            this.configuration = configuration;
+        }
 
+        public override ProviderCollection ConfigureProviders(
+            IServiceProvider services, IAsyncEventingExecutor<IDiscordMessage> pipeline)
+        {
+            var _ = services.GetService<DatadogRoutine>(); // Eager loading
             var discordClient = services.GetService<IDiscordClient>();
-            discordClient.UserUpdate += Client_UserUpdated;
-            discordClient.GuildJoin += Client_JoinedGuild;  
+            discordClient.GuildJoin += ClientJoinedGuildAsync;  
 
-            discordClient.MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
+            discordClient.MessageCreate += async e => await pipeline.ExecuteAsync(e);
             pipeline.OnExecuted += LogErrorsAsync;
 
             return new ProviderCollection()
                 .Add(new ProviderAdapter(
                     discordClient.Gateway.StartAsync,
                     discordClient.Gateway.StopAsync));
+
         }
 
         private async ValueTask LogErrorsAsync(IExecutionResult<IDiscordMessage> arg)
@@ -114,47 +116,28 @@
             sentry.CaptureEvent(arg.Context.ToSentryEvent(arg.Error));
         }
 
-        public override IAsyncEventingExecutor<IDiscordMessage> ConfigurePipeline(
-            IServiceProvider services)
-        {
-            return new CommandPipelineBuilder(services)
-                .UseStage(new CorePipelineStage())
-                .UseFilters(new BotFilter(), new UserFilter())
-                .UsePrefixes()
-                .UseStage(new FetchDataStage())
-                .UseLocalization()
-                .UseArgumentPack()
-                .UseCommandHandler()
-                .UsePermissions()
-                .UseScopes()
-                .Build();
-        }
-
         public override async Task ConfigureAsync(ServiceCollection serviceCollection)
         {
-            CreateLogger();
+            CreateLogger(configuration.LogLevel);
 
-            // TODO(velddev): Remove constant environment fetch.
-            var connString = Environment.GetEnvironmentVariable(Constants.EnvConStr);
-            if(connString == null)
+            if(string.IsNullOrWhiteSpace(configuration.ConnectionString))
             {
                 throw new InvalidOperationException("Connection string cannot be null");
             }
 
-            await using var context = new MikiDbContextFactory().CreateDbContext();
-            var config = await new ConfigService(new UnitOfWork(context)).GetOrCreateAnyAsync(null);
-
             serviceCollection.AddDbContext<MikiDbContext>(
-                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models"))
+                x => x.UseNpgsql(
+                        configuration.ConnectionString, 
+                        b => b.MigrationsAssembly("Miki.Bot.Models"))
                     .EnableDetailedErrors());
             serviceCollection.AddDbContext<DbContext, MikiDbContext>(
-                x => x.UseNpgsql(connString, b => b.MigrationsAssembly("Miki.Bot.Models"))
+                x => x.UseNpgsql(
+                        configuration.ConnectionString, 
+                        b => b.MigrationsAssembly("Miki.Bot.Models"))
                     .EnableDetailedErrors());
 
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            serviceCollection.AddSingleton(config);
-
+            serviceCollection.AddSingleton(configuration.Configuration);
             serviceCollection.AddSingleton<ISerializer, ProtobufSerializer>();
             
             serviceCollection.AddScoped<
@@ -162,51 +145,27 @@
 
             serviceCollection.AddScoped(x => new MikiApiClient(x.GetService<Config>().MikiApiKey));
 
-            // Setup Amazon CDN Client
-
-            if(string.IsNullOrWhiteSpace(config.CdnAccessKey)
-               || string.IsNullOrWhiteSpace(config.CdnRegionEndpoint))
-            {
-                serviceCollection.AddSingleton(new AmazonS3Client(
-                    new AmazonS3Config
-                    {
-                        ServiceURL = "https://cdn.miki.ai"
-                    }));
-            }
-            else
-            {
-                serviceCollection.AddSingleton(new AmazonS3Client(
-                    config.CdnAccessKey,
-                    config.CdnSecretKey,
-                    new AmazonS3Config
-                    {
-                        ServiceURL = config.CdnRegionEndpoint
-                    }));
-            }
-
             // Setup Discord
             serviceCollection.AddSingleton<IApiClient>(
-                s => new DiscordApiClient(
-                    s.GetService<Config>().Token,
-                    s.GetService<ICacheClient>()));
+                s => new DiscordApiClient(s.GetService<Config>().Token, s.GetService<ICacheClient>()));
 
-            bool.TryParse(Environment.GetEnvironmentVariable(Constants.EnvSelfHost), out var selfHost);
-            if(selfHost)
+            if(configuration.IsSelfHosted)
             {
                 serviceCollection.AddSingleton<IGateway>(
-                    new GatewayCluster(
+                    new GatewayShard(
                         new GatewayProperties
                         {
                             ShardCount = 1,
                             ShardId = 0,
-                            Token = config.Token,
-                            AllowNonDispatchEvents = true
+                            Token = configuration.Configuration.Token,
+                            AllowNonDispatchEvents = true,
+                            Intents = GatewayIntents.AllDefault | GatewayIntents.GuildMembers
                         }));    
 
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
 
-                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions
+                var splitConfig = new ConfigurationOptions
                 {
                     LocalhostFilePath = "./feature_flags.yaml"
                 };
@@ -221,11 +180,17 @@
                 var consumer = new RetsuConsumer(
                     new ConsumerConfiguration
                     {
-                        ConnectionString = new Uri(config.RabbitUrl),
+                        ConnectionString = new Uri(configuration.Configuration.RabbitUrl),
                         QueueName = "gateway",
                         ExchangeName = "consumer",
                         ConsumerAutoAck = false,
                         PrefetchCount = 25,
+                    },
+                    new Retsu.Consumer.Models.QueueConfiguration
+                    {
+                        ConnectionString = new Uri(configuration.Configuration.RabbitUrl),
+                        QueueName = "gateway-command",
+                        ExchangeName = "consumer",
                     });
 
                 await consumer.SubscribeAsync("MESSAGE_CREATE");
@@ -257,9 +222,8 @@
 
                 serviceCollection.AddSingleton<IGateway>(consumer);
 
-                var connectionPool = new RedisConnectionPool();
-                await connectionPool.InitAsync(config.RedisConnectionString);
-                serviceCollection.AddSingleton(connectionPool);
+                serviceCollection.AddSingleton(
+                    new RedisConnectionPool(configuration.Configuration.RedisConnectionString));
 
                 serviceCollection.AddTransient(
                     x => x.GetRequiredService<RedisConnectionPool>().Get());
@@ -267,39 +231,43 @@
                 serviceCollection.AddTransient<ICacheClient, StackExchangeCacheClient>();
                 serviceCollection.AddTransient<IExtendedCacheClient, StackExchangeCacheClient>();
 
-                var splitConfig = new Splitio.Services.Client.Classes.ConfigurationOptions();
-                var factory = new SplitFactory(
-                    config.OptionalValues?.SplitioSdkKey, splitConfig);
-                var client = factory.Client();
-                try
+                ISplitClient client = null;
+                if(!string.IsNullOrEmpty(configuration.Configuration.OptionalValues?.SplitioSdkKey))
                 {
-                    client.BlockUntilReady(30000);
+                    var splitConfig = new ConfigurationOptions();
+                    var factory = new SplitFactory(
+                        configuration.Configuration.OptionalValues?.SplitioSdkKey, splitConfig);
+                    client = factory.Client();
+                    try
+                    {
+                        client.BlockUntilReady(30000);
+                    }
+                    catch(TimeoutException)
+                    {
+                        Log.Error("Couldn't initialize splitIO in time.");
+                    }
                 }
-                catch(TimeoutException)
-                {
-                    Log.Error("Couldn't initialize splitIO in time.");
-                }
-                serviceCollection.AddSingleton(client);
+
+                serviceCollection.AddSingleton(x => client);
             }
 
             serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
 
             // Setup web services
             serviceCollection.AddSingleton<UrbanDictionaryApi>();
-            serviceCollection.AddSingleton(x => new BunnyCDNClient(x.GetService<Config>().BunnyCdnKey));
-
+            
             // Setup miscellanious services
             serviceCollection.AddSingleton<ConfigurationManager>();
             serviceCollection.AddSingleton(
                 await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
             ISentryClient sentryClient = null;
-            if(!string.IsNullOrWhiteSpace(config.SharpRavenKey))
+            if(!string.IsNullOrWhiteSpace(configuration.Configuration.SharpRavenKey))
             {
                 sentryClient = new SentryClient(
                     new SentryOptions
                     {
-                        Dsn = new Dsn(config.SharpRavenKey)
+                        Dsn = new Dsn(configuration.Configuration.SharpRavenKey)
                     });
             }
             serviceCollection.AddSingleton(s => sentryClient);
@@ -329,9 +297,10 @@
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
             serviceCollection.AddSingleton<LotteryEventHandler>();
             serviceCollection.AddScoped<ILotteryService, LotteryService>();
-            serviceCollection.AddSingleton<IOsuApiClient>(_ => config.OptionalValues?.OsuApiKey == null
-                ? null
-                : new OsuApiClientV1(config.OptionalValues.OsuApiKey));
+            serviceCollection.AddSingleton<IOsuApiClient>(
+                _ => configuration.Configuration.OptionalValues?.OsuApiKey == null
+                    ? null
+                    : new OsuApiClientV1(configuration.Configuration.OptionalValues.OsuApiKey));
                 serviceCollection.AddScoped<BlackjackService>();
             serviceCollection.AddScoped<LeaderboardsService>();
 
@@ -343,12 +312,26 @@
 
             serviceCollection.AddScoped<IPrefixService, PrefixService>();
 
-            serviceCollection.AddSingleton(x => new CommandTreeBuilder(x)
-                .AddCommandBuildStep(new ConfigurationManagerAdapter())
-                .Create(Assembly.GetExecutingAssembly()));
+            serviceCollection.AddSingleton(
+                x => new CommandTreeBuilder(x).Create(Assembly.GetExecutingAssembly()));
+
+            serviceCollection.AddSingleton<IAsyncEventingExecutor<IDiscordMessage>>(
+                services => new CommandPipelineBuilder(services)
+                    .UseStage(new CorePipelineStage())
+                    .UseFilters(new BotFilter(), new UserFilter())
+                    .UsePrefixes()
+                    .UseStage(new FetchDataStage())
+                    .UseLocalization()
+                    .UseArgumentPack()
+                    .UseCommandHandler()
+                    .UsePermissions()
+                    .UseScopes()
+                    .Build());
+
+            serviceCollection.AddSingleton<DatadogRoutine>();
         }
 
-        public Task<IContext> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
+        public async Task<ContextObject> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
         {
             // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
@@ -375,18 +358,25 @@
                         } : null,
                 },
                 Services.GetService<IDiscordClient>());
-            return CreateFromMessageAsync(message);
-        }
-        /// <summary>
-        /// Hacky temp function
-        /// </summary>
-        public async Task<IContext> CreateFromMessageAsync(IDiscordMessage message)
-        {
-            // TODO (velddev): Resolve this in a better way.
             var context = new ContextObject(Services);
             await new CorePipelineStage().CheckAsync(message, context, () => default);
             await new FetchDataStage().CheckAsync(message, context, () => default);
             return context;
+        }
+        
+        /// <summary>
+        /// Hacky temp function
+        /// </summary>
+        public async Task CreateFromMessageAsync(
+            IDiscordMessage message, Func<IContext, Task> scope)
+        {
+            // TODO (velddev): Resolve this in a better way.
+            using var context = new ContextObject(Services);
+            await new CorePipelineStage().CheckAsync(message, context, () => default);
+            await new FetchDataStage().CheckAsync(message, context, () => default);
+            await new LocalizationPipelineStage(Services.GetService<ILocalizationService>())
+                .CheckAsync(message, context, () => default);
+            await scope(context);
         }
 
         private async Task<LocaleCollection> BuildLocalesAsync()
@@ -418,8 +408,7 @@
             return collection;
         }
 
-
-        private static void CreateLogger()
+        private static void CreateLogger(LogLevel loglevel)
         {
             var theme = new LogTheme();
             theme.SetColor(
@@ -444,35 +433,23 @@
                     Background = 0
                 });
 
-            new LogBuilder()
-                .AddLogEvent((msg, lvl) =>
-                {
-                    if(lvl >= (LogLevel)Enum.Parse(typeof(LogLevel),
-                           Environment.GetEnvironmentVariable(Constants.EnvLogLevel)))
-                    {
-                        Console.WriteLine(msg);
-                    }
-                })
-                .SetLogHeader(msg => $"[{msg}]: ")
-                .SetTheme(theme)
-                .Apply();
-        }
-
-        private async Task Client_UserUpdated(IDiscordUser oldUser, IDiscordUser newUser)
-        {
-            using var scope = Services.CreateScope();
-            if(oldUser.AvatarId != newUser.AvatarId)
+            try
             {
-                await Utils.SyncAvatarAsync(newUser,
-                        scope.ServiceProvider.GetService<IExtendedCacheClient>(),
-                        scope.ServiceProvider.GetService<IUserService>(),
-                        scope.ServiceProvider.GetService<AmazonS3Client>(),
-                        scope.ServiceProvider.GetService<BunnyCDNClient>())
-                    .ConfigureAwait(false);
-            }
+                new LogBuilder()
+                    .AddLogEvent((msg, lvl) =>
+                    {
+                        if(lvl >= loglevel)
+                        {
+                            Console.WriteLine(msg);
+                        }
+                    })
+                    .SetLogHeader(msg => $"[{msg}]: ")
+                    .SetTheme(theme)
+                    .Apply();
+            } catch(UnauthorizedAccessException) { } // Means log is set up already.
         }
 
-        private async Task Client_JoinedGuild(IDiscordGuild arg)
+        private async Task ClientJoinedGuildAsync(IDiscordGuild arg)
         {
             using var scope = Services.CreateScope();
             var context = scope.ServiceProvider.GetService<DbContext>();
@@ -485,7 +462,7 @@
                 Locale i = await locale.GetLocaleAsync((long)defaultChannel.Id)
                     .ConfigureAwait(false);
                 (defaultChannel as IDiscordTextChannel).QueueMessage(
-                    scope.ServiceProvider.GetService<MessageWorker>(), 
+                    scope.ServiceProvider.GetService<IMessageWorker<IDiscordMessage>>(), 
                     message: i.GetString("miki_join_message"));
             }
 
@@ -500,11 +477,11 @@
                 {
                     allArgs.Add($"(@p{i * 2}, @p{i * 2 + 1})");
 
-                    allParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allParams.Add((long)members.ElementAt(i).Id);
                     allParams.Add(members.ElementAt(i).Username);
 
-                    allExpParams.Add(arg.Id.ToDbLong());
-                    allExpParams.Add(members.ElementAt(i).Id.ToDbLong());
+                    allExpParams.Add((long)arg.Id);
+                    allExpParams.Add((long)members.ElementAt(i).Id);
                 }
 
                 await context.Database.ExecuteSqlRawAsync(
@@ -524,6 +501,5 @@
                 Log.Error(e.ToString());
             }
         }
-
     }
 }

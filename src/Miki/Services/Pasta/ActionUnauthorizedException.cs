@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Pasta
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Services.Pasta
+{
     public class ActionUnauthorizedException : LocalizedException
     {
         public override IResource LocaleResource 

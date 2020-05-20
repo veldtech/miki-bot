@@ -1,13 +1,13 @@
-﻿namespace Miki.Services
-{
-    using System;
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Framework;
-    using Miki.Patterns.Repositories;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using System;
+using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Framework;
+using Miki.Patterns.Repositories;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Services
+{
     // TODO: finish and test GuildService.
     public class GuildService : IGuildService
     {

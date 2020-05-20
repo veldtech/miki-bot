@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.CustomCommands
-{
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Modules.CustomCommands
+{
     public class DuplicateCommandException : LocalizedException
     {
         public override IResource LocaleResource 

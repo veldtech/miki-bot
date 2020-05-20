@@ -1,8 +1,8 @@
-﻿namespace Miki
-{
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki
+{
     public class CommandDisabledException : LocalizedException
     {
         /// <inheritdoc />

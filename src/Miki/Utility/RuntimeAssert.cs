@@ -1,8 +1,8 @@
-﻿namespace Miki.Utility
-{
-    using System;
-    using Miki.Localization.Exceptions;
+﻿using System;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Utility
+{
     public static class RuntimeAssert
     {
         public static void NotNull<T>(T any, LocalizedException exception = null)

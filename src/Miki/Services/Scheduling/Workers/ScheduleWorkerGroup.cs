@@ -1,12 +1,12 @@
-﻿namespace Miki.Services.Scheduling
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Miki.Cache;
-    using Miki.Functional;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Miki.Cache;
+using Miki.Functional;
 
+namespace Miki.Services.Scheduling
+{
     public class ScheduleWorkerGroup : ScheduleWorker, IScheduleWorkerGroup
     {
         public ScheduleWorkerGroup(

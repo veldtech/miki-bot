@@ -1,10 +1,10 @@
-﻿namespace Miki.Modules.Fun.Exceptions
-{
-    using System;
-    using Imgur.API;
-    using Miki.Localization.Exceptions;
-    using Miki.Localization;
+﻿using System;
+using Imgur.API;
+using Miki.Localization.Exceptions;
+using Miki.Localization;
 
+namespace Miki.Modules.Fun.Exceptions
+{
     public class InternalServerErrorException : LocalizedException
     {
         private readonly string source;

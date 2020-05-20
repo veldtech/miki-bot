@@ -1,11 +1,11 @@
-﻿namespace Miki.Utility
-{
-    using System.Linq;
-    using System.Security.Cryptography;
-    using System;
-    using System.Collections.Generic;
-    using Miki.Functional;
+﻿using System.Linq;
+using System.Security.Cryptography;
+using System;
+using System.Collections.Generic;
+using Miki.Functional;
 
+namespace Miki.Utility
+{
     public class MikiRandom : RandomNumberGenerator
     {
         private static readonly RandomNumberGenerator RandomNumberGenerator 

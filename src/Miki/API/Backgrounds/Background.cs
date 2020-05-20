@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Backgrounds
-{
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
+namespace Miki.API.Backgrounds
+{
     [DataContract]
 	public class Background
 	{

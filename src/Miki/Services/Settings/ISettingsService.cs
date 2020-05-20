@@ -1,10 +1,10 @@
-﻿namespace Miki.Services.Settings
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Miki.Functional;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Miki.Functional;
 
+namespace Miki.Services.Settings
+{
     /// <summary>
     /// User configurable settings service.
     /// </summary>

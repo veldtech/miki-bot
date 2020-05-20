@@ -1,9 +1,9 @@
-﻿namespace Miki.API.Imageboards
-{
-    using Miki.API.Imageboards.Objects;
-    using System;
-    using System.Collections.Generic;
+﻿using Miki.API.Imageboards.Objects;
+using System;
+using System.Collections.Generic;
 
+namespace Miki.API.Imageboards
+{
     public static class ImageboardProviderPool
     {
         private static readonly Dictionary<Type, ImageboardProvider> Providers =

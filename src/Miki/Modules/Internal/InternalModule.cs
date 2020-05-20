@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.Internal
-{
-    using Miki.Framework.Commands;
-    using Routines;
+﻿using Miki.Framework.Commands;
+using Miki.Modules.Internal.Routines;
 
+namespace Miki.Modules.Internal
+{
     [Module("Internal")]
 	public class InternalModule
 	{

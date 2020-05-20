@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Miki.Utility
 {
-    using System.Threading.Tasks;
-
     public static class Retry
     {
         public static async Task<T> RetryAsync<T>(Func<Task<T>> func, int delayMs, int maxTries = 5)

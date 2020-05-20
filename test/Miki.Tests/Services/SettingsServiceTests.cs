@@ -1,12 +1,12 @@
-﻿namespace Miki.Tests.Services
-{
-    using System.Threading.Tasks;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Modules;
-    using Miki.Services.Settings;
-    using Xunit;
+﻿using System.Threading.Tasks;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Modules;
+using Miki.Services.Settings;
+using Xunit;
 
+namespace Miki.Tests.Services
+{
     public class SettingsServiceTests : BaseEntityTest<MikiDbContext>
     {
         private static readonly long defaultEntityId = 1L;

@@ -1,25 +1,25 @@
-﻿namespace Miki.Modules.Roles
-{
-    using Microsoft.EntityFrameworkCore;
-    using Miki.Attributes;
-    using Miki.Bot.Models;
-    using Miki.Bot.Models.Exceptions;
-    using Miki.Discord;
-    using Miki.Discord.Common;
-    using Miki.Dsl;
-    using Miki.Framework;
-    using Miki.Framework.Commands;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
-    using Miki.Services;
-    using Miki.Services.Transactions;
-    using Miki.Utility;
+﻿using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
+using Miki.Discord;
+using Miki.Discord.Common;
+using Miki.Dsl;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Miki.Localization;
+using Miki.Localization.Exceptions;
+using Miki.Services;
+using Miki.Services.Transactions;
+using Miki.Utility;
 
+namespace Miki.Modules.Roles
+{
     [Module("Role Management")]
 	internal class RolesModule
 	{
@@ -168,8 +168,9 @@
             {
                 List<LevelRole> levelRoles = await context.LevelRoles
                     .Where(x => x.GuildId == (long)e.GetGuild().Id).ToListAsync();
-                if(levelRoles.Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower())
-                       .Count() > 1)
+                if(levelRoles.Count(
+                       x => ModelExtensions.GetRoleAsync(x, e.GetGuild()).Result.Name.ToLower() 
+                            == roleName.ToLower()) > 1)
                 {
                     await e.ErrorEmbed("two roles configured have the same name.")
                         .ToEmbed().QueueAsync(e, e.GetChannel());
@@ -177,9 +178,11 @@
                 }
                 else
                 {
-                    role = levelRoles
-                        .Where(x => x.GetRoleAsync().Result.Name.ToLower() == roleName.ToLower())
-                        .FirstOrDefault().GetRoleAsync().Result;
+                    role = await levelRoles
+                        .FirstOrDefault(
+                            x => x.GetRoleAsync(e.GetGuild()).Result.Name.ToLower() 
+                                 == roleName.ToLower())
+                        .GetRoleAsync(e.GetGuild());
                 }
             }
             else
@@ -271,7 +274,7 @@
 							continue;
 						}
 
-						stringBuilder.Append($"`{role.Item1.Name.PadRight(20)}|`");
+						stringBuilder.Append($"`{role.Item1.Name,20}|`");
 
 						if (role.Item2.RequiredLevel > 0)
 						{

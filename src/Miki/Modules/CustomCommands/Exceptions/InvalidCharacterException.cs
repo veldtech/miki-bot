@@ -1,8 +1,8 @@
-﻿namespace Miki.Modules.CustomCommands.Exceptions
-{
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Modules.CustomCommands.Exceptions
+{
     /// <summary>
     /// Throws when a character is not supported in the current context.
     /// </summary>

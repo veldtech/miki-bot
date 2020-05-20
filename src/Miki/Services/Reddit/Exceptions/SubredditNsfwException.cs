@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Reddit.Exceptions
-{
-    using Miki.Localization;
-    using Miki.Localization.Exceptions;
+﻿using Miki.Localization;
+using Miki.Localization.Exceptions;
 
+namespace Miki.Services.Reddit.Exceptions
+{
     public class SubredditNsfwException : LocalizedException
     {
         private readonly string subreddit;

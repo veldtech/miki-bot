@@ -1,8 +1,8 @@
-﻿namespace Miki.Services.Pasta.Exceptions
+﻿using Miki.Localization;
+using Miki.Bot.Models;
+
+namespace Miki.Services.Pasta.Exceptions
 {
-	using Miki.Localization;
-    using Miki.Bot.Models;
-    
     public class DuplicatePastaException : PastaException
 	{
 		public override IResource LocaleResource
