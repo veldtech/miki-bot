@@ -11,7 +11,6 @@ using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Localization;
 using Miki.Services;
-using Miki.Services.Miki.Services;
 using Miki.Services.Transactions;
 using Miki.Utility;
 
