@@ -47,6 +47,7 @@
     <PackageReference Include="Miki.Framework.Commands" Version="2.3.1.1" />
     <PackageReference Include="Miki.Framework.Commands.Filters" Version="2.3.1" />
     <PackageReference Include="Miki.Functional" Version="0.1.3" />
+    <PackageReference Include="Miki.Functional.Async" Version="0.0.1" />
     <PackageReference Include="Miki.Serialization.Protobuf" Version="1.0.4" />
     <PackageReference Include="Miki.UrbanDictionary" Version="0.2.0" />
     <PackageReference Include="MiScript" Version="0.1.2" />

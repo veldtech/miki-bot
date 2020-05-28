@@ -16,6 +16,7 @@ using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Permissions.Exceptions;
 using Miki.Framework.Commands.Permissions.Models;
 using Miki.Framework.Commands.Scopes.Attributes;
+using Miki.Functional.Async;
 using Miki.Localization;
 using Miki.Modules.Admin.Exceptions;
 using Miki.Utility;

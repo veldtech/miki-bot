@@ -4,6 +4,7 @@ using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Discord.Common;
 using Miki.Framework;
+using Miki.Functional.Async;
 using Miki.Modules.Admin.Exceptions;
 
 namespace Miki.Utility
