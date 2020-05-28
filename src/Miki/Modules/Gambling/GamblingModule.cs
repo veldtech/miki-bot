@@ -8,6 +8,7 @@ using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
+using Miki.Functional.Async;
 using Miki.Localization;
 using Miki.Modules.Accounts.Services;
 using Miki.Modules.Gambling.Exceptions;
