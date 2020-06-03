@@ -29,7 +29,7 @@ namespace Miki.Modules.GuildAccounts
                 new GuildUserReference((long)e.GetGuild().Id, (long)e.GetAuthor().Id));
 
             var embed = new EmbedBuilder()
-                .SetTitle(":house: " + locale.GetString("guildweekly_title"))
+                .SetTitle($"{AppProps.Emoji.WeeklyEmbedIcon} " + locale.GetString("guildweekly_title"))
                 .SetColor(255, 232, 182);
 
             switch (response.Status)

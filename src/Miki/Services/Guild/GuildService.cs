@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
 using Miki.Framework;
 using Miki.Patterns.Repositories;
 using Miki.Services.Transactions;
@@ -72,7 +73,7 @@ namespace Miki.Services
             var localExperience = await localExperienceRepository.GetAsync(guildUser.GuildId, guildUser.UserId);
             if (localExperience == null)
             {
-                throw new LocalExperienceNullException();
+                throw new EntityNullException<LocalExperience>();
             }
             return localExperience;
         }
@@ -97,7 +98,7 @@ namespace Miki.Services
             var timer = await timerRepository.GetAsync(guildUserReference.GuildId, guildUserReference.UserId);
             if (timer == null)
             {
-                throw new TimerNullException();
+                throw new EntityNullException<Timer>();
             }
             return timer;
         }
@@ -137,9 +138,8 @@ namespace Miki.Services
                     timer.Value);
             }
 
-            var amountClaimed = (int)Math.Round(
-                (MikiRandom.NextDouble() + guild.GuildHouseMultiplier)
-                * 0.5 * 10 * guild.CalculateLevel(guild.Experience));
+            var amountClaimed = CalculateWeeklyClaimAmount(
+                guild.GuildHouseMultiplier, guild.CalculateLevel(guild.Experience));
 
             await transactionService.CreateTransactionAsync(
                 new TransactionRequest.Builder()
@@ -156,20 +156,19 @@ namespace Miki.Services
             return new WeeklyResponse(WeeklyStatus.Success, amountClaimed, timer.Value);
         }
 
-        /// <inheritdoc />
-        public ValueTask UpdateTimerAsync(Timer timer)
+        private int CalculateWeeklyClaimAmount(float multiplier, int guildLevel)
+            => (int)Math.Round(
+                (MikiRandom.NextDouble() + multiplier)
+                * 0.5 * 10 * guildLevel);
+
+        private ValueTask UpdateTimerAsync(Timer timer)
             => timerRepository.EditAsync(timer);
 
-        /// <inheritdoc />
-        public ValueTask UpdateLocalExperienceAsync(LocalExperience localExperience)
+        private ValueTask UpdateLocalExperienceAsync(LocalExperience localExperience)
             => localExperienceRepository.EditAsync(localExperience);
 
-        public ValueTask SaveAsync()
+        private ValueTask SaveAsync()
             => unitOfWork.CommitAsync();
-
-        /// <inheritdoc />
-        public void Dispose()
-            => unitOfWork.Dispose();
     }
 
     public struct GuildUserReference
@@ -184,26 +183,35 @@ namespace Miki.Services
         }
     }
 
-    public interface IGuildService : IDisposable
+    public interface IGuildService
     {
         ValueTask<GuildUser> GetGuildAsync(long guildId);
 
         ValueTask<GuildUser> GetRivalAsync(GuildUser guildUser);
 
+        /// <summary>
+        /// Create a local experience object with a given GuildUserReference and save into database.
+        /// </summary>
         ValueTask<LocalExperience> CreateLocalExperienceAsync(GuildUserReference guildUser);
 
+        /// <summary>
+        /// Get a local experience object with a given GuildUserReference.
+        /// </summary>
         ValueTask<LocalExperience> GetLocalExperienceAsync(GuildUserReference guildUser);
 
+        /// <summary>
+        /// Create a timer object with a given GuildUserReference and save into database.
+        /// </summary>
         ValueTask<Timer> CreateTimerAsync(GuildUserReference guildUser);
 
+        /// <summary>
+        /// Get a timer object with a given GuildUserReference.
+        /// </summary>
         ValueTask<Timer> GetTimerAsync(GuildUserReference guildUser);
 
+        /// <summary>
+        /// Claim guild weekly for the given GuildUserReference.
+        /// </summary>
         ValueTask<WeeklyResponse> ClaimWeeklyAsync(GuildUserReference guildUserReference);
-
-        ValueTask UpdateTimerAsync(Timer timer);
-
-        ValueTask UpdateLocalExperienceAsync(LocalExperience localExperience);
-
-        ValueTask SaveAsync();
     }
 }

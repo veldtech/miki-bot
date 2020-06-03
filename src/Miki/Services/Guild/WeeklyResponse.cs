@@ -8,16 +8,16 @@
         Success,
         UserInsufficientExp,
         GuildInsufficientExp,
-        NoRival,
+        RivalNull,
         NotReady
     }
 
     public class WeeklyResponse
     {
-        public WeeklyStatus Status { get; set; }
-        public int AmountClaimed { get; set; }
-        public DateTime LastClaimTime { get; set; }
-        public int ExperienceNeeded { get; set; }
+        public WeeklyStatus Status { get; }
+        public int AmountClaimed { get; }
+        public DateTime LastClaimTime { get; }
+        public int ExperienceNeeded { get; }
 
         public WeeklyResponse(WeeklyStatus status, int amountClaimed, DateTime lastClaimTime, int experienceNeeded = 0)
         {

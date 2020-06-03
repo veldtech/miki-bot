@@ -50,7 +50,7 @@ namespace Miki
             {
                 return await service.GetLocalExperienceAsync(guildUser);
             }
-            catch (LocalExperienceNullException)
+            catch (EntityNullException<LocalExperience>)
             {
                 return await service.CreateLocalExperienceAsync(guildUser);
             }
@@ -66,7 +66,7 @@ namespace Miki
             {
                 return await service.GetTimerAsync(guildUser);
             }
-            catch (TimerNullException)
+            catch (EntityNullException<Timer>)
             {
                 return await service.CreateTimerAsync(guildUser);
             }
