@@ -36,7 +36,7 @@ namespace Miki.Services
             var guildUser = await guildUserRepository.GetAsync(guildId);
             if(guildUser == null)
             {
-                throw new GuildUserNullException();
+                throw new EntityNullException<GuildUser>();
             }
             return guildUser;
         }
@@ -47,9 +47,9 @@ namespace Miki.Services
             {
                 return await GetGuildAsync(guildUser.RivalId);
             }
-            catch(GuildUserNullException)
+            catch(EntityNullException<GuildUser>)
             {
-                throw new GuildRivalNullException();
+                throw new EntityNullException<GuildUser>();
             }
         }
 
