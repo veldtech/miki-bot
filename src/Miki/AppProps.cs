@@ -16,6 +16,7 @@
             public static string ExpBarOffEnd => "<:mbarrightoff:391971424862208000>";
             public static string Mekos => "<:mekos:421972155484471296>";
             public static string Reddit => "<:reddit:704006214694076427>";
+            public static string WeeklyEmbedIcon => "🏠";
         }
 
         public static class Currency

@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Miki.Attributes;
-using Miki.Bot.Models;
-using Miki.Bot.Models.Exceptions;
-using Miki.Discord;
-using Miki.Discord.Rest;
-using Miki.Framework;
-using Miki.Framework.Commands;
-using Miki.Helpers;
-using Miki.Localization;
 using Microsoft.EntityFrameworkCore;
 using Miki.Accounts;
-using Miki.Discord.Common;
+using Miki.Attributes;
+using Miki.Bot.Models;
+using Miki.Discord;
+using Miki.Framework;
+using Miki.Framework.Commands;
+using Miki.Localization;
 using Miki.Services;
 using Miki.Services.Transactions;
 using Miki.Utility;
@@ -26,93 +22,48 @@ namespace Miki.Modules.GuildAccounts
         [GuildOnly, Command("guildweekly", "weekly")]
         public async Task GuildWeeklyAsync(IContext e)
         {
-            var transactionService = e.GetService<ITransactionService>();
-            var guildService = e.GetService<GuildService>();
+            var guildService = e.GetService<IGuildService>();
             var locale = e.GetLocale();
 
-            var unit = e.GetService<IUnitOfWork>();
-            var localExperienceRepository = unit.GetRepository<LocalExperience>();
-            var timerRepository = unit.GetRepository<Timer>();
+            var response = await guildService.ClaimWeeklyAsync(
+                new GuildUserReference((long)e.GetGuild().Id, (long)e.GetAuthor().Id));
 
-            LocalExperience thisUser = await localExperienceRepository.GetAsync(
-                (long)e.GetGuild().Id, (long)e.GetAuthor().Id);
-            // TODO move to LocalExperience service?
-            if(thisUser == null)
+            var embed = new EmbedBuilder()
+                .SetTitle($"{AppProps.Emoji.WeeklyEmbedIcon} " + locale.GetString("guildweekly_title"))
+                .SetColor(255, 232, 182);
+
+            switch (response.Status)
             {
-                thisUser = new LocalExperience
-                {
-                    ServerId = (long)e.GetGuild().Id,
-                    UserId = (long)e.GetAuthor().Id,
-                    Experience = 0,
-                };
-                await localExperienceRepository.AddAsync(thisUser)
-                    .ConfigureAwait(false);
-                await unit.CommitAsync().ConfigureAwait(false);
+                case WeeklyStatus.Success:
+                    embed.AddInlineField(
+                        locale.GetString("guildweekly_success_title"),
+                        locale.GetString("guildweekly_success_content", 
+                            response.AmountClaimed, e.GetGuild().Name));
+                    break;
+                case WeeklyStatus.GuildInsufficientExp:
+                    embed.AddInlineField(
+                            locale.GetString("guildweekly_guildinsufficientexp_title"),
+                            locale.GetString("guildweekly_guildinsufficientexp_content", e.GetGuild().Name))
+                        .SetFooter(locale.GetString("guildweekly_guildinsufficientexp_footer"));
+                    break;
+                case WeeklyStatus.UserInsufficientExp:
+                    embed.AddInlineField(
+                            locale.GetString("guildweekly_userinsufficientexp_title"),
+                            locale.GetString("guildweekly_userinsufficientexp_content",
+                                response.ExperienceNeeded, e.GetGuild().Name))
+                        .SetFooter(locale.GetString("guildweekly_userinsufficientexp_footer"));
+                    break;
+                case WeeklyStatus.NotReady:
+                    embed.AddField(
+                        locale.GetString("guildweekly_notready_title"),
+                        locale.GetString("guildweekly_notready_content", e.GetGuild().Name));
+                    embed.AddInlineField(
+                        locale.GetString("guildweekly_notready_timeleft_title"),
+                        $"`{(response.LastClaimTime.AddDays(7) - DateTime.Now).ToTimeString(e.GetLocale())}`");
+                    break;
             }
 
-            GuildUser thisGuild = await guildService.GetGuildAsync((long)e.GetGuild().Id);
-
-            if(thisUser.Experience < thisGuild.MinimalExperienceToGetRewards)
-            {
-                await e.ErrorEmbedResource("miki_guildweekly_insufficient_exp",
-                        thisGuild.MinimalExperienceToGetRewards.ToString("N0"))
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                return;
-            }
-                
-            Timer timer = await timerRepository.GetAsync((long)e.GetGuild().Id, (long)e.GetAuthor().Id);
-            if (timer == null)
-            {
-                timer = await timerRepository.AddAsync(
-                    new Timer
-                {
-                    GuildId = (long)e.GetGuild().Id,
-                    UserId = (long)e.GetAuthor().Id,
-                    Value = DateTime.Now.AddDays(-30)
-                });
-                await unit.CommitAsync();
-            }
-
-            if (timer.Value.AddDays(7) > DateTime.Now)
-            {
-                await e.ErrorEmbedResource(
-                        "guildweekly_error_timer_running", 
-                        (timer.Value.AddDays(7) - DateTime.Now).ToTimeString(e.GetLocale()))
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                return;
-            }
-
-            GuildUser rival = await guildService.GetRivalAsync(thisGuild);
-            if (rival.Experience > thisGuild.Experience)
-            {
-                await e.ErrorEmbedResource("guildweekly_error_low_level")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                return;
-            }
-
-            // TODO: turn this into a function maybe?
-            int mekosGained = (int)Math.Round(
-                (MikiRandom.NextDouble() + thisGuild.GuildHouseMultiplier) 
-                * 0.5 * 10 * thisGuild.CalculateLevel(thisGuild.Experience));
-
-            await transactionService.CreateTransactionAsync(
-                new TransactionRequest.Builder()
-                    .WithAmount(mekosGained)
-                    .WithReceiver((long)e.GetAuthor().Id)
-                    .WithSender(AppProps.Currency.BankId)
-                    .Build());
-
-            await new EmbedBuilder()
-                .SetTitle(locale.GetString("miki_terms_weekly"))
-                .AddInlineField("Mekos", mekosGained.ToString("N0"))
-                .ToEmbed().QueueAsync(e, e.GetChannel());
-
-            timer.Value = DateTime.Now;
-            await timerRepository.EditAsync(timer);
-            await unit.CommitAsync();
+            await embed.ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         [GuildOnly, Command("guildnewrival")]
