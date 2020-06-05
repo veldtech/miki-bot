@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
 using Miki.Services;
 using Miki.Services.Transactions;
 using Xunit;
@@ -145,7 +146,7 @@ namespace Miki.Tests.Services
         [Fact]
         public async Task ClaimWeeklyNoRivalTest()
         {
-            await Assert.ThrowsAsync<GuildRivalNullException>(async () =>
+            await Assert.ThrowsAsync<EntityNullException<GuildUser>>(async () =>
             {
                 await ClaimWeeklyTest(new GuildUserReference(3L, 2L));
             });
