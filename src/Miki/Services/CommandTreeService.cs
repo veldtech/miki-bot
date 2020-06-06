@@ -1,4 +1,5 @@
-﻿using Miki.Framework.Commands;
+﻿using Miki.Bot.Models.Exceptions;
+using Miki.Framework.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Miki.Services
 
             if(commandNode == null)
             {
-                return null;
+                throw new EntityNullException<Node>();
             }
 
             return commandNode;
@@ -44,7 +45,7 @@ namespace Miki.Services
 
             if(moduleNode == null)
             {
-                return null;
+                throw new EntityNullException<NodeModule>();
             }
 
             return GetCommandFromSpecificModule(moduleNode, commandName);
@@ -61,7 +62,7 @@ namespace Miki.Services
 
             if (moduleNode == null)
             {
-                return null;
+                throw new EntityNullException<NodeModule>();
             }
 
             return moduleNode;
@@ -79,10 +80,31 @@ namespace Miki.Services
 
             if (moduleNode == null)
             {
-                return null;
+                throw new EntityNullException<NodeModule>();
             }
 
             return GetCommandFromSpecificModule(moduleNode, commandName);
+        }
+
+        public bool DoesModuleExist(string moduleName)
+        {
+            moduleName = moduleName.ToLowerInvariant();
+
+            return commandTree.Root.Children
+                    .OfType<NodeModule>()
+                    .Any(x => x.Metadata.Identifiers
+                        .Any(z => z.ToLowerInvariant() == moduleName));
+        }
+
+        public bool DoesCommandExist(string commandName)
+        {
+            commandName = commandName.ToLowerInvariant();
+
+            return commandTree.Root.Children
+                .OfType<NodeModule>()
+                .Any(x => x.Children
+                    .Any(z => z.Metadata.Identifiers
+                        .Any(y => y.ToLowerInvariant() == commandName)));
         }
 
         public NodeContainer GetTree()

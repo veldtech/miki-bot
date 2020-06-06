@@ -333,18 +333,19 @@ namespace Miki.Modules
             var permissionService = e.GetService<PermissionService>();
             var scopesService = e.GetService<ScopeService>();
 
-            var embedBuilder = new EmbedBuilder
-            {
-                Color = new Color(0.6f, 0.6f, 1.0f)
-            };
+            var embedBuilder = new EmbedBuilder()
+                .SetColor(0.6f, 0.6f, 1.0f);
 
             if (e.GetArgumentPack().Take(out string arg))
             {
-                var moduleNode = commandHandler.GetModuleByName(arg);
-
-                if (moduleNode != null)
+                if (commandHandler.DoesModuleExist(arg))
                 {
-                    embedBuilder.SetTitle(moduleNode.Metadata.Identifiers.First().CapitalizeFirst());
+                    var moduleNode = commandHandler.GetModuleByName(arg);
+
+                    embedBuilder.SetTitle(
+                        moduleNode.Metadata.Identifiers.FirstOrDefault()?.CapitalizeFirst() ?? 
+                        locale.GetString("miki_placeholder_null")
+                    );
 
                     await foreach (var cmd in moduleNode.GetAllExecutableAsync(e))
                     {
@@ -365,13 +366,16 @@ namespace Miki.Modules
                 }
                 else
                 {
-                    var commandNode = commandHandler.GetCommandByName(arg);
-
-                    if (commandNode != null)
+                    if (commandHandler.DoesCommandExist(arg))
                     {
-                        var name = commandNode.Metadata.Identifiers.First();
+                        var commandNode = commandHandler.GetCommandByName(arg);
 
-                        embedBuilder.SetTitle(name.CapitalizeFirst());
+                        var name = commandNode.Metadata.Identifiers.FirstOrDefault();
+
+                        embedBuilder.SetTitle(
+                            name?.CapitalizeFirst() ??
+                            locale.GetString("miki_placeholder_null")
+                        );
 
                         string description;
                         try
@@ -397,10 +401,10 @@ namespace Miki.Modules
 
                         embedBuilder.AddInlineField(
                             locale.GetString("miki_module_general_help_usage"),
-                            usage);
+                            usage
+                        );
                     }
-
-                    if (commandNode == null)
+                    else
                     {
                         embedBuilder
                             .SetColor(255, 0, 0)
@@ -412,11 +416,10 @@ namespace Miki.Modules
             else
             {
                 await new EmbedBuilder()
-                {
-                    Description = locale.GetString("miki_module_general_help_dm"),
-                    Color = new Color(0.6f, 0.6f, 1.0f)
-                }.ToEmbed()
-                .QueueAsync(e, e.GetChannel())
+                    .SetDescription(locale.GetString("miki_module_general_help_dm"))
+                    .SetColor(0.6f, 0.6f, 1.0f)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
 
                 foreach (var nodeModule in commandHandler.GetModules())
@@ -480,7 +483,7 @@ namespace Miki.Modules
 
                         if (description == "")
                         {
-                            description = "N/A";
+                            description = locale.GetString("miki_placeholder_null");
                         }
 
                         embedBuilder.AddInlineField(
@@ -490,21 +493,13 @@ namespace Miki.Modules
                     }
                 }
 
-                StringBuilder tagline = new StringBuilder(
-                    locale.GetString("miki_module_general_help_tagline")
-                );
-
-                tagline
-                    .AppendLine()
-                    .AppendLine(
-                    locale.GetString(
+                embedBuilder
+                    .SetTitle("📚  "+locale.GetString("miki_module_general_help_header"))
+                    .SetDescription(locale.GetString("miki_module_general_help_tagline"))
+                    .SetFooter(locale.GetString(
                         "miki_module_general_help_module_example",
                         e.GetPrefixMatch()
-                    )
-                );
-
-                embedBuilder.SetTitle("📚  "+locale.GetString("miki_module_general_help_header"));
-                embedBuilder.SetDescription(tagline.ToString());
+                    ));
             }
 
             var channel = arg == null ?
