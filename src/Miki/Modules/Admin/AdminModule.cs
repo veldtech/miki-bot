@@ -23,7 +23,7 @@ using Miki.Utility;
 
 namespace Miki.Modules.Admin
 {
-    [Module("Admin")]
+    [Module("Admin"), Emoji(AppProps.Emoji.HammerAndWrench)]
     public class AdminModule
     {
         #region resource uris

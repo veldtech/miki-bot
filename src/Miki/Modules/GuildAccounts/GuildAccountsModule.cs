@@ -16,7 +16,7 @@ using Miki.Utility;
 
 namespace Miki.Modules.GuildAccounts
 {
-    [Module("Guild_Accounts")]
+    [Module("Guild_Accounts"), Emoji(AppProps.Emoji.Ledger)]
 	public class GuildAccountsModule
 	{
         [GuildOnly, Command("guildweekly", "weekly")]

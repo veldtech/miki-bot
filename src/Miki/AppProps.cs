@@ -17,6 +17,26 @@
             public static string Mekos => "<:mekos:421972155484471296>";
             public static string Reddit => "<:reddit:704006214694076427>";
             public static string WeeklyEmbedIcon => "🏠";
+
+            public const string Ledger = "📒";
+            public const string Running = "🏃‍";
+            public const string HammerAndWrench = "🛠";
+            public const string TV = "📺";
+            public const string Wrench = "🔧";
+            public const string SpaceInvader = "👾";
+            public const string MoneyBill = "💵";
+            public const string RollerCoaster = "🎢";
+            public const string Slots = "🎰";
+            public const string GamePad = "🎮";
+            public const string SpeechBubble = "💬";
+            public const string Developer = "👨‍💻";
+            public const string Ring = "💍";
+            public const string HotFace = "🥵";
+            public const string Spaghetti = "🍝";
+            public const string ScreamFace = "😱";
+            public const string Hammer = "🔨";
+            public const string Digits = "🔢";
+            public const string Gear = "⚙";
         }
 
         public static class Currency

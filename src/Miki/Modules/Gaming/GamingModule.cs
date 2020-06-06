@@ -10,10 +10,11 @@ using Miki.Logging;
 using Miki.Utility;
 using Veld.Osu;
 using Veld.Osu.Models;
+using Miki.Attributes;
 
 namespace Miki.Modules.Gaming
 {
-    [Module("Gaming")]
+    [Module("Gaming"), Emoji(AppProps.Emoji.GamePad)]
     internal class GamingModule
     {
         private readonly IOsuApiClient osuClient;

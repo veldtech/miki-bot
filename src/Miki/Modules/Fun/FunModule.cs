@@ -14,6 +14,7 @@ using Miki.API.Imageboards;
 using Miki.API.Imageboards.Enums;
 using Miki.API.Imageboards.Interfaces;
 using Miki.API.Imageboards.Objects;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
@@ -34,7 +35,7 @@ using Newtonsoft.Json;
 
 namespace Miki.Modules.Fun
 {
-    [Module("fun")]
+    [Module("fun"), Emoji(AppProps.Emoji.RollerCoaster)]
 	public class FunModule
 	{
         private static class Features

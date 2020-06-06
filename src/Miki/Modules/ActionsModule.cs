@@ -5,10 +5,11 @@ using Miki.Discord.Common;
 using Miki.Discord.Common.Models;
 using Miki.Framework.Commands;
 using Miki.Utility;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
-    [Module("Actions")]
+    [Module("Actions"), Emoji(AppProps.Emoji.Running)]
 	public class ActionsModule
 	{
         private readonly string askImage = "http://i.imgur.com/AHPnL.gif";

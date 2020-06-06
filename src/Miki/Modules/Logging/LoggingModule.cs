@@ -17,7 +17,7 @@ using Miki.Attributes;
 
 namespace Miki.Modules.Logging
 {
-    [Module("logging")]
+    [Module("logging"), Emoji(AppProps.Emoji.Developer)]
     public class LoggingModule
     {
         private readonly ISentryClient sentryClient;

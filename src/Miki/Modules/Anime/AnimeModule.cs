@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using Miki.Anilist.Objects;
 using Miki.Framework.Commands;
 using Miki.Utility;
+using Miki.Attributes;
 
 namespace Miki.Modules.Anime
 {
-    [Module("Anime")]
+    [Module("Anime"), Emoji(AppProps.Emoji.TV)]
 	public class AnimeModule
 	{
 		private readonly AnilistClient anilistClient = new AnilistClient();

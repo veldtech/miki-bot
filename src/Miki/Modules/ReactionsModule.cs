@@ -3,10 +3,11 @@ using Miki.Framework;
 using System.Threading.Tasks;
 using Miki.Framework.Commands;
 using Miki.Utility;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
-    [Module("reactions")]
+    [Module("reactions"), Emoji(AppProps.Emoji.ScreamFace)]
 	public class ReactionsModule
 	{
 		readonly string[] confusedImages =

@@ -31,10 +31,11 @@ using Miki.Services.Settings;
 using Miki.Services.Transactions;
 using Miki.Utility;
 using Miki.Functional.Async;
+using Miki.Attributes;
 
 namespace Miki.Modules.Accounts
 {
-    [Module("Accounts")]
+    [Module("Accounts"), Emoji(AppProps.Emoji.Ledger)]
     public class AccountsModule
     {
         private readonly AchievementService achievementService;

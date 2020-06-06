@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -19,7 +20,7 @@ using Miki.Utility;
 
 namespace Miki.Modules.Pasta
 {
-    [Module("pastas")]
+    [Module("pastas"), Emoji(AppProps.Emoji.Spaghetti)]
     public class PastaModule
     {
         [Command("createpasta")]

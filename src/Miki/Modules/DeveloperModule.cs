@@ -18,10 +18,11 @@ using Miki.Services;
 using Miki.Services.Scheduling;
 using Miki.Accounts;
 using Miki.Services.Dailies;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
-	[Module("Experimental")]
+	[Module("Experimental"), Emoji(AppProps.Emoji.SpaceInvader)]
 	internal class DeveloperModule
 	{
 		[Command("identifyemoji")]
