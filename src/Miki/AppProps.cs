@@ -21,7 +21,7 @@
             public const string Ledger = "📒";
             public const string Running = "🏃‍";
             public const string HammerAndWrench = "🛠";
-            public const string TV = "📺";
+            public const string Television = "📺";
             public const string Wrench = "🔧";
             public const string SpaceInvader = "👾";
             public const string MoneyBill = "💵";

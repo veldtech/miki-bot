@@ -11,7 +11,7 @@ using Miki.Attributes;
 
 namespace Miki.Modules.Anime
 {
-    [Module("Anime"), Emoji(AppProps.Emoji.TV)]
+    [Module("Anime"), Emoji(AppProps.Emoji.Television)]
 	public class AnimeModule
 	{
 		private readonly AnilistClient anilistClient = new AnilistClient();
