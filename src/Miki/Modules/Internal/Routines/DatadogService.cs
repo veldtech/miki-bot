@@ -8,6 +8,7 @@ using Miki.Framework.Commands;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Services.Achievements;
+using Miki.Utility;
 using StatsdClient;
 
 namespace Miki.Modules.Internal.Routines
@@ -136,7 +137,8 @@ namespace Miki.Modules.Internal.Routines
                 DogStatsd.Counter("commands.count", 1, 1, new[] 
                 {
                     $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
-                    $"commandname:{ev.ToString().ToLowerInvariant()}"
+                    $"commandname:{ev.ToString().ToLowerInvariant()}",
+                    $"author:{arg.Context.GetAuthor().Id}",
                 });
             }
 
