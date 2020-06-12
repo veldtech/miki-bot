@@ -6,22 +6,10 @@ using Miki.Functional;
 
 namespace Miki.Utility
 {
-    public class MikiRandom : RandomNumberGenerator
+    public class MikiRandom
     {
         private static readonly RandomNumberGenerator RandomNumberGenerator 
             = new RNGCryptoServiceProvider();
-
-        public static int Next()
-        {
-            var data = new byte[sizeof(int)];
-            RandomNumberGenerator.GetBytes(data);
-            return BitConverter.ToInt32(data, 0) & (int.MaxValue - 1);
-        }
-
-        public static long Next(long maxValue)
-        {
-            return Next(0L, maxValue);
-        }
 
         public static int Next(int maxValue)
         {
@@ -48,14 +36,8 @@ namespace Miki.Utility
             {
                 throw new ArgumentOutOfRangeException();
             }
-
-            return (int)Math.Floor((minValue + ((double)maxValue - minValue) * NextDouble()));
+            return (int)Math.Floor(minValue + ((double)maxValue - minValue) * NextDouble());
         }
-
-        public static T Of<T>(IEnumerable<T> collection)
-            => collection != null && collection.Any()
-                ? collection.ElementAt(Next(collection.Count()))
-                : default;
 
         public static double NextDouble()
         {
@@ -65,14 +47,9 @@ namespace Miki.Utility
             return randUint / (uint.MaxValue + 1.0);
         }
 
-        public override void GetBytes(byte[] data)
-        {
-            RandomNumberGenerator.GetBytes(data);
-        }
-
-        public override void GetNonZeroBytes(byte[] data)
-        {
-            RandomNumberGenerator.GetNonZeroBytes(data);
-        }
+        public static T Of<T>(IEnumerable<T> collection)
+            => collection != null && collection.Any()
+                ? collection.ElementAt(Next(collection.Count()))
+                : default;
     }
 }

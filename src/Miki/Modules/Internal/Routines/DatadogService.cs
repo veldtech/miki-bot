@@ -14,7 +14,7 @@ using StatsdClient;
 namespace Miki.Modules.Internal.Routines
 {
     public class DatadogRoutine
-	{
+    {
         public DatadogRoutine(
             AccountService accounts,
             AchievementService achievements,
@@ -114,10 +114,10 @@ namespace Miki.Modules.Internal.Routines
                 return;
             }
 
-            system.OnExecuted += OnCommandProcessed;
+            system.OnExecuted += OnCommandProcessedAsync;
         }
 
-        private ValueTask OnCommandProcessed(IExecutionResult<IDiscordMessage> arg)
+        private ValueTask OnCommandProcessedAsync(IExecutionResult<IDiscordMessage> arg)
         {
             if(!(arg.Context.Executable is Node ev))
             {
