@@ -23,7 +23,7 @@ using MiScript.Parser;
 
 namespace Miki.Modules.CustomCommands
 {
-    [Module("CustomCommands")]
+    [Module("CustomCommands"), Emoji(AppProps.Emoji.Wrench)]
     public class CustomCommandsModule
     {
         private readonly Tokenizer tokenizer = new Tokenizer();

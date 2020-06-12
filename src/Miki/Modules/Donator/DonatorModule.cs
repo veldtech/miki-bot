@@ -20,7 +20,7 @@ using Miki.Utility;
 
 namespace Miki.Modules.Donator
 {
-    [Module("Donator")]
+    [Module("Donator"), Emoji(AppProps.Emoji.MoneyBill)]
 	internal class DonatorModule
 	{
 		private readonly IHttpClient client;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Miki.API.Cards.Objects;
+using Miki.Attributes;
 using Miki.Bot.Models;
 using Miki.Discord;
 using Miki.Discord.Common;
@@ -23,7 +24,7 @@ using Miki.Utility;
 namespace Miki.Modules.Gambling
 {
 
-    [Module("Gambling")]
+    [Module("Gambling"), Emoji(AppProps.Emoji.Slots)]
     public class GamblingModule
     {
         [Command("rps")]

@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace Miki.Modules
 {
-    [Module("nsfw")]
+    [Module("nsfw"), Emoji(AppProps.Emoji.HotFace)]
 	internal class NsfwModule
 	{
         public NsfwModule(Config config)

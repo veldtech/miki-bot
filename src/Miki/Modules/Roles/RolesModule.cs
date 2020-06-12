@@ -20,7 +20,7 @@ using Miki.Utility;
 
 namespace Miki.Modules.Roles
 {
-    [Module("Role Management")]
+    [Module("Role Management"), Emoji(AppProps.Emoji.Hammer)]
 	internal class RolesModule
 	{
         #region commands

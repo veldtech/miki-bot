@@ -315,6 +315,8 @@ namespace Miki
             serviceCollection.AddSingleton(
                 x => new CommandTreeBuilder(x).Create(Assembly.GetExecutingAssembly()));
 
+            serviceCollection.AddSingleton<CommandTreeService>();
+
             serviceCollection.AddSingleton<IAsyncEventingExecutor<IDiscordMessage>>(
                 services => new CommandPipelineBuilder(services)
                     .UseStage(new CorePipelineStage())

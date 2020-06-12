@@ -15,6 +15,7 @@ using Miki.Localization;
 using Miki.Framework.Commands.Prefixes.Triggers;
 using Miki.Services.Settings;
 using Miki.Utility;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
@@ -31,7 +32,7 @@ namespace Miki.Modules
         None = 1
     }
 
-	[Module("settings")]
+	[Module("settings"), Emoji(AppProps.Emoji.Gear)]
 	internal class SettingsModule
     {
         private readonly Dictionary<string, string> languageNames = new Dictionary<string, string>

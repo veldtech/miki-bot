@@ -25,13 +25,14 @@ using Miki.Functional;
 using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Modules.Accounts.Services;
+using Miki.Services;
 using Miki.Services.Achievements;
 using Miki.Utility;
 using NCalc;
 
 namespace Miki.Modules
 {
-    [Module("General")]
+    [Module("General"), Emoji(AppProps.Emoji.SpeechBubble)]
 	public class GeneralModule
 	{
         private static class FeatureFlags
@@ -326,153 +327,191 @@ namespace Miki.Modules
 
 		[Command("help")]
 		public async Task HelpAsync(IContext e)
-		{
-			var commandHandler = e.GetService<CommandTree>();
+        {
+            var commandHandler = e.GetService<CommandTreeService>();
             var locale = e.GetLocale();
-
-            if (e.GetArgumentPack().Take(out string arg))
-            {
-                var command = commandHandler.GetCommand(new ArgumentPack(arg.Split(' ')));
-                if (command == null)
-                {
-                    var helpListEmbed = new EmbedBuilder
-                    {
-                        Title = locale.GetString("miki_module_help_error_null_header"),
-                        Description = locale.GetString(
-                            "miki_module_help_error_null_message",
-                            e.GetPrefixMatch()),
-                        Color = new Color(0.6f, 0.6f, 1.0f)
-                    };
-
-                    var firstModule = commandHandler.Root.Children.OfType<NodeModule>().First();
-                    var root = (firstModule.Parent as NodeRoot);
-
-                    List<Node> nodes = new List<Node>();
-                    await foreach (var x in root.GetAllExecutableAsync(e))
-                    {
-                        nodes.Add(x);
-                    }
-
-                    var comparer = new API.StringComparison.StringComparer(
-                        nodes.SelectMany(node => node.Metadata.Identifiers));
-                    var best = comparer.GetBest(arg);
-
-                    helpListEmbed.AddField(locale.GetString("miki_common_suggestion"), best.text);
-
-                    await helpListEmbed.ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-                else
-                {
-                    if (!await command.ValidateRequirementsAsync(e)
-                        .ConfigureAwait(false))
-                    {
-                        return;
-                    }
-
-                    var commandId = command.Metadata.Identifiers.First();
-
-                    EmbedBuilder explainedHelpEmbed = new EmbedBuilder()
-                        .SetTitle(commandId.ToUpper());
-
-                    if (command.Metadata.Identifiers.Count > 1)
-                    {
-                        explainedHelpEmbed.AddInlineField(
-                            e.GetLocale().GetString("miki_module_general_help_aliases"),
-                            string.Join(", ", command.Metadata.Identifiers.Skip(1)));
-                    }
-
-                    explainedHelpEmbed.AddField
-                    (
-                        locale.GetString("miki_module_general_help_description"),
-                        locale.GetString("miki_command_description_" + commandId.ToLower())
-                        ?? locale.GetString("miki_placeholder_null"));
-
-                    explainedHelpEmbed.AddField(
-                        locale.GetString("miki_module_general_help_usage"),
-                        locale.GetString("miki_command_usage_" + commandId.ToLower())
-                        ?? locale.GetString("miki_placeholder_null"));
-
-                    await explainedHelpEmbed.ToEmbed()
-                        .QueueAsync(e, e.GetChannel())
-                        .ConfigureAwait(false);
-                }
-
-                return;
-            }
-
-            await new EmbedBuilder()
-			{
-				Description = e.GetLocale().GetString("miki_module_general_help_dm"),
-				Color = new Color(0.6f, 0.6f, 1.0f)
-			}.ToEmbed()
-				.QueueAsync(e, e.GetChannel())
-                .ConfigureAwait(false);
-
-            var embedBuilder = new EmbedBuilder();
-
             var permissionService = e.GetService<PermissionService>();
             var scopesService = e.GetService<ScopeService>();
 
-			foreach(var nodeModule in commandHandler.Root.Children.OfType<NodeModule>())
-			{
-				var id = nodeModule.Metadata.Identifiers.First();
+            var embedBuilder = new EmbedBuilder()
+                .SetColor(0.6f, 0.6f, 1.0f);
 
-                List<Node> nodes = new List<Node>();
-                await foreach (var node in nodeModule.GetAllExecutableAsync(e))
+            if (e.GetArgumentPack().Take(out string arg))
+            {
+                if (commandHandler.DoesModuleExist(arg))
                 {
-                    var perm = await permissionService.GetPriorityPermissionAsync(e);
-                    var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
-                        .FirstOrDefault()?.Status;
-                    if(defaultPermission == null)
-                    {
-                        defaultPermission = PermissionStatus.Allow;
-                    }
+                    var moduleNode = commandHandler.GetModuleByName(arg);
 
-                    if((perm?.Status ?? defaultPermission) != PermissionStatus.Allow)
-                    {
-                        continue;
-                    }
+                    embedBuilder.SetTitle(
+                        moduleNode.Metadata.Identifiers.FirstOrDefault()?.CapitalizeFirst() ?? 
+                        locale.GetString("miki_placeholder_null")
+                    );
 
-                    var requiresScopeAttributes = node.Attributes.OfType<RequiresScopeAttribute>()
-                        .ToList();
-                    bool hasAllScopes = true;
-                    foreach(var scope in requiresScopeAttributes)
+                    await foreach (var cmd in moduleNode.GetAllExecutableAsync(e))
                     {
-                        if(await scopesService.HasScopeAsync(
-                            (long)e.GetAuthor().Id, new [] {scope.ScopeId }))
+                        var name = cmd.Metadata.Identifiers.First();
+
+                        string description;
+                        try
+                        {
+                            description = locale.GetString($"miki_command_description_{name.ToLowerInvariant()}");
+                        }
+                        catch
+                        {
+                            description = locale.GetString("miki_error_message_generic");
+                        }
+
+                        embedBuilder.AddInlineField($"{e.GetPrefixMatch()}{name}", description);
+                    }
+                }
+                else
+                {
+                    if (commandHandler.DoesCommandExist(arg))
+                    {
+                        var commandNode = commandHandler.GetCommandByName(arg);
+
+                        var name = commandNode.Metadata.Identifiers.FirstOrDefault();
+
+                        embedBuilder.SetTitle(
+                            name?.CapitalizeFirst() ??
+                            locale.GetString("miki_placeholder_null")
+                        );
+
+                        string description;
+                        try
+                        {
+                            description = locale.GetString($"miki_command_description_{name.ToLowerInvariant()}");
+                        }
+                        catch
+                        {
+                            description = locale.GetString("miki_error_message_generic");
+                        }
+
+                        embedBuilder.SetDescription(description);
+
+                        string usage;
+                        try
+                        {
+                            usage = locale.GetString($"miki_command_usage_{name.ToLowerInvariant()}");
+                        }
+                        catch
+                        {
+                            usage = locale.GetString("miki_error_message_generic");
+                        }
+
+                        embedBuilder.AddInlineField(
+                            locale.GetString("miki_module_general_help_usage"),
+                            usage
+                        );
+                    }
+                    else
+                    {
+                        embedBuilder
+                            .SetColor(255, 0, 0)
+                            .SetTitle(locale.GetString("miki_module_help_error_null_header"))
+                            .SetDescription(locale.GetString("error_command_null", arg));
+                    }
+                }
+            }
+            else
+            {
+                await new EmbedBuilder()
+                    .SetDescription(locale.GetString("miki_module_general_help_dm"))
+                    .SetColor(0.6f, 0.6f, 1.0f)
+                    .ToEmbed()
+                    .QueueAsync(e, e.GetChannel())
+                .ConfigureAwait(false);
+
+                foreach (var nodeModule in commandHandler.GetModules())
+                {
+                    var id = nodeModule.Metadata.Identifiers.First();
+                    var emoji = nodeModule.Attributes.OfType<EmojiAttribute>().FirstOrDefault();
+
+                    List<Node> nodes = new List<Node>();
+                    await foreach (var node in nodeModule.GetAllExecutableAsync(e))
+                    {
+                        var perm = await permissionService.GetPriorityPermissionAsync(e);
+                        var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
+                            .FirstOrDefault()?.Status;
+                        if (defaultPermission == null)
+                        {
+                            defaultPermission = PermissionStatus.Allow;
+                        }
+
+                        if ((perm?.Status ?? defaultPermission) != PermissionStatus.Allow)
                         {
                             continue;
                         }
-                        hasAllScopes = false;
-                        break;
+
+                        var requiresScopeAttributes = node.Attributes.OfType<RequiresScopeAttribute>()
+                            .ToList();
+                        bool hasAllScopes = true;
+                        foreach (var scope in requiresScopeAttributes)
+                        {
+                            if (await scopesService.HasScopeAsync(
+                                (long)e.GetAuthor().Id, new[] { scope.ScopeId }))
+                            {
+                                continue;
+                            }
+                            hasAllScopes = false;
+                            break;
+                        }
+
+                        if (!hasAllScopes)
+                        {
+                            continue;
+                        }
+
+                        if (await node.ValidateRequirementsAsync(e))
+                        {
+                            nodes.Add(node);
+                        }
                     }
 
-                    if(!hasAllScopes)
+                    if (nodes.Any())
                     {
-                        continue;
-                    }
+                        string description;
 
-                    if(await node.ValidateRequirementsAsync(e))
-                    {
-                        nodes.Add(node);
+                        try
+                        {
+                            description = locale.GetString($"miki_module_{id.ToLowerInvariant()}_description");
+                        }
+                        catch
+                        {
+                            description = locale.GetString("miki_error_message_generic");
+                        }
+
+                        if (description == "")
+                        {
+                            description = locale.GetString("miki_placeholder_null");
+                        }
+
+                        embedBuilder.AddInlineField(
+                            $"{emoji.Emoji}  {id.CapitalizeFirst()}",
+                            description
+                        );
                     }
                 }
-                var commandNames = string.Join(", ", nodes
-                    .Select(node => '`' + node.Metadata.Identifiers.First() + '`'));
 
-				if(!string.IsNullOrEmpty(commandNames))
-				{
-					embedBuilder.AddField(id.ToUpper(), commandNames);
-				}
-			}
+                embedBuilder
+                    .SetTitle("📚  "+locale.GetString("miki_module_general_help_header"))
+                    .SetDescription(locale.GetString("miki_module_general_help_tagline"))
+                    .SetFooter(locale.GetString(
+                        "miki_module_general_help_module_example",
+                        e.GetPrefixMatch()
+                    ));
+            }
 
-			await embedBuilder.ToEmbed()
-				.QueueAsync(
+            var channel = arg == null ?
+                await e.GetAuthor().GetDMChannelAsync().ConfigureAwait(false) :
+                e.GetChannel();
+
+            await embedBuilder.ToEmbed()
+                .QueueAsync(
                     e,
-                    await e.GetAuthor().GetDMChannelAsync().ConfigureAwait(false), 
-                    "Join our support server: https://discord.gg/39Xpj7K")
+                    channel,
+                    arg == null ? "Join our support server: https://discord.gg/39Xpj7K" : ""
+                )
                 .ConfigureAwait(false);
         }
 

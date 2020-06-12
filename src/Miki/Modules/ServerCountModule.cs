@@ -2,10 +2,11 @@
 using Miki.Discord.Common;
 using System.Threading.Tasks;
 using Miki.Framework.Commands;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
-    [Module("internal:servercount")]
+    [Module("internal:servercount"), Emoji(AppProps.Emoji.Digits)]
 	public class ServerCountModule
 	{
 		[Configurable]

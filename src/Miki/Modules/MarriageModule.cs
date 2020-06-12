@@ -16,10 +16,11 @@ using Miki.Services.Transactions;
 using Miki.Utility;
 using Miki.Services.Achievements;
 using Miki.Services.Marriages;
+using Miki.Attributes;
 
 namespace Miki.Modules
 {
-    [Module("Marriage")]
+    [Module("Marriage"), Emoji(AppProps.Emoji.Ring)]
 	public class MarriageModule
     {
         [Command("acceptmarriage")]
