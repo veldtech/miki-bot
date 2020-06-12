@@ -1,17 +1,21 @@
-﻿using Miki.Localization;
-using Newtonsoft.Json;
-using Miki.Functional;
+﻿using Miki.Functional;
+using Miki.Localization;
 
-namespace Miki.Extensions
+namespace Miki
 {
     public static class LocaleExtensions
     {
-        public static string GetString(
+        public static Optional<string> GetString(
             this IResourceManager manager,
             Required<string> key,
             params object[] args)
         {
-            return string.Format(manager.GetString(key), args);
+            var str = manager.GetString(key);
+            if (!str.HasValue)
+            {
+                return Optional<string>.None;
+            }
+            return string.Format(str.Unwrap(), args);
         }
     }
 }

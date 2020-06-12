@@ -24,8 +24,6 @@ namespace Miki.Tests.Services
             context.SaveChanges();
         }
 
-
-
         [Fact]
         public async Task GetSettingThrowsNullTest()
         {

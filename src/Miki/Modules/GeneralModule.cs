@@ -22,6 +22,8 @@ using Miki.Framework.Commands.Prefixes.Triggers;
 using Miki.Framework.Commands.Scopes;
 using Miki.Framework.Commands.Scopes.Attributes;
 using Miki.Functional;
+using Miki.Functional.Async;
+using Miki.Helpers;
 using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Modules.Accounts.Services;
@@ -81,7 +83,7 @@ namespace Miki.Modules
 
             expressionString = expressionString.Trim('\'');
 
-            Expression expression = new Expression(expressionString, EvaluateOptions.NoCache);
+            var expression = new Expression(expressionString, EvaluateOptions.NoCache);
             expression.Parameters.Add("pi", Math.PI);
 
             expression.EvaluateFunction += (name, x) =>
@@ -277,100 +279,88 @@ namespace Miki.Modules
             var prefix = await trigger.GetForGuildAsync(context, cache, guild.Id)
                 .ConfigureAwait(false);
 
-            var roles = (await e.GetGuild().GetRolesAsync().ConfigureAwait(false))
-                .ToList();
-            var channels = (await e.GetGuild().GetChannelsAsync().ConfigureAwait(false))
-                .ToList();
-
-            var builder = new EmbedBuilder
-			{
-				Author = new EmbedAuthor
-				{
-					Name = guild.Name,
-					IconUrl = guild.IconUrl,
-					Url = guild.IconUrl
-				},
-			};
-			builder.AddInlineField(
-				"👑 " + locale.GetString("miki_module_general_guildinfo_owned_by"),
-				$"{owner.Username}#{owner.Discriminator}");
-
-			builder.AddInlineField(
-				"👉 " + locale.GetString("miki_label_prefix"),
-				prefix);
-
-			builder.AddInlineField(
-				"📺 " + locale.GetString("miki_module_general_guildinfo_channels"),
-				channels.Count(x => x.Type == ChannelType.GuildText).ToString("N0"));
-
-			builder.AddInlineField(
-				"🔊 " + locale.GetString("miki_module_general_guildinfo_voicechannels"),
-				channels.Count(x => x.Type == ChannelType.GuildVoice).ToString("N0"));
-
-			builder.AddInlineField(
-				"🙎 " + locale.GetString("miki_module_general_guildinfo_users"),
-				roles.Count().ToString("N0"));
-
-			builder.AddInlineField(
-				"#⃣ " + locale.GetString("miki_module_general_guildinfo_roles_count"),
-				roles.Count().ToString("N0"));
-
+            var roles = (await e.GetGuild().GetRolesAsync().ConfigureAwait(false)).ToList();
+            var channels = (await e.GetGuild().GetChannelsAsync().ConfigureAwait(false)).ToList();
             var rolesString = string.Join(",", roles.Select(x => $"`{x.Name}`"));
-            builder.AddField(
-                "📜 " + locale.GetString("miki_module_general_guildinfo_roles"),
-                rolesString.SplitStringUntil(",", 1500));
 
-            await builder.ToEmbed()
+            await new EmbedBuilder()
+                .SetAuthor(guild.Name, guild.IconUrl, guild.IconUrl)
+                .AddInlineField(
+                    $"👑 {locale.GetString("miki_module_general_guildinfo_owned_by")}",
+				    $"{owner.Username}#{owner.Discriminator}")
+                .AddInlineField(
+                    $"👉 {locale.GetString("miki_label_prefix")}", prefix)
+                .AddInlineField(
+                    $"📺 {locale.GetString("miki_module_general_guildinfo_channels")}",
+				    channels.Count(x => x.Type == ChannelType.GuildText).ToString("N0"))
+                .AddInlineField(
+                    $"🔊 {locale.GetString("miki_module_general_guildinfo_voicechannels")}",
+				    channels.Count(x => x.Type == ChannelType.GuildVoice).ToString("N0"))
+                .AddInlineField(
+                    $"🙎 {locale.GetString("miki_module_general_guildinfo_users")}",
+				    roles.Count.ToString("N0"))
+                .AddInlineField(
+                    $"#⃣ {locale.GetString("miki_module_general_guildinfo_roles_count")}",
+				    roles.Count.ToString("N0"))
+                .AddField(
+                    $"📜 {locale.GetString("miki_module_general_guildinfo_roles")}",
+                    rolesString.SplitStringUntil(",", 1500))
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel())
                 .ConfigureAwait(false);
         }
 
-		[Command("help")]
-		public async Task HelpAsync(IContext e)
+        [Command("help")]
+        public class HelpCommand
         {
-            var commandHandler = e.GetService<CommandTreeService>();
-            var locale = e.GetLocale();
-            var permissionService = e.GetService<PermissionService>();
-            var scopesService = e.GetService<ScopeService>();
-
-            var embedBuilder = new EmbedBuilder()
-                .SetColor(0.6f, 0.6f, 1.0f);
-
-            if (e.GetArgumentPack().Take(out string arg))
+            [Command]
+            public async Task HelpAsync(IContext e)
             {
-                if (commandHandler.DoesModuleExist(arg))
+                var locale = e.GetLocale();
+                var commandHandler = e.GetService<CommandTreeService>();
+
+                var embedBuilder = new EmbedBuilder()
+                    .SetColor(0.6f, 0.6f, 1.0f);
+
+                var arg = e.GetArgumentPack().Pack.TakeAll();
+                if (!string.IsNullOrWhiteSpace(arg))
                 {
-                    var moduleNode = commandHandler.GetModuleByName(arg);
-
-                    embedBuilder.SetTitle(
-                        moduleNode.Metadata.Identifiers.FirstOrDefault()?.CapitalizeFirst() ?? 
-                        locale.GetString("miki_placeholder_null")
-                    );
-
-                    await foreach (var cmd in moduleNode.GetAllExecutableAsync(e))
+                    if (commandHandler.DoesModuleExist(arg))
                     {
-                        var name = cmd.Metadata.Identifiers.First();
+                        var moduleNode = commandHandler.GetModuleByName(arg);
 
-                        string description;
-                        try
+                        embedBuilder.SetTitle(
+                            moduleNode.Metadata.Identifiers.FirstOrDefault()?.CapitalizeFirst() 
+                                ?? locale.GetString("miki_placeholder_null"));
+
+                        await foreach (var module in moduleNode.GetAllExecutableAsync(e))
                         {
-                            description = locale.GetString($"miki_command_description_{name.ToLowerInvariant()}");
-                        }
-                        catch
-                        {
-                            description = locale.GetString("miki_error_message_generic");
+                            var name = module.Metadata.Identifiers.First();
+
+                            string description;
+                            try
+                            {
+                                description = locale.GetString(
+                                    $"miki_command_description_{name.ToLowerInvariant()}");
+                            }
+                            catch
+                            {
+                                description = locale.GetString("miki_error_message_generic");
+                            }
+
+                            embedBuilder.AddInlineField($"{e.GetPrefixMatch()}{name}", description);
                         }
 
-                        embedBuilder.AddInlineField($"{e.GetPrefixMatch()}{name}", description);
+                        await embedBuilder
+                            .ToEmbed()
+                            .QueueAsync(e, e.GetChannel())
+                            .ConfigureAwait(false);
                     }
-                }
-                else
-                {
-                    if (commandHandler.DoesCommandExist(arg))
+                    else if (commandHandler.DoesCommandExist(arg))
                     {
                         var commandNode = commandHandler.GetCommandByName(arg);
 
-                        var name = commandNode.Metadata.Identifiers.FirstOrDefault();
+                        var name = commandNode.Metadata.Identifiers.First();
 
                         embedBuilder.SetTitle(
                             name?.CapitalizeFirst() ??
@@ -399,123 +389,125 @@ namespace Miki.Modules
                             usage = locale.GetString("miki_error_message_generic");
                         }
 
-                        embedBuilder.AddInlineField(
-                            locale.GetString("miki_module_general_help_usage"),
-                            usage
-                        );
+                        await embedBuilder.AddInlineField(locale.GetString("miki_module_general_help_usage"), usage)
+                            .ToEmbed()
+                            .QueueAsync(e, e.GetChannel())
+                            .ConfigureAwait(false);
                     }
                     else
                     {
-                        embedBuilder
+                        await embedBuilder
                             .SetColor(255, 0, 0)
                             .SetTitle(locale.GetString("miki_module_help_error_null_header"))
-                            .SetDescription(locale.GetString("error_command_null", arg));
+                            .SetDescription(locale.GetString("error_command_null", arg))
+                            .ToEmbed()
+                            .QueueAsync(e, e.GetChannel())
+                            .ConfigureAwait(false);
                     }
                 }
+                else
+                {
+                    await new EmbedBuilder()
+                        .SetDescription(locale.GetString("miki_module_general_help_dm"))
+                        .SetColor(0.6f, 0.6f, 1.0f)
+                        .ToEmbed()
+                        .QueueAsync(e, e.GetChannel())
+                        .ConfigureAwait(false);
+
+                    await BuildNodeListAsync(e, embedBuilder);
+                    
+                    var dmChannel = await e.GetAuthor().GetDMChannelAsync();
+                    await embedBuilder
+                        .SetTitle(new IconResource("📚", "miki_module_general_help_header").Get(locale))
+                        .SetDescription(locale.GetString("miki_module_general_help_tagline"))
+                        .SetFooter(locale.GetString(
+                            "miki_module_general_help_module_example",
+                            e.GetPrefixMatch()
+                        ))
+                        .ToEmbed()
+                        .QueueAsync(e, dmChannel, "Join our support server: https://discord.gg/39Xpj7K")
+                        .ConfigureAwait(false);
+                }
             }
-            else
+
+            private async Task BuildNodeListAsync(IContext context, EmbedBuilder builder)
             {
-                await new EmbedBuilder()
-                    .SetDescription(locale.GetString("miki_module_general_help_dm"))
-                    .SetColor(0.6f, 0.6f, 1.0f)
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel())
-                .ConfigureAwait(false);
+                var locale = context.GetLocale();
+                var permissionService = context.GetService<PermissionService>();
+                var scopesService = context.GetService<ScopeService>();
+                var commandHandler = context.GetService<CommandTreeService>();
 
                 foreach (var nodeModule in commandHandler.GetModules())
                 {
-                    var id = nodeModule.Metadata.Identifiers.First();
-                    var emoji = nodeModule.Attributes.OfType<EmojiAttribute>().FirstOrDefault();
-
-                    List<Node> nodes = new List<Node>();
-                    await foreach (var node in nodeModule.GetAllExecutableAsync(e))
+                    var nodes = new List<Node>();
+                    
+                    await foreach (var node in nodeModule.GetAllExecutableAsync(context))
                     {
-                        var perm = await permissionService.GetPriorityPermissionAsync(e);
-                        var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
-                            .FirstOrDefault()?.Status;
-                        if (defaultPermission == null)
+                        Permission perm = null;
+                        if (context.GetAuthor() is IDiscordGuildUser guildUser)
                         {
-                            defaultPermission = PermissionStatus.Allow;
+                            perm = await permissionService.GetPriorityPermissionAsync(
+                                (long)context.GetGuild().Id,
+                                node.Metadata.Identifiers.First(),
+                                await guildUser.GetRolesAsync()
+                                    .Map(x => x ?? new List<IDiscordRole>())
+                                    .Map(x => x.Select(x => (long)x.Id).ToArray()));
                         }
 
+                        var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
+                            .FirstOrDefault()?.Status ?? PermissionStatus.Allow;
                         if ((perm?.Status ?? defaultPermission) != PermissionStatus.Allow)
                         {
                             continue;
                         }
 
-                        var requiresScopeAttributes = node.Attributes.OfType<RequiresScopeAttribute>()
+                        var scopeIds = node.Attributes
+                            .OfType<RequiresScopeAttribute>()
+                            .Select(x => x.ScopeId)
                             .ToList();
-                        bool hasAllScopes = true;
-                        foreach (var scope in requiresScopeAttributes)
-                        {
-                            if (await scopesService.HasScopeAsync(
-                                (long)e.GetAuthor().Id, new[] { scope.ScopeId }))
-                            {
-                                continue;
-                            }
-                            hasAllScopes = false;
-                            break;
-                        }
-
-                        if (!hasAllScopes)
+                        if (!await scopesService.HasScopeAsync(
+                            (long)context.GetAuthor().Id,scopeIds))
                         {
                             continue;
                         }
 
-                        if (await node.ValidateRequirementsAsync(e))
+
+                        if (await node.ValidateRequirementsAsync(context))
                         {
                             nodes.Add(node);
                         }
                     }
 
-                    if (nodes.Any())
+                    if (!nodes.Any())
                     {
-                        string description;
-
-                        try
-                        {
-                            description = locale.GetString($"miki_module_{id.ToLowerInvariant()}_description");
-                        }
-                        catch
-                        {
-                            description = locale.GetString("miki_error_message_generic");
-                        }
-
-                        if (description == "")
-                        {
-                            description = locale.GetString("miki_placeholder_null");
-                        }
-
-                        embedBuilder.AddInlineField(
-                            $"{emoji.Emoji}  {id.CapitalizeFirst()}",
-                            description
-                        );
+                        continue;
                     }
+                    
+                    var id = nodeModule.Metadata.Identifiers.First();
+                    var emoji = nodeModule.Attributes.OfType<EmojiAttribute>().FirstOrDefault();
+
+                    string description;
+
+                    try
+                    {
+                        description = locale.GetString($"miki_module_{id.ToLowerInvariant()}_description");
+                    }
+                    catch
+                    {
+                        description = locale.GetString("miki_error_message_generic");
+                    }
+
+                    if (string.IsNullOrEmpty(description))
+                    {
+                        description = locale.GetString("miki_placeholder_null");
+                    }
+
+                    builder.AddInlineField($"{emoji?.Emoji}  {id.CapitalizeFirst()}", description);
                 }
-
-                embedBuilder
-                    .SetTitle("📚  "+locale.GetString("miki_module_general_help_header"))
-                    .SetDescription(locale.GetString("miki_module_general_help_tagline"))
-                    .SetFooter(locale.GetString(
-                        "miki_module_general_help_module_example",
-                        e.GetPrefixMatch()
-                    ));
             }
-
-            var channel = arg == null ?
-                await e.GetAuthor().GetDMChannelAsync().ConfigureAwait(false) :
-                e.GetChannel();
-
-            await embedBuilder.ToEmbed()
-                .QueueAsync(
-                    e,
-                    channel,
-                    arg == null ? "Join our support server: https://discord.gg/39Xpj7K" : ""
-                )
-                .ConfigureAwait(false);
         }
 
-		[Command("donate")]
+        [Command("donate")]
 		public async Task DonateAsync(IContext e)
 		{
 			await new EmbedBuilder()
@@ -539,12 +531,7 @@ namespace Miki.Modules
 				.SetAuthor($"Miki {v}")
 				.SetColor(0.6f, 0.6f, 1.0f);
 
-            embed.AddField(
-                e.GetLocale().GetString("miki_module_general_info_made_by_header"),
-                e.GetLocale().GetString("miki_module_general_info_made_by_description")
-                + " Fuzen, IA, Rappy, Tal, Vallode, GrammarJew");
-
-			embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
+            embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
 				$"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
 				$"`{"Donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
 				$"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
@@ -587,7 +574,7 @@ namespace Miki.Modules
                         float ping = (float)(message.Timestamp - e.GetMessage().Timestamp)
                             .TotalMilliseconds;
                         return new EmbedBuilder()
-                            .SetTitle("Pong - " + Environment.MachineName)
+                            .SetTitle($"Pong - {Environment.MachineName}")
                             .SetColor(Color.Lerp(
                                 new Color(0, 255, 0), new Color(255, 0, 0), Math.Min(ping / 1000, 1f)))
                             .AddInlineField("Miki", $"{ping:N0}ms")
@@ -603,6 +590,7 @@ namespace Miki.Modules
 			public async Task PrefixHelpAsync(IContext e)
 			{
 				var prefixService = e.GetService<IPrefixService>();
+                var locale = e.GetLocale();
 
 				var prefix = await (prefixService.GetDefaultTrigger() as DynamicPrefixTrigger)
 					.GetForGuildAsync(
@@ -610,8 +598,6 @@ namespace Miki.Modules
 						e.GetService<ICacheClient>(),
 						e.GetGuild().Id)
                     .ConfigureAwait(false);
-                var locale = e.GetLocale();
-
 
                 await new EmbedBuilder()
 					.SetTitle(locale.GetString("miki_module_general_prefix_help_header"))
@@ -671,8 +657,7 @@ namespace Miki.Modules
                 await new EmbedBuilder()
                     .SetTitle(locale.GetString("miki_module_general_prefix_success_header"))
                     .SetDescription(
-                        locale.GetString(
-                            "miki_module_general_prefix_success_message", trigger.DefaultValue))
+                        locale.GetString("miki_module_general_prefix_success_message", trigger.DefaultValue))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel())
                     .ConfigureAwait(false);

@@ -30,7 +30,6 @@ namespace Miki.Modules.Internal.Routines
 
             DogStatsd.Configure(new StatsdConfig
             {
-                // TODO #534: Change to [Configurable]
                 StatsdServerName = config.DatadogHost,
                 StatsdPort = 8125,
                 Prefix = "miki"
@@ -139,6 +138,7 @@ namespace Miki.Modules.Internal.Routines
                     $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
                     $"commandname:{ev.ToString().ToLowerInvariant()}",
                     $"author:{arg.Context.GetAuthor().Id}",
+                    $"locale:{arg.Context.GetLocale().CountryCode}"
                 });
             }
 

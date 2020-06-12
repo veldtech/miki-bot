@@ -14,6 +14,12 @@ namespace Miki.Helpers
         }
 
         public string Get(IResourceManager instance)
-            => icon + "  " + instance.GetString(resourceText);
+        {
+            if (string.IsNullOrEmpty(icon))
+            {
+                return instance.GetString(resourceText).Unwrap();
+            }
+            return $"{icon}  {instance.GetString(resourceText).Unwrap()}";   
+        }
     }
 }
