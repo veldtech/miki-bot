@@ -122,31 +122,25 @@ namespace Miki.Modules.Internal.Routines
             {
                 return default;
             }
+            
+            var commandContext = new[]
+            {
+                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
+                $"commandname:{ev.ToString().ToLowerInvariant()}",
+                $"author:{arg.Context.GetAuthor().Id}",
+                $"locale:{arg.Context.GetLocale().CountryCode}"
+            };
 
             if(!arg.Success && !(arg.Error is LocalizedException))
             {
-                DogStatsd.Counter("commands.error", 1, 1, new[]
-                {
-                    $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
-                    $"commandname:{ev.ToString().ToLowerInvariant()}"
-                });
+                DogStatsd.Counter("commands.error", 1, 1, commandContext);
             }
             else
             {
-                DogStatsd.Counter("commands.count", 1, 1, new[] 
-                {
-                    $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
-                    $"commandname:{ev.ToString().ToLowerInvariant()}",
-                    $"author:{arg.Context.GetAuthor().Id}",
-                    $"locale:{arg.Context.GetLocale().CountryCode}"
-                });
+                DogStatsd.Counter("commands.count", 1, 1, commandContext);
             }
 
-            DogStatsd.Histogram("commands.time", arg.TimeMilliseconds, 1, new[]
-            {
-                $"commandtype:{ev.Parent.ToString().ToLowerInvariant()}",
-                $"commandname:{ev.ToString().ToLowerInvariant()}"
-            });
+            DogStatsd.Histogram("commands.time", arg.TimeMilliseconds, 1, commandContext);
             return default;
         }
     }
