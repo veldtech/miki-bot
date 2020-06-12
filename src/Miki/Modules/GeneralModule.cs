@@ -433,7 +433,6 @@ namespace Miki.Modules
             private async Task BuildNodeListAsync(IContext context, EmbedBuilder builder)
             {
                 var locale = context.GetLocale();
-                var permissionService = context.GetService<PermissionService>();
                 var scopesService = context.GetService<ScopeService>();
                 var commandHandler = context.GetService<CommandTreeService>();
 
@@ -443,24 +442,6 @@ namespace Miki.Modules
                     
                     await foreach (var node in nodeModule.GetAllExecutableAsync(context))
                     {
-                        Permission perm = null;
-                        if (context.GetAuthor() is IDiscordGuildUser guildUser)
-                        {
-                            perm = await permissionService.GetPriorityPermissionAsync(
-                                (long)context.GetGuild().Id,
-                                node.Metadata.Identifiers.First(),
-                                await guildUser.GetRolesAsync()
-                                    .Map(x => x ?? new List<IDiscordRole>())
-                                    .Map(x => x.Select(x => (long)x.Id).ToArray()));
-                        }
-
-                        var defaultPermission = node.Attributes.OfType<DefaultPermissionAttribute>()
-                            .FirstOrDefault()?.Status ?? PermissionStatus.Allow;
-                        if ((perm?.Status ?? defaultPermission) != PermissionStatus.Allow)
-                        {
-                            continue;
-                        }
-
                         var scopeIds = node.Attributes
                             .OfType<RequiresScopeAttribute>()
                             .Select(x => x.ScopeId)
@@ -471,11 +452,7 @@ namespace Miki.Modules
                             continue;
                         }
 
-
-                        if (await node.ValidateRequirementsAsync(context))
-                        {
-                            nodes.Add(node);
-                        }
+                        nodes.Add(node);
                     }
 
                     if (!nodes.Any())
@@ -485,7 +462,6 @@ namespace Miki.Modules
                     
                     var id = nodeModule.Metadata.Identifiers.First();
                     var emoji = nodeModule.Attributes.OfType<EmojiAttribute>().FirstOrDefault();
-
                     string description;
 
                     try
