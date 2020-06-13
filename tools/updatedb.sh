@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# Cleans up environment values set by script
+function clean {
+  echo "cleaning up..."
+  unset MIKI_CONNSTRING
+}
+
 if [ "$#" -ne 1 ]; then
     echo "usage: updatedb.sh <connectionString> [id]"
 	exit 1
 fi
-
 
 echo setting up...
 export MIKI_CONNSTRING=$1
@@ -16,9 +21,19 @@ cd $DIR/..
 
 echo starting migration...
 
+dotnet ef > /dev/null
+if [ $? -ne 0 ]; then
+  echo "installing dotnet-ef tool..."
+  dotnet tool install dotnet-ef -g
+fi
+
 dotnet ef database update --project submodules/miki.bot.models --startup-project src/Miki $2
+if [ $? -ne 0 ]; then
+  clean
+  echo "update failed."
+  exit 1
+fi
 
-echo cleaning up...
-unset MIKI_CONNSTRING
-
+clean
 echo done!
+exit 0
