@@ -341,7 +341,7 @@ namespace Miki.Modules
                             try
                             {
                                 description = locale.GetString(
-                                    $"miki_command_description_{name.ToLowerInvariant()}");
+                                    $"miki_command_description_{name.Replace(' ', '_').ToLowerInvariant()}");
                             }
                             catch
                             {

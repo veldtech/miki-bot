@@ -24,13 +24,13 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
         {
             var context = new Dictionary<string, object>
             {
-                { "author", e.GetAuthor().Username + "#" + e.GetAuthor().Discriminator },
+                { "author", $"{e.GetAuthor().Username}#{e.GetAuthor().Discriminator}"},
                 { "author.id", e.GetAuthor().Id },
                 { "author.bot", e.GetAuthor().IsBot },
                 { "author.mention", e.GetAuthor().Mention },
                 { "author.discrim", e.GetAuthor().Discriminator },
                 { "author.name", e.GetAuthor().Username },
-                { "channel", "#" + e.GetChannel().Name },
+                { "channel", $"#{e.GetChannel().Name}"},
                 { "channel.id", e.GetChannel().Id },
                 { "channel.nsfw", e.GetChannel().IsNsfw },
                 { "message", e.GetMessage().Content },
@@ -40,6 +40,11 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             int i = 0;
             if (e.GetArgumentPack() != null)
             {
+                e.GetArgumentPack().Skip();
+                context.Add($"args", e.GetArgumentPack().Pack.TakeAll());
+                e.GetArgumentPack().Pack.SetCursor(0);
+                
+                e.GetArgumentPack().Skip();
                 while (e.GetArgumentPack().Take<string>(out var str))
                 {
                     context.Add($"args.{i}", str);
@@ -108,7 +113,9 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             if (tokens != null)
             {
                 var context = CreateContext(e);
-                e.GetChannel().QueueMessage(e, null, new Parser(tokens).Parse(context));
+                var result = new Parser(tokens).Parse(context);
+                
+                e.GetChannel().QueueMessage(e, null, result);
             }
         }
     }
