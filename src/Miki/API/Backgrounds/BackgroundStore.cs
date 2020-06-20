@@ -1,24 +1,36 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Miki.Exceptions;
 
 namespace Miki.API.Backgrounds
 {
-    public class BackgroundStore
+    public interface IBackgroundStore
     {
-        public IReadOnlyList<Background> Backgrounds { get; }
+        ValueTask<Background> GetBackgroundAsync(int id);
+    }
+    
+    public class BackgroundStore : IBackgroundStore
+    {
+        private IReadOnlyList<Background> Backgrounds { get; }
 
         public BackgroundStore(IReadOnlyList<Background> backgrounds)
         {
-            if(backgrounds == null)
-            {
-                throw new ArgumentNullException(nameof(backgrounds));
-            }
-            Backgrounds = backgrounds;
+            Backgrounds = backgrounds ?? throw new ArgumentNullException(nameof(backgrounds));
         }
 
+        public ValueTask<Background> GetBackgroundAsync(int id)
+        {
+            if (id >= Backgrounds.Count || id < 0)
+            {
+                throw new EntityNotFoundException<Background>();
+            }
+            return new ValueTask<Background>(Backgrounds[id]);
+        }
+        
         public static async ValueTask<BackgroundStore> LoadFromFileAsync(string path)
         {
             if(!File.Exists(path))

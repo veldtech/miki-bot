@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Miki.Bot.Models.Attributes;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Miki.API.Backgrounds
 {
     [DataContract]
+    [Entity("background")]
 	public class Background
 	{
 		[DataMember(Name = "id")]

@@ -30,8 +30,7 @@ namespace Miki.Tests.Services
             await using var context = NewContext();
             var service = new SettingsService(context);
 
-            var value = await service.GetAsync<AchievementNotificationSetting>(
-                SettingType.Achievements, 345893745L);
+            var value = await service.GetAsync<AchievementNotificationSetting>(SettingType.Achievements, 345893745L);
 
             Assert.Throws<EntityNullException<Setting>>(() => value.Unwrap());
 
