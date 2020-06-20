@@ -125,7 +125,7 @@ namespace Miki.Modules.Accounts
         {
             var achievements = achievementService.GetAchievement(AchievementIds.LevellingId);
 
-            int achievementToUnlock = -1;
+            var achievementToUnlock = -1;
             if(level >= 3 && level < 5)
             {
                 achievementToUnlock = 0;
@@ -479,7 +479,7 @@ namespace Miki.Modules.Accounts
 
             var api = e.GetService<MikiApiClient>();
 
-            LeaderboardsObject obj = await api.GetPagedLeaderboardsAsync(options);
+            var obj = await api.GetPagedLeaderboardsAsync(options);
 
             await Utils.RenderLeaderboards(new EmbedBuilder(), obj.Items, obj.CurrentPage * 12)
                 .SetFooter(
@@ -543,7 +543,7 @@ namespace Miki.Modules.Accounts
 
                 if(e.GetGuild() != null)
                 {
-                    LocalExperience localExp = await LocalExperience.GetAsync(
+                    var localExp = await LocalExperience.GetAsync(
                         context,
                         e.GetGuild().Id,
                         discordUser.Id);
@@ -558,17 +558,13 @@ namespace Miki.Modules.Accounts
                     }
 
                     var rank = await leaderboardsService.GetLocalRankAsync(
-                        (long)e.GetGuild().Id, 
-                        x => x.Experience > localExp.Experience);
+                        (long)e.GetGuild().Id, x => x.Experience > localExp.Experience);
+                    
                     var localLevel = User.CalculateLevel(localExp.Experience);
                     var maxLocalExp = User.CalculateLevelExperience(localLevel);
                     var minLocalExp = User.CalculateLevelExperience(localLevel - 1);
 
-                    EmojiBar expBar = new EmojiBar(
-                        maxLocalExp - minLocalExp, 
-                        onBarSet, 
-                        offBarSet, 
-                        6);
+                    var expBar = new EmojiBar(maxLocalExp - minLocalExp, onBarSet, offBarSet, 6);
                     infoValueBuilder.AppendText(e.GetLocale().GetString(
                         "miki_module_accounts_information_level",
                         localLevel,
@@ -610,8 +606,7 @@ namespace Miki.Modules.Accounts
                         account.Total_Experience.ToString("N0"),
                         maxGlobalExp.ToString("N0")));
 
-                if(self == null 
-                   || await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
+                if(self == null || await self.HasPermissionsAsync(GuildPermission.UseExternalEmojis))
                 {
                     globalInfoBuilder.AppendText(
                         globalExpBar.Print(maxGlobalExp - minGlobalExp));
@@ -642,8 +637,8 @@ namespace Miki.Modules.Accounts
 
                 var users = new List<string>();
 
-                int maxCount = marriages.Count;
-                for(int i = 0; i < maxCount; i++)
+                var maxCount = marriages.Count;
+                for(var i = 0; i < maxCount; i++)
                 {
                     users.Add((await e.GetService<IDiscordClient>()
                         .GetUserAsync(marriages[i].GetOther(discordUser.Id))).Username);
@@ -686,7 +681,7 @@ namespace Miki.Modules.Accounts
                     .ToListAsync();
 
                 var achievementService = e.GetService<AchievementService>();
-                string achievements = allAchievements?.Any() ?? false
+                var achievements = allAchievements?.Any() ?? false
                     ? achievementService.PrintAchievements(allAchievements)
                     : locale.GetString("miki_placeholder_null");
 
@@ -710,26 +705,11 @@ namespace Miki.Modules.Accounts
         [Command("setbackground")]
         public async Task SetProfileBackgroundAsync(IContext e)
         {
-            var unit = e.GetService<IUnitOfWork>();
-            var backgroundRepository = unit.GetRepository<BackgroundsOwned>();
-            var profileVisualRepository = unit.GetRepository<ProfileVisuals>();
-
+            var backgroundService = e.GetService<IBackgroundService>();
             var backgroundId = e.GetArgumentPack().TakeRequired<int>();
-            long userId = (long)e.GetAuthor().Id;
-                       
-            var bo = await backgroundRepository.GetAsync(userId, backgroundId);
-            if(bo == null)
-            {
-                throw new BackgroundNotOwnedException();
-            }
 
-            var v = await profileVisualRepository.GetAsync(userId);
-            v.BackgroundId = bo.BackgroundId;
+            await backgroundService.SetBackgroundAsync((long)e.GetAuthor().Id, backgroundId);
 
-            await profileVisualRepository.EditAsync(v);
-            await unit.CommitAsync();
-
-            // TODO: redo embed.
             await e.SuccessEmbed("Successfully set background.")
                 .QueueAsync(e, e.GetChannel());
         }
@@ -737,82 +717,45 @@ namespace Miki.Modules.Accounts
         [Command("buybackground")]
         public async Task BuyProfileBackgroundAsync(IContext e)
         {
-            var backgrounds = e.GetService<BackgroundStore>();
-            var transactionService = e.GetService<ITransactionService>();
+            var backgrounds = e.GetService<IBackgroundStore>();
+            var locale = e.GetLocale();
+            
+            var id = e.GetArgumentPack().TakeRequired<int>();
 
-            if(!e.GetArgumentPack().Take(out int id))
-            {
-                e.GetChannel().QueueMessage(e, null, "Enter a number after `>buybackground` to check the backgrounds! (e.g. >buybackground 1)");
-            }
-
-            if(id >= backgrounds.Backgrounds.Count || id < 0)
-            {
-                await e.ErrorEmbed("This background does not exist!")
-                    .ToEmbed()
-                    .QueueAsync(e, e.GetChannel());
-                return;
-            }
-
-            var background = backgrounds.Backgrounds[id];
+            var background = await backgrounds.GetBackgroundAsync(id);
 
             var embed = new EmbedBuilder()
-                .SetTitle("Buy Background")
-                .SetImage(background.ImageUrl);
+                .SetTitle($"💰 {locale.GetString("background_buy")}")
+                .SetImage(background.ImageUrl)
+                .SetColor(253, 216, 136);
 
             if(background.Price > 0)
             {
+                var commandExample = $"{e.GetQuery()} {locale.GetString("action_yes")}";
+
                 embed.SetDescription(
-                    $"This background for your profile will cost {background.Price:N0} mekos, Type `>buybackground {id} yes` to buy.");
+                    locale.GetString(
+                        "background_buy_confirmation", 
+                        background.Price.ToString("N0"), 
+                        commandExample.AsCode()));
+            }
+
+            if (e.GetArgumentPack().Take(out string confirmation)
+                  && confirmation.ToLowerInvariant() == locale.GetString("action_yes"))
+            {
+                if (background.Price > 0)
+                {
+                    var backgroundService = e.GetService<IBackgroundService>();
+                    await backgroundService.PurchaseBackgroundAsync((long)e.GetAuthor().Id, id);
+                    await e.SuccessEmbedResource("background_buy_complete")
+                        .QueueAsync(e, e.GetChannel());
+                }
             }
             else
             {
-                embed.SetDescription("This background is not for sale.");
+                await embed.ToEmbed()
+                    .QueueAsync(e, e.GetChannel());
             }
-
-            if(e.GetArgumentPack().Take(out string confirmation))
-            {
-                if(confirmation.ToLower() != "yes")
-                {
-                    return;
-                }
-
-                if(background.Price > 0)
-                {
-                    var context = e.GetService<MikiDbContext>();
-
-                    long userId = (long)e.GetAuthor().Id;
-
-                    var hasBackground = await context.BackgroundsOwned
-                        .AnyAsync(x => x.BackgroundId == background.Id && x.UserId == userId);
-
-                    if(!hasBackground)
-                    {
-                        await transactionService.CreateTransactionAsync(
-                            new TransactionRequest.Builder()
-                                .WithAmount(background.Price)
-                                .WithReceiver(AppProps.Currency.BankId)
-                                .WithSender(userId)
-                                .Build());
-
-                        await context.BackgroundsOwned.AddAsync(new BackgroundsOwned()
-                        {
-                            UserId = (long)e.GetAuthor().Id,
-                            BackgroundId = background.Id,
-                        });
-
-                        await context.SaveChangesAsync();
-                        await e.SuccessEmbed("Background purchased!")
-                            .QueueAsync(e, e.GetChannel());
-                    }
-                    else
-                    {
-                        throw new BackgroundOwnedException();
-                    }
-                }
-            }
-
-            await embed.ToEmbed()
-                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("setbackcolor")]

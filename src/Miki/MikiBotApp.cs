@@ -87,7 +87,6 @@ namespace Miki
                 .Add(new ProviderAdapter(
                     discordClient.Gateway.StartAsync,
                     discordClient.Gateway.StopAsync));
-
         }
 
         private async ValueTask LogErrorsAsync(IExecutionResult<IDiscordMessage> arg)
@@ -258,7 +257,7 @@ namespace Miki
             
             // Setup miscellanious services
             serviceCollection.AddSingleton<ConfigurationManager>();
-            serviceCollection.AddSingleton(
+            serviceCollection.AddSingleton<IBackgroundStore>(
                 await BackgroundStore.LoadFromFileAsync("./resources/backgrounds.json"));
 
             ISentryClient sentryClient = null;
@@ -297,6 +296,7 @@ namespace Miki
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
             serviceCollection.AddSingleton<LotteryEventHandler>();
             serviceCollection.AddScoped<ILotteryService, LotteryService>();
+            serviceCollection.AddScoped<IBackgroundService, BackgroundService>();
             serviceCollection.AddSingleton<IOsuApiClient>(
                 _ => configuration.Configuration.OptionalValues?.OsuApiKey == null
                     ? null

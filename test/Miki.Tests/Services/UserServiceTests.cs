@@ -40,6 +40,7 @@ namespace Miki.Tests.Services
             {
                 Id = 1L
             };
+            
             var receiver = new User
             {
                 Id = 2L
