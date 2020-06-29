@@ -18,7 +18,22 @@ namespace Miki.Modules.CustomCommands.Services
     public class CustomCommandsService : ICustomCommandsService
     {
         private const string CommandCacheKey = "customcommands";
+
+        /// <summary>
+        /// Limit of the storage keys.
+        /// </summary>
+        private const int KeyLimit = 1;
+
+        /// <summary>
+        /// Limit of the storage keys when the guild owner is a donator.
+        /// </summary>
+        private const int DonatorKeyLimit = 25;
         
+        /// <summary>
+        /// Limit of the storage values in bytes.
+        /// </summary>
+        private const int ValueLimit = 4000;
+
         /// <summary>
         /// Default options.
         /// </summary>
@@ -124,14 +139,6 @@ namespace Miki.Modules.CustomCommands.Services
         }
 
         /// <inheritdoc />
-        public async ValueTask<ContextOptions> GetOptionsAsync(IDiscordGuild guild)
-        {
-            var isDonator = await userService.UserIsDonatorAsync((long) guild.OwnerId);
-
-            return isDonator ? DonatorOptions : DefaultOptions;
-        }
-
-        /// <inheritdoc />
         public async ValueTask<bool> ExecuteAsync(IContext e, string commandName)
         {
             var service = e.GetService<ICustomCommandsService>();
@@ -142,11 +149,13 @@ namespace Miki.Modules.CustomCommands.Services
             {
                 return false;
             }
+            
+            var isDonator = await userService.UserIsDonatorAsync((long) guild.OwnerId);
+            var options = isDonator ? DonatorOptions : DefaultOptions;
 
             var say = new ScriptSayFunction();
-            var global = await CreateGlobalAsync(e, say);
+            var global = await CreateGlobalAsync(e, say, isDonator);
             var runner = e.GetService<Runner>();
-            var options = await service.GetOptionsAsync(guild);
             
             await runner.ExecuteAsync(block, global, options);
             await SendResultAsync(e, say);
@@ -157,8 +166,9 @@ namespace Miki.Modules.CustomCommands.Services
         /// <summary>
         /// Create the global context for the runtime.
         /// </summary>
-        private static async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say)
+        private async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say, bool isDonator)
         {
+            var keyLimit = isDonator ? KeyLimit : DonatorKeyLimit;
             var context = new ScriptGlobal
             {
                 ["author"] = ScriptValue.FromObject(new ScriptUser(e.GetAuthor())),
@@ -166,7 +176,8 @@ namespace Miki.Modules.CustomCommands.Services
                 ["message"] = ScriptValue.FromObject(new ScriptMessage(e.GetMessage())),
                 ["args"] = await CreateArgumentsAsync(e),
                 ["say"] = say,
-                ["embed"] = new CreateEmbedFunction()
+                ["embed"] = new CreateEmbedFunction(),
+                ["storage"] = new ScriptStorage(cache, (long) e.GetGuild().Id, keyLimit, ValueLimit)
             };
 
             if (e.GetGuild() != null)

@@ -24,11 +24,6 @@ namespace Miki.Modules.CustomCommands.Services
         Task RemoveCacheAsync(long guildId, string commandName);
 
         /// <summary>
-        /// Get options for the current context.
-        /// </summary>
-        ValueTask<ContextOptions> GetOptionsAsync(IDiscordGuild guild);
-
-        /// <summary>
         /// Execute the custom command.
         /// </summary>
         ValueTask<bool> ExecuteAsync(IContext e, string commandName);
