@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
@@ -143,7 +144,7 @@ namespace Miki.Modules.CustomCommands.Services
             }
 
             var say = new ScriptSayFunction();
-            var global = CreateGlobal(e, say);
+            var global = await CreateGlobalAsync(e, say);
             var runner = e.GetService<Runner>();
             var options = await service.GetOptionsAsync(guild);
             
@@ -156,25 +157,14 @@ namespace Miki.Modules.CustomCommands.Services
         /// <summary>
         /// Create the global context for the runtime.
         /// </summary>
-        private static ScriptGlobal CreateGlobal(IContext e, IScriptValue say)
+        private static async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say)
         {
-            var args = new ScriptArray();
-            
-            if (e.GetArgumentPack() != null)
-            {
-                e.GetArgumentPack().Skip();
-                while (e.GetArgumentPack().Take<string>(out var str))
-                {
-                    args.Add(ScriptValue.FromObject(str));
-                }
-            }
-
             var context = new ScriptGlobal
             {
                 ["author"] = ScriptValue.FromObject(new ScriptUser(e.GetAuthor())),
                 ["channel"] = ScriptValue.FromObject(new ScriptChannel(e.GetChannel())),
                 ["message"] = ScriptValue.FromObject(new ScriptMessage(e.GetMessage())),
-                ["args"] = args,
+                ["args"] = await CreateArgumentsAsync(e),
                 ["say"] = say,
                 ["embed"] = new CreateEmbedFunction()
             };
@@ -186,7 +176,55 @@ namespace Miki.Modules.CustomCommands.Services
 
             return context;
         }
-        
+
+        /// <summary>
+        /// Create arguments array.
+        /// </summary>
+        private static async ValueTask<ScriptArray> CreateArgumentsAsync(IContext e)
+        {
+            var args = new ScriptArray();
+            var argumentPack = e.GetArgumentPack();
+
+            if (argumentPack == null)
+            {
+                return args;
+            }
+
+            var guild = e.GetGuild();
+
+            e.GetArgumentPack().Skip();
+
+            while (argumentPack.Take<string>(out var str))
+            {
+                string value;
+
+                if (Mention.TryParse(str, out var mention))
+                {
+                    value = mention.Type switch
+                    {
+                        MentionType.NONE => str,
+                        MentionType.USER => (await guild.GetMemberAsync(mention.Id)).Username,
+                        MentionType.USER_NICKNAME => (await guild.GetMemberAsync(mention.Id)).Username,
+                        MentionType.ROLE => (await guild.GetRoleAsync(mention.Id)).Name,
+                        MentionType.CHANNEL => '#' + (await guild.GetChannelAsync(mention.Id)).Name,
+                        MentionType.EMOJI => str,
+                        MentionType.ANIMATED_EMOJI => str,
+                        MentionType.USER_ALL => "everyone",
+                        MentionType.USER_ALL_ONLINE => "here",
+                        _ => str
+                    };
+                }
+                else
+                {
+                    value = str;
+                }
+
+                args.Add(ScriptValue.FromObject(value));
+            }
+
+            return args;
+        }
+
         /// <summary>
         /// Send the result of <see cref="ScriptSayFunction"/>.
         /// </summary>

@@ -78,7 +78,7 @@ namespace Miki.Modules.CustomCommands
 
 				try
 				{
-					var service = e.GetService<CustomCommandsService>();
+					var service = e.GetService<ICustomCommandsService>();
                     var guildId = (long)e.GetGuild().Id;
 
                     await service.UpdateBodyAsync(guildId, commandName, scriptBody);
