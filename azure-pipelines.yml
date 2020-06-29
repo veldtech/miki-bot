@@ -24,7 +24,7 @@ stages:
       submodules: true
     - task: CopyFiles@2
       inputs:
-        Contents: 'Nuget.config'
+        Contents: '*.config'
         TargetFolder: 'src/Miki'
         OverWrite: true
     - task: Docker@2
