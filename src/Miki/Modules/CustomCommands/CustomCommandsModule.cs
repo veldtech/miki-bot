@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Miki.Attributes;
 using Miki.Bot.Models;
+using Miki.Cache;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
@@ -16,18 +17,15 @@ using Miki.Framework.Commands.Stages;
 using Miki.Logging;
 using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Modules.CustomCommands.Exceptions;
+using Miki.Modules.CustomCommands.Services;
 using Miki.Utility;
 using MiScript;
-using MiScript.Models;
-using MiScript.Parser;
 
 namespace Miki.Modules.CustomCommands
 {
     [Module("CustomCommands"), Emoji(AppProps.Emoji.Wrench)]
     public class CustomCommandsModule
     {
-        private readonly Tokenizer tokenizer = new Tokenizer();
-
 		public CustomCommandsModule(MikiApp app)
 		{
             var pipeline = new CommandPipelineBuilder(app.Services)
@@ -69,21 +67,7 @@ namespace Miki.Modules.CustomCommands
 
                 try
                 {
-                    var tokens = tokenizer.Tokenize(scriptBody).ToList();
-                    var values = tokens.Where(x => x.TokenType == Tokens.Argument)
-                        .Select(x => x.Value);
-
-                    var context = new Dictionary<string, object>();
-                    foreach(var v in values)
-                    {
-                        if(context.ContainsKey(v))
-                        {
-                            continue;
-                        }
-                        context.Add(v, "");
-                    }
-
-                    new Parser(tokens).Parse(context);
+                    BlockGenerator.Compile(scriptBody);
                 }
                 catch(Exception ex)
                 {
@@ -94,17 +78,11 @@ namespace Miki.Modules.CustomCommands
 
 				try
 				{
-					var db = e.GetService<DbContext>();
-					await db.Set<CustomCommand>()
-                        .AddAsync(new CustomCommand
-					{
-						CommandName = commandName.ToLowerInvariant(),
-						CommandBody = scriptBody,
-						GuildId = (long)e.GetGuild().Id
-					}).ConfigureAwait(false);
-					await db.SaveChangesAsync()
-                        .ConfigureAwait(false);
-				}
+					var service = e.GetService<CustomCommandsService>();
+                    var guildId = (long)e.GetGuild().Id;
+
+                    await service.UpdateBodyAsync(guildId, commandName, scriptBody);
+                }
 				catch(Exception ex)
 				{
 					Log.Error(ex);
