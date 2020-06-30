@@ -1,4 +1,5 @@
-﻿using Miki.Discord.Common;
+﻿using Miki.Discord;
+using Miki.Discord.Common;
 
 namespace Miki
 {
@@ -7,6 +8,11 @@ namespace Miki
         public static string GetFullName(this IDiscordUser user)
         {
             return $"{user.Username}#{user.Discriminator}";
+        }
+
+        public static EmbedBuilder AddCodeBlock(this EmbedBuilder builder, object str, string language = null)
+        {
+            return builder.SetDescription(builder.ToEmbed().Description + $"```{language}\n{str}\n```");
         }
     }
 }

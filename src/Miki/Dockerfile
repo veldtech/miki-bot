@@ -4,6 +4,7 @@ FROM mcr.microsoft.com/dotnet/core/runtime:3.0-buster-slim AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
+COPY ["NuGet.config", "."]
 COPY ["src/Miki/Miki.csproj", "src/Miki/"]
 COPY ["src/Miki.Api/Miki.Api.csproj", "src/Miki.Api/"]
 COPY ["submodules/miki.bot.models/Miki.Bot.Models.csproj", "submodules/miki.bot.models/"]
