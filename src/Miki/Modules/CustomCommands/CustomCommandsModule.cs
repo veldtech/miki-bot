@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.Attributes;
 using Miki.Bot.Models;
+using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Localization;
 using Miki.Framework.Commands.Permissions.Attributes;
 using Miki.Framework.Commands.Permissions.Models;
+using Miki.Framework.Commands.Scopes.Attributes;
 using Miki.Framework.Commands.Stages;
 using Miki.Localization;
 using Miki.Logging;
@@ -138,13 +140,13 @@ namespace Miki.Modules.CustomCommands
                 return;
             }
             
-            var sb = new StringBuilder();
+            var message = e.GetLocale().GetString("customcommands_code", commandName);
             
-            sb.AppendLine("```lua");
-            sb.Append(code);
-            sb.AppendLine("```");
-
-            await e.SuccessEmbedResource("ok_command_code", commandName, sb.ToString())
+            await new EmbedBuilder()
+                .SetTitle(":gear:  Custom Commands")
+                .SetDescription($"{message} ```lua\n{code}\n```")
+                .SetColor(102, 117, 127)
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
 
@@ -180,7 +182,43 @@ namespace Miki.Modules.CustomCommands
                 sb.AppendLine("```");
             }
 
-            await e.SuccessEmbedResource("ok_command_storage", sb.ToString())
+            var message = e.GetLocale().GetString("customcommands_storage");
+
+            await new EmbedBuilder()
+                .SetTitle(":gear:  Custom Commands")
+                .SetDescription($"{message} {sb}")
+                .SetColor(102, 117, 127)
+                .ToEmbed()
+                .QueueAsync(e, e.GetChannel());
+        }
+
+        [Command("getcommandinstructions")]
+        [GuildOnly]
+        [RequiresScope("developer")]
+        public async Task GetInstructionsAsync(IContext e)
+        {
+            var service = e.GetService<ICustomCommandsService>();
+
+            if (!e.GetArgumentPack().Take(out string commandName))
+            {
+                return;
+            }
+
+            var guildId = (long)e.GetGuild().Id;
+            var block = await service.GetBlockAsync(guildId, commandName);
+
+            if (!block.HasValue)
+            {
+                return;
+            }
+
+            var message = e.GetLocale().GetString("customcommands_instructions", commandName);
+
+            await new EmbedBuilder()
+                .SetTitle(":gear:  Custom Commands")
+                .SetDescription($"{message} ```\n{block.Unwrap()}\n```")
+                .SetColor(102, 117, 127)
+                .ToEmbed()
                 .QueueAsync(e, e.GetChannel());
         }
     }
