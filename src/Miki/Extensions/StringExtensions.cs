@@ -18,11 +18,6 @@ namespace Miki
             return $"```{language}\n{str}\n```";
         }
 
-        public static EmbedBuilder AddCodeBlock(this EmbedBuilder builder, object str, string language = null)
-        {
-            return builder.SetDescription(builder.ToEmbed().Description + $"```{language}\n{str}\n```");
-        }
-
         public static string CapitalizeFirst(this string str, CultureInfo culture = null)
         {
             if(string.IsNullOrEmpty(str))

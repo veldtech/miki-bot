@@ -13,7 +13,11 @@ namespace Miki.Modules.CustomCommands.Values
         
         public StringBuilder Output = new StringBuilder();
 
-        public override Task<IScriptValue> InvokeAsync(Context context, IScriptValue thisValue, IScriptValue[] args, CancellationToken token = default)
+        public override Task<IScriptValue> InvokeAsync(
+            Context context,
+            IScriptValue thisValue,
+            IScriptValue[] args,
+            CancellationToken token = default)
         {
             if (args.Length == 0)
             {

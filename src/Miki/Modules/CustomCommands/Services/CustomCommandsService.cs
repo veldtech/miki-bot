@@ -74,8 +74,6 @@ namespace Miki.Modules.CustomCommands.Services
         /// <inheritdoc />
         public async ValueTask<Optional<Block>> GetBlockAsync(long guildId, string commandName)
         {
-            Block block;
-
             var cachePackage = await cache.HashGetAsync<BlockCache>(
                 CommandCacheKey, commandName + ":" + guildId);
             
@@ -84,30 +82,22 @@ namespace Miki.Modules.CustomCommands.Services
                 await using var stream = new MemoryStream(cachePackage.Bytes);
                 var reader = new BinaryReader(stream);
 
-                block = reader.ReadBlock();
+                return reader.ReadBlock();
             }
-            else
+
+            var repository = unitOfWork.GetRepository<CustomCommand>();
+
+            var command = await repository.GetAsync(guildId, commandName);
+
+            if (command == null)
             {
-                var repository = unitOfWork.GetRepository<CustomCommand>();
-
-                var command = await repository.GetAsync(guildId, commandName);
-
-                if (command == null)
-                {
-                    return Optional<Block>.None;
-                }
-
-                block = BlockGenerator.Compile(command.CommandBody);
-
-                await using var stream = new MemoryStream();
-                var writer = new BinaryWriter(stream);
-
-                writer.WriteBlock(block);
-                writer.Flush();
-
-                await cache.HashUpsertAsync(
-                    CommandCacheKey, commandName + ":" + guildId, BlockCache.Create(block));
+                return Optional<Block>.None;
             }
+
+            var block = BlockGenerator.Compile(command.CommandBody);
+
+            await cache.HashUpsertAsync(
+                CommandCacheKey, commandName + ":" + guildId, BlockCache.Create(block));
 
             return block;
         }

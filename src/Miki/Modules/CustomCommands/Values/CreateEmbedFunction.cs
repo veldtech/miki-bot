@@ -11,7 +11,11 @@ namespace Miki.Modules.CustomCommands.Values
 {
     public class CreateEmbedFunction : ScriptBaseFunction
     {
-        public override Task<IScriptValue> InvokeAsync(Context context, IScriptValue thisValue, IScriptValue[] args, CancellationToken token = default)
+        public override Task<IScriptValue> InvokeAsync(
+            Context context,
+            IScriptValue thisValue,
+            IScriptValue[] args,
+            CancellationToken token = default)
         {
             var embedBuilder = new EmbedBuilder();
 
