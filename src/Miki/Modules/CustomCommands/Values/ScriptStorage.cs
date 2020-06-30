@@ -1,11 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Miki.Cache;
 using MiScript;
 using MiScript.Exceptions;
+using MiScript.Utils;
 using MiScript.Values;
 using Newtonsoft.Json;
 
@@ -19,6 +21,7 @@ namespace Miki.Modules.CustomCommands.Values
         private readonly int valueLimit;
         private readonly long guildId;
         private readonly IExtendedCacheClient cache;
+        private readonly IList<IScriptValue> updatedKeys = new List<IScriptValue>();
 
         public ScriptStorage(IExtendedCacheClient cache, long guildId, int keyLimit, int valueLimit)
         {
@@ -28,6 +31,7 @@ namespace Miki.Modules.CustomCommands.Values
             this.valueLimit = valueLimit;
         }
 
+        /// <inheritdoc />
         public override async Task<IScriptValue> GetAsync(Context context, IScriptValue key, CancellationToken token = new CancellationToken())
         {
             var value = await base.GetAsync(context, key, token);
@@ -36,7 +40,8 @@ namespace Miki.Modules.CustomCommands.Values
                 return value;
             }
             
-            var json = await cache.HashGetAsync<string>(CacheKey + ":" + guildId, key.ToString());
+            var cacheKey = GetCacheKey(guildId);
+            var json = await cache.HashGetAsync<string>(cacheKey, key.ToString());
             if (string.IsNullOrEmpty(json))
             {
                 return value;
@@ -48,41 +53,66 @@ namespace Miki.Modules.CustomCommands.Values
             return value;
         }
 
+        /// <inheritdoc />
         public override async Task SetAsync(Context context, IScriptValue key, IScriptValue value, CancellationToken token = new CancellationToken())
         {
             await base.SetAsync(context, key, value, token);
-            
-            var cacheKey = CacheKey + ":" + guildId;
-            var keyStr = key.ToString();
 
-            if (value.IsNull)
+            if (!updatedKeys.Contains(key))
             {
-                await cache.HashDeleteAsync(cacheKey, keyStr);
+                updatedKeys.Add(key);
+            }
+        }
+
+        /// <summary>
+        /// Update the values in Redis.
+        /// </summary>
+        public async ValueTask UpdateAsync(Context context, CancellationToken token = default)
+        {
+            if (updatedKeys.Count == 0)
+            {
                 return;
             }
             
-            var keyCount = await cache.HashLengthAsync(cacheKey);
-
-            if (keyCount >= keyLimit && !await cache.HashExistsAsync(cacheKey, keyStr))
-            {
-                throw new MiScriptException($"You can store up to {keyLimit} keys in the storage");
-            }
-
-            await using var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            var jsonWriter = new JsonTextWriter(writer);
-
-            await value.WriteJsonAsync(context, jsonWriter);
-            await jsonWriter.FlushAsync(token);
+            var cacheKey = GetCacheKey(guildId);
+            var cacheKeys = (await cache.HashKeysAsync(cacheKey)).ToList();
             
-            var json = Encoding.UTF8.GetString(stream.ToArray());
-
-            if (json.Length > valueLimit)
+            foreach (var key in updatedKeys)
             {
-                throw new MiScriptException($"You can store up {valueLimit} bytes storage");
-            }
+                var value = GetRaw(key);
+                var keyStr = key.ToString();
             
-            await cache.HashUpsertAsync(cacheKey, keyStr, json);
+                if (value.IsNull)
+                {
+                    return;
+                }
+            
+                if (cacheKeys.Count >= keyLimit && !cacheKeys.Contains(keyStr))
+                {
+                    throw new MiScriptException($"You can store up to {keyLimit} keys in the storage");
+                }
+
+                await using var stream = new MemoryStream();
+                var writer = new StreamWriter(stream);
+                var jsonWriter = new JsonTextWriter(writer);
+
+                await value.WriteJsonAsync(context, jsonWriter);
+                await jsonWriter.FlushAsync(token);
+            
+                var json = Encoding.UTF8.GetString(stream.ToArray());
+
+                if (json.Length > valueLimit)
+                {
+                    throw new MiScriptException($"The value limit is {valueLimit} bytes, tried to store {json.Length} bytes.");
+                }
+            
+                await cache.HashUpsertAsync(cacheKey, keyStr, json);
+            }
+        }
+
+        public static string GetCacheKey(long guildId)
+        {
+            return CacheKey + ":" + guildId;
         }
     }
 }

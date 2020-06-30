@@ -8,12 +8,22 @@ namespace Miki.Modules.CustomCommands.Values
 {
     public class ScriptEmbedBuilder
     {
+        private int fields;
+        
         public ScriptEmbedBuilder(EmbedBuilder innerEmbedBuilder)
         {
             InnerEmbedBuilder = innerEmbedBuilder;
         }
         
         public EmbedBuilder InnerEmbedBuilder { get; }
+
+        private void IncrementField()
+        {
+            if (++fields > 4)
+            {
+                throw new MiScriptException("You can add up to 4 fields in an embed.");
+            }
+        }
 
         [Function("title")]
         public ScriptEmbedBuilder Title(string title)
@@ -40,7 +50,8 @@ namespace Miki.Modules.CustomCommands.Values
         public ScriptEmbedBuilder Field(string title, string content)
         {
             if (string.IsNullOrEmpty(content)) throw new MiScriptException("Parameter content is required");
-            
+
+            IncrementField();
             InnerEmbedBuilder.AddField(title, content);
             return this;
         }
@@ -50,6 +61,7 @@ namespace Miki.Modules.CustomCommands.Values
         {
             if (string.IsNullOrEmpty(content)) throw new MiScriptException("Parameter content is required");
             
+            IncrementField();
             InnerEmbedBuilder.AddInlineField(title, content);
             return this;
         }

@@ -6,6 +6,8 @@ using System;
 using System.Threading.Tasks;
 using Miki.Discord.Common.Packets.API;
 using Miki.Modules.CustomCommands.Services;
+using Miki.Utility;
+using MiScript.Exceptions;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
@@ -31,12 +33,25 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
             var commandName = endIndex == -1
                 ? message.Substring(startIndex)
                 : message.Substring(startIndex, endIndex - startIndex);
-            
-            var success = await service.ExecuteAsync(e, commandName);
 
-            if (!success)
+            try
             {
-                await next();
+                var success = await service.ExecuteAsync(e, commandName);
+
+                if (!success)
+                {
+                    await next();
+                }
+            }
+            catch (RuntimeException ex) when (ex.InnerException is UserMiScriptException userException)
+            {
+                await e.ErrorEmbedResource("user_error_miscript_execute", userException.Value)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            catch (MiScriptException ex)
+            {
+                await e.ErrorEmbedResource("error_miscript_execute", ex.Message)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
     }

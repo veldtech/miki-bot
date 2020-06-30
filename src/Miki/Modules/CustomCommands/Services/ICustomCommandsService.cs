@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Functional;
 using MiScript;
+using Newtonsoft.Json.Linq;
 
 namespace Miki.Modules.CustomCommands.Services
 {
@@ -12,6 +14,11 @@ namespace Miki.Modules.CustomCommands.Services
         /// Get the block for the <see cref="commandName"/>.
         /// </summary>
         ValueTask<Optional<Block>> GetBlockAsync(long guildId, string commandName);
+
+        /// <summary>
+        /// Get the code for the <see cref="commandName"/>.
+        /// </summary>
+        ValueTask<string> GetBodyAsync(long guildId, string commandName);
 
         /// <summary>
         /// Update the code for the <see cref="commandName"/>.
@@ -27,5 +34,10 @@ namespace Miki.Modules.CustomCommands.Services
         /// Execute the custom command.
         /// </summary>
         ValueTask<bool> ExecuteAsync(IContext e, string commandName);
+
+        /// <summary>
+        /// Get the storage of the guild.
+        /// </summary>
+        ValueTask<IDictionary<string, JToken>> GetStorageAsync(long guildId);
     }
 }
