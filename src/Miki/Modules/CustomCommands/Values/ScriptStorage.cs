@@ -84,7 +84,12 @@ namespace Miki.Modules.CustomCommands.Values
             
                 if (value.IsNull)
                 {
-                    return;
+                    if (cacheKeys.Contains(keyStr))
+                    {
+                        await cache.HashDeleteAsync(cacheKey, keyStr);
+                    }
+                    
+                    continue;
                 }
             
                 if (cacheKeys.Count >= keyLimit && !cacheKeys.Contains(keyStr))
