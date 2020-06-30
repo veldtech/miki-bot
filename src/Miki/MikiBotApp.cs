@@ -39,6 +39,7 @@ using Miki.Localization;
 using Miki.Localization.Exceptions;
 using Miki.Logging;
 using Miki.Modules.Accounts.Services;
+using Miki.Modules.CustomCommands.Services;
 using Miki.Modules.Internal.Routines;
 using Miki.Serialization;
 using Miki.Serialization.Protobuf;
@@ -55,6 +56,7 @@ using Miki.Services.Settings;
 using Miki.Services.Transactions;
 using Miki.UrbanDictionary;
 using Miki.Utility;
+using MiScript;
 using Retsu.Consumer;
 using Sentry;
 using Splitio.Services.Client.Classes;
@@ -134,6 +136,11 @@ namespace Miki
                         configuration.ConnectionString, 
                         b => b.MigrationsAssembly("Miki.Bot.Models"))
                     .EnableDetailedErrors());
+
+            serviceCollection.AddMiScript(builder =>
+            {
+                builder.AddCompiler();
+            });
 
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddSingleton(configuration.Configuration);
@@ -284,6 +291,7 @@ namespace Miki
             serviceCollection.AddSingleton<RedditService>();
             serviceCollection.AddSingleton<AchievementCollection>();
             serviceCollection.AddScoped<AchievementService>();
+            serviceCollection.AddScoped<ICustomCommandsService, CustomCommandsService>();
 
             serviceCollection.AddSingleton<ISchedulerService, SchedulerService>();
             serviceCollection.AddScoped<IGuildService, GuildService>();
