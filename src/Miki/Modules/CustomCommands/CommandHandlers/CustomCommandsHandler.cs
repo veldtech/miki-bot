@@ -1,70 +1,19 @@
-﻿using Miki.Bot.Models;
-using Miki.Cache;
-using Miki.Discord.Common;
+﻿using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Pipelines;
-using MiScript;
-using MiScript.Models;
-using MiScript.Parser;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Miki.Discord.Common.Packets.API;
+using Miki.Localization;
+using Miki.Modules.CustomCommands.Services;
 using Miki.Utility;
+using MiScript.Exceptions;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
     public class CustomCommandsHandler : IPipelineStage
     {
-        private const string CommandCacheKey = "customcommands";
-
-        public Dictionary<string, object> CreateContext(IContext e)
-        {
-            var context = new Dictionary<string, object>
-            {
-                { "author", $"{e.GetAuthor().Username}#{e.GetAuthor().Discriminator}"},
-                { "author.id", e.GetAuthor().Id },
-                { "author.bot", e.GetAuthor().IsBot },
-                { "author.mention", e.GetAuthor().Mention },
-                { "author.discrim", e.GetAuthor().Discriminator },
-                { "author.name", e.GetAuthor().Username },
-                { "channel", $"#{e.GetChannel().Name}"},
-                { "channel.id", e.GetChannel().Id },
-                { "channel.nsfw", e.GetChannel().IsNsfw },
-                { "message", e.GetMessage().Content },
-                { "message.id", e.GetMessage().Id }
-            };
-
-            int i = 0;
-            if (e.GetArgumentPack() != null)
-            {
-                e.GetArgumentPack().Skip();
-                context.Add($"args", e.GetArgumentPack().Pack.TakeAll());
-                e.GetArgumentPack().Pack.SetCursor(0);
-                
-                e.GetArgumentPack().Skip();
-                while (e.GetArgumentPack().Take<string>(out var str))
-                {
-                    context.Add($"args.{i}", str);
-                    i++;
-                }
-            }
-            context.Add("args.count", i + 1);
-
-            if (e.GetGuild() != null)
-            {
-                context.Add("guild", e.GetGuild().Name);
-                context.Add("guild.id", e.GetGuild().Id);
-                context.Add("guild.owner.id", e.GetGuild().OwnerId);
-                context.Add("guild.members", e.GetGuild().MemberCount);
-                context.Add("guild.icon", e.GetGuild().IconUrl);
-            }
-
-            return context;
-        }
-
         public async ValueTask CheckAsync(IDiscordMessage data, IMutableContext e, Func<ValueTask> next)
         {
             if (e == null)
@@ -74,48 +23,53 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
 
             if (e.GetMessage().Type != DiscordMessageType.DEFAULT)
             {
+                await next();
                 return;
             }
 
-            var channel = e.GetChannel();
-            if (!(channel is IDiscordGuildChannel guildChannel))
+            var service = e.GetService<ICustomCommandsService>();
+            var startIndex = e.GetPrefixMatch().Length;
+            var message = e.GetMessage().Content;
+            var endIndex = message.IndexOf(' ', startIndex);
+            var commandName = endIndex == -1
+                ? message.Substring(startIndex)
+                : message.Substring(startIndex, endIndex - startIndex);
+
+            try
             {
-                return;
-            }
+                var success = await service.ExecuteAsync(e, commandName);
 
-            var guild = await guildChannel.GetGuildAsync();
-
-            var cache = e.GetService<IExtendedCacheClient>();
-            IEnumerable<Token> tokens = null;
-
-            string[] args = e.GetMessage().Content.Substring(e.GetPrefixMatch().Length).Split(' ');
-            string commandName = args.FirstOrDefault().ToLowerInvariant();
-
-            var cachePackage = await cache.HashGetAsync<ScriptPackage>(
-                CommandCacheKey, commandName + ":" + guild.Id);
-
-            if (cachePackage != null)
-            {
-                tokens = ScriptPacker.Unpack(cachePackage);
-            }
-            else
-            {
-                var db = e.GetService<IUnitOfWork>();
-                var repository = db.GetRepository<CustomCommand>();
-
-                var command = await repository.GetAsync((long)guild.Id, commandName);
-                if (command != null)
+                if (!success)
                 {
-                    tokens = new Tokenizer().Tokenize(command.CommandBody);
+                    await next();
                 }
             }
-
-            if (tokens != null)
+            catch (MiScriptLimitException ex)
             {
-                var context = CreateContext(e);
-                var result = new Parser(tokens).Parse(context);
-                
-                e.GetChannel().QueueMessage(e, null, result);
+                var type = ex.Type switch
+                {
+                    LimitType.Instructions => "instructions",
+                    LimitType.Stack => "function calls",
+                    LimitType.ArrayItems => "array items",
+                    LimitType.ObjectItems => "object items",
+                    LimitType.StringLength => "string size",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                await e.ErrorEmbedResource("user_error_miscript_limit", type)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            catch (UserMiScriptException ex)
+            {
+                await e.ErrorEmbedResource("user_error_miscript_execute")
+                    .AddCodeBlock(ex.Value)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            catch (MiScriptException ex)
+            {
+                await e.ErrorEmbedResource("error_miscript_execute")
+                    .AddCodeBlock(ex.Message)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
             }
         }
     }

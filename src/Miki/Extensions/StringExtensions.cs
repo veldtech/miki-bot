@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using Miki.Discord;
+using Miki.Discord.Common;
 
 namespace Miki 
 {
@@ -9,6 +11,16 @@ namespace Miki
         public static string AsCode(this object str)
         {
             return $"`{str}`";
+        }
+
+        public static string AsCodeBlock(this object str, string language = null)
+        {
+            return $"```{language}\n{str}\n```";
+        }
+
+        public static EmbedBuilder AddCodeBlock(this EmbedBuilder builder, object str, string language = null)
+        {
+            return builder.SetDescription(builder.ToEmbed().Description + $"```{language}\n{str}\n```");
         }
 
         public static string CapitalizeFirst(this string str, CultureInfo culture = null)
