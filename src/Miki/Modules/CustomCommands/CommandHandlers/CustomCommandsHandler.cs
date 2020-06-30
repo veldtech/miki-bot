@@ -43,9 +43,9 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                     await next();
                 }
             }
-            catch (RuntimeException ex) when (ex.InnerException is UserMiScriptException userException)
+            catch (UserMiScriptException ex)
             {
-                await e.ErrorEmbedResource("user_error_miscript_execute", userException.Value)
+                await e.ErrorEmbedResource("user_error_miscript_execute", ex.Value)
                     .ToEmbed().QueueAsync(e, e.GetChannel());
             }
             catch (MiScriptException ex)

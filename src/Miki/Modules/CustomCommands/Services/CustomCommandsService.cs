@@ -42,7 +42,10 @@ namespace Miki.Modules.CustomCommands.Services
         private static readonly ContextOptions DefaultOptions = new ContextOptions
         {
             InstructionLimit = 250,
-            StackLimit = 10
+            StackLimit = 10,
+            ObjectItemLimit = 50,
+            ArrayItemLimit = 50,
+            StringLengthLimit = 250
         };
 
         /// <summary>
@@ -51,7 +54,10 @@ namespace Miki.Modules.CustomCommands.Services
         private static readonly ContextOptions DonatorOptions = new ContextOptions
         {
             InstructionLimit = 5000,
-            StackLimit = 20
+            StackLimit = 20,
+            ObjectItemLimit = 100,
+            ArrayItemLimit = 100,
+            StringLengthLimit = 500
         };
 
         private readonly IExtendedCacheClient cache;
