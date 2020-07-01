@@ -35,41 +35,9 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
                 ? message.Substring(startIndex)
                 : message.Substring(startIndex, endIndex - startIndex);
 
-            try
+            if (!await service.ExecuteAsync(e, commandName))
             {
-                var success = await service.ExecuteAsync(e, commandName);
-
-                if (!success)
-                {
-                    await next();
-                }
-            }
-            catch (MiScriptLimitException ex)
-            {
-                var type = ex.Type switch
-                {
-                    LimitType.Instructions => "instructions",
-                    LimitType.Stack => "function calls",
-                    LimitType.ArrayItems => "array items",
-                    LimitType.ObjectItems => "object items",
-                    LimitType.StringLength => "string size",
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                await e.ErrorEmbedResource("user_error_miscript_limit", type)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-            }
-            catch (UserMiScriptException ex)
-            {
-                await e.ErrorEmbedResource("user_error_miscript_execute")
-                    .AddCodeBlock(ex.Value)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-            }
-            catch (MiScriptException ex)
-            {
-                await e.ErrorEmbedResource("error_miscript_execute")
-                    .AddCodeBlock(ex.Message)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                await next();
             }
         }
     }

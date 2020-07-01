@@ -12,6 +12,7 @@ using Miki.Modules.CustomCommands.Values;
 using Miki.Services;
 using Miki.Utility;
 using MiScript;
+using MiScript.Exceptions;
 using MiScript.Values;
 using Newtonsoft.Json.Linq;
 
@@ -30,7 +31,7 @@ namespace Miki.Modules.CustomCommands.Services
         /// Limit of the storage keys when the guild owner is a donator.
         /// </summary>
         private const int DonatorKeyLimit = 25;
-        
+
         /// <summary>
         /// Limit of the storage values in bytes.
         /// </summary>
@@ -76,7 +77,7 @@ namespace Miki.Modules.CustomCommands.Services
         {
             var cachePackage = await cache.HashGetAsync<BlockCache>(
                 CommandCacheKey, commandName + ":" + guildId);
-            
+
             if (cachePackage != null)
             {
                 await using var stream = new MemoryStream(cachePackage.Bytes);
@@ -133,11 +134,11 @@ namespace Miki.Modules.CustomCommands.Services
                 command.CommandBody = scriptBody;
                 await repository.EditAsync(command).ConfigureAwait(false);
             }
-                    
+
             await unitOfWork.CommitAsync().ConfigureAwait(false);
             await RemoveCacheAsync(guildId, commandName).ConfigureAwait(false);
         }
-        
+
         /// <inheritdoc />
         public Task RemoveCacheAsync(long guildId, string commandName)
         {
@@ -150,14 +151,21 @@ namespace Miki.Modules.CustomCommands.Services
         {
             var service = e.GetService<ICustomCommandsService>();
             var guild = e.GetGuild();
-            var block = await service.GetBlockAsync((long) guild.Id, commandName);
+            var block = await service.GetBlockAsync((long)guild.Id, commandName);
 
             if (!block.HasValue)
             {
                 return false;
             }
-            
-            var isDonator = await userService.UserIsDonatorAsync((long) guild.OwnerId);
+
+            return await ExecuteAsync(e, block);
+        }
+
+        /// <inheritdoc />
+        public async ValueTask<bool> ExecuteAsync(IContext e, Block block)
+        {
+            var guild = e.GetGuild();
+            var isDonator = await userService.UserIsDonatorAsync((long)guild.OwnerId);
             var options = isDonator ? DonatorOptions : DefaultOptions;
             var keyLimit = isDonator ? DonatorKeyLimit : KeyLimit;
             var storage = new ScriptStorage(cache, (long)e.GetGuild().Id, keyLimit, ValueLimit);
@@ -168,12 +176,44 @@ namespace Miki.Modules.CustomCommands.Services
             var context = new Context(block, global, runner, options);
 
             global["storage"] = storage;
-            
-            await runner.ExecuteAsync(context);
-            await SendResultAsync(e, say);
-            await storage.UpdateAsync(context);
-            
-            return true;
+
+            try
+            {
+                await runner.ExecuteAsync(context);
+                await SendResultAsync(e, say);
+                await storage.UpdateAsync(context);
+
+                return true;
+            }
+            catch (MiScriptLimitException ex)
+            {
+                var type = ex.Type switch
+                {
+                    LimitType.Instructions => "instructions",
+                    LimitType.Stack => "function calls",
+                    LimitType.ArrayItems => "array items",
+                    LimitType.ObjectItems => "object items",
+                    LimitType.StringLength => "string size",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                await e.ErrorEmbedResource("user_error_miscript_limit", type)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            catch (UserMiScriptException ex)
+            {
+                await e.ErrorEmbedResource("user_error_miscript_execute")
+                    .AddCodeBlock(ex.Value)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+            catch (MiScriptException ex)
+            {
+                await e.ErrorEmbedResource("error_miscript_execute")
+                    .AddCodeBlock(ex.Message)
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+            }
+
+            return false;
         }
 
         /// <inheritdoc />
