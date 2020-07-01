@@ -95,6 +95,36 @@ namespace Miki.Modules.CustomCommands
             }
         }
 
+        [Command("eval")]
+        [GuildOnly]
+        [RequiresScope("developer")]
+        public async Task EvalAsync(IContext e)
+        {
+            if (!e.GetArgumentPack().CanTake)
+            {
+                return;
+            }
+
+            var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
+
+            Block block;
+            
+            try
+            {
+                block = BlockGenerator.Compile(scriptBody);
+            }
+            catch (Exception ex)
+            {
+                await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex}```")
+                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                return;
+            }
+
+            var service = e.GetService<ICustomCommandsService>();
+
+            await service.ExecuteAsync(e, block);
+        }
+
         [Command("removecommand")]
         [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]

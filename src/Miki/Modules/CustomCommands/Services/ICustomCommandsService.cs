@@ -36,6 +36,11 @@ namespace Miki.Modules.CustomCommands.Services
         ValueTask<bool> ExecuteAsync(IContext e, string commandName);
 
         /// <summary>
+        /// Execute the block.
+        /// </summary>
+        ValueTask<bool> ExecuteAsync(IContext e, Block block);
+
+        /// <summary>
         /// Get the storage of the guild.
         /// </summary>
         ValueTask<IDictionary<string, JToken>> GetStorageAsync(long guildId);
