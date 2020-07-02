@@ -74,7 +74,7 @@ namespace Miki.Modules.CustomCommands
                 var sb = new StringBuilder();
                 var locale = e.GetLocale();
                 
-                sb.AppendLine(locale.GetString("customcommands_created", $">{commandName}"));
+                sb.AppendLine(locale.GetString("customcommands_created", e.GetPrefixMatch() + commandName));
                 
                 var service = e.GetService<ICustomCommandsService>();
                 
