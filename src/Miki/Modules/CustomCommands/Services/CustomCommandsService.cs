@@ -190,7 +190,7 @@ namespace Miki.Modules.CustomCommands.Services
                 await SendErrorAsync(
                     e, 
                     "error_miscript_parse",
-                    "Internal error in MiScriptInternal error in MiScript: " + ex.Message,
+                    "Internal error in MiScript: " + ex.Message,
                     provider);
                 return false;
             }
