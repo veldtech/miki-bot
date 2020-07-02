@@ -72,8 +72,9 @@ namespace Miki.Modules.CustomCommands
                 var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
                 var provider = new CodeProvider(scriptBody);
                 var sb = new StringBuilder();
+                var locale = e.GetLocale();
                 
-                sb.Append($"Created script '>{commandName}'");
+                sb.AppendLine(locale.GetString("customcommands_created", $">{commandName}"));
                 
                 var service = e.GetService<ICustomCommandsService>();
                 
@@ -84,18 +85,19 @@ namespace Miki.Modules.CustomCommands
 
                     if (information.Messages.Count > 0)
                     {
-                        sb.AppendLine(" however there were some warnings:");
                         sb.AppendLine();
+                        sb.AppendLine(e.GetLocale().GetString("customcommands_warnings").CapitalizeFirst().AsBold());
                         
                         foreach (var message in information.Messages)
                         {
                             if (message.Range.HasValue)
                             {
-                                sb.Append("At line ");
-                                sb.Append(message.Range.Value.StartLine);
-                                sb.Append(", column ");
-                                sb.Append(message.Range.Value.StartColumn + 1);
-                                sb.Append(": ");
+                                var range = message.Range.Value;
+                                
+                                sb.Append(locale.GetString("customcommands_line",
+                                    range.StartLine,
+                                    range.StartColumn + 1));
+                                sb.Append(' ');
                             }
                             sb.AppendLine(message.Content);
 

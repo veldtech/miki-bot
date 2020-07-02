@@ -8,6 +8,11 @@ namespace Miki
 {
     public static class StringExtensions
     {
+        public static string AsBold(this object str)
+        {
+            return $"**{str}**";
+        }
+
         public static string AsCode(this object str)
         {
             return $"`{str}`";
