@@ -17,9 +17,13 @@ using Miki.Localization;
 using Miki.Logging;
 using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Modules.CustomCommands.Exceptions;
+using Miki.Modules.CustomCommands.Providers;
 using Miki.Modules.CustomCommands.Services;
+using Miki.Modules.CustomCommands.Values;
 using Miki.Utility;
 using MiScript;
+using MiScript.Analyzer;
+using MiScript.Exceptions;
 using Newtonsoft.Json;
 
 namespace Miki.Modules.CustomCommands
@@ -65,22 +69,79 @@ namespace Miki.Modules.CustomCommands
                     return;
                 }
 
-                string scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
-
+                var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
+                var provider = new CodeProvider(scriptBody);
+                var sb = new StringBuilder();
+                var locale = e.GetLocale();
+                
+                sb.AppendLine(locale.GetString("customcommands_created", e.GetPrefixMatch() + commandName));
+                
+                var service = e.GetService<ICustomCommandsService>();
+                
                 try
                 {
-                    BlockGenerator.Compile(scriptBody);
+                    var global = await CustomCommandsService.CreateGlobalAsync(e);
+                    var information = BlockInformation.Compile(scriptBody, global);
+
+                    if (information.Messages.Count > 0)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine(e.GetLocale().GetString("customcommands_warnings").CapitalizeFirst().AsBold());
+                        
+                        foreach (var message in information.Messages)
+                        {
+                            if (message.Range.HasValue)
+                            {
+                                var range = message.Range.Value;
+                                
+                                sb.Append(locale.GetString("customcommands_line",
+                                    range.StartLine,
+                                    range.StartColumn + 1));
+                                sb.Append(' ');
+                            }
+                            sb.AppendLine(message.Content);
+
+                            if (message.Range.HasValue)
+                            {
+                                sb.AppendLine("```");
+                                sb.AppendLine(scriptBody.GetPeek(message.Range.Value));
+                                sb.AppendLine("```");
+                            }
+                        }
+                    }
                 }
-                catch(Exception ex)
+                catch (MiScriptInvalidTokenException ex)
                 {
-                    await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex}```")
-                        .ToEmbed().QueueAsync(e, e.GetChannel());
+                    await CustomCommandsService.SendErrorAsync(
+                        e,
+                        "error_miscript_parse",
+                        ex.Message,
+                        provider,
+                        ex.Range);
+                    return;
+                }
+                catch (MiScriptException ex)
+                {
+                    await CustomCommandsService.SendErrorAsync(
+                        e,
+                        "error_miscript_parse",
+                        ex.Message,
+                        provider,
+                        ex.Position);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    await CustomCommandsService.SendErrorAsync(
+                        e, 
+                        "error_miscript_parse",
+                        "Internal error in MiScript: " + ex.Message,
+                        provider);
                     return;
                 }
 
 				try
 				{
-					var service = e.GetService<ICustomCommandsService>();
                     var guildId = (long)e.GetGuild().Id;
 
                     await service.UpdateBodyAsync(guildId, commandName, scriptBody);
@@ -90,7 +151,7 @@ namespace Miki.Modules.CustomCommands
 					Log.Error(ex);
 				}
 
-                await e.SuccessEmbed($"Created script '>{commandName}'")
+                await e.SuccessEmbed(sb.ToString())
                     .QueueAsync(e, e.GetChannel());
             }
         }
@@ -106,23 +167,9 @@ namespace Miki.Modules.CustomCommands
             }
 
             var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
-
-            Block block;
-            
-            try
-            {
-                block = BlockGenerator.Compile(scriptBody);
-            }
-            catch (Exception ex)
-            {
-                await e.ErrorEmbed($"An error occurred when parsing your script: ```{ex}```")
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
-                return;
-            }
-
             var service = e.GetService<ICustomCommandsService>();
 
-            await service.ExecuteAsync(e, block);
+            await service.ExecuteCodeAsync(e, scriptBody);
         }
 
         [Command("removecommand")]
