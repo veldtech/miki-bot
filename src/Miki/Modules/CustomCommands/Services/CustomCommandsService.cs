@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Miki.Bot.Models;
 using Miki.Cache;
 using Miki.Discord.Common;
 using Miki.Framework;
 using Miki.Functional;
+using Miki.Modules.CustomCommands.Providers;
 using Miki.Modules.CustomCommands.Values;
 using Miki.Services;
 using Miki.Utility;
@@ -151,24 +153,57 @@ namespace Miki.Modules.CustomCommands.Services
         {
             var service = e.GetService<ICustomCommandsService>();
             var guild = e.GetGuild();
-            var block = await service.GetBlockAsync((long)guild.Id, commandName);
+            var guildId = (long)guild.Id;
+            var block = await service.GetBlockAsync(guildId, commandName);
 
             if (!block.HasValue)
             {
                 return false;
             }
 
-            return await ExecuteAsync(e, block);
+            return await ExecuteAsync(e, block, new CommandBodyProvider(this, guildId, commandName));
         }
 
         /// <inheritdoc />
-        public async ValueTask<bool> ExecuteAsync(IContext e, Block block)
+        public async ValueTask<bool> ExecuteCodeAsync(IContext e, string body)
+        {
+            var provider = new CodeProvider(body);
+            
+            try
+            {
+                var block = BlockGenerator.Compile(body);
+                return await ExecuteAsync(e, block, provider);
+            }
+            catch (MiScriptException ex)
+            {
+                await SendErrorAsync(
+                    e,
+                    "error_miscript_parse",
+                    ex.Message,
+                    new CodeProvider(body),
+                    ex.Position);
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                await SendErrorAsync(
+                    e, 
+                    "error_miscript_parse",
+                    "Internal error in MiScript: " + ex.Message,
+                    provider);
+                return false;
+            }
+        }
+
+        private async ValueTask<bool> ExecuteAsync(IContext e, Block block, ICodeProvider codeProvider)
         {
             var guild = e.GetGuild();
+            var guildId = (long)e.GetGuild().Id;
             var isDonator = await userService.UserIsDonatorAsync((long)guild.OwnerId);
             var options = isDonator ? DonatorOptions : DefaultOptions;
             var keyLimit = isDonator ? DonatorKeyLimit : KeyLimit;
-            var storage = new ScriptStorage(cache, (long)e.GetGuild().Id, keyLimit, ValueLimit);
+            var storage = new ScriptStorage(cache, guildId, keyLimit, ValueLimit);
 
             var say = new ScriptSayFunction();
             var global = await CreateGlobalAsync(e, say);
@@ -202,18 +237,75 @@ namespace Miki.Modules.CustomCommands.Services
             }
             catch (UserMiScriptException ex)
             {
-                await e.ErrorEmbedResource("user_error_miscript_execute")
-                    .AddCodeBlock(ex.Value)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                await SendErrorAsync(e, "user_error_miscript_execute", ex.Value, codeProvider, ex.Position);
             }
             catch (MiScriptException ex)
             {
-                await e.ErrorEmbedResource("error_miscript_execute")
-                    .AddCodeBlock(ex.Message)
-                    .ToEmbed().QueueAsync(e, e.GetChannel());
+                await SendErrorAsync(e, "error_miscript_execute", ex.Message, codeProvider, ex.Position);
+            }
+            catch (Exception ex)
+            {
+                await SendErrorAsync(e, "error_miscript_execute", "Internal error in MiScript: " + ex.Message, codeProvider);
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Send the error that occured in <see cref="ExecuteAsync"/>.
+        /// </summary>
+        internal static async Task SendErrorAsync(
+            IContext e,
+            string key,
+            object error,
+            ICodeProvider codeProvider,
+            object rangeObj = null)
+        {
+            var sb = new StringBuilder();
+
+            switch (rangeObj)
+            {
+                case SourceRange range:
+                {
+                    var code = await codeProvider.GetAsync();
+
+                    sb.AppendLine();
+                    sb.AppendLine();
+                    sb.Append(error);
+                    sb.Append(" at ");
+                    sb.Append(range.StartLine);
+                    sb.Append(':');
+                    sb.Append(range.StartColumn);
+                    sb.AppendLine();
+                    sb.AppendLine("```");
+                    sb.Append(code.GetPeek(range.Index, range.Length));
+                    sb.AppendLine("```");
+                    break;
+                }
+                case CompiledSourceRange range:
+                {
+                    var code = await codeProvider.GetAsync();
+
+                    sb.AppendLine();
+                    sb.AppendLine();
+                    sb.Append(error);
+                    sb.AppendLine();
+                    sb.AppendLine("```");
+                    sb.Append(code.GetPeek(range.Index, range.Length));
+                    sb.AppendLine("```");
+                    break;
+                }
+                default:
+                    sb.AppendLine("```");
+                    sb.Append(error);
+                    sb.AppendLine();
+                    sb.AppendLine("```");
+                    break;
+            }
+            
+            await e.ErrorEmbedResource(key)
+                .AppendDescription(sb.ToString())
+                .ToEmbed().QueueAsync(e, e.GetChannel());
         }
 
         /// <inheritdoc />
@@ -230,7 +322,7 @@ namespace Miki.Modules.CustomCommands.Services
         /// <summary>
         /// Create the global context for the runtime.
         /// </summary>
-        private static async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say)
+        internal static async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say = null)
         {
             var context = new ScriptGlobal
             {
@@ -238,7 +330,7 @@ namespace Miki.Modules.CustomCommands.Services
                 ["channel"] = ScriptValue.FromObject(new ScriptChannel(e.GetChannel())),
                 ["message"] = ScriptValue.FromObject(new ScriptMessage(e.GetMessage())),
                 ["args"] = await CreateArgumentsAsync(e),
-                ["say"] = say,
+                ["say"] = say ?? new ScriptSayFunction(),
                 ["embed"] = new CreateEmbedFunction()
             };
 
