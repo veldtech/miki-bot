@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Miki.Bot.Models;
+using Miki.Framework.Commands.Scopes;
 using Miki.Services;
 using Miki.Services.Pasta;
 using Miki.Services.Pasta.Exceptions;
+using Moq;
 using Xunit;
 
 namespace Miki.Tests.Services
@@ -23,6 +25,8 @@ namespace Miki.Tests.Services
             CreatedAt = DateTime.Now
         };
 
+        private Mock<IScopeService> scopeServiceMock;
+
         public PastaServiceTests()
             : base(x => new MikiDbContext(x))
         {
@@ -35,33 +39,35 @@ namespace Miki.Tests.Services
                 UserId = 124L
             });
             ctx.SaveChanges();
+
+            scopeServiceMock = new Mock<IScopeService>();
         }
 
         [Fact]
-        public async Task CreatePastaTest()
+        public async Task CreatePastaTestAsync()
         {
             var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
 
             var createdPasta = await service.CreatePastaAsync("createtest", "test body", 22L);
             Assert.Equal(createdPasta, await service.GetPastaAsync(createdPasta.Id));
         }
 
         [Fact]
-        public async Task CreateDuplicateTest()
+        public async Task CreateDuplicateTestAsync()
         {
             var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
 
             await Assert.ThrowsAsync<DuplicatePastaException>(
                 async () => await service.CreatePastaAsync(testPasta.Id, "", 0L));
         }
 
         [Fact]
-        public async Task GetPastaTest()
+        public async Task GetPastaTestAsync()
         {
             var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
 
             var pasta = await service.GetPastaAsync(testPasta.Id);
 
@@ -74,11 +80,14 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task DeletePastaTest()
+        public async Task DeletePastaTestAsync()
         {
+            scopeServiceMock.Setup(x => x.HasScopeAsync(It.IsAny<long>(), It.IsAny<IEnumerable<string>>()))
+                .Returns(() => new ValueTask<bool>(false));
+
             using(var unit = NewContext())
             {
-                var service = new PastaService(unit);
+                var service = new PastaService(unit, scopeServiceMock.Object);
 
                 await service.DeletePastaAsync(testPasta.Id, 0L);
                 await unit.CommitAsync();
@@ -86,7 +95,7 @@ namespace Miki.Tests.Services
 
             using(var unit = NewContext())
             {
-                var service = new PastaService(unit);
+                var service = new PastaService(unit, scopeServiceMock.Object);
 
                 await Assert.ThrowsAsync<PastaNotFoundException>(
                     async () => await service.GetPastaAsync(testPasta.Id));
@@ -94,20 +103,23 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task DeleteUnauthorizedPastaTest()
+        public async Task DeleteUnauthorizedPastaTestAsync()
         {
+            scopeServiceMock.Setup(x => x.HasScopeAsync(It.IsAny<long>(), It.IsAny<IEnumerable<string>>()))
+                .Returns(() => new ValueTask<bool>(false));
+
             var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
 
             await Assert.ThrowsAsync<ActionUnauthorizedException>(
                 async () => await service.DeletePastaAsync(testPasta.Id, 1L));
         }
 
         [Fact]
-        public async Task SearchPastaTest()
+        public async Task SearchPastaTestAsync()
         {
             var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
 
             var result = await service.SearchPastaAsync(x => true, 12, 0);
             Assert.Equal(1, result.PageIndex);
@@ -117,11 +129,11 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task VotePastaTest()
+        public async Task VotePastaTestAsync()
         {
             using(var unit = NewContext())
             {
-                var service = new PastaService(unit);
+                var service = new PastaService(unit, scopeServiceMock.Object);
 
                 await service.VoteAsync(new PastaVote
                 {
@@ -134,7 +146,7 @@ namespace Miki.Tests.Services
 
             using(var unit = NewContext())
             {
-                var service = new PastaService(unit);
+                var service = new PastaService(unit, scopeServiceMock.Object);
                 var vote = await service.GetVoteAsync("test", 0L);
 
                 Assert.NotNull(vote);
@@ -143,10 +155,10 @@ namespace Miki.Tests.Services
         }
 
         [Fact]
-        public async Task GetVotesTest()
+        public async Task GetVotesTestAsync()
         {
             using var unit = NewContext();
-            var service = new PastaService(unit);
+            var service = new PastaService(unit, scopeServiceMock.Object);
             var count = await service.GetVotesAsync("test");
 
             Assert.Equal(

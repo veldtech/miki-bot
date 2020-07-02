@@ -299,7 +299,7 @@ namespace Miki
             serviceCollection.AddScoped<IRpsService, RpsService>();
             serviceCollection.AddScoped<ILocalizationService, LocalizationService>();
             serviceCollection.AddScoped<PermissionService>();
-            serviceCollection.AddScoped<ScopeService>();
+            serviceCollection.AddScoped<IScopeService, ScopeService>();
             serviceCollection.AddScoped<ITransactionService, TransactionService>();
             serviceCollection.AddScoped<IBankAccountService, BankAccountService>();
             serviceCollection.AddSingleton<LotteryEventHandler>();

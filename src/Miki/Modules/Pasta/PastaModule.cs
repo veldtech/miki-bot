@@ -58,15 +58,16 @@ namespace Miki.Modules.Pasta
         }
 
         [Command("deletepasta")]
-        public async Task DeletePasta(IContext e)
+
+        public async Task DeletePastaAsync(IContext e)
         {
             var locale = e.GetLocale();
             var pastaArg = e.GetArgumentPack().Pack.TakeAll();
 
-            if(string.IsNullOrWhiteSpace(pastaArg))
+            if (string.IsNullOrWhiteSpace(pastaArg))
             {
                 await e.ErrorEmbed(
-                        locale.GetString("miki_module_pasta_error_specify", 
+                        locale.GetString("miki_module_pasta_error_specify",
                             locale.GetString("verb_delete")))
                     .ToEmbed()
                     .QueueAsync(e, e.GetChannel());
