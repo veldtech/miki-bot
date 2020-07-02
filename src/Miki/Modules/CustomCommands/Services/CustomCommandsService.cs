@@ -198,12 +198,9 @@ namespace Miki.Modules.CustomCommands.Services
 
         private async ValueTask<bool> ExecuteAsync(IContext e, Block block, ICodeProvider codeProvider)
         {
-            var guild = e.GetGuild();
-            var guildId = (long)e.GetGuild().Id;
-            var isDonator = await userService.UserIsDonatorAsync((long)guild.OwnerId);
+            var isDonator = await userService.UserIsDonatorAsync((long)e.GetGuild().OwnerId);
             var options = isDonator ? DonatorOptions : DefaultOptions;
-            var keyLimit = isDonator ? DonatorKeyLimit : KeyLimit;
-            var storage = new ScriptStorage(cache, guildId, keyLimit, ValueLimit);
+            var storage = await CreateStorageAsync(e, isDonator);
 
             var say = new ScriptSayFunction();
             var global = await CreateGlobalAsync(e, say);
@@ -249,6 +246,26 @@ namespace Miki.Modules.CustomCommands.Services
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Create the storage for the server.
+        /// </summary>
+        private static async ValueTask<ScriptStorage> CreateStorageAsync(IContext e, bool? isDonator = null)
+        {
+            var cache = e.GetService<IExtendedCacheClient>();
+            var guild = e.GetGuild();
+            var guildId = (long)guild.Id;
+            
+            if (!isDonator.HasValue)
+            {
+                var userService = e.GetService<IUserService>();
+                isDonator = await userService.UserIsDonatorAsync(guildId);
+            }
+            
+            var keyLimit = isDonator.Value ? DonatorKeyLimit : KeyLimit;
+            var storage = new ScriptStorage(cache, guildId, keyLimit, ValueLimit);
+            return storage;
         }
 
         /// <summary>
@@ -322,7 +339,10 @@ namespace Miki.Modules.CustomCommands.Services
         /// <summary>
         /// Create the global context for the runtime.
         /// </summary>
-        internal static async ValueTask<ScriptGlobal> CreateGlobalAsync(IContext e, IScriptValue say = null)
+        internal static async ValueTask<ScriptGlobal> CreateGlobalAsync(
+            IContext e,
+            IScriptValue say = null,
+            IScriptValue storage = null)
         {
             var context = new ScriptGlobal
             {
@@ -331,7 +351,8 @@ namespace Miki.Modules.CustomCommands.Services
                 ["message"] = ScriptValue.FromObject(new ScriptMessage(e.GetMessage())),
                 ["args"] = await CreateArgumentsAsync(e),
                 ["say"] = say ?? new ScriptSayFunction(),
-                ["embed"] = new CreateEmbedFunction()
+                ["embed"] = new CreateEmbedFunction(),
+                ["storage"] = storage ?? await CreateStorageAsync(e)
             };
 
             if (e.GetGuild() != null)
