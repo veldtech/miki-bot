@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Miki.Attributes;
 using Miki.Bot.Models;
+using Miki.Bot.Models.Exceptions;
 using Miki.Discord;
 using Miki.Discord.Common;
 using Miki.Framework;
@@ -31,129 +32,112 @@ namespace Miki.Modules.CustomCommands
     [Module("CustomCommands"), Emoji(AppProps.Emoji.Wrench)]
     public class CustomCommandsModule
     {
-		public CustomCommandsModule(MikiApp app)
-		{
-            var pipeline = new CommandPipelineBuilder(app.Services)
-                .UseStage(new CorePipelineStage())
-                .UsePrefixes()
-                .UseStage(new FetchDataStage())               
-                .UseArgumentPack()
-                .UseStage(new LocalizationPipelineStage(app.Services.GetService<ILocalizationService>()))
-                .UseStage(new CustomCommandsHandler())
-                .Build();
-            app.Services.GetService<IDiscordClient>()
-                .MessageCreate += async (e) => await pipeline.ExecuteAsync(e);
-        }
-
         [Command("createcommand")]
         [GuildOnly]
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task NewCustomCommandAsync(IContext e)
         {
-            if(e.GetArgumentPack().Take(out string commandName))
+            var commandName = e.GetArgumentPack().TakeRequired<string>();
+            if (commandName.Contains(' '))
             {
-                if(commandName.Contains(' '))
-                {
-                    throw new InvalidCharacterException(" ");
-                }
+                throw new InvalidCharacterException(" ");
+            }
 
-                var commandHandler = e.GetService<CommandTree>();
-                if(commandHandler.GetCommand(commandName) != null)
-                {
-                    return;
-                }
+            var commandHandler = e.GetService<CommandTree>();
+            if (commandHandler.GetCommand(commandName) != null)
+            {
+                throw new DuplicateCommandException(commandName);
+            }
 
-                if(!e.GetArgumentPack().CanTake)
-                {
-                    // TODO (Veld): Command has no function body.
-                    return;
-                }
+            if (!e.GetArgumentPack().CanTake)
+            {
+                throw new ArgumentMissingException(typeof(CustomCommand));
+            }
 
-                var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
-                var provider = new CodeProvider(scriptBody);
-                var sb = new StringBuilder();
-                var locale = e.GetLocale();
-                
-                sb.AppendLine(locale.GetString("customcommands_created", e.GetPrefixMatch() + commandName));
-                
-                var service = e.GetService<ICustomCommandsService>();
-                
-                try
-                {
-                    var global = await CustomCommandsService.CreateGlobalAsync(e);
-                    var information = BlockInformation.Compile(scriptBody, global);
+            var scriptBody = e.GetArgumentPack().Pack.TakeAll().TrimStart('`').TrimEnd('`');
+            var provider = new CodeProvider(scriptBody);
+            var sb = new StringBuilder();
+            var locale = e.GetLocale();
 
-                    if (information.Messages.Count > 0)
+            sb.AppendLine(locale.GetString("customcommands_created", e.GetPrefixMatch() + commandName));
+
+            var service = e.GetService<ICustomCommandsService>();
+
+            try
+            {
+                var global = await CustomCommandsService.CreateGlobalAsync(e);
+                var information = BlockInformation.Compile(scriptBody, global);
+
+                if (information.Messages.Count > 0)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine(e.GetLocale().GetString("customcommands_warnings").CapitalizeFirst().AsBold());
+
+                    foreach (var message in information.Messages)
                     {
-                        sb.AppendLine();
-                        sb.AppendLine(e.GetLocale().GetString("customcommands_warnings").CapitalizeFirst().AsBold());
-                        
-                        foreach (var message in information.Messages)
+                        if (message.Range.HasValue)
                         {
-                            if (message.Range.HasValue)
-                            {
-                                var range = message.Range.Value;
-                                
-                                sb.Append(locale.GetString("customcommands_line",
-                                    range.StartLine,
-                                    range.StartColumn + 1));
-                                sb.Append(' ');
-                            }
-                            sb.AppendLine(message.Content);
+                            var range = message.Range.Value;
 
-                            if (message.Range.HasValue)
-                            {
-                                sb.AppendLine("```");
-                                sb.AppendLine(scriptBody.GetPeek(message.Range.Value));
-                                sb.AppendLine("```");
-                            }
+                            sb.Append(locale.GetString("customcommands_line",
+                                range.StartLine,
+                                range.StartColumn + 1));
+                            sb.Append(' ');
+                        }
+                        sb.AppendLine(message.Content);
+
+                        if (message.Range.HasValue)
+                        {
+                            sb.AppendLine("```");
+                            sb.AppendLine(scriptBody.GetPeek(message.Range.Value));
+                            sb.AppendLine("```");
                         }
                     }
                 }
-                catch (MiScriptInvalidTokenException ex)
-                {
-                    await CustomCommandsService.SendErrorAsync(
-                        e,
-                        "error_miscript_parse",
-                        ex.Message,
-                        provider,
-                        ex.Range);
-                    return;
-                }
-                catch (MiScriptException ex)
-                {
-                    await CustomCommandsService.SendErrorAsync(
-                        e,
-                        "error_miscript_parse",
-                        ex.Message,
-                        provider,
-                        ex.Position);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    await CustomCommandsService.SendErrorAsync(
-                        e, 
-                        "error_miscript_parse",
-                        "Internal error in MiScript: " + ex.Message,
-                        provider);
-                    return;
-                }
-
-				try
-				{
-                    var guildId = (long)e.GetGuild().Id;
-
-                    await service.UpdateBodyAsync(guildId, commandName, scriptBody);
-                }
-				catch(Exception ex)
-				{
-					Log.Error(ex);
-				}
-
-                await e.SuccessEmbed(sb.ToString())
-                    .QueueAsync(e, e.GetChannel());
             }
+            catch (MiScriptInvalidTokenException ex)
+            {
+                await CustomCommandsService.SendErrorAsync(
+                    e,
+                    "error_miscript_parse",
+                    ex.Message,
+                    provider,
+                    ex.Range);
+                return;
+            }
+            catch (MiScriptException ex)
+            {
+                await CustomCommandsService.SendErrorAsync(
+                    e,
+                    "error_miscript_parse",
+                    ex.Message,
+                    provider,
+                    ex.Position);
+                return;
+            }
+            catch (Exception ex)
+            {
+                await CustomCommandsService.SendErrorAsync(
+                    e,
+                    "error_miscript_parse",
+                    "Internal error in MiScript: " + ex.Message,
+                    provider);
+                return;
+            }
+
+            try
+            {
+                var guildId = (long)e.GetGuild().Id;
+
+                await service.UpdateBodyAsync(guildId, commandName, scriptBody);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            await e.SuccessEmbed(sb.ToString())
+                .QueueAsync(e, e.GetChannel());
         }
 
         [Command("eval")]

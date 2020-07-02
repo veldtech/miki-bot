@@ -63,6 +63,7 @@ using Splitio.Services.Client.Classes;
 using Splitio.Services.Client.Interfaces;
 using Veld.Osu;
 using Veld.Osu.V1;
+using Miki.Modules.CustomCommands.CommandHandlers;
 
 namespace Miki
 {
@@ -333,7 +334,9 @@ namespace Miki
                     .UseStage(new FetchDataStage())
                     .UseLocalization()
                     .UseArgumentPack()
-                    .UseCommandHandler()
+                    .UseStage(new MultiCommandHandler(
+                        new ExecuteCommandStage(services.GetService<CommandTree>()),
+                        new CustomCommandsHandler()))
                     .UsePermissions()
                     .UseScopes()
                     .Build());
