@@ -14,5 +14,10 @@ namespace Miki
         {
             return builder.SetDescription(builder.ToEmbed().Description + $"```{language}\n{str}\n```");
         }
+        
+        public static EmbedBuilder AppendDescription(this EmbedBuilder builder, string description)
+        {
+            return builder.SetDescription(builder.ToEmbed().Description + description);
+        }
     }
 }
