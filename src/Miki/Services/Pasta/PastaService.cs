@@ -9,6 +9,7 @@ using Miki.Framework;
 using Miki.Patterns.Repositories;
 using Miki.Services.Pasta.Exceptions;
 using Miki.Bot.Models.Models.Core;
+using Miki.Framework.Commands.Scopes;
 
 namespace Miki.Services.Pasta
 {
@@ -69,12 +70,14 @@ namespace Miki.Services.Pasta
         private readonly IUnitOfWork unit;
         private readonly IAsyncRepository<GlobalPasta> repository;
         private readonly IAsyncRepository<PastaVote> voteRepository;
+        private readonly IScopeService scopeService;
 
-        public PastaService(IUnitOfWork unit)
+        public PastaService(IUnitOfWork unit, IScopeService scopeService)
         {
             this.unit = unit;
             this.repository = unit.GetRepository<GlobalPasta>();
             this.voteRepository = unit.GetRepository<PastaVote>();
+            this.scopeService = scopeService;
         }
 
         public async ValueTask UpdatePastaAsync(string tag, string body, long userId)
@@ -99,7 +102,8 @@ namespace Miki.Services.Pasta
         {
             var pasta = await GetPastaAsync(tag);
 
-            if(pasta.CreatorId != userId)
+            if (pasta.CreatorId != userId
+                   && !await scopeService.HasScopeAsync(userId, new[] { "moderator" }))
             {
                 throw new ActionUnauthorizedException("delete");
             }
