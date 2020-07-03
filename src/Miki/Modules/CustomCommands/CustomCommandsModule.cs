@@ -187,15 +187,10 @@ namespace Miki.Modules.CustomCommands
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task GetCommandAsync(IContext e)
         {
-            if (!e.GetArgumentPack().Take(out string commandName))
-            {
-                return;
-            }
-            
+            var commandName = e.GetArgumentPack().Take<string>();
             var service = e.GetService<ICustomCommandsService>();
             var guildId = (long)e.GetGuild().Id;
             var code = await service.GetBodyAsync(guildId, commandName);
-
             if (code == null)
             {
                 return;
