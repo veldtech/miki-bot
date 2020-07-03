@@ -6,7 +6,7 @@ namespace Miki.Modules.CustomCommands
     public class DuplicateCommandException : LocalizedException
     {
         public override IResource LocaleResource 
-            => new LanguageResource("error_duplicate_command", $"`{commandName}`");
+            => new LanguageResource("error_duplicate_command", $"'{commandName}'");
 
         private readonly string commandName;
 

@@ -19,6 +19,7 @@ using Miki.Services.Scheduling;
 using Miki.Accounts;
 using Miki.Services.Dailies;
 using Miki.Attributes;
+using Miki.Modules.Admin.Exceptions;
 
 namespace Miki.Modules
 {
@@ -40,6 +41,35 @@ namespace Miki.Modules
                     .QueueAsync(e, e.GetChannel());
             }
         }
+
+		[Command("scopes")]
+		[RequiresScope("developer")]
+		public class ScopesCommand
+        {
+			[Command("add")]
+			[RequiresScope("developer")]
+			public async Task AddScopeAsync(IContext e)
+            {
+				var user = await e.GetGuild().FindUserAsync(e);
+				var scope = e.GetArgumentPack().TakeRequired<string>();
+
+				var scopeService = e.GetService<IScopeService>();
+
+				if(await scopeService.HasScopeAsync((long)user.Id, new[] { scope }))
+                {
+					throw new InvalidEntityException("object");
+                }
+
+				await scopeService.AddScopeAsync(new Scope
+				{
+					ScopeId = scope,
+					UserId = (long)user.Id
+				});
+
+				await e.SuccessEmbed($"Added scope '{scope}' to user {user.Username}#{user.Discriminator}")
+					.QueueAsync(e, e.GetChannel());
+			}
+		}
 
 		[Command("say")]
         [RequiresScope("developer")]
@@ -346,23 +376,6 @@ namespace Miki.Modules
 
 			e.GetChannel().QueueMessage(e, null, ":ok_hand:");
 		}
-
-        [Command("addscope")]
-        [RequiresScope("developer.internal")]
-        public async Task AddScopeAsync(IContext e)
-        {
-            var scopeStage = e.GetService<ScopeService>();
-            var user = await e.GetGuild().FindUserAsync(
-                e.GetArgumentPack().TakeRequired<string>());
-
-            e.GetArgumentPack().Take(out string scope);
-
-            await scopeStage.AddScopeAsync(new Scope{
-                UserId = (long)user.Id, 
-                ScopeId = scope
-            });
-            e.GetChannel().QueueMessage(e, null, ":ok_hand:");
-        }
 
 		[Command("banuser")]
 		[RequiresScope("developer")]

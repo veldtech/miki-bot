@@ -433,7 +433,7 @@ namespace Miki.Modules
             private async Task BuildNodeListAsync(IContext context, EmbedBuilder builder)
             {
                 var locale = context.GetLocale();
-                var scopesService = context.GetService<ScopeService>();
+                var scopesService = context.GetService<IScopeService>();
                 var commandHandler = context.GetService<CommandTreeService>();
 
                 foreach (var nodeModule in commandHandler.GetModules())

@@ -5,10 +5,7 @@ using Miki.Framework.Commands.Pipelines;
 using System;
 using System.Threading.Tasks;
 using Miki.Discord.Common.Packets.API;
-using Miki.Localization;
 using Miki.Modules.CustomCommands.Services;
-using Miki.Utility;
-using MiScript.Exceptions;
 
 namespace Miki.Modules.CustomCommands.CommandHandlers
 {
@@ -16,6 +13,12 @@ namespace Miki.Modules.CustomCommands.CommandHandlers
     {
         public async ValueTask CheckAsync(IDiscordMessage data, IMutableContext e, Func<ValueTask> next)
         {
+            if(e.Executable != null)
+            {
+                await next();
+                return;
+            }
+
             if (e == null)
             {
                 return;
