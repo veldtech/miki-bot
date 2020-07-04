@@ -79,14 +79,22 @@ namespace Miki.Modules.CustomCommands.Values
             
             var cacheKey = GetCacheKey(guildId);
             var json = await cache.HashGetAsync<string>(cacheKey, key);
+
             if (string.IsNullOrEmpty(json))
             {
                 return Null;
             }
-            
-            value = await JsonUtils.ReadJsonAsync(json);
-            values.AddOrUpdate(key, value, (a1, a2) => value);
 
+            try
+            {
+                value = await JsonUtils.ReadJsonAsync(json);
+            }
+            catch
+            {
+                value = Null;
+            }
+            
+            values.AddOrUpdate(key, value, (a1, a2) => value);
             return value;
         }
 
