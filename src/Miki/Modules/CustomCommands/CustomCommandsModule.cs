@@ -37,10 +37,16 @@ namespace Miki.Modules.CustomCommands
         [DefaultPermission(PermissionStatus.Deny)]
         public async Task NewCustomCommandAsync(IContext e)
         {
-            var commandName = e.GetArgumentPack().TakeRequired<string>();
+            var commandName = e.GetArgumentPack().TakeRequired<string>().ToLower();
+            
             if (commandName.Contains(' '))
             {
                 throw new InvalidCharacterException(" ");
+            }
+
+            if (commandName.Length == 0)
+            {
+                throw new ArgumentMissingException(typeof(string));
             }
 
             var commandHandler = e.GetService<CommandTree>();
@@ -166,6 +172,7 @@ namespace Miki.Modules.CustomCommands
                 return;
             }
 
+            var service = e.GetService<ICustomCommandsService>();
             var context = e.GetService<MikiDbContext>();
             var guildId = (long)e.GetGuild().Id;
 
@@ -177,6 +184,7 @@ namespace Miki.Modules.CustomCommands
 
             context.Remove(cmd);
             await context.SaveChangesAsync();
+            await service.RemoveCacheAsync(guildId, commandName);
 
             await e.SuccessEmbedResource("ok_command_deleted", commandName)
                 .QueueAsync(e, e.GetChannel());
