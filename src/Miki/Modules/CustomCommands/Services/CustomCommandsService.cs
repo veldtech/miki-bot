@@ -333,7 +333,17 @@ namespace Miki.Modules.CustomCommands.Services
             return (await cache.HashGetAllAsync<string>(cacheKey))
                 .ToDictionary(
                     kv => kv.Key,
-                    kv => JToken.Parse(kv.Value));
+                    kv =>
+                    {
+                        try
+                        {
+                            return JToken.Parse(kv.Value);
+                        }
+                        catch
+                        {
+                            return JValue.CreateNull();
+                        }
+                    });
         }
 
         /// <summary>
