@@ -44,7 +44,7 @@ namespace Miki.Modules.CustomCommands
                 throw new InvalidCharacterException(" ");
             }
 
-            if (commandName.Length == 0)
+            if (string.IsNullOrEmpty(commandName))
             {
                 throw new ArgumentMissingException(typeof(string));
             }
