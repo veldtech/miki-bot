@@ -387,7 +387,7 @@ namespace Miki.Modules.CustomCommands.Services
             {
                 string value;
 
-                if (Mention.TryParse(str, out var mention))
+                if (!string.IsNullOrEmpty(str) && str[0] == '<' && Mention.TryParse(str, out var mention))
                 {
                     value = mention.Type switch
                     {
