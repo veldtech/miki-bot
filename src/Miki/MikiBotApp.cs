@@ -156,6 +156,23 @@ namespace Miki
             serviceCollection.AddSingleton<IApiClient>(
                 s => new DiscordApiClient(s.GetService<Config>().Token, s.GetService<ICacheClient>()));
 
+            if (!string.IsNullOrEmpty(configuration.Configuration.RedisConnectionString))
+            {
+                serviceCollection.AddSingleton(
+                    new RedisConnectionPool(configuration.Configuration.RedisConnectionString));
+
+                serviceCollection.AddTransient(
+                    x => x.GetRequiredService<RedisConnectionPool>().Get());
+
+                serviceCollection.AddTransient<ICacheClient, StackExchangeCacheClient>();
+                serviceCollection.AddTransient<IExtendedCacheClient, StackExchangeCacheClient>();
+            }
+            else
+            {
+                serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
+                serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
+            }
+            
             if(configuration.IsSelfHosted)
             {
                 serviceCollection.AddSingleton<IGateway>(
@@ -167,10 +184,7 @@ namespace Miki
                             Token = configuration.Configuration.Token,
                             AllowNonDispatchEvents = true,
                             Intents = GatewayIntents.AllDefault | GatewayIntents.GuildMembers
-                        }));    
-
-                serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
-                serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
+                        }));
 
                 var splitConfig = new ConfigurationOptions
                 {
@@ -229,15 +243,11 @@ namespace Miki
 
                 serviceCollection.AddSingleton<IGateway>(consumer);
 
-                serviceCollection.AddSingleton(
-                    new RedisConnectionPool(configuration.Configuration.RedisConnectionString));
-
-                serviceCollection.AddTransient(
-                    x => x.GetRequiredService<RedisConnectionPool>().Get());
-
-                serviceCollection.AddTransient<ICacheClient, StackExchangeCacheClient>();
-                serviceCollection.AddTransient<IExtendedCacheClient, StackExchangeCacheClient>();
-
+                if (!string.IsNullOrEmpty(configuration.Configuration.RedisConnectionString))
+                {
+                    Log.Warning("Self-host is disabled but Redis wasn't configured. Miki is running on in-memory cache!");
+                }
+                
                 ISplitClient client = null;
                 if(!string.IsNullOrEmpty(configuration.Configuration.OptionalValues?.SplitioSdkKey))
                 {
