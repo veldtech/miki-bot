@@ -260,7 +260,7 @@ namespace Miki.Modules.CustomCommands.Services
             if (!isDonator.HasValue)
             {
                 var userService = e.GetService<IUserService>();
-                isDonator = await userService.UserIsDonatorAsync(guildId);
+                isDonator = await userService.UserIsDonatorAsync((long) guild.OwnerId);
             }
             
             var keyLimit = isDonator.Value ? DonatorKeyLimit : KeyLimit;
@@ -381,7 +381,7 @@ namespace Miki.Modules.CustomCommands.Services
 
             var guild = e.GetGuild();
 
-            e.GetArgumentPack().Skip();
+            argumentPack.Pack.SetCursor(1);
 
             while (argumentPack.Take<string>(out var str))
             {
