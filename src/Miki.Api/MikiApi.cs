@@ -11,7 +11,7 @@ namespace Miki.API
 	{
 		private readonly IHttpClient client;
 
-		private const string BaseUrl = "https://api.miki.ai/";
+		private const string BaseUrl = "https://api.miki.bot/";
 
 		public MikiApiClient(string token)
 		{
