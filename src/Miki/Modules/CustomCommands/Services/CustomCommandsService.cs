@@ -381,7 +381,7 @@ namespace Miki.Modules.CustomCommands.Services
 
             var guild = e.GetGuild();
 
-            argumentPack.Pack.SetCursor(1);
+            argumentPack.Skip();
 
             while (argumentPack.Take<string>(out var str))
             {
