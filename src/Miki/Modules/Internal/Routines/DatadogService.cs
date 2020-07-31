@@ -88,22 +88,20 @@ namespace Miki.Modules.Internal.Routines
 				return;
 			}
 
-			discord.MessageCreate += (msg) =>
-			{
-				DogStatsd.Increment("messages.received");
-				return Task.CompletedTask;
-			};
+            discord.Events.MessageCreate.Subscribe(msg =>
+            {
+                DogStatsd.Increment("messages.received");
+            });
 			
-            discord.GuildJoin += (newGuild) =>
+            discord.Events.GuildCreate.Subscribe(newGuild =>
 			{
 				DogStatsd.Increment("guilds.joined");
-				return Task.CompletedTask;
-			};
-			discord.GuildLeave += (oldGuild) =>
+			});
+
+			discord.Events.GuildDelete.Subscribe(oldGuild =>
 			{
 				DogStatsd.Increment("guilds.left");
-				return Task.CompletedTask;
-			};
+			});
 		}
 
         private void CreateEventSystemMetrics(IAsyncEventingExecutor<IDiscordMessage> system)

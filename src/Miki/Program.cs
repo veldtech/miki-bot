@@ -21,10 +21,9 @@ namespace Miki
             var config = await new ConfigService(new UnitOfWork(context)).GetOrCreateAnyAsync(null);
 
             var connectionString = Environment.GetEnvironmentVariable(EnvConStr);
-            var selfHost = 
-                bool.Parse(Environment.GetEnvironmentVariable(EnvSelfHost) ?? "true");
-            var loglevel = (LogLevel)Enum.Parse(typeof(LogLevel),
-                Environment.GetEnvironmentVariable(EnvLogLevel) ?? "Information");
+            var selfHost = bool.Parse(Environment.GetEnvironmentVariable(EnvSelfHost) ?? "true");
+            var loglevel = (LogLevel)Enum.Parse(
+                typeof(LogLevel), Environment.GetEnvironmentVariable(EnvLogLevel) ?? "Information");
 
             var configuration = new StartupConfiguration
             {

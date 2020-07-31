@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Miki.Discord.Common;
-using Miki.Discord.Internal;
+using Miki.Discord.Internal.Data;
 using Miki.Framework.Commands;
 using Miki.Framework.Commands.Stages;
 using Miki.Modules;

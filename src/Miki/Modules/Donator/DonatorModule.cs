@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Miki.API;
+using Miki.API.Payments.Data;
 using Miki.Attributes;
 using Miki.Discord.Common;
 using Miki.Modules.Accounts.Services;
@@ -69,6 +71,12 @@ namespace Miki.Modules.Donator
 		[Command("redeemkey")]
 		public async Task RedeemKeyAsync(IContext e)
 		{
+			if (e.HasFeatureEnabled("redeemkey_using_payment_service"))
+			{
+				await RedeemKeyV2Async(e);
+				return;
+			}
+			
 			var unit = e.GetService<IUnitOfWork>();
 
             var donatorRepository = unit.GetRepository<IsDonator>();
@@ -139,6 +147,33 @@ namespace Miki.Modules.Donator
             }
         }
 
+		private async Task RedeemKeyV2Async(IContext e)
+		{
+			if(!e.GetArgumentPack().Take(out Guid guid))
+			{
+				throw new InvalidKeyFormatException();
+			}
+			
+			var api = e.GetService<MikiApiClient>();
+			var locale = e.GetLocale();
+			
+			var giftCode = await api.RedeemGiftCodeAsync(
+				new GiftCodeV1RedeemRequest
+				{
+					UserId = (long)e.GetAuthor().Id,
+					Key = guid
+				});
+			
+			await new EmbedBuilder()
+				.SetTitle($"🎉 {locale.GetString("common_success", e.GetAuthor().Username)}")
+				.SetColor(226, 46, 68)
+				.SetDescription(locale.GetString("key_redeem_success", giftCode.GiftCode.AmountDays.AsBold()))
+				.SetThumbnail("https://i.imgur.com/OwwA5fV.png")
+				.AddInlineField("When does my status expire?", giftCode.Subscriber.ValidUntil?.ToLongDateString())
+				.ToEmbed()
+				.QueueAsync(e, e.GetChannel());
+		}
+		
 		[Command("box")]
 		[PatreonOnly]
 		public async Task BoxAsync(IContext e)

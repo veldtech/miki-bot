@@ -11,7 +11,7 @@ namespace Miki.Utility
 {
     public class MultiCommandHandler : IPipelineStage
     {
-        private IEnumerable<IPipelineStage> commandHandlers;
+        private readonly IEnumerable<IPipelineStage> commandHandlers;
 
         public MultiCommandHandler(params IPipelineStage[] commandHandlers)
         {

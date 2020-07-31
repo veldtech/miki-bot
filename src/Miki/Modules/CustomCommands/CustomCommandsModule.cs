@@ -77,7 +77,10 @@ namespace Miki.Modules.CustomCommands
                 if (information.Messages.Count > 0)
                 {
                     sb.AppendLine();
-                    sb.AppendLine(e.GetLocale().GetString("customcommands_warnings").CapitalizeFirst().AsBold());
+                    sb.AppendLine(e.GetLocale()
+                        .GetString("customcommands_warnings")
+                        .CapitalizeFirst()
+                        .AsBold());
 
                     foreach (var message in information.Messages)
                     {

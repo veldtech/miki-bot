@@ -1,8 +1,10 @@
-﻿using Miki.Net.Http;
+﻿using System;
+using Miki.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Miki.Api.Leaderboards;
+using Miki.API.Payments.Data;
 using Miki.Api.Users;
 
 namespace Miki.API
@@ -38,6 +40,18 @@ namespace Miki.API
         public async Task<UserInventory> GetUserInventoryAsync(long id)
             => JsonConvert.DeserializeObject<UserInventory>(
                 (await client.GetAsync($"users/{id}/inventory")).Body);
+
+        public async Task<GiftCodeRedeemResponse> RedeemGiftCodeAsync(GiftCodeV1RedeemRequest request)
+        {
+	        if (request == null)
+	        {
+		        throw new InvalidOperationException();
+	        }
+	        
+	        var response = await client.PostAsync($"payments/gifts?key={request.Key}&receiver={request.UserId}");
+	        return JsonConvert.DeserializeObject<GiftCodeRedeemResponse>(response.Body);
+        }
+        
 		private string BuildLeaderboardsRoute(LeaderboardsOptions options)
 		{
 			StringBuilder sb = new StringBuilder()

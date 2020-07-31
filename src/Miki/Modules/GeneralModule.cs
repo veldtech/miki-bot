@@ -508,12 +508,12 @@ namespace Miki.Modules
 				.SetColor(0.6f, 0.6f, 1.0f);
 
             embed.AddField(e.GetLocale().GetString("miki_module_general_info_links"),
-				$"`{e.GetLocale().GetString("miki_module_general_info_docs").PadRight(15)}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
-				$"`{"Donate".PadRight(15)}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_twitter").PadRight(15)}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_reddit").PadRight(15)}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_server").PadRight(15)}:` [discord](https://discord.gg/39Xpj7K)\n" +
-				$"`{e.GetLocale().GetString("miki_module_general_info_website").PadRight(15)}:` [link](https://miki.ai) | [suggestions](https://suggestions.miki.ai/) | [guides](https://miki.ai/guides)");
+				$"`{e.GetLocale().GetString("miki_module_general_info_docs"),-15}:` [documentation](https://www.github.com/velddev/miki/wiki)\n" +
+				$"`{"Donate",-15}:` [patreon](https://www.patreon.com/mikibot) | [ko-fi](https://ko-fi.com/velddy)\n" +
+				$"`{e.GetLocale().GetString("miki_module_general_info_twitter"),-15}:` [veld](https://www.twitter.com/velddev) | [miki](https://www.twitter.com/miki_discord)\n" +
+				$"`{e.GetLocale().GetString("miki_module_general_info_reddit"),-15}:` [/r/mikibot](https://www.reddit.com/r/mikibot) \n" +
+				$"`{e.GetLocale().GetString("miki_module_general_info_server"),-15}:` [discord](https://discord.gg/39Xpj7K)\n" +
+				$"`{e.GetLocale().GetString("miki_module_general_info_website"),-15}:` [link](https://miki.ai) | [suggestions](https://suggestions.miki.ai/) | [guides](https://miki.ai/guides)");
 
 			await embed.ToEmbed()
                 .QueueAsync(e, e.GetChannel())
@@ -646,7 +646,7 @@ namespace Miki.Modules
 			var cache = e.GetService<IExtendedCacheClient>();
 			var locale = e.GetLocale();
 
-            var serverCount = await cache.HashLengthAsync(CacheUtils.GuildsCacheKey)
+            var serverCount = await cache.HashLengthAsync("discord:guilds")
                 .ConfigureAwait(false);
 
             await new EmbedBuilder()
@@ -702,7 +702,7 @@ namespace Miki.Modules
                     .OrderByDescending(x => x.Position)
                     .Select(x => x.Color)
                     .FirstOrDefault();
-                builder.AppendLine($"`Color Hex_:` {c.ToString()}");
+                builder.AppendLine($"`Color Hex_:` {c}");
 
                 string r = string.Join(", ", roles.Select(x => $"`{x.Name}`"));
                 if(string.IsNullOrEmpty(r))
