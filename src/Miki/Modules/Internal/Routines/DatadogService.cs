@@ -93,12 +93,12 @@ namespace Miki.Modules.Internal.Routines
                 DogStatsd.Increment("messages.received");
             });
 			
-            discord.Events.GuildCreate.Subscribe(newGuild =>
+            discord.Events.GuildJoin.Subscribe(newGuild =>
 			{
 				DogStatsd.Increment("guilds.joined");
 			});
 
-			discord.Events.GuildDelete.Subscribe(oldGuild =>
+			discord.Events.GuildLeave.Subscribe(oldGuild =>
 			{
 				DogStatsd.Increment("guilds.left");
 			});

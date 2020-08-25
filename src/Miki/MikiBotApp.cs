@@ -83,7 +83,7 @@ namespace Miki
         {
             var _ = services.GetService<DatadogRoutine>(); // Eager loading
             var discordClient = services.GetService<IDiscordClient>();
-            discordClient.Events.GuildCreate.SubscribeTask(ClientJoinedGuildAsync);  
+            discordClient.Events.GuildJoin.SubscribeTask(ClientJoinedGuildAsync);  
 
             discordClient.Events.MessageCreate
                 .SubscribeTask(async msg => await pipeline.ExecuteAsync(msg));
@@ -345,7 +345,8 @@ namespace Miki
             serviceCollection.AddSingleton<DatadogRoutine>();
         }
 
-        public async Task<ContextObject> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
+        public async Task<ContextObject> CreateFromUserChannelAsync(
+            IDiscordUser user, IDiscordChannel channel)
         {
             // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(

@@ -125,13 +125,13 @@ namespace Miki.Accounts
                     }
                 }
 
-                if(DateTime.Now >= this.lastDbSync + new TimeSpan(0, 1, 0))
+                if(DateTime.Now >= lastDbSync.AddMinutes(1))
                 {
                     try
                     {
                         await experienceLock.WaitAsync();
 
-                        Log.Message($"Applying Experience for {this.experienceQueue.Count} users");
+                        Log.Message($"Applying Experience for {experienceQueue.Count} users");
                         this.lastDbSync = DateTime.Now;
                         var context = services.GetService<DbContext>();
 

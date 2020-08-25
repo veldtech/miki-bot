@@ -442,7 +442,7 @@ namespace Miki.Modules
 
             [Command("setstreak")]
             [RequiresScope("developer")]
-            public async Task SetStreak(IContext e)
+            public async Task SetStreakAsync(IContext e)
             {
                 var userService = e.GetService<IUserService>();
 
