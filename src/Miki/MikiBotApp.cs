@@ -64,6 +64,8 @@ using Splitio.Services.Client.Interfaces;
 using Veld.Osu;
 using Veld.Osu.V1;
 using Miki.Modules.CustomCommands.CommandHandlers;
+using Miki.Discord.Internal.Data;
+using Miki.Discord.Extensions.DependencyInjection;
 
 namespace Miki
 {
@@ -81,15 +83,17 @@ namespace Miki
         {
             var _ = services.GetService<DatadogRoutine>(); // Eager loading
             var discordClient = services.GetService<IDiscordClient>();
-            discordClient.GuildJoin += ClientJoinedGuildAsync;  
+            discordClient.Events.GuildJoin.SubscribeTask(ClientJoinedGuildAsync);  
 
-            discordClient.MessageCreate += async e => await pipeline.ExecuteAsync(e);
+            discordClient.Events.MessageCreate
+                .SubscribeTask(async msg => await pipeline.ExecuteAsync(msg));
+            
             pipeline.OnExecuted += LogErrorsAsync;
 
             return new ProviderCollection()
                 .Add(new ProviderAdapter(
-                    discordClient.Gateway.StartAsync,
-                    discordClient.Gateway.StopAsync));
+                    () => discordClient.StartAsync(default),
+                    () => discordClient.StopAsync(default)));
         }
 
         private async ValueTask LogErrorsAsync(IExecutionResult<IDiscordMessage> arg)
@@ -158,26 +162,20 @@ namespace Miki
 
             if(configuration.IsSelfHosted)
             {
-                serviceCollection.AddSingleton<IGateway>(
-                    new GatewayShard(
-                        new GatewayProperties
-                        {
-                            ShardCount = 1,
-                            ShardId = 0,
-                            Token = configuration.Configuration.Token,
-                            AllowNonDispatchEvents = true,
-                            Intents = GatewayIntents.AllDefault | GatewayIntents.GuildMembers
-                        }));    
-
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
+
+                serviceCollection.UseDiscord((provider, config) =>
+                {
+                    config.Token = provider.GetService<Config>().Token;
+                });
 
                 var splitConfig = new ConfigurationOptions
                 {
                     LocalhostFilePath = "./feature_flags.yaml"
                 };
-                var factory = new SplitFactory("localhost", splitConfig);
-                var client = factory.Client();
+
+                var client = new SplitFactory("localhost", splitConfig).Client();
                 client.BlockUntilReady(30000);
 
                 serviceCollection.AddSingleton(client);
@@ -208,10 +206,12 @@ namespace Miki
                 await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE");
                 await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE_ALL");
                 await consumer.SubscribeAsync("MESSAGE_REACTION_REMOVE_EMOJI");
+                
                 await consumer.SubscribeAsync("CHANNEL_CREATE");
                 await consumer.SubscribeAsync("CHANNEL_DELETE");
                 await consumer.SubscribeAsync("CHANNEL_PINS_UPDATE");
                 await consumer.SubscribeAsync("CHANNEL_UPDATE");
+
                 await consumer.SubscribeAsync("GUILD_CREATE");
                 await consumer.SubscribeAsync("GUILD_DELETE");
                 await consumer.SubscribeAsync("GUILD_UPDATE");
@@ -224,6 +224,7 @@ namespace Miki
                 await consumer.SubscribeAsync("GUILD_ROLE_CREATE");
                 await consumer.SubscribeAsync("GUILD_ROLE_DELETE");
                 await consumer.SubscribeAsync("GUILD_ROLE_UPDATE");
+                
                 await consumer.SubscribeAsync("READY");
                 await consumer.SubscribeAsync("RESUMED");
 
@@ -344,7 +345,8 @@ namespace Miki
             serviceCollection.AddSingleton<DatadogRoutine>();
         }
 
-        public async Task<ContextObject> CreateFromUserChannelAsync(IDiscordUser user, IDiscordChannel channel)
+        public async Task<ContextObject> CreateFromUserChannelAsync(
+            IDiscordUser user, IDiscordChannel channel)
         {
             // TODO : Resolve this in a better way.
             DiscordMessage message = new DiscordMessage(
@@ -353,7 +355,7 @@ namespace Miki
                     Author = new DiscordUserPacket
                     {
                         Avatar = user.AvatarId,
-                        Discriminator = user.Discriminator,
+                        Discriminator = user.Discriminator.ToString(),
                         Id = user.Id,
                         Username = user.Username,
                         IsBot = user.IsBot

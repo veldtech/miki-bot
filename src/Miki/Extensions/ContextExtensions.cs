@@ -33,7 +33,7 @@ namespace Miki
                 Url = e.Executable.ToString(),
             };
             
-            sentryEvent.SetTag("locale", e.GetLocale()?.CountryCode ?? "eng");
+            sentryEvent.SetTag("locale", e.GetLocale().CountryCode ?? "eng");
             sentryEvent.SetTag("guild", e.GetGuild()?.Id.ToString() ?? "dm");
             return sentryEvent;
         }

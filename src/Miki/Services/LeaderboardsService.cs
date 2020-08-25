@@ -52,7 +52,6 @@ namespace Miki.Services
             // TODO: remove hack from here.
             await ctx.Database.ExecuteSqlInterpolatedAsync(
                 $"REFRESH MATERIALIZED VIEW CONCURRENTLY dbo.\"mview_glob_rank_exp\" WITH DATA");
-            await ctx.SaveChangesAsync();
             await cache.UpsertAsync(GetCacheKey(), 1, TimeSpan.FromMinutes(15));
         }
 

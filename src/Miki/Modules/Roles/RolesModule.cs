@@ -654,9 +654,8 @@ namespace Miki.Modules.Roles
                 role = (await GetRolesByNameAsync(e.GetGuild(), roleName)).FirstOrDefault();
             }
 
-            LevelRole newRole = await context.LevelRoles.FindAsync(e.GetGuild().Id.ToDbLong(), role.Id.ToDbLong());
-            MSLResponse arguments = new MMLParser(e.GetArgumentPack().Pack.TakeAll())
-                .Parse();
+            var newRole = await context.LevelRoles.FindAsync((long)e.GetGuild().Id, (long)role.Id);
+            var arguments = new MMLParser(e.GetArgumentPack().Pack.TakeAll()).Parse();
 
             if (role.Name.Length > 20)
             {

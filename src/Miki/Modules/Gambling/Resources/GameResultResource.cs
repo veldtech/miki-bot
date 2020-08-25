@@ -1,4 +1,5 @@
-﻿using Miki.Localization;
+﻿using Miki.Functional;
+using Miki.Localization;
 using Miki.Services.Rps;
 using System;
 

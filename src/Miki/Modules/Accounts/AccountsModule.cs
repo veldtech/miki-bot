@@ -16,7 +16,6 @@ using Miki.Bot.Models;
 using Miki.Common.Builders;
 using Miki.Discord;
 using Miki.Discord.Common;
-using Miki.Exceptions;
 using Miki.Framework;
 using Miki.Framework.Commands;
 using Miki.Logging;
@@ -39,9 +38,7 @@ namespace Miki.Modules.Accounts
     public class AccountsModule
     {
         private readonly AchievementService achievementService;
-
         private readonly IHttpClient client;
-
         private readonly MikiApp app;
 
         public AccountsModule(
@@ -63,7 +60,7 @@ namespace Miki.Modules.Accounts
                 Log.Warning("Image API can not be loaded in AccountsModule");
             }
 
-            discordClient.MessageCreate += OnMessageCreateAsync;
+            discordClient.Events.MessageCreate.SubscribeTask(OnMessageCreateAsync);
 
             accountsService.OnLocalLevelUp += OnUserLevelUpAsync;
             accountsService.OnLocalLevelUp += OnLevelUpAchievementsAsync;

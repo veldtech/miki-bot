@@ -25,7 +25,7 @@ namespace Miki.Tests.Services
             CreatedAt = DateTime.Now
         };
 
-        private Mock<IScopeService> scopeServiceMock;
+        private readonly Mock<IScopeService> scopeServiceMock;
 
         public PastaServiceTests()
             : base(x => new MikiDbContext(x))

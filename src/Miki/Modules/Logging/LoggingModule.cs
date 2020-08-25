@@ -37,8 +37,8 @@ namespace Miki.Modules.Logging
         {
             this.app = app;
             this.sentryClient = sentryClient;
-            client.GuildMemberCreate += OnClientOnGuildMemberCreateAsync;
-            client.GuildMemberDelete += OnClientOnGuildMemberDeleteAsync;
+            client.Events.GuildMemberCreate.SubscribeTask(OnClientOnGuildMemberCreateAsync);
+            client.Events.GuildMemberDelete.SubscribeTask(OnClientOnGuildMemberDeleteAsync);
         }
 
         private async Task OnClientOnGuildMemberCreateAsync(IDiscordGuildUser user)

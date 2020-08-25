@@ -284,17 +284,17 @@ namespace Miki.Modules.Pasta
         [Command("lovedpasta", "lovedpastas", "favouritepastas")]
         public async Task LovePastaListAsync(IContext e)
         {
-            await FavouritePastaList(e);
+            await FavouritePastaListAsync(e);
         }
 
         [Command("hatedpasta", "hatedpastas")]
         public async Task HatePastaListAsync(IContext e)
         {
-            await FavouritePastaList(e, false);
+            await FavouritePastaListAsync(e, false);
         }
 
         // TODO: refactor
-        public async Task FavouritePastaList(IContext e, bool lovedPastas = true)
+        public async Task FavouritePastaListAsync(IContext e, bool lovedPastas = true)
         {
             var locale = e.GetLocale();
 

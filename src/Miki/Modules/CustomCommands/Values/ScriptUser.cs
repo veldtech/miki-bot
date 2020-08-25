@@ -22,7 +22,7 @@ namespace Miki.Modules.CustomCommands.Values
         public string Mention => user.Mention;
         
         [Property("discrim")]
-        public string Discriminator => user.Discriminator;
+        public string Discriminator => user.Discriminator.ToString();
         
         [Property("name")]
         public string Name => user.Username;

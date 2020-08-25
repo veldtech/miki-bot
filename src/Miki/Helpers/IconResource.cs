@@ -1,4 +1,5 @@
-﻿using Miki.Localization;
+﻿using Miki.Functional;
+using Miki.Localization;
 
 namespace Miki.Helpers
 {

@@ -55,8 +55,8 @@ namespace Miki.Accounts
             this.sentryClient = sentryClient;
             this.cache = cache;
 
-            client.GuildMemberCreate += this.Client_UserJoinedAsync;
-            client.MessageCreate += this.CheckAsync;
+            client.Events.GuildMemberCreate.SubscribeTask(Client_UserJoinedAsync);
+            client.Events.MessageCreate.SubscribeTask(CheckAsync);
 
             experienceLock = new SemaphoreSlim(1, 1);
         }
@@ -125,13 +125,13 @@ namespace Miki.Accounts
                     }
                 }
 
-                if(DateTime.Now >= this.lastDbSync + new TimeSpan(0, 1, 0))
+                if(DateTime.Now >= lastDbSync.AddMinutes(1))
                 {
                     try
                     {
                         await experienceLock.WaitAsync();
 
-                        Log.Message($"Applying Experience for {this.experienceQueue.Count} users");
+                        Log.Message($"Applying Experience for {experienceQueue.Count} users");
                         this.lastDbSync = DateTime.Now;
                         var context = services.GetService<DbContext>();
 
@@ -168,7 +168,7 @@ namespace Miki.Accounts
         private async Task<LocalExperience> GetOrCreateExperienceProfileAsync(
             DbContext ctx, IDiscordGuildUser user)
         {
-            LocalExperience newProfile = await LocalExperience.GetAsync(ctx, user.GuildId, user.Id)
+            var newProfile = await LocalExperience.GetAsync(ctx, user.GuildId, user.Id)
                 .ConfigureAwait(false);
             if(newProfile == null)
             {
@@ -181,7 +181,7 @@ namespace Miki.Accounts
 
         public async Task UpdateGlobalDatabaseAsync(DbContext context)
         {
-            if(this.experienceQueue.Count == 0)
+            if(experienceQueue.Count == 0)
             {
                 return;
             }
@@ -193,11 +193,21 @@ namespace Miki.Accounts
 
             for (int i = 0; i < experienceQueue.Values.Count; i++)
             {
-                userQuery.Add($"({experienceQueue.Values.ElementAt(i).UserId}, @p{i}, {experienceQueue.Values.ElementAt(i).Experience})");
-                userParameters.Add(experienceQueue.Values.ElementAt(i).Name ?? "name failed to set?");
+                var item = experienceQueue.Values.ElementAt(i);
+                if(item == null)
+                {
+                    continue;
+                }
+
+                userQuery.Add($"({item.UserId}, @p{i}, {item.Experience})");
+                userParameters.Add(item.Name ?? "name failed to set?");
             }
 
-            string y = "),upsert as ( update \"dbo\".\"Users\" m set \"Total_Experience\" = \"Total_Experience\" + nv.experience FROM new_values nv WHERE m.\"Id\" = nv.id RETURNING m.*) INSERT INTO \"dbo\".\"Users\"(\"Id\", \"Name\", \"Total_Experience\") SELECT id, name, experience FROM new_values WHERE NOT EXISTS(SELECT * FROM upsert up WHERE up.\"Id\" = new_values.id);";
+            string y = "), upsert as (update \"dbo\".\"Users\" m set \"Total_Experience\" =" + 
+                " \"Total_Experience\" + nv.experience FROM new_values nv WHERE m.\"Id\" = nv.id" +
+                " RETURNING m.*) INSERT INTO \"dbo\".\"Users\"(\"Id\", \"Name\", \"Total_Experience\")" +
+                " SELECT id, name, experience FROM new_values WHERE NOT EXISTS(SELECT * FROM upsert up" +
+                " WHERE up.\"Id\" = new_values.id);";
 
             string query = x + string.Join(",", userQuery) + y;
 
@@ -206,7 +216,7 @@ namespace Miki.Accounts
 
         public async Task UpdateLocalDatabaseAsync(DbContext context)
         {
-            if(this.experienceQueue.Count == 0)
+            if(experienceQueue.Count == 0)
             {
                 return;
             }
@@ -214,10 +224,10 @@ namespace Miki.Accounts
             List<string> userQuery = new List<string>();
             string x = "WITH new_values (id, serverid, experience) as (values ";
 
-            for(int i = 0; i < this.experienceQueue.Values.Count; i++)
+            for(int i = 0; i < experienceQueue.Values.Count; i++)
             {
                 userQuery.Add(
-                    $"({this.experienceQueue.Values.ElementAt(i).UserId}, {this.experienceQueue.Values.ElementAt(i).GuildId}, {this.experienceQueue.Values.ElementAt(i).Experience})");
+                    $"({experienceQueue.Values.ElementAt(i).UserId}, {experienceQueue.Values.ElementAt(i).GuildId}, {experienceQueue.Values.ElementAt(i).Experience})");
             }
 
             string y =
@@ -231,7 +241,7 @@ namespace Miki.Accounts
 
         public async Task UpdateGuildDatabaseAsync(DbContext context)
         {
-            if(this.experienceQueue.Count == 0)
+            if(experienceQueue.Count == 0)
             {
                 return;
             }
@@ -239,10 +249,10 @@ namespace Miki.Accounts
             List<string> userQuery = new List<string>();
             string x = "WITH new_values (id, experience) as (values ";
 
-            for(int i = 0; i < this.experienceQueue.Values.Count; i++)
+            for(int i = 0; i < experienceQueue.Values.Count; i++)
             {
                 userQuery.Add(
-                    $"({this.experienceQueue.Values.ElementAt(i).GuildId}, {this.experienceQueue.Values.ElementAt(i).Experience})");
+                    $"({experienceQueue.Values.ElementAt(i).GuildId}, {experienceQueue.Values.ElementAt(i).Experience})");
             }
 
             string y =
