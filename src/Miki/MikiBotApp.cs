@@ -164,7 +164,6 @@ namespace Miki
             {
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
-
                 serviceCollection.UseDiscord((provider, config) =>
                 {
                     config.Token = provider.GetService<Config>().Token;
@@ -355,7 +354,7 @@ namespace Miki
                     Author = new DiscordUserPacket
                     {
                         Avatar = user.AvatarId,
-                        Discriminator = user.Discriminator.ToString(),
+                        Discriminator = user.Discriminator,
                         Id = user.Id,
                         Username = user.Username,
                         IsBot = user.IsBot
