@@ -275,7 +275,7 @@ namespace Miki.Modules.Fun
 			await new EmbedBuilder()
 				.SetTitle("🐶 Doggo!")
 				.SetColor(0.8f, 0.8f, 0.8f)
-				.SetImage("https://random.dog/{url}")
+				.SetImage($"https://random.dog/{url}")
 				.ToEmbed().QueueAsync(e, e.GetChannel());
 		}
 
