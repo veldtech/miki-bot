@@ -375,6 +375,8 @@ namespace Miki
             var context = new ContextObject(Services);
             await new CorePipelineStage().CheckAsync(message, context, () => default);
             await new FetchDataStage().CheckAsync(message, context, () => default);
+            await new LocalizationPipelineStage(Services.GetService<ILocalizationService>())
+                .CheckAsync(message, context, () => default);
             return context;
         }
         
