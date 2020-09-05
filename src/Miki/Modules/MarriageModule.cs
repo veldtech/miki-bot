@@ -51,12 +51,12 @@ namespace Miki.Modules
 
             if(marriage != null)
             {
-                if(accepter.MarriageSlots < (await service.GetMarriagesAsync(accepter.Id)).Count)
+                if(accepter.MarriageSlots <= (await service.GetMarriagesAsync(accepter.Id)).Count)
                 {
                     throw new InsufficientMarriageSlotsException(accepter);
                 }
 
-                if(asker.MarriageSlots < (await service.GetMarriagesAsync(asker.Id)).Count)
+                if(asker.MarriageSlots <= (await service.GetMarriagesAsync(asker.Id)).Count)
                 {
                     throw new InsufficientMarriageSlotsException(asker);
                 }
