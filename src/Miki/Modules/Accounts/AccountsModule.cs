@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -45,12 +44,13 @@ namespace Miki.Modules.Accounts
             MikiApp app, 
             Config config, 
             IDiscordClient discordClient, 
-            AccountService accountsService, 
-            AchievementService achievementService)
+            AccountService accountsService,
+            AchievementService achievementService,
+            AchievementEvents achievementEvents,
+            TransactionEvents transactionEvents)
         {
             this.app = app;
             this.achievementService = achievementService;
-
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 client = new HttpClient(config.ImageApiUrl);
@@ -64,13 +64,13 @@ namespace Miki.Modules.Accounts
 
             accountsService.OnLocalLevelUp += OnUserLevelUpAsync;
             accountsService.OnLocalLevelUp += OnLevelUpAchievementsAsync;
+            transactionEvents.OnTransactionComplete += CheckCurrencyAchievementUnlocksAsync;
 
-            achievementService.OnAchievementUnlocked
+            achievementEvents.OnAchievementUnlockedByUser
                 .SubscribeTask(SendAchievementNotificationAsync);
-            achievementService.OnAchievementUnlocked
+            achievementEvents.OnAchievementUnlockedByUser
                 .SubscribeTask(CheckAchievementUnlocksAsync);
         }
-
         private async Task OnMessageCreateAsync(IDiscordMessage arg)
         {
             if(!(app is MikiBotApp botApp))
@@ -170,10 +170,41 @@ namespace Miki.Modules.Accounts
             }
         }
 
-        /// <summary>
-        /// Notification for local user level ups.
-        /// </summary>
-        private async Task OnUserLevelUpAsync(IDiscordUser user, IDiscordTextChannel channel, int level)
+        private async Task CheckCurrencyAchievementUnlocksAsync(TransactionResponse response)
+        {
+            if (response.Receiver.Id == AppProps.Currency.BankId)
+            {
+                return;
+            }
+            var achievements = achievementService.GetAchievement(AchievementIds.CurrencyId);
+            var totalReceiverCurrency = response.Receiver.Currency + response.Amount;
+            if (totalReceiverCurrency >= 10000)
+            {
+                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 0);
+            }
+            if (totalReceiverCurrency >= 50000)
+            {
+                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 1);
+            }
+            if (totalReceiverCurrency >= 125000)
+            {
+                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 2);
+            }
+            if (totalReceiverCurrency >= 1000000)
+            {
+                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 3);
+            }
+            if (totalReceiverCurrency >= 1000000000)
+            {
+                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 4);
+            }
+            return;
+        }
+
+            /// <summary>
+            /// Notification for local user level ups.
+            /// </summary>
+            private async Task OnUserLevelUpAsync(IDiscordUser user, IDiscordTextChannel channel, int level)
         {
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;

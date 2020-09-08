@@ -17,36 +17,33 @@ namespace Miki.Services.Achievements
         IDiscordUser userBefore, IDiscordUser userAfter);
     public delegate Task<bool> CheckCommandAchievement(User user, Node command);
 
-	public class AchievementService
-	{
+    public class AchievementService
+    {
         private readonly IUnitOfWork unitOfWork;
         private readonly IAsyncRepository<Achievement> repository;
         private readonly AchievementCollection achievementCollection;
+        private readonly AchievementEvents events;
 
-        private readonly Subject<(IContext, AchievementEntry)> achievementUnlockedSubject;
-
-        public IObservable<(IContext, AchievementEntry)> OnAchievementUnlocked
-            => achievementUnlockedSubject;
-
-		public AchievementService(
-            IUnitOfWork unitOfWork, 
+        public AchievementService(
+            IUnitOfWork unitOfWork,
             AchievementCollection achievementCollection,
-            IRepositoryFactory<Achievement> factory)
+            IRepositoryFactory<Achievement> factory,
+            AchievementEvents events)
         {
             this.achievementCollection = achievementCollection;
             this.unitOfWork = unitOfWork;
+            this.events = events;
             repository = unitOfWork.GetRepository(factory);
 
-            achievementUnlockedSubject = new Subject<(IContext, AchievementEntry)>();
         }
-        
+
         public AchievementObject GetAchievementOrDefault(string id)
-            => achievementCollection.TryGetAchievement(id, out var achievement) 
-                ? achievement 
+            => achievementCollection.TryGetAchievement(id, out var achievement)
+                ? achievement
                 : null;
 
-        public AchievementObject GetAchievement(string id) 
-            => GetAchievementOrDefault(id) 
+        public AchievementObject GetAchievement(string id)
+            => GetAchievementOrDefault(id)
                ?? throw new InvalidOperationException("Achievement not found");
 
         public async Task<IEnumerable<Achievement>> GetUnlockedAchievementsAsync(long userId)
@@ -58,36 +55,44 @@ namespace Miki.Services.Achievements
         }
 
         public string PrintAchievements(List<Achievement> achievements)
-		{
-            if(achievements == null || !achievements.Any())
+        {
+            if (achievements == null || !achievements.Any())
             {
                 return string.Empty;
             }
 
             string output = string.Empty;
-            foreach(var a in achievements)
+            foreach (var a in achievements)
             {
-                if(!achievementCollection.TryGetAchievement(a.Name, out var value))
+                if (!achievementCollection.TryGetAchievement(a.Name, out var value))
                 {
                     continue;
                 }
 
-                if(a.Rank < value.Entries.Count)
+                if (a.Rank < value.Entries.Count)
                 {
                     output += value.Entries.ElementAt(a.Rank).Icon + " ";
                 }
             }
-			return output;
-		}
+            return output;
+        }
 
         public Task UnlockAsync(
             IContext context, string achievementName, ulong userId, int rank = 0)
         {
             var achievement = GetAchievement(achievementName);
-            return UnlockAsync(context, achievement, userId, rank);  
+            return UnlockAsync(context, achievement, userId, rank);
         }
+
         public async Task UnlockAsync(
             IContext context, AchievementObject achievement, ulong userId, int rank = 0)
+        {
+            await UnlockAsync(achievement, userId, rank);
+            events.CallAchievementUnlockedByUser(context, achievement.Entries[rank]);
+
+        }
+
+        public async Task UnlockAsync(AchievementObject achievement, ulong userId, int rank = 0)
         {
             if (rank >= achievement.Entries.Count)
             {
@@ -103,13 +108,8 @@ namespace Miki.Services.Achievements
             }
 
             await repository.AddAsync(entry.ToModel(userId));
-
             await unitOfWork.CommitAsync();
-            // TODO: separate for daemon?
-            if (!(context.GetChannel() is null))
-            {
-                achievementUnlockedSubject.OnNext((context, entry));
-             }
+            events.CallAchievementUnlocked(entry);
         }
     }
 }

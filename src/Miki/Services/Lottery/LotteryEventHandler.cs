@@ -88,18 +88,18 @@ namespace Miki.Services.Lottery
             var lotteryAchievements = achievementService.GetAchievement(AchievementIds.LotteryWinId);
             if (winningAmount >= 100000)
             {
-                await achievementService.UnlockAsync(context, lotteryAchievements.Entries[0].Id,
-                        (ulong)winnerUserId, 0);
+                await achievementService.UnlockAsync(
+                    context, lotteryAchievements, (ulong)winnerUserId, 0);
             }
             if (winningAmount >= 10000000)
             {
-                await achievementService.UnlockAsync(context, lotteryAchievements.Entries[1].Id,
-                        (ulong)winnerUserId, 1);
+                await achievementService.UnlockAsync(
+                    context, lotteryAchievements, (ulong)winnerUserId, 1);
             }
             if (winningAmount >= 250000000)
             {
-                await achievementService.UnlockAsync(context, lotteryAchievements.Entries[2].Id,
-                        (ulong)winnerUserId, 2);
+                await achievementService.UnlockAsync(
+                    context, lotteryAchievements, (ulong)winnerUserId, 2);
             }
 
         }
