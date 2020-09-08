@@ -257,7 +257,8 @@ namespace Miki.Modules.Accounts
         }
 
         /// <summary>
-        /// Notification for user achievements
+        /// Notification for user achievements.
+        /// Notifications are not sent for achievements not directly triggered by users.
         /// </summary>
         private async Task SendAchievementNotificationAsync((IContext, AchievementEntry) response)
         {
@@ -265,8 +266,10 @@ namespace Miki.Modules.Accounts
 
             var settingsService = context.GetService<ISettingsService>();
 
+            var notificationChannel = context.GetChannel();
+
             var notificationSettingResult = await settingsService.GetAsync<AchievementNotificationSetting>(
-                    SettingType.Achievements, (long)context.GetChannel().Id)
+                    SettingType.Achievements, (long)notificationChannel.Id)
                 .ConfigureAwait(false);
             var notification = notificationSettingResult
                 .OrElse(AchievementNotificationSetting.All)

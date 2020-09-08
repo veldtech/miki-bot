@@ -105,8 +105,11 @@ namespace Miki.Services.Achievements
             await repository.AddAsync(entry.ToModel(userId));
 
             await unitOfWork.CommitAsync();
-
-            achievementUnlockedSubject.OnNext((context, entry));
+            // TODO: separate for daemon?
+            if (!(context.GetChannel() is null))
+            {
+                achievementUnlockedSubject.OnNext((context, entry));
+             }
         }
     }
 }
