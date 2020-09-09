@@ -21,7 +21,7 @@ namespace Miki.Tests.Services
         {
             await using(var unit = NewContext())
             {
-                var service = NewService(unit);
+                var service = NewService(unit).Item1;
                 await service.UnlockAsync(new TestContextObject(), "test", 0);
             }
 
@@ -39,25 +39,29 @@ namespace Miki.Tests.Services
         public async Task AchievementUnlockShouldFireEventAsync()
         {
             var hasFired = false;
-            var service = NewService();
-
-            service.OnAchievementUnlocked.Subscribe(x =>
+            var (service, events) = NewService();
+            bool ranCallback = false;
+            events.OnAchievementUnlocked.Subscribe(x =>
             {
                 hasFired = true;
+                ranCallback = true;
             });
 
             await service.UnlockAsync(new TestContextObject(), "test", 0);
+            while (!ranCallback) { }
             Assert.True(hasFired);
         }
 
-        private AchievementService NewService(IUnitOfWork work = null)
+        private (AchievementService, AchievementEvents) NewService(IUnitOfWork work = null)
         {
             var collection = new AchievementCollection();
             collection.AddAchievement(new AchievementObject.Builder("test").Add("x").Build());
-            return new AchievementService(
+            var events = new AchievementEvents();
+            return (new AchievementService(
                 work ?? NewContext(), 
-                collection, 
-                new AchievementRepository.Factory());
+                collection,
+                new AchievementRepository.Factory(),
+                events), events);
         }
     }   
 }
