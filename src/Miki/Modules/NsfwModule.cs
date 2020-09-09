@@ -33,7 +33,7 @@ namespace Miki.Modules
             ImageboardProviderPool.AddProvider<E621Post>(new ImageboardProvider(
                 new ImageboardConfigurations
                 {
-                    QueryKey = new Uri("http://e621.net/post/index.json?tags="),
+                    QueryKey = new Uri("http://e621.net/posts.json?tags="),
                     ExplicitTag = "rating:e",
                     QuestionableTag = "rating:q",
                     SafeTag = "rating:s",
@@ -49,7 +49,8 @@ namespace Miki.Modules
                         "gore"
                     },
                     mapper = content => MikiRandom.Of(
-                        JsonConvert.DeserializeObject<List<E621Post>>(content))
+                        JsonConvert.DeserializeObject<E621Response>(content).Posts.Where(
+                            post => post.File.Ext != "webm"))
                 }));
             ImageboardProviderPool.AddProvider<DanbooruPost>(new ImageboardProvider(
                 new ImageboardConfigurations
