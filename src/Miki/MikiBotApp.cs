@@ -291,7 +291,8 @@ namespace Miki
 
             serviceCollection.AddSingleton<RedditService>();
             serviceCollection.AddSingleton<AchievementCollection>();
-            serviceCollection.AddSingleton<AchievementService>();
+            serviceCollection.AddSingleton<AchievementEvents>();
+            serviceCollection.AddScoped<AchievementService>();
             serviceCollection.AddScoped<ICustomCommandsService, CustomCommandsService>();
 
             serviceCollection.AddSingleton<ISchedulerService, SchedulerService>();
