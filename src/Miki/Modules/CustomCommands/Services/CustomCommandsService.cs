@@ -153,6 +153,12 @@ namespace Miki.Modules.CustomCommands.Services
         {
             var service = e.GetService<ICustomCommandsService>();
             var guild = e.GetGuild();
+
+            if (guild == null)
+            {
+                return false;
+            }
+
             var guildId = (long)guild.Id;
             var block = await service.GetBlockAsync(guildId, commandName);
 
