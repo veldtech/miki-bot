@@ -179,27 +179,31 @@ namespace Miki.Modules.Accounts
             }
             var achievements = achievementService.GetAchievement(AchievementIds.CurrencyId);
             var totalReceiverCurrency = response.Receiver.Currency + response.Amount;
-            if (totalReceiverCurrency >= 10000)
+            if (totalReceiverCurrency >= 1000000000)
             {
-                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 0);
-            }
-            if (totalReceiverCurrency >= 50000)
-            {
-                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 1);
-            }
-            if (totalReceiverCurrency >= 125000)
-            {
-                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 2);
+                await achievementService.UnlockUpToRankAsync(achievements, (ulong)response.Receiver.Id, 4);
+                return;
             }
             if (totalReceiverCurrency >= 1000000)
             {
-                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 3);
+                await achievementService.UnlockUpToRankAsync(achievements, (ulong)response.Receiver.Id, 3);
+                return;
             }
-            if (totalReceiverCurrency >= 1000000000)
+            if (totalReceiverCurrency >= 125000)
             {
-                await achievementService.UnlockAsync(achievements, (ulong)response.Receiver.Id, 4);
+                await achievementService.UnlockUpToRankAsync(achievements, (ulong)response.Receiver.Id, 2);
+                return;
             }
-            return;
+            if (totalReceiverCurrency >= 50000)
+            {
+                await achievementService.UnlockUpToRankAsync(achievements, (ulong)response.Receiver.Id, 1);
+                return;
+            }
+            if (totalReceiverCurrency >= 10000)
+            {
+                await achievementService.UnlockUpToRankAsync(achievements, (ulong)response.Receiver.Id, 0);
+                return;
+            }
         }
 
             /// <summary>

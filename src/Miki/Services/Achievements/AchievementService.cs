@@ -103,5 +103,30 @@ namespace Miki.Services.Achievements
             await unitOfWork.CommitAsync();
             events.CallAchievementUnlocked(entry, userId);
         }
+
+        public async Task UnlockUpToRankAsync(AchievementObject achievement, ulong userId, int rank)
+        {
+            if (rank >= achievement.Entries.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rank));
+            }
+
+            var currentAchievement = await repository.GetAsync(
+                (long)userId, achievement.Id);
+            if ((currentAchievement?.Rank ?? -1) >= rank)
+            {
+                return;
+            }
+
+            foreach (var entry in achievement.Entries)
+            {
+                if (entry.Rank <= rank)
+                {
+                    await repository.AddAsync(entry.ToModel(userId));
+                    await unitOfWork.CommitAsync();
+                    events.CallAchievementUnlocked(entry, userId);
+                }
+            }
+        }
     }
 }
