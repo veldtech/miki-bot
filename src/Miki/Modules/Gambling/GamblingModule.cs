@@ -542,7 +542,7 @@ namespace Miki.Modules.Gambling
 
                     var achievements = e.GetService<AchievementService>();
                     var slotsAchievement = achievements.GetAchievement(AchievementIds.SlotsId);
-                    await achievements.UnlockAsync(e, slotsAchievement, e.GetAuthor().Id);
+                    await achievements.UnlockAsync(slotsAchievement, e.GetAuthor().Id);
                 }
             }
 

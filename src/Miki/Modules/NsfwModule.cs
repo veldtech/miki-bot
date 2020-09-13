@@ -258,7 +258,7 @@ namespace Miki.Modules
             if(MikiRandom.Next(100) == 50)
             {
                 var lewdAchievement = service.GetAchievementOrDefault(AchievementIds.LewdId);
-                return new ValueTask(service.UnlockAsync(e, lewdAchievement, e.GetAuthor().Id));
+                return new ValueTask(service.UnlockAsync(lewdAchievement, e.GetAuthor().Id));
             }
             return default;
         }

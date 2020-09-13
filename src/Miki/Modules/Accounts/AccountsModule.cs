@@ -30,6 +30,7 @@ using Miki.Services.Transactions;
 using Miki.Utility;
 using Miki.Functional.Async;
 using Miki.Attributes;
+using Miki.Framework.Commands.Localization;
 
 namespace Miki.Modules.Accounts
 {
@@ -39,7 +40,7 @@ namespace Miki.Modules.Accounts
         private readonly AchievementService achievementService;
         private readonly IHttpClient client;
         private readonly MikiApp app;
-
+        private readonly IDiscordClient discordClient;
         public AccountsModule(
             MikiApp app, 
             Config config, 
@@ -51,6 +52,7 @@ namespace Miki.Modules.Accounts
         {
             this.app = app;
             this.achievementService = achievementService;
+            this.discordClient = discordClient;
             if (!string.IsNullOrWhiteSpace(config.ImageApiUrl))
             {
                 client = new HttpClient(config.ImageApiUrl);
@@ -66,9 +68,9 @@ namespace Miki.Modules.Accounts
             accountsService.OnLocalLevelUp += OnLevelUpAchievementsAsync;
             transactionEvents.OnTransactionComplete += CheckCurrencyAchievementUnlocksAsync;
 
-            achievementEvents.OnAchievementUnlockedByUser
+            achievementEvents.OnAchievementUnlocked
                 .SubscribeTask(SendAchievementNotificationAsync);
-            achievementEvents.OnAchievementUnlockedByUser
+            achievementEvents.OnAchievementUnlocked
                 .SubscribeTask(CheckAchievementUnlocksAsync);
         }
         private async Task OnMessageCreateAsync(IDiscordMessage arg)
@@ -85,7 +87,7 @@ namespace Miki.Modules.Accounts
                     var a = achievementService.GetAchievement(AchievementIds.FrogId);
                     await botApp.CreateFromMessageAsync(
                         arg,
-                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
+                        async ctx => await achievementService.UnlockAsync(a, arg.Author.Id));
                 }
                     break;
 
@@ -94,7 +96,7 @@ namespace Miki.Modules.Accounts
                     var a = achievementService.GetAchievement(AchievementIds.LennyId);
                     await botApp.CreateFromMessageAsync(
                         arg,
-                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
+                        async ctx => await achievementService.UnlockAsync(a, arg.Author.Id));
                 }
                     break;
 
@@ -103,7 +105,7 @@ namespace Miki.Modules.Accounts
                     var a = achievementService.GetAchievement(AchievementIds.ShipId);
                     await botApp.CreateFromMessageAsync(
                         arg,
-                        async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
+                        async ctx => await achievementService.UnlockAsync(a, arg.Author.Id));
                 }
                     break;
             }
@@ -113,7 +115,7 @@ namespace Miki.Modules.Accounts
                 var a = achievementService.GetAchievement(AchievementIds.LuckId);
                 await botApp.CreateFromMessageAsync(
                     arg,
-                    async ctx => await achievementService.UnlockAsync(ctx, a, arg.Author.Id));
+                    async ctx => await achievementService.UnlockAsync(a, arg.Author.Id));
             }
         }
 
@@ -162,7 +164,6 @@ namespace Miki.Modules.Accounts
                 {
                     using var context = await botApp.CreateFromUserChannelAsync(user, channel);
                     await achievementService.UnlockAsync(
-                        context,
                         achievements,
                         user.Id,
                         achievementToUnlock);
@@ -288,45 +289,31 @@ namespace Miki.Modules.Accounts
         }
 
         /// <summary>
-        /// Notification for user achievements.
-        /// Notifications are not sent for achievements not directly triggered by users.
+        /// Notification for user achievements, which are sent via DM.
         /// </summary>
-        private async Task SendAchievementNotificationAsync((IContext, AchievementEntry) response)
+        private async Task SendAchievementNotificationAsync((AchievementEntry, ulong) response)
         {
-            var (context, entry) = response;
+            var (entry, userId) = response;
 
-            var settingsService = context.GetService<ISettingsService>();
-
-            var notificationChannel = context.GetChannel();
-
-            var notificationSettingResult = await settingsService.GetAsync<AchievementNotificationSetting>(
-                    SettingType.Achievements, (long)notificationChannel.Id)
-                .ConfigureAwait(false);
-            var notification = notificationSettingResult
-                .OrElse(AchievementNotificationSetting.All)
-                .Unwrap();
-            if(notification == AchievementNotificationSetting.None)
-            {
-                return;
-            }
-
-            var locale = context.GetLocale();
+            var ctx = new ContextObject(app.Services);
+            // TODO: use default locale by adding GetDefaultLocale to ILocalizationService
+            var locale = await app.Services.GetService<ILocalizationService>().GetLocaleAsync(1);
             await new EmbedBuilder()
                 .SetTitle($"{entry.Icon}  {locale.GetString("achievement_unlocked")}")
                 .SetDescription(
                     locale.GetString("achievement_unlocked_text",
-                    context.GetAuthor().Username, 
                     new LanguageResource(entry.ResourceName)))
                 .ToEmbed()
-                .QueueAsync(context, context.GetChannel());
+                .QueueAsync(ctx, await discordClient.CreateDMAsync(userId));
         }
 
-        private async Task CheckAchievementUnlocksAsync((IContext, AchievementEntry) response)
+        private async Task CheckAchievementUnlocksAsync((AchievementEntry, ulong) response)
         {
-            var (ctx, _) = response;
-         
+            var (entry, userId) = response;
+
+            var ctx = new ContextObject(app.Services);
             var service = ctx.GetService<AchievementService>();
-            var achievements = (await service.GetUnlockedAchievementsAsync((long) ctx.GetAuthor().Id))
+            var achievements = (await service.GetUnlockedAchievementsAsync((long)userId))
                 .ToList();
             var achievementObject = service.GetAchievement(AchievementIds.AchievementsId);
 
@@ -337,25 +324,25 @@ namespace Miki.Modules.Accounts
             if(achievements.Count >= 3
                && currentAchievements.FirstOrDefault(x => x.Rank == 0) == null)
             {
-                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id);
+                await service.UnlockAsync(achievementObject, userId);
             }
 
             if(achievements.Count >= 5
                && currentAchievements.FirstOrDefault(x => x.Rank == 1) == null)
             {
-                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 1);
+                await service.UnlockAsync(achievementObject, userId, 1);
             }
 
             if(achievements.Count >= 12
                && currentAchievements.FirstOrDefault(x => x.Rank == 2) == null)
             {
-                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 2);
+                await service.UnlockAsync(achievementObject, userId, 2);
             }
 
             if(achievements.Count >= 25
                && currentAchievements.FirstOrDefault(x => x.Rank == 3) == null)
             {
-                await service.UnlockAsync(ctx, achievementObject, ctx.GetAuthor().Id, 3);
+                await service.UnlockAsync(achievementObject, userId, 3);
             }
         }
 

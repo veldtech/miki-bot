@@ -133,17 +133,17 @@ namespace Miki.Modules.Donator
             if (donatorStatus.KeysRedeemed >= 1
                 && donatorStatus.KeysRedeemed < 5)
             {
-                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id);
+                await achievementManager.UnlockAsync(donatorAchievement, e.GetAuthor().Id);
             }
             else if (donatorStatus.KeysRedeemed >= 5
                      && donatorStatus.KeysRedeemed < 25)
             {
-                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id, 1)
+                await achievementManager.UnlockAsync(donatorAchievement, e.GetAuthor().Id, 1)
                     .ConfigureAwait(false);
             }
             else if (donatorStatus.KeysRedeemed >= 25)
             {
-                await achievementManager.UnlockAsync(e, donatorAchievement, e.GetAuthor().Id, 2);
+                await achievementManager.UnlockAsync(donatorAchievement, e.GetAuthor().Id, 2);
             }
         }
 

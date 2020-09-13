@@ -78,18 +78,10 @@ namespace Miki.Services.Achievements
         }
 
         public Task UnlockAsync(
-            IContext context, string achievementName, ulong userId, int rank = 0)
+            string achievementName, ulong userId, int rank = 0)
         {
             var achievement = GetAchievement(achievementName);
-            return UnlockAsync(context, achievement, userId, rank);
-        }
-
-        public async Task UnlockAsync(
-            IContext context, AchievementObject achievement, ulong userId, int rank = 0)
-        {
-            await UnlockAsync(achievement, userId, rank);
-            events.CallAchievementUnlockedByUser(context, achievement.Entries[rank]);
-
+            return UnlockAsync(achievement, userId, rank);
         }
 
         public async Task UnlockAsync(AchievementObject achievement, ulong userId, int rank = 0)
@@ -109,7 +101,7 @@ namespace Miki.Services.Achievements
 
             await repository.AddAsync(entry.ToModel(userId));
             await unitOfWork.CommitAsync();
-            events.CallAchievementUnlocked(entry);
+            events.CallAchievementUnlocked(entry, userId);
         }
     }
 }

@@ -89,17 +89,17 @@ namespace Miki.Services.Lottery
             if (winningAmount >= 100000)
             {
                 await achievementService.UnlockAsync(
-                    context, lotteryAchievements, (ulong)winnerUserId, 0);
+                   lotteryAchievements, (ulong)winnerUserId, 0);
             }
             if (winningAmount >= 10000000)
             {
                 await achievementService.UnlockAsync(
-                    context, lotteryAchievements, (ulong)winnerUserId, 1);
+                    lotteryAchievements, (ulong)winnerUserId, 1);
             }
             if (winningAmount >= 250000000)
             {
                 await achievementService.UnlockAsync(
-                    context, lotteryAchievements, (ulong)winnerUserId, 2);
+                    lotteryAchievements, (ulong)winnerUserId, 2);
             }
 
         }

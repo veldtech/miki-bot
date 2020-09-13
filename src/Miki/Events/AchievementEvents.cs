@@ -7,28 +7,19 @@ namespace Miki
 {
     public class AchievementEvents
     {
-        private readonly Subject<(IContext, AchievementEntry)> achievementUnlockedByUserSubject;
-        private readonly Subject<AchievementEntry> achievementUnlockedSubject;
+        private readonly Subject<(AchievementEntry, ulong)> achievementUnlockedSubject;
 
         public AchievementEvents()
         {
-            achievementUnlockedByUserSubject = new Subject<(IContext, AchievementEntry)>();
-            achievementUnlockedSubject = new Subject<AchievementEntry>();
+            achievementUnlockedSubject = new Subject<(AchievementEntry, ulong)>();
         }
 
-        public IObservable<(IContext, AchievementEntry)> OnAchievementUnlockedByUser
-    => achievementUnlockedByUserSubject;
-        public IObservable<AchievementEntry> OnAchievementUnlocked
+        public IObservable<(AchievementEntry, ulong)> OnAchievementUnlocked
             => achievementUnlockedSubject;
 
-        public void CallAchievementUnlockedByUser(IContext context, AchievementEntry entry)
+        public void CallAchievementUnlocked(AchievementEntry entry, ulong userId)
         {
-            achievementUnlockedByUserSubject.OnNext((context, entry));
-        }
-
-        public void CallAchievementUnlocked(AchievementEntry entry)
-        {
-            achievementUnlockedSubject.OnNext(entry);
+            achievementUnlockedSubject.OnNext((entry, userId));
         }
     }
 }

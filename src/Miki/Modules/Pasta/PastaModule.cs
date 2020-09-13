@@ -54,7 +54,7 @@ namespace Miki.Modules.Pasta
                 .QueueAsync(e, e.GetChannel());
 
             var a = e.GetService<AchievementService>();
-            await a.UnlockAsync(e, a.GetAchievement(AchievementIds.CreatePastaId), e.GetAuthor().Id);
+            await a.UnlockAsync(a.GetAchievement(AchievementIds.CreatePastaId), e.GetAuthor().Id);
         }
 
         [Command("deletepasta")]

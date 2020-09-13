@@ -309,7 +309,7 @@ namespace Miki.Modules
 			if(receiverId == askerId)
             {
                 var achievements = e.GetService<AchievementService>();
-                await achievements.UnlockAsync(e,
+                await achievements.UnlockAsync(
                     achievements.GetAchievement(AchievementIds.MarrySelfId),
                     e.GetAuthor().Id);
                 return;

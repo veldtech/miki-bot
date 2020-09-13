@@ -71,12 +71,12 @@ namespace Miki.Modules.Internal.Routines
                 return;
             }
 
-            events.OnAchievementUnlocked.Subscribe(achievement =>
+            events.OnAchievementUnlocked.Subscribe((response) =>
             {
                 DogStatsd.Increment(
                     "achievements.gained", tags: new[]
                     {
-                        $"achievement:{achievement.ResourceName}"
+                        $"achievement:{response.Item1.ResourceName}"
                     });
             });
         }
