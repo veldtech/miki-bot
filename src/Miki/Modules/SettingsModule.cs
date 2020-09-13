@@ -25,7 +25,7 @@ namespace Miki.Modules
 		All = 1,
 		None = 2
 	}
-
+    // TODO: currently unused as notifications are sent via DM, may be removed in the future
     public enum AchievementNotificationSetting
     {
         All = 0,

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Miki.API.Imageboards.Objects;
 using Newtonsoft.Json;
@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 namespace Miki.API.Imageboards
 {
     [DataContract]
-    public class YandereResponse
+    public class E621Response
     {
         [JsonProperty("posts")]
-        public List<YanderePost> Posts { get; set; }
+        public List<E621Post> Posts { get; set; }
     }
 }

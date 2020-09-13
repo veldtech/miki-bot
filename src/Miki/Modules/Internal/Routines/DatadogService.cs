@@ -17,7 +17,7 @@ namespace Miki.Modules.Internal.Routines
     {
         public DatadogRoutine(
             AccountService accounts,
-            AchievementService achievements,
+            AchievementEvents achievements,
             IAsyncEventingExecutor<IDiscordMessage> commandPipeline,
             Config config,
             IDiscordClient discordClient)
@@ -64,20 +64,19 @@ namespace Miki.Modules.Internal.Routines
                 return Task.CompletedTask;
             };
         }
-		private void CreateAchievementsMetrics(AchievementService service)
+		private void CreateAchievementsMetrics(AchievementEvents events)
 		{
-            if(service == null)
+            if(events == null)
             {
                 return;
             }
 
-            service.OnAchievementUnlocked.Subscribe(res =>
+            events.OnAchievementUnlocked.Subscribe((response) =>
             {
-                var (_, achievement) = res;
                 DogStatsd.Increment(
                     "achievements.gained", tags: new[]
                     {
-                        $"achievement:{achievement.ResourceName}"
+                        $"achievement:{response.Item1.ResourceName}"
                     });
             });
         }

@@ -521,7 +521,7 @@ namespace Miki.Modules
 
             var service = e.GetService<AchievementService>();
             await service.UnlockAsync(
-                e, service.GetAchievement(AchievementIds.ReadInfoId), e.GetAuthor().Id);
+                service.GetAchievement(AchievementIds.ReadInfoId), e.GetAuthor().Id);
         }
 
 		[Command("invite")]

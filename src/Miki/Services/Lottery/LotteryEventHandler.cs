@@ -6,6 +6,8 @@ using Miki.Discord.Common;
 using Miki.Discord.Rest.Exceptions;
 using Miki.Framework;
 using Miki.Logging;
+using Miki.Modules.Accounts.Services;
+using Miki.Services.Achievements;
 using Miki.Services.Transactions;
 using Miki.Utility;
 
@@ -21,7 +23,7 @@ namespace Miki.Services.Lottery
 
             var entries = await lotteryService.GetEntriesAsync();
             var entryCount = entries?.Sum(x => x.TicketCount) ?? 0;
-            if(entryCount == 0)
+            if (entryCount == 0)
             {
                 Log.Warning("No entries found.");
                 return;
@@ -30,9 +32,9 @@ namespace Miki.Services.Lottery
             var winnerIndex = MikiRandom.Next(entryCount);
 
             LotteryEntry winner = null;
-            foreach(var entry in entries)
+            foreach (var entry in entries)
             {
-                if(entry.TicketCount > winnerIndex)
+                if (entry.TicketCount > winnerIndex)
                 {
                     winner = entry;
                     break;
@@ -41,7 +43,7 @@ namespace Miki.Services.Lottery
                 winnerIndex -= entry.TicketCount;
             }
 
-            if(winner == null)
+            if (winner == null)
             {
                 Log.Warning("Winner was null");
                 return;
@@ -68,7 +70,7 @@ namespace Miki.Services.Lottery
                         .SetColor(103, 172, 237)
                         .ToEmbed());
             }
-            catch(DiscordRestException)
+            catch (DiscordRestException)
             {
                 Log.Warning("Message failed to send");
                 // Couldn't send message to winner.
@@ -76,6 +78,30 @@ namespace Miki.Services.Lottery
 
             var cache = context.GetService<ICacheClient>();
             await cache.RemoveAsync(LotteryObjectsKey);
+
+            await OnLotteryWinAchievementsAsync(context, winner.UserId, winningAmount);
+        }
+
+        async Task OnLotteryWinAchievementsAsync(IContext context, long winnerUserId, int winningAmount)
+        {
+            var achievementService = context.GetService<AchievementService>();
+            var lotteryAchievements = achievementService.GetAchievement(AchievementIds.LotteryWinId);
+            if (winningAmount >= 100000)
+            {
+                await achievementService.UnlockAsync(
+                   lotteryAchievements, (ulong)winnerUserId, 0);
+            }
+            if (winningAmount >= 10000000)
+            {
+                await achievementService.UnlockAsync(
+                    lotteryAchievements, (ulong)winnerUserId, 1);
+            }
+            if (winningAmount >= 250000000)
+            {
+                await achievementService.UnlockAsync(
+                    lotteryAchievements, (ulong)winnerUserId, 2);
+            }
+
         }
     }
 }

@@ -164,7 +164,6 @@ namespace Miki
             {
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
-
                 serviceCollection.UseDiscord((provider, config) =>
                 {
                     config.Token = provider.GetService<Config>().Token;
@@ -292,6 +291,7 @@ namespace Miki
 
             serviceCollection.AddSingleton<RedditService>();
             serviceCollection.AddSingleton<AchievementCollection>();
+            serviceCollection.AddSingleton<AchievementEvents>();
             serviceCollection.AddScoped<AchievementService>();
             serviceCollection.AddScoped<ICustomCommandsService, CustomCommandsService>();
 
@@ -355,7 +355,7 @@ namespace Miki
                     Author = new DiscordUserPacket
                     {
                         Avatar = user.AvatarId,
-                        Discriminator = user.Discriminator.ToString(),
+                        Discriminator = user.Discriminator,
                         Id = user.Id,
                         Username = user.Username,
                         IsBot = user.IsBot
@@ -376,6 +376,8 @@ namespace Miki
             var context = new ContextObject(Services);
             await new CorePipelineStage().CheckAsync(message, context, () => default);
             await new FetchDataStage().CheckAsync(message, context, () => default);
+            await new LocalizationPipelineStage(Services.GetService<ILocalizationService>())
+                .CheckAsync(message, context, () => default);
             return context;
         }
         

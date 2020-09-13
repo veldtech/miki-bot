@@ -456,7 +456,7 @@ namespace Miki.Modules.Fun
             {
                 var achievements = e.GetService<AchievementService>();
                 var badLuckAchievement = achievements.GetAchievement(AchievementIds.UnluckyId);
-                await achievements.UnlockAsync(e, badLuckAchievement, e.GetAuthor().Id);
+                await achievements.UnlockAsync(badLuckAchievement, e.GetAuthor().Id);
             }
 
 			e.GetChannel()
