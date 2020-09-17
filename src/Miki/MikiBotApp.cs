@@ -355,7 +355,7 @@ namespace Miki
                     Author = new DiscordUserPacket
                     {
                         Avatar = user.AvatarId,
-                        Discriminator = user.Discriminator,
+                        Discriminator = user.Discriminator.ToString(),
                         Id = user.Id,
                         Username = user.Username,
                         IsBot = user.IsBot

@@ -38,7 +38,7 @@
     <PackageReference Include="Miki.Cache.StackExchange.Redis" Version="2.5.0" />
     <PackageReference Include="Miki.Configuration" Version="1.0.0" />
     <PackageReference Include="Miki.Configuration.Providers.Json" Version="1.0.1" />
-    <PackageReference Include="Miki.Discord" Version="4.0.0-rc.8" />
+    <PackageReference Include="Miki.Discord" Version="4.0.0-rc.10" />
     <PackageReference Include="Miki.Discord.Extensions" Version="4.0.0-rc.3" />
     <PackageReference Include="Miki.Discord.Gateway" Version="4.0.0-rc.3" />
     <PackageReference Include="Miki.Discord.Rest" Version="4.0.0-rc.3" />
