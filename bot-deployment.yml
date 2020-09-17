@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot
+  labels:
+    app: bot
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: bot
+  template:
+    metadata:
+      labels:
+        app: bot
+    spec:
+        hostNetwork: true
+        containers:
+        - name: bot-container
+          image: replace with Azure CI
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+          - name: MIKI_CONNSTRING
+            value: Obviously don't keep this here, figure out where we should keep the env var
+        imagePullSecrets:
+        - name: pull secret for Azure CI
