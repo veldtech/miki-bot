@@ -22,7 +22,7 @@ namespace Miki.Tests.Services
             await using(var unit = NewContext())
             {
                 var service = NewService(unit).Item1;
-                await service.UnlockAsync(new TestContextObject(), "test", 0);
+                await service.UnlockAsync("test", 0);
             }
 
             await using(var unit = NewContext())
@@ -47,7 +47,7 @@ namespace Miki.Tests.Services
                 ranCallback = true;
             });
 
-            await service.UnlockAsync(new TestContextObject(), "test", 0);
+            await service.UnlockAsync("test", 0);
             while (!ranCallback) { }
             Assert.True(hasFired);
         }
