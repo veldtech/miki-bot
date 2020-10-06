@@ -66,6 +66,7 @@ using Veld.Osu.V1;
 using Miki.Modules.CustomCommands.CommandHandlers;
 using Miki.Discord.Internal.Data;
 using Miki.Discord.Extensions.DependencyInjection;
+using Miki.Discord.Extensions;
 
 namespace Miki
 {
@@ -164,10 +165,24 @@ namespace Miki
             {
                 serviceCollection.AddSingleton<ICacheClient, InMemoryCacheClient>();
                 serviceCollection.AddSingleton<IExtendedCacheClient, InMemoryCacheClient>();
-                serviceCollection.UseDiscord((provider, config) =>
+                serviceCollection.AddSingleton(services =>
                 {
-                    config.Token = provider.GetService<Config>().Token;
+                    return new DiscordConfiguration()
+                    {
+                        Token = services.GetRequiredService<Config>().Token,
+                    };
                 });
+                serviceCollection.AddSingleton<IApiClient>(
+                    x => new DiscordApiClient(
+                        x.GetRequiredService<Config>().Token,
+                        x.GetRequiredService<ICacheClient>()));
+                serviceCollection.AddSingleton<IGateway>(
+                    x => new GatewayCluster(
+                        new GatewayProperties
+                        {
+                            Token = x.GetRequiredService<Config>().Token,
+                        }));
+                serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
 
                 var splitConfig = new ConfigurationOptions
                 {
