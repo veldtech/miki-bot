@@ -182,7 +182,6 @@ namespace Miki
                         {
                             Token = x.GetRequiredService<Config>().Token,
                         }));
-                serviceCollection.AddSingleton<IDiscordClient, DiscordClient>();
 
                 var splitConfig = new ConfigurationOptions
                 {
