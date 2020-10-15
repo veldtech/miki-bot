@@ -44,5 +44,10 @@ namespace Miki.Modules.CustomCommands.Services
         /// Get the storage of the guild.
         /// </summary>
         ValueTask<IDictionary<string, JToken>> GetStorageAsync(long guildId);
+
+        /// <summary>
+        /// Get the custom commands for the guild.
+        /// </summary>
+        ValueTask<List<string>> GetGuildCommands(long guildId);
     }
 }

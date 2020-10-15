@@ -11,6 +11,7 @@ using Miki.Framework;
 using Miki.Functional;
 using Miki.Modules.CustomCommands.Providers;
 using Miki.Modules.CustomCommands.Values;
+using Miki.Patterns.Repositories;
 using Miki.Services;
 using Miki.Utility;
 using MiScript;
@@ -66,12 +67,16 @@ namespace Miki.Modules.CustomCommands.Services
         private readonly IExtendedCacheClient cache;
         private readonly IUnitOfWork unitOfWork;
         private readonly IUserService userService;
+        
+        private readonly IAsyncRepository<CustomCommand> commandRepository;
 
         public CustomCommandsService(IExtendedCacheClient cache, IUnitOfWork unitOfWork, IUserService userService)
         {
             this.cache = cache;
             this.unitOfWork = unitOfWork;
             this.userService = userService;
+
+            this.commandRepository = unitOfWork.GetRepository<CustomCommand>();
         }
 
         /// <inheritdoc />
@@ -343,6 +348,17 @@ namespace Miki.Modules.CustomCommands.Services
                         .From(() => JToken.Parse(kv.Value))
                         .OrElse(JValue.CreateNull())
                         .Unwrap());
+        }
+
+        /// <inheritdoc />
+        public async ValueTask<List<string>> GetGuildCommands(long guildId)
+        {
+            var commands = (await commandRepository.ListAsync())
+                .Where(x => x.GuildId == guildId)
+                .Select(x => x.CommandName)
+                .ToList();
+            
+            return commands;
         }
 
         /// <summary>
