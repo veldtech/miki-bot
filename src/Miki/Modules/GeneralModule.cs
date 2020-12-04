@@ -345,7 +345,7 @@ namespace Miki.Modules
                             }
                             catch
                             {
-                                description = locale.GetString("miki_error_message_generic");
+                                description = locale.GetString("miki_error_message_command_description");
                             }
 
                             embedBuilder.AddInlineField($"{e.GetPrefixMatch()}{name}", description);
