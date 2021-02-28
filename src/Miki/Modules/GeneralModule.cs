@@ -92,9 +92,9 @@ namespace Miki.Modules
                 {
                     case "lerp":
                     {
-                        double n = (double) x.Parameters[0].Evaluate();
-                        double v = (double) x.Parameters[1].Evaluate();
-                        double o = (double) x.Parameters[2].Evaluate();
+                        double n = Convert.ToDouble(x.Parameters[0].Evaluate());
+                        double v = Convert.ToDouble(x.Parameters[1].Evaluate());
+                        double o = Convert.ToDouble(x.Parameters[2].Evaluate());
                         x.Result = n * (1.0 - o) + v * o;
                         break;
                     }
