@@ -492,7 +492,7 @@ namespace Miki.Modules
 				Description = e.GetLocale().GetString("miki_module_general_info_donate_string"),
 				Color = new Color(0.8f, 0.4f, 0.4f),
 			}.AddField("Links", "https://www.patreon.com/mikibot - if you want to donate every month and get cool rewards!\nhttps://ko-fi.com/velddy - one time donations please include your discord name#identifiers so i can contact you!", true)
-			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [Discordbots.org](https://discordbots.org/bot/160105994217586689)", true)
+			.AddField("Don't have money?", "You can always support us in different ways too! Please participate in our [idea](https://suggestions.miki.ai/) discussions so we can get a better grasp of what you guys would like to see next! Or vote for Miki on [top.gg](https://top.gg/bot/160105994217586689)", true)
 			.ToEmbed()
             .QueueAsync(e, e.GetChannel())
             .ConfigureAwait(false);
