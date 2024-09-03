@@ -1,26 +1,13 @@
 # Miki
-![Miki](https://discordbots.org/api/widget/status/160105994217586689.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0181e7d12f8344fd9950067e80f53f74)](https://www.codacy.com/app/velddev/Miki?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=velddev/Miki&amp;utm_campaign=Badge_Grade)
-[![](https://img.shields.io/badge/invite-miki-7289da?logo=discord)](https://miki.ai/invite?ref=github)
-<br>
 Your solution to a great Discord Community! Adding levels, role management, achievements, profiles, image search, games, and many more!
+
+# ⚠️ Notice: This repository is no longer used and will no longer be updated. Miki has been moved private source into a monorepo to further develop and integrate all modules. The repository will be left up for any learning purposes. IT should still work, but you may have a bad time getting it in a good place.
 
 ## Build status
 | Platform | Status |
 | --- | --- |
 | Ubuntu | ![badge](https://dev.azure.com/mikibot/Miki/_apis/build/status/miki-ubuntu-master) |
 | Docker |[![Build Status](https://dev.azure.com/mikibot/Miki/_apis/build/status/Mikibot.bot?branchName=master)](https://dev.azure.com/mikibot/Miki/_build/latest?definitionId=15&branchName=master) |
-
-## Useful links
-Bot invite: https://miki.bot/invite?ref=github<br>
-Documentation: https://github.com/velddev/Miki/wiki<br>
-Guides: https://miki.bot/guides<br>
-Issues: https://github.com/Mikibot/bot/issues<br>
-Patreon: https://www.patreon.com/mikibot<br>
-Support server: https://discord.gg/39Xpj7K<br>
-
-
-## Feature requests
-[Go to Suggestions.Miki.ai](https://suggestions.miki.ai)
 
 ## Getting Started 
 
