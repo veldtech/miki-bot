@@ -736,7 +736,7 @@ namespace Miki.Modules.Accounts
                 .QueueAsync(e, e.GetChannel());
         }
 
-        [Command("buybackground")]
+        [Command("setbackcolor", "setbackcolour")]
         public async Task BuyProfileBackgroundAsync(IContext e)
         {
             var backgrounds = e.GetService<IBackgroundStore>();
@@ -819,7 +819,7 @@ namespace Miki.Modules.Accounts
             }
         }
 
-        [Command("setfrontcolor")]
+        [Command("setfrontcolor", "setfrontcolour")]
         public async Task SetProfileForeColorAsync(IContext e)
         {
             var transactionService = e.GetService<ITransactionService>();
